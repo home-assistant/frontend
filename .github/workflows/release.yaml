@@ -8,7 +8,7 @@ on:
 env:
   PYTHON_VERSION: 3.8
   NODE_VERSION: 14
-  NODE_OPTIONS: --max_old_space_size=4096
+  NODE_OPTIONS: --max_old_space_size=6144
 
 jobs:
   release:
@@ -73,8 +73,7 @@ jobs:
       matrix:
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
         tag:
-          - "3.8-alpine3.12"
-          - "3.9-alpine3.13"
+          - "3.9-alpine3.14"
     steps:
       - name: Download requirements.txt
         uses: actions/download-artifact@v2

@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
@@ -62,7 +63,9 @@ class HassioAddonNetwork extends LitElement {
         )}
       >
         <div class="card-content">
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
 
           <table>
             <tbody>
@@ -86,9 +89,9 @@ class HassioAddonNetwork extends LitElement {
                     <td>
                       <paper-input
                         @value-changed=${this._configChanged}
-                        placeholder="${this.supervisor.localize(
+                        placeholder=${this.supervisor.localize(
                           "addon.configuration.network.disabled"
-                        )}"
+                        )}
                         .value=${item.host ? String(item.host) : ""}
                         .container=${item.container}
                         no-label-float
@@ -168,7 +171,7 @@ class HassioAddonNetwork extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_reset",
         "error",
@@ -204,7 +207,7 @@ class HassioAddonNetwork extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -224,10 +227,6 @@ class HassioAddonNetwork extends LitElement {
         }
         ha-card {
           display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
         .card-actions {
           display: flex;

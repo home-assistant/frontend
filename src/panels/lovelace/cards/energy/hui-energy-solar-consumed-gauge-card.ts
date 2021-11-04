@@ -1,9 +1,12 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
@@ -29,7 +32,9 @@ class HuiEnergySolarGaugeCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass!).subscribe((data) => {
+      getEnergyDataCollection(this.hass!, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
         this._data = data;
       }),
     ];
@@ -49,7 +54,9 @@ class HuiEnergySolarGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -72,17 +79,30 @@ class HuiEnergySolarGaugeCard
     let value: number | undefined;
 
     if (productionReturnedToGrid !== null && totalSolarProduction) {
-      const cosumedSolar = Math.max(
+      const consumedSolar = Math.max(
         0,
         totalSolarProduction - productionReturnedToGrid
       );
-      value = (cosumedSolar / totalSolarProduction) * 100;
+      value = (consumedSolar / totalSolarProduction) * 100;
     }
 
     return html`
       <ha-card>
         ${value !== undefined
-          ? html`<ha-gauge
+          ? html`
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <paper-tooltip animation-delay="0" for="info" position="left">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                  )}
+                </span>
+              </paper-tooltip>
+              <ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
@@ -92,10 +112,19 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Self consumed solar energy</div>`
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
+                )}
+              </div>
+            `
           : totalSolarProduction === 0
-          ? "You have not produced any solar energy"
-          : "Self consumed solar energy couldn't be calculated"}
+          ? this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
+            )
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+            )}
       </ha-card>
     `;
   }
@@ -124,7 +153,6 @@ class HuiEnergySolarGaugeCard
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }
@@ -136,6 +164,22 @@ class HuiEnergySolarGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        top: 8px !important;
       }
     `;
   }

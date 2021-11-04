@@ -1,3 +1,4 @@
+import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -39,10 +40,10 @@ class HaCoverTiltControls extends LitElement {
         class=${classMap({
           invisible: !this._entityObj.supportsOpenTilt,
         })}
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
         )}
-        icon="hass:arrow-top-right"
+        .path=${mdiArrowTopRight}
         @click=${this._onOpenTiltTap}
         .disabled=${this._computeOpenDisabled()}
       ></ha-icon-button>
@@ -50,8 +51,8 @@ class HaCoverTiltControls extends LitElement {
         class=${classMap({
           invisible: !this._entityObj.supportsStopTilt,
         })}
-        label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
-        icon="hass:stop"
+        .label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
+        .path=${mdiStop}
         @click=${this._onStopTiltTap}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       ></ha-icon-button>
@@ -59,10 +60,10 @@ class HaCoverTiltControls extends LitElement {
         class=${classMap({
           invisible: !this._entityObj.supportsCloseTilt,
         })}
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.dialogs.more_info_control.close_tilt_cover"
         )}
-        icon="hass:arrow-bottom-left"
+        .path=${mdiArrowBottomLeft}
         @click=${this._onCloseTiltTap}
         .disabled=${this._computeClosedDisabled()}
       ></ha-icon-button>`;

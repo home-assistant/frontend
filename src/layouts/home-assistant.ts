@@ -145,10 +145,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
           if (registration) {
             registration.update();
           } else {
+            // @ts-ignore Firefox supports forceGet
             location.reload(true);
           }
         });
       } else {
+        // @ts-ignore Firefox supports forceGet
         location.reload(true);
       }
     }
@@ -170,7 +172,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const { auth, conn } = result;
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
-    } catch (err) {
+    } catch (err: any) {
       this._error = true;
     }
   }
@@ -211,6 +213,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (!this.hass!.connection.connected) {
       return;
     }
+    window.stop();
     this.hass!.connection.suspend();
   }
 

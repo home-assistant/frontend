@@ -15,6 +15,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-alert";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type {
   LovelaceCardConfig,
@@ -87,7 +88,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     try {
       this._config = load(this.yaml) as any;
       this._errors = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._errors = [err.message];
     }
     this._setConfig();
@@ -111,7 +112,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     if (!this._errors) {
       try {
         this._updateConfigElement();
-      } catch (err) {
+      } catch (err: any) {
         this._errors = [err.message];
       }
     }
@@ -229,9 +230,12 @@ export abstract class HuiElementEditor<T> extends LitElement {
           : ""}
         ${this.hasWarning
           ? html`
-              <div class="warning">
-                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
-                <br />
+              <ha-alert
+                alert-type="warning"
+                .title="${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}:"
+              >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html` <ul>
                       ${this._warnings!.map(
@@ -240,7 +244,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                     </ul>`
                   : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </div>
+              </ha-alert>
             `
           : ""}
       </div>
@@ -321,7 +325,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
         // Setup GUI editor and check that it can handle the current config
         try {
           this._configElement.setConfig(this.value);
-        } catch (err) {
+        } catch (err: any) {
           const msgs = handleStructError(this.hass, err);
           throw new GUISupportError(
             "Config is not supported",
@@ -332,7 +336,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
       } else {
         this.GUImode = false;
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;

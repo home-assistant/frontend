@@ -105,7 +105,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         <div>
           <div class="header">
-            [[localize( 'ui.panel.developer-tools.tabs.events.available_events'
+            [[localize( 'ui.panel.developer-tools.tabs.events.active_listeners'
             )]]
           </div>
           <events-list

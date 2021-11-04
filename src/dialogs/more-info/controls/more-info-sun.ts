@@ -2,7 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-relative-time";
 import { HomeAssistant } from "../../../types";
 
@@ -72,9 +72,6 @@ class MoreInfoSun extends LitElement {
       ha-relative-time {
         display: inline-block;
         white-space: nowrap;
-      }
-      ha-relative-time::first-letter {
-        text-transform: lowercase;
       }
       hr {
         border-color: var(--divider-color);

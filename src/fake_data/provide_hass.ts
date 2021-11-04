@@ -8,7 +8,7 @@ import { DEFAULT_PANEL } from "../data/panel";
 import { NumberFormat, TimeFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
@@ -33,7 +33,11 @@ export interface MockHomeAssistant extends HomeAssistant {
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS(
     type: string,
-    callback: (msg: any, onChange?: (response: any) => void) => any
+    callback: (
+      msg: any,
+      hass: MockHomeAssistant,
+      onChange?: (response: any) => void
+    ) => any
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
@@ -144,7 +148,7 @@ export const provideHass = (
         const callback = wsCommands[msg.type];
 
         if (callback) {
-          callback(msg);
+          callback(msg, hass());
         } else {
           // eslint-disable-next-line
           console.error(`Unknown WS command: ${msg.type}`);
@@ -153,7 +157,7 @@ export const provideHass = (
       sendMessagePromise: async (msg) => {
         const callback = wsCommands[msg.type];
         return callback
-          ? callback(msg)
+          ? callback(msg, hass())
           : Promise.reject({
               code: "command_not_mocked",
               message: `WS Command ${msg.type} is not implemented in provide_hass.`,
@@ -162,7 +166,7 @@ export const provideHass = (
       subscribeMessage: async (onChange, msg) => {
         const callback = wsCommands[msg.type];
         return callback
-          ? callback(msg, onChange)
+          ? callback(msg, hass(), onChange)
           : Promise.reject({
               code: "command_not_mocked",
               message: `WS Command ${msg.type} is not implemented in provide_hass.`,
@@ -266,6 +270,7 @@ export const provideHass = (
     updateStates,
     updateTranslations,
     addTranslations,
+    loadFragmentTranslation: async (_fragment: string) => hass().localize,
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

@@ -15,7 +15,7 @@ import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { mdiCheck } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -46,6 +46,7 @@ export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<style>
     paper-item {
       padding: 0;
@@ -242,7 +243,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (outputDevices.length === 1) {
         return outputDevices;
       }
-      return outputDevices.sort((a, b) => compare(a.name || "", b.name || ""));
+      return outputDevices.sort((a, b) =>
+        stringCompare(a.name || "", b.name || "")
+      );
     }
   );
 
@@ -335,7 +338,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

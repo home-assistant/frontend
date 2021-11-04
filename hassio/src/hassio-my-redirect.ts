@@ -26,7 +26,10 @@ const REDIRECTS: Redirects = {
     redirect: "/hassio/system",
   },
   supervisor_snapshots: {
-    redirect: "/hassio/snapshots",
+    redirect: "/hassio/backups",
+  },
+  supervisor_backups: {
+    redirect: "/hassio/backups",
   },
   supervisor_store: {
     redirect: "/hassio/store",
@@ -84,7 +87,7 @@ class HassioMyRedirect extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize("my.error");
       return;
     }

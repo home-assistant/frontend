@@ -18,7 +18,7 @@ gulp.task(
     },
     "clean-cast",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     "gen-index-cast-dev",
     env.useRollup() ? "rollup-dev-server-cast" : "webpack-dev-server-cast"
@@ -33,7 +33,7 @@ gulp.task(
     },
     "clean-cast",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     env.useRollup() ? "rollup-prod-cast" : "webpack-prod-cast",
     "gen-index-cast-prod"

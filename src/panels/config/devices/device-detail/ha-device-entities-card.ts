@@ -15,16 +15,23 @@ import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import { HomeAssistant } from "../../../../types";
-import { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
+import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
+  @property() public header!: string;
+
+  @property() public deviceName!: string;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entities!: EntityRegistryStateEntry[];
@@ -47,11 +54,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     const disabledEntities: EntityRegistryStateEntry[] = [];
     this._entityRows = [];
     return html`
-      <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.config.devices.entities.entities"
-        )}
-      >
+      <ha-card .header=${this.header}>
         ${this.entities.length
           ? html`
               <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
@@ -102,14 +105,8 @@ export class HaDeviceEntitiesCard extends LitElement {
               </div>
             `
           : html`
-              <div class="config-entry-row">
-                <paper-item-body two-line>
-                  <div>
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.entities.none"
-                    )}
-                  </div>
-                </paper-item-body>
+              <div class="empty card-content">
+                ${this.hass.localize("ui.panel.config.devices.entities.none")}
               </div>
             `}
       </ha-card>
@@ -121,9 +118,21 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
-    const element = createRowElement({ entity: entry.entity_id });
+    const config: LovelaceRowConfig = {
+      entity: entry.entity_id,
+    };
+
+    const element = createRowElement(config);
     if (this.hass) {
       element.hass = this.hass;
+      const state = this.hass.states[entry.entity_id];
+      const name = stripPrefixFromEntityName(
+        computeStateName(state),
+        `${this.deviceName} `.toLowerCase()
+      );
+      if (name) {
+        config.name = name;
+      }
     }
     // @ts-ignore
     element.entry = entry;
@@ -133,13 +142,24 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {
     return html`
-      <paper-icon-item .entry=${entry} @click=${this._openEditEntry}>
-        <ha-icon
+      <paper-icon-item
+        class="disabled-entry"
+        .entry=${entry}
+        @click=${this._openEditEntry}
+      >
+        <ha-svg-icon
           slot="item-icon"
-          .icon=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-icon>
+          .path=${domainIcon(computeDomain(entry.entity_id))}
+        ></ha-svg-icon>
         <paper-item-body>
-          <div class="name">${entry.stateName || entry.entity_id}</div>
+          <div class="name">
+            ${entry.stateName
+              ? stripPrefixFromEntityName(
+                  entry.stateName,
+                  `${this.deviceName} `.toLowerCase()
+                )
+              : entry.entity_id}
+          </div>
         </paper-item-body>
       </paper-icon-item>
     `;
@@ -168,7 +188,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       this.hass,
       this.entities
         .filter((entity) => !entity.disabled_by)
-        .map((entity) => entity.entity_id)
+        .map((entity) => entity.entity_id),
+      this.deviceName
     );
   }
 
@@ -190,6 +211,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       .disabled-entry {
         color: var(--secondary-text-color);
       }
+      #entities {
+        margin-top: -24px; /* match the spacing between card title and content of the device info card above it */
+      }
       #entities > * {
         margin: 8px 16px 8px 8px;
       }
@@ -198,11 +222,15 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       paper-icon-item {
         min-height: 40px;
-        padding: 0 8px;
+        padding: 0 16px;
         cursor: pointer;
+        --paper-item-icon-width: 48px;
       }
       .name {
         font-size: 14px;
+      }
+      .empty {
+        text-align: center;
       }
       button.show-more {
         color: var(--primary-color);

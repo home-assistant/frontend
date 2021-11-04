@@ -96,14 +96,14 @@ export class DialogHelperDetail extends LitElement {
               </div>
               <mwc-button
                 slot="primaryAction"
-                @click="${this._createItem}"
+                @click=${this._createItem}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
               </mwc-button>
               <mwc-button
                 slot="secondaryAction"
-                @click="${this._goBack}"
+                @click=${this._goBack}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.common.back")}
@@ -121,10 +121,10 @@ export class DialogHelperDetail extends LitElement {
                       .platform=${platform}
                       dialogInitialFocus
                     >
-                      <ha-icon
+                      <ha-svg-icon
                         slot="item-icon"
-                        .icon=${domainIcon(platform)}
-                      ></ha-icon>
+                        .path=${domainIcon(platform)}
+                      ></ha-svg-icon>
                       <span class="item-text">
                         ${this.hass.localize(
                           `ui.panel.config.helpers.types.${platform}`
@@ -145,7 +145,7 @@ export class DialogHelperDetail extends LitElement {
                   </div>
                 `;
               })}
-              <mwc-button slot="primaryAction" @click="${this.closeDialog}">
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass!.localize("ui.common.cancel")}
               </mwc-button>
             `}
@@ -166,7 +166,7 @@ export class DialogHelperDetail extends LitElement {
     try {
       await HELPERS[this._platform](this.hass, this._item);
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;

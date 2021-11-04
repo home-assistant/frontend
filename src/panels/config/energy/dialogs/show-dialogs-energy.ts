@@ -1,8 +1,12 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
+  BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+  EnergyGasUnit,
+  EnergyInfo,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
+  GasSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 
@@ -29,8 +33,20 @@ export interface EnergySettingsGridFlowToDialogParams {
 }
 
 export interface EnergySettingsSolarDialogParams {
+  info: EnergyInfo;
   source?: SolarSourceTypeEnergyPreference;
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsBatteryDialogParams {
+  source?: BatterySourceTypeEnergyPreference;
+  saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsGasDialogParams {
+  source?: GasSourceTypeEnergyPreference;
+  unit?: EnergyGasUnit;
+  saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsDeviceDialogParams {
@@ -48,6 +64,17 @@ export const showEnergySettingsDeviceDialog = (
   });
 };
 
+export const showEnergySettingsBatteryDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsBatteryDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-battery-settings",
+    dialogImport: () => import("./dialog-energy-battery-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
 export const showEnergySettingsSolarDialog = (
   element: HTMLElement,
   dialogParams: EnergySettingsSolarDialogParams
@@ -55,6 +82,17 @@ export const showEnergySettingsSolarDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-solar-settings",
     dialogImport: () => import("./dialog-energy-solar-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsGasDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsGasDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-gas-settings",
+    dialogImport: () => import("./dialog-energy-gas-settings"),
     dialogParams: dialogParams,
   });
 };

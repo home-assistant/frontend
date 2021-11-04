@@ -62,7 +62,7 @@ export class HuiCardPreview extends ReactiveElement {
       if (!this._error && oldConfig && this.config.type === oldConfig.type) {
         try {
           this._element.setConfig(this.config);
-        } catch (err) {
+        } catch (err: any) {
           this._createCard(createErrorCardConfig(err.message, this.config));
         }
       } else {

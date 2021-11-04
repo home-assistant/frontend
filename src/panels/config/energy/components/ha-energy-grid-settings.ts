@@ -10,9 +10,8 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-card";
-import "../../../../components/ha-settings-row";
+import "../../../../components/ha-icon-button";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -21,7 +20,9 @@ import {
 import {
   emptyGridSourceEnergyPreference,
   EnergyPreferences,
+  EnergyPreferencesValidation,
   energySourcesByType,
+  EnergyValidationIssue,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
@@ -34,11 +35,13 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { brandsUrl } from "../../../../util/brands-url";
 import { documentationUrl } from "../../../../util/documentation-url";
 import {
   showEnergySettingsGridFlowFromDialog,
   showEnergySettingsGridFlowToDialog,
 } from "../dialogs/show-dialogs-energy";
+import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-grid-settings")
@@ -48,6 +51,9 @@ export class EnergyGridSettings extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
+
   @state() private _configEntries?: ConfigEntry[];
 
   protected firstUpdated() {
@@ -55,11 +61,23 @@ export class EnergyGridSettings extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const types = energySourcesByType(this.preferences);
+    const gridIdx = this.preferences.energy_sources.findIndex(
+      (source) => source.type === "grid"
+    );
 
-    const gridSource = types.grid
-      ? types.grid[0]
-      : emptyGridSourceEnergyPreference();
+    let gridSource: GridSourceTypeEnergyPreference;
+    let gridValidation: EnergyValidationIssue[] | undefined;
+
+    if (gridIdx === -1) {
+      gridSource = emptyGridSourceEnergyPreference();
+    } else {
+      gridSource = this.preferences.energy_sources[
+        gridIdx
+      ] as GridSourceTypeEnergyPreference;
+      if (this.validationResult) {
+        gridValidation = this.validationResult.energy_sources[gridIdx];
+      }
+    }
 
     return html`
       <ha-card>
@@ -74,16 +92,29 @@ export class EnergyGridSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
+              href=${documentationUrl(
                 this.hass,
                 "/docs/energy/electricity-grid/"
-              )}"
+              )}
               >${this.hass.localize(
                 "ui.panel.config.energy.grid.learn_more"
               )}</a
             >
           </p>
-          <h3>Grid consumption</h3>
+          ${gridValidation
+            ? html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${gridValidation}
+                ></ha-energy-validation-result>
+              `
+            : ""}
+
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.grid_consumption"
+            )}
+          </h3>
           ${gridSource.flow_from.map((flow) => {
             const entityState = this.hass.states[flow.stat_energy_from];
             return html`
@@ -100,23 +131,29 @@ export class EnergyGridSettings extends LitElement {
                     ? computeStateName(entityState)
                     : flow.stat_energy_from}</span
                 >
-                <mwc-icon-button @click=${this._editFromSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteFromSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editFromSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteFromSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeImportOutline}></ha-svg-icon>
             <mwc-button @click=${this._addFromSource}
-              >Add consumption</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.energy.grid.add_consumption"
+              )}</mwc-button
             >
           </div>
 
-          <h3>Return to grid</h3>
+          <h3>
+            ${this.hass.localize("ui.panel.config.energy.grid.return_to_grid")}
+          </h3>
           ${gridSource.flow_to.map((flow) => {
             const entityState = this.hass.states[flow.stat_energy_to];
             return html`
@@ -133,36 +170,49 @@ export class EnergyGridSettings extends LitElement {
                     ? computeStateName(entityState)
                     : flow.stat_energy_to}</span
                 >
-                <mwc-icon-button @click=${this._editToSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteToSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editToSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteToSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addToSource}>Add return</mwc-button>
+            <mwc-button @click=${this._addToSource}
+              >${this.hass.localize(
+                "ui.panel.config.energy.grid.add_return"
+              )}</mwc-button
+            >
           </div>
 
-          <h3>Grid carbon footprint</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.grid_carbon_footprint"
+            )}
+          </h3>
           ${this._configEntries?.map(
             (entry) => html`<div class="row" .entry=${entry}>
               <img
                 referrerpolicy="no-referrer"
-                src="https://brands.home-assistant.io/co2signal/icon.png"
+                src=${brandsUrl({
+                  domain: "co2signal",
+                  type: "icon",
+                  darkOptimized: this.hass.selectedTheme?.dark,
+                })}
               />
               <span class="content">${entry.title}</span>
               <a href=${`/config/integrations#config_entry=${entry.entry_id}`}>
-                <mwc-icon-button>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button .path=${mdiPencil}></ha-icon-button>
               </a>
-              <mwc-icon-button @click=${this._removeCO2Sensor}>
-                <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                @click=${this._removeCO2Sensor}
+                .path=${mdiDelete}
+              ></ha-icon-button>
             </div>`
           )}
           ${this._configEntries?.length === 0
@@ -170,10 +220,16 @@ export class EnergyGridSettings extends LitElement {
                 <div class="row border-bottom">
                   <img
                     referrerpolicy="no-referrer"
-                    src="https://brands.home-assistant.io/co2signal/icon.png"
+                    src=${brandsUrl({
+                      domain: "co2signal",
+                      type: "icon",
+                      darkOptimized: this.hass.selectedTheme?.dark,
+                    })}
                   />
                   <mwc-button @click=${this._addCO2Sensor}>
-                    Add CO2 signal integration
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.add_co2_signal"
+                    )}
                   </mwc-button>
                 </div>
               `
@@ -202,8 +258,7 @@ export class EnergyGridSettings extends LitElement {
     const entryId = ev.currentTarget.closest(".row").entry.entry_id;
     if (
       !(await showConfirmationDialog(this, {
-        title:
-          "Are you sure you wan't to delete this integration? It will remove the entities it provides",
+        title: this.hass.localize("ui.panel.config.energy.delete_integration"),
       }))
     ) {
       return;
@@ -340,7 +395,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
@@ -359,7 +414,7 @@ export class EnergyGridSettings extends LitElement {
 
     try {
       await this._savePreferences(preferences);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }
@@ -370,7 +425,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
@@ -389,7 +444,7 @@ export class EnergyGridSettings extends LitElement {
 
     try {
       await this._savePreferences(preferences);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }

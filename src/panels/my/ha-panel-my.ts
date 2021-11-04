@@ -31,6 +31,9 @@ const REDIRECTS: Redirects = {
   developer_events: {
     redirect: "/developer-tools/event",
   },
+  developer_statistics: {
+    redirect: "/developer-tools/statistics",
+  },
   config: {
     redirect: "/config",
   },
@@ -59,11 +62,19 @@ const REDIRECTS: Redirects = {
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  config_energy: {
+    component: "energy",
+    redirect: "/config/energy/dashboard",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },
   entities: {
     redirect: "/config/entities",
+  },
+  energy: {
+    component: "energy",
+    redirect: "/energy",
   },
   areas: {
     redirect: "/config/areas/dashboard",
@@ -197,7 +208,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = "url_error";
       return;
     }
@@ -207,7 +218,7 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      let error = "Unknown error";
+      let error: string;
       switch (this._error) {
         case "not_supported":
           error =
@@ -240,7 +251,7 @@ class HaPanelMy extends LitElement {
             html`<a
               target="_blank"
               rel="noreferrer noopener"
-              href="${documentationUrl(this.hass, "/installation")}"
+              href=${documentationUrl(this.hass, "/installation")}
               >${this.hass.localize("ui.panel.my.documentation")}</a
             >`
           );

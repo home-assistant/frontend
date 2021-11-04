@@ -36,7 +36,7 @@ export class HaYamlEditor extends LitElement {
         value && !isEmpty(value)
           ? dump(value, { schema: this.yamlSchema })
           : "";
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err, value);
       alert(`There was an error converting to YAML: ${err}`);
@@ -73,7 +73,7 @@ export class HaYamlEditor extends LitElement {
     if (this._yaml) {
       try {
         parsed = load(this._yaml, { schema: this.yamlSchema });
-      } catch (err) {
+      } catch (err: any) {
         // Invalid YAML
         isValid = false;
       }

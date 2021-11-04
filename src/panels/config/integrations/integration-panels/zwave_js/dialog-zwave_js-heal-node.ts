@@ -1,6 +1,5 @@
 import "../../../../../components/ha-circular-progress";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiStethoscope, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -225,8 +224,8 @@ class DialogZWaveJSHealNode extends LitElement {
       this._status = (await healNode(this.hass, this.entry_id!, this.node_id!))
         ? "finished"
         : "failed";
-    } catch (error) {
-      this._error = error.message;
+    } catch (err: any) {
+      this._error = err.message;
       this._status = "failed";
     }
   }

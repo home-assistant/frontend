@@ -107,6 +107,7 @@ export class HcMain extends HassElement {
         this._sendStatus();
       }
     });
+    this.addEventListener("dialog-closed", this._dialogClosed);
   }
 
   private _sendStatus(senderId?: string) {
@@ -131,6 +132,10 @@ export class HcMain extends HassElement {
     }
   }
 
+  private _dialogClosed = () => {
+    document.body.setAttribute("style", "overflow-y: auto !important");
+  };
+
   private async _handleGetStatusMessage(msg: GetStatusMessage) {
     this._sendStatus(msg.senderId!);
   }
@@ -148,14 +153,14 @@ export class HcMain extends HassElement {
           expires_in: 0,
         }),
       });
-    } catch (err) {
+    } catch (err: any) {
       this._error = this._getErrorMessage(err);
       return;
     }
     let connection;
     try {
       connection = await createConnection({ auth });
-    } catch (err) {
+    } catch (err: any) {
       this._error = this._getErrorMessage(err);
       return;
     }
@@ -193,7 +198,7 @@ export class HcMain extends HassElement {
         this._unsubLovelace = llColl.subscribe((lovelaceConfig) =>
           this._handleNewLovelaceConfig(lovelaceConfig)
         );
-      } catch (err) {
+      } catch (err: any) {
         // eslint-disable-next-line
         console.log("Error fetching Lovelace configuration", err, msg);
         // Generate a Lovelace config.

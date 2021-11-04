@@ -60,11 +60,11 @@ export const fetchNetworkStatus = (
     type: "zwave/network_status",
   });
 
-export const startOzwConfigFlow = (
+export const startZwaveJsConfigFlow = (
   hass: HomeAssistant
 ): Promise<{ flow_id: string }> =>
   hass.callWS({
-    type: "zwave/start_ozw_config_flow",
+    type: "zwave/start_zwave_js_config_flow",
   });
 
 export const fetchMigrationConfig = (

@@ -31,7 +31,7 @@ import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-input";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import {
   computeDeviceName,
@@ -201,7 +201,7 @@ export class HaSceneEditor extends SubscribeMixin(
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
+        .backCallback=${this._backTapped}
         .tabs=${configSections.automation}
       >
         <ha-button-menu
@@ -210,12 +210,11 @@ export class HaSceneEditor extends SubscribeMixin(
           @action=${this._handleMenuAction}
           activatable
         >
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
           <mwc-list-item
             .disabled=${!this.sceneId}
@@ -254,9 +253,9 @@ export class HaSceneEditor extends SubscribeMixin(
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
-          class="${classMap({
+          class=${classMap({
             rtl: computeRTL(this.hass),
-          })}"
+          })}
         >
           ${this._config
             ? html`
@@ -279,7 +278,7 @@ export class HaSceneEditor extends SubscribeMixin(
                           "ui.panel.config.scene.editor.name"
                         )}
                       ></paper-input>
-                      <ha-icon-input
+                      <ha-icon-picker
                         .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.icon"
                         )}
@@ -287,7 +286,7 @@ export class HaSceneEditor extends SubscribeMixin(
                         .value=${this._config.icon}
                         @value-changed=${this._valueChanged}
                       >
-                      </ha-icon-input>
+                      </ha-icon-picker>
                     </div>
                   </ha-card>
                 </ha-config-section>
@@ -311,10 +310,10 @@ export class HaSceneEditor extends SubscribeMixin(
                           <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
-                              icon="hass:delete"
-                              title="${this.hass.localize(
+                              .path=${mdiDelete}
+                              .label=${this.hass.localize(
                                 "ui.panel.config.scene.editor.devices.delete"
-                              )}"
+                              )}
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
@@ -402,11 +401,11 @@ export class HaSceneEditor extends SubscribeMixin(
                                         ${computeStateName(entityStateObj)}
                                       </paper-item-body>
                                       <ha-icon-button
-                                        icon="hass:delete"
+                                        .path=${mdiDelete}
                                         .entityId=${entityId}
-                                        .title="${this.hass.localize(
+                                        .label=${this.hass.localize(
                                           "ui.panel.config.scene.editor.entities.delete"
-                                        )}"
+                                        )}
                                         @click=${this._deleteEntity}
                                       ></ha-icon-button>
                                     </paper-icon-item>
@@ -554,8 +553,8 @@ export class HaSceneEditor extends SubscribeMixin(
     let config: SceneConfig;
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
-    } catch (err) {
-      showAlertDialog(this, {
+    } catch (err: any) {
+      await showAlertDialog(this, {
         text:
           err.status_code === 404
             ? this.hass.localize(
@@ -566,7 +565,8 @@ export class HaSceneEditor extends SubscribeMixin(
                 "err_no",
                 err.status_code
               ),
-      }).then(() => history.back());
+      });
+      history.back();
       return;
     }
 
@@ -698,7 +698,7 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   }
 
-  private _backTapped(): void {
+  private _backTapped = (): void => {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -711,7 +711,7 @@ export class HaSceneEditor extends SubscribeMixin(
     } else {
       this._goBack();
     }
-  }
+  };
 
   private _goBack(): void {
     applyScene(this.hass, this._storedStates);
@@ -798,7 +798,7 @@ export class HaSceneEditor extends SubscribeMixin(
       if (!this.sceneId) {
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
-    } catch (err) {
+    } catch (err: any) {
       this._errors = err.body.message || err.message;
       showToast(this, {
         message: err.body.message || err.message,

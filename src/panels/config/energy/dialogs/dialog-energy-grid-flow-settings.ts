@@ -21,6 +21,7 @@ import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/entity/ha-entity-picker";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-grid-flow-settings")
 export class DialogEnergyGridFlowSettings
@@ -45,10 +46,9 @@ export class DialogEnergyGridFlowSettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : (this._source =
-          params.direction === "from"
-            ? emptyFlowFromGridSourceEnergyPreference()
-            : emptyFlowToGridSourceEnergyPreference());
+      : params.direction === "from"
+      ? emptyFlowFromGridSourceEnergyPreference()
+      : emptyFlowToGridSourceEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -94,6 +94,7 @@ export class DialogEnergyGridFlowSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source[
             this._params.direction === "from"
               ? "stat_energy_from"
@@ -102,7 +103,6 @@ export class DialogEnergyGridFlowSettings
           .label=${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
-          entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
@@ -286,8 +286,8 @@ export class DialogEnergyGridFlowSettings
       }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

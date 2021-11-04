@@ -20,11 +20,11 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { TimestampRenderingFormats } from "../components/types";
+import { TimestampRenderingFormat } from "../components/types";
 import { LovelaceRow } from "./types";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
-  format?: TimestampRenderingFormats;
+  format?: TimestampRenderingFormat;
 }
 
 @customElement("hui-sensor-entity-row")
@@ -77,6 +77,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
                   .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${this._config.format}
+                  capitalize
                 ></hui-timestamp-display>
               `
             : computeStateDisplay(

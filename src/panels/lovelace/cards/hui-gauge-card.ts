@@ -24,10 +24,10 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const severityMap = {
-  red: "var(--label-badge-red)",
-  green: "var(--label-badge-green)",
-  yellow: "var(--label-badge-yellow)",
-  normal: "var(--label-badge-blue)",
+  red: "var(--error-color)",
+  green: "var(--success-color)",
+  yellow: "var(--warning-color)",
+  normal: "var(--info-color)",
 };
 
 @customElement("hui-gauge-card")
@@ -119,6 +119,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name = this._config.name ?? computeStateName(stateObj);
+
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
     return html`
@@ -138,9 +140,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name">
-          ${this._config.name || computeStateName(stateObj)}
-        </div>
+        <div class="name" .title=${name}>${name}</div>
       </ha-card>
     `;
   }
@@ -170,7 +170,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeSeverity(numberValue: number): string {
+  private _computeSeverity(numberValue: number): string | undefined {
+    if (this._config!.needle) {
+      return undefined;
+    }
     const sections = this._config!.severity;
 
     if (!sections) {
@@ -240,7 +243,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }

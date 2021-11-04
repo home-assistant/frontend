@@ -1,5 +1,6 @@
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { Lovelace } from "../../../src/panels/lovelace/types";
+import { energyEntities } from "../stubs/entities";
 import { DemoConfig } from "./types";
 
 export const demoConfigs: Array<() => Promise<DemoConfig>> = [
@@ -27,6 +28,7 @@ export const setDemoConfig = async (
   selectedDemoConfig = confProm;
 
   hass.addEntities(config.entities(hass.localize), true);
+  hass.addEntities(energyEntities());
   lovelace.saveConfig(config.lovelace(hass.localize));
   hass.mockTheme(config.theme());
 };

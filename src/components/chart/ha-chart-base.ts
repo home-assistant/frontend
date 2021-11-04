@@ -61,6 +61,11 @@ export default class HaChartBase extends LitElement {
       this.chart.config.type = this.chartType;
     }
     if (changedProps.has("data")) {
+      if (this._hiddenDatasets.size) {
+        this.data.datasets.forEach((dataset, index) => {
+          dataset.hidden = this._hiddenDatasets.has(index);
+        });
+      }
       this.chart.data = this.data;
     }
     if (changedProps.has("options")) {
@@ -81,6 +86,7 @@ export default class HaChartBase extends LitElement {
                   class=${classMap({
                     hidden: this._hiddenDatasets.has(index),
                   })}
+                  .title=${dataset.label}
                 >
                   <div
                     class="bullet"
@@ -238,9 +244,19 @@ export default class HaChartBase extends LitElement {
     };
   }
 
-  public updateChart = (): void => {
+  public updateChart = (
+    mode:
+      | "resize"
+      | "reset"
+      | "none"
+      | "hide"
+      | "show"
+      | "normal"
+      | "active"
+      | undefined
+  ): void => {
     if (this.chart) {
-      this.chart.update();
+      this.chart.update(mode);
     }
   };
 

@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
@@ -35,9 +36,11 @@ export const getLogbookDataForContext = async (
   hass: HomeAssistant,
   startDate: string,
   contextId?: string
-): Promise<LogbookEntry[]> =>
-  addLogbookMessage(
+): Promise<LogbookEntry[]> => {
+  const localize = await hass.loadBackendTranslation("device_class");
+  return addLogbookMessage(
     hass,
+    localize,
     await getLogbookDataFromServer(
       hass,
       startDate,
@@ -47,6 +50,7 @@ export const getLogbookDataForContext = async (
       contextId
     )
   );
+};
 
 export const getLogbookData = async (
   hass: HomeAssistant,
@@ -54,9 +58,11 @@ export const getLogbookData = async (
   endDate: string,
   entityId?: string,
   entity_matches_only?: boolean
-): Promise<LogbookEntry[]> =>
-  addLogbookMessage(
+): Promise<LogbookEntry[]> => {
+  const localize = await hass.loadBackendTranslation("device_class");
+  return addLogbookMessage(
     hass,
+    localize,
     await getLogbookDataCache(
       hass,
       startDate,
@@ -65,9 +71,11 @@ export const getLogbookData = async (
       entity_matches_only
     )
   );
+};
 
 export const addLogbookMessage = (
   hass: HomeAssistant,
+  localize: LocalizeFunc,
   logbookData: LogbookEntry[]
 ): LogbookEntry[] => {
   for (const entry of logbookData) {
@@ -75,6 +83,7 @@ export const addLogbookMessage = (
     if (entry.state && stateObj) {
       entry.message = getLogbookMessage(
         hass,
+        localize,
         entry.state,
         stateObj,
         computeDomain(entry.entity_id!)
@@ -103,7 +112,7 @@ export const getLogbookDataCache = async (
     DATA_CACHE[cacheKey] = {};
   }
 
-  if (DATA_CACHE[cacheKey][entityId]) {
+  if (entityId in DATA_CACHE[cacheKey]) {
     return DATA_CACHE[cacheKey][entityId];
   }
 
@@ -157,6 +166,7 @@ export const clearLogbookCache = (startDate: string, endDate: string) => {
 
 export const getLogbookMessage = (
   hass: HomeAssistant,
+  localize: LocalizeFunc,
   state: string,
   stateObj: HassEntity,
   domain: string
@@ -165,21 +175,17 @@ export const getLogbookMessage = (
     case "device_tracker":
     case "person":
       if (state === "not_home") {
-        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
       }
       if (state === "home") {
-        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
       }
-      return hass.localize(
-        `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
-        "state",
-        state
-      );
+      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, "state", state);
 
     case "sun":
       return state === "above_horizon"
-        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.rose`)
-        : hass.localize(`${LOGBOOK_LOCALIZE_PATH}.set`);
+        ? localize(`${LOGBOOK_LOCALIZE_PATH}.rose`)
+        : localize(`${LOGBOOK_LOCALIZE_PATH}.set`);
 
     case "binary_sensor": {
       const isOn = state === BINARY_STATE_ON;
@@ -189,19 +195,19 @@ export const getLogbookMessage = (
       switch (device_class) {
         case "battery":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_low`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_low`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_normal`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_normal`);
           }
           break;
 
         case "connectivity":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_connected`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_connected`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_disconnected`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_disconnected`);
           }
           break;
 
@@ -210,46 +216,46 @@ export const getLogbookMessage = (
         case "opening":
         case "window":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
           }
           break;
 
         case "lock":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
           }
           break;
 
         case "plug":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_plugged_in`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_plugged_in`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unplugged`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unplugged`);
           }
           break;
 
         case "presence":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
           }
           break;
 
         case "safety":
           if (isOn) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unsafe`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unsafe`);
           }
           if (isOff) {
-            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_safe`);
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.was_safe`);
           }
           break;
 
@@ -265,18 +271,27 @@ export const getLogbookMessage = (
         case "sound":
         case "vibration":
           if (isOn) {
-            return hass.localize(
-              `${LOGBOOK_LOCALIZE_PATH}.detected_device_class`,
-              "device_class",
-              device_class
-            );
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
+              device_class: localize(
+                `component.binary_sensor.device_class.${device_class}`
+              ),
+            });
           }
           if (isOff) {
-            return hass.localize(
-              `${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`,
-              "device_class",
-              device_class
-            );
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
+              device_class: localize(
+                `component.binary_sensor.device_class.${device_class}`
+              ),
+            });
+          }
+          break;
+
+        case "tamper":
+          if (isOn) {
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_tampering`);
+          }
+          if (isOff) {
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_tampering`);
           }
           break;
       }
@@ -287,43 +302,43 @@ export const getLogbookMessage = (
     case "cover":
       switch (state) {
         case "open":
-          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
         case "opening":
-          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
         case "closing":
-          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_closing`);
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_closing`);
         case "closed":
-          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
       }
       break;
 
     case "lock":
       if (state === "unlocked") {
-        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
       }
       if (state === "locked") {
-        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
+        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
       }
       break;
   }
 
   if (state === BINARY_STATE_ON) {
-    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.turned_on`);
+    return localize(`${LOGBOOK_LOCALIZE_PATH}.turned_on`);
   }
 
   if (state === BINARY_STATE_OFF) {
-    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.turned_off`);
+    return localize(`${LOGBOOK_LOCALIZE_PATH}.turned_off`);
   }
 
   if (UNAVAILABLE_STATES.includes(state)) {
-    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
+    return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
   }
 
   return hass.localize(
     `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
     stateObj
-      ? computeStateDisplay(hass.localize, stateObj, hass.locale, state)
+      ? computeStateDisplay(localize, stateObj, hass.locale, state)
       : state
   );
 };

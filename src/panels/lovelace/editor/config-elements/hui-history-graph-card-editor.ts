@@ -1,7 +1,15 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, number, object, optional, string } from "superstruct";
+import {
+  array,
+  assert,
+  number,
+  object,
+  optional,
+  string,
+  assign,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
@@ -12,14 +20,17 @@ import { processEditorEntities } from "../process-editor-entities";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  entities: array(entitiesConfigStruct),
-  title: optional(string()),
-  hours_to_show: optional(number()),
-  refresh_interval: optional(number()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entities: array(entitiesConfigStruct),
+    title: optional(string()),
+    hours_to_show: optional(number()),
+    refresh_interval: optional(number()),
+  })
+);
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
@@ -63,9 +74,9 @@ export class HuiHistoryGraphCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
@@ -75,10 +86,10 @@ export class HuiHistoryGraphCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._hours_to_show}"
+            .value=${this._hours_to_show}
             min="1"
             .configValue=${"hours_to_show"}
-            @value-changed="${this._valueChanged}"
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             type="number"
@@ -87,15 +98,15 @@ export class HuiHistoryGraphCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._refresh_interval}"
+            .value=${this._refresh_interval}
             .configValue=${"refresh_interval"}
-            @value-changed="${this._valueChanged}"
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <hui-entity-editor
           .hass=${this.hass}
-          .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          .entities=${this._configEntities}
+          @entities-changed=${this._valueChanged}
         ></hui-entity-editor>
       </div>
     `;

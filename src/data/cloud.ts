@@ -3,8 +3,8 @@ import { PlaceholderContainer } from "../panels/config/automation/thingtalk/dial
 import { HomeAssistant } from "../types";
 import { AutomationConfig } from "./automation";
 
-interface CloudStatusBase {
-  logged_in: boolean;
+interface CloudStatusNotLoggedIn {
+  logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
 }
 
@@ -44,7 +44,9 @@ export interface CloudPreferences {
   tts_default_voice: [string, string];
 }
 
-export type CloudStatusLoggedIn = CloudStatusBase & {
+export interface CloudStatusLoggedIn {
+  logged_in: true;
+  cloud: "disconnected" | "connecting" | "connected";
   email: string;
   google_registered: boolean;
   google_entities: EntityFilter;
@@ -54,12 +56,14 @@ export type CloudStatusLoggedIn = CloudStatusBase & {
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
-};
+}
 
-export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
+export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;
+  provider: string;
+  plan_renewal_date?: number;
 }
 
 export interface CloudWebhook {
@@ -73,6 +77,39 @@ export interface ThingTalkConversion {
   config: Partial<AutomationConfig>;
   placeholders: PlaceholderContainer;
 }
+
+export const cloudLogin = (
+  hass: HomeAssistant,
+  email: string,
+  password: string
+) =>
+  hass.callApi("POST", "cloud/login", {
+    email,
+    password,
+  });
+
+export const cloudLogout = (hass: HomeAssistant) =>
+  hass.callApi("POST", "cloud/logout");
+
+export const cloudForgotPassword = (hass: HomeAssistant, email: string) =>
+  hass.callApi("POST", "cloud/forgot_password", {
+    email,
+  });
+
+export const cloudRegister = (
+  hass: HomeAssistant,
+  email: string,
+  password: string
+) =>
+  hass.callApi("POST", "cloud/register", {
+    email,
+    password,
+  });
+
+export const cloudResendVerification = (hass: HomeAssistant, email: string) =>
+  hass.callApi("POST", "cloud/resend_confirm", {
+    email,
+  });
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>
   hass.callWS<CloudStatus>({ type: "cloud/status" });

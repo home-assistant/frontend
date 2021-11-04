@@ -39,6 +39,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
   theme?: string;
+  state_color?: boolean;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -92,45 +93,61 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 export interface EnergySummaryCardConfig extends LovelaceCardConfig {
   type: "energy-summary";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
   type: "energy-distribution";
   title?: string;
+  link_dashboard?: boolean;
+  collection_key?: string;
 }
 export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
   type: "energy-summary-graph";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
   type: "energy-solar-graph";
   title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-gas-graph";
+  title?: string;
+  collection_key?: string;
 }
 
 export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   type: "energy-sources-table";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-solar-consumed-gauge";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-grid-result-gauge";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-carbon-consumed-gauge";
   title?: string;
+  collection_key?: string;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -370,6 +387,7 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  show_current?: boolean;
   show_forecast?: boolean;
   secondary_info_attribute?: string;
   theme?: string;

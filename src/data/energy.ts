@@ -6,11 +6,14 @@ import {
   startOfYesterday,
 } from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import { fetchStatistics, Statistics } from "./history";
+
+const energyCollectionKeys: (string | undefined)[] = [];
 
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
@@ -44,6 +47,28 @@ export const emptySolarEnergyPreference =
     stat_energy_from: "",
     config_entry_solar_forecast: null,
   });
+
+export const emptyBatteryEnergyPreference =
+  (): BatterySourceTypeEnergyPreference => ({
+    type: "battery",
+    stat_energy_from: "",
+    stat_energy_to: "",
+  });
+export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
+  type: "gas",
+  stat_energy_from: "",
+  stat_cost: null,
+  entity_energy_from: null,
+  entity_energy_price: null,
+  number_energy_price: null,
+});
+
+interface EnergySolarForecast {
+  wh_hours: Record<string, number>;
+}
+export type EnergySolarForecasts = {
+  [config_entry_id: string]: EnergySolarForecast;
+};
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -92,9 +117,31 @@ export interface SolarSourceTypeEnergyPreference {
   config_entry_solar_forecast: string[] | null;
 }
 
+export interface BatterySourceTypeEnergyPreference {
+  type: "battery";
+  stat_energy_from: string;
+  stat_energy_to: string;
+}
+export interface GasSourceTypeEnergyPreference {
+  type: "gas";
+
+  // kWh meter
+  stat_energy_from: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_from: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+}
+
 type EnergySource =
   | SolarSourceTypeEnergyPreference
-  | GridSourceTypeEnergyPreference;
+  | GridSourceTypeEnergyPreference
+  | BatterySourceTypeEnergyPreference
+  | GasSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -103,11 +150,28 @@ export interface EnergyPreferences {
 
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
+  solar_forecast_domains: string[];
+}
+
+export interface EnergyValidationIssue {
+  type: string;
+  identifier: string;
+  value?: unknown;
+}
+
+export interface EnergyPreferencesValidation {
+  energy_sources: EnergyValidationIssue[][];
+  device_consumption: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (hass: HomeAssistant) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
+  });
+
+export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
+  hass.callWS<EnergyPreferencesValidation>({
+    type: "energy/validate",
   });
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
@@ -123,30 +187,19 @@ export const saveEnergyPreferences = async (
     type: "energy/save_prefs",
     ...prefs,
   });
-  const energyCollection = getEnergyDataCollection(hass);
-  energyCollection.clearPrefs();
-  if (energyCollection._active) {
-    energyCollection.refresh();
-  }
+  clearEnergyCollectionPreferences(hass);
   return newPrefs;
 };
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  battery?: BatterySourceTypeEnergyPreference[];
+  gas?: GasSourceTypeEnergyPreference[];
 }
 
-export const energySourcesByType = (prefs: EnergyPreferences) => {
-  const types: EnergySourceByType = {};
-  for (const source of prefs.energy_sources) {
-    if (source.type in types) {
-      types[source.type]!.push(source as any);
-    } else {
-      types[source.type] = [source as any];
-    }
-  }
-  return types;
-};
+export const energySourcesByType = (prefs: EnergyPreferences) =>
+  groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
 export interface EnergyData {
   start: Date;
@@ -205,18 +258,50 @@ const getEnergyData = async (
       continue;
     }
 
+    if (source.type === "gas") {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
+      }
+      const costStatId = info.cost_sensors[source.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_energy_from);
+      statIDs.push(source.stat_energy_to);
+      continue;
+    }
+
     // grid source
     for (const flowFrom of source.flow_from) {
       statIDs.push(flowFrom.stat_energy_from);
+      if (flowFrom.stat_cost) {
+        statIDs.push(flowFrom.stat_cost);
+      }
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
     for (const flowTo of source.flow_to) {
       statIDs.push(flowTo.stat_energy_to);
+      if (flowTo.stat_compensation) {
+        statIDs.push(flowTo.stat_compensation);
+      }
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
   }
 
   const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
-  return {
+  const data = {
     start,
     end,
     info,
@@ -225,6 +310,8 @@ const getEnergyData = async (
     co2SignalConfigEntry,
     co2SignalEntity,
   };
+
+  return data;
 };
 
 export interface EnergyCollection extends Collection<EnergyData> {
@@ -238,17 +325,37 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
+const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+  energyCollectionKeys.forEach((key) => {
+    const energyCollection = getEnergyDataCollection(hass, { key });
+    energyCollection.clearPrefs();
+    if (energyCollection._active) {
+      energyCollection.refresh();
+    }
+  });
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  prefs?: EnergyPreferences
+  options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
-  if ((hass.connection as any)._energy) {
-    return (hass.connection as any)._energy;
+  let key = "_energy";
+  if (options.key) {
+    if (!options.key.startsWith("energy_")) {
+      throw new Error("Key need to start with energy_");
+    }
+    key = `_${options.key}`;
   }
+
+  if ((hass.connection as any)[key]) {
+    return (hass.connection as any)[key];
+  }
+
+  energyCollectionKeys.push(options.key);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
-    "_energy",
+    key,
     async () => {
       if (!collection.prefs) {
         // This will raise if not found.
@@ -268,10 +375,10 @@ export const getEnergyDataCollection = (
         // Schedule a refresh for 20 minutes past the hour
         // If the end is larger than the current time.
         const nextFetch = new Date();
-        if (nextFetch.getMinutes() > 20) {
+        if (nextFetch.getMinutes() >= 20) {
           nextFetch.setHours(nextFetch.getHours() + 1);
         }
-        nextFetch.setMinutes(20);
+        nextFetch.setMinutes(20, 0, 0);
 
         collection._refreshTimeout = window.setTimeout(
           () => collection.refresh(),
@@ -304,7 +411,7 @@ export const getEnergyDataCollection = (
   };
 
   collection._active = 0;
-  collection.prefs = prefs;
+  collection.prefs = options.prefs;
   const now = new Date();
   // Set start to start of today if we have data for today, otherwise yesterday
   collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
@@ -328,16 +435,71 @@ export const getEnergyDataCollection = (
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
     collection.start = newStart;
     collection.end = newEnd;
-    if (collection._updatePeriodTimeout) {
+    if (
+      collection.start.getTime() === startOfToday().getTime() &&
+      collection.end?.getTime() === endOfToday().getTime() &&
+      !collection._updatePeriodTimeout
+    ) {
+      scheduleUpdatePeriod();
+    } else if (collection._updatePeriodTimeout) {
       clearTimeout(collection._updatePeriodTimeout);
       collection._updatePeriodTimeout = undefined;
     }
-    if (
-      collection.start.getTime() === startOfToday().getTime() &&
-      collection.end?.getTime() === endOfToday().getTime()
-    ) {
-      scheduleUpdatePeriod();
-    }
   };
   return collection;
+};
+
+export const getEnergySolarForecasts = (hass: HomeAssistant) =>
+  hass.callWS<EnergySolarForecasts>({
+    type: "energy/solar_forecast",
+  });
+
+export const ENERGY_GAS_VOLUME_UNITS = ["m³", "ft³"];
+export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
+export const ENERGY_GAS_UNITS = [
+  ...ENERGY_GAS_VOLUME_UNITS,
+  ...ENERGY_GAS_ENERGY_UNITS,
+];
+
+export type EnergyGasUnit = "volume" | "energy";
+
+export const getEnergyGasUnitCategory = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): EnergyGasUnit | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity) {
+      return ENERGY_GAS_VOLUME_UNITS.includes(
+        entity.attributes.unit_of_measurement!
+      )
+        ? "volume"
+        : "energy";
+    }
+  }
+  return undefined;
+};
+
+export const getEnergyGasUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): string | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity?.attributes.unit_of_measurement) {
+      // Wh is normalized to kWh by stats generation
+      return entity.attributes.unit_of_measurement === "Wh"
+        ? "kWh"
+        : entity.attributes.unit_of_measurement;
+    }
+  }
+  return undefined;
 };

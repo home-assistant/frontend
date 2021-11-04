@@ -9,6 +9,7 @@ import {
   object,
   optional,
   string,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -25,17 +26,20 @@ import { processEditorEntities } from "../process-editor-entities";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  aspect_ratio: optional(string()),
-  default_zoom: optional(number()),
-  dark_mode: optional(boolean()),
-  entities: array(entitiesConfigStruct),
-  hours_to_show: optional(number()),
-  geo_location_sources: optional(array(string())),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    aspect_ratio: optional(string()),
+    default_zoom: optional(number()),
+    dark_mode: optional(boolean()),
+    entities: array(entitiesConfigStruct),
+    hours_to_show: optional(number()),
+    geo_location_sources: optional(array(string())),
+  })
+);
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {

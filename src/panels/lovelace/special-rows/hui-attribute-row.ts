@@ -8,7 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import { HomeAssistant } from "../../../types";
 import { formatAttributeValue } from "../../../util/hass-attributes-util";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -70,6 +70,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
                 .hass=${this.hass}
                 .ts=${date}
                 .format=${this._config.format}
+                capitalize
               ></hui-timestamp-display>`
             : typeof attribute === "number"
             ? formatNumber(attribute, this.hass.locale)

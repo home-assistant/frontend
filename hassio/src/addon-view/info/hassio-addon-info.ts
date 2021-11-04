@@ -11,6 +11,12 @@ import {
   mdiHomeAssistant,
   mdiKey,
   mdiNetwork,
+  mdiNumeric1,
+  mdiNumeric2,
+  mdiNumeric3,
+  mdiNumeric4,
+  mdiNumeric5,
+  mdiNumeric6,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
@@ -23,8 +29,9 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-label-badge";
+import "../../../../src/components/ha-chip";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
@@ -70,6 +77,15 @@ const STAGE_ICON = {
   stable: mdiCheckCircle,
   experimental: mdiFlask,
   deprecated: mdiExclamationThick,
+};
+
+const RATING_ICON = {
+  1: mdiNumeric1,
+  2: mdiNumeric2,
+  3: mdiNumeric3,
+  4: mdiNumeric4,
+  5: mdiNumeric5,
+  6: mdiNumeric6,
 };
 
 @customElement("hassio-addon-info")
@@ -122,18 +138,18 @@ class HassioAddonInfo extends LitElement {
               <div class="card-content">
                 <hassio-card-content
                   .hass=${this.hass}
-                  .title="${this.supervisor.localize(
+                  .title=${this.supervisor.localize(
                     "addon.dashboard.new_update_available",
                     "name",
                     this.addon.name,
                     "version",
                     this.addon.version_latest
-                  )}"
-                  .description="${this.supervisor.localize(
+                  )}
+                  .description=${this.supervisor.localize(
                     "common.running_version",
                     "version",
                     this.addon.version
-                  )}"
+                  )}
                   icon=${mdiArrowUpBoldCircle}
                   iconClass="update"
                 ></hassio-card-content>
@@ -143,14 +159,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch"
                           )}
-                        </p>
+                        </ha-alert>
                       `
                     : html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch",
                             "core_version_installed",
@@ -158,7 +174,7 @@ class HassioAddonInfo extends LitElement {
                             "core_version_needed",
                             addonStoreInfo.homeassistant
                           )}
-                        </p>
+                        </ha-alert>
                       `
                   : ""}
               </div>
@@ -179,24 +195,21 @@ class HassioAddonInfo extends LitElement {
         : ""}
       ${!this.addon.protected
         ? html`
-        <ha-card class="warning">
-          <h1 class="card-header">${this.supervisor.localize(
-            "addon.dashboard.protection_mode.title"
-          )}
-          </h1>
-          <div class="card-content">
-          ${this.supervisor.localize("addon.dashboard.protection_mode.content")}
-          </div>
-          <div class="card-actions protection-enable">
-              <mwc-button @click=${this._protectionToggled}>
-              ${this.supervisor.localize(
+            <ha-alert
+              alert-type="error"
+              .title=${this.supervisor.localize(
+                "addon.dashboard.protection_mode.title"
+              )}
+              .actionText=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.enable"
               )}
-              </mwc-button>
-            </div>
-          </div>
-        </ha-card>
-      `
+              @alert-action-clicked=${this._protectionToggled}
+            >
+              ${this.supervisor.localize(
+                "addon.dashboard.protection_mode.content"
+              )}
+            </ha-alert>
+          `
         : ""}
 
       <ha-card>
@@ -248,12 +261,169 @@ class HassioAddonInfo extends LitElement {
                 >`}
           </div>
 
+          <div class="capabilities">
+            ${this.addon.stage !== "stable"
+              ? html` <ha-chip
+                  hasIcon
+                  class=${classMap({
+                    yellow: this.addon.stage === "experimental",
+                    red: this.addon.stage === "deprecated",
+                  })}
+                  @click=${this._showMoreInfo}
+                  id="stage"
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${STAGE_ICON[this.addon.stage]}
+                  >
+                  </ha-svg-icon>
+                  ${this.supervisor.localize(
+                    `addon.dashboard.capability.stages.${this.addon.stage}`
+                  )}
+                </ha-chip>`
+              : ""}
+
+            <ha-chip
+              hasIcon
+              class=${classMap({
+                green: [5, 6].includes(Number(this.addon.rating)),
+                yellow: [3, 4].includes(Number(this.addon.rating)),
+                red: [1, 2].includes(Number(this.addon.rating)),
+              })}
+              @click=${this._showMoreInfo}
+              id="rating"
+            >
+              <ha-svg-icon slot="icon" .path=${RATING_ICON[this.addon.rating]}>
+              </ha-svg-icon>
+
+              ${this.supervisor.localize(
+                "addon.dashboard.capability.label.rating"
+              )}
+            </ha-chip>
+            ${this.addon.host_network
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="host_network"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiNetwork}> </ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.host"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.full_access
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="full_access"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiChip}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.hardware"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.homeassistant_api
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="homeassistant_api"
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.core"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this._computeHassioApi
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="hassio_api">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      `addon.dashboard.capability.role.${this.addon.hassio_role}`
+                    ) || this.addon.hassio_role}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.docker_api
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="docker_api">
+                    <ha-svg-icon slot="icon" .path=${mdiDocker}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.docker"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.host_pid
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="host_pid">
+                    <ha-svg-icon slot="icon" .path=${mdiPound}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.host_pid"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.apparmor !== "default"
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    class=${this._computeApparmorClassName}
+                    id="apparmor"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiShield}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.apparmor"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.auth_api
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="auth_api">
+                    <ha-svg-icon slot="icon" .path=${mdiKey}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.auth"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.ingress
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="ingress">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCursorDefaultClickOutline}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.ingress"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+          </div>
+
           <div class="description light-color">
             ${this.addon.description}.<br />
             ${this.supervisor.localize(
               "addon.dashboard.visit_addon_page",
               "name",
-              html`<a href="${this.addon.url!}" target="_blank" rel="noreferrer"
+              html`<a href=${this.addon.url!} target="_blank" rel="noreferrer"
                 >${this.addon.name}</a
               >`
             )}
@@ -268,178 +438,13 @@ class HassioAddonInfo extends LitElement {
                     />
                   `
                 : ""}
-              <div class="security">
-                ${this.addon.stage !== "stable"
-                  ? html` <ha-label-badge
-                      class=${classMap({
-                        yellow: this.addon.stage === "experimental",
-                        red: this.addon.stage === "deprecated",
-                      })}
-                      @click=${this._showMoreInfo}
-                      id="stage"
-                      .label=${this.supervisor.localize(
-                        "addon.dashboard.capability.label.stage"
-                      )}
-                      description=""
-                    >
-                      <ha-svg-icon
-                        .path=${STAGE_ICON[this.addon.stage]}
-                      ></ha-svg-icon>
-                    </ha-label-badge>`
-                  : ""}
-
-                <ha-label-badge
-                  class=${classMap({
-                    green: [5, 6].includes(Number(this.addon.rating)),
-                    yellow: [3, 4].includes(Number(this.addon.rating)),
-                    red: [1, 2].includes(Number(this.addon.rating)),
-                  })}
-                  @click=${this._showMoreInfo}
-                  id="rating"
-                  .value=${this.addon.rating}
-                  label="rating"
-                  description=""
-                ></ha-label-badge>
-                ${this.addon.host_network
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="host_network"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.host"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiNetwork}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.full_access
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="full_access"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hardware"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiChip}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.homeassistant_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="homeassistant_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hass"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this._computeHassioApi
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="hassio_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hassio"
-                        )}
-                        .description=${this.supervisor.localize(
-                          `addon.dashboard.capability.role.${this.addon.hassio_role}`
-                        ) || this.addon.hassio_role}
-                      >
-                        <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.docker_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="docker_api"
-                        .label=".${this.supervisor.localize(
-                          "addon.dashboard.capability.label.docker"
-                        )}"
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.host_pid
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="host_pid"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.host_pid"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.apparmor
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        class=${this._computeApparmorClassName}
-                        id="apparmor"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.apparmor"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.auth_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="auth_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.auth"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiKey}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.ingress
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="ingress"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.ingress"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon
-                          .path=${mdiCursorDefaultClickOutline}
-                        ></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-              </div>
-
               ${this.addon.version
                 ? html`
                     <div
-                      class="${classMap({
+                      class=${classMap({
                         "addon-options": true,
                         started: this.addon.state === "started",
-                      })}"
+                      })}
                     >
                       <ha-settings-row ?three-line=${this.narrow}>
                         <span slot="heading">
@@ -569,21 +574,23 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
           </div>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
               )
               ? html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_arch"
                     )}
-                  </p>
+                  </ha-alert>
                 `
               : html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
                       "core_version_installed",
@@ -591,7 +598,7 @@ class HassioAddonInfo extends LitElement {
                       "core_version_needed",
                       addonStoreInfo!.homeassistant
                     )}
-                  </p>
+                  </ha-alert>
                 `
             : ""}
         </div>
@@ -793,7 +800,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -815,7 +822,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -837,7 +844,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -859,7 +866,7 @@ class HassioAddonInfo extends LitElement {
         path: "security",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -881,7 +888,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -909,7 +916,7 @@ class HassioAddonInfo extends LitElement {
         title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "addon.dashboard.action_error.get_changelog"
@@ -931,7 +938,7 @@ class HassioAddonInfo extends LitElement {
         path: "install",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.install"),
         text: extractApiErrorMessage(err),
@@ -952,7 +959,7 @@ class HassioAddonInfo extends LitElement {
         path: "stop",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.stop"),
         text: extractApiErrorMessage(err),
@@ -973,7 +980,7 @@ class HassioAddonInfo extends LitElement {
         path: "stop",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.restart"),
         text: extractApiErrorMessage(err),
@@ -987,7 +994,7 @@ class HassioAddonInfo extends LitElement {
       supervisor: this.supervisor,
       name: this.addon.name,
       version: this.addon.version_latest,
-      snapshotParams: {
+      backupParams: {
         name: `addon_${this.addon.slug}_${this.addon.version}`,
         addons: [this.addon.slug],
         homeassistant: false,
@@ -1032,7 +1039,7 @@ class HassioAddonInfo extends LitElement {
         button.progress = false;
         return;
       }
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Failed to validate addon configuration",
         text: extractApiErrorMessage(err),
@@ -1050,7 +1057,7 @@ class HassioAddonInfo extends LitElement {
         path: "start",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.start"),
         text: extractApiErrorMessage(err),
@@ -1088,7 +1095,7 @@ class HassioAddonInfo extends LitElement {
         path: "uninstall",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "addon.dashboard.action_error.uninstall"
@@ -1149,6 +1156,7 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         img.logo {
+          max-width: 100%;
           max-height: 60px;
           margin: 16px 0;
           display: block;
@@ -1158,10 +1166,10 @@ class HassioAddonInfo extends LitElement {
           display: flex;
         }
         ha-svg-icon.running {
-          color: var(--paper-green-400);
+          color: var(--success-color);
         }
         ha-svg-icon.stopped {
-          color: var(--google-red-300);
+          color: var(--error-color);
         }
         ha-call-api-button {
           font-weight: 500;
@@ -1173,33 +1181,30 @@ class HassioAddonInfo extends LitElement {
         .description a {
           color: var(--primary-color);
         }
+        ha-chip {
+          text-transform: capitalize;
+          --ha-chip-text-color: var(--text-primary-color);
+          --ha-chip-background-color: var(--primary-color);
+        }
+
         .red {
-          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+          --ha-chip-background-color: var(--label-badge-red, #df4c1e);
         }
         .blue {
-          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+          --ha-chip-background-color: var(--label-badge-blue, #039be5);
         }
         .green {
-          --ha-label-badge-color: var(--label-badge-green, #0da035);
+          --ha-chip-background-color: var(--label-badge-green, #0da035);
         }
         .yellow {
-          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+          --ha-chip-background-color: var(--label-badge-yellow, #f4b400);
         }
-        .security {
+        .capabilities {
           margin-bottom: 16px;
         }
         .card-actions {
           justify-content: space-between;
           display: flex;
-        }
-        .security h3 {
-          margin-bottom: 8px;
-          font-weight: normal;
-        }
-        .security ha-label-badge {
-          cursor: pointer;
-          margin-right: 4px;
-          --ha-label-badge-padding: 8px 0 0 0;
         }
         .changelog {
           display: contents;
@@ -1240,6 +1245,9 @@ class HassioAddonInfo extends LitElement {
         }
 
         @media (max-width: 720px) {
+          ha-chip {
+            line-height: 36px;
+          }
           .addon-options {
             max-width: 100%;
           }

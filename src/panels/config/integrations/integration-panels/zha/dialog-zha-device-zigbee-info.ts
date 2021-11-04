@@ -36,7 +36,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       <ha-dialog
         open
         hideActions
-        @closed="${this._close}"
+        @closed=${this._close}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_signature`)

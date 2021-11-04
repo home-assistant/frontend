@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
@@ -18,14 +17,16 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
-import { caseInsensitiveCompare } from "../../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
@@ -47,6 +48,7 @@ import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
+import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -249,6 +251,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (this.route.path === "/add") {
       this._handleAdd(localizePromise);
     }
+    this._scanUSBDevices();
   }
 
   protected updated(changed: PropertyValues) {
@@ -287,13 +290,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}
       @action=${this._handleMenuAction}
     >
-      <mwc-icon-button
-        .title=${this.hass.localize("ui.common.menu")}
-        .label=${this.hass.localize("ui.common.overflow_menu")}
+      <ha-icon-button
         slot="trigger"
+        .label=${this.hass.localize("ui.common.menu")}
+        .path=${mdiFilterVariant}
       >
-        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-      </mwc-icon-button>
+      </ha-icon-button>
       <mwc-list-item graphic="control" .selected=${this._showIgnored}>
         <ha-checkbox slot="graphic" .checked=${this._showIgnored}></ha-checkbox>
         ${this.hass.localize(
@@ -323,6 +325,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   .filter=${this._filter}
                   class="header"
                   no-label-float
@@ -338,6 +341,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           : html`
               <div class="search">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   .filter=${this._filter}
@@ -492,12 +496,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           })
         )
         .sort((conf1, conf2) =>
-          caseInsensitiveCompare(
+          caseInsensitiveStringCompare(
             conf1.localized_domain_name + conf1.title,
             conf2.localized_domain_name + conf2.title
           )
         );
     });
+  }
+
+  private async _scanUSBDevices() {
+    if (!isComponentLoaded(this.hass, "usb")) {
+      return;
+    }
+    await scanUSBDevices(this.hass);
   }
 
   private async _fetchManifests() {
@@ -679,9 +690,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 2px 2px 2px 8px;
           margin-left: 4px;
           font-size: 14px;
-        }
-        .active-filters ha-icon {
-          color: var(--primary-color);
         }
         .active-filters mwc-button {
           margin-left: 8px;

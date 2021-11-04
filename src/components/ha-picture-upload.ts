@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiImagePlus } from "@mdi/js";
 import "@polymer/paper-input/paper-input-container";
 import { html, LitElement, TemplateResult } from "lit";
@@ -13,7 +12,6 @@ import {
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-file-upload";
-import "./ha-svg-icon";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {
@@ -34,6 +32,7 @@ export class HaPictureUpload extends LitElement {
   public render(): TemplateResult {
     return html`
       <ha-file-upload
+        .hass=${this.hass}
         .icon=${mdiImagePlus}
         .label=${this.label ||
         this.hass.localize("ui.components.picture-upload.label")}
@@ -89,7 +88,7 @@ export class HaPictureUpload extends LitElement {
       const media = await createImage(this.hass, file);
       this.value = generateImageThumbnailUrl(media.id, this.size);
       fireEvent(this, "change");
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: err.toString(),
       });

@@ -25,7 +25,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @state() private _params?: DeviceRegistryDetailDialogParams;
 
-  @state() private _areaId?: string | null;
+  @property() public _areaId?: string | null;
 
   @state() private _disabledBy!: string | null;
 
@@ -111,7 +111,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         </mwc-button>
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.panel.config.devices.update")}
@@ -142,7 +142,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         disabled_by: this._disabledBy || null,
       });
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error =
         err.message ||
         this.hass.localize("ui.panel.config.devices.unknown_error");

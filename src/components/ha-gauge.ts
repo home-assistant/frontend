@@ -1,8 +1,8 @@
-import { css, LitElement, PropertyValues, svg } from "lit";
+import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { formatNumber } from "../common/string/format_number";
+import { formatNumber } from "../common/number/format_number";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
@@ -75,9 +75,22 @@ export class Gauge extends LitElement {
           this.levels
             ? this.levels
                 .sort((a, b) => a.level - b.level)
-                .map((level) => {
+                .map((level, idx) => {
+                  let firstPath: TemplateResult | undefined;
+                  if (idx === 0 && level.level !== this.min) {
+                    const angle = getAngle(this.min, this.min, this.max);
+                    firstPath = svg`<path
+                        stroke="var(--info-color)"
+                        class="level"
+                        d="M
+                          ${50 - 40 * Math.cos((angle * Math.PI) / 180)}
+                          ${50 - 40 * Math.sin((angle * Math.PI) / 180)}
+                         A 40 40 0 0 1 90 50
+                        "
+                      ></path>`;
+                  }
                   const angle = getAngle(level.level, this.min, this.max);
-                  return svg`<path
+                  return svg`${firstPath}<path
                       stroke="${level.stroke}"
                       class="level"
                       d="M

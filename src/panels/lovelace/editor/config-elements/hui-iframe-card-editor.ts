@@ -1,20 +1,23 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { IframeCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  url: optional(string()),
-  aspect_ratio: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    url: optional(string()),
+    aspect_ratio: optional(string()),
+  })
+);
 
 @customElement("hui-iframe-card-editor")
 export class HuiIframeCardEditor
@@ -55,9 +58,9 @@ export class HuiIframeCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._url}"
-          .configValue="${"url"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._url}
+          .configValue=${"url"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
@@ -66,9 +69,9 @@ export class HuiIframeCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._title}"
-            .configValue="${"title"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
@@ -76,9 +79,9 @@ export class HuiIframeCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
       </div>

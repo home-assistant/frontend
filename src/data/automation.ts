@@ -46,9 +46,11 @@ export interface BlueprintAutomationConfig extends ManualAutomationConfig {
 }
 
 export interface ForDict {
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
 }
 
 export interface ContextConstraint {
@@ -192,10 +194,10 @@ export interface NumericStateCondition extends BaseCondition {
 
 export interface SunCondition extends BaseCondition {
   condition: "sun";
-  after_offset: number;
-  before_offset: number;
-  after: "sunrise" | "sunset";
-  before: "sunrise" | "sunset";
+  after_offset?: number;
+  before_offset?: number;
+  after?: "sunrise" | "sunset";
+  before?: "sunrise" | "sunset";
 }
 
 export interface ZoneCondition extends BaseCondition {

@@ -1,13 +1,12 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { createCurrencyListEl } from "../components/currency-datalist";
 import "../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../components/timezone-datalist";
@@ -16,11 +15,15 @@ import {
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
+import { SYMBOL_TO_ISO } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant } from "../types";
+import "../components/ha-radio";
+import "../components/ha-formfield";
+import type { HaRadio } from "../components/ha-radio";
 
-const amsterdam = [52.3731339, 4.8903147];
+const amsterdam: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
 
 @customElement("onboarding-core-config")
@@ -31,15 +34,17 @@ class OnboardingCoreConfig extends LitElement {
 
   @state() private _working = false;
 
-  @state() private _name!: ConfigUpdateValues["location_name"];
+  @state() private _name?: ConfigUpdateValues["location_name"];
 
-  @state() private _location!: [number, number];
+  @state() private _location?: [number, number];
 
-  @state() private _elevation!: string;
+  @state() private _elevation?: string;
 
-  @state() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @state() private _unitSystem?: ConfigUpdateValues["unit_system"];
 
-  @state() private _timeZone!: string;
+  @state() private _currency?: ConfigUpdateValues["currency"];
+
+  @state() private _timeZone?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -131,33 +136,74 @@ class OnboardingCoreConfig extends LitElement {
             "ui.panel.config.core.section.core.core_config.unit_system"
           )}
         </div>
-        <paper-radio-group
-          class="flex"
-          .selected=${this._unitSystemValue}
-          @selected-changed=${this._unitSystemChanged}
-        >
-          <paper-radio-button name="metric" .disabled=${this._working}>
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.unit_system_metric"
-            )}
-            <div class="secondary">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.metric_example"
+        <div class="radio-group">
+          <ha-formfield
+            .label=${html`${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.unit_system_metric"
               )}
-            </div>
-          </paper-radio-button>
-          <paper-radio-button name="imperial" .disabled=${this._working}>
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.unit_system_imperial"
-            )}
-            <div class="secondary">
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.imperial_example"
+              <div class="secondary">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.metric_example"
+                )}
+              </div>`}
+          >
+            <ha-radio
+              name="unit_system"
+              value="metric"
+              .checked=${this._unitSystemValue === "metric"}
+              @change=${this._unitSystemChanged}
+              .disabled=${this._working}
+            ></ha-radio>
+          </ha-formfield>
+          <ha-formfield
+            .label=${html`${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.unit_system_imperial"
               )}
-            </div>
-          </paper-radio-button>
-        </paper-radio-group>
+              <div class="secondary">
+                ${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.imperial_example"
+                )}
+              </div>`}
+          >
+            <ha-radio
+              name="unit_system"
+              value="imperial"
+              .checked=${this._unitSystemValue === "imperial"}
+              @change=${this._unitSystemChanged}
+              .disabled=${this._working}
+            ></ha-radio>
+          </ha-formfield>
+        </div>
       </div>
+
+      <div class="row">
+            <div class="flex">
+              ${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}<br />
+              <a
+                href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+                target="_blank"
+                rel="noopener noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.find_currency_value"
+                )}</a
+              >
+            </div>
+
+            <paper-input
+              class="flex"
+              .label=${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}
+              name="currency"
+              list="currencies"
+              .disabled=${this._working}
+              .value=${this._currencyValue}
+              @value-changed=${this._handleChange}
+            ></paper-input>
+          </div>
+        </div>
 
       <div class="footer">
         <mwc-button @click=${this._save} .disabled=${this._working}>
@@ -180,10 +226,15 @@ class OnboardingCoreConfig extends LitElement {
         this._save(ev);
       }
     });
-    const input = this.shadowRoot!.querySelector(
+    const tzInput = this.shadowRoot!.querySelector(
       "[name=timeZone]"
     ) as PaperInputElement;
-    input.inputElement.appendChild(createTimezoneListEl());
+    tzInput.inputElement.appendChild(createTimezoneListEl());
+
+    const cInput = this.shadowRoot!.querySelector(
+      "[name=currency]"
+    ) as PaperInputElement;
+    cInput.inputElement.appendChild(createCurrencyListEl());
   }
 
   private get _nameValue() {
@@ -210,6 +261,10 @@ class OnboardingCoreConfig extends LitElement {
     return this._unitSystem !== undefined ? this._unitSystem : "metric";
   }
 
+  private get _currencyValue() {
+    return this._currency !== undefined ? this._currency : "";
+  }
+
   private _markerLocation = memoizeOne(
     (location: [number, number]): MarkerLocation[] => [
       {
@@ -223,23 +278,31 @@ class OnboardingCoreConfig extends LitElement {
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
-    this[`_${target.name}`] = target.value;
+
+    let value = target.value;
+
+    if (target.name === "currency" && value) {
+      if (value in SYMBOL_TO_ISO) {
+        value = SYMBOL_TO_ISO[value];
+      }
+    }
+
+    this[`_${target.name}`] = value;
   }
 
   private _locationChanged(ev) {
     this._location = ev.detail.location;
   }
 
-  private _unitSystemChanged(
-    ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
-  ) {
-    this._unitSystem = ev.detail.value;
+  private _unitSystemChanged(ev: CustomEvent) {
+    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
   }
 
   private async _detect() {
     this._working = true;
     try {
       const values = await detectCoreConfig(this.hass);
+
       if (values.latitude && values.longitude) {
         this._location = [Number(values.latitude), Number(values.longitude)];
       }
@@ -252,7 +315,10 @@ class OnboardingCoreConfig extends LitElement {
       if (values.time_zone) {
         this._timeZone = values.time_zone;
       }
-    } catch (err) {
+      if (values.currency) {
+        this._currency = values.currency;
+      }
+    } catch (err: any) {
       alert(`Failed to detect location information: ${err.message}`);
     } finally {
       this._working = false;
@@ -271,13 +337,14 @@ class OnboardingCoreConfig extends LitElement {
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue || "UTC",
+        currency: this._currencyValue || "EUR",
       });
       const result = await onboardCoreConfigStep(this.hass);
       fireEvent(this, "onboarding-step", {
         type: "core_config",
         result,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._working = false;
       alert(`Failed to save: ${err.message}`);
     }
@@ -307,9 +374,19 @@ class OnboardingCoreConfig extends LitElement {
       .row > * {
         margin: 0 8px;
       }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
       .footer {
         margin-top: 16px;
         text-align: right;
+      }
+      a {
+        color: var(--primary-color);
       }
     `;
   }

@@ -1,10 +1,9 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { LightCardConfig } from "../../cards/types";
@@ -15,16 +14,21 @@ import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { domainIcon } from "../../../../common/entity/domain_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
-const cardConfigStruct = object({
-  type: string(),
-  name: optional(string()),
-  entity: optional(string()),
-  theme: optional(string()),
-  icon: optional(string()),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    name: optional(string()),
+    entity: optional(string()),
+    theme: optional(string()),
+    icon: optional(string()),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+  })
+);
 
 const includeDomains = ["light"];
 
@@ -80,6 +84,8 @@ export class HuiLightCardEditor
       "none",
     ];
 
+    const entityState = this.hass.states[this._entity];
+
     return html`
       <div class="card-config">
         <ha-entity-picker
@@ -106,18 +112,22 @@ export class HuiLightCardEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
 
         <hui-theme-select-editor
