@@ -19,6 +19,25 @@ import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { RegistriesDialogParams } from "./show-dialog-registries";
 
+const SCHEMA = [
+  {
+    type: "string",
+    name: "registry",
+    required: true,
+  },
+  {
+    type: "string",
+    name: "username",
+    required: true,
+  },
+  {
+    type: "string",
+    name: "password",
+    required: true,
+    format: "password",
+  },
+];
+
 @customElement("dialog-hassio-registries")
 class HassioRegistriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -59,24 +78,7 @@ class HassioRegistriesDialog extends LitElement {
           ? html`
               <ha-form
                 .data=${this._input}
-                .schema=${[
-                  {
-                    type: "string",
-                    name: "registry",
-                    required: true,
-                  },
-                  {
-                    type: "string",
-                    name: "username",
-                    required: true,
-                  },
-                  {
-                    type: "string",
-                    name: "password",
-                    required: true,
-                    format: "password",
-                  },
-                ]}
+                .schema=${SCHEMA}
                 @value-changed=${this._valueChanged}
                 .computeLabel=${this._computeLabel}
               ></ha-form>
