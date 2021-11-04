@@ -114,6 +114,14 @@ export default class MediaPlayerEntity {
     return supportsFeature(this.stateObj, 16384);
   }
 
+  get supportsPreviousChannel() {
+    return supportsFeature(this.stateObj, 1048576);
+  }
+
+  get supportsNextChannel() {
+    return supportsFeature(this.stateObj, 2097152);
+  }
+
   get primaryTitle() {
     return this._attr.media_title;
   }
@@ -161,12 +169,20 @@ export default class MediaPlayerEntity {
     this.callService("media_play_pause");
   }
 
+  nextChannel() {
+    this.callService("media_next_channel");
+  }
+
   nextTrack() {
     this.callService("media_next_track");
   }
 
   playbackControl() {
     this.callService("media_play_pause");
+  }
+
+  previousChannel() {
+    this.callService("media_previous_channel");
   }
 
   previousTrack() {

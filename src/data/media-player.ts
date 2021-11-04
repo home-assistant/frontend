@@ -80,6 +80,8 @@ export const SUPPORT_STOP = 4096;
 export const SUPPORT_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
 export const SUPPORT_BROWSE_MEDIA = 131072;
+export const SUPPORT_PREVIOUS_CHANNEL = 1048576;
+export const SUPPORT_NEXT_CHANNEL = 2097152;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
 
@@ -314,6 +316,20 @@ export const computeMediaControls = (
     buttons.push({
       icon: mdiSkipNext,
       action: "media_next_track",
+    });
+  }
+
+  if (state === "on" && supportsFeature(stateObj, SUPPORT_NEXT_CHANNEL)) {
+    buttons.push({
+      icon: "mdi:chevron-up",
+      action: "media_next_channel",
+    });
+  }
+
+  if (state === "on" && supportsFeature(stateObj, SUPPORT_PREVIOUS_CHANNEL)) {
+    buttons.push({
+      icon: "mdi:chevron-down",
+      action: "media_previous_channel",
     });
   }
 

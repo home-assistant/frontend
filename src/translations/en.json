@@ -192,7 +192,9 @@
         "turn_off": "Turn off",
         "media_play": "Play",
         "media_play_pause": "Play/pause",
+        "media_next_channel": "Channel up",
         "media_next_track": "Next",
+        "media_previous_channel": "Channel down",
         "media_previous_track": "Previous",
         "text_to_speak": "Text to speak"
       },
