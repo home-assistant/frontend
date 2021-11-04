@@ -3462,7 +3462,7 @@
                     "confirm_delete": "Czy na pewno chcesz usunąć tę kartę?",
                     "empty_state": {
                         "go_to_integrations_page": "Przejdź do strony integracji.",
-                        "no_devices": "Ta strona pozwala kontrolować urządzenia, ale wygląda na to, że nie masz jeszcze żadnych skonfigurowanych. Przejdź na stronę integracji, aby rozpocząć.",
+                        "no_devices": "Strona pozwala kontrolować urządzenia, ale wygląda na to, że nie masz jeszcze żadnych skonfigurowanych. Przejdź na stronę integracji, aby rozpocząć.",
                         "title": "Witaj w domu"
                     },
                     "energy": {
@@ -3475,8 +3475,8 @@
                         "energy_distribution": {
                             "battery": "Bateria",
                             "gas": "Gaz",
-                            "grid": "Siatka",
-                            "home": "Strona główna",
+                            "grid": "Sieć",
+                            "home": "Dom",
                             "non_fossil": "Niekopalne",
                             "solar": "Panele słoneczne"
                         },
