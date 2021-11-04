@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-svg-icon";
 import {
   EnergyPreferencesValidation,
   getEnergyPreferenceValidation,
@@ -79,8 +78,7 @@ class HaConfigEnergy extends LitElement {
         .tabs=${configSections.experiences}
       >
         <ha-alert>
-          After setting up a new device, it can take up to 2 hours for new data
-          to arrive in your energy dashboard.
+          ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
         <div class="container">
           <ha-energy-grid-settings

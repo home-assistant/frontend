@@ -107,6 +107,7 @@ export class HcMain extends HassElement {
         this._sendStatus();
       }
     });
+    this.addEventListener("dialog-closed", this._dialogClosed);
   }
 
   private _sendStatus(senderId?: string) {
@@ -130,6 +131,10 @@ export class HcMain extends HassElement {
       }
     }
   }
+
+  private _dialogClosed = () => {
+    document.body.setAttribute("style", "overflow-y: auto !important");
+  };
 
   private async _handleGetStatusMessage(msg: GetStatusMessage) {
     this._sendStatus(msg.senderId!);

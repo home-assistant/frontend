@@ -76,6 +76,7 @@ export class ZHAClustersDataTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         .columns=${this._columns(this.narrow)}
         .data=${this._clusters(this.clusters)}
         .id=${"cluster_id"}

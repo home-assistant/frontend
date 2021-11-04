@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheck } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -103,7 +102,12 @@ export class HaStatisticPicker extends LitElement {
     </style>
     <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
     <paper-icon-item>
-      <state-badge slot="item-icon" .stateObj=${item.state}></state-badge>
+      ${item.state
+        ? html`<state-badge
+            slot="item-icon"
+            .stateObj=${item.state}
+          ></state-badge>`
+        : ""}
       <paper-item-body two-line="">
         ${item.name}
         <span secondary
@@ -154,7 +158,10 @@ export class HaStatisticPicker extends LitElement {
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
-            output.push({ id: meta.statistic_id, name: meta.statistic_id });
+            output.push({
+              id: meta.statistic_id,
+              name: meta.name || meta.statistic_id,
+            });
           }
           return;
         }
@@ -289,7 +296,7 @@ export class HaStatisticPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

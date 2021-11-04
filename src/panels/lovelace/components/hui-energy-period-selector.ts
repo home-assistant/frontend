@@ -1,21 +1,22 @@
+import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import {
-  endOfToday,
   addDays,
-  endOfDay,
-  startOfToday,
-  endOfWeek,
-  endOfMonth,
-  startOfDay,
-  startOfWeek,
-  startOfMonth,
   addMonths,
   addWeeks,
-  startOfYear,
   addYears,
+  differenceInDays,
+  endOfDay,
+  endOfMonth,
+  endOfToday,
+  endOfWeek,
   endOfYear,
   isWithinInterval,
-  differenceInDays,
+  startOfDay,
+  startOfMonth,
+  startOfToday,
+  startOfWeek,
+  startOfYear,
 } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -26,21 +27,12 @@ import {
   formatDateShort,
   formatDateYear,
 } from "../../../common/datetime/format_date";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import "../../../components/ha-button-toggle-group";
+import "../../../components/ha-icon-button";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
-import "@material/mwc-icon-button/mwc-icon-button";
-import "../../../components/ha-svg-icon";
-import "@material/mwc-button/mwc-button";
-import "../../../components/ha-button-toggle-group";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-
-const viewButtons: ToggleButton[] = [
-  { label: "Day", value: "day" },
-  { label: "Week", value: "week" },
-  { label: "Month", value: "month" },
-  { label: "Year", value: "year" },
-];
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -72,6 +64,33 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return html``;
     }
 
+    const viewButtons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.day"
+        ),
+        value: "day",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.week"
+        ),
+        value: "week",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.month"
+        ),
+        value: "month",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.year"
+        ),
+        value: "year",
+      },
+    ];
+
     return html`
       <div class="row">
         <div class="label">
@@ -88,14 +107,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}
-          <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
-            <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-icon-button label="Next" @click=${this._pickNext}>
-            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.previous"
+            )}
+            @click=${this._pickPrevious}
+            .path=${mdiChevronLeft}
+          ></ha-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.next"
+            )}
+            @click=${this._pickNext}
+            .path=${mdiChevronRight}
+          ></ha-icon-button>
           <mwc-button dense outlined @click=${this._pickToday}>
-            Today
+            ${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.today"
+            )}
           </mwc-button>
         </div>
         <div class="period">
@@ -232,11 +261,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         --mdc-button-disabled-ink-color: var(--disabled-text-color);
         --mdc-icon-button-ripple-opacity: 0.2;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 28px;
       }
       ha-button-toggle-group {
         padding-left: 8px;
+      }
+      mwc-button {
+        flex-shrink: 0;
       }
     `;
   }

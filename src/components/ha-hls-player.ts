@@ -8,7 +8,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
@@ -65,7 +64,6 @@ class HaHLSPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -191,6 +189,7 @@ class HaHLSPlayer extends LitElement {
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
+      maxLiveSyncPlaybackRate: 2,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
@@ -204,10 +203,6 @@ class HaHLSPlayer extends LitElement {
     videoEl.addEventListener("loadedmetadata", () => {
       videoEl.play();
     });
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   private _cleanUp() {
@@ -234,6 +229,7 @@ class HaHLSPlayer extends LitElement {
 
       video {
         width: 100%;
+        max-height: var(--video-max-height, calc(100vh - 97px));
       }
     `;
   }

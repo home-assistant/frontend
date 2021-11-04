@@ -1,16 +1,14 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-circular-progress";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
+import "../../../../components/ha-dialog";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
@@ -20,44 +18,31 @@ export class HuiDialogEditLovelace extends LitElement {
 
   private _config?: LovelaceConfig;
 
-  private _saving: boolean;
+  private _saving = false;
 
-  public constructor() {
-    super();
-    this._saving = false;
-  }
-
-  public async showDialog(lovelace: Lovelace): Promise<void> {
+  public showDialog(lovelace: Lovelace): void {
     this._lovelace = lovelace;
-    if (this._dialog == null) {
-      await this.updateComplete;
-    }
-
     const { views, ...lovelaceConfig } = this._lovelace!.config;
     this._config = lovelaceConfig as LovelaceConfig;
-
-    this._dialog.open();
   }
 
   public closeDialog(): void {
     this._config = undefined;
-    this._dialog.close();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
-  }
-
   protected render(): TemplateResult {
+    if (!this._config) {
+      return html``;
+    }
     return html`
-      <ha-paper-dialog with-backdrop modal>
-        <h2>
-          ${this.hass!.localize(
-            "ui.panel.lovelace.editor.edit_lovelace.header"
-          )}
-        </h2>
-        <paper-dialog-scrollable>
+      <ha-dialog
+        open
+        .heading=${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_lovelace.header"
+        )}
+      >
+        <div>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.edit_lovelace.explanation"
           )}
@@ -65,27 +50,26 @@ export class HuiDialogEditLovelace extends LitElement {
             .hass=${this.hass}
             .config=${this._config}
             @lovelace-config-changed=${this._ConfigChanged}
-          ></hui-lovelace-editor
-        ></paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button @click=${this.closeDialog}
-            >${this.hass!.localize("ui.common.cancel")}</mwc-button
-          >
-          <mwc-button
-            ?disabled=${!this._config || this._saving}
-            @click=${this._save}
-          >
-            ${this._saving
-              ? html`<ha-circular-progress
-                  active
-                  size="small"
-                  title="Saving"
-                ></ha-circular-progress>`
-              : ""}
-            ${this.hass!.localize("ui.common.save")}</mwc-button
-          >
+          ></hui-lovelace-editor>
         </div>
-      </ha-paper-dialog>
+        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+          ${this.hass!.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          .disabled=${!this._config || this._saving}
+          @click=${this._save}
+          slot="primaryAction"
+        >
+          ${this._saving
+            ? html`<ha-circular-progress
+                active
+                size="small"
+                title="Saving"
+              ></ha-circular-progress>`
+            : ""}
+          ${this.hass!.localize("ui.common.save")}</mwc-button
+        >
+      </ha-dialog>
     `;
   }
 
@@ -128,26 +112,7 @@ export class HuiDialogEditLovelace extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-        }
-        @media all and (min-width: 660px) {
-          ha-paper-dialog {
-            width: 650px;
-          }
-        }
-        ha-paper-dialog {
-          max-width: 650px;
-        }
-      `,
-    ];
+    return haStyleDialog;
   }
 }
 

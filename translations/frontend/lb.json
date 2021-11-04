@@ -606,7 +606,7 @@
                     "text": "Gitt den numm vun neien Beräich un.",
                     "title": "Neien Beräich dobäisetzen"
                 },
-                "add_new": "Neien Beräich dobäisetzen...",
+                "add_new": "Neien Beräich dobäisetzen…",
                 "area": "Beräich",
                 "clear": "Läschen",
                 "no_areas": "Du hues keng Beräicher",
@@ -1080,7 +1080,7 @@
             "title": "Notifikatioune"
         },
         "notification_toast": {
-            "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut...",
+            "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut…",
             "dismiss": "Verwerfen",
             "service_call_failed": "Feeler beim opruffen vun {service}",
             "started": "Home Assistant ass gestart!",
@@ -1487,7 +1487,7 @@
                         "importing": "Plang gëtt gelueden...",
                         "raw_blueprint": "Plang Inhalt",
                         "save_btn": "Plang importéieren",
-                        "saving": "Plang gëtt importéiert...",
+                        "saving": "Plang gëtt importéiert…",
                         "unsupported_blueprint": "Dëse Plang gëtt net ënnerstëtzt",
                         "url": "URL vum Plang"
                     },
@@ -1530,7 +1530,7 @@
                         },
                         "connected": "Verbonnen",
                         "connection_status": "Cloud Verbindungs Status",
-                        "fetching_subscription": "Abonnement gëtt ausgelies...",
+                        "fetching_subscription": "Abonnement gëtt ausgelies…",
                         "google": {
                             "config_documentation": "Dokumentatioun iwwert d'Konfiguration",
                             "devices_pin": "Sécherheets Apparater Pin",
@@ -1579,7 +1579,7 @@
                             "disable_hook_error_msg": "Feeler beim désaktivéieren vum Webhook:",
                             "info": "Alles wat konfiguréiert ass fir duerch e Webhook ausgeléist ze ginn, kann eng ëffentlech zougänglech URL kréien, fir datt Dir Är Donnéeën zréck un den Home Assistant vun iergendwou kënnt zréckschécken, ouni Är Instanz um Internet z'exposéieren",
                             "link_learn_more": "Méi iwwert wéi ee webhook-baséiert Automatismen erstellt léieren",
-                            "loading": "Lued ...",
+                            "loading": "Lued …",
                             "manage": "Verwalten",
                             "no_hooks_yet": "Et gesäit sou aus wéi wann nach keng webhooks benotzt ginn. Fänkt mam erstellen vun enger ",
                             "no_hooks_yet2": " oder via erstellen vun ",
@@ -1752,7 +1752,7 @@
                         },
                         "automations": "Automatismen",
                         "conditions": {
-                            "caption": "Nëmmen eppes maachen wann...",
+                            "caption": "Nëmmen eppes maachen wann…",
                             "no_conditions": "Keng Konditiounen",
                             "unknown_condition": "Onbekannte Konditioun"
                         },
@@ -1990,7 +1990,7 @@
                     },
                     "configure": "Astellen",
                     "configured": "Konfiguréiert",
-                    "description": "Integratioune mat Servicer, Apparater, ... verwalten",
+                    "description": "Integratioune mat Servicer, Apparater, …verwalten",
                     "details": "Detailer vun der Integratioun",
                     "disable": {
                         "disabled_integrations": "{number} deaktivéiert"
@@ -2221,7 +2221,7 @@
                         "complete": "Aktualiséierung vun den Node Informatioune komplett",
                         "description": "Dëst befeelt OpenZWave fir en Node ofzefroen a Kommando Klassen, Fäegkeeten a Wäerter vum Node aktualiséieren.",
                         "node_status": "Status vum Node",
-                        "refreshing_description": "Node Informatiounen aktualiséieren...",
+                        "refreshing_description": "Node Informatiounen aktualiséieren…",
                         "start_refresh_button": "Aktualiséierung starten",
                         "step": "Schrëtt",
                         "title": "Node Informatiounen aktualiséieren",
@@ -2504,7 +2504,7 @@
                         "no_devices_found": "Keng Apparater fonnt, stell sécher dass sie am Kopplung Modus sinn a vermeid dass sie während der Entdeckung net an de Stand by ginn.",
                         "pairing_mode": "Stell sécher dass deng Apparater sech am Kopplungs Modus befannen. Kuckt d'Instruktioune vun dengen Apparater wéi dat geht.",
                         "search_again": "Nach emol sichen",
-                        "spinner": "Sicht no ZHA Zigbee Apparater..."
+                        "spinner": "Sicht no ZHA Zigbee Apparater…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributer vum ausgewielten Cluster",
@@ -2835,7 +2835,7 @@
                         "reorder_items": "Artikele nei sortéieren"
                     },
                     "starting": {
-                        "description": "Home Assistant start, waart w.e.g..."
+                        "description": "Home Assistant start, waart w.e.g…"
                     }
                 },
                 "changed_toast": {

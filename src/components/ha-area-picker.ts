@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -42,6 +41,7 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
@@ -362,28 +362,24 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <mwc-icon-button
+                <ha-icon-button
                   .label=${this.hass.localize(
                     "ui.components.area-picker.clear"
                   )}
+                  .path=${mdiClose}
                   slot="suffix"
                   class="clear-button"
                   @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>
+                ></ha-icon-button>
               `
             : ""}
 
-          <mwc-icon-button
+          <ha-icon-button
             .label=${this.hass.localize("ui.components.area-picker.toggle")}
+            .path=${this._opened ? mdiMenuUp : mdiMenuDown}
             slot="suffix"
             class="toggle-button"
-          >
-            <ha-svg-icon
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            ></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
@@ -457,7 +453,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

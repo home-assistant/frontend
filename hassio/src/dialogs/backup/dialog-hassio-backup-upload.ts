@@ -3,6 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-header-bar";
+import "../../../../src/components/ha-icon-button";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -14,7 +15,7 @@ export class DialogHassioBackupUpload
   extends LitElement
   implements HassDialog<HassioBackupUploadDialogParams>
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: HassioBackupUploadDialogParams;
 
@@ -52,9 +53,12 @@ export class DialogHassioBackupUpload
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"> Upload backup </span>
-            <mwc-icon-button slot="actionItems" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass?.localize("common.close") || "close"}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
           </ha-header-bar>
         </div>
         <hassio-upload-backup

@@ -690,7 +690,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "ZHA Zigbee սարքերի որոնում ..."
+                        "spinner": "ZHA Zigbee սարքերի որոնում …"
                     }
                 },
                 "zwave": {
@@ -710,7 +710,7 @@
                         "network_started": "Մեկնարկեց Z-Wave ցանցը",
                         "network_started_note_all_queried": "Բոլոր հանգույցներին  հարցում ուղարկված են:",
                         "network_started_note_some_queried": "Արթնացնող հանգույցները հարցվել են: Քնած հանգույցները կզգան, երբ նրանք արթնանան:",
-                        "network_starting": "Մեկնարկվում է Z-Wave ցանցը ...",
+                        "network_starting": "Մեկնարկվում է Z-Wave ցանցը …",
                         "network_starting_note": "Սա կարող է որոշ ժամանակ տևել `կախված ձեր ցանցի չափից:",
                         "network_stopped": "Z-wave ցանցը դադարեցված է"
                     },

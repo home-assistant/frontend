@@ -3,6 +3,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
+import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
@@ -15,11 +16,11 @@ import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
+import { computeUserInitials } from "../../../data/user";
 import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
   HumidifierCardConfig,
-  LightCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
@@ -31,6 +32,8 @@ const HIDE_DOMAIN = new Set([
   "device_tracker",
   "geo_location",
   "persistent_notification",
+  "script",
+  "sun",
   "zone",
 ]);
 
@@ -83,8 +86,7 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>,
-  single = false
+  entityCardOptions: Partial<EntitiesCardConfig>
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -92,7 +94,7 @@ export const computeCards = (
   const entities: Array<string | LovelaceRowConfig> = [];
 
   const titlePrefix = entityCardOptions.title
-    ? `${entityCardOptions.title} `
+    ? `${entityCardOptions.title} `.toLowerCase()
     : undefined;
 
   for (const [entityId, stateObj] of states) {
@@ -122,12 +124,6 @@ export const computeCards = (
         entity: entityId,
       };
       cards.push(cardConfig);
-    } else if (domain === "light" && single) {
-      const cardConfig: LightCardConfig = {
-        type: "light",
-        entity: entityId,
-      };
-      cards.push(cardConfig);
     } else if (domain === "media_player") {
       const cardConfig = {
         type: "media-control",
@@ -153,16 +149,18 @@ export const computeCards = (
     ) {
       // Do nothing.
     } else {
-      let name: string;
+      let name: string | undefined;
       const entityConf =
         titlePrefix &&
         stateObj &&
         // eslint-disable-next-line no-cond-assign
-        (name = computeStateName(stateObj)) !== titlePrefix &&
-        name.startsWith(titlePrefix)
+        (name = stripPrefixFromEntityName(
+          computeStateName(stateObj),
+          titlePrefix
+        ))
           ? {
               entity: entityId,
-              name: adjustName(name.substr(titlePrefix.length)),
+              name,
             }
           : entityId;
 
@@ -181,14 +179,6 @@ export const computeCards = (
   return cards;
 };
 
-const hasUpperCase = (str: string): boolean => str.toLowerCase() !== str;
-
-const adjustName = (name: string): string =>
-  // If first word already has an upper case letter (e.g. from brand name)
-  // leave as-is, otherwise capitalize the first word.
-  hasUpperCase(name.substr(0, name.indexOf(" ")))
-    ? name
-    : name[0].toUpperCase() + name.slice(1);
 const computeDefaultViewStates = (
   entities: HassEntities,
   entityEntries: EntityRegistryEntry[]
@@ -196,7 +186,9 @@ const computeDefaultViewStates = (
   const states = {};
   const hiddenEntities = new Set(
     entityEntries
-      .filter((entry) => HIDE_PLATFORM.has(entry.platform))
+      .filter(
+        (entry) => entry.entity_category || HIDE_PLATFORM.has(entry.platform)
+      )
       .map((entry) => entry.entity_id)
   );
 
@@ -240,6 +232,62 @@ export const generateViewConfig = (
   });
 
   let cards: LovelaceCardConfig[] = [];
+
+  if ("person" in ungroupedEntitites) {
+    const personCards: LovelaceCardConfig[] = [];
+
+    if (ungroupedEntitites.person.length === 1) {
+      cards.push({
+        type: "entities",
+        entities: ungroupedEntitites.person,
+      });
+    } else {
+      let backgroundColor: string | undefined;
+      let foregroundColor = "";
+
+      for (const personEntityId of ungroupedEntitites.person) {
+        const stateObj = entities[personEntityId];
+
+        let image = stateObj.attributes.entity_picture;
+
+        if (!image) {
+          if (backgroundColor === undefined) {
+            const computedStyle = getComputedStyle(document.body);
+            backgroundColor = encodeURIComponent(
+              computedStyle.getPropertyValue("--light-primary-color").trim()
+            );
+            foregroundColor = encodeURIComponent(
+              (
+                computedStyle.getPropertyValue("--text-light-primary-color") ||
+                computedStyle.getPropertyValue("--primary-text-color")
+              ).trim()
+            );
+          }
+          const initials = computeUserInitials(
+            stateObj.attributes.friendly_name || ""
+          );
+          image = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50' width='50' height='50' style='background-color:${backgroundColor}'%3E%3Cg%3E%3Ctext font-family='roboto' x='50%25' y='50%25' text-anchor='middle' stroke='${foregroundColor}' font-size='1.3em' dy='.3em'%3E${initials}%3C/text%3E%3C/g%3E%3C/svg%3E`;
+        }
+
+        personCards.push({
+          type: "picture-entity",
+          entity: personEntityId,
+          aspect_ratio: "1",
+          show_name: false,
+          image,
+        });
+      }
+
+      cards.push({
+        type: "grid",
+        square: true,
+        columns: 3,
+        cards: personCards,
+      });
+    }
+
+    delete ungroupedEntitites.person;
+  }
 
   splitted.groups.forEach((groupEntity) => {
     cards = cards.concat(

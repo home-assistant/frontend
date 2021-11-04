@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -8,7 +7,7 @@ import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
-import "../../components/ha-svg-icon";
+import "../../components/ha-icon-button";
 import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
@@ -72,14 +71,13 @@ class HaLongLivedTokens extends LitElement {
                       relativeTime(new Date(token.created_at), this.hass.locale)
                     )}
                   </div>
-                  <mwc-icon-button
+                  <ha-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
-                    .title=${this.hass.localize(`ui.common.delete`)}
+                    .label=${this.hass.localize("ui.common.delete")}
+                    .path=${mdiDelete}
                     @click=${this._deleteToken}
-                  >
-                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 </ha-settings-row>`
               )}
         </div>
@@ -171,7 +169,7 @@ class HaLongLivedTokens extends LitElement {
         mwc-button {
           --mdc-theme-primary: var(--primary-color);
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
       `,

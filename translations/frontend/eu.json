@@ -184,7 +184,7 @@
             "title": "Jakinarazpenak"
         },
         "notification_toast": {
-            "connection_lost": "Konexioa galdu da. Berriro konektatzen..."
+            "connection_lost": "Konexioa galdu da. Berriro konektatzen…"
         },
         "panel": {
             "config": {
@@ -422,7 +422,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "ZHA Zigbee gailuak bilatzen..."
+                        "spinner": "ZHA Zigbee gailuak bilatzen…"
                     }
                 },
                 "zwave": {

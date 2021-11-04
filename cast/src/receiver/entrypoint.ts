@@ -28,11 +28,29 @@ const setTouchControlsVisibility = (visible: boolean) => {
   }
 };
 
+const playDummyMedia = () => {
+  const playerManager = castContext.getPlayerManager();
+  const loadRequestData = new cast.framework.messages.LoadRequestData();
+  loadRequestData.autoplay = true;
+  loadRequestData.media = new cast.framework.messages.MediaInformation();
+  loadRequestData.media.contentId =
+    "https://www.home-assistant.io/images/blog/2018-09-thinking-big/social.png";
+  loadRequestData.media.contentType = "image/jpeg";
+  loadRequestData.media.streamType = cast.framework.messages.StreamType.NONE;
+  const metadata = new cast.framework.messages.GenericMediaMetadata();
+  metadata.title = "Home Assistant Lovelace";
+  loadRequestData.media.metadata = metadata;
+
+  loadRequestData.requestId = 0;
+  playerManager.load(loadRequestData);
+};
+
 const showLovelaceController = () => {
   mediaPlayer.style.display = "none";
   lovelaceController.style.display = "initial";
   document.body.setAttribute("style", "overflow-y: auto !important");
   setTouchControlsVisibility(false);
+  playDummyMedia();
 };
 
 const showMediaPlayer = () => {
@@ -103,6 +121,12 @@ const playerManager = castContext.getPlayerManager();
 playerManager.setMessageInterceptor(
   cast.framework.messages.MessageType.LOAD,
   (loadRequestData) => {
+    if (
+      loadRequestData.media.contentId ===
+      "https://www.home-assistant.io/images/blog/2018-09-thinking-big/social.png"
+    ) {
+      return loadRequestData;
+    }
     // We received a play media command, hide Lovelace and show media player
     showMediaPlayer();
     const media = loadRequestData.media;

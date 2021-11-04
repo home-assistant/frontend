@@ -20,7 +20,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-checkbox", true) private _input?: HTMLElement;
+  @query("ha-checkbox", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {

@@ -10,7 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
-import { CustomIcon, customIconsets } from "../data/custom_iconsets";
+import { CustomIcon, customIcons } from "../data/custom_icons";
 import {
   checkCacheVersion,
   Chunks,
@@ -52,18 +52,6 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
     newName: "cast-variant",
     removeIn: "2021.12",
   },
-  application: {
-    newName: "application-outline",
-    removeIn: "2021.12",
-  },
-  "application-cog": {
-    newName: "application-cog-outline",
-    removeIn: "2021.12",
-  },
-  "application-settings": {
-    newName: "application-settings-outline",
-    removeIn: "2021.12",
-  },
   bandcamp: {
     removeIn: "2021.12",
   },
@@ -75,14 +63,6 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
   },
   "bolnisi-cross": {
     newName: "cross-bolnisi",
-    removeIn: "2021.12",
-  },
-  "boom-gate-up": {
-    newName: "boom-gate-arrow-up",
-    removeIn: "2021.12",
-  },
-  "boom-gate-up-outline": {
-    newName: "boom-gate-arrow-up-outline",
     removeIn: "2021.12",
   },
   "boom-gate-down": {
@@ -376,7 +356,7 @@ export class HaIcon extends LitElement {
 
   @state() private _path?: string;
 
-  @state() private _viewBox?;
+  @state() private _viewBox?: string;
 
   @state() private _legacy = false;
 
@@ -406,6 +386,7 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return;
     }
+    const requestedIcon = this.icon;
     const [iconPrefix, origIconName] = this.icon.split(":", 2);
 
     let iconName = origIconName;
@@ -415,10 +396,10 @@ export class HaIcon extends LitElement {
     }
 
     if (!MDI_PREFIXES.includes(iconPrefix)) {
-      if (iconPrefix in customIconsets) {
-        const customIconset = customIconsets[iconPrefix];
-        if (customIconset) {
-          this._setCustomPath(customIconset(iconName));
+      if (iconPrefix in customIcons) {
+        const customIcon = customIcons[iconPrefix];
+        if (customIcon && typeof customIcon.getIcon === "function") {
+          this._setCustomPath(customIcon.getIcon(iconName), requestedIcon);
         }
         return;
       }
@@ -461,14 +442,16 @@ export class HaIcon extends LitElement {
     }
 
     if (databaseIcon) {
-      this._path = databaseIcon;
+      if (this.icon === requestedIcon) {
+        this._path = databaseIcon;
+      }
       cachedIcons[iconName] = databaseIcon;
       return;
     }
     const chunk = findIconChunk(iconName);
 
     if (chunk in chunks) {
-      this._setPath(chunks[chunk], iconName);
+      this._setPath(chunks[chunk], iconName, requestedIcon);
       return;
     }
 
@@ -476,19 +459,31 @@ export class HaIcon extends LitElement {
       response.json()
     );
     chunks[chunk] = iconPromise;
-    this._setPath(iconPromise, iconName);
+    this._setPath(iconPromise, iconName, requestedIcon);
     debouncedWriteCache();
   }
 
-  private async _setCustomPath(promise: Promise<CustomIcon>) {
+  private async _setCustomPath(
+    promise: Promise<CustomIcon>,
+    requestedIcon: string
+  ) {
     const icon = await promise;
+    if (this.icon !== requestedIcon) {
+      return;
+    }
     this._path = icon.path;
     this._viewBox = icon.viewBox;
   }
 
-  private async _setPath(promise: Promise<Icons>, iconName: string) {
+  private async _setPath(
+    promise: Promise<Icons>,
+    iconName: string,
+    requestedIcon: string
+  ) {
     const iconPack = await promise;
-    this._path = iconPack[iconName];
+    if (this.icon === requestedIcon) {
+      this._path = iconPack[iconName];
+    }
     cachedIcons[iconName] = iconPack[iconName];
   }
 

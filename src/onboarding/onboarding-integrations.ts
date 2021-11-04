@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
@@ -79,7 +80,7 @@ class OnboardingIntegrations extends LitElement {
             <integration-badge
               .domain=${entry.domain}
               .title=${title}
-              badgeIcon="hass:check"
+              .badgeIcon=${mdiCheck}
               .darkOptimizedIcon=${this.hass.selectedTheme?.dark}
             ></integration-badge>
           `,
@@ -120,7 +121,7 @@ class OnboardingIntegrations extends LitElement {
             title=${this.onboardingLocalize(
               "ui.panel.page-onboarding.integration.more_integrations"
             )}
-            icon="hass:dots-horizontal"
+            .icon=${mdiDotsHorizontal}
           ></action-badge>
         </button>
       </div>
