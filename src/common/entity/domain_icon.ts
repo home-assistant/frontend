@@ -80,12 +80,7 @@ export const domainIcon = (
     case "switch":
       switch (stateObj?.attributes.device_class) {
         case "outlet":
-          switch (state) {
-            case "on":
-              return mdiPowerPlug;
-            default:
-              return mdiPowerPlugOff;
-          }
+          return state === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
           switch (state) {
             case "on":
