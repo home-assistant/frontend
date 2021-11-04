@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script type="module" src="<%= latestReceiverJS %>"></script>
-  <%= renderTemplate('_style_base') %>
-  <style>
-    body {
-      background-color: white;
-      font-size: initial;
-    }
-  </style>
-  <script>
-  var _gaq=[['_setAccount','UA-57927901-10'],['_trackPageview']];
-  (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-  g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-  s.parentNode.insertBefore(g,s)}(document,'script'));
-  </script>
+  <head>
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script type="module" src="<%= latestReceiverJS %>"></script>
+    <%= renderTemplate('_style_base') %>
+    <style>
+      body {
+        background-color: white;
+        font-size: initial;
+      }
+      .castMediaElement {
+        display: none;
+      }
+    </style>
+    <script>
+    var _gaq=[['_setAccount','UA-57927901-10'],['_trackPageview']];
+    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+  </head>
+  <body>
+    <video class="castMediaElement"></video>
+  </body>
 </html>
