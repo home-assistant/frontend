@@ -3,6 +3,7 @@ import {
   mdiAccountArrowRight,
   mdiAirHumidifierOff,
   mdiAirHumidifier,
+  mdiFlash,
   mdiBluetooth,
   mdiBluetoothConnect,
   mdiLanConnect,
@@ -14,8 +15,12 @@ import {
   mdiCastConnected,
   mdiCast,
   mdiEmoticonDead,
+  mdiPowerPlug,
+  mdiPowerPlugOff,
   mdiSleep,
   mdiTimerSand,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
   mdiZWave,
   mdiClock,
   mdiCalendar,
@@ -79,6 +84,16 @@ export const domainIcon = (
 
     case "media_player":
       return compareState === "playing" ? mdiCastConnected : mdiCast;
+
+    case "switch":
+      switch (stateObj?.attributes.device_class) {
+        case "outlet":
+          return state === "on" ? mdiPowerPlug : mdiPowerPlugOff;
+        case "switch":
+          return state === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+        default:
+          return mdiFlash;
+      }
 
     case "zwave":
       switch (compareState) {
