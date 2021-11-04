@@ -1,3 +1,4 @@
+import { startOfYesterday } from "date-fns";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -31,7 +32,11 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    const href = "/history?entity_id=" + this.entityId;
+    const href =
+      "/history?entity_id=" +
+      this.entityId +
+      "&start_date=" +
+      startOfYesterday().getTime();
 
     return html`${isComponentLoaded(this.hass, "history")
       ? html` <div class="header">
