@@ -24,6 +24,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
+  "button-entity": () => import("../entity-rows/hui-button-entity-row"),
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
   "group-entity": () => import("../entity-rows/hui-group-entity-row"),
@@ -53,6 +54,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
   alert: "toggle",
   automation: "toggle",
+  button: "button",
   climate: "climate",
   cover: "cover",
   fan: "toggle",
