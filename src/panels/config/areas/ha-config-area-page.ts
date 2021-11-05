@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiCog } from "@mdi/js";
+import { mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -134,25 +134,39 @@ class HaConfigAreaPage extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
       >
-        ${this.narrow ? html` <span slot="header"> ${area.name} </span> ` : ""}
-
-        <ha-icon-button
-          slot="toolbar-icon"
-          .path=${mdiCog}
-          .entry=${area}
-          @click=${this._showSettings}
-          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
-        ></ha-icon-button>
+        ${this.narrow
+          ? html`<span slot="header"> ${area.name} </span>
+              <ha-icon-button
+                .path=${mdiPencil}
+                .entry=${area}
+                @click=${this._showSettings}
+                slot="toolbar-icon"
+                .label=${this.hass.localize(
+                  "ui.panel.config.areas.edit_settings"
+                )}
+              ></ha-icon-button>`
+          : ""}
 
         <div class="container">
           ${!this.narrow
             ? html`
                 <div class="fullwidth">
-                  <h1>${area.name}</h1>
+                  <h1>
+                    ${area.name}
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      .entry=${area}
+                      @click=${this._showSettings}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.areas.edit_settings"
+                      )}
+                    ></ha-icon-button>
+                  </h1>
                 </div>
               `
             : ""}
           <div class="column">
+            ${area.picture ? html`<img src=${area.picture} />` : ""}
             <ha-card
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
@@ -403,7 +417,7 @@ class HaConfigAreaPage extends LitElement {
       haStyle,
       css`
         h1 {
-          margin-top: 0;
+          margin: 0;
           font-family: var(--paper-font-headline_-_font-family);
           -webkit-font-smoothing: var(
             --paper-font-headline_-_-webkit-font-smoothing
@@ -413,6 +427,13 @@ class HaConfigAreaPage extends LitElement {
           letter-spacing: var(--paper-font-headline_-_letter-spacing);
           line-height: var(--paper-font-headline_-_line-height);
           opacity: var(--dark-primary-opacity);
+          display: flex;
+          align-items: center;
+        }
+
+        img {
+          border-radius: var(--ha-card-border-radius, 4px);
+          width: 100%;
         }
 
         .container {
