@@ -12,7 +12,7 @@ export interface AreaRegistryEntry {
 
 export interface AreaRegistryEntryMutableParams {
   name: string;
-  picture: string | null;
+  picture?: string | null;
 }
 
 export const createAreaRegistryEntry = (

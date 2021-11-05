@@ -3,7 +3,6 @@ import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-alert";
 import "../../../components/ha-picture-upload";
@@ -159,7 +158,7 @@ class DialogAreaDetail extends LitElement {
       } else {
         await this._params!.createEntry!(values);
       }
-      this._params = undefined;
+      this.closeDialog();
     } catch (err: any) {
       this._error =
         err.message ||
@@ -173,13 +172,11 @@ class DialogAreaDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry!()) {
-        this._params = undefined;
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
     }
-
-    navigate("/config/areas/dashboard");
   }
 
   static get styles(): CSSResultGroup {

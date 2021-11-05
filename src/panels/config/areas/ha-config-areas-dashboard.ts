@@ -232,6 +232,7 @@ export class HaConfigAreasDashboard extends LitElement {
       }
       .card-content {
         min-height: 16px;
+        color: var(--secondary-text-color);
       }
     `;
   }

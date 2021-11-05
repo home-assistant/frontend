@@ -6,6 +6,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import {
@@ -404,6 +405,7 @@ class HaConfigAreaPage extends LitElement {
 
         try {
           await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
+          afterNextRender(() => history.back());
           return true;
         } catch (err: any) {
           return false;
