@@ -23,6 +23,8 @@ export class MoreInfoHistory extends LitElement {
 
   @state() private _stateHistory?: HistoryResult;
 
+  private _showMoreHref = "";
+
   private _throttleGetStateHistory = throttle(() => {
     this._getStateHistory();
   }, 10000);
@@ -32,18 +34,12 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    const href =
-      "/history?entity_id=" +
-      this.entityId +
-      "&start_date=" +
-      startOfYesterday().getTime();
-
     return html`${isComponentLoaded(this.hass, "history")
       ? html` <div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
-            <a href=${href} @click=${this._close}
+            <a href=${this._showMoreHref} @click=${this._close}
               >${this.hass.localize(
                 "ui.dialogs.more_info_control.show_more"
               )}</a
@@ -56,6 +52,14 @@ export class MoreInfoHistory extends LitElement {
             .isLoadingData=${!this._stateHistory}
           ></state-history-charts>`
       : ""}`;
+  }
+
+  protected firstUpdated(): void {
+    this._showMoreHref =
+      "/history?entity_id=" +
+      this.entityId +
+      "&start_date=" +
+      startOfYesterday().toISOString();
   }
 
   protected updated(changedProps: PropertyValues): void {

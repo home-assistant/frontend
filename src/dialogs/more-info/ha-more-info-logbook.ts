@@ -31,6 +31,8 @@ export class MoreInfoLogbook extends LitElement {
 
   private _error?: string;
 
+  private _showMoreHref = "";
+
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
@@ -44,12 +46,6 @@ export class MoreInfoLogbook extends LitElement {
     if (!stateObj) {
       return html``;
     }
-
-    const href =
-      "/logbook?entity_id=" +
-      this.entityId +
-      "&start_date=" +
-      startOfYesterday().getTime();
 
     return html`
       ${isComponentLoaded(this.hass, "logbook")
@@ -72,7 +68,7 @@ export class MoreInfoLogbook extends LitElement {
                 <div class="title">
                   ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
                 </div>
-                <a href=${href} @click=${this._close}
+                <a href=${this._showMoreHref} @click=${this._close}
                   >${this.hass.localize(
                     "ui.dialogs.more_info_control.show_more"
                   )}</a
@@ -98,6 +94,11 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchUserPromise = this._fetchUserNames();
+    this._showMoreHref =
+      "/logbook?entity_id=" +
+      this.entityId +
+      "&start_date=" +
+      startOfYesterday().toISOString();
   }
 
   protected updated(changedProps: PropertyValues): void {

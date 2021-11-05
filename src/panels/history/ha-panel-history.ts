@@ -140,7 +140,7 @@ class HaPanelHistory extends LitElement {
 
     this._entityId = extractSearchParam("entity_id") ?? "";
 
-    const startDate = Number(extractSearchParam("start_date"));
+    const startDate = extractSearchParam("start_date");
     if (startDate) {
       this._startDate = new Date(startDate);
     }
