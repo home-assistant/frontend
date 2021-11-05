@@ -376,9 +376,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         result.push({
           ...entry,
           entity,
-          name:
-            computeEntityRegistryName(this.hass!, entry) ||
-            this.hass.localize("state.default.unavailable"),
+          name: computeEntityRegistryName(this.hass!, entry),
           unavailable,
           restored,
           area: area ? area.name : undefined,
