@@ -8,6 +8,7 @@ import { addDistanceToCoord } from "../../../common/location/add_distance_to_coo
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
@@ -114,7 +115,7 @@ class DialogZoneDetail extends LitElement {
               required
               auto-validate
             ></paper-input>
-            <paper-input
+            <ha-icon-picker
               .value=${this._icon}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
@@ -123,7 +124,7 @@ class DialogZoneDetail extends LitElement {
                 "ui.panel.config.zone.detail.icon_error_msg"
               )}
               .invalid=${iconValid}
-            ></paper-input>
+            ></ha-icon-picker>
             <ha-locations-editor
               class="flex"
               .hass=${this.hass}
