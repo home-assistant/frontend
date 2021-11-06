@@ -55,7 +55,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "cold":
       return is_off ? mdiThermometer : mdiSnowflake;
     case "connectivity":
-      return is_off ? mdiServerNetworkOff : mdiServerNetwork;
+      return is_off ? mdiCloseNetworkOutline : mdiCheckNetworkOutline;
     case "door":
       return is_off ? mdiDoorClosed : mdiDoorOpen;
     case "garage_door":
