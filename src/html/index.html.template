@@ -39,12 +39,6 @@
     <meta name="theme-color" content="#THEMEC" />
     <meta name="color-scheme" content="dark light" />
     <style>
-      #ha-init-skeleton::before {
-        display: block;
-        content: "";
-        height: 56px;
-        background-color: #THEMEC;
-      }
       html {
         background-color: var(--primary-background-color);
       }
@@ -53,14 +47,10 @@
           background-color: #111111;
           color: #e1e1e1;
         }
-        #ha-init-skeleton::before {
-          background-color: #1c1c1c;
-        }
       }
     </style>
   </head>
   <body>
-    <div id="ha-init-skeleton"></div>
     <home-assistant> </home-assistant>
 
     <%= renderTemplate('_js_base') %>
