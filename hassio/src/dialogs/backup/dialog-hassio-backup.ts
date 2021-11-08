@@ -35,7 +35,7 @@ class HassioBackupDialog
   extends LitElement
   implements HassDialog<HassioBackupDialogParams>
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _error?: string;
 
@@ -77,7 +77,7 @@ class HassioBackupDialog
           <ha-header-bar>
             <span slot="title">${this._backup.name}</span>
             <ha-icon-button
-              .label=${this.hass.localize("common.close")}
+              .label=${this.hass?.localize("common.close") || "close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -114,7 +114,7 @@ class HassioBackupDialog
               @closed=${stopPropagation}
             >
               <ha-icon-button
-                .label=${this.hass.localize("common.menu")}
+                .label=${this.hass!.localize("common.menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
@@ -192,25 +192,23 @@ class HassioBackupDialog
     }
 
     if (!this._dialogParams?.onboarding) {
-      this.hass
-        .callApi(
-          "POST",
+      this.hass!.callApi(
+        "POST",
 
-          `hassio/${
-            atLeastVersion(this.hass.config.version, 2021, 9)
-              ? "backups"
-              : "snapshots"
-          }/${this._backup!.slug}/restore/partial`,
-          backupDetails
-        )
-        .then(
-          () => {
-            this.closeDialog();
-          },
-          (error) => {
-            this._error = error.body.message;
-          }
-        );
+        `hassio/${
+          atLeastVersion(this.hass!.config.version, 2021, 9)
+            ? "backups"
+            : "snapshots"
+        }/${this._backup!.slug}/restore/partial`,
+        backupDetails
+      ).then(
+        () => {
+          this.closeDialog();
+        },
+        (error) => {
+          this._error = error.body.message;
+        }
+      );
     } else {
       fireEvent(this, "restoring");
       fetch(`/api/hassio/backups/${this._backup!.slug}/restore/partial`, {
@@ -244,24 +242,22 @@ class HassioBackupDialog
     }
 
     if (!this._dialogParams?.onboarding) {
-      this.hass
-        .callApi(
-          "POST",
-          `hassio/${
-            atLeastVersion(this.hass.config.version, 2021, 9)
-              ? "backups"
-              : "snapshots"
-          }/${this._backup!.slug}/restore/full`,
-          backupDetails
-        )
-        .then(
-          () => {
-            this.closeDialog();
-          },
-          (error) => {
-            this._error = error.body.message;
-          }
-        );
+      this.hass!.callApi(
+        "POST",
+        `hassio/${
+          atLeastVersion(this.hass!.config.version, 2021, 9)
+            ? "backups"
+            : "snapshots"
+        }/${this._backup!.slug}/restore/full`,
+        backupDetails
+      ).then(
+        () => {
+          this.closeDialog();
+        },
+        (error) => {
+          this._error = error.body.message;
+        }
+      );
     } else {
       fireEvent(this, "restoring");
       fetch(`/api/hassio/backups/${this._backup!.slug}/restore/full`, {
@@ -283,36 +279,33 @@ class HassioBackupDialog
       return;
     }
 
-    this.hass
-
-      .callApi(
-        atLeastVersion(this.hass.config.version, 2021, 9) ? "DELETE" : "POST",
-        `hassio/${
-          atLeastVersion(this.hass.config.version, 2021, 9)
-            ? `backups/${this._backup!.slug}`
-            : `snapshots/${this._backup!.slug}/remove`
-        }`
-      )
-      .then(
-        () => {
-          if (this._dialogParams!.onDelete) {
-            this._dialogParams!.onDelete();
-          }
-          this.closeDialog();
-        },
-        (error) => {
-          this._error = error.body.message;
+    this.hass!.callApi(
+      atLeastVersion(this.hass!.config.version, 2021, 9) ? "DELETE" : "POST",
+      `hassio/${
+        atLeastVersion(this.hass!.config.version, 2021, 9)
+          ? `backups/${this._backup!.slug}`
+          : `snapshots/${this._backup!.slug}/remove`
+      }`
+    ).then(
+      () => {
+        if (this._dialogParams!.onDelete) {
+          this._dialogParams!.onDelete();
         }
-      );
+        this.closeDialog();
+      },
+      (error) => {
+        this._error = error.body.message;
+      }
+    );
   }
 
   private async _downloadClicked() {
     let signedPath: { path: string };
     try {
       signedPath = await getSignedPath(
-        this.hass,
+        this.hass!,
         `/api/hassio/${
-          atLeastVersion(this.hass.config.version, 2021, 9)
+          atLeastVersion(this.hass!.config.version, 2021, 9)
             ? "backups"
             : "snapshots"
         }/${this._backup!.slug}/download`

@@ -1,6 +1,13 @@
 import {
+  mdiAccount,
+  mdiAccountArrowRight,
   mdiAirHumidifierOff,
   mdiAirHumidifier,
+  mdiFlash,
+  mdiBluetooth,
+  mdiBluetoothConnect,
+  mdiLanConnect,
+  mdiLanDisconnect,
   mdiLockOpen,
   mdiLockAlert,
   mdiLockClock,
@@ -8,8 +15,12 @@ import {
   mdiCastConnected,
   mdiCast,
   mdiEmoticonDead,
+  mdiPowerPlug,
+  mdiPowerPlugOff,
   mdiSleep,
   mdiTimerSand,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
   mdiZWave,
   mdiClock,
   mdiCalendar,
@@ -44,6 +55,17 @@ export const domainIcon = (
     case "cover":
       return coverIcon(compareState, stateObj);
 
+    case "device_tracker":
+      if (stateObj?.attributes.source_type === "router") {
+        return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
+      }
+      if (
+        ["bluetooth", "bluetooth_le"].includes(stateObj?.attributes.source_type)
+      ) {
+        return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
+      }
+      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
+
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
 
@@ -62,6 +84,16 @@ export const domainIcon = (
 
     case "media_player":
       return compareState === "playing" ? mdiCastConnected : mdiCast;
+
+    case "switch":
+      switch (stateObj?.attributes.device_class) {
+        case "outlet":
+          return state === "on" ? mdiPowerPlug : mdiPowerPlugOff;
+        case "switch":
+          return state === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+        default:
+          return mdiFlash;
+      }
 
     case "zwave":
       switch (compareState) {

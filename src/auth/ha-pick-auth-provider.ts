@@ -21,7 +21,11 @@ class HaPickAuthProvider extends litLocalizeLiteMixin(LitElement) {
       <p>${this.localize("ui.panel.page-authorize.pick_auth_provider")}:</p>
       ${this.authProviders.map(
         (provider) => html`
-          <paper-item .auth_provider=${provider} @click=${this._handlePick}>
+          <paper-item
+            role="button"
+            .auth_provider=${provider}
+            @click=${this._handlePick}
+          >
             <paper-item-body>${provider.name}</paper-item-body>
             <ha-icon-next></ha-icon-next>
           </paper-item>

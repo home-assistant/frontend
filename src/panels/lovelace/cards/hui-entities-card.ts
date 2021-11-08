@@ -231,7 +231,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        overflow: hidden;
       }
       .card-header {
         display: flex;
@@ -261,7 +260,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       #states > div > * {
-        overflow: hidden;
+        overflow: clip visible;
       }
 
       #states > div {

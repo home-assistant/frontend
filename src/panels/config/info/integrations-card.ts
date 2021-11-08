@@ -98,7 +98,7 @@ class IntegrationsCard extends LitElement {
                           domain: domain,
                           type: "icon",
                           useFallback: true,
-                          darkOptimized: this.hass.selectedTheme?.dark,
+                          darkOptimized: this.hass.themes?.darkMode,
                         })}
                         referrerpolicy="no-referrer"
                       />
