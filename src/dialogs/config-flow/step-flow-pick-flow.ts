@@ -45,7 +45,7 @@ class StepFlowPickFlow extends LitElement {
                 domain: flow.handler,
                 type: "icon",
                 useFallback: true,
-                darkOptimized: this.hass.selectedTheme?.dark,
+                darkOptimized: this.hass.themes?.darkMode,
               })}
               referrerpolicy="no-referrer"
             />

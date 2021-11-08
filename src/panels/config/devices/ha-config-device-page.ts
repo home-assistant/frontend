@@ -293,7 +293,7 @@ export class HaConfigDevicePage extends LitElement {
                             src=${brandsUrl({
                               domain: integrations[0],
                               type: "logo",
-                              darkOptimized: this.hass.selectedTheme?.dark,
+                              darkOptimized: this.hass.themes?.darkMode,
                             })}
                             referrerpolicy="no-referrer"
                             @load=${this._onImageLoad}
