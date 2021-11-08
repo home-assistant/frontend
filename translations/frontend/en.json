@@ -549,6 +549,9 @@
                 "last_triggered": "Last triggered",
                 "trigger": "Run Actions"
             },
+            "button": {
+                "press": "Press"
+            },
             "camera": {
                 "not_available": "Image not available"
             },

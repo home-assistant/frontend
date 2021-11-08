@@ -549,6 +549,9 @@
                 "last_triggered": "Sist utløst",
                 "trigger": "Kjør handlinger"
             },
+            "button": {
+                "press": "trykk"
+            },
             "camera": {
                 "not_available": "Bilde ikke tilgjengelig"
             },

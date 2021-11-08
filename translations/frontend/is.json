@@ -154,6 +154,7 @@
             "delete_backup_title": "Eyða öryggisafriti",
             "delete_selected": "Eyða völdum afritum",
             "enter_password": "Færðu inn lykilorð.",
+            "failed_to_delete": "Ekki tókst að eyða",
             "folders": "Möppur",
             "full_backup": "Fullt afrit",
             "name": "Heiti",
@@ -366,6 +367,7 @@
                 "brightness": "Birtustig",
                 "color_temperature": "Litastig",
                 "effect": "Áhrif",
+                "warm_white_value": "Hlýtt hvítt birtustig",
                 "white_value": "Hvítt gildi"
             },
             "lock": {
@@ -492,6 +494,9 @@
                 "clear": "Hreinsa",
                 "show_areas": "Birta svæði"
             },
+            "attributes": {
+                "expansion_header": "Eiginleikar"
+            },
             "blueprint-picker": {
                 "add_user": "Bæta við notanda",
                 "remove_user": "Fjarlægja notanda",
@@ -554,6 +559,9 @@
             },
             "picture-upload": {
                 "label": "Mynd"
+            },
+            "related-filter-menu": {
+                "filtered_by_device": "Tæki"
             },
             "related-items": {
                 "area": "Svæði",
@@ -677,6 +685,7 @@
                 "edit": "Breyta einingu",
                 "history": "Saga",
                 "last_changed": "Síðast breytt",
+                "logbook": "Færslubók",
                 "remote": {
                     "activity": "Núverandi verkþáttur"
                 },
@@ -778,7 +787,9 @@
                 }
             },
             "zha_reconfigure_device": {
-                "cluster_header": "Klasi"
+                "cluster_header": "Klasi",
+                "configuring_alt": "Stillir",
+                "start_reconfiguration": "Byrja endurstillingu"
             }
         },
         "duration": {
@@ -797,6 +808,10 @@
                 "key_missing": "Nauðsynlegan lykil \"{key}\" vantar.",
                 "key_not_expected": "Ekki er búist við lyklinum \"{key}\" eða hann er ekki studdur af ritlinum.",
                 "key_wrong_type": "Uppgefið gildi fyrir \"{key}\" er ekki stutt af ritlinum. Við styðjum ({type_correct}) en fengum ({type_wrong})."
+            },
+            "supervisor": {
+                "ask": "Biðja um hjálp",
+                "system_health": "Kanna kerfisheilbrigði"
             }
         },
         "login-form": {
@@ -821,9 +836,11 @@
                     "caption": "Svæðaskrá",
                     "data_table": {
                         "area": "Svæði",
-                        "devices": "Tæki"
+                        "devices": "Tæki",
+                        "entities": "Einingar"
                     },
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
+                    "edit_settings": "Svæðisstillingar",
                     "editor": {
                         "create": "STOFNA",
                         "default_name": "Nýtt svæði",
@@ -1123,7 +1140,10 @@
                         }
                     },
                     "trace": {
+                        "download_trace": "Sækja rakningu",
                         "edit_automation": "Breyta sjálfvirkni",
+                        "newer_trace": "Nýrri rakning",
+                        "older_trace": "Eldri rakning",
                         "refresh": "Endurnýja"
                     }
                 },
@@ -1148,6 +1168,7 @@
                         "confirm_delete_header": "Eyða þessum uppdrætti?",
                         "confirm_delete_text": "Á örugglega að eyða þessum uppdrætti?",
                         "create_automation": "Búa til sjálfvirkni",
+                        "create_script": "Búa til skriftu",
                         "delete_blueprint": "Eyða uppdrætti",
                         "discover_more": "Uppgötva fleiri uppdrætti",
                         "header": "Uppdráttarritill",
@@ -1189,6 +1210,7 @@
                         "not_connected": "Ekki tengdur",
                         "remote": {
                             "certificate_info": "Upplýsingar skilríkis",
+                            "connected": "Tengt",
                             "link_learn_how_it_works": "Læra hvernig þetta virkar",
                             "not_connected": "Ekki tengdur",
                             "title": "Fjarstýring"
@@ -1343,6 +1365,7 @@
                         "integration": "Samþætting",
                         "user": "Notandi"
                     },
+                    "edit_settings": "Breyta stillingum",
                     "enabled_cause": "Tækið er óvirkt vegna {cause}.",
                     "enabled_description": "Óvirk tæki verða ekki sýnd, einingar sem tilheyra tækinu verða gerðar óvirkar og þeim ekki bætt við Home Assistant.",
                     "enabled_label": "Virkja einingu",
@@ -1352,6 +1375,7 @@
                         "control": "Stjórntæki",
                         "disabled_entities": "+{count} {count, plural,\n  one {óvirk eining}\n  other {óvirkar einingar}\n}",
                         "entities": "Einingar",
+                        "sensor": "Skynjarar",
                         "state": "Staða"
                     },
                     "name": "Nafn",
@@ -1378,10 +1402,17 @@
                     "scripts": "Skriftur",
                     "unknown_error": "Óþekkt villa",
                     "unnamed_device": "Ónefnt tæki",
-                    "update": "Uppfæra"
+                    "update": "Uppfæra",
+                    "update_device_error": "Uppfærsla tækisins mistókst"
                 },
                 "energy": {
                     "battery": {
+                        "add_battery_system": "Bæta við rafhlöðukerfi",
+                        "battery_systems": "Rafhlöðukerfi",
+                        "dialog": {
+                            "energy_out_of_battery": "Orka að koma út úr rafhlöðunni (kwh)",
+                            "header": "Stilla rafhlöðukerfi"
+                        },
                         "learn_more": "Nánari upplýsingar um hvernig á að byrja."
                     },
                     "caption": "Orka",
@@ -1396,6 +1427,7 @@
                         "title": "Einstök tæki"
                     },
                     "gas": {
+                        "add_gas_source": "Bæta við gasgjafa",
                         "dialog": {
                             "cost_entity_input": "Eining með núverandi verð á {unit}",
                             "cost_number": "Nota fast verð",
@@ -1405,9 +1437,12 @@
                             "energy_stat": "Orkunotkun (m³)",
                             "gas_usage": "Gasnotkun",
                             "header": "Stilla gas notkun",
-                            "m3_or_kWh": "m³ eða kWh"
+                            "m3_or_kWh": "m³ eða kWh",
+                            "no_cost": "Ekki fylgjast með kostnaði"
                         },
+                        "gas_consumption": "Gas notkun",
                         "learn_more": "Nánari upplýsingar um hvernig á að byrja.",
+                        "sub": "Leyfðu Home Assistant að fylgjast með gasnotkun þinni.",
                         "title": "Gas notkun"
                     },
                     "grid": {
@@ -1430,6 +1465,9 @@
                         "title": "Raforkukerfi"
                     },
                     "solar": {
+                        "dialog": {
+                            "add_forecast": "Bæta við spá"
+                        },
                         "title": "Sólarsellur"
                     },
                     "validation": {
@@ -1522,6 +1560,7 @@
                     "built_using": "Byggt með",
                     "caption": "Upplýsingar",
                     "copy_github": "Fyrir GitHub",
+                    "copy_menu": "Afrita valmynd",
                     "copy_raw": "Hrár texti",
                     "documentation": "Skjölun",
                     "icons_by": "Smátákn eftir",
@@ -1589,6 +1628,7 @@
                 "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
                 "logs": {
                     "clear": "Hreinsa",
+                    "copy": "Afrita færslu",
                     "level": {
                         "critical": "AÐKALLANDI",
                         "debug": "AFLÚSUN",
@@ -1866,6 +1906,9 @@
                         "clusters": "Klasar",
                         "value": "Gildi"
                     },
+                    "configuration_page": {
+                        "update_button": "Uppfæra stillingar"
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Uppsetningu lokið",
                         "CONFIGURED_status_text": "Frumstilli",
@@ -1999,6 +2042,7 @@
                         "server_version": "Útgáfa miðlara"
                     },
                     "device_info": {
+                        "device_config": "Stilla tæki",
                         "is_secure": "Öruggt",
                         "node_ready": "Hnútur tilbúinn",
                         "node_status": "Staða hnúts",
@@ -2084,7 +2128,8 @@
                         },
                         "issue": "Vandamál",
                         "issues": {
-                            "entity_not_recorded": "Þessi eining er útilokuð frá því að vera skráð."
+                            "entity_not_recorded": "Þessi eining er útilokuð frá því að vera skráð.",
+                            "no_state": "Engin staða er til fyrir þessa einingu."
                         },
                         "no_issue": "Engin vandamál",
                         "title": "Tölfræði"
@@ -2097,6 +2142,10 @@
             },
             "energy": {
                 "cards": {
+                    "energy_devices_graph_title": "Vakta einstök tæki",
+                    "energy_distribution_title": "Orkudreifing",
+                    "energy_gas_graph_title": "Gas notkun",
+                    "energy_solar_graph_title": "Sólarframleiðsla",
                     "energy_usage_graph_title": "Orkunotkun"
                 },
                 "charts": {
@@ -2121,20 +2170,43 @@
                         "title": "Velkomin(n) heim"
                     },
                     "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Þetta spjald gefur til kynna hversu mikið af orkunni sem heimili þitt notaði var framleitt með eldsneyti sem ekki er jarðefnaeldsneyti eins og sól, vindur og kjarnorka. Því hærra, því betra!",
+                            "non_fossil_energy_consumed": "Neysla á endurnýjanlegum orkugjöfum",
+                            "non_fossil_energy_not_calculated": "Ekki var hægt að reikna út eydda orku sem ekki er jarðefnaeldsneyti."
+                        },
                         "energy_devices_graph": {
                             "energy_usage": "Orkunotkun"
                         },
                         "energy_distribution": {
                             "battery": "Rafhlaða",
                             "gas": "Gas",
+                            "go_to_energy_dashboard": "Opna mælaborð fyrir orkunotkun",
+                            "grid": "Dreifikerfi",
                             "home": "Heima",
+                            "non_fossil": "Endurnýjanlegir",
                             "solar": "Sólarorka"
                         },
                         "energy_sources_table": {
                             "cost": "Kostnaður",
                             "energy": "Orka"
                         },
-                        "loading": "Hleð..."
+                        "energy_usage_graph": {
+                            "combined_from_grid": "Samtals frá dreifikerfi",
+                            "consumed_battery": "Neysla af rafhlöðu",
+                            "consumed_solar": "Neysla sólarorku"
+                        },
+                        "grid_neutrality_gauge": {
+                            "energy_dependency": "Þetta kort gefur til kynna nettó orkunotkun þína.",
+                            "net_consumed_grid": "Nettó notkun af dreifikerfinu",
+                            "net_returned_grid": "Nettó skilað til dreifikerfis"
+                        },
+                        "loading": "Hleð...",
+                        "no_data_period": "Það eru engin gögn fyrir þetta tímabil.",
+                        "solar_consumed_gauge": {
+                            "not_produced_solar_energy": "Þú hefur ekki framleitt neina sólarorku",
+                            "self_consumed_solar_energy": "Neysla af eigin sólarorku framleiðslu"
+                        }
                     },
                     "picture-elements": {
                         "call_service": "Kalla í þjónustu {name}",
@@ -2149,7 +2221,8 @@
                         "add_item": "Bæta við hlut",
                         "checked_items": "Valdir hlutir",
                         "clear_items": "Hreinsa valda hluti"
-                    }
+                    },
+                    "show_more_info": "Sýna meiri upplýsingar"
                 },
                 "changed_toast": {
                     "message": "Lovelace stillingum hefur verið breytt, viltu endurnýja?"
@@ -2322,6 +2395,7 @@
                         },
                         "weather-forecast": {
                             "name": "Veðurspá",
+                            "show_both": "Sýna núverandi veður og veðurspá",
                             "show_forecast": "Sýna veðurspá",
                             "show_only_current": "Sýna aðeins núverandi veður",
                             "show_only_forecast": "Sýna aðeins veðurspá"
@@ -2346,6 +2420,7 @@
                         "edit": "Breyta",
                         "header": "Stillingar spjalds",
                         "move": "Færa",
+                        "move_down": "Færa kort niður",
                         "options": "Fleir valkostir",
                         "pick_card": "Veldu spjald sem þú vilt bæta við.",
                         "show_code_editor": "Birta kóða ritil",
@@ -2537,7 +2612,8 @@
                 "initializing": "Frumstilli",
                 "logging_in_to_with": "Skrái þig inn á **{locationName}** með **{authProviderName}**.",
                 "logging_in_with": "Skrái inn með ** {authProviderName} **.",
-                "pick_auth_provider": "Eða skráðu þig inn með"
+                "pick_auth_provider": "Eða skráðu þig inn með",
+                "store_token": "Halda mér innskráðum"
             },
             "page-demo": {
                 "cards": {
@@ -2744,7 +2820,9 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Stillingar forrits"
+            "external_app_configuration": "Stillingar forrits",
+            "hide_panel": "Fela töflu",
+            "show_panel": "Sýna töflu"
         }
     }
 }

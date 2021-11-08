@@ -180,6 +180,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
+                        "core": "Core",
                         "docker": "docker",
                         "hardware": "hardware",
                         "hass": "hass",
@@ -204,6 +205,10 @@
                     "stage": {
                         "description": "Os add-ons podem ter um de três estágios: \n\n {icon_stable} **Estável**: Esses add-ons estão prontos para serem usados em produção\n\n {icon_experimental} **Experimental**: Esses add-ons podem apresentar error, ou estar num estado inacabado.\n\n {icon_deprecated} **Obsoleto**: Esses add-ons não receberão mais atualizações.",
                         "title": "Estágio do add-on"
+                    },
+                    "stages": {
+                        "deprecated": "Descontinuado",
+                        "experimental": "Experimental"
                     }
                 },
                 "changelog": "Registro de Alterações",
@@ -307,6 +312,7 @@
             "failed_to_restart_name": "Falha ao reiniciar {name}",
             "failed_to_update_name": "Falha ao atualizar {name}",
             "learn_more": "Saiba mais",
+            "menu": "Menu",
             "new_version_available": "Nova versão disponível",
             "newest_version": "Nova versão",
             "no": "Não",
@@ -347,6 +353,11 @@
             "no_addons": "Você ainda não tem nenhum add-on instalado. Vá até a loja de add-on para começar!"
         },
         "dialog": {
+            "datadisk_move": {
+                "cancel": "Cancelar",
+                "loading_devices": "Carregando dispositivos",
+                "move": "Mover"
+            },
             "hardware": {
                 "attributes": "Atributos",
                 "device_path": "Caminho do dispositivo",
@@ -497,6 +508,7 @@
                     "network_manager": "Gerenciador de Rede",
                     "os": "Sistema Operacional",
                     "privileged": "Supervisor não é privilegiado",
+                    "software": "Software não suportado detectado",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Você está executando uma instalação sem suporte",
@@ -525,6 +537,9 @@
             "automation": {
                 "last_triggered": "Último disparo",
                 "trigger": "Executar"
+            },
+            "button": {
+                "press": "Pressione"
             },
             "camera": {
                 "not_available": "Imagem indisponível"
@@ -675,6 +690,7 @@
             "and": "e",
             "back": "Voltar",
             "cancel": "Cancelar",
+            "clear": "Limpar",
             "close": "Fechar",
             "continue": "Continuar",
             "copied": "Copiado",
@@ -683,9 +699,11 @@
             "disable": "Desabilitar",
             "enable": "Habilitar",
             "error_required": "Obrigatório",
+            "help": "Ajuda",
             "leave": "Sair",
             "loading": "Carregando",
             "menu": "Menu",
+            "move": "Mover",
             "next": "Próximo",
             "no": "Não",
             "not_now": "Agora não",
@@ -777,6 +795,7 @@
                 },
                 "entity-picker": {
                     "clear": "Limpar",
+                    "edit": "Editar",
                     "entity": "Entidade",
                     "no_match": "Nenhuma entidade correspondente encontrada",
                     "show_entities": "Mostrar entidades"
@@ -929,8 +948,10 @@
                 "add_area_id": "Escolher área",
                 "add_device_id": "Escolher dispositivo",
                 "add_entity_id": "Escolher entidade",
+                "expand": "Expandir",
                 "expand_area_id": "Expandir esta área para os dispositivos e entidades separadas que ela contém. Após a expansão, ela não atualizará os dispositivos e entidades quando a área mudar.",
                 "expand_device_id": "Expandir este dispositivo para as entidades separadas que ele contém. Após a expansão, ele não atualizará as entidades quando o dispositivo mudar.",
+                "remove": "Remover",
                 "remove_area_id": "Remover área",
                 "remove_device_id": "Remover dispositivo",
                 "remove_entity_id": "Remover entidade"
@@ -1059,6 +1080,7 @@
                 "history": "Histórico",
                 "last_changed": "Última alteração",
                 "last_updated": "Última atualização",
+                "logbook": "Eventos",
                 "person": {
                     "create_zone": "Criar zona a partir da localização atual"
                 },
@@ -1077,6 +1099,7 @@
                     "last_triggered": "Último disparo"
                 },
                 "settings": "Configurações da entidade",
+                "show_more": "Mostrar mais",
                 "sun": {
                     "elevation": "Elevação",
                     "rising": "Nascendo",
@@ -1132,10 +1155,14 @@
                         "devices": "Dispositivos",
                         "energy": "Energia",
                         "entities": "Entidades",
+                        "helpers": "Helpers",
                         "info": "Informações",
                         "integrations": "Integrações",
+                        "logs": "Logs",
+                        "lovelace": "Paineis Lovelace",
                         "person": "Pessoas",
                         "scene": "Cenas",
+                        "script": "Scripts",
                         "server_control": "Controles do Servidor",
                         "tag": "Marcadores",
                         "users": "Usuários",
@@ -1676,6 +1703,10 @@
                             "introduction": "Digite abaixo o que esta automação deve fazer, e tentaremos convertê-la em uma automação Home Assistant.",
                             "language_note": "Nota: Por enquanto, apenas o Inglês é suportado."
                         }
+                    },
+                    "trace": {
+                        "edit_automation": "Editar automação",
+                        "refresh": "Atualizar"
                     }
                 },
                 "blueprint": {
@@ -1700,18 +1731,25 @@
                         "add_blueprint": "Importar projeto",
                         "confirm_delete_header": "Apagar esse projeto?",
                         "confirm_delete_text": "Tem certeza que quer apagar esse projeto?",
+                        "create_automation": "Criar automação",
+                        "create_script": "Criar script",
                         "delete_blueprint": "Apagar projeto",
                         "discover_more": "Descubra mais Projetos",
                         "header": "Editor de Projetos",
                         "headers": {
                             "domain": "Domínio",
                             "file_name": "Nome do arquivo",
-                            "name": "Nome"
+                            "name": "Nome",
+                            "type": "Tipo"
                         },
                         "introduction": "A seção de Projetos em Ajustes permite que você importe e gerencie seus projetos.",
                         "learn_more": "Aprender mais sobre os projetos",
                         "share_blueprint": "Compartilhar projeto",
                         "share_blueprint_no_url": "Não foi possível compartilhar o projeto: endereço de origem ausente",
+                        "types": {
+                            "automation": "Automação",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Criar automação"
                     }
                 },
@@ -2013,21 +2051,26 @@
                         "integration": "Integração",
                         "user": "Usuário"
                     },
+                    "edit_settings": "Editar configurações",
                     "enabled_cause": "Dispositivo desativado por {cause}.",
                     "enabled_description": "Os dispositivos desabilitados não serão mostrados e as entidades pertencentes ao dispositivo serão desabilitadas e não adicionadas ao Home Assistant.",
                     "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
                         "config": "Configuração",
+                        "control": "Controles",
                         "diagnostic": "Diagnóstico",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidade desabilitada}\n  other {entidades desabilitadas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Ocultar desativado(s)",
-                        "none": "Este dispositivo não possui entidades"
+                        "none": "Este dispositivo não possui entidades",
+                        "sensor": "Sensores",
+                        "state": "Estado"
                     },
                     "name": "Nome",
                     "no_devices": "Sem dispositivos",
                     "open_configuration_url_device": "Acessar dispositivo",
+                    "open_configuration_url_service": "Acessar página do serviço",
                     "picker": {
                         "filter": {
                             "filter": "Filtro",
@@ -2057,15 +2100,28 @@
                 },
                 "energy": {
                     "battery": {
+                        "add_battery_system": "Adicionar sistema de bateria",
+                        "battery_systems": "Sistemas de baterias",
+                        "dialog": {
+                            "energy_into_battery": "Energia entrando na bateria (kWh)",
+                            "energy_out_of_battery": "Energia saindo da bateria (kWh)",
+                            "header": "Configurar o sistema de bateria"
+                        },
                         "learn_more": "Mais informações sobre como começar",
                         "sub": "Se você tem um sistema que funciona",
                         "title": "Sistema doméstico de armazenamento de bateria"
                     },
                     "caption": "Energia",
+                    "delete_integration": "Tem certeza de que deseja excluir esta integração? Isso removerá as entidades que ela fornece",
+                    "delete_source": "Você tem certeza de que quer apagar esta fonte?",
                     "description": "Monitore sua produção e consumo de energia",
                     "device_consumption": {
+                        "add_device": "Adicionar dispositivo",
                         "add_stat": "Escolha uma entidade para acompanhar o uso de energia",
+                        "devices": "Dispositivos",
                         "dialog": {
+                            "device_consumption_energy": "Consumo de energia do dispositivo (kwh)",
+                            "header": "Adicionar um dispositivo",
                             "selected_stat_intro": "Selecione a entidade que representa o uso de energia do dispositivo."
                         },
                         "learn_more": "Mais informações sobre como começar",
@@ -2074,6 +2130,7 @@
                         "title": "Dispositivos individuais"
                     },
                     "gas": {
+                        "add_gas_source": "Adicionar fonte de gás",
                         "dialog": {
                             "cost_entity": "Use uma entidade com preço atual",
                             "cost_entity_input": "Entidade com o preço atual",
@@ -2084,15 +2141,21 @@
                             "cost_stat": "Use uma entidade que acompanhe os custos totais",
                             "cost_stat_input": "Entidade de Custos Totais",
                             "energy_stat": "Energia consumida (m³)",
+                            "gas_usage": "Uso de gás",
                             "header": "Configurar o consumo de gás",
+                            "m3_or_kWh": "m³ ou kWh",
                             "no_cost": "Não rastreie os custos",
                             "paragraph": "O consumo de gás é o volume de gás que flui para sua casa."
                         },
+                        "gas_consumption": "Consumo de gás",
                         "learn_more": "Mais informações sobre como começar.",
                         "sub": "Deixe o Home Assistant monitorar o seu uso de gás",
                         "title": "Consumo de gás"
                     },
                     "grid": {
+                        "add_co2_signal": "Adicionar a integração do sinal de CO2",
+                        "add_consumption": "Adicionar consumo",
+                        "add_return": "Adicionar devolução",
                         "flow_dialog": {
                             "from": {
                                 "cost_entity": "Use uma entidade com preço atual",
@@ -2123,12 +2186,27 @@
                                 "paragraph": "A produção de rede é a energia que flui de seus painéis solares para a rede eletrica."
                             }
                         },
+                        "grid_carbon_footprint": "Pegada de carbono da rede",
+                        "grid_consumption": "Consumo da rede",
                         "learn_more": "Mais informações sobre como começar",
+                        "return_to_grid": "Retorno à rede",
                         "sub": "Configure a quantidade de energia que você consome da rede e, se você produzir energia, devolva-a à rede. Isto permite que o Home Assistant rastreie todo o consumo de energia de sua casa.",
                         "title": "Rede elétrica"
                     },
+                    "new_device_info": "Após a instalação de um novo dispositivo, pode levar até 2 horas para que novos dados cheguem ao seu painel de energia.",
                     "solar": {
+                        "add_solar_production": "Adicionar produção solar",
+                        "dialog": {
+                            "add_forecast": "Adicionar previsão",
+                            "dont_forecast_production": "Não faça previsões de produção",
+                            "forecast_production": "Previsão de produção",
+                            "header": "Configurar painéis solares",
+                            "solar_production_energy": "Produção de energia solar (kWh)",
+                            "solar_production_forecast": "Previsão da produção solar",
+                            "solar_production_forecast_description": "A adição de informações de previsão da produção solar permitirá que você veja rapidamente sua produção esperada para hoje."
+                        },
                         "learn_more": "Mais informações sobre como começar",
+                        "solar_production": "Produção solar",
                         "stat_predicted_production": "Previsão da sua produção de energia solar",
                         "stat_production": "Sua produção de energia solar",
                         "stat_return_to_grid": "Energia solar devolvida à rede",
@@ -2156,6 +2234,10 @@
                             "entity_unavailable": {
                                 "description": "O estado dessas entidades configuradas não está disponível no momento:",
                                 "title": "Entidade indisponível"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "As seguintes entidades não têm a classe de dispositivo esperada:",
+                                "title": "Classe de dispositivo inesperada"
                             },
                             "entity_unexpected_state_class": {
                                 "description": "As seguintes entidades não têm a classe de estado esperada:",
@@ -2356,7 +2438,7 @@
                         "finish": "Terminar",
                         "loading": {
                             "fallback_title": "a integração",
-                            "loading_flow": "Por favor, aguarde enquanto {integração} está sendo configurado",
+                            "loading_flow": "Por favor, aguarde enquanto {integration} está sendo configurado",
                             "loading_step": "Carregamento do próximo passo para {integration}"
                         },
                         "next": "Próximo",
@@ -2437,6 +2519,8 @@
                             "yaml": "Arquivo YAML"
                         },
                         "confirm_delete": "Tem certeza de que deseja excluir este painel?",
+                        "confirm_delete_text": "Seu painel será permanentemente apagado.",
+                        "confirm_delete_title": "Apagar {dashboard_title}?",
                         "default_dashboard": "Este é o painel de instrumentos padrão",
                         "detail": {
                             "create": "Criar",
@@ -3008,6 +3092,7 @@
                     },
                     "edit_home_zone": "O raio da zona \"Casa\" ainda não pode ser editado a partir do frontend. Arraste o marcador no mapa para mover a zona de origem.",
                     "edit_home_zone_narrow": "O raio da zona Casa ainda não pode ser editado a partir do frontend. A localização pode ser alterada a partir da configuração geral.",
+                    "edit_zone": "Editar Zona",
                     "go_to_core_config": "Ir para configuração geral?",
                     "home_zone_core_config": "A localização da sua zona Casa é editável na página de configuração geral. O raio da zona inicial ainda não pode ser editado a partir do frontend. Deseja ir para a configuração geral?",
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automações.",
@@ -3148,11 +3233,14 @@
                     "device_info": {
                         "device_config": "Configurar Dispositivo",
                         "heal_node": "Reparar Dispositivo",
+                        "highest_security": "Segurança máxima",
                         "node_ready": "Node pronto",
                         "node_status": "Estado do Node",
                         "reinterview_device": "Re-entrevistar Dispositivo",
                         "remove_failed": "Remover Dispositivo com Falha",
-                        "zwave_info": "Informações da rede Z-Wave"
+                        "zwave_info": "Informações da rede Z-Wave",
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Versão {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "A reparação da rede foi cancelado.",
@@ -3239,6 +3327,27 @@
                         "introduction": "Remova um node de sua rede Z-Wave e remova o dispositivo e entidades associadas do Home Assistant.",
                         "start_exclusion": "Iniciar Exclusão",
                         "title": "Remover um node da rede Z-Wave"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Nenhum"
+                        },
+                        "S0_Legacy": {
+                            "description": "Exemplo: Fechaduras de portas legadas sem suporte S2",
+                            "title": "S0 Legado"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Exemplo: Fechaduras de portas e portas de garagem",
+                            "title": "Controle de acesso S2"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Exemplo: Iluminação, Sensores e Sistemas de Segurança",
+                            "title": "S2 Autenticado"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Como S2 Autenticado, mas sem a verificação de que o dispositivo correto está incluído",
+                            "title": "S2 não autenticado"
+                        }
                     }
                 }
             },
@@ -3305,6 +3414,14 @@
                         "state_attributes": "Atributos de estado (YAML, opcional)",
                         "title": "Estado"
                     },
+                    "statistics": {
+                        "entity": "Entidade",
+                        "issues": {
+                            "entity_no_longer_recorded": "Esta entidade não está mais sendo registrada.",
+                            "no_state": "Não há nenhum estado disponível para esta entidade."
+                        },
+                        "title": "Estatísticas"
+                    },
                     "templates": {
                         "all_listeners": "Este modelo escuta todos os eventos de estado alterado.",
                         "description": "Os templates são renderizados usando o Jinja2 com algumas extensões específicas do Home Assistant.",
@@ -3324,6 +3441,14 @@
                 }
             },
             "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "Monitorar dispositivos individuais",
+                    "energy_distribution_title": "Distribuição de energia",
+                    "energy_gas_graph_title": "Consumo de gás",
+                    "energy_solar_graph_title": "Produção solar",
+                    "energy_sources_table_title": "Fontes",
+                    "energy_usage_graph_title": "Uso de energia"
+                },
                 "charts": {
                     "by_device": "Consumo por dispositivo",
                     "solar": "Solar",
@@ -3357,13 +3482,63 @@
                         "title": "Bem-vindo a casa"
                     },
                     "energy": {
-                        "energy_distribution": {
-                            "battery": "Bateria"
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Este cartão indica quanto da energia consumida por sua casa foi gerada utilizando combustíveis não fósseis como solar, eólico e nuclear. Quanto mais alto, melhor!",
+                            "non_fossil_energy_consumed": "Energia não fóssil consumida",
+                            "non_fossil_energy_not_calculated": "Energia não fóssil consumida não pôde ser calculada"
                         },
-                        "loading": "Carregando ..."
+                        "energy_devices_graph": {
+                            "energy_usage": "Uso de energia"
+                        },
+                        "energy_distribution": {
+                            "battery": "Bateria",
+                            "gas": "Gás",
+                            "go_to_energy_dashboard": "Ir para o painel de energia",
+                            "grid": "Rede",
+                            "home": "Início",
+                            "non_fossil": "Não fóssil",
+                            "solar": "Solar"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Previsão {nome}",
+                            "production": "Produção {nome}"
+                        },
+                        "energy_sources_table": {
+                            "battery_total": "Total da bateria",
+                            "cost": "Custo",
+                            "energy": "Energia",
+                            "grid_total": "Total da rede",
+                            "source": "Fonte",
+                            "total_costs": "Custos totais"
+                        },
+                        "energy_usage_graph": {
+                            "consumed_battery": "Bateria consumida",
+                            "consumed_solar": "Energia solar consumida",
+                            "total_consumed": "Total consumido {num} kWh",
+                            "total_returned": "Total devolvido {num} kWh"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "Se o ponteiro estiver no roxo, você devolveu mais energia à rede do que consumiu dela. Se estiver no azul, você consumiu mais energia da rede do que devolveu.",
+                            "energy_dependency": "Este cartão indica seu uso líquido de energia.",
+                            "grid_neutrality_not_calculated": "A neutralidade da rede não pôde ser calculada",
+                            "net_consumed_grid": "Consumo líquido da rede",
+                            "net_returned_grid": "Devolução líquida à rede",
+                            "red_green_color_explain": "Se estiver verde, significa que você produziu mais energia do que consumiu da rede. Se estiver vermelho, significa que você dependeu da rede para parte do consumo de energia de sua casa."
+                        },
+                        "loading": "Carregando ...",
+                        "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Este cartão indica quanto da energia solar que você produziu foi usada em sua casa em vez de ser devolvida à rede.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Se esse número for normalmente muito baixo, indicando excesso de produção solar, você talvez queira considerar utilizar seus painéis solares para carregar uma bateria doméstica ou carro elétrico em momentos de alta produção solar.",
+                            "not_produced_solar_energy": "Você não produziu nenhuma energia solar",
+                            "self_consumed_solar_could_not_calc": "A energia solar auto-consumida não pôde ser calculada",
+                            "self_consumed_solar_energy": "Energia solar auto-consumida"
+                        }
                     },
                     "entities": {
                         "never_triggered": "Nunca disparado"
+                    },
+                    "map": {
+                        "reset_focus": "Redefinir o foco"
                     },
                     "picture-elements": {
                         "call_service": "Iniciar Serviço {name}",
@@ -3385,6 +3560,7 @@
                         "drag_and_drop": "Arrastar e soltar",
                         "reorder_items": "Reordenar itens"
                     },
+                    "show_more_info": "Mostrar mais informações",
                     "starting": {
                         "description": "O Home Assistant está iniciando, por favor aguarde…"
                     }
@@ -3641,7 +3817,10 @@
                         "weather-forecast": {
                             "description": "O cartão Previsão do tempo exibe o clima. Muito útil para incluir nas interfaces que as pessoas exibem na parede.",
                             "name": "Previsão do Tempo",
-                            "show_forecast": "Mostrar previsão"
+                            "show_both": "Mostrar clima e previsão atuais",
+                            "show_forecast": "Mostrar previsão",
+                            "show_only_current": "Mostrar apenas o clima atual",
+                            "show_only_forecast": "Mostrar apenas previsão"
                         }
                     },
                     "cardpicker": {
@@ -3673,6 +3852,8 @@
                         "move": "Mover para Visualização",
                         "move_after": "Mover card após",
                         "move_before": "Mova o card antes",
+                        "move_down": "Mover cartão para baixo",
+                        "move_up": "Mover cartão para cima",
                         "options": "Mais opções",
                         "pick_card": "Qual card você gostaria de adicionar?",
                         "pick_card_view_title": "Qual card você gostaria de adicionar à sua visualização {name} ?",
@@ -3772,7 +3953,8 @@
                     },
                     "select_view": {
                         "dashboard_label": "Painel de controle",
-                        "header": "Selecione uma tela"
+                        "header": "Selecione uma tela",
+                        "views_label": "Vista"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3835,6 +4017,9 @@
                 "delete_prompt": "Excluir esta mensagem?",
                 "empty": "Você não tem mensagens",
                 "playback_title": "Reprodução da mensagem"
+            },
+            "map": {
+                "edit_zones": "Editar Zonas"
             },
             "my": {
                 "component_not_loaded": "Este redirecionamento não é compatível com a instância do Home Assistant. Você precisa da integração {integration} para usar este redirecionamento.",
@@ -3942,7 +4127,8 @@
                 "initializing": "Iniciando",
                 "logging_in_to_with": "Fazendo login em **{locationName}** com **{authProviderName}**.",
                 "logging_in_with": "Fazendo login com **{authProviderName}**.",
-                "pick_auth_provider": "Ou entre com"
+                "pick_auth_provider": "Ou entre com",
+                "store_token": "Mantenha-me logado"
             },
             "page-demo": {
                 "cards": {
@@ -4064,6 +4250,7 @@
                     "header": "Altere a ordem e oculte os itens da barra lateral"
                 },
                 "dashboard": {
+                    "default_dashboard_label": "Visão geral (padrão)",
                     "description": "Escolha um painel padrão para este dispositivo.",
                     "dropdown_label": "Painel de controle",
                     "header": "Painel de controle"
