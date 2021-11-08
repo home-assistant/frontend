@@ -109,7 +109,7 @@ export class HaConfigAreasDashboard extends LitElement {
                         ? `url(${area.picture})`
                         : undefined,
                     })}
-                    class="picture"
+                    class="picture ${!area.picture ? "placeholder" : ""}"
                   ></div>
                   <h1 class="card-header">${area.name}</h1>
                   <div class="card-content">
@@ -231,7 +231,7 @@ export class HaConfigAreasDashboard extends LitElement {
         background-position: center;
         position: relative;
       }
-      .picture::before {
+      .picture.placeholder::before {
         position: absolute;
         content: "";
         width: 100%;
