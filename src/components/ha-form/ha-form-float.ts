@@ -47,12 +47,19 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   private _valueChanged(ev: Event) {
     const source = ev.target as TextField;
-    const rawValue = source.value;
+    const rawValue = source.value.replace(",", ".");
 
     let value: number | undefined;
 
+    if (rawValue.endsWith(".")) {
+      return;
+    }
+
     if (rawValue !== "") {
       value = parseFloat(rawValue);
+      if (isNaN(value)) {
+        value = undefined;
+      }
     }
 
     // Detect anything changed
@@ -61,7 +68,6 @@ export class HaFormFloat extends LitElement implements HaFormElement {
       const newRawValue = value === undefined ? "" : String(value);
       if (source.value !== newRawValue) {
         source.value = newRawValue;
-        return;
       }
       return;
     }
