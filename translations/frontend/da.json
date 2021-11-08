@@ -179,6 +179,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "godkendelse",
+                        "core": "Core",
                         "docker": "docker",
                         "hardware": "hardware",
                         "hass": "hass",
@@ -203,6 +204,10 @@
                     "stage": {
                         "description": "Tilføjelsesprogrammer kan have en af tre faser:\n\n{icon_stable} **Stabil**: Disse tilføjelsesprogrammer er klar til brug i produktionen.\n\n{icon_experimental} **Eksperimentel**: Disse tilføjelsesprogrammer indeholde fejl og kan være ufærdige.\n\n{icon_deprecated} **Forældet**: Disse tilføjelsesprogrammer modtager ikke længere opdateringer.",
                         "title": "Fase for tilføjelsesprogram"
+                    },
+                    "stages": {
+                        "deprecated": "Udfaset",
+                        "experimental": "Eksperimentel"
                     }
                 },
                 "changelog": "Ændringshistorik",
@@ -310,7 +315,7 @@
             "newest_version": "Nyeste version",
             "no": "Nej",
             "refresh": "Opdater",
-            "release_notes": "Udgivelses noter",
+            "release_notes": "Udgivelsesnoter",
             "reload": "Genindlæs",
             "reset_defaults": "Gendan standardindstillinger",
             "reset_options": "Nulstil indstillinger",
@@ -346,6 +351,9 @@
             "no_addons": "Du har endnu ikke installeret nogen tilføjelsesprogrammer. Gå over til butikken for tilføjelsesprogrammer for at komme i gang!"
         },
         "dialog": {
+            "datadisk_move": {
+                "title": "Flyt datadisk"
+            },
             "hardware": {
                 "attributes": "Attributter",
                 "device_path": "Enhedssti",
@@ -423,8 +431,8 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Core CPU forbrug",
-                "ram_usage": "Core RAM forbrug"
+                "cpu_usage": "Core CPU-forbrug",
+                "ram_usage": "Core RAM-forbrug"
             },
             "host": {
                 "change": "Ændre",
@@ -433,7 +441,7 @@
                 "confirm_shutdown": "Er du sikker på, at du vil lukke værten ned?",
                 "deployment": "Installation",
                 "docker_version": "Docker-version",
-                "emmc_lifetime_used": "Anvendt eMMC levetid",
+                "emmc_lifetime_used": "Anvendt eMMC-levetid",
                 "failed_to_get_hardware_list": "Hardwarelisten kunne ikke hentes",
                 "failed_to_import_from_usb": "Import fra USB mislykkedes",
                 "failed_to_reboot": "Genstart af vært mislykkedes",
@@ -443,11 +451,12 @@
                 "hostname": "Værtsnavn",
                 "import_from_usb": "Importer fra USB",
                 "ip_address": "IP-adresse",
+                "move_datadisk": "Flyt datadisk",
                 "new_hostname": "Indtast et nyt værtsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Genstart værten",
                 "shutdown_host": "Sluk vært",
-                "used_space": "Plads forbrug"
+                "used_space": "Anvendt plads"
             },
             "log": {
                 "get_logs": "Kunne ikke hente {provider} -logfiler, {error}",
@@ -459,7 +468,7 @@
                 "beta_release_items": "Dette omfatter betaversioner af:",
                 "beta_warning": "Betaversioner er henvendt til testere og tidlige brugere og kan indeholde ustabil kode",
                 "channel": "Kanal",
-                "cpu_usage": "Supervisor CPU forbrug",
+                "cpu_usage": "Supervisor CPU-forbrug",
                 "failed_to_reload": "Genindlæsning af Supervisor mislykkedes",
                 "failed_to_set_option": "Indstilling af Supervisor optioner myslykkedes",
                 "failed_to_update": "Opdatering af Supervisor mislykkedes",
@@ -467,7 +476,7 @@
                 "join_beta_description": "Få beta-opdateringer til Home Assistant (RCs), Supervisor og værtsmaskinen",
                 "leave_beta_action": "Forlad betakanal",
                 "leave_beta_description": "Få stabile opdateringer til Home Assistant, Supervisor og værtsmaskinen",
-                "ram_usage": "Supervisor RAM forbrug",
+                "ram_usage": "Supervisor RAM-forbrug",
                 "reload_supervisor": "Genindlæs Supervisor",
                 "search": "Søg",
                 "share_diagnostics": "Del diagnostik",
@@ -524,6 +533,9 @@
             "automation": {
                 "last_triggered": "Senest udløst",
                 "trigger": "Udfør"
+            },
+            "button": {
+                "press": "Tryk"
             },
             "camera": {
                 "not_available": "Billedet er ikke tilgængeligt"
@@ -1316,7 +1328,7 @@
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
             "triggered": "Udløste {name}",
-            "wrapping_up_startup": "Færdigører opstarten af Home Assistant. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig."
+            "wrapping_up_startup": "Færdigør opstarten af Home Assistant. Nogle funktioner er måske ikke tilgængelig før opstarten er færdig."
         },
         "panel": {
             "config": {

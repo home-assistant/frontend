@@ -549,6 +549,9 @@
                 "last_triggered": "Última activación",
                 "trigger": "Ejecutar acciones"
             },
+            "button": {
+                "press": "Pulsa"
+            },
             "camera": {
                 "not_available": "Imagen no disponible"
             },
@@ -1769,7 +1772,7 @@
                         "importing": "Cargando plano...",
                         "raw_blueprint": "Contenido del plano",
                         "save_btn": "Importar plano",
-                        "saving": "Importando plano…",
+                        "saving": "Importando plano...",
                         "unsupported_blueprint": "Este plano no es compatible",
                         "url": "URL del plano"
                     },
