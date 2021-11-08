@@ -209,7 +209,8 @@ export class HaConfigAreasDashboard extends LitElement {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-gap: 16px 16px;
         padding: 8px 16px 16px;
-        margin-bottom: 64px;
+        margin: 0 auto 64px auto;
+        max-width: 1000px;
       }
       .container > * {
         max-width: 500px;
@@ -228,7 +229,15 @@ export class HaConfigAreasDashboard extends LitElement {
         width: 100%;
         background-size: cover;
         background-position: center;
-        background-color: var(--primary-background-color);
+        position: relative;
+      }
+      .picture::before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
       }
       .card-content {
         min-height: 16px;

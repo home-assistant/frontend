@@ -930,6 +930,7 @@
           "caption": "Areas",
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
+          "add_picture": "Add a picture",
           "data_table": {
             "area": "Area",
             "devices": "Devices",

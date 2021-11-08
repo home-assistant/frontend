@@ -1,5 +1,7 @@
 import "@material/mwc-button";
-import { mdiPencil } from "@mdi/js";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import { mdiImagePlus, mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -168,7 +170,27 @@ class HaConfigAreaPage extends LitElement {
               `
             : ""}
           <div class="column">
-            ${area.picture ? html`<img src=${area.picture} />` : ""}
+            ${area.picture
+              ? html`<div class="img-container">
+                  <img src=${area.picture} /><ha-icon-button
+                    .path=${mdiPencil}
+                    .entry=${area}
+                    @click=${this._showSettings}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.areas.edit_settings"
+                    )}
+                    class="img-edit-btn"
+                  ></ha-icon-button>
+                </div>`
+              : html`<mwc-button
+                  .entry=${area}
+                  @click=${this._showSettings}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.areas.add_picture"
+                  )}
+                >
+                  <ha-svg-icon .path=${mdiImagePlus} slot="icon"></ha-svg-icon>
+                </mwc-button>`}
             <ha-card
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
@@ -197,7 +219,8 @@ class HaConfigAreaPage extends LitElement {
               .header=${this.hass.localize(
                 "ui.panel.config.areas.editor.linked_entities_caption"
               )}
-              >${entities.length
+            >
+              ${entities.length
                 ? entities.map(
                     (entity) =>
                       html`
@@ -483,9 +506,32 @@ class HaConfigAreaPage extends LitElement {
           cursor: default;
         }
 
-        ha-card > *:first-child {
+        ha-card > a:first-child {
           display: block;
+        }
+        ha-card > *:first-child {
           margin-top: -16px;
+        }
+        .img-container {
+          position: relative;
+        }
+        .img-edit-btn {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          display: none;
+        }
+        .img-container:hover .img-edit-btn {
+          display: block;
+        }
+        .img-edit-btn::before {
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: var(--card-background-color);
+          opacity: 0.5;
+          border-radius: 50%;
         }
       `,
     ];
