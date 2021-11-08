@@ -12,7 +12,7 @@ export interface Zone {
 }
 
 export interface ZoneMutableParams {
-  icon: string;
+  icon?: string;
   latitude: number;
   longitude: number;
   name: string;

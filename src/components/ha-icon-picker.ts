@@ -60,6 +60,8 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public invalid = false;
+
   @state() private _opened = false;
 
   @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
@@ -86,6 +88,8 @@ export class HaIconPicker extends LitElement {
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
+          .errorMessage=${this.errorMessage}
+          .invalid=${this.invalid}
         >
           ${this._value || this.placeholder
             ? html`
