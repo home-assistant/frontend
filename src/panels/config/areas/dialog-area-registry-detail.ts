@@ -4,7 +4,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
@@ -47,9 +47,12 @@ class DialogAreaDetail extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${entry
-          ? entry.name
-          : this.hass.localize("ui.panel.config.areas.editor.default_name")}
+        .heading=${createCloseHeading(
+          this.hass,
+          entry
+            ? entry.name
+            : this.hass.localize("ui.panel.config.areas.editor.default_name")
+        )}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
