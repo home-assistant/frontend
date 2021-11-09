@@ -549,6 +549,9 @@
                 "last_triggered": "上次觸發",
                 "trigger": "執行自動化"
             },
+            "button": {
+                "press": "按下"
+            },
             "camera": {
                 "not_available": "無法載入影像"
             },
@@ -1104,6 +1107,7 @@
                 "history": "歷史",
                 "last_changed": "上次變更",
                 "last_updated": "最後更新",
+                "logbook": "日誌",
                 "person": {
                     "create_zone": "使用目前位置新增區域"
                 },
@@ -1122,6 +1126,7 @@
                     "last_triggered": "上次觸發"
                 },
                 "settings": "實體設定",
+                "show_more": "顯示更多資訊",
                 "sun": {
                     "elevation": "海拔",
                     "rising": "日升",
@@ -1425,8 +1430,8 @@
                                     "label": "判斷式"
                                 },
                                 "delay": {
-                                    "delay": "延遲",
-                                    "label": "延遲"
+                                    "delay": "持續時間",
+                                    "label": "等候時間（延遲）"
                                 },
                                 "device_id": {
                                     "action": "動作",
@@ -1479,7 +1484,7 @@
                                 },
                                 "wait_template": {
                                     "continue_timeout": "繼續逾時計算",
-                                    "label": "等待",
+                                    "label": "等待模板",
                                     "timeout": "超時（選項）",
                                     "wait_template": "等待模板"
                                 }
@@ -1777,18 +1782,25 @@
                         "add_blueprint": "匯入 Blueprint",
                         "confirm_delete_header": "刪除此 Blueprint？",
                         "confirm_delete_text": "確定要刪除此 Blueprint？",
+                        "create_automation": "新增自動化",
+                        "create_script": "新增腳本",
                         "delete_blueprint": "刪除 Blueprint",
                         "discover_more": "搜尋更多 Blueprint",
                         "header": "Blueprint 編輯器",
                         "headers": {
                             "domain": "實體類群",
                             "file_name": "檔案名稱",
-                            "name": "名稱"
+                            "name": "名稱",
+                            "type": "類型"
                         },
                         "introduction": "Blueprint 編輯器可允許匯入與管理 Blueprint。",
                         "learn_more": "詳細了解如何使用 Blueprint",
                         "share_blueprint": "分享 Blueprint",
                         "share_blueprint_no_url": "無法分享 Blueprint：沒有來源 URL",
+                        "types": {
+                            "automation": "自動化",
+                            "script": "腳本"
+                        },
                         "use_blueprint": "新增自動化"
                     }
                 },
@@ -2097,11 +2109,13 @@
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
                         "config": "設定",
+                        "control": "控制",
                         "diagnostic": "診斷資料",
                         "disabled_entities": "{count} {count, plural,\n  one {個已關閉實體}\n  other {個已關閉實體}\n}",
                         "entities": "實體列表面板",
                         "hide_disabled": "隱藏已關閉實體",
                         "none": "此裝置沒有實體。",
+                        "sensor": "感測器",
                         "state": "狀態"
                     },
                     "name": "名稱",
@@ -3911,7 +3925,10 @@
                         "weather-forecast": {
                             "description": "天氣預報面板顯示天氣狀態。對於放置於牆上顯示非常實用。",
                             "name": "天氣預報面板",
-                            "show_forecast": "顯示預報"
+                            "show_both": "顯示目前天氣與預報",
+                            "show_forecast": "顯示預報",
+                            "show_only_current": "僅顯示目前天氣",
+                            "show_only_forecast": "僅顯示預報"
                         }
                     },
                     "cardpicker": {
@@ -4218,7 +4235,8 @@
                 "initializing": "初始化中",
                 "logging_in_to_with": "使用 **{authProviderName}** 登入 **{locationName}**。",
                 "logging_in_with": "使用 **{authProviderName}** 登入。",
-                "pick_auth_provider": "或以其他方式登入"
+                "pick_auth_provider": "或以其他方式登入",
+                "store_token": "保持登入"
             },
             "page-demo": {
                 "cards": {

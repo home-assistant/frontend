@@ -180,6 +180,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
+                        "core": "Core",
                         "docker": "docker",
                         "hardware": "hardware",
                         "hass": "hass",
@@ -204,6 +205,10 @@
                     "stage": {
                         "description": "I componenti aggiuntivi possono avere una delle tre fasi seguenti:\n\n{icon_stable} **Stabile**: si tratta di componenti aggiuntivi pronti per l'uso in produzione.\n\n{icon_experimental} **Sperimentale**: questi possono contenere bug e potrebbero non essere completati.\n\n{icon_deprecated} **Deprecato**: questi componenti aggiuntivi non riceveranno più aggiornamenti.",
                         "title": "Fase del componente aggiuntivo"
+                    },
+                    "stages": {
+                        "deprecated": "Deprecato",
+                        "experimental": "Sperimentale"
                     }
                 },
                 "changelog": "Registro delle modifiche",
@@ -543,6 +548,9 @@
             "automation": {
                 "last_triggered": "Ultima attivazione",
                 "trigger": "Esegui azioni"
+            },
+            "button": {
+                "press": "Premi"
             },
             "camera": {
                 "not_available": "Immagine non disponibile"
@@ -1099,6 +1107,7 @@
                 "history": "Storico",
                 "last_changed": "Ultima modifica",
                 "last_updated": "Ultimo aggiornamento",
+                "logbook": "Registro",
                 "person": {
                     "create_zone": "Crea zona dalla posizione corrente"
                 },
@@ -1117,6 +1126,7 @@
                     "last_triggered": "Ultima attivazione"
                 },
                 "settings": "Impostazioni dell'entità",
+                "show_more": "Mostra di più",
                 "sun": {
                     "elevation": "Elevazione",
                     "rising": "Alba",
@@ -1420,8 +1430,8 @@
                                     "label": "Condizione"
                                 },
                                 "delay": {
-                                    "delay": "Ritardo",
-                                    "label": "Ritardo"
+                                    "delay": "Durata",
+                                    "label": "Attesa per un tempo da trascorrere (ritardo)"
                                 },
                                 "device_id": {
                                     "action": "Azione",
@@ -1469,12 +1479,12 @@
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Continua al timeout",
-                                    "label": "In attesa dell'attivazione",
+                                    "label": "Attesa per una attivazione",
                                     "timeout": "Timeout (opzionale)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Continua al timeout",
-                                    "label": "Attendere",
+                                    "label": "Attesa per un modello",
                                     "timeout": "Timeout (opzionale)",
                                     "wait_template": "Modello di attesa"
                                 }
@@ -1772,18 +1782,25 @@
                         "add_blueprint": "Importa progetto",
                         "confirm_delete_header": "Eliminare questo progetto?",
                         "confirm_delete_text": "Sei sicuro di voler eliminare questo progetto?",
+                        "create_automation": "Crea automazione",
+                        "create_script": "Crea script",
                         "delete_blueprint": "Elimina progetto",
                         "discover_more": "Scopri altri Progetti",
                         "header": "Editor del progetto",
                         "headers": {
                             "domain": "Dominio",
                             "file_name": "Nome file",
-                            "name": "Nome"
+                            "name": "Nome",
+                            "type": "Tipo"
                         },
                         "introduction": "La configurazione del progetto ti consente di importare e gestire i tuoi progetti.",
                         "learn_more": "Ulteriori informazioni sull'utilizzo dei progetti",
                         "share_blueprint": "Condividi progetto",
                         "share_blueprint_no_url": "Impossibile condividere il progetto: url di origine assente",
+                        "types": {
+                            "automation": "Automazione",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Crea automazione"
                     }
                 },
@@ -2092,11 +2109,13 @@
                     "entities": {
                         "add_entities_lovelace": "Aggiungi a Lovelace",
                         "config": "Configurazione",
+                        "control": "Controlli",
                         "diagnostic": "Diagnostica",
                         "disabled_entities": "+{count} {count, plural,\n  one {entità disabilitata}\n  other {entità disabilitate}\n}",
                         "entities": "Entità",
                         "hide_disabled": "Nascondi disabilitato",
                         "none": "Questo dispositivo non ha entità",
+                        "sensor": "Sensori",
                         "state": "Stato"
                     },
                     "name": "Nome",
@@ -2186,7 +2205,7 @@
                         "title": "Consumo di gas"
                     },
                     "grid": {
-                        "add_co2_signal": "Aggiungi l'integrazione del segnale di CO2",
+                        "add_co2_signal": "Aggiungi l'integrazione CO2 Signal",
                         "add_consumption": "Aggiungi consumo",
                         "add_return": "Aggiungi reso",
                         "flow_dialog": {
@@ -3297,13 +3316,16 @@
                     "device_info": {
                         "device_config": "Configura il dispositivo",
                         "heal_node": "Ripristina dispositivo",
+                        "highest_security": "Massima sicurezza",
                         "is_secure": "Sicuro",
                         "node_ready": "Nodo pronto",
                         "node_status": "Stato del Nodo",
                         "reinterview_device": "Re-interroga il dispositivo",
                         "remove_failed": "Rimuovi dispositivo guasto",
                         "unknown": "Sconosciuto",
-                        "zwave_info": "Informazioni Z-Wave"
+                        "zwave_info": "Informazioni Z-Wave",
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Versione {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "La riparazione della rete è stata annullata.",
@@ -3390,6 +3412,27 @@
                         "introduction": "Rimuovi un nodo dalla tua rete Z-Wave e rimuovi il dispositivo e le entità associati da Home Assistant.",
                         "start_exclusion": "Avvia esclusione",
                         "title": "Rimuovi un nodo Z-Wave"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Nessuno"
+                        },
+                        "S0_Legacy": {
+                            "description": "Esempio: serrature per porte obsolete senza supporto S2",
+                            "title": "S0 obsoleto"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Esempio: serrature e porte da garage",
+                            "title": "S2 Controllo Accessi"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Esempio: illuminazione, sensori e sistemi di sicurezza",
+                            "title": "S2 Autenticato"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Come S2 Autenticato, ma senza la verifica che il dispositivo corretto sia incluso",
+                            "title": "S2 Non autenticato"
+                        }
                     }
                 }
             },
@@ -3882,7 +3925,10 @@
                         "weather-forecast": {
                             "description": "La scheda Previsioni Meteo mostra le condizioni meteorologiche. Molto utili da includere nelle interfacce che le persone visualizzano sulla parete.",
                             "name": "Previsioni del tempo",
-                            "show_forecast": "Mostra Previsioni"
+                            "show_both": "Mostra meteo e previsioni attuali",
+                            "show_forecast": "Mostra Previsioni",
+                            "show_only_current": "Mostra solo il meteo attuale",
+                            "show_only_forecast": "Mostra solo le previsioni"
                         }
                     },
                     "cardpicker": {
@@ -4189,7 +4235,8 @@
                 "initializing": "Inizializzazione",
                 "logging_in_to_with": "Accesso a **{locationName}** con **{authProviderName}**.",
                 "logging_in_with": "Accesso con **{authProviderName}**.",
-                "pick_auth_provider": "Oppure accedi con"
+                "pick_auth_provider": "Oppure accedi con",
+                "store_token": "Resta collegato"
             },
             "page-demo": {
                 "cards": {
