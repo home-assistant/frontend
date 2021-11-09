@@ -549,6 +549,9 @@
                 "last_triggered": "上次触发",
                 "trigger": "执行"
             },
+            "button": {
+                "press": "按下"
+            },
             "camera": {
                 "not_available": "无图像"
             },
@@ -3619,7 +3622,7 @@
                         },
                         "grid_neutrality_gauge": {
                             "color_explain": "若指针为紫色，说明返还给电网的电量比消耗的多；若为蓝色，说明从电网消耗的电量比返还的多。",
-                            "energy_dependency": "此卡片表示您的能源依赖情况。",
+                            "energy_dependency": "此卡片表示您的能源使用情况。",
                             "grid_neutrality_not_calculated": "无法计算电网中立性",
                             "net_consumed_grid": "净用电量",
                             "net_returned_grid": "净发电量",

@@ -11,6 +11,7 @@
         --progress-color: #03a9f4;
         --splash-image: url('https://home-assistant.io/images/cast/splash.png');
         --splash-size: cover;
+        --background-color: #41bdf5;
       }
     </style>
     <script>

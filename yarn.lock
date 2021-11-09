@@ -1329,14 +1329,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/gutter@npm:^0.19.3":
-  version: 0.19.3
-  resolution: "@codemirror/gutter@npm:0.19.3"
+"@codemirror/gutter@npm:^0.19.4":
+  version: 0.19.4
+  resolution: "@codemirror/gutter@npm:0.19.4"
   dependencies:
     "@codemirror/rangeset": ^0.19.0
     "@codemirror/state": ^0.19.0
     "@codemirror/view": ^0.19.0
-  checksum: bc3ab643418e71dfad0ecffb3d51207df5dcb71692c3c3db2e1d4a9215847a71093ddbeaf5dc18308b0540ee57e7d9ebbbecb3263b21c6046547c594135fbe1f
+  checksum: 5e3ed8c8aad85411651dd752ad5e634c918e47b271dcf74206181bee27acd6cc01c495a921abcdd614076e535c66387973104a7bd34c67d0655c4c4d1b951cc4
   languageName: node
   linkType: hard
 
@@ -1442,12 +1442,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^0.19.0, @codemirror/state@npm:^0.19.2":
-  version: 0.19.2
-  resolution: "@codemirror/state@npm:0.19.2"
+"@codemirror/state@npm:^0.19.0, @codemirror/state@npm:^0.19.2, @codemirror/state@npm:^0.19.3, @codemirror/state@npm:^0.19.4":
+  version: 0.19.4
+  resolution: "@codemirror/state@npm:0.19.4"
   dependencies:
     "@codemirror/text": ^0.19.0
-  checksum: 6460ff45d8ce20812a9abcb035a3e5f2a4adcb837c0efd00151b07c8e0bf617f6fdcf7668982b76c8e7bb447b0a83e7b8308817dac754c190c9495b49289bcaf
+  checksum: 2babd90a62c5f65dd4aaf7955c9c52fae4a46ad75c50a540eb95f2f31b6648873ea73c84d6c0a676d4eab335a4bce511a75fce656144758d04ca62b9a2b644c4
   languageName: node
   linkType: hard
 
@@ -1465,23 +1465,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.4":
-  version: 0.19.4
-  resolution: "@codemirror/text@npm:0.19.4"
-  checksum: 1467a13e60ef0d58f7ac7a043e4d21852e5a972f06656eb633164e1b6f8c464001b82c80651ecbe17386c0a530423cf8f83d9126f771055e7ab723096f727265
+"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.4, @codemirror/text@npm:^0.19.5":
+  version: 0.19.5
+  resolution: "@codemirror/text@npm:0.19.5"
+  checksum: e8ff270e705fe7f9adb3c479845569f6bfb3d8033b70cb1da530f37d9088160713b7cda2b60106fa03df5dd82cd8bcde45662450dd42854006303101a0296892
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:^0.19.0, @codemirror/view@npm:^0.19.9":
-  version: 0.19.9
-  resolution: "@codemirror/view@npm:0.19.9"
+"@codemirror/view@npm:^0.19.0, @codemirror/view@npm:^0.19.15":
+  version: 0.19.15
+  resolution: "@codemirror/view@npm:0.19.15"
   dependencies:
     "@codemirror/rangeset": ^0.19.0
-    "@codemirror/state": ^0.19.2
+    "@codemirror/state": ^0.19.3
     "@codemirror/text": ^0.19.0
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: babb017be1506763f40775fc8501168aa94edf786b724840a0ba234cd6acf64315155c4533ed7d5a34f3829babab47551a42c731d87fdeb5870efcc84b6da00b
+  checksum: 7864fc4b5ba6d490a4b1b3416a6ef93108a70cc28a6261bbf34c484358d64d739c80c723aa3d0c8344ccb437aeea39020f7e5a6b10ae4438ed8d12df20a7e568
   languageName: node
   linkType: hard
 
@@ -8992,16 +8992,16 @@ fsevents@^1.2.7:
     "@babel/preset-typescript": ^7.15.0
     "@braintree/sanitize-url": ^5.0.2
     "@codemirror/commands": ^0.19.5
-    "@codemirror/gutter": ^0.19.3
+    "@codemirror/gutter": ^0.19.4
     "@codemirror/highlight": ^0.19.6
     "@codemirror/history": ^0.19.0
     "@codemirror/legacy-modes": ^0.19.0
     "@codemirror/rectangular-selection": ^0.19.1
     "@codemirror/search": ^0.19.2
-    "@codemirror/state": ^0.19.2
+    "@codemirror/state": ^0.19.4
     "@codemirror/stream-parser": ^0.19.2
-    "@codemirror/text": ^0.19.4
-    "@codemirror/view": ^0.19.9
+    "@codemirror/text": ^0.19.5
+    "@codemirror/view": ^0.19.15
     "@formatjs/intl-datetimeformat": ^4.2.5
     "@formatjs/intl-getcanonicallocales": ^1.8.0
     "@formatjs/intl-locale": ^2.4.40

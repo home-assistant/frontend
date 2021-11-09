@@ -217,7 +217,7 @@
                 "install": "telepítés",
                 "new_update_available": "{name} {version} elérhető",
                 "not_available_arch": "Ez a kiegészítő nem kompatibilis a készülék processzorával vagy az eszközre telepített operációs rendszerrel.",
-                "not_available_version": "A Home Assistant {core_version_installed} verziója fut. A bővítmény erre a verzióra történő frissítéséhez legalább {core_version_needed} Home Assistant verzióra van szükség.",
+                "not_available_version": "A Home Assistant {core_version_installed}. verziója fut. A bővítmény erre a verzióra történő frissítéséhez legalább {core_version_needed}. Home Assistant verzióra van szükség.",
                 "open_web_ui": "Webes felhasználói felület megnyitása",
                 "option": {
                     "auto_update": {
@@ -323,7 +323,7 @@
             "reset_options": "Visszaállítási lehetõségek",
             "restart": "Újraindítás",
             "restart_name": "{name} újraindítása",
-            "running_version": "Jelenleg a {version} verzió fut",
+            "running_version": "Jelenleg a {version}. verzió fut",
             "save": "Mentés",
             "show_more": "További információk megjelenítése",
             "update": "Frissítés",
@@ -341,7 +341,7 @@
                 "title": "{name} újraindítása"
             },
             "update": {
-                "text": "Biztos benne, hogy frissíteni szeretné {name} verziót {version} verzióra?",
+                "text": "Biztos benne, hogy frissíteni szeretné {name}-t {version}. verzióra?",
                 "title": "{name} frissítése"
             }
         },
@@ -415,7 +415,7 @@
                 "backup": "Biztonsági mentés",
                 "create_backup": "Frissítés előtt készüljön egy új {name} biztonsági mentés",
                 "creating_backup": "{name} biztonsági mentésének létrehozása",
-                "updating": "{name} frissítése {version} verzióra"
+                "updating": "{name} frissítése {version}. verzióra"
             }
         },
         "my": {
@@ -474,7 +474,7 @@
                 "log_provider": "Naplószolgáltató"
             },
             "supervisor": {
-                "beta_backup": "A szolgáltatás aktiválása előtt győződjön meg arról, hogy rendelkezik biztonsági mentése az adatokról.",
+                "beta_backup": "Aktiválás előtt győződjön meg arról, hogy van biztonsági mentése az adatokról.",
                 "beta_join_confirm": "Szeretne csatlakozni a béta csatornához?",
                 "beta_release_items": "Ez magában foglalja a következő béta verziókat:",
                 "beta_warning": "A bétaverziók tesztelők és korai alkalmazók számára készültek, és instabil programelemeket tartalmazhatnak",
@@ -548,6 +548,9 @@
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
                 "trigger": "Műveletek futtatása"
+            },
+            "button": {
+                "press": "Nyomja meg"
             },
             "camera": {
                 "not_available": "Kép nem áll rendelkezésre"
@@ -825,7 +828,7 @@
                     "cleared_tampering": "manipulálás elhárítva",
                     "detected_device_class": "{device_class} észlelve",
                     "detected_tampering": "manipulálás észlelve",
-                    "is_closing": "zár",
+                    "is_closing": "záródik",
                     "is_opening": "nyílik",
                     "rose": "felkelt",
                     "set": "lenyugodott",
@@ -834,13 +837,13 @@
                     "was_at_home": "hazaért",
                     "was_at_state": "{state} állapotban volt",
                     "was_away": "távol volt",
-                    "was_closed": "be lett zárva",
+                    "was_closed": "zárva lett",
                     "was_connected": "csatlakozott",
                     "was_disconnected": "lecsatlakozott",
                     "was_locked": "zárolva lett",
                     "was_low": "alacsony volt",
                     "was_normal": "normális volt",
-                    "was_opened": "ki lett nyitva",
+                    "was_opened": "nyitva lett",
                     "was_plugged_in": "be lett dugva",
                     "was_safe": "biztonságos volt",
                     "was_unlocked": "fel lett oldva",
@@ -1321,7 +1324,7 @@
                 "reboot": "Próbálja újraindítani a gazdagépet",
                 "system_health": "Rendszerállapot ellenőrzése",
                 "title": "Nem sikerült betölteni a Supervisor panelt!",
-                "wait": "Ha most kezdte, győződjön meg arról, hogy elegendő időt adott-e a felügyelőnek a kezdéshez."
+                "wait": "Ha most kezdte, győződjön meg arról, hogy elegendő időt adott-e a Supervisornak az elinduláshoz."
             }
         },
         "login-form": {
@@ -1381,7 +1384,7 @@
                         "create_area": "Terület létrehozása",
                         "header": "Területek",
                         "integrations_page": "Integrációk oldal",
-                        "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
+                        "introduction": "A területek (area) segítségével az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
                         "introduction2": "Az eszközök területekbe történő elhelyezéséhez használja az alábbi linket az integrációs oldalra való navigáláshoz, majd kattintson egy konfigurált integrációra az eszközkártyák eléréséhez.",
                         "no_areas": "Úgy tűnik, még nincs egy területe sem!"
                     }
@@ -1427,7 +1430,7 @@
                                     "label": "Feltétel"
                                 },
                                 "delay": {
-                                    "delay": "Késleltetés",
+                                    "delay": "Időtartam",
                                     "label": "Késleltetés"
                                 },
                                 "device_id": {
@@ -1481,7 +1484,7 @@
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Folytatás időtúllépéskor",
-                                    "label": "Várakozás",
+                                    "label": "Várakozás sablonra",
                                     "timeout": "Időtúllépés (opcionális)",
                                     "wait_template": "Várakozási sablon"
                                 }
@@ -1726,7 +1729,7 @@
                         "headers": {
                             "name": "Név"
                         },
-                        "introduction": "Az automatizmus szerkesztő lehetővé tesz különféle automatikusan végrehajtott szabályok létrehozását és szerkesztését. Kérem, olvassa el az útmutatót az alábbi linken, hogy megbizonyosodjon róla, hogy Home Assistant helyesen van konfigurálva.",
+                        "introduction": "Az automatizmus (automation) szerkesztő lehetővé tesz különféle automatikusan végrehajtott szabályok létrehozását és szerkesztését.",
                         "learn_more": "Tudjon meg többet az automatizmusokról",
                         "no_automations": "Nem található szerkeszthető automatizmus",
                         "only_editable": "Csak az automations.yaml fájlban megadott automatizmusok szerkeszthetők.",
@@ -1790,7 +1793,7 @@
                             "name": "Név",
                             "type": "Típus"
                         },
-                        "introduction": "A sablon-automatizmus szerkesztő lehetővé teszi azok létrehozását és szerkesztését.",
+                        "introduction": "A sablon-automatizmus (blueprint) szerkesztő lehetővé teszi azok létrehozását és szerkesztését.",
                         "learn_more": "Tudjon meg többet a sablon-automatizmusokról",
                         "share_blueprint": "Sablon-automatizmus megosztása",
                         "share_blueprint_no_url": "Nem lehet megosztani a sablon-automatizmust: nincs forrás url",
@@ -2763,7 +2766,7 @@
                     "select_instance": {
                         "header": "OpenZWave példány kiválasztása",
                         "introduction": "Egynél több OpenZWave példány fut. Melyik példányt szeretné kezelni?",
-                        "none_found": "Nem található OpenZWave példány. Ha úgy gondolja, hogy ez helytelen, akkor ellenőrizze az OpenZWave és az MQTT beállításait, és győződjön meg arról, hogy Home Assistant képes kommunikálni az MQTT közvetítővel."
+                        "none_found": "Nem található OpenZWave példány. Ha úgy gondolja, hogy ez helytelen, akkor ellenőrizze az OpenZWave és az MQTT beállításait, és győződjön meg arról, hogy Home Assistant képes kommunikálni az MQTT szerverrel."
                     },
                     "services": {
                         "add_node": "Csomópont hozzáadása",
@@ -2842,7 +2845,7 @@
                         "headers": {
                             "name": "Név"
                         },
-                        "introduction": "A jelenet szerkesztő lehetővé teszi jelenetek létrehozását és szerkesztését. Kérem, olvassa el az útmutatót az alábbi linken, hogy megbizonyosodjon róla, hogy Home Assistant helyesen van konfigurálva.",
+                        "introduction": "A jelenet (scene) szerkesztő lehetővé teszi jelenetek létrehozását és szerkesztését.",
                         "learn_more": "Tudjon meg többet a jelenetekről",
                         "no_scenes": "Nem található jelenet",
                         "only_editable": "Csak a scenes.yaml fájlban megadott jelenetek szerkeszthetők.",
@@ -2894,7 +2897,7 @@
                         "headers": {
                             "name": "Név"
                         },
-                        "introduction": "A szkript szerkesztő lehetővé teszi szkriptek létrehozását és szerkesztését. Kérem, olvassa el az útmutatót az alábbi linken, hogy megbizonyosodjon róla, hogy Home Assistant helyesen van konfigurálva.",
+                        "introduction": "A szkript (script) szerkesztő lehetővé tesz parancslisták létrehozását és szerkesztését.",
                         "learn_more": "Tudjon meg többet a szkriptekről",
                         "no_scripts": "Nem találtunk szerkeszthető szkripteket",
                         "run_script": "Szkript futtatása",
@@ -2966,7 +2969,7 @@
                     "create_automation": "Matricás automatizmus létrehozása",
                     "description": "Automatizmusok indítása NFC-, QR-kód matricák stb. beolvasásakor",
                     "detail": {
-                        "companion_apps": "társalkalmazások",
+                        "companion_apps": "társalkalmazást",
                         "create": "Létrehozás",
                         "create_and_write": "Létrehozás és írás",
                         "delete": "Törlés",
@@ -2976,7 +2979,7 @@
                         "tag_id": "Matrica azonosítója",
                         "tag_id_placeholder": "Automatikusan generálódik, ha nincs kitöltve",
                         "update": "Frissítés",
-                        "usage": "A matrica beolvasáskor egy automatizmust indíthat el. Használhat matricaként NFC tageket, QR-kódokat vagy bármi más hasonlót. Használja {companion_link} appot, hogy ezt a címkét egy programozható NFC tagre íhassa, vagy hozzon létre egy QR-kódot most."
+                        "usage": "A matrica (tag) beolvasáskor egy automatizmust indíthat el. Használhat matricaként NFC tageket, QR-kódokat vagy bármi más hasonlót. Használja a {companion_link}, hogy ezt a matricát egy programozható NFC tagre íhassa, vagy hozzon létre egy QR-kódot most."
                     },
                     "edit": "Szerkesztés",
                     "headers": {
@@ -4139,7 +4142,7 @@
                 "authorizing_client": "Ön a {clientId} címen lévő Home Assistanthoz próbál hozzáférni.",
                 "form": {
                     "error": "Hiba: {error}",
-                    "next": "Tovább",
+                    "next": "Bejelentkezés",
                     "providers": {
                         "command_line": {
                             "abort": {

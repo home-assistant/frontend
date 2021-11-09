@@ -549,6 +549,9 @@
                 "last_triggered": "Viimati käivitatud",
                 "trigger": "Käivita toimingud"
             },
+            "button": {
+                "press": "Vajuta nuppu"
+            },
             "camera": {
                 "not_available": "Kujutis pole saadaval"
             },
@@ -3599,7 +3602,7 @@
                             "solar": "Päikeseenergia"
                         },
                         "energy_solar_graph": {
-                            "forecast": "Ennusta {name}",
+                            "forecast": "Prognoos {name}",
                             "production": "Tootmine {name}"
                         },
                         "energy_sources_table": {
