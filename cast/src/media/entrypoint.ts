@@ -1,7 +1,4 @@
-import { CastReceiverContext } from "chromecast-caf-receiver/cast.framework";
-
-const castContext =
-  cast.framework.CastContext.getInstance() as unknown as CastReceiverContext;
+const castContext = cast.framework.CastReceiverContext.getInstance();
 
 const playerManager = castContext.getPlayerManager();
 
