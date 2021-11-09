@@ -72,7 +72,7 @@ export class HaDialog extends Dialog {
           top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
           border-radius: var(
-            --ha-dialog-border-radius,
+            --ha-card-border-radius,
             var(--mdc-shape-medium, 4px)
           );
         }
