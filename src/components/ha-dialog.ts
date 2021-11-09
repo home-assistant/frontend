@@ -72,6 +72,10 @@ export class HaDialog extends Dialog {
           position: var(--dialog-surface-position, relative);
           top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
+          border-radius: var(
+            --ha-dialog-border-radius,
+            var(--ha-card-border-radius, 4px)
+          );
         }
         :host([flexContent]) .mdc-dialog .mdc-dialog__content {
           display: flex;
