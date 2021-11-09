@@ -18,6 +18,7 @@ const cropOptions: CropOptions = {
   round: false,
   type: "image/jpeg",
   quality: 0.75,
+  aspectRatio: 1.78,
 };
 
 class DialogAreaDetail extends LitElement {
