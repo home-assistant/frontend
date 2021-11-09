@@ -54,19 +54,15 @@ export class MoreInfoHistory extends LitElement {
       : ""}`;
   }
 
-  protected firstUpdated(): void {
-    this._showMoreHref =
-      "/history?entity_id=" +
-      this.entityId +
-      "&start_date=" +
-      startOfYesterday().toISOString();
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
+
+      this._showMoreHref = `/history?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       if (!this.entityId) {
         return;

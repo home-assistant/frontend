@@ -94,11 +94,6 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchUserPromise = this._fetchUserNames();
-    this._showMoreHref =
-      "/logbook?entity_id=" +
-      this.entityId +
-      "&start_date=" +
-      startOfYesterday().toISOString();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -107,6 +102,10 @@ export class MoreInfoLogbook extends LitElement {
     if (changedProps.has("entityId")) {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
+
+      this._showMoreHref = `/logbook?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       if (!this.entityId) {
         return;
