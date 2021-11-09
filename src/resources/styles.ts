@@ -331,11 +331,8 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      /* both mdc-shape-medium and ha-card-border-radius affect the border radius
-        and should not take effect in fullscreen */
-      --mdc-shape-medium: 0px;
-      --ha-card-border-radius: 0px;
       --vertial-align-dialog: flex-end;
+      --ha-dialog-border-radius: 0px;
     }
   }
   mwc-button.warning {
