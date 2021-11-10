@@ -313,7 +313,7 @@ class OnboardingCoreConfig extends LitElement {
         this.map.addEventListener(
           "markers-updated",
           () => {
-            this.map.fitMarker("location");
+            this.map.fitMarker(locationMarkerId);
           },
           {
             once: true,
