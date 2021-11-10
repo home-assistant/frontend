@@ -39,6 +39,7 @@ export class HaImagecropperDialog extends LitElement {
     this._open = false;
     this._params = undefined;
     this._cropper?.destroy();
+    this._cropper = undefined;
   }
 
   protected updated(changedProperties: PropertyValues) {
