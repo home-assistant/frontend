@@ -40,9 +40,9 @@ export class HcMain extends HassElement {
 
   @state() private _error?: string;
 
-  private _unsubLovelace?: UnsubscribeFunc;
+  @state() private _urlPath?: string | null;
 
-  private _urlPath?: string | null;
+  private _unsubLovelace?: UnsubscribeFunc;
 
   public processIncomingMessage(msg: HassMessage) {
     if (msg.type === "connect") {
@@ -173,6 +173,7 @@ export class HcMain extends HassElement {
   }
 
   private async _handleShowLovelaceMessage(msg: ShowLovelaceViewMessage) {
+    this._showDemo = false;
     // We should not get this command before we are connected.
     // Means a client got out of sync. Let's send status to them.
     if (!this.hass) {
@@ -180,10 +181,12 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
+    this._lovelacePath = msg.viewPath;
     if (msg.urlPath === "lovelace") {
       msg.urlPath = null;
     }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
+      this._lovelaceConfig = undefined;
       this._urlPath = msg.urlPath;
       if (this._unsubLovelace) {
         this._unsubLovelace();
@@ -215,8 +218,6 @@ export class HcMain extends HassElement {
         loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
       }
     }
-    this._showDemo = false;
-    this._lovelacePath = msg.viewPath;
 
     this._sendStatus();
   }
@@ -237,7 +238,7 @@ export class HcMain extends HassElement {
   }
 
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
-    castContext.setApplicationState(lovelaceConfig.title!);
+    castContext.setApplicationState(lovelaceConfig.title || "");
     this._lovelaceConfig = lovelaceConfig;
   }
 

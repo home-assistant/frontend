@@ -15,7 +15,7 @@ class HcLovelace extends LitElement {
 
   @property() public viewPath?: string | number;
 
-  public urlPath?: string | null;
+  @property() public urlPath?: string | null;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;

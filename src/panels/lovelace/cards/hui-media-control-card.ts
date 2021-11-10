@@ -544,7 +544,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     try {
-      const { foreground, background } = await extractColors(this._image);
+      const { foreground, background } = await extractColors(
+        this.hass.hassUrl(this._image)
+      );
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;
     } catch (err: any) {
