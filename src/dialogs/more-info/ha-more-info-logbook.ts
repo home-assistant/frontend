@@ -103,13 +103,13 @@ export class MoreInfoLogbook extends LitElement {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
 
-      this._showMoreHref = `/logbook?entity_id=${
-        this.entityId
-      }&start_date=${startOfYesterday().toISOString()}`;
-
       if (!this.entityId) {
         return;
       }
+
+      this._showMoreHref = `/logbook?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       this._throttleGetLogbookEntries();
       return;

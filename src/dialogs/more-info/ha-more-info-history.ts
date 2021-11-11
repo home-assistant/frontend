@@ -60,13 +60,13 @@ export class MoreInfoHistory extends LitElement {
     if (changedProps.has("entityId")) {
       this._stateHistory = undefined;
 
-      this._showMoreHref = `/history?entity_id=${
-        this.entityId
-      }&start_date=${startOfYesterday().toISOString()}`;
-
       if (!this.entityId) {
         return;
       }
+
+      this._showMoreHref = `/history?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       this._throttleGetStateHistory();
       return;
