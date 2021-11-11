@@ -78,7 +78,6 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 
 export interface AreaCardConfig extends LovelaceCardConfig {
   area: string;
-  image: string;
   navigation_path?: string;
 }
 

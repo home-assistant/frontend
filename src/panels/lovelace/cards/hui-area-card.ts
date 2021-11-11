@@ -65,7 +65,7 @@ export class HuiAreaCard
   }
 
   public static getStubConfig(): AreaCardConfig {
-    return { type: "area", area: "", image: "" };
+    return { type: "area", area: "" };
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -249,9 +249,7 @@ export class HuiAreaCard
     return html`
       <ha-card
         style=${styleMap({
-          "background-image": `url(${this.hass.hassUrl(
-            this._config.image || this._area.picture
-          )})`,
+          "background-image": `url(${this.hass.hassUrl(this._area.picture)})`,
         })}
       >
         <div class="container">

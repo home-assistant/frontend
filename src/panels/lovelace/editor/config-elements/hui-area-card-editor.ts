@@ -16,7 +16,6 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     area: optional(string()),
-    image: optional(string()),
     navigation_path: optional(string()),
     theme: optional(string()),
   })
@@ -38,10 +37,6 @@ export class HuiAreaCardEditor
 
   get _area(): string {
     return this._config!.area || "";
-  }
-
-  get _image(): string {
-    return this._config!.image || "";
   }
 
   get _navigation_path(): string {
@@ -67,15 +62,6 @@ export class HuiAreaCardEditor
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.area")}
           @value-changed=${this._valueChanged}
         ></ha-area-picker>
-        <paper-input
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.image"
-          )}
-          .value=${this._image}
-          .configValue=${"image"}
-          @value-changed=${this._valueChanged}
-        >
-        </paper-input>
         <paper-input
           .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.action-editor.navigation_path"
