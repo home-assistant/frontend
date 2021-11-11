@@ -21,8 +21,8 @@ import {
   mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
-  mdiCheckboxOutline,
-  mdiCheckboxBlankOutline,
+  mdiCheckCircleOutline,
+  mdiCloseCircleOutline,
   mdiZWave,
   mdiClock,
   mdiCalendar,
@@ -73,8 +73,8 @@ export const domainIcon = (
 
     case "input_boolean":
       return compareState === "on"
-        ? mdiCheckboxOutline
-        : mdiCheckboxBlankOutline;
+        ? mdiCheckCircleOutline
+        : mdiCloseCircleOutline;
 
     case "lock":
       switch (compareState) {
