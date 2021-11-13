@@ -87,11 +87,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
+    const [weather, forecast] = this._prepareRenderData();
+
     let cardSize = 0;
-    if (this._config?.show_current !== false) {
+    if (weather) {
       cardSize += 2;
     }
-    if (this._config?.show_forecast !== false) {
+    if (forecast) {
       cardSize += 3;
     }
     return cardSize;
@@ -143,6 +145,25 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _prepareRenderData(): [any, any] {
+    if (!this._config || !this.hass) {
+      return [undefined, undefined];
+    }
+
+    const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
+    if (!stateObj || stateObj.state === UNAVAILABLE) {
+      return [undefined, undefined];
+    }
+
+    const forecastData =
+      this._config?.show_forecast !== false &&
+      stateObj.attributes.forecast?.length
+        ? stateObj.attributes.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
+        : undefined;
+    const showWeather = !forecastData || this._config?.show_current !== false;
+    return [showWeather, forecastData];
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -170,12 +191,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const forecast =
-      this._config?.show_forecast !== false &&
-      stateObj.attributes.forecast?.length
-        ? stateObj.attributes.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
-        : undefined;
-    const weather = !forecast || this._config?.show_current !== false;
+    const [weather, forecast] = this._prepareRenderData();
 
     let hourly: boolean | undefined;
     let dayNight: boolean | undefined;
