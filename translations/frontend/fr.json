@@ -3511,7 +3511,7 @@
             },
             "energy": {
                 "cards": {
-                    "energy_devices_graph_title": "Appareils surveiller",
+                    "energy_devices_graph_title": "Appareils surveillés",
                     "energy_distribution_title": "Distribution d'énergie",
                     "energy_gas_graph_title": "Consommation de gaz",
                     "energy_solar_graph_title": "Production solaire",
