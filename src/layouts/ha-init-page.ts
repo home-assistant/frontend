@@ -7,6 +7,8 @@ class HaInitPage extends LitElement {
 
   @state() showProgressIndicator = false;
 
+  private _showProgressIndicatorTimeout;
+
   protected render() {
     return this.error
       ? html`
@@ -26,15 +28,22 @@ class HaInitPage extends LitElement {
             : ""}
         `
       : html`
-          ${this.showProgressIndicator
-            ? html`<ha-circular-progress active></ha-circular-progress>`
-            : ""}
-          <p>Loading data</p>
+          <div id="progress-indicator-wrapper">
+            ${this.showProgressIndicator
+              ? html`<ha-circular-progress active></ha-circular-progress>`
+              : ""}
+          </div>
+          <div id="loading-text">Loading data</div>
         `;
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._showProgressIndicatorTimeout);
+  }
+
   protected firstUpdated() {
-    setTimeout(async () => {
+    this._showProgressIndicatorTimeout = setTimeout(async () => {
       await import("../components/ha-circular-progress");
       this.showProgressIndicator = true;
     }, 5000);
@@ -49,16 +58,20 @@ class HaInitPage extends LitElement {
       :host {
         flex: 0;
         display: flex;
-        flex-direction: row;
-        margin-top: 25px;
+        flex-direction: column;
+        align-items: center;
       }
-      ha-circular-progress {
-        margin-right: 10px;
+      #progress-indicator-wrapper {
+        display: flex;
+        align-items: center;
+        margin: 25px 0;
+        height: 50px;
       }
       a {
         color: var(--primary-color);
       }
-      p {
+      p,
+      #loading-text {
         max-width: 350px;
         color: var(--primary-text-color);
       }
@@ -67,3 +80,9 @@ class HaInitPage extends LitElement {
 }
 
 customElements.define("ha-init-page", HaInitPage);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-init-page": HaInitPage;
+  }
+}

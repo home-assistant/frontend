@@ -44,6 +44,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _visiblePromiseResolve?: () => void;
 
+  private _visibleLaunchScreen = true;
+
   constructor() {
     super();
     const path = curPath();
@@ -59,10 +61,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected render() {
-    const hass = this.hass;
-
-    if (hass && hass.states && hass.config && hass.services) {
-      removeLaunchScreen();
+    if (this._isHassComplete() && this.hass) {
       return html`
         <home-assistant-main
           .hass=${this.hass}
@@ -71,10 +70,17 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       `;
     }
 
-    renderLaunchScreenInfoBox(
-      html`<ha-init-page .error=${this._error}></ha-init-page>`
-    );
     return "";
+  }
+
+  update(changedProps) {
+    super.update(changedProps);
+
+    // Remove launch screen if main gui is loaded
+    if (this._isHassComplete() && this._visibleLaunchScreen) {
+      this._visibleLaunchScreen = false;
+      removeLaunchScreen();
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -119,6 +125,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         navigate(href);
       }
     });
+
+    // Render launch screen info box (loading data / error message)
+    if (!this._isHassComplete() && this._visibleLaunchScreen) {
+      renderLaunchScreenInfoBox(
+        html`<ha-init-page .error=${this._error}></ha-init-page>`
+      );
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -238,6 +251,14 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._visiblePromiseResolve();
       this._visiblePromiseResolve = undefined;
     }
+  }
+
+  private _isHassComplete(): boolean {
+    if (this.hass?.states && this.hass.config && this.hass.services) {
+      return true;
+    }
+
+    return false;
   }
 }
 
