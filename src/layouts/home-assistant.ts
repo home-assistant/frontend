@@ -9,6 +9,10 @@ import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
+  renderLaunchScreenInfoBox,
+  removeLaunchScreen,
+} from "../util/launch-screen";
+import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
@@ -57,14 +61,20 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   protected render() {
     const hass = this.hass;
 
-    return hass && hass.states && hass.config && hass.services
-      ? html`
-          <home-assistant-main
-            .hass=${this.hass}
-            .route=${this._route}
-          ></home-assistant-main>
-        `
-      : html`<ha-init-page .error=${this._error}></ha-init-page>`;
+    if (hass && hass.states && hass.config && hass.services) {
+      removeLaunchScreen();
+      return html`
+        <home-assistant-main
+          .hass=${this.hass}
+          .route=${this._route}
+        ></home-assistant-main>
+      `;
+    }
+
+    renderLaunchScreenInfoBox(
+      html`<ha-init-page .error=${this._error}></ha-init-page>`
+    );
+    return "";
   }
 
   protected firstUpdated(changedProps) {

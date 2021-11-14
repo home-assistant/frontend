@@ -1,43 +1,43 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { property } from "lit/decorators";
-import "../components/ha-circular-progress";
-import { removeInitSkeleton } from "../util/init-skeleton";
+import { property, state } from "lit/decorators";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
+  @state() showProgressIndicator = false;
+
   protected render() {
-    return html`
-      <div>
-        <img src="/static/icons/favicon-192x192.png" height="192" />
-        ${this.error
-          ? html`
-              <p>Unable to connect to Home Assistant.</p>
-              <mwc-button @click=${this._retry}>Retry</mwc-button>
-              ${location.host.includes("ui.nabu.casa")
-                ? html`
-                    <p>
-                      It is possible that you are seeing this screen because
-                      your Home Assistant is not currently connected. You can
-                      ask it to come online from your
-                      <a href="https://account.nabucasa.com/"
-                        >Naba Casa account page</a
-                      >.
-                    </p>
-                  `
-                : ""}
-            `
-          : html`
-              <ha-circular-progress active></ha-circular-progress>
-              <p>Loading data</p>
-            `}
-      </div>
-    `;
+    return this.error
+      ? html`
+          <p>Unable to connect to Home Assistant.</p>
+          <mwc-button @click=${this._retry}>Retry</mwc-button>
+          ${location.host.includes("ui.nabu.casa")
+            ? html`
+                <p>
+                  It is possible that you are seeing this screen because your
+                  Home Assistant is not currently connected. You can ask it to
+                  come online from your
+                  <a href="https://account.nabucasa.com/"
+                    >Naba Casa account page</a
+                  >.
+                </p>
+              `
+            : ""}
+        `
+      : html`
+          ${this.showProgressIndicator
+            ? html`<ha-circular-progress active></ha-circular-progress>`
+            : ""}
+          <p>Loading data</p>
+        `;
   }
 
   protected firstUpdated() {
-    removeInitSkeleton();
+    setTimeout(async () => {
+      await import("../components/ha-circular-progress");
+      this.showProgressIndicator = true;
+    }, 5000);
   }
 
   private _retry() {
@@ -46,15 +46,14 @@ class HaInitPage extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      div {
-        height: 100%;
+      :host {
+        flex: 0;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        flex-direction: row;
+        margin-top: 25px;
       }
       ha-circular-progress {
-        margin-top: 9px;
+        margin-right: 10px;
       }
       a {
         color: var(--primary-color);
