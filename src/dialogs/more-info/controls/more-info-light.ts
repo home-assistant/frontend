@@ -18,6 +18,7 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
+import { EntitiesCardEntityConfig } from "../../../panels/lovelace/cards/types";
 import {
   getLightCurrentModeRgbColor,
   LightColorModes,
@@ -84,6 +85,8 @@ class MoreInfoLight extends LitElement {
 
     const supportsColor =
       supportsRgbww || supportsRgbw || lightSupportsColor(this.stateObj);
+
+    const memberLightsHeader = "Lights in this group";
 
     return html`
       <div class="content">
@@ -229,6 +232,20 @@ class MoreInfoLight extends LitElement {
                   `
                 : ""}
             `
+          : ""}
+        ${this.stateObj!.attributes.entity_id?.length > 0
+          ? html`<hr />
+              <ha-expansion-panel .header=${memberLightsHeader} outlined>
+                ${this.stateObj!.attributes.entity_id?.map((memberLight) => {
+                  const config: EntitiesCardEntityConfig = {
+                    entity: memberLight,
+                  };
+                  return html`<hui-generic-entity-row
+                    .hass=${this.hass}
+                    .config=${config}
+                  ></hui-generic-entity-row>`;
+                })}
+              </ha-expansion-panel> `
           : ""}
         <ha-attributes
           .hass=${this.hass}
