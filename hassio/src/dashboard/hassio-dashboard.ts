@@ -1,5 +1,7 @@
+import { mdiStorePlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../src/components/ha-fab";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -28,6 +30,7 @@ class HassioDashboard extends LitElement {
         .tabs=${supervisorTabs}
         main-page
         supervisor
+        hasFab
       >
         <span slot="header">
           ${this.supervisor.localize("panel.dashboard")}
@@ -42,6 +45,14 @@ class HassioDashboard extends LitElement {
             .supervisor=${this.supervisor}
           ></hassio-addons>
         </div>
+
+        <a href="/hassio/store" slot="fab">
+          <ha-fab .label=${this.supervisor.localize("panel.store")} extended>
+            <ha-svg-icon
+              slot="icon"
+              .path=${mdiStorePlus}
+            ></ha-svg-icon> </ha-fab
+        ></a>
       </hass-tabs-subpage>
     `;
   }

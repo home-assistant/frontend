@@ -108,7 +108,6 @@ class HassioAddonDashboard extends LitElement {
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
         .tabs=${addonTabs}
         supervisor
