@@ -26,6 +26,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "location-updated": { id: string; location: [number, number] };
+    "markers-updated": undefined;
     "radius-updated": { id: string; radius: number };
     "marker-clicked": { id: string };
   }
@@ -281,6 +282,7 @@ export class HaLocationsEditor extends LitElement {
     });
     this._circles = circles;
     this._locationMarkers = locationMarkers;
+    fireEvent(this, "markers-updated");
   }
 
   static get styles(): CSSResultGroup {
