@@ -71,7 +71,7 @@ import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
-import { addonArchIsSupported } from "../../util/addon";
+import { addonArchIsSupported, extractChangelog } from "../../util/addon";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -899,22 +899,14 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
-      if (
-        content.includes(`# ${this.addon.version}`) &&
-        content.includes(`# ${this.addon.version_latest}`)
-      ) {
-        const newcontent = content.split(`# ${this.addon.version}`)[0];
-        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
-          // Only change the content if the new version still exist
-          // if the changelog does not have the newests version on top
-          // this will not be true, and we don't modify the content
-          content = newcontent;
-        }
-      }
+      const content = await fetchHassioAddonChangelog(
+        this.hass,
+        this.addon.slug
+      );
+
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
-        content,
+        content: extractChangelog(this.addon, content),
       });
     } catch (err: any) {
       showAlertDialog(this, {

@@ -926,6 +926,10 @@
           },
           "learn_more": "Learn more"
         },
+        "updates": {
+          "version_available": "Version {version} is available",
+          "review": "review"
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",

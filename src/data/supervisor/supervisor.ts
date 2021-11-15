@@ -70,6 +70,18 @@ export interface Supervisor {
   localize: LocalizeFunc;
 }
 
+export interface SupervisorAvailableUpdates {
+  panel_path?: string;
+  update_type?: string;
+  version?: string;
+  version_latest?: string;
+  icon?: string;
+  name?: string;
+}
+
+export interface SupervisorAvailableUpdatesResponse {
+  available_updates: SupervisorAvailableUpdates[];
+}
 export const supervisorApiWsRequest = <T>(
   conn: Connection,
   request: supervisorApiRequest
@@ -139,3 +151,45 @@ export const subscribeSupervisorEvents = (
   getSupervisorEventCollection(hass.connection, key, endpoint).subscribe(
     onChange
   );
+
+/* export const fetchSupervisorAvailableUpdates = async (
+  hass: HomeAssistant
+): Promise<SupervisorAvailableUpdates[]> =>
+  hassioApiResultExtractor<SupervisorAvailableUpdatesResponse>(
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/store",
+      method: "get",
+    })
+  ).available_updates; */
+
+export const fetchSupervisorAvailableUpdates = async (
+  _hass: HomeAssistant
+): Promise<SupervisorAvailableUpdates[]> => [
+  {
+    panel_path: "/update-available/core",
+    update_type: "core",
+    version: "123",
+    version_latest: "2021.12.0b0",
+  },
+  {
+    panel_path: "/update-available/os",
+    update_type: "os",
+    version: "123",
+    version_latest: "7.0rc1",
+  },
+  {
+    panel_path: "/update-available/supervisor",
+    update_type: "supervisor",
+    version: "123",
+    version_latest: "2021.12.3",
+  },
+  {
+    name: "Mosquitto broker",
+    icon: "/addons/core_mosquitto/icon",
+    panel_path: "/update-available/core_mosquitto",
+    update_type: "addon",
+    version: "123",
+    version_latest: "1.2.0",
+  },
+];
