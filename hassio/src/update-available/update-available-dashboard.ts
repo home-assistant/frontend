@@ -96,7 +96,6 @@ class UpdateAvailableDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .header=${this.supervisor.localize("common.update")}
-        supervisor
       >
         <ha-card .header=${name}>
           <div class="card-content">
