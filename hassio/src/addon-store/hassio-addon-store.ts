@@ -77,11 +77,9 @@ class HassioAddonStore extends LitElement {
     return html`
       <hass-subpage
         .hass=${this.hass}
-        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
         .header=${this.supervisor.localize("panel.store")}
-        supervisor
       >
         <ha-button-menu
           corner="BOTTOM_START"
