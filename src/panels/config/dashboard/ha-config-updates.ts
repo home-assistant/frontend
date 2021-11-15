@@ -75,7 +75,10 @@ class HaConfigUpdates extends LitElement {
             <span slot="description">
               ${this.hass.localize(
                 "ui.panel.config.updates.version_available",
-                { version: update.version_latest }
+                {
+                  version: update.version,
+                  version_latest: update.version_latest,
+                }
               )}
             </span>
             <a .href="/hassio${update.panel_path}">
