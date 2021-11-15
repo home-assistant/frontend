@@ -63,9 +63,9 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "",
+                "auto": "Auto",
                 "away": "Borte",
-                "baby": "",
+                "baby": "Baby",
                 "boost": "Øke",
                 "comfort": "Komfort",
                 "eco": "Øko",
@@ -119,7 +119,7 @@
                     "header": "Nettverk",
                     "host": "Vert"
                 },
-                "no_configuration": "Dette tillegget utsetter ikke konfigurasjon for deg til å tulle med…",
+                "no_configuration": "Dette tillegget eksponerer ikke konfigurasjon så du kan tulle med den…",
                 "options": {
                     "edit_in_ui": "Rediger i brukergrensesnittet",
                     "edit_in_yaml": "Rediger i YAML",
@@ -199,7 +199,7 @@
                         "admin": "admin",
                         "backup": "sikkerhetskopi",
                         "default": "Standard",
-                        "homeassistant": "hjemmeassistent",
+                        "homeassistant": "homeassistant",
                         "manager": "Manager"
                     },
                     "stage": {
@@ -212,7 +212,7 @@
                     }
                 },
                 "changelog": "Endringslogg",
-                "cpu_usage": "Tillegg CPU forbruk",
+                "cpu_usage": "Tilleggets CPU-forbruk",
                 "hostname": "Vertsnavn",
                 "install": "Installer",
                 "new_update_available": "{name} {version} er tilgjengelig",
@@ -327,7 +327,7 @@
             "save": "Lagre",
             "show_more": "Vis mer informasjon om dette",
             "update": "Oppdater",
-            "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
+            "update_available": "{count, plural,\n  one {Oppdatering}\n  other {{count} oppdateringer}\n} venter",
             "version": "Versjon",
             "yes": "Ja"
         },
@@ -350,7 +350,7 @@
             "addon_running": "Tillegget kjører",
             "addon_stopped": "Tillegget er stoppet",
             "addons": "Installerte tillegg",
-            "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
+            "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå til tilleggsbutikken for å komme i gang!"
         },
         "dialog": {
             "datadisk_move": {
@@ -374,7 +374,7 @@
             },
             "network": {
                 "connected_to": "Koblet til {ssid}",
-                "dhcp": "",
+                "dhcp": "DHCP",
                 "disabled": "Deaktivert",
                 "dns_servers": "DNS-servere",
                 "failed_to_change": "Kunne ikke endre nettverksinnstillingene",
@@ -420,12 +420,12 @@
         },
         "my": {
             "error": "En ukjent feil har oppstått",
-            "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke inngang",
+            "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke ingress",
             "error_addon_not_found": "Tillegget ble ikke funnet",
             "error_addon_not_installed": "Det forespurte tillegget er ikke installert. Vennligst installer den først",
             "error_addon_not_started": "Det valgte tillegget kjører ikke. Vennligst start den først",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
-            "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
+            "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-installasjonen. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
         },
         "panel": {
             "backups": "Sikkerhetskopier",
@@ -481,7 +481,7 @@
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor CPU forbruk",
                 "failed_to_reload": "Kunne ikke laste inn Supervisor på nytt",
-                "failed_to_set_option": "Kunne ikke sette Supervisor-instilling",
+                "failed_to_set_option": "Kunne ikke sette Supervisor-innstilling",
                 "failed_to_update": "Kunne ikke oppdatere Supervisor",
                 "join_beta_action": "Bli med i beta-kanalen",
                 "join_beta_description": "Få beta-oppdateringer for Home Assistant (RCs), Supervisor og vert",
@@ -509,18 +509,18 @@
                     "container": "Containere som er kjent for å forårsake problemer",
                     "content-trust": "Validering av innholds klarering er deaktivert",
                     "content_trust": "Validering av innholds klarering er deaktivert",
-                    "dbus": "",
+                    "dbus": "DBUS",
                     "docker_configuration": "Docker-konfigurasjon",
                     "docker_version": "Docker-versjon",
                     "job_conditions": "Ignorerte arbeidsforhold",
-                    "lxc": "",
+                    "lxc": "LXC",
                     "network_manager": "Nettverksbehandler",
                     "os": "Operativsystem",
                     "os_agent": "OS-agent",
                     "privileged": "Supervisor er ikke privilegert",
                     "software": "Programvare som ikke støttes oppdaget",
                     "source_mods": "Kildeendringer",
-                    "systemd": ""
+                    "systemd": "Systemd"
                 },
                 "unsupported_title": "Du kjører en installasjon som ikke støttes",
                 "update_supervisor": "Oppdater Supervisor",
@@ -643,8 +643,8 @@
                 "actions": {
                     "cancel": "Avbryt",
                     "finish": "Ferdig",
-                    "pause": "",
-                    "start": ""
+                    "pause": "Pause",
+                    "start": "Start"
                 }
             },
             "vacuum": {
@@ -676,12 +676,12 @@
                     "e": "Ø",
                     "ene": "ØNØ",
                     "ese": "ØSØ",
-                    "n": "",
+                    "n": "N",
                     "ne": "NØ",
                     "nne": "NNØ",
                     "nnw": "NNV",
                     "nw": "NV",
-                    "s": "",
+                    "s": "S",
                     "se": "SØ",
                     "sse": "SSØ",
                     "ssw": "SSV",
@@ -864,7 +864,7 @@
                     "composer": "Komponist",
                     "contributing_artist": "Medvirkende artist",
                     "directory": "Bibliotek",
-                    "episode": "",
+                    "episode": "Episode",
                     "game": "Spill",
                     "genre": "Sjanger",
                     "image": "Bilde",
@@ -1061,9 +1061,9 @@
                     "time": "Tid"
                 },
                 "input_number": {
-                    "box": "Innputt felt",
-                    "max": "Maksimal verdi",
-                    "min": "Minimum verdi",
+                    "box": "Inndatafelt",
+                    "max": "Maksimumsverdi",
+                    "min": "Minimumsverdi",
                     "mode": "Visningsmodus",
                     "slider": "Glidebryter",
                     "step": "Trinnstørrelse",
@@ -1076,8 +1076,8 @@
                     "options": "Alternativer"
                 },
                 "input_text": {
-                    "max": "Maksimal lengde",
-                    "min": "Minimum lengde",
+                    "max": "Maksimumslengde",
+                    "min": "Minimumslengde",
                     "mode": "Visningsmodus",
                     "password": "Passord",
                     "pattern": "Regex-mønster for validering på klientsiden",
@@ -1140,11 +1140,11 @@
                     "commands": "Støvsugerkommandoer:",
                     "fan_speed": "Viftehastighet",
                     "locate": "Lokaliser",
-                    "pause": "",
+                    "pause": "Pause",
                     "return_home": "Returner hjem",
-                    "start": "",
+                    "start": "Start",
                     "start_pause": "Start / Pause",
-                    "status": "",
+                    "status": "Status",
                     "stop": "Stopp"
                 }
             },
@@ -1190,7 +1190,7 @@
                         "person": "Personer",
                         "scene": "Scener",
                         "script": "Skript",
-                        "server_control": "Server-kontroller",
+                        "server_control": "Serverstyring",
                         "tag": "Tagger",
                         "users": "Brukere",
                         "zone": "Soner"
@@ -1199,33 +1199,33 @@
                         "automation": "Automasjoner",
                         "command_line": "Kommandolinjeenheter",
                         "core": "Plassering og tilpasninger",
-                        "filesize": "Enheter for filstørrelse",
-                        "filter": "Filtrere entiteter",
+                        "filesize": "Filstørrelse-enheter",
+                        "filter": "Filterenheter",
                         "generic": "Generiske IP-kameraenheter",
-                        "generic_thermostat": "Generiske termostat enheter",
-                        "group": "Grupper, gruppeenheter og varsler tjenester",
+                        "generic_thermostat": "Generiske termostatenheter",
+                        "group": "Grupper, gruppeenheter og varslingstjenester",
                         "history_stats": "Historikkstatistiske enheter",
                         "homekit": "HomeKit",
-                        "input_boolean": "Boolske innganger",
-                        "input_datetime": "Inngangsdato ganger",
-                        "input_number": "Inndatanumre",
-                        "input_select": "Inngang velges",
-                        "input_text": "Inngangstekster",
-                        "min_max": "Min/maks enheter",
+                        "input_boolean": "Inndata boolske",
+                        "input_datetime": "Inndata dato-tid",
+                        "input_number": "Inndata tall",
+                        "input_select": "Inndata valg",
+                        "input_text": "Inndata tekst",
+                        "min_max": "Min/maks-enheter",
                         "mqtt": "Manuelt konfigurerte MQTT-enheter",
                         "person": "Personer",
                         "ping": "Ping binære sensorenheter",
                         "reload": "{domain}",
-                        "rest": "Rest enheter og varsle tjenester",
+                        "rest": "Rest-enheter og varslingstjenester",
                         "rpi_gpio": "Raspberry Pi GPIO-enheter",
                         "scene": "Scener",
                         "script": "Skript",
                         "smtp": "SMTP-varslingstjenester",
                         "statistics": "Statistiske enheter",
-                        "telegram": "Telegram varsler tjenester",
+                        "telegram": "Telegram varslingstjenester",
                         "template": "Malenheter",
-                        "trend": "Trend enheter",
-                        "universal": "Enheter for universell mediaspiller",
+                        "trend": "Trend-enheter",
+                        "universal": "Enheter for universalmediaspiller",
                         "zone": "Soner"
                     },
                     "server_control": {
@@ -1268,7 +1268,7 @@
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
                 "power_source": "Strømkilde",
-                "quirk": "",
+                "quirk": "Quirk",
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra ZigBee-nettverket.",
@@ -1650,9 +1650,9 @@
                                 },
                                 "homeassistant": {
                                     "event": "Hendelse:",
-                                    "label": "",
+                                    "label": "Home Assistant",
                                     "shutdown": "Slå av",
-                                    "start": ""
+                                    "start": "Start"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -1699,8 +1699,8 @@
                                     "seconds": "Sekunder"
                                 },
                                 "webhook": {
-                                    "label": "",
-                                    "webhook_id": ""
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 },
                                 "zone": {
                                     "enter": "Ankommer",
@@ -1818,7 +1818,7 @@
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
                             "sync_entities": "Synkroniser enheter til Amazon",
                             "sync_entities_error": "Kunne ikke synkronisere entiteter:",
-                            "title": ""
+                            "title": "Alexa"
                         },
                         "connected": "Tilkoblet",
                         "connecting": "Kobler til…",
@@ -1840,7 +1840,7 @@
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
                             "sync_entities_404_message": "Kunne ikke synkronisere entitetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere entitetene dine.",
-                            "title": ""
+                            "title": "Google Assistant"
                         },
                         "integrations": "Integrasjoner",
                         "integrations_introduction": "Integrasjoner for Home Assistant Cloud lar deg koble til tjenester i skyen uten å måtte avsløre Home Assistant-forekomsten offentlig på internett.",
@@ -1861,7 +1861,7 @@
                             "reconnecting": "Ikke tilkoblet. Prøver å koble til på nytt.",
                             "remote_enabled": {
                                 "caption": "Koble til automatisk",
-                                "description": "Aktiver dette alternativet for å sikre at Home Assistant-forekomsten alltid er eksternt tilgjengelig."
+                                "description": "Aktiver dette alternativet for å sikre at Home Assistant-installasjonen alltid er eksternt tilgjengelig."
                             },
                             "title": "Fjernkontroll"
                         },
@@ -1884,7 +1884,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:",
-                            "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistent fra hvor som helst, uten å utsette forekomsten din for Internett.",
+                            "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistant fra hvor som helst, uten å utsette installasjonen din for Internett.",
                             "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
                             "loading": "Laster inn…",
                             "manage": "Administrer",
@@ -1906,7 +1906,7 @@
                         "manage_domains": "Administrer domener",
                         "not_exposed": "{selected} ikke eksponert",
                         "not_exposed_entities": "Ikke eksponerte entiteter",
-                        "title": ""
+                        "title": "Alexa"
                     },
                     "description_features": "Kontroller hjemmet når du er borte og integrer med Alexa og Google Assistant",
                     "description_login": "Logget inn som {email}",
@@ -1951,7 +1951,7 @@
                         "not_exposed": "{selected} ikke eksponert",
                         "not_exposed_entities": "Ikke eksponerte entiteter",
                         "sync_to_google": "Synkroniserer endringer til Google.",
-                        "title": ""
+                        "title": "Google Assistant"
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Du må bekrefte e-posten din før du logger inn.",
@@ -1979,7 +1979,7 @@
                         "email_error_msg": "Ugyldig e-postadresse",
                         "feature_amazon_alexa": "Integrasjon med Amazon Alexa",
                         "feature_google_home": "Integrasjon med Google Assistant",
-                        "feature_remote_control": "Kontroller Home Assistent når du er borte fra hjemmet",
+                        "feature_remote_control": "Kontroller Home Assistant når du er borte fra hjemmet",
                         "feature_webhook_apps": "Enkel integrasjon med webhookbaserte apper som OwnTracks",
                         "headline": "Start prøveversjon",
                         "information": "Opprett en konto for å starte en gratis prøveperiode på en måned med Home Assistant Cloud. Ingen betalingsinformasjon nødvendig.",
@@ -2017,13 +2017,13 @@
                                 "imperial_example": "Fahrenheit, pund",
                                 "internal_url": "Intern URL",
                                 "latitude": "Breddegrad",
-                                "location_name": "Navn på installasjonen av Home Assistant",
+                                "location_name": "Home Assistant-installasjonens navn",
                                 "longitude": "Lengdegrad",
                                 "metric_example": "Celsius, kilogram",
                                 "save_button": "Lagre",
                                 "time_zone": "Tidssone",
                                 "unit_system": "Enhetssystem",
-                                "unit_system_imperial": "Imperisk",
+                                "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Metrisk"
                             },
                             "header": "Generell konfigurasjon",
@@ -2241,7 +2241,7 @@
                         "grid_carbon_footprint": "Karbonfotavtrykk i nettet",
                         "grid_consumption": "Nettforbruk",
                         "learn_more": "Mer informasjon om hvordan du kommer i gang.",
-                        "return_to_grid": "Gå tilbake til rutenettet",
+                        "return_to_grid": "Gå tilbake til strømnettet",
                         "sub": "Konfigurer mengden energi du bruker fra strømnettet-, og gir tilbake til strømnettet hvis du produserer energi. Dette gjør at Home Assistant kan spore hele energiforbruket i hjemmet.",
                         "title": "Strømnett"
                     },
@@ -2337,7 +2337,7 @@
                             "confirm_title": "Vil du aktivere {number} {number, plural,\n  one {enhet}\n  other {enheter}\n}?"
                         },
                         "filter": {
-                            "filter": "",
+                            "filter": "Filter",
                             "hidden_entities": "{number} {number, plural,\n  one {skjult entitet}\n  other {skjulte entiteter}\n}",
                             "show_all": "Vis alle",
                             "show_disabled": "Vis deaktiverte entiteter",
@@ -2351,7 +2351,7 @@
                             "entity_id": "Entitets-ID",
                             "integration": "Integrasjon",
                             "name": "Navn",
-                            "status": ""
+                            "status": "Status"
                         },
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
                         "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
@@ -2388,7 +2388,7 @@
                             "editable": "Redigerbare",
                             "entity_id": "Entitets-ID",
                             "name": "Navn",
-                            "type": ""
+                            "type": "Type"
                         },
                         "no_helpers": "Det ser ut som om du ikke har noen hjelpere ennå!"
                     },
@@ -2397,7 +2397,7 @@
                         "input_boolean": "Veksle",
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
-                        "input_select": "",
+                        "input_select": "Valg",
                         "input_text": "Tekst",
                         "timer": "Timer"
                     }
@@ -2405,7 +2405,7 @@
                 "info": {
                     "built_using": "Bygget med",
                     "caption": "Informasjon",
-                    "copy_github": "",
+                    "copy_github": "For GitHub",
                     "copy_menu": "Kopier meny",
                     "copy_raw": "Rå tekst",
                     "custom_uis": "Tilpassede brukergrensesnitt:",
@@ -2414,7 +2414,7 @@
                     "documentation": "Dokumentasjon",
                     "frontend": "frontend",
                     "frontend_version": "Brukergrensesnittet-versjon: {version} - {type}",
-                    "home_assistant_logo": "",
+                    "home_assistant_logo": "Home Assistant-logo",
                     "icons_by": "Ikoner fra",
                     "integrations": "Integrasjoner",
                     "issues": "Problemer",
@@ -2632,7 +2632,7 @@
                         "picker": {
                             "add_resource": "Legg til ressurs",
                             "headers": {
-                                "type": "",
+                                "type": "Type",
                                 "url": "URL"
                             },
                             "no_resources": "Ingen ressurser"
@@ -2920,18 +2920,18 @@
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Historikkstatistiske enheter",
                             "homekit": "HomeKit",
-                            "input_boolean": "Boolske innganger",
-                            "input_datetime": "Inngangsdato ganger",
-                            "input_number": "Inndatanumre",
-                            "input_select": "Inngang velges",
-                            "input_text": "Inngangstekster",
+                            "input_boolean": "Inndata boolske",
+                            "input_datetime": "Inndata dato-tid",
+                            "input_number": "Inndata tall",
+                            "input_select": "Inndata valg",
+                            "input_text": "Inndata tekst",
                             "introduction": "Noen deler av Home Assistant kan lastes inn på nytt uten at det krever omstart. Hvis du klikker på et av alternativene nedenfor, vil den nåværende YAML -konfigurasjonen lastes ut og den nye lastes inn.",
-                            "min_max": "Min/maks enheter",
+                            "min_max": "Min/maks-enheter",
                             "mqtt": "Manuelt konfigurerte MQTT-enheter",
                             "person": "Personer",
                             "ping": "Ping binære sensorenheter",
                             "reload": "{domain}",
-                            "rest": "Rest enheter og varsle tjenester",
+                            "rest": "Rest-enheter og varslingstjenester",
                             "rpi_gpio": "Raspberry Pi GPIO-enheter",
                             "scene": "Scener",
                             "script": "Skript",
@@ -2939,15 +2939,15 @@
                             "statistics": "Statistiske enheter",
                             "telegram": "Telegram varsler tjenester",
                             "template": "Malenheter",
-                            "trend": "Trend enheter",
-                            "universal": "Enheter for universell mediaspiller",
+                            "trend": "Trend-enheter",
+                            "universal": "Enheter for universalmediaspiller",
                             "zone": "Soner"
                         },
                         "server_management": {
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
                             "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?",
                             "heading": "Serveradministrasjon",
-                            "introduction": "Kontroller Home Assistant -serveren... fra Home Assistant.",
+                            "introduction": "Styr Home Assistant-serveren... fra Home Assistant.",
                             "restart": "Omstart",
                             "stop": "Stopp"
                         },
@@ -3005,7 +3005,7 @@
                         "activate_user": "Aktiver bruker",
                         "active": "Aktiv",
                         "active_tooltip": "Kontrollerer om brukeren kan logge inn",
-                        "admin": "",
+                        "admin": "Administrator",
                         "caption": "Vis bruker",
                         "change_password": "Endre passord",
                         "confirm_user_deletion": "Er du sikker på at du vil slette {name} ?",
@@ -3147,7 +3147,7 @@
                         "new_zone": "Ny sone",
                         "passive": "Passiv",
                         "passive_note": "Passive soner er skjult i grensesnittet og brukes ikke som sted for enhetssporere. Dette er nyttig hvis du bare vil bruke dem til automasjoner.",
-                        "radius": "",
+                        "radius": "Radius",
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
@@ -3470,7 +3470,7 @@
                         "call_service": "Tilkall tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
-                        "column_parameter": "",
+                        "column_parameter": "Parameter",
                         "description": "Tjenesteutviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
                         "no_template_ui_support": "Brukergrensesnittet støtter ikke maler, du kan fortsatt bruke YAML-redigereren.",
@@ -3596,7 +3596,7 @@
                             "battery": "Batteri",
                             "gas": "Gass",
                             "go_to_energy_dashboard": "Gå til energidashboardet",
-                            "grid": "Rutenett",
+                            "grid": "Strømnett",
                             "home": "Hjem",
                             "non_fossil": "Ikke-fossilt",
                             "solar": "Solenergi"
@@ -3609,12 +3609,12 @@
                             "battery_total": "Totalt batteri",
                             "cost": "Kostnad",
                             "energy": "Energi",
-                            "grid_total": "Rutenett totalt",
+                            "grid_total": "Strømnett totalt",
                             "source": "Kilde",
                             "total_costs": "Totale kostnader"
                         },
                         "energy_usage_graph": {
-                            "combined_from_grid": "Kombinert fra rutenett",
+                            "combined_from_grid": "Kombinert fra strømnett",
                             "consumed_battery": "Forbrukt batteri",
                             "consumed_solar": "Forbrukt solenergi",
                             "total_consumed": "Total forbruk {num} kWh",
@@ -3650,7 +3650,7 @@
                     },
                     "picture-elements": {
                         "call_service": "Tilkall tjeneste {name}",
-                        "hold": "",
+                        "hold": "Hold:",
                         "more_info": "Vis mer informasjon: {name}",
                         "navigate_to": "Naviger til {location}",
                         "tap": "Trykk:",
@@ -3807,8 +3807,8 @@
                             "image": "Bane til bilde",
                             "manual": "Manuell",
                             "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å manuelt skrive YAML?",
-                            "maximum": "Maksimalt",
-                            "minimum": "",
+                            "maximum": "Maksimum",
+                            "minimum": "Minimum",
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
@@ -3872,7 +3872,7 @@
                         "markdown": {
                             "content": "Innhold",
                             "description": "Markdown-kortet brukes til å gjengi Markdown.",
-                            "name": ""
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "description": "Mediekontroll kortet brukes til å vise mediespiller entiteter på et grensesnitt med brukervennlige kontroller.",
@@ -3902,7 +3902,7 @@
                         "sensor": {
                             "description": "Sensorkortet gir deg en rask oversikt over sensortilstanden din med en valgfri graf for å visualisere endring over tid.",
                             "graph_type": "Graf type",
-                            "name": "",
+                            "name": "Sensor",
                             "show_more_detail": "Vis flere detaljer"
                         },
                         "shopping-list": {
@@ -4276,7 +4276,7 @@
                             "upstairs": "Oppe"
                         },
                         "unit": {
-                            "minutes_abbr": "",
+                            "minutes_abbr": "min",
                             "watching": "Ser på"
                         }
                     }
@@ -4360,8 +4360,8 @@
                 "dashboard": {
                     "default_dashboard_label": "Oversikt (standard)",
                     "description": "Velg et standard instrumentbord for denne enheten.",
-                    "dropdown_label": "",
-                    "header": ""
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
                 },
                 "enable_shortcuts": {
                     "description": "Aktiver eller deaktiver hurtigtaster for å utføre forskjellige handlinger i brukergrensesnittet",
