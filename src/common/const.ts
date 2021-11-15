@@ -119,6 +119,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   current: mdiCurrentAc,
   date: mdiCalendar,
   energy: mdiLightningBolt,
+  frequency: mdiSineWave,
   gas: mdiGasCylinder,
   humidity: mdiWaterPercent,
   illuminance: mdiBrightness5,
