@@ -3924,7 +3924,6 @@
           },
           "create_account": "Create Account",
           "error": {
-            "required_fields": "Fill in all required fields",
             "password_not_match": "Passwords don't match"
           }
         },
