@@ -102,9 +102,9 @@ class HaConfigUpdates extends LitElement {
       img,
       ha-svg-icon,
       ha-logo-svg {
-        width: var(--mdc-icon-size, 28px);
-        height: var(--mdc-icon-size, 28px);
-        padding-right: 8px;
+        width: var(--mdc-icon-size, 32px);
+        height: var(--mdc-icon-size, 32px);
+        padding-right: 12px;
         display: block;
         color: var(--secondary-text-color);
       }
