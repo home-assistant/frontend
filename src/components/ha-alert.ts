@@ -51,28 +51,31 @@ class HaAlert extends LitElement {
           [this.alertType]: true,
         })}"
       >
-        <div class="icon ${this.title ? "" : "no-title"}">
-          <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
-        </div>
+        <slot name="icon">
+          <div class="icon ${this.title ? "" : "no-title"}">
+            <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
+          </div>
+        </slot>
         <div class="content">
           <div class="main-content">
             ${this.title ? html`<div class="title">${this.title}</div>` : ""}
             <slot></slot>
           </div>
           <div class="action">
-            <slot name="action"></slot>
-            ${this.actionText
-              ? html`<mwc-button
-                  @click=${this._action_clicked}
-                  .label=${this.actionText}
-                ></mwc-button>`
-              : this.dismissable
-              ? html`<ha-icon-button
-                  @click=${this._dismiss_clicked}
-                  label="Dismiss alert"
-                  .path=${mdiClose}
-                ></ha-icon-button>`
-              : ""}
+            <slot name="action">
+              ${this.actionText
+                ? html`<mwc-button
+                    @click=${this._action_clicked}
+                    .label=${this.actionText}
+                  ></mwc-button>`
+                : this.dismissable
+                ? html`<ha-icon-button
+                    @click=${this._dismiss_clicked}
+                    label="Dismiss alert"
+                    .path=${mdiClose}
+                  ></ha-icon-button>`
+                : ""}
+            </slot>
           </div>
         </div>
       </div>
@@ -108,14 +111,14 @@ class HaAlert extends LitElement {
       content: "";
       border-radius: 4px;
     }
-    .icon {
+    slot > .icon {
       margin-right: 8px;
       width: 24px;
     }
     .icon.no-title {
       align-self: center;
     }
-    .issue-type.rtl > .icon {
+    .issue-type.rtl > slot > .icon {
       margin-right: 0px;
       margin-left: 8px;
       width: 24px;
@@ -143,28 +146,28 @@ class HaAlert extends LitElement {
     ha-icon-button {
       --mdc-icon-button-size: 36px;
     }
-    .issue-type.info > .icon {
+    .issue-type.info > slot > .icon {
       color: var(--info-color);
     }
     .issue-type.info::before {
       background-color: var(--info-color);
     }
 
-    .issue-type.warning > .icon {
+    .issue-type.warning > slot > .icon {
       color: var(--warning-color);
     }
     .issue-type.warning::before {
       background-color: var(--warning-color);
     }
 
-    .issue-type.error > .icon {
+    .issue-type.error > slot > .icon {
       color: var(--error-color);
     }
     .issue-type.error::before {
       background-color: var(--error-color);
     }
 
-    .issue-type.success > .icon {
+    .issue-type.success > slot > .icon {
       color: var(--success-color);
     }
     .issue-type.success::before {

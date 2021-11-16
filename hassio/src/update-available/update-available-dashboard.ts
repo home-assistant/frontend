@@ -19,6 +19,7 @@ import "../../../src/components/ha-expansion-panel";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-settings-row";
+import "../../../src/components/ha-svg-icon";
 import "../../../src/components/ha-switch";
 import {
   fetchHassioAddonChangelog,
@@ -43,7 +44,7 @@ import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
-import { SUPERVISOR_UPDATE_ENTRIES } from "../../../src/panels/config/dashboard/ha-config-updates";
+import { SUPERVISOR_UPDATE_NAMES } from "../../../src/panels/config/dashboard/ha-config-updates";
 import { HomeAssistant, Route } from "../../../src/types";
 import { documentationUrl } from "../../../src/util/documentation-url";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
@@ -101,8 +102,7 @@ class UpdateAvailableDashboard extends LitElement {
     }
     const name =
       // @ts-ignore
-      this._updateInfo?.name ||
-      SUPERVISOR_UPDATE_ENTRIES[this._updateEntry]?.name;
+      this._updateInfo?.name || SUPERVISOR_UPDATE_NAMES[this._updateEntry];
     const changelog = !this._isAddon
       ? changelogUrl(
           this.hass,
