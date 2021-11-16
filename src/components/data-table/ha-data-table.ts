@@ -678,7 +678,7 @@ export class HaDataTable extends LitElement {
           padding-left: 16px;
           /* @noflip */
           padding-right: 0;
-          width: 56px;
+          width: 60px;
         }
         :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
         :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
