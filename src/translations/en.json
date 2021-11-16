@@ -927,7 +927,7 @@
           "learn_more": "Learn more"
         },
         "updates": {
-          "version_available": "You have {version}, {version_latest} is available",
+          "version_available": "Version {version_available} is available",
           "review": "review"
         },
         "areas": {

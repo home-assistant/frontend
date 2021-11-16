@@ -76,8 +76,7 @@ class HaConfigUpdates extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.updates.version_available",
                 {
-                  version: update.version,
-                  version_latest: update.version_latest,
+                  version_available: update.version_latest,
                 }
               )}
             </span>
