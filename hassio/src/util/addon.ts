@@ -11,6 +11,9 @@ export const extractChangelog = (
   addon: HassioAddonDetails,
   content: string
 ): string => {
+  if (content.startsWith("# Changelog")) {
+    content = content.substr(12, content.length);
+  }
   if (
     content.includes(`# ${addon.version}`) &&
     content.includes(`# ${addon.version_latest}`)

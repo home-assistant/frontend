@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { mdiArrowRight } from "@mdi/js";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../src/common/search/search-input";
@@ -113,6 +114,7 @@ class UpdateAvailableDashboard extends LitElement {
                       `
                     : ""}
                   <div class="versions">
+                    <span></span>
                     <ha-settings-row>
                       <span slot="heading">
                         ${this.supervisor.localize("common.version")}
@@ -121,6 +123,7 @@ class UpdateAvailableDashboard extends LitElement {
                         >${this._updateInfo.version}</span
                       >
                     </ha-settings-row>
+                    <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
                     <ha-settings-row>
                       <span slot="heading">
                         ${this.supervisor.localize("common.newest_version")}
@@ -129,6 +132,7 @@ class UpdateAvailableDashboard extends LitElement {
                         ${this._updateInfo.version_latest}
                       </span>
                     </ha-settings-row>
+                    <span></span>
                   </div>
                   ${!["os", "supervisor"].includes(this._updateEntry!)
                     ? html`
@@ -324,8 +328,11 @@ class UpdateAvailableDashboard extends LitElement {
         padding: 0;
       }
       .versions {
+        --mdc-icon-size: 32px;
         display: flex;
         justify-content: space-around;
+        align-items: center;
+        margin: auto;
       }
       .versions ha-settings-row {
         text-align: center;
