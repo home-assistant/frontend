@@ -123,7 +123,8 @@ class HassioAddonInfo extends LitElement {
       },
     ];
     return html`
-      ${this.addon.update_available
+      ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+      this.addon.update_available
         ? html`
             <ha-alert
               .title=${this.supervisor.localize("common.update_available", {
