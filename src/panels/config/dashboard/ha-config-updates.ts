@@ -12,7 +12,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
-import "../../../components/ha-card";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -43,48 +42,41 @@ class HaConfigUpdates extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card>
-        ${this._error
-          ? html`<ha-alert
-              .title=${this.hass.localize(
-                "ui.panel.config.updates.supervisor_error_title"
-              )}
-              alert-type="error"
-              >${this._error}</ha-alert
-            >`
-          : ""}
-        ${this._supervisorUpdates?.map(
-          (update) => html`
-            <ha-alert
-              .title=${update.update_type === "addon"
-                ? update.name
-                : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-            >
-              <span slot="icon" class="icon">
-                ${update.update_type === "addon"
-                  ? update.icon
-                    ? html`<img src="/api/hassio${update.icon}" />`
-                    : html`<ha-svg-icon
-                        .path=${mdiPackageVariant}
-                      ></ha-svg-icon>`
-                  : html`<ha-logo-svg></ha-logo-svg>`}
-              </span>
-              ${this.hass.localize(
-                "ui.panel.config.updates.version_available",
-                {
-                  version_available: update.version_latest,
-                }
-              )}
-              <a href="/hassio${update.panel_path}" slot="action">
-                <mwc-button
-                  .label=${this.hass.localize("ui.panel.config.updates.review")}
-                >
-                </mwc-button>
-              </a>
-            </ha-alert>
-          `
-        )}
-      </ha-card>
+      ${this._error
+        ? html`<ha-alert
+            .title=${this.hass.localize(
+              "ui.panel.config.updates.supervisor_error_title"
+            )}
+            alert-type="error"
+            >${this._error}</ha-alert
+          >`
+        : ""}
+      ${this._supervisorUpdates?.map(
+        (update) => html`
+          <ha-alert
+            .title=${update.update_type === "addon"
+              ? update.name
+              : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
+          >
+            <span slot="icon" class="icon">
+              ${update.update_type === "addon"
+                ? update.icon
+                  ? html`<img src="/api/hassio${update.icon}" />`
+                  : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
+                : html`<ha-logo-svg></ha-logo-svg>`}
+            </span>
+            ${this.hass.localize("ui.panel.config.updates.version_available", {
+              version_available: update.version_latest,
+            })}
+            <a href="/hassio${update.panel_path}" slot="action">
+              <mwc-button
+                .label=${this.hass.localize("ui.panel.config.updates.review")}
+              >
+              </mwc-button>
+            </a>
+          </ha-alert>
+        `
+      )}
     `;
   }
 
