@@ -58,7 +58,7 @@ class HaConfigUpdates extends LitElement {
         ${this._supervisorUpdates.map(
           (update) => html`<ha-settings-row>
             <span slot="prefix">
-              ${update.icon
+              ${update.update_type === "addon" && update.icon
                 ? html` <img src="/api/hassio${update.icon}" />`
                 : html`
                     <ha-svg-icon
@@ -69,8 +69,9 @@ class HaConfigUpdates extends LitElement {
                   `}
             </span>
             <span slot="heading">
-              ${SUPERVISOR_UPDATE_ENTRIES[update.update_type!]?.name ||
-              update.name}
+              ${update.update_type === "addon"
+                ? update.name
+                : SUPERVISOR_UPDATE_ENTRIES[update.update_type!]?.name}
             </span>
             <span slot="description">
               ${this.hass.localize(

@@ -70,14 +70,38 @@ export interface Supervisor {
   localize: LocalizeFunc;
 }
 
-export interface SupervisorAvailableUpdates {
+interface SupervisorBaseAvailableUpdates {
   panel_path?: string;
   update_type?: string;
-  version?: string;
   version_latest?: string;
+}
+
+interface SupervisorAddonAvailableUpdates
+  extends SupervisorBaseAvailableUpdates {
+  update_type?: "addon";
   icon?: string;
   name?: string;
 }
+
+interface SupervisorCoreAvailableUpdates
+  extends SupervisorBaseAvailableUpdates {
+  update_type?: "core";
+}
+
+interface SupervisorOsAvailableUpdates extends SupervisorBaseAvailableUpdates {
+  update_type?: "os";
+}
+
+interface SupervisorSupervisorAvailableUpdates
+  extends SupervisorBaseAvailableUpdates {
+  update_type?: "supervisor";
+}
+
+export type SupervisorAvailableUpdates =
+  | SupervisorAddonAvailableUpdates
+  | SupervisorCoreAvailableUpdates
+  | SupervisorOsAvailableUpdates
+  | SupervisorSupervisorAvailableUpdates;
 
 export interface SupervisorAvailableUpdatesResponse {
   available_updates: SupervisorAvailableUpdates[];
@@ -169,19 +193,16 @@ export const fetchSupervisorAvailableUpdates = async (
   {
     panel_path: "/update-available/core",
     update_type: "core",
-    version: "123",
     version_latest: "2021.12.0b0",
   },
   {
     panel_path: "/update-available/os",
     update_type: "os",
-    version: "123",
     version_latest: "7.0rc1",
   },
   {
     panel_path: "/update-available/supervisor",
     update_type: "supervisor",
-    version: "123",
     version_latest: "2021.12.3",
   },
   {
@@ -189,7 +210,6 @@ export const fetchSupervisorAvailableUpdates = async (
     icon: "/addons/core_mosquitto/icon",
     panel_path: "/update-available/core_mosquitto",
     update_type: "addon",
-    version: "123",
     version_latest: "1.2.0",
   },
 ];
