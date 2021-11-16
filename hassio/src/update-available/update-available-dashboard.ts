@@ -26,7 +26,10 @@ import {
   HassioAddonDetails,
   updateHassioAddon,
 } from "../../../src/data/hassio/addon";
-import { createHassioPartialBackup } from "../../../src/data/hassio/backup";
+import {
+  createHassioPartialBackup,
+  HassioPartialBackupCreateParams,
+} from "../../../src/data/hassio/backup";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -288,9 +291,23 @@ class UpdateAvailableDashboard extends LitElement {
 
   private async _update() {
     if (this._createBackup) {
+      let backupArgs: HassioPartialBackupCreateParams;
+      if (this._isAddon) {
+        backupArgs = {
+          name: `addon_${this._updateEntry}_${this._updateInfo?.version}`,
+          addons: [this._updateEntry!],
+          homeassistant: false,
+        };
+      } else {
+        backupArgs = {
+          name: `${this._updateEntry}_${this._updateInfo?.version}`,
+          folders: ["homeassistant"],
+          homeassistant: true,
+        };
+      }
       this._action = "backup";
       try {
-        await createHassioPartialBackup(this.hass, { name: "test" });
+        await createHassioPartialBackup(this.hass, backupArgs);
       } catch (err: any) {
         this._error = extractApiErrorMessage(err);
         this._action = null;
