@@ -45,7 +45,7 @@ class HaConfigUpdates extends LitElement {
       ${this._error
         ? html`<ha-alert
             .title=${this.hass.localize(
-              "ui.panel.config.updates.supervisor_error_title"
+              "ui.panel.config.updates.unable_to_fetch"
             )}
             alert-type="error"
             >${this._error}</ha-alert
