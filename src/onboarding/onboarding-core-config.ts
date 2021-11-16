@@ -2,13 +2,16 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { createCurrencyListEl } from "../components/currency-datalist";
 import "../components/map/ha-locations-editor";
-import type { MarkerLocation } from "../components/map/ha-locations-editor";
+import type {
+  HaLocationsEditor,
+  MarkerLocation,
+} from "../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
@@ -25,6 +28,7 @@ import type { HaRadio } from "../components/ha-radio";
 
 const amsterdam: [number, number] = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
+const locationMarkerId = "location";
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -45,6 +49,8 @@ class OnboardingCoreConfig extends LitElement {
   @state() private _currency?: ConfigUpdateValues["currency"];
 
   @state() private _timeZone?: string;
+
+  @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
     return html`
@@ -268,7 +274,7 @@ class OnboardingCoreConfig extends LitElement {
   private _markerLocation = memoizeOne(
     (location: [number, number]): MarkerLocation[] => [
       {
-        id: "location",
+        id: locationMarkerId,
         latitude: location[0],
         longitude: location[1],
         location_editable: true,
@@ -304,6 +310,15 @@ class OnboardingCoreConfig extends LitElement {
       const values = await detectCoreConfig(this.hass);
 
       if (values.latitude && values.longitude) {
+        this.map.addEventListener(
+          "markers-updated",
+          () => {
+            this.map.fitMarker(locationMarkerId);
+          },
+          {
+            once: true,
+          }
+        );
         this._location = [Number(values.latitude), Number(values.longitude)];
       }
       if (values.elevation) {
