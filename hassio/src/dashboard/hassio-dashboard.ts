@@ -1,6 +1,7 @@
 import { mdiStorePlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/ha-fab";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
@@ -27,7 +28,7 @@ class HassioDashboard extends LitElement {
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${supervisorTabs}
+        .tabs=${supervisorTabs(this.hass)}
         main-page
         supervisor
         hasFab
@@ -36,10 +37,14 @@ class HassioDashboard extends LitElement {
           ${this.supervisor.localize("panel.dashboard")}
         </span>
         <div class="content">
-          <hassio-update
-            .hass=${this.hass}
-            .supervisor=${this.supervisor}
-          ></hassio-update>
+          ${!atLeastVersion(this.hass.config.version, 2021, 12)
+            ? html`
+                <hassio-update
+                  .hass=${this.hass}
+                  .supervisor=${this.supervisor}
+                ></hassio-update>
+              `
+            : ""}
           <hassio-addons
             .hass=${this.hass}
             .supervisor=${this.supervisor}

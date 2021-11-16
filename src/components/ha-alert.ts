@@ -60,6 +60,7 @@ class HaAlert extends LitElement {
             <slot></slot>
           </div>
           <div class="action">
+            <slot name="action"></slot>
             ${this.actionText
               ? html`<mwc-button
                   @click=${this._action_clicked}

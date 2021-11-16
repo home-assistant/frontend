@@ -21,7 +21,6 @@ import {
   configSyncOS,
   rebootHost,
   shutdownHost,
-  updateOS,
 } from "../../../src/data/hassio/host";
 import {
   fetchNetworkInfo,
@@ -108,9 +107,12 @@ class HassioHostInfo extends LitElement {
               </span>
               ${this.supervisor.os.update_available
                 ? html`
-                    <ha-progress-button @click=${this._osUpdate}>
-                      ${this.supervisor.localize("commmon.update")}
-                    </ha-progress-button>
+                    <a href="/hassio/update-available/os">
+                      <mwc-button
+                        .label=${this.supervisor.localize("common.review")}
+                      >
+                      </mwc-button>
+                    </a>
                   `
                 : ""}
             </ha-settings-row>
@@ -333,50 +335,6 @@ class HassioHostInfo extends LitElement {
     button.progress = false;
   }
 
-  private async _osUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize(
-        "confirm.update.title",
-        "name",
-        "Home Assistant Operating System"
-      ),
-      text: this.supervisor.localize(
-        "confirm.update.text",
-        "name",
-        "Home Assistant Operating System",
-        "version",
-        this.supervisor.os.version_latest
-      ),
-      confirmText: this.supervisor.localize("common.update"),
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      button.progress = false;
-      return;
-    }
-
-    try {
-      await updateOS(this.hass);
-      fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
-    } catch (err: any) {
-      if (this.hass.connection.connected) {
-        showAlertDialog(this, {
-          title: this.supervisor.localize(
-            "common.failed_to_update_name",
-            "name",
-            "Home Assistant Operating System"
-          ),
-          text: extractApiErrorMessage(err),
-        });
-      }
-    }
-    button.progress = false;
-  }
-
   private async _changeNetworkClicked(): Promise<void> {
     showNetworkDialog(this, {
       supervisor: this.supervisor,
@@ -493,6 +451,9 @@ class HassioHostInfo extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
+        }
+        a {
+          text-decoration: none;
         }
       `,
     ];

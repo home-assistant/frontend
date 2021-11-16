@@ -1,4 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
+import { mdiArrowRight } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -7,7 +8,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { mdiArrowRight } from "@mdi/js";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../src/common/search/search-input";
@@ -31,12 +31,8 @@ import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
-import { HassioHassOSInfo, updateOS } from "../../../src/data/hassio/host";
-import {
-  HassioHomeAssistantInfo,
-  HassioSupervisorInfo,
-  updateSupervisor,
-} from "../../../src/data/hassio/supervisor";
+import { updateOS } from "../../../src/data/hassio/host";
+import { updateSupervisor } from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -48,6 +44,25 @@ import { SUPERVISOR_UPDATE_ENTRIES } from "../../../src/panels/config/dashboard/
 import { HomeAssistant, Route } from "../../../src/types";
 import { documentationUrl } from "../../../src/util/documentation-url";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
+
+const changelogUrl = (
+  hass: HomeAssistant,
+  entry: string,
+  version: string
+): string | undefined => {
+  if (entry === "core") {
+    return documentationUrl(hass, "/latest-release-notes/");
+  }
+  if (entry === "os") {
+    return !version?.includes("dev")
+      ? `https://github.com/home-assistant/operating-system/releases/tag/${version}`
+      : undefined;
+  }
+  if (entry === "supervisor") {
+    return `https://github.com/home-assistant/supervisor/releases/tag/${version}`;
+  }
+  return undefined;
+};
 
 class UpdateAvailableDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -62,13 +77,7 @@ class UpdateAvailableDashboard extends LitElement {
 
   @state() private _changelogContent?: string;
 
-  @state() private _changelogUrl?: string;
-
-  @state() private _updateInfo?:
-    | HassioAddonDetails
-    | HassioHomeAssistantInfo
-    | HassioHassOSInfo
-    | HassioSupervisorInfo;
+  @state() private _updateInfo?: HassioAddonDetails;
 
   @state() private _createBackup = true;
 
@@ -84,13 +93,20 @@ class UpdateAvailableDashboard extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (!this._updateInfo) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+    if (!this._updateEntry) {
+      return html``;
     }
     const name =
       // @ts-ignore
-      this._updateInfo.name ||
-      SUPERVISOR_UPDATE_ENTRIES[this._updateEntry!]?.name;
+      this._updateInfo?.name ||
+      SUPERVISOR_UPDATE_ENTRIES[this._updateEntry]?.name;
+    const changelog = !this._isAddon
+      ? changelogUrl(
+          this.hass,
+          this._updateEntry,
+          this.supervisor[this._updateEntry]?.version
+        )
+      : undefined;
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -119,9 +135,10 @@ class UpdateAvailableDashboard extends LitElement {
                       <span slot="heading">
                         ${this.supervisor.localize("common.version")}
                       </span>
-                      <span slot="description"
-                        >${this._updateInfo.version}</span
-                      >
+                      <span slot="description">
+                        ${this._updateInfo?.version ||
+                        this.supervisor[this._updateEntry]?.version}
+                      </span>
                     </ha-settings-row>
                     <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
                     <ha-settings-row>
@@ -129,12 +146,13 @@ class UpdateAvailableDashboard extends LitElement {
                         ${this.supervisor.localize("common.newest_version")}
                       </span>
                       <span slot="description">
-                        ${this._updateInfo.version_latest}
+                        ${this._updateInfo?.version_latest ||
+                        this.supervisor[this._updateEntry]?.version}
                       </span>
                     </ha-settings-row>
                     <span></span>
                   </div>
-                  ${!["os", "supervisor"].includes(this._updateEntry!)
+                  ${!["os", "supervisor"].includes(this._updateEntry)
                     ? html`
                         <ha-settings-row>
                           <ha-checkbox
@@ -164,7 +182,9 @@ class UpdateAvailableDashboard extends LitElement {
                     ${this._action === "update"
                       ? this.supervisor.localize("dialog.update.updating", {
                           name,
-                          version: this._updateInfo.version,
+                          version:
+                            this._updateInfo?.version ||
+                            this.supervisor[this._updateEntry]?.version,
                         })
                       : this.supervisor.localize(
                           "dialog.update.creating_backup",
@@ -175,8 +195,8 @@ class UpdateAvailableDashboard extends LitElement {
           ${this._action === null
             ? html`
                 <div class="card-actions">
-                  ${this._changelogUrl
-                    ? html`<a .href=${this._changelogUrl} target="_blank">
+                  ${changelog
+                    ? html`<a .href=${changelog} target="_blank">
                         <mwc-button>Open releasenotes</mwc-button>
                       </a>`
                     : ""}
@@ -200,79 +220,65 @@ class UpdateAvailableDashboard extends LitElement {
     super.firstUpdated(changedProps);
     this._updateEntry = this.route.path.substring(1, this.route.path.length);
     this._isAddon = !["core", "os", "supervisor"].includes(this._updateEntry);
-    this._loadData();
+    if (this._isAddon) {
+      this._loadAddonData();
+    }
   }
 
-  private async _loadData() {
-    if (this._isAddon) {
+  private async _loadAddonData() {
+    try {
+      this._updateInfo = await fetchHassioAddonInfo(
+        this.hass,
+        this._updateEntry!
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this._updateEntry,
+        text: extractApiErrorMessage(err),
+        confirm: () => history.back(),
+      });
+      return;
+    }
+    const addonStoreInfo =
+      !this._updateInfo.detached && !this._updateInfo.available
+        ? this._addonStoreInfo(
+            this._updateInfo.slug,
+            this.supervisor.store.addons
+          )
+        : undefined;
+
+    if (this._updateInfo.changelog) {
       try {
-        this._updateInfo = await fetchHassioAddonInfo(
+        const content = await fetchHassioAddonChangelog(
           this.hass,
           this._updateEntry!
         );
+        this._changelogContent = extractChangelog(this._updateInfo, content);
       } catch (err) {
-        showAlertDialog(this, {
-          title: this._updateEntry,
-          text: extractApiErrorMessage(err),
-          confirm: () => history.back(),
-        });
+        this._error = extractApiErrorMessage(err);
         return;
       }
-      const addonStoreInfo =
-        !this._updateInfo.detached && !this._updateInfo.available
-          ? this._addonStoreInfo(
-              this._updateInfo.slug,
-              this.supervisor.store.addons
-            )
-          : undefined;
+    }
 
-      if (this._updateInfo.changelog) {
-        try {
-          const content = await fetchHassioAddonChangelog(
-            this.hass,
-            this._updateEntry!
-          );
-          this._changelogContent = extractChangelog(this._updateInfo, content);
-        } catch (err) {
-          this._error = extractApiErrorMessage(err);
-          return;
-        }
+    if (!this._updateInfo.available && addonStoreInfo) {
+      if (
+        !addonArchIsSupported(
+          this.supervisor.info.supported_arch,
+          this._updateInfo.arch
+        )
+      ) {
+        this._error = this.supervisor.localize(
+          "addon.dashboard.not_available_arch"
+        );
+      } else {
+        this._error = this.supervisor.localize(
+          "addon.dashboard.not_available_arch",
+          {
+            core_version_installed: this.supervisor.core.version,
+            core_version_needed: addonStoreInfo.homeassistant,
+          }
+        );
       }
-
-      if (!this._updateInfo.available && addonStoreInfo) {
-        if (
-          !addonArchIsSupported(
-            this.supervisor.info.supported_arch,
-            this._updateInfo.arch
-          )
-        ) {
-          this._error = this.supervisor.localize(
-            "addon.dashboard.not_available_arch"
-          );
-        } else {
-          this._error = this.supervisor.localize(
-            "addon.dashboard.not_available_arch",
-            {
-              core_version_installed: this.supervisor.core.version,
-              core_version_needed: addonStoreInfo.homeassistant,
-            }
-          );
-        }
-      }
-    } else if (this._updateEntry === "core") {
-      this._updateInfo = this.supervisor.core;
-      this._changelogUrl = documentationUrl(
-        this.hass,
-        "/latest-release-notes/"
-      );
-    } else if (this._updateEntry === "os") {
-      this._updateInfo = this.supervisor.os;
-      this._changelogUrl = !this._updateInfo.version_latest?.includes("dev")
-        ? `https://github.com/home-assistant/operating-system/releases/tag/${this._updateInfo.version_latest}`
-        : undefined;
-    } else if (this._updateEntry === "supervisor") {
-      this._updateInfo = this.supervisor.supervisor;
-      this._changelogUrl = `https://github.com/home-assistant/supervisor/releases/tag/${this._updateInfo.version_latest}`;
     }
   }
 

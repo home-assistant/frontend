@@ -4182,6 +4182,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "menu": "[%key:ui::common::menu%]",
+      "review": "[%key:ui::panel::config::updates::review%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
@@ -4219,6 +4220,7 @@
       "repositories": "Repositories"
     },
     "panel": {
+      "addons": "Add-ons",
       "dashboard": "Dashboard",
       "backups": "Backups",
       "store": "Add-on Store",
