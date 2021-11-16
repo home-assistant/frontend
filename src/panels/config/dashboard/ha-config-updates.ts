@@ -11,9 +11,11 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchSupervisorAvailableUpdates,
   SupervisorAvailableUpdates,
@@ -44,18 +46,26 @@ class HaConfigUpdates extends LitElement {
 
   @state() private _supervisorUpdates?: SupervisorAvailableUpdates[];
 
+  @state() private _error?: string;
+
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._loadSupervisorUpdates();
   }
 
   protected render(): TemplateResult {
-    if (!this._supervisorUpdates?.length) {
-      return html``;
-    }
     return html`
       <ha-card>
-        ${this._supervisorUpdates.map(
+        ${this._error
+          ? html`<ha-alert
+              .title=${this.hass.localize(
+                "ui.panel.config.updates.supervisor_error_title"
+              )}
+              alert-type="error"
+              >${this._error}</ha-alert
+            >`
+          : ""}
+        ${this._supervisorUpdates?.map(
           (update) => html`<ha-settings-row>
             <span slot="prefix">
               ${update.update_type === "addon" && update.icon
@@ -95,7 +105,13 @@ class HaConfigUpdates extends LitElement {
   }
 
   private async _loadSupervisorUpdates(): Promise<void> {
-    this._supervisorUpdates = await fetchSupervisorAvailableUpdates(this.hass);
+    try {
+      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
+        this.hass
+      );
+    } catch (err) {
+      this._error = extractApiErrorMessage(err);
+    }
   }
 
   static get styles(): CSSResultGroup {

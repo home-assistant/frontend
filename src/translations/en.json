@@ -927,6 +927,7 @@
           "learn_more": "Learn more"
         },
         "updates": {
+          "supervisor_error_title": "Could not fetch supervisor updates",
           "version_available": "Version {version_available} is available",
           "review": "review"
         },

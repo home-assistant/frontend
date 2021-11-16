@@ -182,10 +182,11 @@ export const subscribeSupervisorEvents = (
   hassioApiResultExtractor<SupervisorAvailableUpdatesResponse>(
     await hass.callWS({
       type: "supervisor/api",
-      endpoint: "/store",
+      endpoint: "/supervisor/available_updates",
       method: "get",
     })
-  ).available_updates; */
+  )?.available_updates;
+*/
 
 export const fetchSupervisorAvailableUpdates = async (
   _hass: HomeAssistant
