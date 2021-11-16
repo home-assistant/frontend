@@ -4193,6 +4193,9 @@
         "update_failed": "Update failed"
       }
     },
+    "update_available": {
+      "update_name": "Update {name}"
+    },
     "confirm": {
       "update": {
         "title": "Update {name}",

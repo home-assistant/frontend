@@ -1,3 +1,4 @@
+import "../../../src/components/ha-card";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowRight } from "@mdi/js";
 import {
@@ -115,9 +116,12 @@ class UpdateAvailableDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .header=${this.supervisor.localize("common.update")}
       >
-        <ha-card .header=${name}>
+        <ha-card
+          .header=${this.supervisor.localize("update_available.update_name", {
+            name,
+          })}
+        >
           <div class="card-content">
             ${this._error
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -338,6 +342,9 @@ class UpdateAvailableDashboard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+    hass-subpage {
+      --app-header-background-color: background-color: var(--primary-background-color);
+    }
       ha-card {
         margin: auto;
         margin-top: 16px;
