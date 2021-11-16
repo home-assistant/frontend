@@ -105,7 +105,8 @@ class HassioHostInfo extends LitElement {
               <span slot="description">
                 ${this.supervisor.host.operating_system}
               </span>
-              ${this.supervisor.os.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.os.update_available
                 ? html`
                     <a href="/hassio/update-available/os">
                       <mwc-button

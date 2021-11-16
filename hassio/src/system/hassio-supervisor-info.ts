@@ -76,7 +76,8 @@ class HassioSupervisorInfo extends LitElement {
               <span slot="description">
                 supervisor-${this.supervisor.supervisor.version_latest}
               </span>
-              ${this.supervisor.supervisor.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.supervisor.update_available
                 ? html`
                     <a href="/hassio/update-available/supervisor">
                       <mwc-button

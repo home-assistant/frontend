@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -65,7 +66,8 @@ class HassioCoreInfo extends LitElement {
               <span slot="description">
                 core-${this.supervisor.core.version_latest}
               </span>
-              ${this.supervisor.core.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.core.update_available
                 ? html`
                     <a href="/hassio/update-available/core">
                       <mwc-button
