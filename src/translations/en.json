@@ -601,7 +601,6 @@
             "zone": "[%key:ui::panel::config::zone::caption%]",
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
-            "customize": "[%key:ui::panel::config::customize::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
@@ -687,8 +686,6 @@
         "dismiss": "Dismiss",
         "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
-        "info_customize": "You can overwrite some attributes in the {customize_link} section.",
-        "customize_link": "entity customizations",
         "editor": {
           "name": "Name",
           "icon": "Icon",
@@ -1358,7 +1355,7 @@
               "heading": "YAML configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
               "reload": "{domain}",
-              "core": "Location & customizations",
+              "core": "Location",
               "group": "Groups, group entities, and notify services",
               "automation": "Automations",
               "script": "Scripts",
@@ -1398,27 +1395,6 @@
               "confirm_stop": "Are you sure you want to stop Home Assistant?"
             }
           }
-        },
-        "customize": {
-          "caption": "Customizations",
-          "description": "Customize your entities",
-          "picker": {
-            "header": "Customizations",
-            "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
-            "documentation": "Customization documentation"
-          },
-          "warning": {
-            "include_sentence": "It seems that your configuration.yaml doesn't properly",
-            "include_link": "include customize.yaml",
-            "not_applied": "Changes made here are written in it, but will not be applied after a configuration reload unless the include is in place."
-          },
-          "attributes_customize": "The following attributes are already set in customize.yaml",
-          "attributes_outside": "The following attributes are customized from outside of customize.yaml",
-          "different_include": "Possibly via a domain, a glob or a different include.",
-          "attributes_set": "The following attributes of the entity are set programmatically.",
-          "attributes_override": "You can override them if you like.",
-          "attributes_not_set": "The following attributes weren't set. Set them if you like.",
-          "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
           "caption": "Automations",
