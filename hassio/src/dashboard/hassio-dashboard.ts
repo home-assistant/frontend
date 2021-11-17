@@ -37,7 +37,8 @@ class HassioDashboard extends LitElement {
           ${this.supervisor.localize("panel.dashboard")}
         </span>
         <div class="content">
-          ${!atLeastVersion(this.hass.config.version, 2021, 12)
+          ${this.hass.config.version.includes("dev") ||
+          !atLeastVersion(this.hass.config.version, 2021, 12)
             ? html`
                 <hassio-update
                   .hass=${this.hass}
