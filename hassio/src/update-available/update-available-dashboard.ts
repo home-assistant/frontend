@@ -85,7 +85,7 @@ class UpdateAvailableDashboard extends LitElement {
 
   @state() private _changelogContent?: string;
 
-  @state() private _updateInfo?: HassioAddonDetails;
+  @state() private _addonInfo?: HassioAddonDetails;
 
   @state() private _createBackup = true;
 
@@ -106,7 +106,7 @@ class UpdateAvailableDashboard extends LitElement {
     }
     const name =
       // @ts-ignore
-      this._updateInfo?.name || SUPERVISOR_UPDATE_NAMES[this._updateEntry];
+      this._addonInfo?.name || SUPERVISOR_UPDATE_NAMES[this._updateEntry];
     const changelog = !this._isAddon
       ? changelogUrl(
           this.hass,
@@ -146,10 +146,10 @@ class UpdateAvailableDashboard extends LitElement {
                         {
                           name,
                           version:
-                            this._updateInfo?.version ||
+                            this._addonInfo?.version ||
                             this.supervisor[this._updateEntry]?.version,
                           newest_version:
-                            this._updateInfo?.version_latest ||
+                            this._addonInfo?.version_latest ||
                             this.supervisor[this._updateEntry]?.version_latest,
                         }
                       )}
@@ -161,7 +161,7 @@ class UpdateAvailableDashboard extends LitElement {
                               "update_available.core_note",
                               {
                                 version:
-                                  this._updateInfo?.version ||
+                                  this._addonInfo?.version ||
                                   this.supervisor[this._updateEntry]?.version,
                               }
                             )}
@@ -194,8 +194,8 @@ class UpdateAvailableDashboard extends LitElement {
                       ? this.supervisor.localize("dialog.update.updating", {
                           name,
                           version:
-                            this._updateInfo?.version ||
-                            this.supervisor[this._updateEntry]?.version,
+                            this._addonInfo?.version_latest ||
+                            this.supervisor[this._updateEntry]?.version_latest,
                         })
                       : this.supervisor.localize(
                           "dialog.update.creating_backup",
@@ -247,7 +247,7 @@ class UpdateAvailableDashboard extends LitElement {
 
   private async _loadAddonData() {
     try {
-      this._updateInfo = await fetchHassioAddonInfo(
+      this._addonInfo = await fetchHassioAddonInfo(
         this.hass,
         this._updateEntry!
       );
@@ -260,31 +260,31 @@ class UpdateAvailableDashboard extends LitElement {
       return;
     }
     const addonStoreInfo =
-      !this._updateInfo.detached && !this._updateInfo.available
+      !this._addonInfo.detached && !this._addonInfo.available
         ? this._addonStoreInfo(
-            this._updateInfo.slug,
+            this._addonInfo.slug,
             this.supervisor.store.addons
           )
         : undefined;
 
-    if (this._updateInfo.changelog) {
+    if (this._addonInfo.changelog) {
       try {
         const content = await fetchHassioAddonChangelog(
           this.hass,
           this._updateEntry!
         );
-        this._changelogContent = extractChangelog(this._updateInfo, content);
+        this._changelogContent = extractChangelog(this._addonInfo, content);
       } catch (err) {
         this._error = extractApiErrorMessage(err);
         return;
       }
     }
 
-    if (!this._updateInfo.available && addonStoreInfo) {
+    if (!this._addonInfo.available && addonStoreInfo) {
       if (
         !addonArchIsSupported(
           this.supervisor.info.supported_arch,
-          this._updateInfo.arch
+          this._addonInfo.arch
         )
       ) {
         this._error = this.supervisor.localize(
@@ -311,13 +311,13 @@ class UpdateAvailableDashboard extends LitElement {
       let backupArgs: HassioPartialBackupCreateParams;
       if (this._isAddon) {
         backupArgs = {
-          name: `addon_${this._updateEntry}_${this._updateInfo?.version}`,
+          name: `addon_${this._updateEntry}_${this._addonInfo?.version}`,
           addons: [this._updateEntry!],
           homeassistant: false,
         };
       } else {
         backupArgs = {
-          name: `${this._updateEntry}_${this._updateInfo?.version}`,
+          name: `${this._updateEntry}_${this._addonInfo?.version}`,
           folders: ["homeassistant"],
           homeassistant: true,
         };
