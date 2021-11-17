@@ -26,7 +26,10 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import { subscribeDeviceRegistry } from "../../../data/device_registry";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -73,10 +76,9 @@ export class HuiAreaCard
 
   @state() private _entities?: EntityRegistryEntry[];
 
-  @state() private _devicesInArea: Set<string> = new Set();
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  // null means area not found. undefined = loading.
-  @state() private _area?: AreaRegistryEntry | null;
+  @state() private _areas?: AreaRegistryEntry[];
 
   private _memberships = memoizeOne(
     (
@@ -133,20 +135,29 @@ export class HuiAreaCard
     }
   );
 
+  private _area = memoizeOne(
+    (areaId: string | undefined, areas: AreaRegistryEntry[]) =>
+      areas.find((area) => area.area_id === areaId) || null
+  );
+
+  private _devicesInArea = memoizeOne(
+    (areaId: string | undefined, devices: DeviceRegistryEntry[]) =>
+      new Set(
+        areaId
+          ? devices
+              .filter((device) => device.area_id === areaId)
+              .map((device) => device.id)
+          : []
+      )
+  );
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeAreaRegistry(this.hass!.connection, (areas) => {
-        this._area =
-          areas.find((area) => area.area_id === this._config!.area) || null;
+        this._areas = areas;
       }),
       subscribeDeviceRegistry(this.hass!.connection, (devices) => {
-        this._devicesInArea = new Set(
-          this._config
-            ? devices
-                .filter((device) => device.area_id === this._config!.area_id)
-                .map((device) => device.id)
-            : []
-        );
+        this._devices = devices;
       }),
       subscribeEntityRegistry(this.hass!.connection, (entries) => {
         this._entities = entries;
@@ -193,13 +204,17 @@ export class HuiAreaCard
       return true;
     }
 
-    if (!this._devicesInArea || !this._entities) {
+    if (
+      !this._devices ||
+      !this._devicesInArea(this._config.area, this._devices) ||
+      !this._entities
+    ) {
       return false;
     }
 
     const { sensorEntities, entitiesToggle } = this._memberships(
       this._config.area,
-      this._devicesInArea,
+      this._devicesInArea(this._config.area, this._devices),
       this._entities,
       this.hass.states
     );
@@ -223,8 +238,8 @@ export class HuiAreaCard
     if (
       !this._config ||
       !this.hass ||
-      this._area === undefined ||
-      !this._devicesInArea ||
+      !this._areas ||
+      !this._devices ||
       !this._entities
     ) {
       return html``;
@@ -232,12 +247,14 @@ export class HuiAreaCard
 
     const { sensorEntities, entitiesToggle } = this._memberships(
       this._config.area,
-      this._devicesInArea,
+      this._devicesInArea(this._config.area, this._devices),
       this._entities,
       this.hass.states
     );
 
-    if (this._area === null) {
+    const area = this._area(this._config.area, this._areas);
+
+    if (area === null) {
       return html`
         <hui-warning>
           ${this.hass.localize("ui.card.area.area_not_found")}
@@ -248,7 +265,7 @@ export class HuiAreaCard
     return html`
       <ha-card
         style=${styleMap({
-          "background-image": `url(${this.hass.hassUrl(this._area.picture)})`,
+          "background-image": `url(${this.hass.hassUrl(area.picture)})`,
         })}
       >
         <div class="container">
@@ -278,7 +295,7 @@ export class HuiAreaCard
               class="name ${this._config.navigation_path ? "navigate" : ""}"
               @click=${this._handleNavigation}
             >
-              ${this._area!.name}
+              ${area.name}
             </div>
             <div class="buttons">
               ${entitiesToggle.map(
