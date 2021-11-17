@@ -17,7 +17,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { navigate } from "../../../common/navigate";
-import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -42,15 +41,15 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
 
-const SENSOR_DOMAINS = ["sensor", "binary_sensor"];
+const SENSOR_DOMAINS = new Set(["sensor", "binary_sensor"]);
 
-const SENSOR_DEVICE_CLASSES = [
+const SENSOR_DEVICE_CLASSES = new Set([
   "temperature",
   "humidity",
   "motion",
   "door",
   "aqi",
-];
+]);
 
 const TOGGLE_DOMAINS = new Set(["light", "fan", "switch"]);
 
@@ -101,7 +100,7 @@ export class HuiAreaCard
 
       for (const entity of entitiesInArea) {
         const domain = computeDomain(entity);
-        if (!TOGGLE_DOMAINS.has(domain) && !SENSOR_DOMAINS.includes(domain)) {
+        if (!TOGGLE_DOMAINS.has(domain) && !SENSOR_DOMAINS.has(domain)) {
           continue;
         }
 
@@ -118,9 +117,9 @@ export class HuiAreaCard
 
         if (
           sensorEntities.length < 3 &&
-          SENSOR_DOMAINS.includes(domain) &&
+          SENSOR_DOMAINS.has(domain) &&
           stateObj.attributes.device_class &&
-          SENSOR_DEVICE_CLASSES.includes(stateObj.attributes.device_class)
+          SENSOR_DEVICE_CLASSES.has(stateObj.attributes.device_class)
         ) {
           sensorEntities.push(stateObj);
         }
@@ -349,65 +348,62 @@ export class HuiAreaCard
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      iconColorCSS,
-      css`
-        ha-card {
-          overflow: hidden;
-          position: relative;
-          padding-bottom: 56.25%;
-          background-size: cover;
-        }
+    return css`
+      ha-card {
+        overflow: hidden;
+        position: relative;
+        padding-bottom: 56.25%;
+        background-size: cover;
+      }
 
-        .container {
-          display: flex;
-          flex-direction: column;
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background-color: rgba(0, 0, 0, 0.4);
-        }
+      .container {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
 
-        .sensors {
-          color: white;
-          font-size: 18px;
-          flex: 1;
-          padding: 16px;
-          --mdc-icon-size: 28px;
-          cursor: pointer;
-        }
+      .sensors {
+        color: white;
+        font-size: 18px;
+        flex: 1;
+        padding: 16px;
+        --mdc-icon-size: 28px;
+        cursor: pointer;
+      }
 
-        .name {
-          color: white;
-          font-size: 24px;
-        }
+      .name {
+        color: white;
+        font-size: 24px;
+      }
 
-        .bottom {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 8px 8px 8px 16px;
-        }
+      .bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 8px 8px 16px;
+      }
 
-        .name.navigate {
-          cursor: pointer;
-        }
+      .name.navigate {
+        cursor: pointer;
+      }
 
-        state-badge {
-          --ha-icon-display: inline;
-        }
+      state-badge {
+        --ha-icon-display: inline;
+      }
 
-        ha-icon-button {
-          color: white;
-          background-color: var(--area-button-color, rgb(175, 175, 175, 0.5));
-          border-radius: 50%;
-          margin-left: 8px;
-          --mdc-icon-button-size: 44px;
-        }
-      `,
-    ];
+      ha-icon-button {
+        color: white;
+        background-color: var(--area-button-color, rgb(175, 175, 175, 0.5));
+        border-radius: 50%;
+        margin-left: 8px;
+        --mdc-icon-button-size: 44px;
+      }
+    `;
   }
 }
 
