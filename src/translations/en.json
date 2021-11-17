@@ -116,6 +116,9 @@
         "arm_vacation": "Arm vacation",
         "arm_custom_bypass": "Custom bypass"
       },
+      "area": {
+        "area_not_found": "Area not found."
+      },
       "automation": {
         "last_triggered": "Last triggered",
         "trigger": "Run Actions"
@@ -3211,6 +3214,10 @@
               "name": "Alarm Panel",
               "available_states": "Available States",
               "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
+            },
+            "area": {
+              "name": "Area",
+              "description": "The Area card automatically displays entities of a specific area."
             },
             "calendar": {
               "name": "Calendar",

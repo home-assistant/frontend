@@ -172,6 +172,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           {
             area_id: "",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
+            picture: null,
           },
         ];
       }
@@ -295,6 +296,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           {
             area_id: "",
             name: this.hass.localize("ui.components.area-picker.no_match"),
+            picture: null,
           },
         ];
       }
@@ -306,6 +308,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
             {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
+              picture: null,
             },
           ];
     }
