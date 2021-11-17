@@ -140,15 +140,34 @@ class UpdateAvailableDashboard extends LitElement {
                       `
                     : ""}
                   <div class="versions">
-                    ${this.supervisor.localize("update_available.description", {
-                      name,
-                      version:
-                        this._updateInfo?.version ||
-                        this.supervisor[this._updateEntry]?.version,
-                      newest_version:
-                        this._updateInfo?.version_latest ||
-                        this.supervisor[this._updateEntry]?.version_latest,
-                    })}
+                    <p>
+                      ${this.supervisor.localize(
+                        "update_available.description",
+                        {
+                          name,
+                          version:
+                            this._updateInfo?.version ||
+                            this.supervisor[this._updateEntry]?.version,
+                          newest_version:
+                            this._updateInfo?.version_latest ||
+                            this.supervisor[this._updateEntry]?.version_latest,
+                        }
+                      )}
+                    </p>
+                    ${this._updateEntry === "core"
+                      ? html`
+                          <i>
+                            ${this.supervisor.localize(
+                              "update_available.core_note",
+                              {
+                                version:
+                                  this._updateInfo?.version ||
+                                  this.supervisor[this._updateEntry]?.version,
+                              }
+                            )}
+                          </i>
+                        `
+                      : ""}
                   </div>
                   ${!["os", "supervisor"].includes(this._updateEntry)
                     ? html`
