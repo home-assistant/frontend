@@ -33,6 +33,7 @@ const ALWAYS_LOADED_TYPES = new Set([
 
 const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
+  area: () => import("../cards/hui-area-card"),
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
   "energy-usage-graph": () =>
