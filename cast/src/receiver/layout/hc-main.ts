@@ -40,9 +40,9 @@ export class HcMain extends HassElement {
 
   @state() private _error?: string;
 
-  private _unsubLovelace?: UnsubscribeFunc;
+  @state() private _urlPath?: string | null;
 
-  private _urlPath?: string | null;
+  private _unsubLovelace?: UnsubscribeFunc;
 
   public processIncomingMessage(msg: HassMessage) {
     if (msg.type === "connect") {
@@ -68,8 +68,10 @@ export class HcMain extends HassElement {
       !this._lovelaceConfig ||
       this._lovelacePath === null ||
       // Guard against part of HA not being loaded yet.
-      (this.hass &&
-        (!this.hass.states || !this.hass.config || !this.hass.services))
+      !this.hass ||
+      !this.hass.states ||
+      !this.hass.config ||
+      !this.hass.services
     ) {
       return html`
         <hc-launch-screen
@@ -119,7 +121,7 @@ export class HcMain extends HassElement {
 
     if (this.hass) {
       status.hassUrl = this.hass.auth.data.hassUrl;
-      status.lovelacePath = this._lovelacePath!;
+      status.lovelacePath = this._lovelacePath;
       status.urlPath = this._urlPath;
     }
 
@@ -173,6 +175,7 @@ export class HcMain extends HassElement {
   }
 
   private async _handleShowLovelaceMessage(msg: ShowLovelaceViewMessage) {
+    this._showDemo = false;
     // We should not get this command before we are connected.
     // Means a client got out of sync. Let's send status to them.
     if (!this.hass) {
@@ -183,14 +186,16 @@ export class HcMain extends HassElement {
     if (msg.urlPath === "lovelace") {
       msg.urlPath = null;
     }
+    this._lovelacePath = msg.viewPath;
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
       this._urlPath = msg.urlPath;
+      this._lovelaceConfig = undefined;
       if (this._unsubLovelace) {
         this._unsubLovelace();
       }
       const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
-        ? getLovelaceCollection(this.hass!.connection, msg.urlPath)
-        : getLegacyLovelaceCollection(this.hass!.connection);
+        ? getLovelaceCollection(this.hass.connection, msg.urlPath)
+        : getLegacyLovelaceCollection(this.hass.connection);
       // We first do a single refresh because we need to check if there is LL
       // configuration.
       try {
@@ -199,8 +204,12 @@ export class HcMain extends HassElement {
           this._handleNewLovelaceConfig(lovelaceConfig)
         );
       } catch (err: any) {
-        // eslint-disable-next-line
-        console.log("Error fetching Lovelace configuration", err, msg);
+        if (err.code !== "config_not_found") {
+          // eslint-disable-next-line
+          console.log("Error fetching Lovelace configuration", err, msg);
+          this._error = `Error fetching Lovelace configuration: ${err.message}`;
+          return;
+        }
         // Generate a Lovelace config.
         this._unsubLovelace = () => undefined;
         await this._generateLovelaceConfig();
@@ -215,8 +224,6 @@ export class HcMain extends HassElement {
         loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
       }
     }
-    this._showDemo = false;
-    this._lovelacePath = msg.viewPath;
 
     this._sendStatus();
   }
@@ -237,7 +244,7 @@ export class HcMain extends HassElement {
   }
 
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
-    castContext.setApplicationState(lovelaceConfig.title!);
+    castContext.setApplicationState(lovelaceConfig.title || "");
     this._lovelaceConfig = lovelaceConfig;
   }
 

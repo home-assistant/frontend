@@ -26,7 +26,9 @@ class HaEntityMarker extends LitElement {
           ? html`<div
               class="entity-picture"
               style=${styleMap({
-                "background-image": `url(${this.entityPicture})`,
+                "background-image": `url(${this.hass.hassUrl(
+                  this.entityPicture
+                )})`,
               })}
             ></div>`
           : this.entityName}
