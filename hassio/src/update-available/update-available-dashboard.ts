@@ -56,15 +56,19 @@ const changelogUrl = (
   version: string
 ): string | undefined => {
   if (entry === "core") {
-    return documentationUrl(hass, "/latest-release-notes/");
+    return version?.includes("dev")
+      ? "https://github.com/home-assistant/core/commits/dev"
+      : documentationUrl(hass, "/latest-release-notes/");
   }
   if (entry === "os") {
-    return !version?.includes("dev")
-      ? `https://github.com/home-assistant/operating-system/releases/tag/${version}`
-      : undefined;
+    return version?.includes("dev")
+      ? "https://github.com/home-assistant/operating-system/commits/dev"
+      : `https://github.com/home-assistant/operating-system/releases/tag/${version}`;
   }
   if (entry === "supervisor") {
-    return `https://github.com/home-assistant/supervisor/releases/tag/${version}`;
+    return version?.includes("dev")
+      ? "https://github.com/home-assistant/supervisor/commits/main"
+      : `https://github.com/home-assistant/supervisor/releases/tag/${version}`;
   }
   return undefined;
 };
