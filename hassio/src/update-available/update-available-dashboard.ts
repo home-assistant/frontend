@@ -191,14 +191,14 @@ class UpdateAvailableDashboard extends LitElement {
                   </ha-circular-progress>
                   <p class="progress-text">
                     ${this._action === "update"
-                      ? this.supervisor.localize("dialog.update.updating", {
+                      ? this.supervisor.localize("update_available.updating", {
                           name,
                           version:
                             this._addonInfo?.version_latest ||
                             this.supervisor[this._updateEntry]?.version_latest,
                         })
                       : this.supervisor.localize(
-                          "dialog.update.creating_backup",
+                          "update_available.creating_backup",
                           { name }
                         )}
                   </p>`}
