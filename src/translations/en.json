@@ -926,6 +926,11 @@
           },
           "learn_more": "Learn more"
         },
+        "updates": {
+          "unable_to_fetch": "Unable to fetch available updates",
+          "version_available": "Version {version_available} is available",
+          "review": "review"
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
@@ -4178,6 +4183,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "menu": "[%key:ui::common::menu%]",
+      "review": "[%key:ui::panel::config::updates::review%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
@@ -4187,11 +4193,16 @@
         "update_failed": "Update failed"
       }
     },
+    "update_available": {
+      "update_name": "Update {name}",
+      "open_release_notes": "Open release notes",
+      "create_backup": "Create backup before updating",
+      "description": "There is an update available for the {name}. You have {version} installed. Click update to update to version {newest_version}",
+      "core_note": "The supervisor will roll back to version {version} if your instance does not come up after the update.",
+      "updating": "Updating {name} to version {version}",
+      "creating_backup": "Creating backup of {name}"
+    },
     "confirm": {
-      "update": {
-        "title": "Update {name}",
-        "text": "Are you sure you want to update {name} to version {version}?"
-      },
       "restart": {
         "title": "[%key:supervisor::common::restart_name%]",
         "text": "Are you sure you want to restart {name}?"
@@ -4215,6 +4226,7 @@
       "repositories": "Repositories"
     },
     "panel": {
+      "addons": "Add-ons",
       "dashboard": "Dashboard",
       "backups": "Backups",
       "store": "Add-on Store",
@@ -4381,12 +4393,6 @@
       "restart_addon": {
         "confirm_text": "Restart add-on",
         "text": "Do you want to restart the add-on with your changes?"
-      },
-      "update": {
-        "backup": "Backup",
-        "create_backup": "Create a backup of {name} before updating",
-        "updating": "Updating {name} to version {version}",
-        "creating_backup": "Creating backup of {name}"
       },
       "hardware": {
         "title": "Hardware",

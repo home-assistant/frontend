@@ -28,7 +28,7 @@ class HassioSystem extends LitElement {
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${supervisorTabs}
+        .tabs=${supervisorTabs(this.hass)}
         main-page
         supervisor
       >

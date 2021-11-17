@@ -51,7 +51,7 @@ import {
 } from "../external_app/external_config";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant, PanelInfo } from "../types";
+import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-menu-button";
@@ -188,6 +188,8 @@ class HaSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
+  @property() public route!: Route;
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
@@ -351,12 +353,19 @@ class HaSidebar extends LitElement {
       this._hiddenPanels
     );
 
+    // Show the update-available as beeing part of configuration
+    const selectedPanel = this.route.path?.startsWith(
+      "/hassio/update-available"
+    )
+      ? "config"
+      : this.hass.panelUrl;
+
     // prettier-ignore
     return html`
       <paper-listbox
         attr-for-selected="data-panel"
         class="ha-scrollbar"
-        .selected=${this.hass.panelUrl}
+        .selected=${selectedPanel}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
