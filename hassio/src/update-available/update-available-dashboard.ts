@@ -1,4 +1,3 @@
-import "../../../src/components/ha-card";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowRight } from "@mdi/js";
 import {
@@ -15,6 +14,7 @@ import "../../../src/common/search/search-input";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-card";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-expansion-panel";
 import "../../../src/components/ha-icon-button";

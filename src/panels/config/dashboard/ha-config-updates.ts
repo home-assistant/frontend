@@ -48,8 +48,9 @@ class HaConfigUpdates extends LitElement {
               "ui.panel.config.updates.unable_to_fetch"
             )}
             alert-type="error"
-            >${this._error}</ha-alert
-          >`
+          >
+            ${this._error}
+          </ha-alert>`
         : ""}
       ${this._supervisorUpdates?.map(
         (update) => html`

@@ -176,41 +176,13 @@ export const subscribeSupervisorEvents = (
     onChange
   );
 
-/* export const fetchSupervisorAvailableUpdates = async (
+export const fetchSupervisorAvailableUpdates = async (
   hass: HomeAssistant
 ): Promise<SupervisorAvailableUpdates[]> =>
-  hassioApiResultExtractor<SupervisorAvailableUpdatesResponse>(
-    await hass.callWS({
+  (
+    await hass.callWS<SupervisorAvailableUpdatesResponse>({
       type: "supervisor/api",
       endpoint: "/supervisor/available_updates",
       method: "get",
     })
-  )?.available_updates;
-*/
-
-export const fetchSupervisorAvailableUpdates = async (
-  _hass: HomeAssistant
-): Promise<SupervisorAvailableUpdates[]> => [
-  {
-    panel_path: "/update-available/core",
-    update_type: "core",
-    version_latest: "2021.12.0b0",
-  },
-  {
-    panel_path: "/update-available/os",
-    update_type: "os",
-    version_latest: "7.0rc1",
-  },
-  {
-    panel_path: "/update-available/supervisor",
-    update_type: "supervisor",
-    version_latest: "2021.12.3",
-  },
-  {
-    name: "Mosquitto broker",
-    icon: "/addons/core_mosquitto/icon",
-    panel_path: "/update-available/core_mosquitto",
-    update_type: "addon",
-    version_latest: "1.2.0",
-  },
-];
+  ).available_updates;
