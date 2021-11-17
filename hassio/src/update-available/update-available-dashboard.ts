@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowRight } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -141,27 +140,15 @@ class UpdateAvailableDashboard extends LitElement {
                       `
                     : ""}
                   <div class="versions">
-                    <span></span>
-                    <ha-settings-row>
-                      <span slot="heading">
-                        ${this.supervisor.localize("common.version")}
-                      </span>
-                      <span slot="description">
-                        ${this._updateInfo?.version ||
-                        this.supervisor[this._updateEntry]?.version}
-                      </span>
-                    </ha-settings-row>
-                    <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
-                    <ha-settings-row>
-                      <span slot="heading">
-                        ${this.supervisor.localize("common.newest_version")}
-                      </span>
-                      <span slot="description">
-                        ${this._updateInfo?.version_latest ||
-                        this.supervisor[this._updateEntry]?.version}
-                      </span>
-                    </ha-settings-row>
-                    <span></span>
+                    ${this.supervisor.localize("update_available.description", {
+                      name,
+                      version:
+                        this._updateInfo?.version ||
+                        this.supervisor[this._updateEntry]?.version,
+                      newest_version:
+                        this._updateInfo?.version_latest ||
+                        this.supervisor[this._updateEntry]?.version_latest,
+                    })}
                   </div>
                   ${!["os", "supervisor"].includes(this._updateEntry)
                     ? html`
@@ -173,14 +160,8 @@ class UpdateAvailableDashboard extends LitElement {
                           >
                           </ha-checkbox>
                           <span slot="heading">
-                            ${this.supervisor.localize("dialog.update.backup")}
-                          </span>
-                          <span slot="description">
                             ${this.supervisor.localize(
-                              "dialog.update.create_backup",
-                              {
-                                name,
-                              }
+                              "update_available.create_backup"
                             )}
                           </span>
                         </ha-settings-row>
@@ -207,8 +188,17 @@ class UpdateAvailableDashboard extends LitElement {
             ? html`
                 <div class="card-actions">
                   ${changelog
-                    ? html`<a .href=${changelog} target="_blank">
-                        <mwc-button>Open releasenotes</mwc-button>
+                    ? html`<a
+                        .href=${changelog}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <mwc-button
+                          .label=${this.supervisor.localize(
+                            "update_available.open_release_notes"
+                          )}
+                        >
+                        </mwc-button>
                       </a>`
                     : ""}
                   <span></span>
@@ -360,16 +350,6 @@ class UpdateAvailableDashboard extends LitElement {
       }
       ha-settings-row {
         padding: 0;
-      }
-      .versions {
-        --mdc-icon-size: 32px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        margin: auto;
-      }
-      .versions ha-settings-row {
-        text-align: center;
       }
       .card-actions {
         display: flex;
