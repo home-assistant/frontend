@@ -59,6 +59,7 @@ const LAZY_LOAD_TYPES = {
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   humidifier: () => import("../cards/hui-humidifier-card"),
   "media-control": () => import("../cards/hui-media-control-card"),
+  person: () => import("../cards/hui-person-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),
   "picture-glance": () => import("../cards/hui-picture-glance-card"),

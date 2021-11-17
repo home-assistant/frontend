@@ -288,6 +288,10 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
   theme?: string;
 }
+export interface PersonCardConfig extends LovelaceCardConfig {
+  entity?: string;
+  theme?: string;
+}
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;

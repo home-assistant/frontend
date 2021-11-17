@@ -58,6 +58,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "person",
+    showElement: true,
+  },
+  {
     type: "picture",
     showElement: true,
   },
