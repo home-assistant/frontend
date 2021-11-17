@@ -176,6 +176,7 @@ class HaPanelDevStatistics extends LitElement {
             it from your database.<br /><br />Do you want to permanently remove
             the long term statistics of ${issue.data.statistic_id} from your
             database?`,
+          confirmText: this.hass.localize("ui.common.remove"),
           confirm: async () => {
             await clearStatistics(this.hass, [issue.data.statistic_id]);
             this._validateStatistics();
