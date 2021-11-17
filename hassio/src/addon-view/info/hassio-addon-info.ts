@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import {
-  mdiArrowUpBoldCircle,
   mdiCheckCircle,
   mdiChip,
   mdiCircle,
@@ -49,7 +48,6 @@ import {
   startHassioAddon,
   stopHassioAddon,
   uninstallHassioAddon,
-  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -69,9 +67,8 @@ import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
-import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
-import { addonArchIsSupported } from "../../util/addon";
+import { addonArchIsSupported, extractChangelog } from "../../util/addon";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -128,69 +125,23 @@ class HassioAddonInfo extends LitElement {
     return html`
       ${this.addon.update_available
         ? html`
-            <ha-card
-              .header="${this.supervisor.localize(
-                "common.update_available",
-                "count",
-                1
-              )}🎉"
+            <ha-alert
+              .title=${this.supervisor.localize("common.update_available", {
+                count: 1,
+              })}
             >
-              <div class="card-content">
-                <hassio-card-content
-                  .hass=${this.hass}
-                  .title=${this.supervisor.localize(
-                    "addon.dashboard.new_update_available",
-                    "name",
-                    this.addon.name,
-                    "version",
-                    this.addon.version_latest
-                  )}
-                  .description=${this.supervisor.localize(
-                    "common.running_version",
-                    "version",
-                    this.addon.version
-                  )}
-                  icon=${mdiArrowUpBoldCircle}
-                  iconClass="update"
-                ></hassio-card-content>
-                ${!this.addon.available && addonStoreInfo
-                  ? !addonArchIsSupported(
-                      this.supervisor.info.supported_arch,
-                      this.addon.arch
-                    )
-                    ? html`
-                        <ha-alert alert-type="warning">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.not_available_arch"
-                          )}
-                        </ha-alert>
-                      `
-                    : html`
-                        <ha-alert alert-type="warning">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.not_available_arch",
-                            "core_version_installed",
-                            this.supervisor.core.version,
-                            "core_version_needed",
-                            addonStoreInfo.homeassistant
-                          )}
-                        </ha-alert>
-                      `
-                  : ""}
-              </div>
-              <div class="card-actions">
-                ${this.addon.changelog
-                  ? html`
-                      <mwc-button @click=${this._openChangelog}>
-                        ${this.supervisor.localize("addon.dashboard.changelog")}
-                      </mwc-button>
-                    `
-                  : html`<span></span>`}
-                <mwc-button @click=${this._updateClicked}>
-                  ${this.supervisor.localize("common.update")}
+              ${this.supervisor.localize(
+                "addon.dashboard.new_update_available",
+                { name: this.addon.name, version: this.addon.version_latest }
+              )}
+              <a
+                href="/hassio/update-available/${this.addon.slug}"
+                slot="action"
+              >
+                <mwc-button .label=${this.supervisor.localize("common.review")}>
                 </mwc-button>
-              </div>
-            </ha-card>
+              </a>
+            </ha-alert>
           `
         : ""}
       ${!this.addon.protected
@@ -899,22 +850,14 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
-      if (
-        content.includes(`# ${this.addon.version}`) &&
-        content.includes(`# ${this.addon.version_latest}`)
-      ) {
-        const newcontent = content.split(`# ${this.addon.version}`)[0];
-        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
-          // Only change the content if the new version still exist
-          // if the changelog does not have the newests version on top
-          // this will not be true, and we don't modify the content
-          content = newcontent;
-        }
-      }
+      const content = await fetchHassioAddonChangelog(
+        this.hass,
+        this.addon.slug
+      );
+
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
-        content,
+        content: extractChangelog(this.addon, content),
       });
     } catch (err: any) {
       showAlertDialog(this, {
@@ -987,33 +930,6 @@ class HassioAddonInfo extends LitElement {
       });
     }
     button.progress = false;
-  }
-
-  private async _updateClicked(): Promise<void> {
-    showDialogSupervisorUpdate(this, {
-      supervisor: this.supervisor,
-      name: this.addon.name,
-      version: this.addon.version_latest,
-      backupParams: {
-        name: `addon_${this.addon.slug}_${this.addon.version}`,
-        addons: [this.addon.slug],
-        homeassistant: false,
-      },
-      updateHandler: async () => this._updateAddon(),
-    });
-  }
-
-  private async _updateAddon(): Promise<void> {
-    await updateHassioAddon(this.hass, this.addon.slug);
-    fireEvent(this, "supervisor-collection-refresh", {
-      collection: "addon",
-    });
-    const eventdata = {
-      success: true,
-      response: undefined,
-      path: "update",
-    };
-    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -1242,6 +1158,13 @@ class HassioAddonInfo extends LitElement {
 
         .addon-container > div:last-of-type {
           align-self: end;
+        }
+
+        ha-alert mwc-button {
+          --mdc-theme-primary: var(--primary-text-color);
+        }
+        a {
+          text-decoration: none;
         }
 
         @media (max-width: 720px) {
