@@ -29,6 +29,8 @@ const strategies: Record<
     (await import("./original-states-strategy")).OriginalStatesStrategy,
   energy: async () =>
     (await import("../../energy/strategies/energy-strategy")).EnergyStrategy,
+  "area-overview": async () =>
+    (await import("./area-overview-strategy")).AreaOverviewStrategy,
 };
 
 const getLovelaceStrategy = async <

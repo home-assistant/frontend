@@ -345,7 +345,8 @@ export const generateDefaultViewConfig = (
   entityEntries: EntityRegistryEntry[],
   entities: HassEntities,
   localize: LocalizeFunc,
-  energyPrefs?: EnergyPreferences
+  energyPrefs?: EnergyPreferences,
+  areaOnly?: boolean
 ): LovelaceViewConfig => {
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
@@ -373,7 +374,7 @@ export const generateDefaultViewConfig = (
     path,
     title,
     icon,
-    splittedByAreas.otherEntities,
+    areaOnly ? {} : splittedByAreas.otherEntities,
     groupOrders
   );
 
@@ -390,7 +391,7 @@ export const generateDefaultViewConfig = (
     );
   });
 
-  if (energyPrefs) {
+  if (energyPrefs && !areaOnly) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
       (source) => source.type === "grid"
