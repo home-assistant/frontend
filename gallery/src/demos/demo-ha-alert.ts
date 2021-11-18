@@ -105,7 +105,7 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action (RTL)",
     type: "error",
-    action: "restart",
+    actionSlot: html`<mwc-button slot="action" label="restart"></mwc-button>`,
     rtl: true,
   },
   {
