@@ -115,6 +115,9 @@ class HaAlert extends LitElement {
       margin-right: 8px;
       width: 24px;
     }
+    slot[name="icon"]::slotted(*) {
+      position: relative;
+    }
     .icon.no-title {
       align-self: center;
     }
