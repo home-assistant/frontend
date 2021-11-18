@@ -176,7 +176,18 @@ export const computeCards = (
     });
   }
 
-  return cards;
+  if (cards.length < 2) {
+    return cards;
+  }
+
+  return [
+    {
+      type: "grid",
+      square: false,
+      columns: 1,
+      cards,
+    },
+  ];
 };
 
 const computeDefaultViewStates = (
