@@ -1,3 +1,4 @@
+import "../../../src/components/ha-faded";
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
@@ -133,10 +134,10 @@ class UpdateAvailableDashboard extends LitElement {
               ? html`
                   ${this._changelogContent
                     ? html`
-                        <ha-expansion-panel header="Changelog" outlined>
+                        <ha-faded>
                           <ha-markdown .content=${this._changelogContent}>
                           </ha-markdown>
-                        </ha-expansion-panel>
+                        </ha-faded>
                       `
                     : ""}
                   <div class="versions">
