@@ -21,7 +21,7 @@ declare global {
 
 @customElement("ha-chip-set")
 export class HaChipSet extends LitElement {
-  @property() public items = [];
+  @property() public items: string[] = [];
 
   protected render(): TemplateResult {
     if (this.items.length === 0) {
