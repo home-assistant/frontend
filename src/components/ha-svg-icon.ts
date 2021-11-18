@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, LitElement, svg, SVGTemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { getColorByIndex } from "../common/color/colors";
 
 @customElement("ha-svg-icon")
 export class HaSvgIcon extends LitElement {
@@ -8,14 +7,14 @@ export class HaSvgIcon extends LitElement {
 
   @property() public viewBox?: string;
 
-  @property({ type: Boolean }) public background = false;
+  @property({ attribute: "background-color" }) public backgroundColor?: string;
 
   protected render(): SVGTemplateResult {
     return svg`
     <svg
-      class="${this.background ? "background" : ""}"
+      class="${this.backgroundColor ? "background" : ""}"
       style="background-color: ${
-        this.background ? getColorByIndex(this.path?.length || 0) : "undefined"
+        this.backgroundColor ? this.backgroundColor : "undefined"
       };"
       viewBox=${this.viewBox || "0 0 24 24"}
       preserveAspectRatio="xMidYMid meet"

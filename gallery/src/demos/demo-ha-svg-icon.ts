@@ -1,12 +1,7 @@
-import {
-  mdiRocketLaunch,
-  mdiHomeAssistant,
-  mdiDocker,
-  mdiExclamationThick,
-  mdiFlask,
-} from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
+import { getColorByIndex } from "../../../src/common/color/colors";
+import { FIXED_DOMAIN_ICONS } from "../../../src/common/const";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-svg-icon";
 
@@ -16,26 +11,22 @@ export class DemoHaSvgIcon extends LitElement {
     return html`
       <ha-card header="ha-svg-icon demo">
         <div class="card-content">
-          <div class="icon">
-            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-            <ha-svg-icon .path=${mdiHomeAssistant} background></ha-svg-icon>
-          </div>
-          <div class="icon">
-            <ha-svg-icon .path=${mdiRocketLaunch}></ha-svg-icon>
-            <ha-svg-icon .path=${mdiRocketLaunch} background></ha-svg-icon>
-          </div>
-          <div class="icon">
-            <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
-            <ha-svg-icon .path=${mdiDocker} background></ha-svg-icon>
-          </div>
-          <div class="icon">
-            <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
-            <ha-svg-icon .path=${mdiExclamationThick} background></ha-svg-icon>
-          </div>
-          <div class="icon">
-            <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
-            <ha-svg-icon .path=${mdiFlask} background></ha-svg-icon>
-          </div>
+          ${Object.values(FIXED_DOMAIN_ICONS).map(
+            (icon) => html`
+              <div class="icon">
+                <ha-svg-icon .path=${icon}></ha-svg-icon>
+                <ha-svg-icon
+                  .path=${icon}
+                  .backgroundColor=${getColorByIndex(icon.length)}
+                ></ha-svg-icon>
+                <ha-svg-icon
+                  class="background"
+                  .path=${icon}
+                  .backgroundColor=${getColorByIndex(icon.length)}
+                ></ha-svg-icon>
+              </div>
+            `
+          )}
         </div>
       </ha-card>
     `;
@@ -50,7 +41,7 @@ export class DemoHaSvgIcon extends LitElement {
       ha-svg-icon {
         margin: 4px;
       }
-      ha-svg-icon[background] {
+      .background {
         color: var(--card-background-color);
       }
       .icon {
