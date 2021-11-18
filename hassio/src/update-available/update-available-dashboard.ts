@@ -355,9 +355,10 @@ class UpdateAvailableDashboard extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-    hass-subpage {
-      --app-header-background-color: background-color: var(--primary-background-color);
-    }
+      hass-subpage {
+        --app-header-background-color: var(--primary-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+      }
       ha-card {
         margin: auto;
         margin-top: 16px;
