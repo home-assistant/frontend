@@ -151,14 +151,18 @@ class HassioAddonInfo extends LitElement {
               .title=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.title"
               )}
-              .actionText=${this.supervisor.localize(
-                "addon.dashboard.protection_mode.enable"
-              )}
-              @alert-action-clicked=${this._protectionToggled}
             >
               ${this.supervisor.localize(
                 "addon.dashboard.protection_mode.content"
               )}
+              <mwc-button
+                slot="action"
+                .label=${this.supervisor.localize(
+                  "addon.dashboard.protection_mode.enable"
+                )}
+                @click=${this._protectionToggled}
+              >
+              </mwc-button>
             </ha-alert>
           `
         : ""}

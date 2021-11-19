@@ -9,7 +9,6 @@ const alerts: {
   description: string | TemplateResult;
   type: "info" | "warning" | "error" | "success";
   dismissable?: boolean;
-  action?: string;
   rtl?: boolean;
   iconSlot?: TemplateResult;
   actionSlot?: TemplateResult;
@@ -76,13 +75,13 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action",
     type: "error",
-    action: "restart",
+    actionSlot: html`<mwc-button slot="action" label="restart"></mwc-button>`,
   },
   {
     title: "Unsaved data",
     description: "You have unsaved data",
     type: "warning",
-    action: "save",
+    actionSlot: html`<mwc-button slot="action" label="save"></mwc-button>`,
   },
   {
     title: "Slotted icon",
@@ -106,7 +105,7 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action (RTL)",
     type: "error",
-    action: "restart",
+    actionSlot: html`<mwc-button slot="action" label="restart"></mwc-button>`,
     rtl: true,
   },
   {
@@ -129,7 +128,6 @@ export class DemoHaAlert extends LitElement {
                 .title=${alert.title || ""}
                 .alertType=${alert.type}
                 .dismissable=${alert.dismissable || false}
-                .actionText=${alert.action || ""}
                 .rtl=${alert.rtl || false}
               >
                 ${alert.iconSlot} ${alert.description} ${alert.actionSlot}
