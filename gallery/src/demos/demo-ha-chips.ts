@@ -1,3 +1,4 @@
+import "../../../src/components/ha-chip-set";
 import { mdiHomeAssistant } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
@@ -22,8 +23,8 @@ const chips: {
   },
 ];
 
-@customElement("demo-ha-chip")
-export class DemoHaChip extends LitElement {
+@customElement("demo-ha-chips")
+export class DemoHaChips extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card header="ha-chip demo">
@@ -39,6 +40,23 @@ export class DemoHaChip extends LitElement {
               </ha-chip>
             `
           )}
+        </div>
+      </ha-card>
+      <ha-card header="ha-chip-set demo">
+        <div class="card-content">
+          <ha-chip-set>
+            ${chips.map(
+              (chip) => html`
+                <ha-chip .hasIcon=${chip.icon !== undefined}>
+                  ${chip.icon
+                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                      </ha-svg-icon>`
+                    : ""}
+                  ${chip.content}
+                </ha-chip>
+              `
+            )}
+          </ha-chip-set>
         </div>
       </ha-card>
     `;
@@ -63,6 +81,6 @@ export class DemoHaChip extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-chip": DemoHaChip;
+    "demo-ha-chips": DemoHaChips;
   }
 }

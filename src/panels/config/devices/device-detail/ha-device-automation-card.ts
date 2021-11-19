@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
 import "../../../../components/ha-card";
+import "../../../../components/ha-chip";
 import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
 import {
@@ -55,12 +56,18 @@ export abstract class HaDeviceAutomationCard<
     return html`
       <h3>${this.hass.localize(this.headerKey)}</h3>
       <div class="content">
-        <ha-chip-set
-          @chip-clicked=${this._handleAutomationClicked}
-          .items=${this.automations.map((automation) =>
-            this._localizeDeviceAutomation(this.hass, automation)
+        <ha-chip-set>
+          ${this.automations.map(
+            (automation, idx) =>
+              html`
+                <ha-chip
+                  .index=${idx}
+                  @chip-clicked=${this._handleAutomationClicked}
+                >
+                  ${this._localizeDeviceAutomation(this.hass, automation)}
+                </ha-chip>
+              `
           )}
-        >
         </ha-chip-set>
       </div>
     `;

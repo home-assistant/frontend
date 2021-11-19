@@ -9,23 +9,23 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
-  // for fire event
   interface HASSDomEvents {
-    "chip-clicked": { index: string };
+    "chip-clicked": { index: number };
   }
 }
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
-  @property() public index = 0;
+  @property({ type: Number }) public index = 0;
 
   @property({ type: Boolean }) public hasIcon = false;
 
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip" .index=${this.index}>
+      <div class="mdc-chip" .index=${this.index} @click=${this._handleClick}>
         ${this.hasIcon
           ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
               <slot name="icon"></slot>
@@ -39,6 +39,12 @@ export class HaChip extends LitElement {
         </span>
       </div>
     `;
+  }
+
+  private _handleClick(ev): void {
+    fireEvent(this, "chip-clicked", {
+      index: ev.currentTarget.index,
+    });
   }
 
   static get styles(): CSSResultGroup {
