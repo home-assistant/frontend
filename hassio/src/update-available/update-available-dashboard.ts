@@ -16,6 +16,7 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-expansion-panel";
+import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-settings-row";
@@ -171,19 +172,17 @@ class UpdateAvailableDashboard extends LitElement {
                   </div>
                   ${!["os", "supervisor"].includes(this._updateEntry)
                     ? html`
-                        <ha-settings-row>
+                        <ha-formfield
+                          .label=${this.supervisor.localize(
+                            "update_available.create_backup"
+                          )}
+                        >
                           <ha-checkbox
-                            slot="prefix"
                             .checked=${this._createBackup}
                             @click=${this._toggleBackup}
                           >
                           </ha-checkbox>
-                          <span slot="heading">
-                            ${this.supervisor.localize(
-                              "update_available.create_backup"
-                            )}
-                          </span>
-                        </ha-settings-row>
+                        </ha-formfield>
                       `
                     : ""}
                 `
