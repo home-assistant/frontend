@@ -46,8 +46,6 @@ export class AreaOverviewStrategy {
       view.cards?.push({
         type: "area",
         area: area.area_id,
-        image:
-          "https://www.boardandvellum.com/wp-content/uploads/2019/09/16x9-private_offices_vs_open_office_concepts-1242x699.jpg",
       });
     });
 
@@ -63,8 +61,8 @@ export class AreaOverviewStrategy {
 
     const areaViews = areaEntries.map((area) => ({
       strategy: {
-        type: "original-states",
-        options: { areaId: area.area_id },
+        type: "area",
+        options: { area_id: area.area_id },
       },
       title: area.name,
     }));

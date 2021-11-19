@@ -86,10 +86,22 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  dedicated?: boolean
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-
+  const sensorGrid: { type: string; cards: LovelaceCardConfig[] } = {
+    type: "grid",
+    columns: 2,
+    square: false,
+    cards: [],
+  };
+  const toggleGrid: { type: string; cards: LovelaceCardConfig[] } = {
+    type: "grid",
+    columns: 2,
+    square: false,
+    cards: [],
+  };
   // For entity card
   const entities: Array<string | LovelaceRowConfig> = [];
 
@@ -148,6 +160,39 @@ export const computeCards = (
       stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
     ) {
       // Do nothing.
+    } else if (dedicated) {
+      if (domain === "binary_sensor") {
+        const cardConfig = {
+          type: "entity",
+          entity: entityId,
+        };
+        sensorGrid.cards.push(cardConfig);
+      } else if (domain === "sensor") {
+        const cardConfig = {
+          type: "sensor",
+          entity: entityId,
+          graph: "line",
+        };
+        sensorGrid.cards.push(cardConfig);
+      } else if (domain === "switch") {
+        const cardConfig = {
+          type: "button",
+          entity: entityId,
+        };
+        toggleGrid.cards.push(cardConfig);
+      } else if (domain === "fan") {
+        const cardConfig = {
+          type: "button",
+          entity: entityId,
+        };
+        toggleGrid.cards.push(cardConfig);
+      } else if (domain === "light") {
+        const cardConfig = {
+          type: "light",
+          entity: entityId,
+        };
+        toggleGrid.cards.push(cardConfig);
+      }
     } else {
       let name: string | undefined;
       const entityConf =
@@ -174,6 +219,14 @@ export const computeCards = (
       entities,
       ...entityCardOptions,
     });
+  }
+
+  if (sensorGrid.cards.length > 0) {
+    cards.push(sensorGrid);
+  }
+
+  if (toggleGrid.cards.length > 0) {
+    cards.push(toggleGrid);
   }
 
   return cards;
@@ -345,8 +398,7 @@ export const generateDefaultViewConfig = (
   entityEntries: EntityRegistryEntry[],
   entities: HassEntities,
   localize: LocalizeFunc,
-  energyPrefs?: EnergyPreferences,
-  areaOnly?: boolean
+  energyPrefs?: EnergyPreferences
 ): LovelaceViewConfig => {
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
@@ -374,7 +426,7 @@ export const generateDefaultViewConfig = (
     path,
     title,
     icon,
-    areaOnly ? {} : splittedByAreas.otherEntities,
+    splittedByAreas.otherEntities,
     groupOrders
   );
 
@@ -391,7 +443,7 @@ export const generateDefaultViewConfig = (
     );
   });
 
-  if (energyPrefs && !areaOnly) {
+  if (energyPrefs) {
     // Distribution card requires the grid to be configured
     const grid = energyPrefs.energy_sources.find(
       (source) => source.type === "grid"
@@ -405,6 +457,62 @@ export const generateDefaultViewConfig = (
       });
     }
   }
+
+  config.cards!.unshift(...areaCards);
+
+  return config;
+};
+
+export const generateAreaViewConfig = (
+  area: AreaRegistryEntry,
+  deviceEntries: DeviceRegistryEntry[],
+  entityEntries: EntityRegistryEntry[],
+  entities: HassEntities,
+  localize: LocalizeFunc
+): LovelaceViewConfig => {
+  const states = computeDefaultViewStates(entities, entityEntries);
+  const path = "default_view";
+  const title = "Home";
+  const icon = undefined;
+
+  // In the case of a default view, we want to use the group order attribute
+  const groupOrders = {};
+  Object.keys(states).forEach((entityId) => {
+    const stateObj = states[entityId];
+    if (stateObj.attributes.order) {
+      groupOrders[entityId] = stateObj.attributes.order;
+    }
+  });
+
+  const splittedByAreas = splitByAreas(
+    [area],
+    deviceEntries,
+    entityEntries,
+    states
+  );
+
+  const config = generateViewConfig(
+    localize,
+    path,
+    title,
+    icon,
+    {},
+    groupOrders
+  );
+
+  const areaCards: LovelaceCardConfig[] = [];
+
+  splittedByAreas.areasWithEntities.forEach(([a, areaEntities]) => {
+    areaCards.push(
+      ...computeCards(
+        areaEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title: a.name,
+        },
+        true
+      )
+    );
+  });
 
   config.cards!.unshift(...areaCards);
 

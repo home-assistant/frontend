@@ -69,15 +69,12 @@ export class OriginalStatesStrategy {
     const view = generateDefaultViewConfig(
       !areaId
         ? areaEntries
-        : areaEntries.filter(
-            (area) => area.area_id === info.view.strategy?.options?.area
-          ),
+        : areaEntries.filter((area) => area.area_id === areaId),
       deviceEntries,
       entityEntries,
       hass.states,
       localize,
-      energyPrefs,
-      Boolean(info.view.strategy?.options?.area)
+      energyPrefs
     );
 
     // Add map of geo locations to default view if loaded
