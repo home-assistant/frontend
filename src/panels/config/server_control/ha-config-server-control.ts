@@ -277,6 +277,10 @@ export class HaConfigServerControl extends LitElement {
         ha-config-section {
           padding-bottom: 24px;
         }
+
+        .mdc-button {
+          justify-content: left;
+        }
       `,
     ];
   }
