@@ -18,7 +18,6 @@ export class OriginalStatesStrategy {
     info: Parameters<LovelaceViewStrategy["generateView"]>[0]
   ): ReturnType<LovelaceViewStrategy["generateView"]> {
     const hass = info.hass;
-    const areaId = info.view.strategy?.options?.areaId;
 
     if (hass.config.state === STATE_NOT_RUNNING) {
       return {
@@ -67,9 +66,7 @@ export class OriginalStatesStrategy {
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
     const view = generateDefaultViewConfig(
-      !areaId
-        ? areaEntries
-        : areaEntries.filter((area) => area.area_id === areaId),
+      areaEntries,
       deviceEntries,
       entityEntries,
       hass.states,
