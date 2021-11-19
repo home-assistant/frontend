@@ -151,24 +151,28 @@ class HassioSupervisorInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>`
                 : ""
-              : html`<ha-alert
-                  alert-type="warning"
-                  .actionText=${this.supervisor.localize("common.learn_more")}
-                  @alert-action-clicked=${this._unsupportedDialog}
-                >
+              : html`<ha-alert alert-type="warning">
                   ${this.supervisor.localize(
                     "system.supervisor.unsupported_title"
                   )}
+                  <mwc-button
+                    slot="action"
+                    .label=${this.supervisor.localize("common.learn_more")}
+                    @click=${this._unsupportedDialog}
+                  >
+                  </mwc-button>
                 </ha-alert>`}
             ${!this.supervisor.supervisor.healthy
-              ? html`<ha-alert
-                  alert-type="error"
-                  .actionText=${this.supervisor.localize("common.learn_more")}
-                  @alert-action-clicked=${this._unhealthyDialog}
-                >
+              ? html`<ha-alert alert-type="error">
                   ${this.supervisor.localize(
                     "system.supervisor.unhealthy_title"
                   )}
+                  <mwc-button
+                    slot="action"
+                    .label=${this.supervisor.localize("common.learn_more")}
+                    @click=${this._unhealthyDialog}
+                  >
+                  </mwc-button>
                 </ha-alert>`
               : ""}
           </div>
@@ -465,6 +469,9 @@ class HassioSupervisorInfo extends LitElement {
         ha-settings-row > div[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
+        }
+        ha-alert mwc-button {
+          --mdc-theme-primary: var(--primary-text-color);
         }
         a {
           text-decoration: none;
