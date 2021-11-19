@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Conexión perdida. Reconectando...",
             "dismiss": "Descartar",
-            "intergration_starting": "Iniciando {integration}, no estará todo disponible hasta que finalice.",
+            "integration_starting": "Iniciando {integration}, no estará todo disponible hasta que finalice.",
             "service_call_failed": "Error al llamar al servicio {service}.",
             "started": "¡Home Assistant se ha iniciado!",
             "starting": "Home Assistant se está iniciando, no estará todo disponible hasta que finalice.",

@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение ...",
             "dismiss": "Закрыть",
-            "intergration_starting": "Запуск {integration}, пока что не всё может быть доступно.",
+            "integration_starting": "Запуск {integration}, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",

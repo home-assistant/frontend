@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
             "dismiss": "Ausblenden",
-            "intergration_starting": "Starte {integration}. Währenddessen ist noch nicht alles verfügbar.",
+            "integration_starting": "Starte {integration}. Währenddessen ist noch nicht alles verfügbar.",
             "service_call_failed": "Fehler beim Aufrufen des Diensts {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
             "starting": "Home Assistant startet. Währenddessen ist noch nicht alles verfügbar.",

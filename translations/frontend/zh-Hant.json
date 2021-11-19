@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "dismiss": "關閉",
-            "intergration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
+            "integration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",

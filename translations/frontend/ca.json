@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
             "dismiss": "Omet",
-            "intergration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
+            "integration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",

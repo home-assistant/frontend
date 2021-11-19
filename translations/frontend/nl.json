@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
-            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
+            "integration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
             "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",

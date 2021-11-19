@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Connessione persa. Riconnessione…",
             "dismiss": "Rimuovi",
-            "intergration_starting": "{integration} si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
+            "integration_starting": "{integration} si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "started": "Home Assistant si è avviato!",
             "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino ad avvio completo.",

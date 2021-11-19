@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
             "dismiss": "Zavřít",
-            "intergration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
+            "integration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",

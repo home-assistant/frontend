@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
             "dismiss": "关闭",
-            "intergration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
+            "integration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
             "service_call_failed": "调用服务 {service} 失败。",
             "started": "Home Assistant 已启动！",
             "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",

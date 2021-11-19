@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "dismiss": "Ignorer",
-            "intergration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
+            "integration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",

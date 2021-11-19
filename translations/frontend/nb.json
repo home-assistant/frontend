@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
             "dismiss": "Avvis",
-            "intergration_starting": "Fra og med {integration} vil ikke alt være tilgjengelig før den er ferdig.",
+            "integration_starting": "Fra og med {integration} vil ikke alt være tilgjengelig før den er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",

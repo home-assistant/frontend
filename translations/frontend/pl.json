@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
-            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
+            "integration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",

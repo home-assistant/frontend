@@ -1239,7 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
             "dismiss": "Loobu",
-            "intergration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
+            "integration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Home Assistant on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
