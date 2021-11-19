@@ -159,12 +159,7 @@ class UpdateAvailableDashboard extends LitElement {
                       ? html`
                           <i>
                             ${this.supervisor.localize(
-                              "update_available.core_note",
-                              {
-                                version:
-                                  this._addonInfo?.version ||
-                                  this.supervisor[this._updateEntry]?.version,
-                              }
+                              "update_available.core_note"
                             )}
                           </i>
                         `
