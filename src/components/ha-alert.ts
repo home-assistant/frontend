@@ -113,6 +113,7 @@ class HaAlert extends LitElement {
       justify-content: space-between;
       align-items: center;
       width: 100%;
+      z-index: 1;
     }
     .action {
       width: min-content;
