@@ -85,9 +85,11 @@ class HaConfigNavigation extends LitElement {
       ha-svg-icon,
       ha-icon-next {
         color: var(--secondary-text-color);
+        height: 24px;
+        width: 24px;
       }
       ha-svg-icon {
-        margin: 8px;
+        padding: 8px;
       }
       .iron-selected paper-item::before,
       a:not(.iron-selected):focus::before {
@@ -110,11 +112,9 @@ class HaConfigNavigation extends LitElement {
         opacity: 0.2;
       }
       .icon-background {
-        padding: 8px;
         border-radius: 50%;
       }
       .icon-background ha-svg-icon {
-        margin: 0px;
         color: var(--card-background-color);
       }
     `;
