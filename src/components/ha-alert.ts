@@ -51,11 +51,11 @@ class HaAlert extends LitElement {
           [this.alertType]: true,
         })}"
       >
-        <slot name="icon">
-          <div class="icon ${this.title ? "" : "no-title"}">
+        <div class="icon ${this.title ? "" : "no-title"}">
+          <slot name="icon">
             <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
-          </div>
-        </slot>
+          </slot>
+        </div>
         <div class="content">
           <div class="main-content">
             ${this.title ? html`<div class="title">${this.title}</div>` : ""}
@@ -100,7 +100,7 @@ class HaAlert extends LitElement {
     .issue-type.rtl {
       flex-direction: row-reverse;
     }
-    .issue-type::before {
+    .issue-type::after {
       position: absolute;
       top: 0;
       right: 0;
@@ -111,20 +111,11 @@ class HaAlert extends LitElement {
       content: "";
       border-radius: 4px;
     }
-    slot > .icon {
-      margin-right: 8px;
-      width: 24px;
-    }
-    slot[name="icon"]::slotted(*) {
-      position: relative;
+    .icon {
+      z-index: 1;
     }
     .icon.no-title {
       align-self: center;
-    }
-    .issue-type.rtl > slot > .icon {
-      margin-right: 0px;
-      margin-left: 8px;
-      width: 24px;
     }
     .issue-type.rtl > .content {
       flex-direction: row-reverse;
@@ -138,42 +129,47 @@ class HaAlert extends LitElement {
     }
     .main-content {
       overflow-wrap: anywhere;
+      margin-left: 8px;
+      margin-right: 0;
+    }
+    .issue-type.rtl > .content > .main-content {
+      margin-left: 0;
+      margin-right: 8px;
     }
     .title {
       margin-top: 2px;
       font-weight: bold;
     }
-    mwc-button {
+    .action mwc-button,
+    .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
-    }
-    ha-icon-button {
       --mdc-icon-button-size: 36px;
     }
-    .issue-type.info > slot > .icon {
+    .issue-type.info > .icon {
       color: var(--info-color);
     }
-    .issue-type.info::before {
+    .issue-type.info::after {
       background-color: var(--info-color);
     }
 
-    .issue-type.warning > slot > .icon {
+    .issue-type.warning > .icon {
       color: var(--warning-color);
     }
-    .issue-type.warning::before {
+    .issue-type.warning::after {
       background-color: var(--warning-color);
     }
 
-    .issue-type.error > slot > .icon {
+    .issue-type.error > .icon {
       color: var(--error-color);
     }
-    .issue-type.error::before {
+    .issue-type.error::after {
       background-color: var(--error-color);
     }
 
-    .issue-type.success > slot > .icon {
+    .issue-type.success > .icon {
       color: var(--success-color);
     }
-    .issue-type.success::before {
+    .issue-type.success::after {
       background-color: var(--success-color);
     }
   `;
