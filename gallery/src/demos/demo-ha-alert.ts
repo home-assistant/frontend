@@ -87,7 +87,17 @@ const alerts: {
     title: "Slotted icon",
     description: "Alert with slotted icon",
     type: "warning",
-    iconSlot: html`<ha-logo-svg slot="icon"></ha-logo-svg>`,
+    iconSlot: html`<span slot="icon" class="image">
+      <ha-logo-svg></ha-logo-svg>
+    </span>`,
+  },
+  {
+    title: "Slotted image",
+    description: "Alert with slotted image",
+    type: "warning",
+    iconSlot: html`<span slot="icon" class="image"
+      ><img src="https://www.home-assistant.io/images/home-assistant-logo.svg"
+    /></span>`,
   },
   {
     title: "Slotted action",
@@ -155,14 +165,14 @@ export class DemoHaAlert extends LitElement {
         align-items: center;
         justify-content: space-between;
       }
-      span {
-        margin-right: 16px;
+      .image {
+        display: inline-flex;
+        height: 100%;
+        align-items: center;
       }
-      ha-logo-svg {
-        width: 28px;
-        height: 28px;
-        padding-right: 8px;
-        place-self: center;
+      img {
+        max-height: 24px;
+        width: 24px;
       }
       mwc-button {
         --mdc-theme-primary: var(--primary-text-color);
