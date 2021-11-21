@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-chip";
 import "../../../../components/ha-chip-set";
@@ -10,6 +11,12 @@ import {
 } from "../../../../data/device_automation";
 import { showScriptEditor } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
+
+declare global {
+  interface HASSDomEvents {
+    "entry-selected": undefined;
+  }
+}
 
 export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
@@ -60,10 +67,7 @@ export abstract class HaDeviceAutomationCard<
           ${this.automations.map(
             (automation, idx) =>
               html`
-                <ha-chip
-                  .index=${idx}
-                  @chip-clicked=${this._handleAutomationClicked}
-                >
+                <ha-chip .index=${idx} @click=${this._handleAutomationClicked}>
                   ${this._localizeDeviceAutomation(this.hass, automation)}
                 </ha-chip>
               `
@@ -74,17 +78,19 @@ export abstract class HaDeviceAutomationCard<
   }
 
   private _handleAutomationClicked(ev: CustomEvent) {
-    const automation = this.automations[ev.detail.index];
+    const automation = this.automations[(ev.currentTarget as any).index];
     if (!automation) {
       return;
     }
     if (this.script) {
       showScriptEditor({ sequence: [automation as DeviceAction] });
+      fireEvent(this, "entry-selected");
       return;
     }
     const data = {};
     data[this.type] = [automation];
     showAutomationEditor(data);
+    fireEvent(this, "entry-selected");
   }
 
   static get styles(): CSSResultGroup {
