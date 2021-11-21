@@ -48,7 +48,11 @@ class MoreInfoCover extends LitElement {
 
         <div class="tilt">
           ${supportsSetTiltPosition(this.stateObj)
-            ? html`
+            ? // Either render the labeled slider and put the tilt buttons into its slot
+              // or (if tilt position is not supported and therefore no slider is shown)
+              // render a title <div> (same style as for a labeled slider) and directly put
+              // the tilt controls on the more-info.
+              html`
                 <ha-labeled-slider
                   .caption=${this.hass.localize("ui.card.cover.tilt_position")}
                   pin=""
