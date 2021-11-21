@@ -4180,7 +4180,7 @@
       "update_name": "Update {name}",
       "open_release_notes": "Open release notes",
       "create_backup": "Create backup before updating",
-      "description": "There is an update available for the {name}. You have {version} installed. Click update to update to version {newest_version}",
+      "description": "There is an update available for {name}. You have {version} installed. Click update to update to version {newest_version}",
       "core_note": "The supervisor will roll back to version {version} if your instance does not come up after the update.",
       "updating": "Updating {name} to version {version}",
       "creating_backup": "Creating backup of {name}"
