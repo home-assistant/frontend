@@ -24,10 +24,13 @@ class HaConfigNavigation extends LitElement {
           ? html`
               <a href=${page.path} aria-role="option" tabindex="-1">
                 <paper-icon-item>
-                  <ha-svg-icon
-                    .path=${page.iconPath}
+                  <div
+                    class=${page.iconColor ? "icon-background" : ""}
                     slot="item-icon"
-                  ></ha-svg-icon>
+                    .style="background-color: ${page.iconColor || "undefined"}"
+                  >
+                    <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
+                  </div>
                   <paper-item-body two-line>
                     ${page.name ||
                     this.hass.localize(
@@ -54,7 +57,8 @@ class HaConfigNavigation extends LitElement {
                           `
                       : html`
                           <div secondary>
-                            ${this.hass.localize(
+                            ${page.description ||
+                            this.hass.localize(
                               `ui.panel.config.${page.component}.description`
                             )}
                           </div>
@@ -81,6 +85,11 @@ class HaConfigNavigation extends LitElement {
       ha-svg-icon,
       ha-icon-next {
         color: var(--secondary-text-color);
+        height: 24px;
+        width: 24px;
+      }
+      ha-svg-icon {
+        padding: 8px;
       }
       .iron-selected paper-item::before,
       a:not(.iron-selected):focus::before {
@@ -101,6 +110,12 @@ class HaConfigNavigation extends LitElement {
       .iron-selected paper-item:focus::before,
       .iron-selected:focus paper-item::before {
         opacity: 0.2;
+      }
+      .icon-background {
+        border-radius: 50%;
+      }
+      .icon-background ha-svg-icon {
+        color: var(--card-background-color);
       }
     `;
   }

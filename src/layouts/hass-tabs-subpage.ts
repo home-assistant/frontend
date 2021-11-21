@@ -28,6 +28,8 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  description?: string;
+  iconColor?: string;
   info?: any;
 }
 
