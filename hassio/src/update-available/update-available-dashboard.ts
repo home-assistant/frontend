@@ -155,20 +155,6 @@ class UpdateAvailableDashboard extends LitElement {
                         }
                       )}
                     </p>
-                    ${this._updateEntry === "core"
-                      ? html`
-                          <i>
-                            ${this.supervisor.localize(
-                              "update_available.core_note",
-                              {
-                                version:
-                                  this._addonInfo?.version ||
-                                  this.supervisor[this._updateEntry]?.version,
-                              }
-                            )}
-                          </i>
-                        `
-                      : ""}
                   </div>
                   ${!["os", "supervisor"].includes(this._updateEntry)
                     ? html`

@@ -59,6 +59,7 @@ class HaConfigDashboard extends LitElement {
                     name: "Home Assistant Cloud",
                     info: this.cloudStatus,
                     iconPath: mdiCloudLock,
+                    iconColor: "#174B62",
                   },
                 ]}
               ></ha-config-navigation>
