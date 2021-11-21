@@ -24,8 +24,18 @@ export class HaChipSet extends LitElement {
     return css`
       ${unsafeCSS(chipStyles)}
 
+      .mdc-chip-set {
+        padding: 0;
+      }
+
       slot::slotted(ha-chip) {
-        margin: 4px;
+        margin: 0 4px;
+      }
+      slot::slotted(ha-chip:first-of-type) {
+        margin-left: 0;
+      }
+      slot::slotted(ha-chip:last-of-type) {
+        margin-right: 0;
       }
     `;
   }
