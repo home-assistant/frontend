@@ -10,11 +10,6 @@ export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   entities: Array<string | EntityConfig>;
 }
 
-export interface ChipsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
-  type: "chips";
-  entities: Array<string | EntityConfig>;
-}
-
 export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   type: "graph";
   entity: string;
