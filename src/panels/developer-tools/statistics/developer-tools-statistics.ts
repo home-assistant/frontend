@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   clearStatistics,
   getStatisticIds,
@@ -18,6 +19,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
@@ -33,7 +35,7 @@ const FIX_ISSUES_ORDER = {
   unsupported_unit_metadata: 5,
 };
 @customElement("developer-tools-statistics")
-class HaPanelDevStatistics extends LitElement {
+class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -42,6 +44,8 @@ class HaPanelDevStatistics extends LitElement {
     issues?: StatisticsValidationResult[];
     state?: HassEntity;
   })[] = [] as StatisticsMetaData[];
+
+  @state() private _disabledEntities = new Set<string>();
 
   protected firstUpdated() {
     this._validateStatistics();
@@ -130,6 +134,25 @@ class HaPanelDevStatistics extends LitElement {
     }
   }
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        const disabledEntities = new Set<string>();
+        for (const confEnt of entities) {
+          if (!confEnt.disabled_by) {
+            continue;
+          }
+          disabledEntities.add(confEnt.entity_id);
+        }
+        // If the disabled entities changed, re-validate the statistics
+        if (disabledEntities !== this._disabledEntities) {
+          this._disabledEntities = disabledEntities;
+          this._validateStatistics();
+        }
+      }),
+    ];
+  }
+
   private async _validateStatistics() {
     const [statisticIds, issues] = await Promise.all([
       getStatisticIds(this.hass),
@@ -138,17 +161,24 @@ class HaPanelDevStatistics extends LitElement {
 
     const statsIds = new Set();
 
-    this._data = statisticIds.map((statistic) => {
-      statsIds.add(statistic.statistic_id);
-      return {
-        ...statistic,
-        state: this.hass.states[statistic.statistic_id],
-        issues: issues[statistic.statistic_id],
-      };
-    });
+    this._data = statisticIds
+      .filter(
+        (statistic) => !this._disabledEntities.has(statistic.statistic_id)
+      )
+      .map((statistic) => {
+        statsIds.add(statistic.statistic_id);
+        return {
+          ...statistic,
+          state: this.hass.states[statistic.statistic_id],
+          issues: issues[statistic.statistic_id],
+        };
+      });
 
     Object.keys(issues).forEach((statisticId) => {
-      if (!statsIds.has(statisticId)) {
+      if (
+        !statsIds.has(statisticId) &&
+        !this._disabledEntities.has(statisticId)
+      ) {
         this._data.push({
           statistic_id: statisticId,
           unit_of_measurement: "",

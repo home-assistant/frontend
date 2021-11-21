@@ -320,8 +320,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       }
 
-      entities.forEach((entity) => entity);
-
       let filteredEntities = showReadOnly
         ? entities.concat(stateEntities)
         : entities;
