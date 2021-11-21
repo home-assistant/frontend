@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -23,7 +22,6 @@ const ALERT_ICONS = {
 declare global {
   interface HASSDomEvents {
     "alert-dismissed-clicked": undefined;
-    "alert-action-clicked": undefined;
   }
 }
 
@@ -36,8 +34,6 @@ class HaAlert extends LitElement {
     | "warning"
     | "error"
     | "success" = "info";
-
-  @property({ attribute: "action-text" }) public actionText = "";
 
   @property({ type: Boolean }) public dismissable = false;
 
@@ -63,12 +59,7 @@ class HaAlert extends LitElement {
           </div>
           <div class="action">
             <slot name="action">
-              ${this.actionText
-                ? html`<mwc-button
-                    @click=${this._action_clicked}
-                    .label=${this.actionText}
-                  ></mwc-button>`
-                : this.dismissable
+              ${this.dismissable
                 ? html`<ha-icon-button
                     @click=${this._dismiss_clicked}
                     label="Dismiss alert"
@@ -84,10 +75,6 @@ class HaAlert extends LitElement {
 
   private _dismiss_clicked() {
     fireEvent(this, "alert-dismissed-clicked");
-  }
-
-  private _action_clicked() {
-    fireEvent(this, "alert-action-clicked");
   }
 
   static styles = css`
@@ -126,6 +113,10 @@ class HaAlert extends LitElement {
       justify-content: space-between;
       align-items: center;
       width: 100%;
+    }
+    .action {
+      width: min-content;
+      --mdc-theme-primary: var(--primary-text-color);
     }
     .main-content {
       overflow-wrap: anywhere;
