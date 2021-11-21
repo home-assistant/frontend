@@ -115,7 +115,7 @@ class HaConfigNavigation extends LitElement {
         border-radius: 50%;
       }
       .icon-background ha-svg-icon {
-        color: var(--card-background-color);
+        color: #fff;
       }
     `;
   }
