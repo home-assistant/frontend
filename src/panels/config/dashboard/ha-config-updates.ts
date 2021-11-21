@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiPackageVariant } from "@mdi/js";
+import { mdiPackageUp } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
@@ -63,7 +63,7 @@ class HaConfigUpdates extends LitElement {
               ${update.update_type === "addon"
                 ? update.icon
                   ? html`<img src="/api/hassio${update.icon}" />`
-                  : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
+                  : html`<ha-svg-icon .path=${mdiPackageUp}></ha-svg-icon>`
                 : html`<ha-logo-svg></ha-logo-svg>`}
             </span>
             ${this.hass.localize("ui.panel.config.updates.version_available", {
@@ -98,15 +98,18 @@ class HaConfigUpdates extends LitElement {
         color: var(--primary-text-color);
       }
       .icon {
-        place-self: center;
+        display: inline-flex;
+        height: 100%;
+        align-items: center;
       }
       img,
       ha-svg-icon,
       ha-logo-svg {
-        width: var(--mdc-icon-size, 32px);
-        height: var(--mdc-icon-size, 32px);
-        padding-right: 12px;
-        display: block;
+        --mdc-icon-size: 32px;
+        max-height: 32px;
+        width: 32px;
+      }
+      ha-logo-svg {
         color: var(--secondary-text-color);
       }
     `;
