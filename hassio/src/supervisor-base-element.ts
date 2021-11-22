@@ -108,7 +108,9 @@ export class SupervisorBaseElement extends urlSyncMixin(
       this._language = this.hass.language;
     }
     this._initializeLocalize();
-    this._initSupervisor();
+    if (this.hass.user?.is_admin) {
+      this._initSupervisor();
+    }
   }
 
   private async _initializeLocalize() {
