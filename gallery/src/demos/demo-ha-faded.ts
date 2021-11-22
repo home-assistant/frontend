@@ -15,7 +15,7 @@ In vitae eros sollicitudin, iaculis ex eget, egestas orci. Etiam sed pretium lor
 Quisque posuere, velit sed porttitor dapibus, neque augue fringilla felis, eu luctus nisi nisl nec ipsum. Curabitur pellentesque ac lectus eget ultricies. Vestibulum est dolor, lacinia pharetra vulputate a, facilisis a magna. Nam vitae arcu nibh. Praesent finibus blandit ante, ac gravida ex mollis eget. Donec quam est, pulvinar vitae neque ut, bibendum aliquam erat. Nullam mollis arcu at sem tincidunt, in tristique lectus facilisis. Aenean ut lacus vel nisl finibus iaculis non a turpis. Integer eget ipsum ante. Donec nunc neque, vestibulum ac magna ac, posuere scelerisque dui. Pellentesque massa nibh, rhoncus id dolor quis, placerat posuere turpis. Donec aliquet augue nisi, eu finibus dui auctor et. Vestibulum eu varius lorem. Quisque lectus ante, malesuada pretium risus eget, interdum mattis enim.
 `;
 
-const SMAL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+const SMALL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
 @customElement("demo-ha-faded")
 export class DemoHaFaded extends LitElement {
@@ -26,7 +26,7 @@ export class DemoHaFaded extends LitElement {
           <h3>Long text</h3>
           <ha-faded>${LONG_TEXT}</ha-faded>
           <h3>Smal text</h3>
-          <ha-faded>${SMAL_TEXT}</ha-faded>
+          <ha-faded>${SMALL_TEXT}</ha-faded>
         </div>
       </ha-card>
     `;
