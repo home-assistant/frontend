@@ -113,9 +113,9 @@ class HaAlert extends LitElement {
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      z-index: 1;
     }
     .action {
+      z-index: 1;
       width: min-content;
       --mdc-theme-primary: var(--primary-text-color);
     }

@@ -1,8 +1,10 @@
-import "../../../src/components/ha-logo-svg";
-import { html, css, LitElement, TemplateResult } from "lit";
+import "@material/mwc-button/mwc-button";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
+import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-logo-svg";
 
 const alerts: {
   title?: string;
@@ -130,29 +132,60 @@ const alerts: {
 export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-alert demo">
-        <div class="card-content">
-          ${alerts.map(
-            (alert) => html`
-              <ha-alert
-                .title=${alert.title || ""}
-                .alertType=${alert.type}
-                .dismissable=${alert.dismissable || false}
-                .rtl=${alert.rtl || false}
-              >
-                ${alert.iconSlot} ${alert.description} ${alert.actionSlot}
-              </ha-alert>
-            `
-          )}
-        </div>
-      </ha-card>
+      ${["light", "dark"].map(
+        (mode) => html`
+          <div class=${mode}>
+            <ha-card header="ha-alert ${mode} demo">
+              <div class="card-content">
+                ${alerts.map(
+                  (alert) => html`
+                    <ha-alert
+                      .title=${alert.title || ""}
+                      .alertType=${alert.type}
+                      .dismissable=${alert.dismissable || false}
+                      .rtl=${alert.rtl || false}
+                    >
+                      ${alert.iconSlot} ${alert.description} ${alert.actionSlot}
+                    </ha-alert>
+                  `
+                )}
+              </div>
+            </ha-card>
+          </div>
+        `
+      )}
     `;
+  }
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    applyThemesOnElement(
+      this.shadowRoot!.querySelector(".dark"),
+      {
+        default_theme: "default",
+        default_dark_theme: "default",
+        themes: {},
+        darkMode: false,
+      },
+      "default",
+      { dark: true }
+    );
   }
 
   static get styles() {
     return css`
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .dark,
+      .light {
+        display: block;
+        background-color: var(--primary-background-color);
+        padding: 0 50px;
+      }
       ha-card {
-        max-width: 600px;
         margin: 24px auto;
       }
       ha-alert {
