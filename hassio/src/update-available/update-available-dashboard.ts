@@ -277,7 +277,7 @@ class UpdateAvailableDashboard extends LitElement {
         );
       } else {
         this._error = this.supervisor.localize(
-          "addon.dashboard.not_available_arch",
+          "addon.dashboard.not_available_version",
           {
             core_version_installed: this.supervisor.core.version,
             core_version_needed: addonStoreInfo.homeassistant,
