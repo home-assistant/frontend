@@ -2370,7 +2370,6 @@
             "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
-            "hub": "Connected via",
             "via": "Connected via",
             "firmware": "Firmware: {version}",
             "unnamed_entry": "Unnamed entry",
