@@ -1,15 +1,17 @@
 import { ActionConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface LovelaceHeaderFooterConfig {
   type: string;
 }
 
 export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
-  entities: Array<string | EntityConfig>;
+  type: "buttons";
+  entities: Array<string | EntitiesCardEntityConfig>;
 }
 
 export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "graph";
   entity: string;
   detail?: number;
   hours_to_show?: number;
@@ -20,6 +22,7 @@ export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
 }
 
 export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "picture";
   image: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
