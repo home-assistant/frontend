@@ -1,23 +1,7 @@
-import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../src/common/search/search-input";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-alert";
-import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-checkbox";
-import "../../../src/components/ha-expansion-panel";
-import "../../../src/components/ha-formfield";
-import "../../../src/components/ha-icon-button";
-import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-settings-row";
-import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-switch";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
-import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import "./update-available-card";
 
