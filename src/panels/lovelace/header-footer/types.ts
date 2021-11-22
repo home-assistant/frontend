@@ -1,5 +1,5 @@
 import { ActionConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface LovelaceHeaderFooterConfig {
   type: string;
@@ -7,7 +7,7 @@ export interface LovelaceHeaderFooterConfig {
 
 export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   type: "buttons";
-  entities: Array<string | EntityConfig>;
+  entities: Array<string | EntitiesCardEntityConfig>;
 }
 
 export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
