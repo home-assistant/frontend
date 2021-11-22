@@ -98,7 +98,7 @@ export const computeCards = (
     ? `${entityCardOptions.title} `.toLowerCase()
     : undefined;
 
-  const footerEntities: ButtonsHeaderFooterConfig["entities"][] = [];
+  const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
