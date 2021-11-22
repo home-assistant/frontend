@@ -145,7 +145,6 @@ class UpdateAvailableDashboard extends LitElement {
                       ${this.supervisor.localize(
                         "update_available.description",
                         {
-                          name,
                           version:
                             this._addonInfo?.version ||
                             this.supervisor[this._updateEntry]?.version,
