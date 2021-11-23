@@ -274,7 +274,7 @@ class UpdateAvailableCard extends LitElement {
       try {
         const content = await fetchHassioAddonChangelog(
           this.hass,
-          this._updateType!
+          this.addonSlug!
         );
         this._changelogContent = extractChangelog(this._addonInfo, content);
       } catch (err) {
