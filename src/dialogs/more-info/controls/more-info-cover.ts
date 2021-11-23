@@ -7,19 +7,12 @@ import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-labeled-slider";
 import {
   CoverEntity,
+  FEATURE_CLASS_NAMES,
   isTiltOnly,
   supportsSetPosition,
   supportsSetTiltPosition,
 } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-
-const FEATURE_CLASS_NAMES = {
-  4: "has-set_position",
-  16: "has-open_tilt",
-  32: "has-close_tilt",
-  64: "has-stop_tilt",
-  128: "has-set_tilt_position",
-};
 
 @customElement("more-info-cover")
 class MoreInfoCover extends LitElement {
@@ -63,18 +56,18 @@ class MoreInfoCover extends LitElement {
                   <ha-cover-tilt-controls
                     .hass=${this.hass}
                     slot="extra"
-                    .hidden=${_isTiltOnly}
+                    ?hidden=${_isTiltOnly}
                     .stateObj=${this.stateObj}
                   ></ha-cover-tilt-controls>
                 </ha-labeled-slider>
               `
             : html`
-                <div class="title" .hidden=${_isTiltOnly}>
+                <div class="title" ?hidden=${_isTiltOnly}>
                   ${this.hass.localize("ui.card.cover.tilt_position")}
                 </div>
                 <ha-cover-tilt-controls
                   .hass=${this.hass}
-                  .hidden=${_isTiltOnly}
+                  ?hidden=${_isTiltOnly}
                   .stateObj=${this.stateObj}
                 ></ha-cover-tilt-controls>
               `}
@@ -129,10 +122,6 @@ class MoreInfoCover extends LitElement {
       .has-set_tilt_position .tilt,
       .has-current_tilt_position .tilt {
         max-height: 208px;
-      }
-
-      [invisible] {
-        visibility: hidden !important;
       }
 
       /* from ha-labeled-slider for consistent look */

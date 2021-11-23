@@ -13,6 +13,14 @@ export const SUPPORT_CLOSE_TILT = 32;
 export const SUPPORT_STOP_TILT = 64;
 export const SUPPORT_SET_TILT_POSITION = 128;
 
+export const FEATURE_CLASS_NAMES = {
+  4: "has-set_position",
+  16: "has-open_tilt",
+  32: "has-close_tilt",
+  64: "has-stop_tilt",
+  128: "has-set_tilt_position",
+};
+
 export const supportsOpen = (stateObj) =>
   supportsFeature(stateObj, SUPPORT_OPEN);
 

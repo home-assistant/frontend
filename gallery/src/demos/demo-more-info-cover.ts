@@ -100,7 +100,7 @@ const ENTITIES = [
       SUPPORT_SET_TILT_POSITION,
     current_tilt_position: 70,
   }),
-  getEntity("cover", "position_slider_tile", "on", {
+  getEntity("cover", "position_slider_tilt", "on", {
     friendly_name: "Position Slider & Tilt",
     supported_features:
       SUPPORT_OPEN +
@@ -111,6 +111,26 @@ const ENTITIES = [
       SUPPORT_STOP_TILT +
       SUPPORT_CLOSE_TILT,
     current_position: 30,
+  }),
+  getEntity("cover", "position_slider_only_tilt_slider", "on", {
+    friendly_name: "Position Slider Only & Tilt Buttons",
+    supported_features:
+      SUPPORT_SET_POSITION +
+      SUPPORT_OPEN_TILT +
+      SUPPORT_STOP_TILT +
+      SUPPORT_CLOSE_TILT,
+    current_position: 30,
+  }),
+  getEntity("cover", "position_slider_only_tilt", "on", {
+    friendly_name: "Position Slider Only & Tilt",
+    supported_features:
+      SUPPORT_SET_POSITION +
+      SUPPORT_OPEN_TILT +
+      SUPPORT_STOP_TILT +
+      SUPPORT_CLOSE_TILT +
+      SUPPORT_SET_TILT_POSITION,
+    current_position: 30,
+    current_tilt_position: 70,
   }),
 ];
 
