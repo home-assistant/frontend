@@ -170,7 +170,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/core",
       translationKey: "ui.panel.config.core.caption",
       iconPath: mdiHomeAssistant,
-      iconColor: "#D35B2A",
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -178,7 +178,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/server_control",
       translationKey: "ui.panel.config.server_control.caption",
       iconPath: mdiServer,
-      iconColor: "#D35B2A",
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -186,7 +186,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/logs",
       translationKey: "ui.panel.config.logs.caption",
       iconPath: mdiMathLog,
-      iconColor: "#D35B2A",
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -194,7 +194,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
       iconPath: mdiInformation,
-      iconColor: "#D35B2A",
+      iconColor: "#4A5963",
       core: true,
     },
   ],
