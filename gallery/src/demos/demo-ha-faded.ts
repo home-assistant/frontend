@@ -2,6 +2,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-faded";
+import "../../../src/components/ha-markdown";
 
 const LONG_TEXT = `
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc laoreet velit ut elit volutpat, eget ultrices odio lacinia. In imperdiet malesuada est, nec sagittis metus ultricies quis. Sed nisl ex, convallis porttitor ante quis, hendrerit tristique justo. Mauris pharetra venenatis augue, eu maximus sem cursus in. Quisque sed consequat risus. Suspendisse facilisis ligula a odio consectetur condimentum. Curabitur vehicula elit nec augue mollis, et volutpat massa dictum.
@@ -24,9 +25,45 @@ export class DemoHaFaded extends LitElement {
       <ha-card header="ha-faded demo">
         <div class="card-content">
           <h3>Long text</h3>
-          <ha-faded>${LONG_TEXT}</ha-faded>
+          <ha-faded><span>${LONG_TEXT}</span></ha-faded>
+          <h3>No text</h3>
+          <ha-faded><span></span></ha-faded>
           <h3>Smal text</h3>
-          <ha-faded>${SMALL_TEXT}</ha-faded>
+          <ha-faded><span>${SMALL_TEXT}</span></ha-faded>
+          <h3>Long text in markdown</h3>
+          <ha-faded>
+            <ha-markdown .content=${LONG_TEXT}> </ha-markdown>
+          </ha-faded>
+          <h3>Missing 1px from hiding</h3>
+          <ha-faded faded-height="87">
+            <span>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
+              laoreet velit ut elit volutpat, eget ultrices odio lacinia. In
+              imperdiet malesuada est, nec sagittis metus ultricies quis. Sed
+              nisl ex, convallis porttitor ante quis, hendrerit tristique justo.
+              Mauris pharetra venenatis augue, eu maximus sem cursus in. Quisque
+              sed consequat risus. Suspendisse facilisis ligula a odio
+              consectetur condimentum. Curabitur vehicula elit nec augue mollis,
+              et volutpat massa dictum. Nam pellentesque auctor rutrum.
+              Suspendisse elit est, sodales vel diam nec, porttitor faucibus
+              massa. Ut pretium ac orci eu pharetra.
+            </span>
+          </ha-faded>
+          <h3>1px over hiding point</h3>
+          <ha-faded faded-height="86">
+            <span>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
+              laoreet velit ut elit volutpat, eget ultrices odio lacinia. In
+              imperdiet malesuada est, nec sagittis metus ultricies quis. Sed
+              nisl ex, convallis porttitor ante quis, hendrerit tristique justo.
+              Mauris pharetra venenatis augue, eu maximus sem cursus in. Quisque
+              sed consequat risus. Suspendisse facilisis ligula a odio
+              consectetur condimentum. Curabitur vehicula elit nec augue mollis,
+              et volutpat massa dictum. Nam pellentesque auctor rutrum.
+              Suspendisse elit est, sodales vel diam nec, porttitor faucibus
+              massa. Ut pretium ac orci eu pharetra.
+            </span>
+          </ha-faded>
         </div>
       </ha-card>
     `;

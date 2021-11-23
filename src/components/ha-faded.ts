@@ -1,14 +1,13 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-faded")
 class HaFaded extends LitElement {
-  @property({ type: Number }) public fadedHeight = 102;
+  @property({ type: Number, attribute: "faded-height" })
+  public fadedHeight = 102;
 
   @state() _contentShown = false;
-
-  @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
@@ -23,24 +22,32 @@ class HaFaded extends LitElement {
   }
 
   get _slottedHeight(): number {
-    const elements = (
-      this._container.firstElementChild as HTMLSlotElement
-    ).assignedElements();
-
-    if (!elements.length) {
-      return this._container.clientHeight;
-    }
-    return elements.reduce(
-      (partial, element) => partial + element.clientHeight,
-      0
-    );
+    return (
+      this.shadowRoot!.querySelector(".container")
+        ?.firstElementChild as HTMLSlotElement
+    )
+      .assignedElements()
+      .reduce(
+        (partial, element) => partial + (element as HTMLElement).offsetHeight,
+        0
+      );
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    if (this._slottedHeight < this.fadedHeight) {
-      this._contentShown = true;
-    }
+    const callback = setInterval(() => {
+      const height = this._slottedHeight;
+      if (height !== 0) {
+        if (height < this.fadedHeight + 50) {
+          this._contentShown = true;
+        }
+        clearInterval(callback);
+      }
+    }, 100);
+    // If we don't get a height in 1s, there is nothing to show.
+    setTimeout(() => {
+      clearInterval(callback);
+    }, 1000);
   }
 
   private async _showContent(): Promise<void> {
