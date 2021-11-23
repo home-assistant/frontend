@@ -385,6 +385,9 @@ class UpdateAvailableDashboard extends LitElement {
       .progress-text {
         text-align: center;
       }
+      ha-markdown {
+        margin-bottom: 24px;
+      }
     `;
   }
 }

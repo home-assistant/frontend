@@ -4,49 +4,42 @@ import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-faded")
 class HaFaded extends LitElement {
-  @property({ type: Number }) public fadedHeight = 84;
+  @property({ type: Number }) public fadedHeight = 102;
 
   @state() faded = true;
-
-  @state() fadeable = true;
 
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
       <div
-        class="container ${classMap({ faded: this.fadeable && this.faded })}"
+        class="container ${classMap({ faded: this.faded })}"
         style=${this.faded ? `max-height: ${this.fadedHeight}px` : ""}
+        @click=${this._showContent}
       >
         <slot></slot>
       </div>
-      ${this.fadeable
-        ? html`
-            <div
-              class="show ${classMap({ faded: this.fadeable && this.faded })}"
-              @click=${this._toggleContainer}
-            >
-              ${this.faded ? "Show more" : "Show less"}
-            </div>
-          `
-        : ""}
     `;
+  }
+
+  get _slottedHeight(): number {
+    return (this._container.firstElementChild as HTMLSlotElement)
+      .assignedElements()
+      .reduce((partial, element) => partial + element.clientHeight, 0);
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     if (
-      this._container.clientHeight !== 0 &&
-      this._container.clientHeight < this.fadedHeight
+      this._slottedHeight !== 0 &&
+      this._slottedHeight < this.fadedHeight + 16
     ) {
-      this.fadeable = false;
+      this.faded = false;
     }
   }
 
-  private async _toggleContainer(): Promise<void> {
-    if (this.fadeable) {
-      this.faded = !this.faded;
-    }
+  private async _showContent(): Promise<void> {
+    this.faded = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -54,8 +47,10 @@ class HaFaded extends LitElement {
       .container {
         display: block;
         height: auto;
+        cursor: default;
       }
-      .container.faded {
+      .faded {
+        cursor: pointer;
         -webkit-mask-image: linear-gradient(
           to bottom,
           black 25%,
@@ -63,19 +58,6 @@ class HaFaded extends LitElement {
         );
         mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
         overflow-y: hidden;
-      }
-      .show {
-        cursor: pointer;
-        color: var(--primary-color);
-        position: relative;
-        text-align: right;
-        font-weight: 500;
-      }
-      .show.faded {
-        bottom: 16px;
-      }
-      .show:hover {
-        font-weight: 600;
       }
     `;
   }
