@@ -61,3 +61,12 @@ export const COLORS = [
 export function getColorByIndex(index: number) {
   return COLORS[index % COLORS.length];
 }
+
+export function getGraphColorByIndex(
+  index: number,
+  style: CSSStyleDeclaration
+) {
+  return (
+    style.getPropertyValue(`--graph-color-${index}`) || getColorByIndex(index)
+  );
+}
