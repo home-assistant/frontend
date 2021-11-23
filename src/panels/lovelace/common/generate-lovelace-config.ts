@@ -425,7 +425,9 @@ export const generateDefaultViewConfig = (
 
     if (grid && grid.flow_from.length > 0) {
       areaCards.push({
-        title: "Energy distribution today",
+        title: localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
+        ),
         type: "energy-distribution",
         link_dashboard: true,
       });

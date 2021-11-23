@@ -3030,6 +3030,7 @@
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
             "energy_distribution": {
+              "title_today": "Energy distribution today",
               "grid": "Grid",
               "gas": "Gas",
               "solar": "Solar",
