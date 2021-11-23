@@ -6,15 +6,15 @@ import { classMap } from "lit/directives/class-map";
 class HaFaded extends LitElement {
   @property({ type: Number }) public fadedHeight = 102;
 
-  @state() faded = true;
+  @state() _contentShown = false;
 
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
       <div
-        class="container ${classMap({ faded: this.faded })}"
-        style=${this.faded ? `max-height: ${this.fadedHeight}px` : ""}
+        class="container ${classMap({ faded: !this._contentShown })}"
+        style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ""}
         @click=${this._showContent}
       >
         <slot></slot>
@@ -23,23 +23,28 @@ class HaFaded extends LitElement {
   }
 
   get _slottedHeight(): number {
-    return (this._container.firstElementChild as HTMLSlotElement)
-      .assignedElements()
-      .reduce((partial, element) => partial + element.clientHeight, 0);
+    const elements = (
+      this._container.firstElementChild as HTMLSlotElement
+    ).assignedElements();
+
+    if (!elements.length) {
+      return this._container.clientHeight;
+    }
+    return elements.reduce(
+      (partial, element) => partial + element.clientHeight,
+      0
+    );
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    if (
-      this._slottedHeight !== 0 &&
-      this._slottedHeight < this.fadedHeight + 16
-    ) {
-      this.faded = false;
+    if (this._slottedHeight < this.fadedHeight) {
+      this._contentShown = true;
     }
   }
 
   private async _showContent(): Promise<void> {
-    this.faded = false;
+    this._contentShown = true;
   }
 
   static get styles(): CSSResultGroup {
