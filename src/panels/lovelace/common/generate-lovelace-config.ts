@@ -325,6 +325,7 @@ export const generateViewConfig = (
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
+          state_color: true,
         }
       )
     );
@@ -348,6 +349,7 @@ export const generateViewConfig = (
             ]),
           {
             title: domainToName(localize, domain),
+            state_color: true,
           }
         )
       );
@@ -412,6 +414,7 @@ export const generateDefaultViewConfig = (
         areaEntities.map((entity) => [entity.entity_id, entity]),
         {
           title: area.name,
+          state_color: true,
         }
       )
     );
