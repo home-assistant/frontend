@@ -25,6 +25,7 @@ import {
   ThermostatCardConfig,
 } from "../cards/types";
 import { LovelaceRowConfig } from "../entity-rows/types";
+import { ButtonsHeaderFooterConfig } from "../header-footer/types";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -97,6 +98,8 @@ export const computeCards = (
     ? `${entityCardOptions.title} `.toLowerCase()
     : undefined;
 
+  const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
+
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
 
@@ -143,6 +146,12 @@ export const computeCards = (
         show_forecast: false,
       };
       cards.push(cardConfig);
+    } else if (domain === "scene" || domain === "script") {
+      footerEntities.push({
+        entity: entityId,
+        show_icon: true,
+        show_name: true,
+      });
     } else if (
       domain === "sensor" &&
       stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
@@ -168,15 +177,33 @@ export const computeCards = (
     }
   }
 
-  if (entities.length > 0) {
-    cards.unshift({
+  if (entities.length > 0 || footerEntities.length > 0) {
+    const card: EntitiesCardConfig = {
       type: "entities",
       entities,
       ...entityCardOptions,
-    });
+    };
+    if (footerEntities.length > 0) {
+      card.footer = {
+        type: "buttons",
+        entities: footerEntities,
+      } as ButtonsHeaderFooterConfig;
+    }
+    cards.unshift(card);
   }
 
-  return cards;
+  if (cards.length < 2) {
+    return cards;
+  }
+
+  return [
+    {
+      type: "grid",
+      square: false,
+      columns: 1,
+      cards,
+    },
+  ];
 };
 
 const computeDefaultViewStates = (

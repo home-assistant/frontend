@@ -28,6 +28,8 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  description?: string;
+  iconColor?: string;
   info?: any;
 }
 
@@ -85,7 +87,7 @@ class HassTabsSubpage extends LitElement {
             <a href=${page.path}>
               <ha-tab
                 .hass=${this.hass}
-                .active=${page === activeTab}
+                .active=${page.path === activeTab?.path}
                 .narrow=${this.narrow}
                 .name=${page.translationKey
                   ? localizeFunc(page.translationKey)

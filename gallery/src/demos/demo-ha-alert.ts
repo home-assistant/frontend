@@ -1,15 +1,16 @@
-import "../../../src/components/ha-logo-svg";
-import { html, css, LitElement, TemplateResult } from "lit";
+import "@material/mwc-button/mwc-button";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
+import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-logo-svg";
 
 const alerts: {
   title?: string;
   description: string | TemplateResult;
   type: "info" | "warning" | "error" | "success";
   dismissable?: boolean;
-  action?: string;
   rtl?: boolean;
   iconSlot?: TemplateResult;
   actionSlot?: TemplateResult;
@@ -76,19 +77,29 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action",
     type: "error",
-    action: "restart",
+    actionSlot: html`<mwc-button slot="action" label="restart"></mwc-button>`,
   },
   {
     title: "Unsaved data",
     description: "You have unsaved data",
     type: "warning",
-    action: "save",
+    actionSlot: html`<mwc-button slot="action" label="save"></mwc-button>`,
   },
   {
     title: "Slotted icon",
     description: "Alert with slotted icon",
     type: "warning",
-    iconSlot: html`<ha-logo-svg slot="icon"></ha-logo-svg>`,
+    iconSlot: html`<span slot="icon" class="image">
+      <ha-logo-svg></ha-logo-svg>
+    </span>`,
+  },
+  {
+    title: "Slotted image",
+    description: "Alert with slotted image",
+    type: "warning",
+    iconSlot: html`<span slot="icon" class="image"
+      ><img src="https://www.home-assistant.io/images/home-assistant-logo.svg"
+    /></span>`,
   },
   {
     title: "Slotted action",
@@ -106,7 +117,7 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action (RTL)",
     type: "error",
-    action: "restart",
+    actionSlot: html`<mwc-button slot="action" label="restart"></mwc-button>`,
     rtl: true,
   },
   {
@@ -121,30 +132,60 @@ const alerts: {
 export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-alert demo">
-        <div class="card-content">
-          ${alerts.map(
-            (alert) => html`
-              <ha-alert
-                .title=${alert.title || ""}
-                .alertType=${alert.type}
-                .dismissable=${alert.dismissable || false}
-                .actionText=${alert.action || ""}
-                .rtl=${alert.rtl || false}
-              >
-                ${alert.iconSlot} ${alert.description} ${alert.actionSlot}
-              </ha-alert>
-            `
-          )}
-        </div>
-      </ha-card>
+      ${["light", "dark"].map(
+        (mode) => html`
+          <div class=${mode}>
+            <ha-card header="ha-alert ${mode} demo">
+              <div class="card-content">
+                ${alerts.map(
+                  (alert) => html`
+                    <ha-alert
+                      .title=${alert.title || ""}
+                      .alertType=${alert.type}
+                      .dismissable=${alert.dismissable || false}
+                      .rtl=${alert.rtl || false}
+                    >
+                      ${alert.iconSlot} ${alert.description} ${alert.actionSlot}
+                    </ha-alert>
+                  `
+                )}
+              </div>
+            </ha-card>
+          </div>
+        `
+      )}
     `;
+  }
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    applyThemesOnElement(
+      this.shadowRoot!.querySelector(".dark"),
+      {
+        default_theme: "default",
+        default_dark_theme: "default",
+        themes: {},
+        darkMode: false,
+      },
+      "default",
+      { dark: true }
+    );
   }
 
   static get styles() {
     return css`
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      .dark,
+      .light {
+        display: block;
+        background-color: var(--primary-background-color);
+        padding: 0 50px;
+      }
       ha-card {
-        max-width: 600px;
         margin: 24px auto;
       }
       ha-alert {
@@ -157,14 +198,14 @@ export class DemoHaAlert extends LitElement {
         align-items: center;
         justify-content: space-between;
       }
-      span {
-        margin-right: 16px;
+      .image {
+        display: inline-flex;
+        height: 100%;
+        align-items: center;
       }
-      ha-logo-svg {
-        width: 28px;
-        height: 28px;
-        padding-right: 8px;
-        place-self: center;
+      img {
+        max-height: 24px;
+        width: 24px;
       }
       mwc-button {
         --mdc-theme-primary: var(--primary-text-color);

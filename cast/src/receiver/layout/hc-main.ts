@@ -13,7 +13,11 @@ import {
   ShowDemoMessage,
   ShowLovelaceViewMessage,
 } from "../../../../src/cast/receiver_messages";
-import { ReceiverStatusMessage } from "../../../../src/cast/sender_messages";
+import {
+  ReceiverErrorCode,
+  ReceiverErrorMessage,
+  ReceiverStatusMessage,
+} from "../../../../src/cast/sender_messages";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
 import {
@@ -134,6 +138,26 @@ export class HcMain extends HassElement {
     }
   }
 
+  private _sendError(
+    error_code: number,
+    error_message: string,
+    senderId?: string
+  ) {
+    const error: ReceiverErrorMessage = {
+      type: "receiver_error",
+      error_code,
+      error_message,
+    };
+
+    if (senderId) {
+      this.sendMessage(senderId, error);
+    } else {
+      for (const sender of castContext.getSenders()) {
+        this.sendMessage(sender.id, error);
+      }
+    }
+  }
+
   private _dialogClosed = () => {
     document.body.setAttribute("style", "overflow-y: auto !important");
   };
@@ -156,14 +180,18 @@ export class HcMain extends HassElement {
         }),
       });
     } catch (err: any) {
-      this._error = this._getErrorMessage(err);
+      const errorMessage = this._getErrorMessage(err);
+      this._error = errorMessage;
+      this._sendError(err, errorMessage);
       return;
     }
     let connection;
     try {
       connection = await createConnection({ auth });
     } catch (err: any) {
-      this._error = this._getErrorMessage(err);
+      const errorMessage = this._getErrorMessage(err);
+      this._error = errorMessage;
+      this._sendError(err, errorMessage);
       return;
     }
     if (this.hass) {
@@ -181,8 +209,10 @@ export class HcMain extends HassElement {
     if (!this.hass) {
       this._sendStatus(msg.senderId!);
       this._error = "Cannot show Lovelace because we're not connected.";
+      this._sendError(ReceiverErrorCode.NOT_CONNECTED, this._error);
       return;
     }
+    this._error = undefined;
     if (msg.urlPath === "lovelace") {
       msg.urlPath = null;
     }
@@ -204,10 +234,14 @@ export class HcMain extends HassElement {
           this._handleNewLovelaceConfig(lovelaceConfig)
         );
       } catch (err: any) {
-        if (err.code !== "config_not_found") {
+        if (
+          atLeastVersion(this.hass.connection.haVersion, 0, 107) &&
+          err.code !== "config_not_found"
+        ) {
           // eslint-disable-next-line
           console.log("Error fetching Lovelace configuration", err, msg);
           this._error = `Error fetching Lovelace configuration: ${err.message}`;
+          this._sendError(ReceiverErrorCode.FETCH_CONFIG_FAILED, this._error);
           return;
         }
         // Generate a Lovelace config.

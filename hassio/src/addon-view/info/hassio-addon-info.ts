@@ -62,12 +62,13 @@ import {
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
+import "../../update-available/update-available-card";
 import { addonArchIsSupported, extractChangelog } from "../../util/addon";
 
 const STAGE_ICON = {
@@ -88,6 +89,8 @@ const RATING_ICON = {
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -125,23 +128,12 @@ class HassioAddonInfo extends LitElement {
     return html`
       ${this.addon.update_available
         ? html`
-            <ha-alert
-              .title=${this.supervisor.localize("common.update_available", {
-                count: 1,
-              })}
-            >
-              ${this.supervisor.localize(
-                "addon.dashboard.new_update_available",
-                { name: this.addon.name, version: this.addon.version_latest }
-              )}
-              <a
-                href="/hassio/update-available/${this.addon.slug}"
-                slot="action"
-              >
-                <mwc-button .label=${this.supervisor.localize("common.review")}>
-                </mwc-button>
-              </a>
-            </ha-alert>
+            <update-available-card
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .supervisor=${this.supervisor}
+              .addonSlug=${this.addon.slug}
+            ></update-available-card>
           `
         : ""}
       ${!this.addon.protected
@@ -151,14 +143,18 @@ class HassioAddonInfo extends LitElement {
               .title=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.title"
               )}
-              .actionText=${this.supervisor.localize(
-                "addon.dashboard.protection_mode.enable"
-              )}
-              @alert-action-clicked=${this._protectionToggled}
             >
               ${this.supervisor.localize(
                 "addon.dashboard.protection_mode.content"
               )}
+              <mwc-button
+                slot="action"
+                .label=${this.supervisor.localize(
+                  "addon.dashboard.protection_mode.enable"
+                )}
+                @click=${this._protectionToggled}
+              >
+              </mwc-button>
             </ha-alert>
           `
         : ""}
@@ -1165,6 +1161,10 @@ class HassioAddonInfo extends LitElement {
         }
         a {
           text-decoration: none;
+        }
+
+        update-available-card {
+          padding-bottom: 16px;
         }
 
         @media (max-width: 720px) {

@@ -176,11 +176,6 @@ class HaGallery extends PolymerElement {
     this.addEventListener("alert-dismissed-clicked", () =>
       this.$.notifications.showDialog({ message: "Alert dismissed clicked" })
     );
-
-    this.addEventListener("alert-action-clicked", () =>
-      this.$.notifications.showDialog({ message: "Alert action clicked" })
-    );
-
     this.addEventListener("hass-more-info", (ev) => {
       if (ev.detail.entityId) {
         this.$.notifications.showDialog({
