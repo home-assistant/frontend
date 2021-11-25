@@ -193,7 +193,6 @@ class UpdateAvailableCard extends LitElement {
                 <span></span>
                 <ha-progress-button
                   .disabled=${!this._version ||
-                  this._error !== undefined ||
                   (this._shouldCreateBackup &&
                     this.supervisor.info.state !== "running")}
                   @click=${this._update}
@@ -306,6 +305,7 @@ class UpdateAvailableCard extends LitElement {
   }
 
   private async _update() {
+    this._error = undefined;
     if (this._shouldCreateBackup) {
       let backupArgs: HassioPartialBackupCreateParams;
       if (this._updateType === "addon") {
