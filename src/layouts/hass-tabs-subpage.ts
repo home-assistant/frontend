@@ -226,7 +226,7 @@ class HassTabsSubpage extends LitElement {
         box-sizing: border-box;
       }
       .toolbar a {
-        color: var(--sidebar-text-color);
+        color: var(--app-header-text-color);
         text-decoration: none;
       }
       .bottom-bar a {
