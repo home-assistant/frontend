@@ -8,6 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import { buttonLinkStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
 export const SUPERVISOR_UPDATE_NAMES = {
@@ -78,9 +79,9 @@ class HaConfigUpdates extends LitElement {
       ${!this._showAll && !this.narrow ? html`<div class="divider"></div>` : ""}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
-            <div class="show-all" @click=${this._showAllClicked}>
+            <button class="link show-all" @click=${this._showAllClicked}>
               ${this.hass.localize("ui.panel.config.updates.show_all_updates")}
-            </div>
+            </button>
           `
         : ""}
     `;
@@ -90,44 +91,47 @@ class HaConfigUpdates extends LitElement {
     this._showAll = true;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .title {
-        font-size: 16px;
-        padding: 16px;
-        padding-bottom: 0;
-      }
-      a {
-        text-decoration: none;
-        color: var(--primary-text-color);
-      }
-      .icon {
-        display: inline-flex;
-        height: 100%;
-        align-items: center;
-      }
-      img,
-      ha-svg-icon,
-      ha-logo-svg {
-        --mdc-icon-size: 32px;
-        max-height: 32px;
-        width: 32px;
-      }
-      ha-logo-svg {
-        color: var(--secondary-text-color);
-      }
-      .show-all {
-        cursor: pointer;
-        color: var(--primary-color);
-        margin: 4px 16px;
-      }
-      .divider::before {
-        content: " ";
-        display: block;
-        height: 1px;
-        background-color: var(--divider-color);
-      }
-    `;
+  static get styles(): CSSResultGroup[] {
+    return [
+      buttonLinkStyle,
+      css`
+        .title {
+          font-size: 16px;
+          padding: 16px;
+          padding-bottom: 0;
+        }
+        a {
+          text-decoration: none;
+          color: var(--primary-text-color);
+        }
+        .icon {
+          display: inline-flex;
+          height: 100%;
+          align-items: center;
+        }
+        img,
+        ha-svg-icon,
+        ha-logo-svg {
+          --mdc-icon-size: 32px;
+          max-height: 32px;
+          width: 32px;
+        }
+        ha-logo-svg {
+          color: var(--secondary-text-color);
+        }
+        button.show-all {
+          color: var(--primary-color);
+          text-decoration: none;
+          margin: 8px 16px;
+        }
+        .divider::before {
+          content: " ";
+          display: block;
+          height: 1px;
+          background-color: var(--divider-color);
+        }
+      `,
+    ];
   }
 }
 
