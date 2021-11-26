@@ -147,7 +147,7 @@ class HaSceneDashboard extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
         .columns=${this._columns(this.hass.language)}
         id="entity_id"
         .data=${this._scenes(this.scenes, this._filteredScenes)}

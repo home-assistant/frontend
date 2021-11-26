@@ -90,7 +90,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
       >
         <ha-button-menu
           corner="BOTTOM_START"

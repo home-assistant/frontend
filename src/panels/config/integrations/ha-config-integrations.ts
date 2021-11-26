@@ -319,7 +319,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
       >
         ${this.narrow
           ? html`

@@ -478,7 +478,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ? undefined
           : "/config"}
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .columns=${this._columns(
           this.narrow,
           this.hass.language,

@@ -89,7 +89,7 @@ export class HaConfigAreasDashboard extends LitElement {
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         back-path="/config"
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
       >
         <ha-icon-button
