@@ -915,7 +915,6 @@
       },
       "config": {
         "header": "Configure Home Assistant",
-        "introduction": "In this view it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
           "link_profile_page": "your profile page"
@@ -927,9 +926,11 @@
           "learn_more": "Learn more"
         },
         "updates": {
+          "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to fetch available updates",
           "version_available": "Version {version_available} is available",
-          "review": "review"
+          "show_all_updates": "Show all updates",
+          "show": "show"
         },
         "areas": {
           "caption": "Areas",
@@ -4165,7 +4166,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "menu": "[%key:ui::common::menu%]",
-      "review": "[%key:ui::panel::config::updates::review%]",
+      "show": "[%key:ui::panel::config::updates::show%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",

@@ -50,7 +50,7 @@ export class CloudLogin extends LitElement {
         header="Home Assistant Cloud"
       >
         <div class="content">
-          <ha-config-section isWide=${this.isWide}>
+          <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
               <p>

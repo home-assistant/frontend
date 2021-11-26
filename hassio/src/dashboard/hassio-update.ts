@@ -111,7 +111,7 @@ export class HassioUpdate extends LitElement {
         </div>
         <div class="card-actions">
           <a href="/hassio/update-available/${key}">
-            <mwc-button .label=${this.supervisor.localize("common.review")}>
+            <mwc-button .label=${this.supervisor.localize("common.show")}>
             </mwc-button>
           </a>
         </div>

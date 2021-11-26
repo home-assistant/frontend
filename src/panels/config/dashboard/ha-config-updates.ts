@@ -2,23 +2,12 @@ import "@material/mwc-button/mwc-button";
 import { mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
-import {
-  fetchSupervisorAvailableUpdates,
-  SupervisorAvailableUpdates,
-} from "../../../data/supervisor/supervisor";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
 import { HomeAssistant } from "../../../types";
 
 export const SUPERVISOR_UPDATE_NAMES = {
@@ -31,68 +20,83 @@ export const SUPERVISOR_UPDATE_NAMES = {
 class HaConfigUpdates extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[];
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private _error?: string;
+  @property({ attribute: false })
+  public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._loadSupervisorUpdates();
-  }
+  @state() private _showAll = false;
 
   protected render(): TemplateResult {
+    if (!this.supervisorUpdates) {
+      return html``;
+    }
+
+    const updates =
+      this._showAll || this.supervisorUpdates.length <= 3
+        ? this.supervisorUpdates
+        : this.supervisorUpdates.slice(0, 2);
+
     return html`
-      ${this._error
-        ? html`<ha-alert
-            .title=${this.hass.localize(
-              "ui.panel.config.updates.unable_to_fetch"
-            )}
-            alert-type="error"
-          >
-            ${this._error}
-          </ha-alert>`
-        : ""}
-      ${this._supervisorUpdates?.map(
+      <div class="title">
+        ${this.hass.localize("ui.panel.config.updates.title", {
+          count: this.supervisorUpdates.length,
+        })}
+      </div>
+      ${updates.map(
         (update) => html`
-          <ha-alert
-            .title=${update.update_type === "addon"
-              ? update.name
-              : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-          >
-            <span slot="icon" class="icon">
+          <paper-icon-item>
+            <span slot="item-icon" class="icon">
               ${update.update_type === "addon"
                 ? update.icon
                   ? html`<img src="/api/hassio${update.icon}" />`
                   : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
                 : html`<ha-logo-svg></ha-logo-svg>`}
             </span>
-            ${this.hass.localize("ui.panel.config.updates.version_available", {
-              version_available: update.version_latest,
-            })}
-            <a href="/hassio${update.panel_path}" slot="action">
+            <paper-item-body two-line>
+              ${update.update_type === "addon"
+                ? update.name
+                : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
+              <div secondary>
+                ${this.hass.localize(
+                  "ui.panel.config.updates.version_available",
+                  {
+                    version_available: update.version_latest,
+                  }
+                )}
+              </div>
+            </paper-item-body>
+            <a href="/hassio${update.panel_path}">
               <mwc-button
-                .label=${this.hass.localize("ui.panel.config.updates.review")}
+                .label=${this.hass.localize("ui.panel.config.updates.show")}
               >
               </mwc-button>
             </a>
-          </ha-alert>
+          </paper-icon-item>
         `
       )}
+      ${!this.narrow ? html`<div class="divider"></div>` : ""}
+      ${!this._showAll && this.supervisorUpdates.length >= 4
+        ? html`
+            <div class="show-all" @click=${this._showAllClicked}>
+              ${this.hass.localize("ui.panel.config.updates.show_all_updates")}
+            </div>
+          `
+        : ""}
     `;
   }
 
-  private async _loadSupervisorUpdates(): Promise<void> {
-    try {
-      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
-        this.hass
-      );
-    } catch (err) {
-      this._error = extractApiErrorMessage(err);
-    }
+  private _showAllClicked() {
+    this._showAll = true;
   }
 
   static get styles(): CSSResultGroup {
     return css`
+      .title {
+        font-size: 16px;
+        padding: 16px;
+        padding-bottom: 0;
+      }
       a {
         text-decoration: none;
         color: var(--primary-text-color);
@@ -111,6 +115,17 @@ class HaConfigUpdates extends LitElement {
       }
       ha-logo-svg {
         color: var(--secondary-text-color);
+      }
+      .show-all {
+        cursor: pointer;
+        color: var(--primary-color);
+        margin: 4px 16px;
+      }
+      .divider::before {
+        content: " ";
+        display: block;
+        height: 1px;
+        background-color: var(--divider-color);
       }
     `;
   }

@@ -24,6 +24,7 @@ export interface PageNavigation {
   path: string;
   translationKey?: string;
   component?: string;
+  components?: string[];
   name?: string;
   core?: boolean;
   advancedOnly?: boolean;

@@ -310,13 +310,13 @@ class UpdateAvailableCard extends LitElement {
       let backupArgs: HassioPartialBackupCreateParams;
       if (this._updateType === "addon") {
         backupArgs = {
-          name: `addon_${this._updateType}_${this._addonInfo?.version}`,
-          addons: [this._updateType!],
+          name: `addon_${this.addonSlug}_${this._version}`,
+          addons: [this.addonSlug!],
           homeassistant: false,
         };
       } else {
         backupArgs = {
-          name: `${this._updateType}_${this._addonInfo?.version}`,
+          name: `${this._updateType}_${this._version}`,
           folders: ["homeassistant"],
           homeassistant: true,
         };
@@ -334,7 +334,7 @@ class UpdateAvailableCard extends LitElement {
     this._action = "update";
     try {
       if (this._updateType === "addon") {
-        await updateHassioAddon(this.hass, this._updateType!);
+        await updateHassioAddon(this.hass, this.addonSlug!);
       } else if (this._updateType === "core") {
         await updateCore(this.hass);
       } else if (this._updateType === "os") {

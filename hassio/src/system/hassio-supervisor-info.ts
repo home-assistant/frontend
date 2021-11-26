@@ -81,7 +81,7 @@ class HassioSupervisorInfo extends LitElement {
                 ? html`
                     <a href="/hassio/update-available/supervisor">
                       <mwc-button
-                        .label=${this.supervisor.localize("common.review")}
+                        .label=${this.supervisor.localize("common.show")}
                       >
                       </mwc-button>
                     </a>
