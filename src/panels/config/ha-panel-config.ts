@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiBadgeAccountHorizontal,
+  mdiCog,
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
@@ -27,6 +28,10 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
+import {
+  fetchSupervisorAvailableUpdates,
+  SupervisorAvailableUpdates,
+} from "../../data/supervisor/supervisor";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -40,7 +45,82 @@ declare global {
 }
 
 export const configSections: { [name: string]: PageNavigation[] } = {
-  integrations: [
+  dashboard: [
+    {
+      path: "/config/integrations",
+      name: "Devices & Services",
+      description: "Integrations, devices, entities and areas",
+      iconPath: mdiDevices,
+      iconColor: "#2D338F",
+      core: true,
+    },
+    {
+      path: "/config/automation",
+      name: "Automations",
+      description: "Automations, bludprints, scenes and scripts",
+      iconPath: mdiRobot,
+      iconColor: "#518C43",
+      components: ["automation", "blueprint", "scene", "script"],
+    },
+    {
+      path: "/config/helpers",
+      name: "Helpers",
+      description: "Elements that help build automations",
+      iconPath: mdiTools,
+      iconColor: "#4D2EA4",
+      core: true,
+    },
+    {
+      path: "/hassio",
+      name: "Add-ons & Backups",
+      description: "Create backups, check logs or reboot your system",
+      iconPath: mdiHomeAssistant,
+      iconColor: "#4084CD",
+      component: "hassio",
+    },
+    {
+      path: "/config/lovelace/dashboards",
+      name: "Dashboards",
+      description: "Create customized sets of cards to control your home",
+      iconPath: mdiViewDashboard,
+      iconColor: "#B1345C",
+      component: "lovelace",
+    },
+    {
+      path: "/config/energy",
+      name: "Energy",
+      description: "Monitor your energy production and consumption",
+      iconPath: mdiLightningBolt,
+      iconColor: "#F1C447",
+      component: "energy",
+    },
+    {
+      path: "/config/tags",
+      name: "Tags",
+      description:
+        "Trigger automations when a NFC tag, QR code, etc. is scanned",
+      iconPath: mdiNfcVariant,
+      iconColor: "#616161",
+      component: "tag",
+    },
+    {
+      path: "/config/person",
+      name: "People & Zones",
+      description: "Manage the people and zones that Home Assistant tracks",
+      iconPath: mdiAccount,
+      iconColor: "#E48629",
+      components: ["person", "zone", "users"],
+    },
+    {
+      path: "/config/core",
+      name: "Settings",
+      description: "Basic settings, server controls, logs and info",
+      iconPath: mdiCog,
+      iconColor: "#4A5963",
+      core: true,
+    },
+  ],
+  devices: [
     {
       component: "integrations",
       path: "/config/integrations",
@@ -74,7 +154,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
   ],
-  automation: [
+  automations: [
     {
       component: "blueprint",
       path: "/config/blueprint",
@@ -114,7 +194,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
   ],
-  experiences: [
+  tags: [
     {
       component: "tag",
       path: "/config/tags",
@@ -122,6 +202,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiNfcVariant,
       iconColor: "#616161",
     },
+  ],
+  energy: [
     {
       component: "energy",
       path: "/config/energy",
@@ -335,6 +417,8 @@ class HaPanelConfig extends HassRouterPage {
 
   @state() private _cloudStatus?: CloudStatus;
 
+  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+
   private _listeners: Array<() => void> = [];
 
   public connectedCallback() {
@@ -363,6 +447,11 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("title");
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
+    }
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._loadSupervisorUpdates();
+    } else {
+      this._supervisorUpdates = null;
     }
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
@@ -394,6 +483,7 @@ class HaPanelConfig extends HassRouterPage {
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
+        supervisorUpdates: this._supervisorUpdates,
       });
     } else {
       el.route = this.routeTail;
@@ -402,6 +492,7 @@ class HaPanelConfig extends HassRouterPage {
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
+      el.supervisorUpdates = this._supervisorUpdates;
     }
   }
 
@@ -417,6 +508,16 @@ class HaPanelConfig extends HassRouterPage {
         !this._cloudStatus.remote_connected)
     ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
+    }
+  }
+
+  private async _loadSupervisorUpdates(): Promise<void> {
+    try {
+      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
+        this.hass
+      );
+    } catch (err) {
+      this._supervisorUpdates = null;
     }
   }
 }

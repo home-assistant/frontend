@@ -71,7 +71,7 @@ class HassioCoreInfo extends LitElement {
                 ? html`
                     <a href="/hassio/update-available/core">
                       <mwc-button
-                        .label=${this.supervisor.localize("common.review")}
+                        .label=${this.supervisor.localize("common.show")}
                       >
                       </mwc-button>
                     </a>

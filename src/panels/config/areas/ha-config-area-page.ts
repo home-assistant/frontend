@@ -135,7 +135,7 @@ class HaConfigAreaPage extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
       >
         ${this.narrow
