@@ -75,7 +75,7 @@ class HaConfigUpdates extends LitElement {
           </paper-icon-item>
         `
       )}
-      ${!this.narrow ? html`<div class="divider"></div>` : ""}
+      ${!this._showAll && !this.narrow ? html`<div class="divider"></div>` : ""}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
             <div class="show-all" @click=${this._showAllClicked}>
