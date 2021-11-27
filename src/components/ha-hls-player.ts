@@ -204,7 +204,7 @@ class HaHLSPlayer extends LitElement {
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
       hls.loadSource(url);
     });
-    hls.on(Hls.Events.ERROR, (_, data: Any) => {
+    hls.on(Hls.Events.ERROR, (_, data: any) => {
       if (!data.fatal) {
         return;
       }
