@@ -1,4 +1,3 @@
-import "./ha-config-updates";
 import { mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -9,13 +8,14 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import "./ha-config-updates";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -91,21 +91,7 @@ class HaConfigDashboard extends LitElement {
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
-                </ha-card>
-                ${!this.showAdvanced
-                  ? html`
-                      <div class="promo-advanced">
-                        ${this.hass.localize(
-                          "ui.panel.config.advanced_mode.hint_enable"
-                        )}
-                        <a href="/profile"
-                          >${this.hass.localize(
-                            "ui.panel.config.advanced_mode.link_profile_page"
-                          )}</a
-                        >.
-                      </div>
-                    `
-                  : ""}`}
+                </ha-card>`}
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -138,14 +124,6 @@ class HaConfigDashboard extends LitElement {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
-        }
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
-          margin-bottom: 24px;
-        }
-        .promo-advanced a {
-          color: var(--secondary-text-color);
         }
         :host([narrow]) ha-card {
           background-color: var(--primary-background-color);
