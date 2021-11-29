@@ -179,7 +179,7 @@ export interface StateCondition extends BaseCondition {
   condition: "state";
   entity_id: string;
   attribute?: string;
-  state: string | number;
+  state: string | number | string[];
   for?: string | number | ForDict;
 }
 
