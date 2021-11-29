@@ -76,7 +76,6 @@ class HaConfigUpdates extends LitElement {
           </paper-icon-item>
         `
       )}
-      ${!this._showAll && !this.narrow ? html`<div class="divider"></div>` : ""}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
             <button class="link show-all" @click=${this._showAllClicked}>
@@ -123,12 +122,6 @@ class HaConfigUpdates extends LitElement {
           color: var(--primary-color);
           text-decoration: none;
           margin: 8px 16px;
-        }
-        .divider::before {
-          content: " ";
-          display: block;
-          height: 1px;
-          background-color: var(--divider-color);
         }
       `,
     ];
