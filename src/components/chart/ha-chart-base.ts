@@ -95,7 +95,7 @@ export default class HaChartBase extends LitElement {
                       borderColor: dataset.borderColor as string,
                     })}
                   ></div>
-                  ${dataset.label}
+                  <div class="label">${dataset.label}</div>
                 </li>`
               )}
             </ul>
@@ -278,17 +278,20 @@ export default class HaChartBase extends LitElement {
       }
       .chartLegend li {
         cursor: pointer;
-        display: inline-flex;
+        display: inline-grid;
+        grid-auto-flow: column;
         padding: 0 8px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
         box-sizing: border-box;
         align-items: center;
         color: var(--secondary-text-color);
       }
       .chartLegend .hidden {
         text-decoration: line-through;
+      }
+      .chartLegend .label {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
       .chartLegend .bullet,
       .chartTooltip .bullet {
