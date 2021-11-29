@@ -57,6 +57,45 @@ export enum SecurityClass {
   S0_Legacy = 7,
 }
 
+/** A named list of Z-Wave features */
+export enum ZWaveFeature {
+  // Available starting with Z-Wave SDK 6.81
+  SmartStart,
+}
+
+enum QRCodeVersion {
+  S2 = 0,
+  SmartStart = 1,
+}
+
+enum Protocols {
+  ZWave = 0,
+  ZWaveLongRange = 1,
+}
+export interface QRProvisioningInformation {
+  version: QRCodeVersion;
+  securityClasses: SecurityClass[];
+  dsk: string;
+  genericDeviceClass: number;
+  specificDeviceClass: number;
+  installerIconType: number;
+  manufacturerId: number;
+  productType: number;
+  productId: number;
+  applicationVersion: string;
+  maxInclusionRequestInterval?: number | undefined;
+  uuid?: string | undefined;
+  supportedProtocols?: Protocols[] | undefined;
+}
+
+interface PlannedProvisioningEntry {
+  /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
+  dsk: string;
+  securityClasses: SecurityClass[];
+}
+
+export const MINIMUM_QR_STRING_LENGTH = 52;
+
 export interface ZWaveJSNodeIdentifiers {
   home_id: string;
   node_id: number;
@@ -266,6 +305,43 @@ export const validateDskAndEnterPin = (
     type: "zwave_js/validate_dsk_and_enter_pin",
     entry_id,
     pin,
+  });
+
+export const supportsFeature = (
+  hass: HomeAssistant,
+  entry_id: string,
+  feature: ZWaveFeature
+): Promise<{ supported: boolean }> =>
+  hass.callWS({
+    type: "zwave_js/supports_feature",
+    entry_id,
+    feature,
+  });
+
+export const parseQrCode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_code_string: string
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/parse_qr_code_string",
+    entry_id,
+    qr_code_string,
+  });
+
+export const provisionSmartStartNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_code_string?: string,
+  qr_provisioning_information?: QRProvisioningInformation,
+  planned_provisioning_entry?: PlannedProvisioningEntry
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/provision_smart_start_node",
+    entry_id,
+    qr_code_string,
+    qr_provisioning_information,
+    planned_provisioning_entry,
   });
 
 export const fetchNodeStatus = (

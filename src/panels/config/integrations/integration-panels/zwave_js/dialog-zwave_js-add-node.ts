@@ -1,30 +1,47 @@
 import "@material/mwc-button/mwc-button";
-import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
+import type { Select } from "@material/mwc-select/mwc-select";
+import {
+  mdiAlertCircle,
+  mdiCheckCircle,
+  mdiCloseCircle,
+  mdiQrcodeScan,
+} from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type QrScanner from "qr-scanner";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import "../../../../../components/ha-alert";
+import { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-radio";
 import "../../../../../components/ha-switch";
 import {
   grantSecurityClasses,
   InclusionStrategy,
+  MINIMUM_QR_STRING_LENGTH,
+  parseQrCode,
+  provisionSmartStartNode,
+  QRProvisioningInformation,
   RequestedGrant,
   SecurityClass,
   stopInclusion,
   subscribeAddNode,
+  supportsFeature,
   validateDskAndEnterPin,
+  ZWaveFeature,
 } from "../../../../../data/zwave_js";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
-import "../../../../../components/ha-radio";
-import { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-alert";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -41,10 +58,12 @@ class DialogZWaveJSAddNode extends LitElement {
     | "loading"
     | "started"
     | "choose_strategy"
+    | "qr_scan"
     | "interviewing"
     | "failed"
     | "timed_out"
     | "finished"
+    | "provisioned"
     | "validate_dsk_enter_pin"
     | "grant_security_classes";
 
@@ -64,9 +83,19 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _lowSecurity = false;
 
+  @state() private _supportsSmartStart?: boolean;
+
+  @state() private _qrError?: string;
+
   private _addNodeTimeoutHandle?: number;
 
   private _subscribed?: Promise<UnsubscribeFunc>;
+
+  private _cameras?: QrScanner.Camera[];
+
+  private _qrScanner?: QrScanner;
+
+  private _qrProcessing = false;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -76,10 +105,14 @@ class DialogZWaveJSAddNode extends LitElement {
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
     this._entryId = params.entry_id;
     this._status = "loading";
+    this._supportsSmartStart = undefined;
+    this._checkSmartStartSupport();
     this._startInclusion();
   }
 
   @query("#pin-input") private _pinInput?: PaperInputElement;
+
+  @query("video") private _videoEl?: HTMLVideoElement;
 
   protected render(): TemplateResult {
     if (!this._entryId) {
@@ -157,6 +190,31 @@ class DialogZWaveJSAddNode extends LitElement {
               >
                 Search device
               </mwc-button>`
+          : this._status === "qr_scan"
+          ? html` ${this._cameras && this._cameras.length > 1
+                ? html`<mwc-select
+                    .label=${this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.select_camera"
+                    )}
+                    fixedMenuPosition
+                    naturalMenuWidth
+                    @closed=${stopPropagation}
+                    @selected=${this._cameraChanged}
+                  >
+                    ${this._cameras!.map(
+                      (camera) => html`
+                        <mwc-list-item .value=${camera.id}
+                          >${camera.label}</mwc-list-item
+                        >
+                      `
+                    )}
+                  </mwc-select>`
+                : ""}
+              ${this._qrError
+                ? html`<ha-alert alert-type="error">${this._qrError}</ha-alert>`
+                : ""}
+              <div class="canvas-container"></div>
+              <video></video>`
           : this._status === "validate_dsk_enter_pin"
           ? html`
                 <p>
@@ -244,15 +302,13 @@ class DialogZWaveJSAddNode extends LitElement {
           : this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b
-                      >${this.hass.localize(
-                        "ui.panel.config.zwave_js.add_node.controller_in_inclusion_mode"
-                      )}</b
-                    >
-                  </p>
+                <div class="outline">
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.searching_device"
+                    )}
+                  </h2>
+                  <ha-circular-progress active></ha-circular-progress>
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -263,10 +319,34 @@ class DialogZWaveJSAddNode extends LitElement {
                       class="link"
                       @click=${this._chooseInclusionStrategy}
                     >
-                      Advanced inclusion
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.add_node.choose_inclusion_strategy"
+                      )}
                     </button>
                   </p>
                 </div>
+                ${navigator.mediaDevices && this._supportsSmartStart
+                  ? html` <div class="outline">
+                      <h2>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.add_node.qr_code"
+                        )}
+                      </h2>
+                      <ha-svg-icon .path=${mdiQrcodeScan}></ha-svg-icon>
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.add_node.qr_code_paragraph"
+                        )}
+                      </p>
+                      <p>
+                        <mwc-button @click=${this._scanQRCode}>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.add_node.scan_qr_code"
+                          )}
+                        </mwc-button>
+                      </p>
+                    </div>`
+                  : ""}
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize(
@@ -391,6 +471,23 @@ class DialogZWaveJSAddNode extends LitElement {
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
+          : this._status === "provisioned"
+          ? html` <div class="flex-container">
+                <ha-svg-icon
+                  .path=${mdiCheckCircle}
+                  class="success"
+                ></ha-svg-icon>
+                <div class="status">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.provisioning_finished"
+                    )}
+                  </p>
+                </div>
+              </div>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+              </mwc-button>`
           : ""}
       </ha-dialog>
     `;
@@ -415,6 +512,73 @@ class DialogZWaveJSAddNode extends LitElement {
         (val) => val !== securityClass
       );
     }
+  }
+
+  private async _scanQRCode(): Promise<void> {
+    this._unsubscribe();
+    this._status = "loading";
+    const QrScanner = (await import("qr-scanner")).default;
+    if (!(await QrScanner.hasCamera())) {
+      await showAlertDialog(this, { title: "No camera found" });
+      this._startInclusion();
+      return;
+    }
+    this._cameras = await QrScanner.listCameras(true);
+    this._status = "qr_scan";
+    await this.updateComplete;
+    this._qrScanner = new QrScanner(this._videoEl!, this._qrCodeScanned);
+    this._qrScanner.start();
+    this.shadowRoot
+      ?.querySelector(".canvas-container")
+      // @ts-ignore
+      ?.appendChild(this._qrScanner.$canvas);
+    // @ts-ignore
+    this._qrScanner.$canvas.style.display = "block";
+  }
+
+  private _qrCodeScanned = async (qrCodeString: string): Promise<void> => {
+    this._qrError = undefined;
+    if (this._qrProcessing) {
+      return;
+    }
+    this._qrProcessing = true;
+    if (qrCodeString.length < MINIMUM_QR_STRING_LENGTH) {
+      this._qrProcessing = false;
+      this._qrError = "Invalid QR code";
+      // return;
+    }
+    let provisioningInfo: QRProvisioningInformation;
+    try {
+      provisioningInfo = await parseQrCode(
+        this.hass,
+        this._entryId!,
+        qrCodeString
+      );
+    } catch (err: any) {
+      this._qrProcessing = false;
+      this._qrError = err.message;
+      return;
+    }
+    this._qrScanner!.stop();
+    this._qrScanner!.destroy();
+    this._qrScanner = undefined;
+    this._qrProcessing = false;
+    this._status = "loading";
+    try {
+      await provisionSmartStartNode(
+        this.hass,
+        this._entryId!,
+        undefined,
+        provisioningInfo
+      );
+      this._status = "provisioned";
+    } catch (err: any) {
+      this._status = "failed";
+    }
+  };
+
+  private _cameraChanged(ev: CustomEvent): void {
+    this._qrScanner?.setCamera((ev.target as Select).value);
   }
 
   private _handlePinKeyUp(ev: KeyboardEvent) {
@@ -458,6 +622,12 @@ class DialogZWaveJSAddNode extends LitElement {
       this._inclusionStrategy = InclusionStrategy.Default;
     }
     this._startInclusion();
+  }
+
+  private async _checkSmartStartSupport() {
+    this._supportsSmartStart = (
+      await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
+    ).supported;
   }
 
   private _startInclusion(): void {
@@ -558,6 +728,11 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = undefined;
     this._device = undefined;
     this._stages = undefined;
+    if (this._qrScanner) {
+      this._qrScanner.stop();
+      this._qrScanner.destroy();
+      this._qrScanner = undefined;
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -587,6 +762,19 @@ class DialogZWaveJSAddNode extends LitElement {
           display: grid;
         }
 
+        .outline {
+          border: 1px solid var(--divider-color);
+          border-radius: 4px;
+          padding: 16px;
+          min-height: 250px;
+          text-align: center;
+          flex: 1;
+        }
+
+        .outline:nth-child(2) {
+          margin-left: 16px;
+        }
+
         .flex-container .stage ha-svg-icon {
           width: 16px;
           height: 16px;
@@ -608,6 +796,11 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .flex-column ha-formfield {
           padding: 8px 0;
+        }
+
+        mwc-select {
+          width: 100%;
+          margin-bottom: 16px;
         }
 
         ha-svg-icon {

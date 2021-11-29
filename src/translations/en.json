@@ -2854,10 +2854,16 @@
           "add_node": {
             "title": "Add a Z-Wave Device",
             "cancel_inclusion": "Cancel Inclusion",
-            "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
+            "searching_device": "Searching for device",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "choose_inclusion_strategy": "Choose inclusion strategy",
+            "qr_code": "QR Code",
+            "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
+            "scan_qr_code": "Scan QR code",
+            "select_camera": "Select camera",
             "inclusion_failed": "The device could not be added. Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",
+            "provisioning_finished": "The device has been added. If you power it on, it will become available.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
             "interview_failed": "The device interview failed. Additional information may be available in the logs."
