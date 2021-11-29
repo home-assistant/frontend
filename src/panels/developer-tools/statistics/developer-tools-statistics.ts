@@ -45,7 +45,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
     state?: HassEntity;
   })[] = [] as StatisticsMetaData[];
 
-  @state() private _disabledEntities = new Set<string>();
+  private _disabledEntities = new Set<string>();
 
   protected firstUpdated() {
     this._validateStatistics();
