@@ -2,12 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
 import type { Select } from "@material/mwc-select/mwc-select";
-import {
-  mdiAlertCircle,
-  mdiCheckCircle,
-  mdiCloseCircle,
-  mdiQrcodeScan,
-} from "@mdi/js";
+import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -84,8 +79,6 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _lowSecurity = false;
 
   @state() private _supportsSmartStart?: boolean;
-
-  @state() private _qrError?: string;
 
   private _addNodeTimeoutHandle?: number;
 
@@ -210,8 +203,8 @@ class DialogZWaveJSAddNode extends LitElement {
                     )}
                   </mwc-select>`
                 : ""}
-              ${this._qrError
-                ? html`<ha-alert alert-type="error">${this._qrError}</ha-alert>`
+              ${this._error
+                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
               <div class="canvas-container"></div>
               <video></video>`
@@ -390,16 +383,18 @@ class DialogZWaveJSAddNode extends LitElement {
           : this._status === "failed"
           ? html`
               <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
                 <div class="status">
-                  <p>
-                    ${this.hass.localize(
+                  <ha-alert
+                    alert-type="error"
+                    .title=${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.inclusion_failed"
                     )}
-                  </p>
+                  >
+                    ${this._error ||
+                    this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.check_logs"
+                    )}
+                  </ha-alert>
                   ${this._stages
                     ? html` <div class="stages">
                         ${this._stages.map(
@@ -538,7 +533,7 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _qrCodeScanned = async (qrCodeString: string): Promise<void> => {
-    this._qrError = undefined;
+    this._error = undefined;
     if (this._qrProcessing) {
       return;
     }
@@ -548,7 +543,7 @@ class DialogZWaveJSAddNode extends LitElement {
       !qrCodeString.startsWith("90")
     ) {
       this._qrProcessing = false;
-      this._qrError = `Invalid QR code (${qrCodeString})`;
+      this._error = `Invalid QR code (${qrCodeString})`;
       return;
     }
     let provisioningInfo: QRProvisioningInformation;
@@ -560,7 +555,7 @@ class DialogZWaveJSAddNode extends LitElement {
       );
     } catch (err: any) {
       this._qrProcessing = false;
-      this._qrError = err.message;
+      this._error = err.message;
       return;
     }
     this._qrScanner!.stop();
@@ -577,6 +572,7 @@ class DialogZWaveJSAddNode extends LitElement {
       );
       this._status = "provisioned";
     } catch (err: any) {
+      this._error = err.message;
       this._status = "failed";
     }
   };
@@ -632,7 +628,6 @@ class DialogZWaveJSAddNode extends LitElement {
     this._supportsSmartStart = (
       await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
     ).supported;
-    this._supportsSmartStart = true;
   }
 
   private _startInclusion(): void {
@@ -756,10 +751,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .warning {
           color: var(--warning-color);
-        }
-
-        .failed {
-          color: var(--error-color);
         }
 
         .stages {
