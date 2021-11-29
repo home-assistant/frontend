@@ -1,4 +1,3 @@
-import "./ha-config-updates";
 import { mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -9,13 +8,14 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import "./ha-config-updates";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
