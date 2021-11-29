@@ -18,7 +18,7 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
     }
 
     this._element = createRowElement(
-      "state_color" in config && (config as EntityCardConfig).state_color
+      (config as EntityCardConfig).state_color
         ? ({
             state_color: true,
             ...(config.row as EntityConfig),
