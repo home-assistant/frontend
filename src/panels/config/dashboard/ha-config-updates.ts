@@ -79,7 +79,9 @@ class HaConfigUpdates extends LitElement {
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
             <button class="link show-all" @click=${this._showAllClicked}>
-              ${this.hass.localize("ui.panel.config.updates.show_all_updates")}
+              ${this.hass.localize("ui.panel.config.updates.more_updates", {
+                count: this.supervisorUpdates!.length - updates.length,
+              })}
             </button>
           `
         : ""}
