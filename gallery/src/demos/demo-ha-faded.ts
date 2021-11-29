@@ -24,7 +24,9 @@ export class DemoHaFaded extends LitElement {
     return html`
       <ha-card header="ha-faded demo">
         <div class="card-content">
-          <h3>Long text</h3>
+          <h3>Long text directly as slotted content</h3>
+          <ha-faded>${LONG_TEXT}</ha-faded>
+          <h3>Long text with slotted element</h3>
           <ha-faded><span>${LONG_TEXT}</span></ha-faded>
           <h3>No text</h3>
           <ha-faded><span></span></ha-faded>
@@ -50,7 +52,7 @@ export class DemoHaFaded extends LitElement {
             </span>
           </ha-faded>
           <h3>1px over hiding point</h3>
-          <ha-faded faded-height="86">
+          <ha-faded faded-height="85">
             <span>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
               laoreet velit ut elit volutpat, eget ultrices odio lacinia. In

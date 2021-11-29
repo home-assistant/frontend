@@ -16,41 +16,43 @@ class HaFaded extends LitElement {
         style=${!this._contentShown ? `max-height: ${this.fadedHeight}px` : ""}
         @click=${this._showContent}
       >
-        <slot></slot>
+        <slot
+          @iron-resize=${
+            // ha-markdown-element fire this when render is complete
+            this._setShowContent
+          }
+        ></slot>
       </div>
     `;
   }
 
   get _slottedHeight(): number {
     return (
-      this.shadowRoot!.querySelector(".container")
-        ?.firstElementChild as HTMLSlotElement
-    )
-      .assignedElements()
-      .reduce(
-        (partial, element) => partial + (element as HTMLElement).offsetHeight,
-        0
-      );
+      (
+        this.shadowRoot!.querySelector(".container")
+          ?.firstElementChild as HTMLSlotElement
+      )
+        .assignedElements()
+        .reduce(
+          (partial, element) => partial + (element as HTMLElement).offsetHeight,
+          0
+        ) || 0
+    );
+  }
+
+  private _setShowContent() {
+    const height = this._slottedHeight;
+    if (height !== 0 && height <= this.fadedHeight + 50) {
+      this._contentShown = true;
+    }
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    const callback = setInterval(() => {
-      const height = this._slottedHeight;
-      if (height !== 0) {
-        if (height < this.fadedHeight + 50) {
-          this._contentShown = true;
-        }
-        clearInterval(callback);
-      }
-    }, 100);
-    // If we don't get a height in 1s, there is nothing to show.
-    setTimeout(() => {
-      clearInterval(callback);
-    }, 1000);
+    this._setShowContent();
   }
 
-  private async _showContent(): Promise<void> {
+  private _showContent(): void {
     this._contentShown = true;
   }
 
