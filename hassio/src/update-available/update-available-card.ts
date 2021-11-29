@@ -16,7 +16,7 @@ import "../../../src/components/ha-alert";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-checkbox";
-import "../../../src/components/ha-expansion-panel";
+import "../../../src/components/ha-faded";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
@@ -136,10 +136,10 @@ class UpdateAvailableCard extends LitElement {
             ? html`
                 ${this._changelogContent
                   ? html`
-                      <ha-expansion-panel header="Changelog" outlined>
+                      <ha-faded>
                         <ha-markdown .content=${this._changelogContent}>
                         </ha-markdown>
-                      </ha-expansion-panel>
+                      </ha-faded>
                     `
                   : ""}
                 <div class="versions">
