@@ -10,6 +10,9 @@ export const demoConfig: HassConfig = {
     mass: "kg",
     temperature: "°C",
     volume: "L",
+    pressure: "Pa",
+    wind_speed: "m/s",
+    accumulated_precipitation: "mm",
   },
   components: [
     "notify.html5",
