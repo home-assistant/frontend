@@ -16,6 +16,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import { extractSearchParam } from "../../../common/url/search-params";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -90,6 +91,7 @@ class HaConfigDashboard extends LitElement {
                     .hass=${this.hass}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
+                    .focusedPath=${extractSearchParam("focusedPath")}
                   ></ha-config-navigation>
                 </ha-card>
                 ${!this.showAdvanced
