@@ -543,7 +543,10 @@ class DialogZWaveJSAddNode extends LitElement {
       return;
     }
     this._qrProcessing = true;
-    if (qrCodeString.length < MINIMUM_QR_STRING_LENGTH) {
+    if (
+      qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
+      !qrCodeString.startsWith("90")
+    ) {
       this._qrProcessing = false;
       this._qrError = `Invalid QR code (${qrCodeString})`;
       return;
@@ -629,6 +632,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._supportsSmartStart = (
       await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
     ).supported;
+    this._supportsSmartStart = true;
   }
 
   private _startInclusion(): void {
