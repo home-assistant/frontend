@@ -90,7 +90,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           ? html`<onboarding-restore-backup
               .localize=${this.localize}
               .restoring=${this._restoring}
-              .installtionType=${this._installation_type}
+              .installationType=${this._installation_type}
               @restoring=${this._restoringBackup}
             >
             </onboarding-restore-backup>`
