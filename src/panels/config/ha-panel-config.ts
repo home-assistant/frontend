@@ -56,7 +56,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     },
     {
       path: "/config/automation",
-      name: "Automations",
+      name: "Automations & Scenes",
       description: "Automations, blueprints, scenes and scripts",
       iconPath: mdiRobot,
       iconColor: "#518C43",
