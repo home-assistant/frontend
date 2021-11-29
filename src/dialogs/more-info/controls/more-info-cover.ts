@@ -45,32 +45,32 @@ class MoreInfoCover extends LitElement {
               // or (if tilt position is not supported and therefore no slider is shown)
               // render a title <div> (same style as for a labeled slider) and directly put
               // the tilt controls on the more-info.
-              html`
-                <ha-labeled-slider
-                  .caption=${this.hass.localize("ui.card.cover.tilt_position")}
-                  pin=""
-                  extra=""
-                  .value=${this.stateObj.attributes.current_tilt_position}
-                  @change=${this._coverTiltPositionSliderChanged}
-                >
-                  <ha-cover-tilt-controls
-                    .hass=${this.hass}
-                    slot="extra"
-                    ?hidden=${_isTiltOnly}
-                    .stateObj=${this.stateObj}
-                  ></ha-cover-tilt-controls>
-                </ha-labeled-slider>
-              `
-            : html`
-                <div class="title" ?hidden=${_isTiltOnly}>
+              html` <ha-labeled-slider
+                .caption=${this.hass.localize("ui.card.cover.tilt_position")}
+                pin=""
+                extra=""
+                .value=${this.stateObj.attributes.current_tilt_position}
+                @change=${this._coverTiltPositionSliderChanged}
+              >
+                ${!_isTiltOnly
+                  ? html`<ha-cover-tilt-controls
+                      .hass=${this.hass}
+                      slot="extra"
+                      .stateObj=${this.stateObj}
+                    ></ha-cover-tilt-controls> `
+                  : html``}
+              </ha-labeled-slider>`
+            : !_isTiltOnly
+            ? html`
+                <div class="title">
                   ${this.hass.localize("ui.card.cover.tilt_position")}
                 </div>
                 <ha-cover-tilt-controls
                   .hass=${this.hass}
-                  ?hidden=${_isTiltOnly}
                   .stateObj=${this.stateObj}
                 ></ha-cover-tilt-controls>
-              `}
+              `
+            : html``}
         </div>
       </div>
       <ha-attributes
