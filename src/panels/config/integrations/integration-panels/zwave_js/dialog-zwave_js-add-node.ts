@@ -43,6 +43,8 @@ import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
+import QrScannerWorkerPath from "!!file-loader!../../../../../../node_modules/qr-scanner/qr-scanner-worker.min.js";
+
 export interface ZWaveJSAddNodeDevice {
   id: string;
   name: string;
@@ -523,6 +525,7 @@ class DialogZWaveJSAddNode extends LitElement {
       this._startInclusion();
       return;
     }
+    QrScanner.WORKER_PATH = QrScannerWorkerPath;
     this._cameras = await QrScanner.listCameras(true);
     this._status = "qr_scan";
     await this.updateComplete;
@@ -628,6 +631,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._supportsSmartStart = (
       await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
     ).supported;
+    // this._supportsSmartStart = true;
   }
 
   private _startInclusion(): void {
