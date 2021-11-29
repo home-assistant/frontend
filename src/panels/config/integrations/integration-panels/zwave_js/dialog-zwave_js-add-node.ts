@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
 import type { Select } from "@material/mwc-select/mwc-select";
+import { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -183,7 +184,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 Search device
               </mwc-button>`
           : this._status === "qr_scan"
-          ? html` ${this._cameras && this._cameras.length > 1
+          ? html`${this._cameras && this._cameras.length > 1
                 ? html`<mwc-select
                     .label=${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.select_camera"
@@ -205,8 +206,24 @@ class DialogZWaveJSAddNode extends LitElement {
               ${this._error
                 ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
-              <div class="canvas-container"></div>
-              <video></video>`
+              ${navigator.mediaDevices
+                ? html`<div class="canvas-container"></div>
+                    <video></video>`
+                : html`<ha-alert alert-type="warning"
+                    >${window.location.protocol !== "https:"
+                      ? "You can only use your camera to scan a QR core when using HTTPS."
+                      : "Your browser doesn't support QR scanning."}</ha-alert
+                  >`}
+              <p>
+                If scanning doesn't work, you can enter the QR code value
+                manually:
+              </p>
+              <mwc-textfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.enter_qr_code"
+                )}
+                @keydown=${this._qrKeyDown}
+              ></mwc-textfield>`
           : this._status === "validate_dsk_enter_pin"
           ? html`
                 <p>
@@ -293,7 +310,7 @@ class DialogZWaveJSAddNode extends LitElement {
             `
           : this._status === "started"
           ? html`
-              <div class="flex-container">
+              <div class="select-inclusion">
                 <div class="outline">
                   <h2>
                     ${this.hass.localize(
@@ -317,7 +334,7 @@ class DialogZWaveJSAddNode extends LitElement {
                     </button>
                   </p>
                 </div>
-                ${navigator.mediaDevices && this._supportsSmartStart
+                ${this._supportsSmartStart
                   ? html` <div class="outline">
                       <h2>
                         ${this.hass.localize(
@@ -511,24 +528,39 @@ class DialogZWaveJSAddNode extends LitElement {
   private async _scanQRCode(): Promise<void> {
     this._unsubscribe();
     this._status = "loading";
-    const QrScanner = (await import("qr-scanner")).default;
-    if (!(await QrScanner.hasCamera())) {
-      await showAlertDialog(this, { title: "No camera found" });
-      this._startInclusion();
-      return;
-    }
-    QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
-    this._cameras = await QrScanner.listCameras(true);
-    this._status = "qr_scan";
-    await this.updateComplete;
-    this._qrScanner = new QrScanner(this._videoEl!, this._qrCodeScanned);
-    this._qrScanner.start();
-    this.shadowRoot
-      ?.querySelector(".canvas-container")
+    if (navigator.mediaDevices) {
+      const QrScanner = (await import("qr-scanner")).default;
+      if (!(await QrScanner.hasCamera())) {
+        await showAlertDialog(this, { title: "No camera found" });
+        this._startInclusion();
+        return;
+      }
+      QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
+      this._cameras = await QrScanner.listCameras(true);
+      this._status = "qr_scan";
+      await this.updateComplete;
+      this._qrScanner = new QrScanner(this._videoEl!, this._qrCodeScanned);
+      try {
+        await this._qrScanner.start();
+      } catch (err: any) {
+        this._error = err;
+        return;
+      }
+      this.shadowRoot
+        ?.querySelector(".canvas-container")
+        // @ts-ignore
+        ?.appendChild(this._qrScanner.$canvas);
       // @ts-ignore
-      ?.appendChild(this._qrScanner.$canvas);
-    // @ts-ignore
-    this._qrScanner.$canvas.style.display = "block";
+      this._qrScanner.$canvas.style.display = "block";
+    } else {
+      this._status = "qr_scan";
+    }
+  }
+
+  private _qrKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      this._qrCodeScanned((ev.target as TextField).value);
+    }
   }
 
   private _qrCodeScanned = async (qrCodeString: string): Promise<void> => {
@@ -627,6 +659,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._supportsSmartStart = (
       await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
     ).supported;
+    this._supportsSmartStart = true;
   }
 
   private _startInclusion(): void {
@@ -758,19 +791,6 @@ class DialogZWaveJSAddNode extends LitElement {
           display: grid;
         }
 
-        .outline {
-          border: 1px solid var(--divider-color);
-          border-radius: 4px;
-          padding: 16px;
-          min-height: 250px;
-          text-align: center;
-          flex: 1;
-        }
-
-        .outline:nth-child(2) {
-          margin-left: 16px;
-        }
-
         .flex-container .stage ha-svg-icon {
           width: 16px;
           height: 16px;
@@ -794,9 +814,46 @@ class DialogZWaveJSAddNode extends LitElement {
           padding: 8px 0;
         }
 
+        .select-inclusion {
+          display: flex;
+          align-items: center;
+        }
+
+        .select-inclusion .outline:nth-child(2) {
+          margin-left: 16px;
+        }
+
+        .select-inclusion .outline {
+          border: 1px solid var(--divider-color);
+          border-radius: 4px;
+          padding: 16px;
+          min-height: 250px;
+          text-align: center;
+          flex: 1;
+        }
+
+        @media all and (max-width: 500px) {
+          .select-inclusion {
+            flex-direction: column;
+          }
+
+          .select-inclusion .outline:nth-child(2) {
+            margin-left: 0;
+            margin-top: 16px;
+          }
+        }
+
+        canvas {
+          width: 100%;
+        }
+
         mwc-select {
           width: 100%;
           margin-bottom: 16px;
+        }
+
+        mwc-textfield {
+          width: 100%;
         }
 
         ha-svg-icon {
