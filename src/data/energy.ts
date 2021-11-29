@@ -269,6 +269,7 @@ const getEnergyData = async (
     }
   }
 
+  const consumptionStatIDs: string[] = [];
   const statIDs: string[] = [];
 
   for (const source of prefs.energy_sources) {
@@ -297,6 +298,7 @@ const getEnergyData = async (
 
     // grid source
     for (const flowFrom of source.flow_from) {
+      consumptionStatIDs.push(flowFrom.stat_energy_from);
       statIDs.push(flowFrom.stat_energy_from);
       if (flowFrom.stat_cost) {
         statIDs.push(flowFrom.stat_cost);
@@ -337,7 +339,7 @@ const getEnergyData = async (
     fossilEnergyConsumption = await getFossilEnergyConsumption(
       hass!,
       start,
-      statIDs,
+      consumptionStatIDs,
       co2SignalEntity,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
