@@ -25,11 +25,10 @@ import {
 } from "../../../src/data/hassio/addon";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
-import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -76,16 +75,12 @@ class HassioAddonStore extends LitElement {
     }
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
-        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${supervisorTabs}
-        main-page
-        supervisor
+        .header=${this.supervisor.localize("panel.store")}
       >
-        <span slot="header"> ${this.supervisor.localize("panel.store")} </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
@@ -133,7 +128,7 @@ class HassioAddonStore extends LitElement {
               </div>
             `
           : ""}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

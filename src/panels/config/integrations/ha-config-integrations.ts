@@ -319,7 +319,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
       >
         ${this.narrow
           ? html`
@@ -690,9 +690,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 2px 2px 2px 8px;
           margin-left: 4px;
           font-size: 14px;
-        }
-        .active-filters ha-icon {
-          color: var(--primary-color);
         }
         .active-filters mwc-button {
           margin-left: 8px;

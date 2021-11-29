@@ -18,12 +18,10 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
-import { severityMap } from "../hui-gauge-card";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: severityMap.red },
-  { level: -0.2, stroke: severityMap.yellow },
-  { level: 0, stroke: severityMap.green },
+  { level: -1, stroke: "var(--energy-grid-consumption-color)" },
+  { level: 0, stroke: "var(--energy-grid-return-color)" },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
@@ -109,7 +107,7 @@ class HuiEnergyGridGaugeCard
                   )}
                   <br /><br />
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.red_green_color_explain"
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
                   )}
                 </span>
               </paper-tooltip>

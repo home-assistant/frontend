@@ -36,7 +36,11 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    if ("valueMin" in this.schema && "valueMax" in this.schema) {
+    if (
+      this.schema.valueMin !== undefined &&
+      this.schema.valueMax !== undefined &&
+      this.schema.valueMax - this.schema.valueMin < 256
+    ) {
       return html`
         <div>
           ${this.label}
@@ -96,10 +100,15 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
 
     if (this.schema.optional) {
-      return 0;
+      return this.schema.valueMin || 0;
     }
 
-    return this.schema.description?.suggested_value || this.schema.default || 0;
+    return (
+      this.schema.description?.suggested_value ||
+      this.schema.default ||
+      this.schema.valueMin ||
+      0
+    );
   }
 
   private _handleCheckboxChange(ev: Event) {

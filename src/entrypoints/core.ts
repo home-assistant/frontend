@@ -60,10 +60,12 @@ const connProm = async (auth) => {
       searchParams.delete("auth_callback");
       searchParams.delete("code");
       searchParams.delete("state");
+      searchParams.delete("storeToken");
+      const search = searchParams.toString();
       history.replaceState(
         null,
         "",
-        `${location.pathname}?${searchParams.toString()}`
+        `${location.pathname}${search ? `?${search}` : ""}`
       );
     }
 

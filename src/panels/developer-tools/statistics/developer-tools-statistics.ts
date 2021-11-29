@@ -8,18 +8,24 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import {
+  clearStatistics,
   getStatisticIds,
   StatisticsMetaData,
   StatisticsValidationResult,
   validateStatistics,
 } from "../../../data/history";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
 
 const FIX_ISSUES_ORDER = {
+  no_state: 0,
+  entity_no_longer_recorded: 1,
   entity_not_recorded: 1,
   unsupported_unit_state: 2,
   unsupported_state_class: 3,
@@ -44,24 +50,30 @@ class HaPanelDevStatistics extends LitElement {
   private _columns = memoizeOne(
     (localize): DataTableColumnContainer => ({
       state: {
-        title: "Entity",
+        title: "Name",
         sortable: true,
         filterable: true,
         grows: true,
         template: (entityState, data: any) =>
           html`${entityState
             ? computeStateName(entityState)
-            : data.statistic_id}`,
+            : data.name || data.statistic_id}`,
       },
       statistic_id: {
         title: "Statistic id",
         sortable: true,
         filterable: true,
         hidden: this.narrow,
-        width: "30%",
+        width: "20%",
       },
       unit_of_measurement: {
         title: "Unit",
+        sortable: true,
+        filterable: true,
+        width: "10%",
+      },
+      source: {
+        title: "Source",
         sortable: true,
         filterable: true,
         width: "10%",
@@ -103,7 +115,7 @@ class HaPanelDevStatistics extends LitElement {
       <ha-data-table
         .columns=${this._columns(this.hass.localize)}
         .data=${this._data}
-        noDataText="No issues found!"
+        noDataText="No statistics"
         id="statistic_id"
         clickable
         @row-click=${this._rowClicked}
@@ -140,6 +152,7 @@ class HaPanelDevStatistics extends LitElement {
         this._data.push({
           statistic_id: statisticId,
           unit_of_measurement: "",
+          source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
         });
@@ -155,6 +168,21 @@ class HaPanelDevStatistics extends LitElement {
     );
     const issue = issues[0];
     switch (issue.type) {
+      case "no_state":
+        showConfirmationDialog(this, {
+          title: "Entity has no state",
+          text: html`This entity has no state at the moment, if this is an
+            orphaned entity, you may want to remove the long term statistics of
+            it from your database.<br /><br />Do you want to permanently remove
+            the long term statistics of ${issue.data.statistic_id} from your
+            database?`,
+          confirmText: this.hass.localize("ui.common.remove"),
+          confirm: async () => {
+            await clearStatistics(this.hass, [issue.data.statistic_id]);
+            this._validateStatistics();
+          },
+        });
+        break;
       case "entity_not_recorded":
         showAlertDialog(this, {
           title: "Entity not recorded",
@@ -162,6 +190,24 @@ class HaPanelDevStatistics extends LitElement {
             we can not track long term statistics for it. <br /><br />You
             probably excluded this entity, or have just included some
             entities.<br /><br />See the
+            <a
+              href="https://www.home-assistant.io/integrations/recorder/#configure-filter"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              recorder documentation</a
+            >
+            for more information.`,
+        });
+        break;
+      case "entity_no_longer_recorded":
+        showAlertDialog(this, {
+          title: "Entity no longer recorded",
+          text: html`We have generated statistics for this entity in the past,
+            but state changes of this entity are no longer recorded, therefore,
+            we can not track long term statistics for it anymore.
+            <br /><br />You probably excluded this entity, or have just included
+            some entities.<br /><br />See the
             <a
               href="https://www.home-assistant.io/integrations/recorder/#configure-filter"
               target="_blank"

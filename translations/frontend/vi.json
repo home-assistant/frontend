@@ -271,7 +271,7 @@
                     "text": "Nhập tên của khu vực mới.",
                     "title": "Thêm khu vực mới"
                 },
-                "add_new": "Thêm khu vực mới...",
+                "add_new": "Thêm khu vực mới…",
                 "area": "Khu vực",
                 "clear": "Xoá",
                 "show_areas": "Hiển thị các khu vực"
@@ -304,7 +304,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Đang tải lịch sử trạng thái ...",
+                "loading_history": "Đang tải lịch sử trạng thái …",
                 "no_history_found": "Không tìm thấy lịch sử trạng thái."
             },
             "logbook": {
@@ -1295,7 +1295,7 @@
                     "refresh_node": {
                         "button": "Làm mới Nút",
                         "node_status": "Trạng thái Nút",
-                        "refreshing_description": "Đang làm mới thông tin nút...",
+                        "refreshing_description": "Đang làm mới thông tin nút…",
                         "start_refresh_button": "Bắt đầu Làm mới",
                         "step": "Bước"
                     },
@@ -1516,7 +1516,7 @@
                         "discovered_text": "Thiết bị sẽ hiển thị ở đây một khi được tìm thấy.",
                         "no_devices_found": "Không có thiết bị nào được tìm thấy, hãy chắc chắn thiết bị đang trong chế độ ghép nối và giữ thiết bị kích hoạt khi tự động phát hiện đang chạy.",
                         "pairing_mode": "Đảm bảo các thiết bị của bạn đang ở chế độ ghép nối. Kiểm tra hướng dẫn đi kèm thiết bị về cách làm điều này.",
-                        "spinner": "Tìm kiếm các thiết bị ZHA Zigbee ..."
+                        "spinner": "Tìm kiếm các thiết bị ZHA Zigbee …"
                     },
                     "clusters": {
                         "header": "Các Cụm"
@@ -1719,7 +1719,7 @@
                         "clear_items": "Xóa các mục đã chọn"
                     },
                     "starting": {
-                        "description": "Home Assistant đang khởi động, vui lòng chờ..."
+                        "description": "Home Assistant đang khởi động, vui lòng chờ…"
                     }
                 },
                 "changed_toast": {

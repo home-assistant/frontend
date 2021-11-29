@@ -8,7 +8,6 @@ import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-icon-button";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,

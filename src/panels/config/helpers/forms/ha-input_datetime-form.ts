@@ -1,13 +1,14 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
 
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {
@@ -70,43 +71,60 @@ class HaInputDateTimeForm extends LitElement {
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <br />
         ${this.hass.localize("ui.dialogs.helper_settings.input_datetime.mode")}:
         <br />
-        <paper-radio-group
-          .selected=${this._mode}
-          @selected-changed=${this._modeChanged}
+
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.input_datetime.date"
+          )}
         >
-          <paper-radio-button name="date">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_datetime.date"
-            )}
-          </paper-radio-button>
-          <paper-radio-button name="time">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_datetime.time"
-            )}
-          </paper-radio-button>
-          <paper-radio-button name="datetime">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_datetime.datetime"
-            )}
-          </paper-radio-button>
-        </paper-radio-group>
+          <ha-radio
+            name="mode"
+            value="date"
+            .checked=${this._mode === "date"}
+            @change=${this._modeChanged}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.input_datetime.time"
+          )}
+        >
+          <ha-radio
+            name="mode"
+            value="time"
+            .checked=${this._mode === "time"}
+            @change=${this._modeChanged}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.input_datetime.datetime"
+          )}
+        >
+          <ha-radio
+            name="mode"
+            value="datetime"
+            .checked=${this._mode === "datetime"}
+            @change=${this._modeChanged}
+          ></ha-radio>
+        </ha-formfield>
       </div>
     `;
   }
 
   private _modeChanged(ev: CustomEvent) {
-    const mode = ev.detail.value;
+    const mode = (ev.target as HaRadio).value;
     fireEvent(this, "value-changed", {
       value: {
         ...this._item,

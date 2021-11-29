@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiCheckboxMarkedCircle, mdiClose, mdiHelpCircle } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,7 +6,7 @@ import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-icon";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
@@ -81,7 +81,7 @@ export class ZwaveNetwork extends LitElement {
                 <div class="details">
                   ${this._networkStatus.state === ZWAVE_NETWORK_STATE_STOPPED
                     ? html`
-                        <ha-icon icon="hass:close"></ha-icon>
+                        <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
                         ${this.hass!.localize(
                           "ui.panel.config.zwave.network_status.network_stopped"
                         )}
@@ -100,7 +100,9 @@ export class ZwaveNetwork extends LitElement {
                       `
                     : this._networkStatus.state === ZWAVE_NETWORK_STATE_AWAKED
                     ? html`
-                        <ha-icon icon="hass:checkbox-marked-circle"> </ha-icon>
+                        <ha-svg-icon
+                          .path=${mdiCheckboxMarkedCircle}
+                        ></ha-svg-icon>
                         ${this.hass!.localize(
                           "ui.panel.config.zwave.network_status.network_started"
                         )}<br />
@@ -252,7 +254,7 @@ export class ZwaveNetwork extends LitElement {
           padding: 24px;
         }
 
-        .network-status ha-icon {
+        .network-status ha-svg-icon {
           display: block;
           margin: 0px auto 16px;
           width: 48px;

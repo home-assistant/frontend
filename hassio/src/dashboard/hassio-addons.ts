@@ -20,7 +20,9 @@ class HassioAddons extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        <h1>${this.supervisor.localize("dashboard.addons")}</h1>
+        ${!atLeastVersion(this.hass.config.version, 2021, 12)
+          ? html` <h1>${this.supervisor.localize("dashboard.addons")}</h1> `
+          : ""}
         <div class="card-group">
           ${!this.supervisor.supervisor.addons?.length
             ? html`

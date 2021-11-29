@@ -375,7 +375,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config"}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenDevices}

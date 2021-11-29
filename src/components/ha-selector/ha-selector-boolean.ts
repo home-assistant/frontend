@@ -16,7 +16,7 @@ export class HaBooleanSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html` <ha-formfield alignEnd spaceBetween .label=${this.label}>
+    return html`<ha-formfield alignEnd spaceBetween .label=${this.label}>
       <ha-switch
         .checked=${this.value}
         @change=${this._handleChange}

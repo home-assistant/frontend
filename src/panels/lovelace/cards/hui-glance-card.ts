@@ -9,7 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -17,6 +16,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../../../components/ha-relative-time";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   ActionHandlerEvent,
@@ -321,13 +321,17 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                         .hass=${this.hass}
                         .ts=${new Date(stateObj.state)}
                         .format=${entityConf.format}
+                        capitalize
                       ></hui-timestamp-display>
                     `
                   : entityConf.show_last_changed
-                  ? relativeTime(
-                      new Date(stateObj.last_changed),
-                      this.hass!.locale
-                    )
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                        capitalize
+                      ></ha-relative-time>
+                    `
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,

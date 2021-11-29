@@ -73,7 +73,6 @@ export class DialogEnergyBatterySettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_into_battery"
           )}
-          entities-only
           @value-changed=${this._statisticToChanged}
         ></ha-statistic-picker>
 
@@ -85,7 +84,6 @@ export class DialogEnergyBatterySettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_out_of_battery"
           )}
-          entities-only
           @value-changed=${this._statisticFromChanged}
         ></ha-statistic-picker>
 

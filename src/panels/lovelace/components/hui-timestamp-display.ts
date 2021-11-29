@@ -4,6 +4,7 @@ import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormat } from "./types";
@@ -24,6 +25,8 @@ class HuiTimestampDisplay extends LitElement {
   @property() public ts?: Date;
 
   @property() public format?: TimestampRenderingFormat;
+
+  @property({ type: Boolean }) public capitalize = false;
 
   @state() private _relative?: string;
 
@@ -105,6 +108,10 @@ class HuiTimestampDisplay extends LitElement {
         this._format === "relative"
           ? relativeTime(this.ts, this.hass!.locale)
           : relativeTime(new Date(), this.hass!.locale, this.ts, false);
+
+      this._relative = this.capitalize
+        ? capitalizeFirstLetter(this._relative)
+        : this._relative;
     }
   }
 }

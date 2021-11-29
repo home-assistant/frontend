@@ -31,7 +31,7 @@ import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-input";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import {
   computeDeviceName,
@@ -202,7 +202,7 @@ export class HaSceneEditor extends SubscribeMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -278,7 +278,7 @@ export class HaSceneEditor extends SubscribeMixin(
                           "ui.panel.config.scene.editor.name"
                         )}
                       ></paper-input>
-                      <ha-icon-input
+                      <ha-icon-picker
                         .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.icon"
                         )}
@@ -286,7 +286,7 @@ export class HaSceneEditor extends SubscribeMixin(
                         .value=${this._config.icon}
                         @value-changed=${this._valueChanged}
                       >
-                      </ha-icon-input>
+                      </ha-icon-picker>
                     </div>
                   </ha-card>
                 </ha-config-section>

@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -6,7 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-icon";
+import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
@@ -73,12 +74,11 @@ export class HuiAlarmPanelCardEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          .label=${this.hass.localize(
+          .label=${`${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
-          )}
-          (${this.hass.localize(
+          )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
-          )})
+          )})`}
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
@@ -87,12 +87,11 @@ export class HuiAlarmPanelCardEditor
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          .label=${this.hass.localize(
+          .label=${`${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.name"
-          )}
-          (${this.hass.localize(
+          )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
-          )})
+          )})`}
           .value=${this._name}
           .configValue=${"name"}
           @value-changed=${this._valueChanged}
@@ -101,12 +100,12 @@ export class HuiAlarmPanelCardEditor
           (entityState, index) => html`
             <div class="states">
               <paper-item>${entityState}</paper-item>
-              <ha-icon
+              <ha-svg-icon
                 class="deleteState"
                 .value=${index}
-                icon="hass:close"
+                .path=${mdiClose}
                 @click=${this._stateRemoved}
-              ></ha-icon>
+              ></ha-svg-icon>
             </div>
           `
         )}
@@ -146,7 +145,7 @@ export class HuiAlarmPanelCardEditor
         .states:hover > .deleteState {
           visibility: visible;
         }
-        ha-icon {
+        ha-svg-icon {
           padding-top: 12px;
         }
       `,

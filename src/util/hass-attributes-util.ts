@@ -31,6 +31,7 @@ const hassAttributeUtil = {
       "power",
       "presence",
       "problem",
+      "running",
       "safety",
       "smoke",
       "sound",

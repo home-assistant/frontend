@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
+import { extractSearchParam } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
 import "../../components/entity/ha-entity-picker";
@@ -136,6 +137,13 @@ class HaPanelHistory extends LitElement {
       [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
+
+    this._entityId = extractSearchParam("entity_id") ?? "";
+
+    const startDate = extractSearchParam("start_date");
+    if (startDate) {
+      this._startDate = new Date(startDate);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {

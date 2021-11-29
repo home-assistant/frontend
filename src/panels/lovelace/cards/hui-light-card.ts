@@ -15,10 +15,9 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { LightEntity, lightSupportsDimming } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -145,9 +144,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 })}
                 tabindex="0"
               >
-                <ha-icon
-                  .icon=${this._config.icon || stateIcon(stateObj)}
-                ></ha-icon>
+                <ha-state-icon
+                  .icon=${this._config.icon}
+                  .state=${stateObj}
+                ></ha-state-icon>
               </ha-icon-button>
             </div>
           </div>

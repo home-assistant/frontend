@@ -4,7 +4,6 @@ import "@polymer/paper-tabs/paper-tab";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import "../../components/ha-tabs";
 import "../../layouts/ha-app-layout";

@@ -24,7 +24,7 @@ export const createCloseHeading = (
 // @ts-expect-error
 export class HaDialog extends Dialog {
   public scrollToPos(x: number, y: number) {
-    this.contentElement.scrollTo(x, y);
+    this.contentElement?.scrollTo(x, y);
   }
 
   protected renderHeading() {
@@ -38,11 +38,18 @@ export class HaDialog extends Dialog {
         .mdc-dialog {
           --mdc-dialog-scroll-divider-color: var(--divider-color);
           z-index: var(--dialog-z-index, 7);
+          -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
           backdrop-filter: var(--dialog-backdrop-filter, none);
         }
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        }
+        .mdc-dialog__actions span:nth-child(1) {
+          flex: var(--secondary-action-button-flex, unset);
+        }
+        .mdc-dialog__actions span:nth-child(2) {
+          flex: var(--primary-action-button-flex, unset);
         }
         .mdc-dialog__container {
           align-items: var(--vertial-align-dialog, center);
@@ -65,6 +72,10 @@ export class HaDialog extends Dialog {
           position: var(--dialog-surface-position, relative);
           top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
+          border-radius: var(
+            --ha-dialog-border-radius,
+            var(--ha-card-border-radius, 4px)
+          );
         }
         :host([flexContent]) .mdc-dialog .mdc-dialog__content {
           display: flex;

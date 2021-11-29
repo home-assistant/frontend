@@ -155,7 +155,7 @@ export class ZHAGroupPage extends LitElement {
                 >
                 </zha-device-endpoint-data-table>
 
-                <div class="paper-dialog-buttons">
+                <div class="buttons">
                   <mwc-button
                     .disabled=${!this._selectedDevicesToRemove.length ||
                     this._processingRemove}
@@ -190,7 +190,7 @@ export class ZHAGroupPage extends LitElement {
           >
           </zha-device-endpoint-data-table>
 
-          <div class="paper-dialog-buttons">
+          <div class="buttons">
             <mwc-button
               .disabled=${!this._selectedDevicesToAdd.length ||
               this._processingAdd}
@@ -304,11 +304,11 @@ export class ZHAGroupPage extends LitElement {
           color: var(--primary-color);
           text-decoration: none;
         }
-        .paper-dialog-buttons {
+        .buttons {
           align-items: flex-end;
           padding: 8px;
         }
-        .paper-dialog-buttons .warning {
+        .buttons .warning {
           --mdc-theme-primary: var(--error-color);
         }
       `,

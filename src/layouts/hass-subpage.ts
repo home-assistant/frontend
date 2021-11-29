@@ -13,6 +13,8 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
+  @property({ type: String, attribute: "back-path" }) public backPath?: string;
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean }) public supervisor = false;
@@ -30,6 +32,14 @@ class HassSubpage extends LitElement {
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>
+            `
+          : this.backPath
+          ? html`
+              <a href=${this.backPath}>
+                <ha-icon-button-arrow-prev
+                  .hass=${this.hass}
+                ></ha-icon-button-arrow-prev>
+              </a>
             `
           : html`
               <ha-icon-button-arrow-prev
@@ -79,6 +89,10 @@ class HassSubpage extends LitElement {
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
+      }
+      .toolbar a {
+        color: var(--app-header-text-color);
+        text-decoration: none;
       }
 
       ha-menu-button,

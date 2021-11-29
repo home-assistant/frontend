@@ -240,7 +240,7 @@
                     "text": "Ievadiet jaunā apgabala nosaukumu.",
                     "title": "Pievienot jaunu apgabalu"
                 },
-                "add_new": "Pievienot jaunu apgabalu...",
+                "add_new": "Pievienot jaunu apgabalu…",
                 "area": "Apgabals",
                 "clear": "Notīrīt",
                 "show_areas": "Rādīt Apgabalus"
@@ -481,7 +481,7 @@
             "title": "Paziņojumi"
         },
         "notification_toast": {
-            "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās ...",
+            "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās …",
             "service_call_failed": "Neizdevās izsaukt servisu {service}."
         },
         "panel": {
@@ -764,7 +764,7 @@
                             }
                         },
                         "webhooks": {
-                            "loading": "Ielādē..."
+                            "loading": "Ielādē…"
                         }
                     },
                     "alexa": {
@@ -840,7 +840,7 @@
                     "automation": {
                         "automations": "Automatizācijas",
                         "conditions": {
-                            "caption": "Darīt kaut ko tikai tad, ja ..."
+                            "caption": "Darīt kaut ko tikai tad, ja …"
                         },
                         "create": "Izveidot automatizāciju ar ierīci",
                         "no_automations": "Nav automatizāciju",
@@ -1352,7 +1352,7 @@
                     "add_device": "Pievienot ierīci",
                     "add_device_page": {
                         "search_again": "Atkārtot meklēšanu",
-                        "spinner": "Meklē ZHA Zigbee ierīces..."
+                        "spinner": "Meklē ZHA Zigbee ierīces…"
                     },
                     "clusters": {
                         "header": "Kopas"
@@ -1422,7 +1422,7 @@
                         "network_started": "Z-Wave tīkls startēts",
                         "network_started_note_all_queried": "Visi mezgli ir ierindoti.",
                         "network_started_note_some_queried": "Nomodā esoši megli ir ierindoti. Miega režimā esoši mezgli tiks ierindoti tiklīdz tie būs nomodā.",
-                        "network_starting": "Z-Wave tīkla startēšana...",
+                        "network_starting": "Z-Wave tīkla startēšana…",
                         "network_starting_note": "Tas var aizņemt kādu laiku atkarībā no Jūsu tīkla lieluma.",
                         "network_stopped": "Z-Wave tīkls apturēts"
                     },

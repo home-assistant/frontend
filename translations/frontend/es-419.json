@@ -118,7 +118,7 @@
                     "header": "Red",
                     "host": "Host"
                 },
-                "no_configuration": "Este complemento no expone ninguna configuración que pueda alterar...",
+                "no_configuration": "Este complemento no expone ninguna configuración que pueda alterar…",
                 "options": {
                     "edit_in_ui": "Editar en la interfaz de usuario",
                     "edit_in_yaml": "Editar en YAML",
@@ -179,6 +179,7 @@
                     "label": {
                         "apparmor": "Apparmor",
                         "auth": "autenticación",
+                        "core": "Núcleo",
                         "docker": "Docker",
                         "hardware": "Hardware",
                         "hass": "hass",
@@ -711,7 +712,7 @@
                     "text": "Ingrese el nombre de la nueva área.",
                     "title": "Agregar nueva área"
                 },
-                "add_new": "Agregar nueva área ...",
+                "add_new": "Agregar nueva área…",
                 "area": "Área",
                 "clear": "Limpiar",
                 "no_areas": "No tienes áreas",
@@ -771,7 +772,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integración de historial deshabilitada",
-                "loading_history": "Cargando historial de estado...",
+                "loading_history": "Cargando historial de estado…",
                 "no_history_found": "No se encontró historial de estado."
             },
             "logbook": {
@@ -917,7 +918,7 @@
                 "statistic": "Estadística"
             },
             "statistics_charts": {
-                "loading_statistics": "Cargando estadísticas...",
+                "loading_statistics": "Cargando estadísticas…",
                 "no_statistics_found": "No se encontraron estadísticas.",
                 "statistic_types": {
                     "max": "máx.",
@@ -1060,6 +1061,7 @@
                 "history": "Historial",
                 "last_changed": "Último cambio",
                 "last_updated": "Última actualización",
+                "logbook": "Registro",
                 "person": {
                     "create_zone": "Crear zona desde ubicación actual"
                 },
@@ -1078,6 +1080,7 @@
                     "last_triggered": "Última activación"
                 },
                 "settings": "Configuración de la entidad",
+                "show_more": "Mostrar más",
                 "sun": {
                     "elevation": "Elevación",
                     "rising": "Salida del sol",
@@ -1291,7 +1294,7 @@
             "title": "Notificaciones"
         },
         "notification_toast": {
-            "connection_lost": "Conexión perdida. Reconectando...",
+            "connection_lost": "Conexión perdida. Reconectando…",
             "dismiss": "Descartar",
             "integration_starting": "Iniciando {integration}, no todo estará totalmente disponible hasta que finalice.",
             "service_call_failed": "Error al llamar al servicio {service} .",
@@ -1715,7 +1718,7 @@
                         "importing": "Cargando plano ...",
                         "raw_blueprint": "Contenido del plano",
                         "save_btn": "Importar plano",
-                        "saving": "Importando plano ...",
+                        "saving": "Importando plano …",
                         "unsupported_blueprint": "Este plano no es compatible",
                         "url": "URL del plano"
                     },
@@ -1725,18 +1728,25 @@
                         "add_blueprint": "Importar plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
                         "confirm_delete_text": "¿Está seguro de que desea eliminar este plano?",
+                        "create_automation": "Crear automatización",
+                        "create_script": "Crear script",
                         "delete_blueprint": "Eliminar plano",
                         "discover_more": "Descubra más planos",
                         "header": "Editor de planos",
                         "headers": {
                             "domain": "Dominio",
                             "file_name": "Nombre del archivo",
-                            "name": "Nombre"
+                            "name": "Nombre",
+                            "type": "Tipo"
                         },
                         "introduction": "La configuración de planos le permite importar y administrar sus planos.",
                         "learn_more": "Obtenga más información sobre el uso de planos",
                         "share_blueprint": "Compartir plano",
                         "share_blueprint_no_url": "No se puede compartir el plano: no hay URL de origen",
+                        "types": {
+                            "automation": "Automatización",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Crear automatización"
                     }
                 },
@@ -1757,9 +1767,9 @@
                             "title": "Alexa"
                         },
                         "connected": "Conectado",
-                        "connecting": "Conectando...",
+                        "connecting": "Conectando…",
                         "connection_status": "Estado de la conexión en la nube",
-                        "fetching_subscription": "Obteniendo suscripción...",
+                        "fetching_subscription": "Obteniendo suscripción…",
                         "google": {
                             "config_documentation": "Documentación de configuración",
                             "devices_pin": "PIN de dispositivos de seguridad",
@@ -1794,7 +1804,7 @@
                             "instance_will_be_available": "Su instancia estará disponible en",
                             "link_learn_how_it_works": "Aprenda cómo funciona",
                             "not_connected": "No conectado",
-                            "reconnecting": "Conexión perdida. Reconectando...",
+                            "reconnecting": "Conexión perdida. Reconectando…",
                             "remote_enabled": {
                                 "caption": "Conectar automáticamente",
                                 "description": "Habilite esta opción para asegurarse de que su instancia de Home Assistant sea siempre accesible de forma remota."
@@ -1822,7 +1832,7 @@
                             "disable_hook_error_msg": "Error al deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirle enviar datos a Home Assistant desde cualquier lugar, sin exponer su instancia a Internet.",
                             "link_learn_more": "Obtenga más información sobre la creación de automatizaciones basadas en webhook.",
-                            "loading": "Cargando...",
+                            "loading": "Cargando…",
                             "manage": "Administrar",
                             "no_hooks_yet": "Parece que todavía no tienes webhooks. Comience configurando un",
                             "no_hooks_yet2": " o mediante la creación de un ",
@@ -1991,13 +2001,13 @@
                     "add_prompt": "Aún no se ha agregado ningún {name} con este dispositivo. Puede agregar uno haciendo clic en el botón + de arriba.",
                     "automation": {
                         "actions": {
-                            "caption": "Cuando algo se desencadena...",
+                            "caption": "Cuando algo se desencadena…",
                             "no_actions": "Sin acciones",
                             "unknown_action": "Acción desconocida"
                         },
                         "automations": "Automatizaciones",
                         "conditions": {
-                            "caption": "Sólo hacer algo si...",
+                            "caption": "Sólo hacer algo si…",
                             "no_conditions": "Sin condiciones",
                             "unknown_condition": "Condición desconocida"
                         },
@@ -2042,10 +2052,12 @@
                     "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Agregar a Lovelace",
+                        "control": "Controles",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidad deshabilitada}\n  other {entidades deshabilitadas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Ocultar deshabilitadas",
-                        "none": "Este dispositivo no tiene entidades"
+                        "none": "Este dispositivo no tiene entidades",
+                        "sensor": "Sensores"
                     },
                     "name": "Nombre",
                     "no_devices": "Sin dispositivos",
@@ -2563,7 +2575,7 @@
                         "complete": "Actualización de nodo completa",
                         "description": "Esto le indicará a OpenZWave que vuelva a consultar un nodo y actualice las clases de comando, las capacidades y los valores del nodo.",
                         "node_status": "Estado del nodo",
-                        "refreshing_description": "Actualizando la información del nodo ...",
+                        "refreshing_description": "Actualizando la información del nodo…",
                         "start_refresh_button": "Iniciar actualización",
                         "step": "Paso",
                         "title": "Actualizar la información del nodos",
@@ -2851,7 +2863,7 @@
                         "no_devices_found": "No se encontraron dispositivos, asegúrese de que estén en modo de emparejamiento y manténgalos encendidos mientras el descubrimiento se está ejecutando.",
                         "pairing_mode": "Asegúrese de que sus dispositivos estén en modo de emparejamiento. Consulte las instrucciones de su dispositivo sobre cómo hacer esto.",
                         "search_again": "Buscar de nuevo",
-                        "spinner": "Buscando dispositivos ZHA Zigbee ..."
+                        "spinner": "Buscando dispositivos ZHA Zigbee…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos del clúster seleccionado",
@@ -2988,7 +3000,7 @@
                         "network_started": "Red Z-Wave iniciada",
                         "network_started_note_all_queried": "Todos los nodos han sido consultados.",
                         "network_started_note_some_queried": "Los nodos despiertos han sido consultados. Los nodos dormidos serán consultados cuando se despierten.",
-                        "network_starting": "Iniciando la Red Z-Wave...",
+                        "network_starting": "Iniciando la Red Z-Wave…",
                         "network_starting_note": "Esto puede llevar un tiempo dependiendo del tamaño de su red.",
                         "network_stopped": "Red Z-Wave detenida"
                     },
@@ -3099,11 +3111,13 @@
                     "device_info": {
                         "device_config": "Configurar dispositivo",
                         "heal_node": "Nodo de curación",
+                        "highest_security": "Seguridad máxima",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del nodo",
                         "reinterview_device": "Dispositivo de reentrevista",
                         "remove_failed": "Quitar dispositivo fallido",
-                        "zwave_info": "Información de Z-Wave"
+                        "zwave_info": "Información de Z-Wave",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "heal_network": {
                         "healing_cancelled": "Se canceló la recuperación de la red.",
@@ -3131,7 +3145,7 @@
                     "logs": {
                         "log_level": "Nivel de registro",
                         "log_level_changed": "El nivel de registro cambió a: {level}",
-                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS ...",
+                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS …",
                         "title": "Registros de Z-Wave JS"
                     },
                     "navigation": {
@@ -3190,6 +3204,11 @@
                         "introduction": "Elimine un nodo de su red Z-Wave y elimine el dispositivo asociado y las entidades de Home Assistant.",
                         "start_exclusion": "Iniciar exclusión",
                         "title": "Eliminar un nodo Z-Wave"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Ninguno"
+                        }
                     }
                 }
             },
@@ -3254,6 +3273,11 @@
                         "state": "Estado",
                         "state_attributes": "Atributos del estado (YAML, opcional)",
                         "title": "Estados"
+                    },
+                    "statistics": {
+                        "issues": {
+                            "no_state": "No hay estado disponible para esta entidad"
+                        }
                     },
                     "templates": {
                         "all_listeners": "Esta plantilla escucha todos los eventos de cambio de estado.",
@@ -3330,7 +3354,7 @@
                         "reorder_items": "Reordenar elementos"
                     },
                     "starting": {
-                        "description": "Home Assistant está iniciando, por favor espere ..."
+                        "description": "Home Assistant está iniciando, por favor espere …"
                     }
                 },
                 "changed_toast": {

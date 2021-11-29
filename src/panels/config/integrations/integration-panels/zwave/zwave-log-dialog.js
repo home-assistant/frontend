@@ -1,10 +1,9 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../../../components/dialog/ha-paper-dialog";
 import { EventsMixin } from "../../../../../mixins/events-mixin";
 import "../../../../../styles/polymer-ha-style-dialog";
+import "../../../../../components/ha-dialog";
 
 class ZwaveLogDialog extends EventsMixin(PolymerElement) {
   static get template() {
@@ -14,12 +13,11 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
         font-family: var(--code-font-family, monospace);
       }
     </style>
-      <ha-paper-dialog id="pwaDialog" with-backdrop="" opened="{{_opened}}">
-        <h2>OpenZwave internal logfile</h2>
-        <paper-dialog-scrollable>
+      <ha-dialog open="[[_opened]]" heading="OpenZwave internal logfile" on-closed="closeDialog">
+        <div>
           <pre>[[_ozwLog]]</pre>
-        <paper-dialog-scrollable>
-      </ha-paper-dialog>
+        <div>
+      </ha-dialog>
       `;
   }
 
@@ -56,7 +54,6 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
     this._opened = true;
     this._dialogClosedCallback = dialogClosedCallback;
     this._numLogLines = _numLogLines;
-    setTimeout(() => this.$.pwaDialog.center(), 0);
     if (_tail) {
       this.setProperties({
         _intervalId: setInterval(() => {
@@ -66,22 +63,20 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
     }
   }
 
+  closeDialog() {
+    clearInterval(this._intervalId);
+    this._opened = false;
+    const closedEvent = true;
+    this._dialogClosedCallback({ closedEvent });
+    this._dialogClosedCallback = null;
+  }
+
   async _refreshLog() {
     const info = await this.hass.callApi(
       "GET",
       "zwave/ozwlog?lines=" + this._numLogLines
     );
     this.setProperties({ _ozwLog: info });
-  }
-
-  _dialogClosed(ev) {
-    if (ev.target.nodeName === "ZWAVE-LOG-DIALOG") {
-      clearInterval(this._intervalId);
-      this._opened = false;
-      const closedEvent = true;
-      this._dialogClosedCallback({ closedEvent });
-      this._dialogClosedCallback = null;
-    }
   }
 }
 

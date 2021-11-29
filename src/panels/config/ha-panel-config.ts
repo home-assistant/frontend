@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiBadgeAccountHorizontal,
+  mdiCog,
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
@@ -10,7 +11,6 @@ import {
   mdiNfcVariant,
   mdiPalette,
   mdiPaletteSwatch,
-  mdiPencil,
   mdiPuzzle,
   mdiRobot,
   mdiScriptText,
@@ -28,6 +28,10 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
+import {
+  fetchSupervisorAvailableUpdates,
+  SupervisorAvailableUpdates,
+} from "../../data/supervisor/supervisor";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -41,12 +45,88 @@ declare global {
 }
 
 export const configSections: { [name: string]: PageNavigation[] } = {
-  integrations: [
+  dashboard: [
+    {
+      path: "/config/integrations",
+      name: "Devices & Services",
+      description: "Integrations, devices, entities and areas",
+      iconPath: mdiDevices,
+      iconColor: "#0D47A1",
+      core: true,
+    },
+    {
+      path: "/config/automation",
+      name: "Automations",
+      description: "Automations, blueprints, scenes and scripts",
+      iconPath: mdiRobot,
+      iconColor: "#518C43",
+      components: ["automation", "blueprint", "scene", "script"],
+    },
+    {
+      path: "/config/helpers",
+      name: "Helpers",
+      description: "Elements that help build automations",
+      iconPath: mdiTools,
+      iconColor: "#4D2EA4",
+      core: true,
+    },
+    {
+      path: "/hassio",
+      name: "Add-ons & Backups",
+      description: "Create backups, check logs or reboot your system",
+      iconPath: mdiHomeAssistant,
+      iconColor: "#4084CD",
+      component: "hassio",
+    },
+    {
+      path: "/config/lovelace/dashboards",
+      name: "Dashboards",
+      description: "Create customized sets of cards to control your home",
+      iconPath: mdiViewDashboard,
+      iconColor: "#B1345C",
+      component: "lovelace",
+    },
+    {
+      path: "/config/energy",
+      name: "Energy",
+      description: "Monitor your energy production and consumption",
+      iconPath: mdiLightningBolt,
+      iconColor: "#F1C447",
+      component: "energy",
+    },
+    {
+      path: "/config/tags",
+      name: "Tags",
+      description:
+        "Trigger automations when a NFC tag, QR code, etc. is scanned",
+      iconPath: mdiNfcVariant,
+      iconColor: "#616161",
+      component: "tag",
+    },
+    {
+      path: "/config/person",
+      name: "People & Zones",
+      description: "Manage the people and zones that Home Assistant tracks",
+      iconPath: mdiAccount,
+      iconColor: "#E48629",
+      components: ["person", "zone", "users"],
+    },
+    {
+      path: "/config/core",
+      name: "Settings",
+      description: "Basic settings, server controls, logs and info",
+      iconPath: mdiCog,
+      iconColor: "#4A5963",
+      core: true,
+    },
+  ],
+  devices: [
     {
       component: "integrations",
       path: "/config/integrations",
       translationKey: "ui.panel.config.integrations.caption",
       iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
       core: true,
     },
     {
@@ -54,6 +134,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/devices",
       translationKey: "ui.panel.config.devices.caption",
       iconPath: mdiDevices,
+      iconColor: "#2D338F",
       core: true,
     },
     {
@@ -61,6 +142,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/entities",
       translationKey: "ui.panel.config.entities.caption",
       iconPath: mdiShape,
+      iconColor: "#2D338F",
       core: true,
     },
     {
@@ -68,33 +150,38 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/areas",
       translationKey: "ui.panel.config.areas.caption",
       iconPath: mdiSofa,
+      iconColor: "#2D338F",
       core: true,
     },
   ],
-  automation: [
+  automations: [
     {
       component: "blueprint",
       path: "/config/blueprint",
       translationKey: "ui.panel.config.blueprint.caption",
       iconPath: mdiPaletteSwatch,
+      iconColor: "#518C43",
     },
     {
       component: "automation",
       path: "/config/automation",
       translationKey: "ui.panel.config.automation.caption",
       iconPath: mdiRobot,
+      iconColor: "#518C43",
     },
     {
       component: "scene",
       path: "/config/scene",
       translationKey: "ui.panel.config.scene.caption",
       iconPath: mdiPalette,
+      iconColor: "#518C43",
     },
     {
       component: "script",
       path: "/config/script",
       translationKey: "ui.panel.config.script.caption",
       iconPath: mdiScriptText,
+      iconColor: "#518C43",
     },
   ],
   helpers: [
@@ -103,21 +190,26 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/helpers",
       translationKey: "ui.panel.config.helpers.caption",
       iconPath: mdiTools,
+      iconColor: "#4D2EA4",
       core: true,
     },
   ],
-  experiences: [
+  tags: [
     {
       component: "tag",
       path: "/config/tags",
       translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
+      iconColor: "#616161",
     },
+  ],
+  energy: [
     {
       component: "energy",
       path: "/config/energy",
       translationKey: "ui.panel.config.energy.caption",
       iconPath: mdiLightningBolt,
+      iconColor: "#F1C447",
     },
   ],
   lovelace: [
@@ -126,6 +218,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/lovelace/dashboards",
       translationKey: "ui.panel.config.lovelace.caption",
       iconPath: mdiViewDashboard,
+      iconColor: "#B1345C",
     },
   ],
   persons: [
@@ -134,18 +227,21 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/person",
       translationKey: "ui.panel.config.person.caption",
       iconPath: mdiAccount,
+      iconColor: "#E48629",
     },
     {
       component: "zone",
       path: "/config/zone",
       translationKey: "ui.panel.config.zone.caption",
       iconPath: mdiMapMarkerRadius,
+      iconColor: "#E48629",
     },
     {
       component: "users",
       path: "/config/users",
       translationKey: "ui.panel.config.users.caption",
       iconPath: mdiBadgeAccountHorizontal,
+      iconColor: "#E48629",
       core: true,
       advancedOnly: true,
     },
@@ -156,6 +252,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/core",
       translationKey: "ui.panel.config.core.caption",
       iconPath: mdiHomeAssistant,
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -163,6 +260,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/server_control",
       translationKey: "ui.panel.config.server_control.caption",
       iconPath: mdiServer,
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -170,6 +268,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/logs",
       translationKey: "ui.panel.config.logs.caption",
       iconPath: mdiMathLog,
+      iconColor: "#4A5963",
       core: true,
     },
     {
@@ -177,17 +276,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
       iconPath: mdiInformation,
+      iconColor: "#4A5963",
       core: true,
-    },
-  ],
-  advanced: [
-    {
-      component: "customize",
-      path: "/config/customize",
-      translationKey: "ui.panel.config.customize.caption",
-      iconPath: mdiPencil,
-      core: true,
-      advancedOnly: true,
     },
   ],
 };
@@ -243,10 +333,8 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-info",
         load: () => import("./info/ha-config-info"),
       },
-      customize: {
-        tag: "ha-config-customize",
-        load: () => import("./customize/ha-config-customize"),
-      },
+      // customize was removed in 2021.12, fallback to dashboard
+      customize: "dashboard",
       dashboard: {
         tag: "ha-config-dashboard",
         load: () => import("./dashboard/ha-config-dashboard"),
@@ -329,6 +417,8 @@ class HaPanelConfig extends HassRouterPage {
 
   @state() private _cloudStatus?: CloudStatus;
 
+  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+
   private _listeners: Array<() => void> = [];
 
   public connectedCallback() {
@@ -357,6 +447,11 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("title");
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
+    }
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._loadSupervisorUpdates();
+    } else {
+      this._supervisorUpdates = null;
     }
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
@@ -388,6 +483,7 @@ class HaPanelConfig extends HassRouterPage {
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
+        supervisorUpdates: this._supervisorUpdates,
       });
     } else {
       el.route = this.routeTail;
@@ -396,6 +492,7 @@ class HaPanelConfig extends HassRouterPage {
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
+      el.supervisorUpdates = this._supervisorUpdates;
     }
   }
 
@@ -411,6 +508,16 @@ class HaPanelConfig extends HassRouterPage {
         !this._cloudStatus.remote_connected)
     ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
+    }
+  }
+
+  private async _loadSupervisorUpdates(): Promise<void> {
+    try {
+      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
+        this.hass
+      );
+    } catch (err) {
+      this._supervisorUpdates = null;
     }
   }
 }

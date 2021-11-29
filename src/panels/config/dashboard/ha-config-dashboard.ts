@@ -1,3 +1,4 @@
+import "./ha-config-updates";
 import { mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -14,6 +15,7 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -26,67 +28,11 @@ class HaConfigDashboard extends LitElement {
 
   @property() public cloudStatus?: CloudStatus;
 
+  @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+
   @property() public showAdvanced!: boolean;
 
   protected render(): TemplateResult {
-    const content = html` <ha-config-section
-      .narrow=${this.narrow}
-      .isWide=${this.isWide}
-    >
-      <div slot="header">${this.hass.localize("ui.panel.config.header")}</div>
-
-      <div slot="introduction">
-        ${this.hass.localize("ui.panel.config.introduction")}
-      </div>
-
-      ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
-        ? html`
-            <ha-card>
-              <ha-config-navigation
-                .hass=${this.hass}
-                .showAdvanced=${this.showAdvanced}
-                .pages=${[
-                  {
-                    component: "cloud",
-                    path: "/config/cloud",
-                    name: "Home Assistant Cloud",
-                    info: this.cloudStatus,
-                    iconPath: mdiCloudLock,
-                  },
-                ]}
-              ></ha-config-navigation>
-            </ha-card>
-          `
-        : ""}
-      ${Object.values(configSections).map(
-        (section) => html`
-          <ha-card>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${section}
-            ></ha-config-navigation>
-          </ha-card>
-        `
-      )}
-      ${!this.showAdvanced
-        ? html`
-            <div class="promo-advanced">
-              ${this.hass.localize("ui.panel.config.advanced_mode.hint_enable")}
-              <a href="/profile"
-                >${this.hass.localize(
-                  "ui.panel.config.advanced_mode.link_profile_page"
-                )}</a
-              >.
-            </div>
-          `
-        : ""}
-    </ha-config-section>`;
-
-    if (!this.narrow && this.hass.dockedSidebar !== "always_hidden") {
-      return content;
-    }
-
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -95,10 +41,72 @@ class HaConfigDashboard extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
+            <div main-title>${this.hass.localize("panel.config")}</div>
           </app-toolbar>
         </app-header>
 
-        ${content}
+        <ha-config-section
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          full-width
+        >
+          ${isComponentLoaded(this.hass, "hassio") &&
+          this.supervisorUpdates === undefined
+            ? html``
+            : html`${this.supervisorUpdates !== null
+                  ? html`<ha-card>
+                      <ha-config-updates
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .supervisorUpdates=${this.supervisorUpdates}
+                      ></ha-config-updates>
+                    </ha-card>`
+                  : ""}
+                <ha-card>
+                  ${this.narrow && this.supervisorUpdates !== null
+                    ? html`<div class="title">
+                        ${this.hass.localize("panel.config")}
+                      </div>`
+                    : ""}
+                  ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
+                    ? html`
+                        <ha-config-navigation
+                          .hass=${this.hass}
+                          .showAdvanced=${this.showAdvanced}
+                          .pages=${[
+                            {
+                              component: "cloud",
+                              path: "/config/cloud",
+                              name: "Home Assistant Cloud",
+                              info: this.cloudStatus,
+                              iconPath: mdiCloudLock,
+                              iconColor: "#3B808E",
+                            },
+                          ]}
+                        ></ha-config-navigation>
+                      `
+                    : ""}
+                  <ha-config-navigation
+                    .hass=${this.hass}
+                    .showAdvanced=${this.showAdvanced}
+                    .pages=${configSections.dashboard}
+                  ></ha-config-navigation>
+                </ha-card>
+                ${!this.showAdvanced
+                  ? html`
+                      <div class="promo-advanced">
+                        ${this.hass.localize(
+                          "ui.panel.config.advanced_mode.hint_enable"
+                        )}
+                        <a href="/profile"
+                          >${this.hass.localize(
+                            "ui.panel.config.advanced_mode.link_profile_page"
+                          )}</a
+                        >.
+                      </div>
+                    `
+                  : ""}`}
+        </ha-config-section>
       </ha-app-layout>
     `;
   }
@@ -108,16 +116,16 @@ class HaConfigDashboard extends LitElement {
       haStyle,
       css`
         app-header {
-          --app-header-background-color: var(--primary-background-color);
+          border-bottom: var(--app-header-border-bottom);
+          --header-height: 55px;
         }
         ha-card:last-child {
           margin-bottom: 24px;
         }
         ha-config-section {
-          margin-top: -12px;
-        }
-        :host([narrow]) ha-config-section {
-          margin-top: -20px;
+          margin: auto;
+          margin-top: -32px;
+          max-width: 600px;
         }
         ha-card {
           overflow: hidden;
@@ -126,6 +134,11 @@ class HaConfigDashboard extends LitElement {
           text-decoration: none;
           color: var(--primary-text-color);
         }
+        .title {
+          font-size: 16px;
+          padding: 16px;
+          padding-bottom: 0;
+        }
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
@@ -133,6 +146,14 @@ class HaConfigDashboard extends LitElement {
         }
         .promo-advanced a {
           color: var(--secondary-text-color);
+        }
+        :host([narrow]) ha-card {
+          background-color: var(--primary-background-color);
+          box-shadow: unset;
+        }
+
+        :host([narrow]) ha-config-section {
+          margin-top: -42px;
         }
       `,
     ];

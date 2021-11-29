@@ -386,10 +386,14 @@ export class QuickBar extends LitElement {
   private _generateEntityItems(): EntityItem[] {
     return Object.keys(this.hass.states)
       .map((entityId) => {
+        const entityState = this.hass.states[entityId];
         const entityItem = {
-          primaryText: computeStateName(this.hass.states[entityId]),
+          primaryText: computeStateName(entityState),
           altText: entityId,
-          icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+          icon: entityState.attributes.icon,
+          iconPath: entityState.attributes.icon
+            ? undefined
+            : domainIcon(computeDomain(entityId), entityState),
           action: () => fireEvent(this, "hass-more-info", { entityId }),
         };
 

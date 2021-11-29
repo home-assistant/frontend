@@ -66,7 +66,7 @@ export const computeEntityRegistryName = (
     return entry.name;
   }
   const state = hass.states[entry.entity_id];
-  return state ? computeStateName(state) : null;
+  return state ? computeStateName(state) : entry.entity_id;
 };
 
 export const getExtendedEntityRegistryEntry = (

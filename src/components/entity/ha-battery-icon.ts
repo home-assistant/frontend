@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { batteryIcon } from "../../common/entity/battery_icon";
-import "../ha-icon";
+import { batteryStateIcon } from "../../common/entity/battery_icon";
+import "../ha-svg-icon";
 
 @customElement("ha-battery-icon")
 export class HaBatteryIcon extends LitElement {
@@ -11,9 +11,18 @@ export class HaBatteryIcon extends LitElement {
 
   protected render() {
     return html`
-      <ha-icon
-        .icon=${batteryIcon(this.batteryStateObj, this.batteryChargingStateObj)}
-      ></ha-icon>
+      <ha-svg-icon
+        .path=${batteryStateIcon(
+          this.batteryStateObj,
+          this.batteryChargingStateObj
+        )}
+      ></ha-svg-icon>
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-battery-icon": HaBatteryIcon;
   }
 }

@@ -197,21 +197,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-        }
-        @media all and (min-width: 660px) {
-          ha-paper-dialog {
-            width: 650px;
-          }
-        }
-        ha-paper-dialog {
-          max-width: 650px;
-        }
         ha-switch {
           padding-bottom: 16px;
         }

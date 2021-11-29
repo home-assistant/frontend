@@ -14,7 +14,6 @@ import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
 import { UNAVAILABLE } from "../data/entity";
 import type { HomeAssistant } from "../types";
 import CoverEntity from "../util/cover-model";
-import "./ha-icon";
 import "./ha-icon-button";
 
 @customElement("ha-cover-controls")
@@ -49,8 +48,8 @@ class HaCoverControls extends LitElement {
           )}
           @click=${this._onOpenTap}
           .disabled=${this._computeOpenDisabled()}
+          .path=${computeOpenIcon(this.stateObj)}
         >
-          <ha-icon .icon=${computeOpenIcon(this.stateObj)}></ha-icon>
         </ha-icon-button>
         <ha-icon-button
           class=${classMap({
@@ -72,8 +71,8 @@ class HaCoverControls extends LitElement {
           )}
           @click=${this._onCloseTap}
           .disabled=${this._computeClosedDisabled()}
+          .path=${computeCloseIcon(this.stateObj)}
         >
-          <ha-icon .icon=${computeCloseIcon(this.stateObj)}></ha-icon>
         </ha-icon-button>
       </div>
     `;

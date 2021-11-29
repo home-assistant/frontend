@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

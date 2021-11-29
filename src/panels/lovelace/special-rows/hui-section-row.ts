@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
-import "../../../components/ha-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 

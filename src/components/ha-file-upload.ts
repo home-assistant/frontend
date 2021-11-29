@@ -17,7 +17,7 @@ declare global {
 
 @customElement("ha-file-upload")
 export class HaFileUpload extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public accept!: string;
 
@@ -84,15 +84,21 @@ export class HaFileUpload extends LitElement {
                   ${this.value}
                 </iron-input>
                 ${this.value
-                  ? html`<ha-icon-button
-                      slot="suffix"
-                      @click=${this._clearValue}
-                      .label=${this.hass.localize("ui.common.close")}
-                      .path=${mdiClose}
-                    ></ha-icon-button>`
-                  : html`<ha-icon-button slot="suffix">
-                      .path=${this.icon} ></ha-icon-button
-                    >`}
+                  ? html`
+                      <ha-icon-button
+                        slot="suffix"
+                        @click=${this._clearValue}
+                        .label=${this.hass?.localize("ui.common.close") ||
+                        "close"}
+                        .path=${mdiClose}
+                      ></ha-icon-button>
+                    `
+                  : html`
+                      <ha-icon-button
+                        slot="suffix"
+                        .path=${this.icon}
+                      ></ha-icon-button>
+                    `}
               </paper-input-container>
             </label>
           `}

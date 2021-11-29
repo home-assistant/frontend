@@ -102,7 +102,7 @@ class StepFlowPickHandler extends LitElement {
                         domain: handler.slug,
                         type: "icon",
                         useFallback: true,
-                        darkOptimized: this.hass.selectedTheme?.dark,
+                        darkOptimized: this.hass.themes?.darkMode,
                       })}
                       referrerpolicy="no-referrer"
                     />

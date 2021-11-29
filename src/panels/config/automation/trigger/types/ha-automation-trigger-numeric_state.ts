@@ -12,7 +12,7 @@ import { handleChangeEvent } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-duration-input";
 
 @customElement("ha-automation-trigger-numeric_state")
-export default class HaNumericStateTrigger extends LitElement {
+export class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: NumericStateTrigger;

@@ -20,8 +20,8 @@ export const darkStyles = {
   "input-outlined-idle-border-color": "rgba(255, 255, 255, 0.38)",
   "input-outlined-hover-border-color": "rgba(255, 255, 255, 0.87)",
   "input-outlined-disabled-border-color": "rgba(255, 255, 255, 0.06)",
-  "input-fill-color": "rgb(10, 10, 10)",
-  "input-disabled-fill-color": "rgb(5, 5, 5)",
+  "input-fill-color": "rgba(255, 255, 255, 0.05)",
+  "input-disabled-fill-color": "rgba(255, 255, 255, 0.02)",
   "input-ink-color": "rgba(255, 255, 255, 0.87)",
   "input-label-ink-color": "rgba(255, 255, 255, 0.6)",
   "input-disabled-ink-color": "rgba(255, 255, 255, 0.37)",
@@ -45,7 +45,7 @@ export const darkStyles = {
   "codemirror-property": "#C792EA",
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
-  "energy-grid-return-color": "#b39bdb",
+  "energy-grid-return-color": "#a280db",
 };
 
 export const derivedStyles = {
@@ -302,57 +302,6 @@ export const haStyle = css`
 `;
 
 export const haStyleDialog = css`
-  /* prevent clipping of positioned elements */
-  paper-dialog-scrollable {
-    --paper-dialog-scrollable: {
-      -webkit-overflow-scrolling: auto;
-    }
-  }
-
-  /* force smooth scrolling for iOS 10 */
-  paper-dialog-scrollable.can-scroll {
-    --paper-dialog-scrollable: {
-      -webkit-overflow-scrolling: touch;
-    }
-  }
-
-  .paper-dialog-buttons {
-    align-items: flex-end;
-    padding: 8px;
-    padding-bottom: max(env(safe-area-inset-bottom), 8px);
-  }
-
-  @media all and (min-width: 450px) and (min-height: 500px) {
-    ha-paper-dialog {
-      min-width: 400px;
-    }
-  }
-
-  @media all and (max-width: 450px), all and (max-height: 500px) {
-    paper-dialog,
-    ha-paper-dialog {
-      margin: 0;
-      width: calc(
-        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
-      ) !important;
-      min-width: calc(
-        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
-      ) !important;
-      max-width: calc(
-        100% - env(safe-area-inset-right) - env(safe-area-inset-left)
-      ) !important;
-      max-height: calc(100% - var(--header-height));
-
-      position: fixed !important;
-      bottom: 0px;
-      left: env(safe-area-inset-left);
-      right: env(safe-area-inset-right);
-      overflow: scroll;
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
-  }
-
   /* mwc-dialog (ha-dialog) styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
@@ -382,8 +331,8 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
+      --ha-dialog-border-radius: 0px;
     }
   }
   mwc-button.warning {

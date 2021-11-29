@@ -84,6 +84,9 @@ export interface ZWaveJSNodeStatus {
   ready: boolean;
   status: number;
   is_secure: boolean | string;
+  is_routing: boolean | null;
+  zwave_plus_version: number | null;
+  highest_security_class: SecurityClass | null;
 }
 
 export interface ZwaveJSNodeMetadata {

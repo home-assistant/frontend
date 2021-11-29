@@ -222,6 +222,30 @@ const SCHEMAS: {
       },
     ],
   },
+  {
+    title: "OctoPrint",
+    translations: {
+      username: "Username",
+      host: "Host",
+      port: "Port Number",
+      path: "Application Path",
+      ssl: "Use SSL",
+    },
+    schema: [
+      { type: "string", name: "username", required: true, default: "" },
+      { type: "string", name: "host", required: true, default: "" },
+      {
+        type: "integer",
+        valueMin: 1,
+        valueMax: 65535,
+        name: "port",
+        optional: true,
+        default: 80,
+      },
+      { type: "string", name: "path", optional: true, default: "/" },
+      { type: "boolean", name: "ssl", optional: true, default: false },
+    ],
+  },
 ];
 
 @customElement("demo-ha-form")

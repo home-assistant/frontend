@@ -48,6 +48,7 @@ class StepFlowForm extends LitElement {
           : ""}
         <ha-form
           .data=${stepData}
+          .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
           .schema=${step.data_schema}
           .error=${step.errors}

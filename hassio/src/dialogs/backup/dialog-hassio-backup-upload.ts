@@ -15,7 +15,7 @@ export class DialogHassioBackupUpload
   extends LitElement
   implements HassDialog<HassioBackupUploadDialogParams>
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: HassioBackupUploadDialogParams;
 
@@ -54,7 +54,7 @@ export class DialogHassioBackupUpload
           <ha-header-bar>
             <span slot="title"> Upload backup </span>
             <ha-icon-button
-              .label=${this.hass.localize("common.close")}
+              .label=${this.hass?.localize("common.close") || "close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"

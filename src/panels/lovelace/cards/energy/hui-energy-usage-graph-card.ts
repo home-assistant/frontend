@@ -17,7 +17,6 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { hexBlend } from "../../../../common/color/hex";
 import { labDarken } from "../../../../common/color/lab";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -357,10 +356,6 @@ export class HuiEnergyUsageGraphCard
       ),
     };
 
-    const backgroundColor = computedStyles
-      .getPropertyValue("--card-background-color")
-      .trim();
-
     Object.entries(statistics).forEach(([key, statIds]) => {
       const sum = [
         "solar",
@@ -515,7 +510,7 @@ export class HuiEnergyUsageGraphCard
               ? Object.keys(combinedData).length
               : idx + 1,
           borderColor,
-          backgroundColor: hexBlend(borderColor, backgroundColor, 50),
+          backgroundColor: borderColor + "7F",
           stack: "stack",
           data: [],
         });

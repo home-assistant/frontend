@@ -371,6 +371,10 @@ export class HAFullCalendar extends LitElement {
           );
           --fc-theme-standard-border-color: var(--divider-color);
           --fc-border-color: var(--divider-color);
+          --fc-page-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
         }
 
         a {

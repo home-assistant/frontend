@@ -202,12 +202,12 @@ class DialogZWaveJSAddNode extends LitElement {
                     (securityClass) => html`<ha-formfield
                       .label=${html`<b
                           >${this.hass.localize(
-                            `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.title`
+                            `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.title`
                           )}</b
                         >
                         <div class="secondary">
                           ${this.hass.localize(
-                            `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.description`
+                            `ui.panel.config.zwave_js.security_classes.${SecurityClass[securityClass]}.description`
                           )}
                         </div>`}
                     >

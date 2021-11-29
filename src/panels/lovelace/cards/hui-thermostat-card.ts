@@ -1,4 +1,13 @@
-import { mdiDotsVertical } from "@mdi/js";
+import {
+  mdiAutorenew,
+  mdiCalendarSync,
+  mdiDotsVertical,
+  mdiFan,
+  mdiFire,
+  mdiPower,
+  mdiSnowflake,
+  mdiWaterPercent,
+} from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -19,7 +28,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
-import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import {
   ClimateEntity,
@@ -36,13 +44,13 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
 const modeIcons: { [mode in HvacMode]: string } = {
-  auto: "hass:calendar-sync",
-  heat_cool: "hass:autorenew",
-  heat: "hass:fire",
-  cool: "hass:snowflake",
-  off: "hass:power",
-  fan_only: "hass:fan",
-  dry: "hass:water-percent",
+  auto: mdiCalendarSync,
+  heat_cool: mdiAutorenew,
+  heat: mdiFire,
+  cool: mdiSnowflake,
+  off: mdiPower,
+  fan_only: mdiFan,
+  dry: mdiWaterPercent,
 };
 
 @customElement("hui-thermostat-card")
@@ -418,8 +426,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         .mode=${mode}
         @click=${this._handleAction}
         tabindex="0"
+        .path=${modeIcons[mode]}
       >
-        <ha-icon .icon=${modeIcons[mode]}></ha-icon>
       </ha-icon-button>
     `;
   }

@@ -29,6 +29,7 @@ import {
   Blueprints,
   deleteBlueprint,
 } from "../../../data/blueprint";
+import { showScriptEditor } from "../../../data/script";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -52,6 +53,12 @@ const createNewFunctions = {
       use_blueprint: { path: blueprintMeta.path },
     });
   },
+  script: (blueprintMeta: BlueprintMetaDataPath) => {
+    showScriptEditor({
+      alias: blueprintMeta.name,
+      use_blueprint: { path: blueprintMeta.path },
+    });
+  },
 };
 
 @customElement("ha-blueprint-overview")
@@ -62,27 +69,38 @@ class HaBlueprintOverview extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public blueprints!: Blueprints;
+  @property({ attribute: false }) public blueprints!: Record<
+    string,
+    Blueprints
+  >;
 
-  private _processedBlueprints = memoizeOne((blueprints: Blueprints) => {
-    const result = Object.entries(blueprints).map(([path, blueprint]) => {
-      if ("error" in blueprint) {
-        return {
-          name: blueprint.error,
-          error: true,
-          path,
-        };
-      }
-      return {
-        ...blueprint.metadata,
-        error: false,
-        path,
-      };
-    });
-    return result;
-  });
+  private _processedBlueprints = memoizeOne(
+    (blueprints: Record<string, Blueprints>) => {
+      const result: any[] = [];
+      Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
+        Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
+          if ("error" in blueprint) {
+            result.push({
+              name: blueprint.error,
+              type,
+              error: true,
+              path,
+            });
+          } else {
+            result.push({
+              ...blueprint.metadata,
+              type,
+              error: false,
+              path,
+            });
+          }
+        })
+      );
+      return result;
+    }
+  );
 
   private _columns = memoizeOne(
     (narrow, _language): DataTableColumnContainer => ({
@@ -102,6 +120,20 @@ class HaBlueprintOverview extends LitElement {
               `
           : undefined,
       },
+      type: {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.type"
+        ),
+        template: (type: string) =>
+          html`${this.hass.localize(
+            `ui.panel.config.blueprint.overview.types.${type}`
+          )}`,
+        sortable: true,
+        filterable: true,
+        hidden: narrow,
+        direction: "asc",
+        width: "10%",
+      },
       path: {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.file_name"
@@ -114,25 +146,27 @@ class HaBlueprintOverview extends LitElement {
       },
       create: {
         title: "",
+        width: narrow ? undefined : "20%",
         type: narrow ? "icon-button" : undefined,
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
             : narrow
-            ? html` <ha-icon-button
+            ? html`<ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
+                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
                 )}
-                .path=${mdiRobot}
                 @click=${this._createNew}
-              ></ha-icon-button>`
+                .path=${mdiRobot}
+              >
+              </ha-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
                 @click=${this._createNew}
               >
                 ${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
+                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
                 )}
               </mwc-button>`,
       },
@@ -190,7 +224,7 @@ class HaBlueprintOverview extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"

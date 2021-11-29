@@ -1,18 +1,20 @@
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
+  mdiAlertCircle,
   mdiCancel,
   mdiDelete,
   mdiFilterVariant,
+  mdiPencilOff,
   mdiPlus,
+  mdiRestoreAlert,
   mdiUndo,
 } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -21,8 +23,6 @@ import memoize from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { domainIcon } from "../../../common/entity/domain_icon";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -76,7 +76,7 @@ export interface StateEntity extends EntityRegistryEntry {
 }
 
 export interface EntityRow extends StateEntity {
-  icon: string;
+  entity: HassEntity;
   unavailable: boolean;
   restored: boolean;
   status: string;
@@ -169,8 +169,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       icon: {
         title: "",
         type: "icon",
-        template: (icon) => html`
-          <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
+        template: (_, entry: any) => html`
+          <ha-state-icon
+            slot="item-icon"
+            .state=${entry.entity}
+          ></ha-state-icon>
         `,
       },
       name: {
@@ -250,18 +253,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
-                  <ha-icon
+                  <ha-svg-icon
                     style=${styleMap({
                       color: entity.unavailable ? "var(--error-color)" : "",
                     })}
-                    .icon=${entity.restored
-                      ? "hass:restore-alert"
+                    .path=${entity.restored
+                      ? mdiRestoreAlert
                       : entity.unavailable
-                      ? "hass:alert-circle"
+                      ? mdiAlertCircle
                       : entity.disabled_by
-                      ? "hass:cancel"
-                      : "hass:pencil-off"}
-                  ></ha-icon>
+                      ? mdiCancel
+                      : mdiPencilOff}
+                  ></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
                     ${entity.restored
                       ? this.hass.localize(
@@ -372,12 +375,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         result.push({
           ...entry,
-          icon: entity
-            ? stateIcon(entity)
-            : domainIcon(computeDomain(entry.entity_id)),
-          name:
-            computeEntityRegistryName(this.hass!, entry) ||
-            this.hass.localize("state.default.unavailable"),
+          entity,
+          name: computeEntityRegistryName(this.hass!, entry),
           unavailable,
           restored,
           area: area ? area.name : undefined,
@@ -479,7 +478,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           ? undefined
           : "/config"}
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .columns=${this._columns(
           this.narrow,
           this.hass.language,

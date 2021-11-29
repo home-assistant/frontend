@@ -10,7 +10,7 @@ import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import "../../src/layouts/hass-loading-screen";
-import { HomeAssistant, Route } from "../../src/types";
+import { HomeAssistant } from "../../src/types";
 import "./hassio-router";
 import { SupervisorBaseElement } from "./supervisor-base-element";
 
@@ -23,8 +23,6 @@ export class HassioMain extends SupervisorBaseElement {
   @property({ attribute: false }) public panel!: HassioPanelInfo;
 
   @property({ type: Boolean }) public narrow!: boolean;
-
-  @property({ attribute: false }) public route?: Route;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -113,12 +111,6 @@ export class HassioMain extends SupervisorBaseElement {
           : this.hass.themes.default_theme);
 
       themeSettings = this.hass.selectedTheme;
-      if (themeSettings?.dark === undefined) {
-        themeSettings = {
-          ...this.hass.selectedTheme,
-          dark: this.hass.themes.darkMode,
-        };
-      }
     } else {
       themeName =
         (this.hass.selectedTheme as unknown as string) ||

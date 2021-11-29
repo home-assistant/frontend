@@ -3,34 +3,18 @@ import { mdiHomeAssistant } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
-import {
-  extractApiErrorMessage,
-  HassioResponse,
-  ignoreSupervisorError,
-} from "../../../src/data/hassio/common";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
-import { updateCore } from "../../../src/data/supervisor/core";
-import {
-  Supervisor,
-  supervisorApiWsRequest,
-} from "../../../src/data/supervisor/supervisor";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../src/dialogs/generic/show-dialog-box";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 const computeVersion = (key: string, version: string): string =>
@@ -73,26 +57,18 @@ export class HassioUpdate extends LitElement {
           ${this._renderUpdateCard(
             "Home Assistant Core",
             "core",
-            this.supervisor.core,
-            "hassio/homeassistant/update",
-            `https://${
-              this.supervisor.core.version_latest.includes("b") ? "rc" : "www"
-            }.home-assistant.io/latest-release-notes/`
+            this.supervisor.core
           )}
           ${this._renderUpdateCard(
             "Supervisor",
             "supervisor",
-            this.supervisor.supervisor,
-            "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisor.supervisor.version_latest}`
+            this.supervisor.supervisor
           )}
           ${this.supervisor.host.features.includes("haos")
             ? this._renderUpdateCard(
                 "Operating System",
                 "os",
-                this.supervisor.os,
-                "hassio/os/update",
-                `https://github.com//home-assistant/hassos/releases/tag/${this.supervisor.os.version_latest}`
+                this.supervisor.os
               )
             : ""}
         </div>
@@ -103,9 +79,7 @@ export class HassioUpdate extends LitElement {
   private _renderUpdateCard(
     name: string,
     key: string,
-    object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo,
-    apiPath: string,
-    releaseNotesUrl: string
+    object: HassioHomeAssistantInfo | HassioSupervisorInfo | HassioHassOSInfo
   ): TemplateResult {
     if (!object.update_available) {
       return html``;
@@ -136,94 +110,13 @@ export class HassioUpdate extends LitElement {
           </ha-settings-row>
         </div>
         <div class="card-actions">
-          <a href=${releaseNotesUrl} target="_blank" rel="noreferrer">
-            <mwc-button>
-              ${this.supervisor.localize("common.release_notes")}
+          <a href="/hassio/update-available/${key}">
+            <mwc-button .label=${this.supervisor.localize("common.show")}>
             </mwc-button>
           </a>
-          <ha-progress-button
-            .apiPath=${apiPath}
-            .name=${name}
-            .key=${key}
-            .version=${object.version_latest}
-            @click=${this._confirmUpdate}
-          >
-            ${this.supervisor.localize("common.update")}
-          </ha-progress-button>
         </div>
       </ha-card>
     `;
-  }
-
-  private async _confirmUpdate(ev): Promise<void> {
-    const item = ev.currentTarget;
-    if (item.key === "core") {
-      showDialogSupervisorUpdate(this, {
-        supervisor: this.supervisor,
-        name: "Home Assistant Core",
-        version: this.supervisor.core.version_latest,
-        backupParams: {
-          name: `core_${this.supervisor.core.version}`,
-          folders: ["homeassistant"],
-          homeassistant: true,
-        },
-        updateHandler: async () => this._updateCore(),
-      });
-      return;
-    }
-    item.progress = true;
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize(
-        "confirm.update.title",
-        "name",
-        item.name
-      ),
-      text: this.supervisor.localize(
-        "confirm.update.text",
-        "name",
-        item.name,
-        "version",
-        computeVersion(item.key, item.version)
-      ),
-      confirmText: this.supervisor.localize("common.update"),
-      dismissText: this.supervisor.localize("common.cancel"),
-    });
-
-    if (!confirmed) {
-      item.progress = false;
-      return;
-    }
-    try {
-      if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
-        await supervisorApiWsRequest(this.hass.connection, {
-          method: "post",
-          endpoint: item.apiPath.replace("hassio", ""),
-          timeout: null,
-        });
-      } else {
-        await this.hass.callApi<HassioResponse<void>>("POST", item.apiPath);
-      }
-      fireEvent(this, "supervisor-collection-refresh", {
-        collection: item.key,
-      });
-    } catch (err: any) {
-      // Only show an error if the status code was not expected (user behind proxy)
-      // or no status at all(connection terminated)
-      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
-        showAlertDialog(this, {
-          title: this.supervisor.localize("common.error.update_failed"),
-          text: extractApiErrorMessage(err),
-        });
-      }
-    }
-    item.progress = false;
-  }
-
-  private async _updateCore(): Promise<void> {
-    await updateCore(this.hass);
-    fireEvent(this, "supervisor-collection-refresh", {
-      collection: "core",
-    });
   }
 
   static get styles(): CSSResultGroup {

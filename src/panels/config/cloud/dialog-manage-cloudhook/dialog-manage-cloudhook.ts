@@ -1,11 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { state } from "lit/decorators";
-import "../../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -19,11 +17,13 @@ export class DialogManageCloudhook extends LitElement {
 
   @state() private _params?: WebhookDialogParams;
 
-  public async showDialog(params: WebhookDialogParams) {
+  public showDialog(params: WebhookDialogParams) {
     this._params = params;
-    // Wait till dialog is rendered.
-    await this.updateComplete;
-    this._dialog.open();
+  }
+
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
@@ -39,14 +39,14 @@ export class DialogManageCloudhook extends LitElement {
           )
         : documentationUrl(this.hass!, `/integrations/${webhook.domain}/`);
     return html`
-      <ha-paper-dialog with-backdrop>
-        <h2>
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
-            "name",
-            webhook.name
-          )}
-        </h2>
+      <ha-dialog
+        open
+        .heading=${this.hass!.localize(
+          "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
+          "name",
+          webhook.name
+        )}
+      >
         <div>
           <p>
             ${this.hass!.localize(
@@ -79,34 +79,27 @@ export class DialogManageCloudhook extends LitElement {
           </p>
         </div>
 
-        <div class="paper-dialog-buttons">
-          <a href=${docsUrl} target="_blank" rel="noreferrer">
-            <mwc-button
-              >${this.hass!.localize(
-                "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-              )}</mwc-button
-            >
-          </a>
-          <mwc-button @click=${this._closeDialog}
-            >${this.hass!.localize(
-              "ui.panel.config.cloud.dialog_cloudhook.close"
-            )}</mwc-button
-          >
-        </div>
-      </ha-paper-dialog>
+        <a
+          href=${docsUrl}
+          target="_blank"
+          rel="noreferrer"
+          slot="secondaryAction"
+        >
+          <mwc-button>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+            )}
+          </mwc-button>
+        </a>
+        <mwc-button @click=${this.closeDialog} slot="primaryAction">
+          ${this.hass!.localize("ui.panel.config.cloud.dialog_cloudhook.close")}
+        </mwc-button>
+      </ha-dialog>
     `;
-  }
-
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private get _paperInput(): PaperInputElement {
     return this.shadowRoot!.querySelector("paper-input")!;
-  }
-
-  private _closeDialog() {
-    this._dialog.close();
   }
 
   private async _disableWebhook() {
@@ -118,7 +111,7 @@ export class DialogManageCloudhook extends LitElement {
       confirmText: this.hass!.localize("ui.common.disable"),
       confirm: () => {
         this._params!.disableHook();
-        this._closeDialog();
+        this.closeDialog();
       },
     });
   }
@@ -147,7 +140,7 @@ export class DialogManageCloudhook extends LitElement {
     return [
       haStyle,
       css`
-        ha-paper-dialog {
+        ha-dialog {
           width: 650px;
         }
         paper-input {
@@ -156,7 +149,7 @@ export class DialogManageCloudhook extends LitElement {
         button.link {
           color: var(--primary-color);
         }
-        .paper-dialog-buttons a {
+        a {
           text-decoration: none;
         }
       `,

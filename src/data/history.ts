@@ -74,14 +74,28 @@ export interface StatisticValue {
 export interface StatisticsMetaData {
   unit_of_measurement: string;
   statistic_id: string;
+  source: string;
+  name?: string | null;
 }
 
 export type StatisticsValidationResult =
+  | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
   | StatisticsValidationResultUnitsChanged
   | StatisticsValidationResultUnsupportedUnitMetadata
   | StatisticsValidationResultUnsupportedUnitState;
+
+export interface StatisticsValidationResultNoState {
+  type: "no_state";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultEntityNoLongerRecorded {
+  type: "entity_no_longer_recorded";
+  data: { statistic_id: string };
+}
 
 export interface StatisticsValidationResultEntityNotRecorded {
   type: "entity_not_recorded";

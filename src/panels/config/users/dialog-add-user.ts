@@ -11,7 +11,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import { createAuthForUser } from "../../../data/auth";
@@ -87,7 +87,10 @@ export class DialogAddUser extends LitElement {
         @closed=${this._close}
         scrimClickAction
         escapeKeyAction
-        .heading=${this.hass.localize("ui.panel.config.users.add_user.caption")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.users.add_user.caption")
+        )}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -167,13 +170,6 @@ export class DialogAddUser extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button
-          slot="secondaryAction"
-          @click=${this._close}
-          .disabled=${this._loading}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">

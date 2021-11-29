@@ -4,12 +4,12 @@ import {
   mdiInformationOutline,
   mdiPencil,
   mdiPencilOff,
+  mdiPlayCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -22,6 +22,7 @@ import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-overflow-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -135,7 +136,7 @@ class HaAutomationPicker extends LitElement {
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${this._runActions}
+              @click=${this._triggerRunActions}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -143,78 +144,73 @@ class HaAutomationPicker extends LitElement {
           `,
         };
       }
-      columns.info = {
+      columns.actions = {
         title: "",
-        type: "icon-button",
-        template: (_info, automation) => html`
-          <ha-icon-button
-            .automation=${automation}
-            @click=${this._showInfo}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.picker.show_info_automation"
-            )}
-            .path=${mdiInformationOutline}
-          ></ha-icon-button>
-        `,
-      };
-      columns.trace = {
-        title: "",
-        type: "icon-button",
+        type: "overflow-menu",
         template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/trace/${automation.attributes.id}`
-                : undefined
-            )}
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .items=${[
+              // Info Button
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_info_automation"
+                ),
+                action: () => this._showInfo(automation),
+              },
+              // Trigger Button
+              {
+                path: mdiPlayCircleOutline,
+                label: this.hass.localize("ui.card.automation.trigger"),
+                narrowOnly: true,
+                action: () => this._runActions(automation),
+              },
+              // Trace Button
+              {
+                path: mdiHistory,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.dev_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (automation.attributes.id) {
+                    navigate(
+                      `/config/automation/trace/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+              // Edit Button
+              {
+                path: automation.attributes.id ? mdiPencil : mdiPencilOff,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.edit_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (automation.attributes.id) {
+                    navigate(
+                      `/config/automation/edit/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+            ]}
+            style="color: var(--secondary-text-color)"
           >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.dev_automation"
-              )}
-              .path=${mdiHistory}
-              .disabled=${!automation.attributes.id}
-            ></ha-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.dev_only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
-        `,
-      };
-      columns.edit = {
-        title: "",
-        type: "icon-button",
-        template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/edit/${automation.attributes.id}`
-                : undefined
-            )}
-          >
-            <ha-icon-button
-              .disabled=${!automation.attributes.id}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.edit_automation"
-              )}
-              .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
-            ></ha-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
+          </ha-icon-overflow-menu>
         `,
       };
       return columns;
@@ -229,7 +225,7 @@ class HaAutomationPicker extends LitElement {
         back-path="/config"
         id="entity_id"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
         .activeFilters=${this._activeFilters}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._automations(this.automations, this._filteredAutomations)}
@@ -285,9 +281,8 @@ class HaAutomationPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _showInfo(ev) {
-    ev.stopPropagation();
-    const entityId = ev.currentTarget.automation.entity_id;
+  private _showInfo(automation: AutomationEntity) {
+    const entityId = automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
   }
 
@@ -311,9 +306,12 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _runActions = (ev) => {
-    const entityId = ev.currentTarget.automation.entity_id;
-    triggerAutomationActions(this.hass, entityId);
+  private _triggerRunActions = (ev) => {
+    this._runActions(ev.currentTarget.automation);
+  };
+
+  private _runActions = (automation: AutomationEntity) => {
+    triggerAutomationActions(this.hass, automation.entity_id);
   };
 
   private _createNew() {

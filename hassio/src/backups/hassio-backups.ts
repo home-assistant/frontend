@@ -158,7 +158,7 @@ export class HassioBackups extends LitElement {
     }
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${supervisorTabs}
+        .tabs=${supervisorTabs(this.hass)}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .searchLabel=${this.supervisor.localize("search")}

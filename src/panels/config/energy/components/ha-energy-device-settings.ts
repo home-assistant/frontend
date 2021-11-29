@@ -4,9 +4,9 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-state-icon";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
@@ -79,7 +79,7 @@ export class EnergyDeviceSettings extends LitElement {
             const entityState = this.hass.states[device.stat_consumption];
             return html`
               <div class="row">
-                <ha-icon .icon=${stateIcon(entityState)}></ha-icon>
+                <ha-state-icon .state=${entityState}></ha-state-icon>
                 <span class="content"
                   >${entityState
                     ? computeStateName(entityState)

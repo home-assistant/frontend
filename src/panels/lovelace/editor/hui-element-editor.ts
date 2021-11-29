@@ -15,6 +15,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-alert";
 import type { HaCodeEditor } from "../../../components/ha-code-editor";
 import type {
   LovelaceCardConfig,
@@ -229,9 +230,12 @@ export abstract class HuiElementEditor<T> extends LitElement {
           : ""}
         ${this.hasWarning
           ? html`
-              <div class="warning">
-                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
-                <br />
+              <ha-alert
+                alert-type="warning"
+                .title="${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}:"
+              >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html` <ul>
                       ${this._warnings!.map(
@@ -240,7 +244,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                     </ul>`
                   : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </div>
+              </ha-alert>
             `
           : ""}
       </div>

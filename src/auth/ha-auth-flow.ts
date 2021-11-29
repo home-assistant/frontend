@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -7,18 +8,20 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import "./ha-password-manager-polyfill";
 import { property, state } from "lit/decorators";
-import "../components/ha-form/ha-form";
-import "../components/ha-markdown";
 import "../components/ha-alert";
+import "../components/ha-checkbox";
+import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
+import "../components/ha-form/ha-form";
+import "../components/ha-formfield";
+import "../components/ha-markdown";
 import { AuthProvider } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
+import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
@@ -40,6 +43,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @state() private _errorMessage?: string;
 
   @state() private _submitting = false;
+
+  @state() private _storeToken = false;
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -201,10 +206,28 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
+          ${this.clientId === genClientId() &&
+          !["select_mfa_module", "mfa"].includes(step.step_id)
+            ? html`
+                <ha-formfield
+                  class="store-token"
+                  .label=${this.localize("ui.panel.page-authorize.store_token")}
+                >
+                  <ha-checkbox
+                    .checked=${this._storeToken}
+                    @change=${this._storeTokenChanged}
+                  ></ha-checkbox>
+                </ha-formfield>
+              `
+            : ""}
         `;
       default:
         return html``;
     }
+  }
+
+  private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
+    this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
@@ -273,6 +296,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
     if (this.oauth2State) {
       url += `&state=${encodeURIComponent(this.oauth2State)}`;
+    }
+    if (this._storeToken) {
+      url += `&storeToken=true`;
     }
 
     document.location.assign(url);
@@ -356,6 +382,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       .action {
         margin: 24px 0 8px;
         text-align: center;
+      }
+      /* Align with the rest of the form. */
+      .store-token {
+        margin-top: 10px;
+        margin-left: -16px;
       }
     `;
   }

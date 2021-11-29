@@ -26,7 +26,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
@@ -167,7 +166,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       >
         ${this._config.show_icon
           ? html`
-              <ha-icon
+              <ha-state-icon
                 tabindex="-1"
                 data-domain=${ifDefined(
                   this._config.state_color && stateObj
@@ -177,8 +176,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 data-state=${ifDefined(
                   stateObj ? computeActiveState(stateObj) : undefined
                 )}
-                .icon=${this._config.icon ||
-                (stateObj ? stateIcon(stateObj) : "")}
+                .icon=${this._config.icon}
+                .state=${stateObj}
                 style=${styleMap({
                   filter: stateObj ? this._computeBrightness(stateObj) : "",
                   color: stateObj ? this._computeColor(stateObj) : "",
@@ -186,7 +185,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                     ? this._config.icon_height
                     : "",
                 })}
-              ></ha-icon>
+              ></ha-state-icon>
             `
           : ""}
         ${this._config.show_name
@@ -270,18 +269,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           outline: none;
         }
 
-        ha-icon {
+        ha-state-icon {
           width: 40%;
           height: auto;
           color: var(--paper-item-icon-color, #44739e);
           --mdc-icon-size: 100%;
         }
 
-        ha-icon + span {
+        ha-state-icon + span {
           margin-top: 8px;
         }
 
-        ha-icon,
+        ha-state-icon,
         span {
           outline: none;
         }

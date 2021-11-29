@@ -84,8 +84,8 @@ documentContainer.innerHTML = `<custom-style>
       --state-climate-idle-color: #8a8a8a;
 
       /* energy */
-      --energy-grid-consumption-color: #126a9a;
-      --energy-grid-return-color: #673ab7;
+      --energy-grid-consumption-color: #488fc2;
+      --energy-grid-return-color: #8353d1;
       --energy-solar-color: #ff9800;
       --energy-non-fossil-color: #0f9d58;
       --energy-battery-out-color: #4db6ac;
@@ -135,25 +135,6 @@ documentContainer.innerHTML = `<custom-style>
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
-    }
-
-    /*
-      prevent clipping of positioned elements in a small scrollable
-      force smooth scrolling if can scroll
-      use non-shady selectors so this only targets iOS 9
-      conditional mixin set in ha-style-dialog does not work with shadyCSS
-    */
-    paper-dialog-scrollable:not(.can-scroll) > .scrollable {
-      -webkit-overflow-scrolling: auto !important;
-    }
-
-    paper-dialog-scrollable.can-scroll > .scrollable {
-      -webkit-overflow-scrolling: touch !important;
-    }
-
-    /* for paper-dialog */
-    iron-overlay-backdrop {
-      backdrop-filter: var(--dialog-backdrop-filter, none);
     }
   </style>
 </custom-style>`;

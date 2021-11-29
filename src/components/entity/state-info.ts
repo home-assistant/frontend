@@ -53,6 +53,7 @@ class StateInfo extends LitElement {
                     <ha-relative-time
                       .hass=${this.hass}
                       .datetime=${this.stateObj.last_changed}
+                      capitalize
                     ></ha-relative-time>
                   </div>
                   <div class="row">
@@ -64,6 +65,7 @@ class StateInfo extends LitElement {
                     <ha-relative-time
                       .hass=${this.hass}
                       .datetime=${this.stateObj.last_updated}
+                      capitalize
                     ></ha-relative-time>
                   </div>
                 </div>

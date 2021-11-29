@@ -3,7 +3,6 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
@@ -308,12 +307,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   >
                 </div>
                 <div class="form-group">
-                  <paper-checkbox
-                    checked="{{entityIgnored}}"
-                    class="form-control"
+                  <ha-formfield
+                    label="[[localize('ui.panel.config.zwave.node_management.exclude_entity')]]"
                   >
-                    [[localize('ui.panel.config.zwave.node_management.exclude_entity')]]
-                  </paper-checkbox>
+                    <ha-checkbox
+                      checked="[[entityIgnored]]"
+                      class="form-control"
+                      on-change="entityIgnoredChanged"
+                    >
+                    </ha-checkbox>
+                  </ha-formfield>
                   <paper-input
                     disabled="{{entityIgnored}}"
                     label="[[localize('ui.panel.config.zwave.node_management.pooling_intensity')]]"
@@ -705,6 +708,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  entityIgnoredChanged(ev) {
+    this.entityIgnored = ev.target.checked;
   }
 }
 

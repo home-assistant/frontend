@@ -32,6 +32,7 @@ if (__BUILD__ === "latest") {
   }
   if (shouldPolyfillDateTime()) {
     polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
+    polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
   }
 }
 

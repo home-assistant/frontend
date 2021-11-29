@@ -24,10 +24,13 @@ export interface PageNavigation {
   path: string;
   translationKey?: string;
   component?: string;
+  components?: string[];
   name?: string;
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  description?: string;
+  iconColor?: string;
   info?: any;
 }
 
@@ -85,7 +88,7 @@ class HassTabsSubpage extends LitElement {
             <a href=${page.path}>
               <ha-tab
                 .hass=${this.hass}
-                .active=${page === activeTab}
+                .active=${page.path === activeTab?.path}
                 .narrow=${this.narrow}
                 .name=${page.translationKey
                   ? localizeFunc(page.translationKey)
@@ -224,7 +227,7 @@ class HassTabsSubpage extends LitElement {
         box-sizing: border-box;
       }
       .toolbar a {
-        color: var(--sidebar-text-color);
+        color: var(--app-header-text-color);
         text-decoration: none;
       }
       .bottom-bar a {
