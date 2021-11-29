@@ -98,7 +98,6 @@ class DialogZWaveJSAddNode extends LitElement {
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
     this._entryId = params.entry_id;
     this._status = "loading";
-    this._supportsSmartStart = undefined;
     this._checkSmartStartSupport();
     this._startInclusion();
   }
@@ -728,6 +727,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = undefined;
     this._device = undefined;
     this._stages = undefined;
+    this._error = undefined;
     if (this._qrScanner) {
       this._qrScanner.stop();
       this._qrScanner.destroy();
