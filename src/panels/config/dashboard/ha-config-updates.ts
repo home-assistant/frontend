@@ -123,7 +123,7 @@ class HaConfigUpdates extends LitElement {
         button.show-all {
           color: var(--primary-color);
           text-decoration: none;
-          margin: 8px 16px;
+          margin: 16px;
         }
       `,
     ];
