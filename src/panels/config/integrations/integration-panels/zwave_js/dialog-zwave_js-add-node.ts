@@ -2,7 +2,8 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
 import type { Select } from "@material/mwc-select/mwc-select";
-import { TextField } from "@material/mwc-textfield/mwc-textfield";
+import type { TextField } from "@material/mwc-textfield/mwc-textfield";
+import "@material/mwc-textfield/mwc-textfield";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -34,7 +35,6 @@ import {
   validateDskAndEnterPin,
   ZWaveFeature,
 } from "../../../../../data/zwave_js";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
@@ -90,6 +90,8 @@ class DialogZWaveJSAddNode extends LitElement {
   private _qrScanner?: QrScanner;
 
   private _qrProcessing = false;
+
+  private _qrNotFoundCount = 0;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -531,15 +533,18 @@ class DialogZWaveJSAddNode extends LitElement {
     if (navigator.mediaDevices) {
       const QrScanner = (await import("qr-scanner")).default;
       if (!(await QrScanner.hasCamera())) {
-        await showAlertDialog(this, { title: "No camera found" });
-        this._startInclusion();
+        this._error = "No camera found";
         return;
       }
       QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
       this._cameras = await QrScanner.listCameras(true);
       this._status = "qr_scan";
       await this.updateComplete;
-      this._qrScanner = new QrScanner(this._videoEl!, this._qrCodeScanned);
+      this._qrScanner = new QrScanner(
+        this._videoEl!,
+        this._qrCodeScanned,
+        this._qrCodeError
+      );
       try {
         await this._qrScanner.start();
       } catch (err: any) {
@@ -563,8 +568,22 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   }
 
+  private _qrCodeError = (err: any) => {
+    if (err === "No QR code found") {
+      this._qrNotFoundCount++;
+      if (this._qrNotFoundCount === 250) {
+        this._error = err;
+      }
+      return;
+    }
+    this._error = err.message || err;
+    // eslint-disable-next-line no-console
+    console.log(err);
+  };
+
   private _qrCodeScanned = async (qrCodeString: string): Promise<void> => {
     this._error = undefined;
+    this._qrNotFoundCount = 0;
     if (this._qrProcessing) {
       return;
     }
@@ -761,6 +780,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._device = undefined;
     this._stages = undefined;
     this._error = undefined;
+    this._qrNotFoundCount = 0;
     if (this._qrScanner) {
       this._qrScanner.stop();
       this._qrScanner.destroy();
