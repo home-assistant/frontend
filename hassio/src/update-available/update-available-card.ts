@@ -387,6 +387,9 @@ class UpdateAvailableCard extends LitElement {
       ha-markdown {
         padding-bottom: 8px;
       }
+      ha-formfield {
+        cursor: pointer;
+      }
     `;
   }
 }
