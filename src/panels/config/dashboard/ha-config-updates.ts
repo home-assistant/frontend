@@ -76,11 +76,12 @@ class HaConfigUpdates extends LitElement {
           </paper-icon-item>
         `
       )}
-      ${!this._showAll && !this.narrow ? html`<div class="divider"></div>` : ""}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
             <button class="link show-all" @click=${this._showAllClicked}>
-              ${this.hass.localize("ui.panel.config.updates.show_all_updates")}
+              ${this.hass.localize("ui.panel.config.updates.more_updates", {
+                count: this.supervisorUpdates!.length - updates.length,
+              })}
             </button>
           `
         : ""}
@@ -122,13 +123,7 @@ class HaConfigUpdates extends LitElement {
         button.show-all {
           color: var(--primary-color);
           text-decoration: none;
-          margin: 8px 16px;
-        }
-        .divider::before {
-          content: " ";
-          display: block;
-          height: 1px;
-          background-color: var(--divider-color);
+          margin: 16px;
         }
       `,
     ];

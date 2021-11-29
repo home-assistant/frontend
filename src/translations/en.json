@@ -930,7 +930,7 @@
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to fetch available updates",
           "version_available": "Version {version_available} is available",
-          "show_all_updates": "Show all updates",
+          "more_updates": "+ {count} Updates",
           "show": "show"
         },
         "areas": {
