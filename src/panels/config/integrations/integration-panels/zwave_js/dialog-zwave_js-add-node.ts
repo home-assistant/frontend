@@ -545,8 +545,8 @@ class DialogZWaveJSAddNode extends LitElement {
     this._qrProcessing = true;
     if (qrCodeString.length < MINIMUM_QR_STRING_LENGTH) {
       this._qrProcessing = false;
-      this._qrError = "Invalid QR code";
-      // return;
+      this._qrError = `Invalid QR code (${qrCodeString})`;
+      return;
     }
     let provisioningInfo: QRProvisioningInformation;
     try {
