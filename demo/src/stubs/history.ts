@@ -189,13 +189,18 @@ const generateCurvedStatistics = (
 
 const statisticsFunctions: Record<
   string,
-  (id: string, start: Date, end: Date) => StatisticValue[]
+  (
+    id: string,
+    start: Date,
+    end: Date,
+    period: "5minute" | "hour" | "day" | "month"
+  ) => StatisticValue[]
 > = {
   "sensor.energy_consumption_tarif_1": (
     id: string,
     start: Date,
     end: Date,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
+    period = "hour"
   ) => {
     if (period !== "hour") {
       return generateSumStatistics(
@@ -242,7 +247,7 @@ const statisticsFunctions: Record<
     id: string,
     start: Date,
     end: Date,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
+    period = "hour"
   ) => {
     if (period !== "hour") {
       return generateSumStatistics(
@@ -278,24 +283,15 @@ const statisticsFunctions: Record<
     );
     return [...morning, ...highTarif, ...evening];
   },
-  "sensor.energy_production_tarif_1": (
-    id,
-    start,
-    end,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
-  ) => generateSumStatistics(id, start, end, period, 0, 0),
+  "sensor.energy_production_tarif_1": (id, start, end, period = "hour") =>
+    generateSumStatistics(id, start, end, period, 0, 0),
   "sensor.energy_production_tarif_1_compensation": (
     id,
     start,
     end,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
+    period = "hour"
   ) => generateSumStatistics(id, start, end, period, 0, 0),
-  "sensor.energy_production_tarif_2": (
-    id,
-    start,
-    end,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
-  ) => {
+  "sensor.energy_production_tarif_2": (id, start, end, period = "hour") => {
     if (period !== "hour") {
       return generateSumStatistics(
         id,
@@ -347,12 +343,7 @@ const statisticsFunctions: Record<
     );
     return [...morning, ...production, ...evening, ...rest];
   },
-  "sensor.solar_production": (
-    id,
-    start,
-    end,
-    period: "5minute" | "hour" | "day" | "month" = "hour"
-  ) => {
+  "sensor.solar_production": (id, start, end, period = "hour") => {
     if (period !== "hour") {
       return generateSumStatistics(
         id,
