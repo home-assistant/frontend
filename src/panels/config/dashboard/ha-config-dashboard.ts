@@ -91,21 +91,7 @@ class HaConfigDashboard extends LitElement {
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
-                </ha-card>
-                ${!this.showAdvanced
-                  ? html`
-                      <div class="promo-advanced">
-                        ${this.hass.localize(
-                          "ui.panel.config.advanced_mode.hint_enable"
-                        )}
-                        <a href="/profile"
-                          >${this.hass.localize(
-                            "ui.panel.config.advanced_mode.link_profile_page"
-                          )}</a
-                        >.
-                      </div>
-                    `
-                  : ""}`}
+                </ha-card>`}
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -138,14 +124,6 @@ class HaConfigDashboard extends LitElement {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
-        }
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
-          margin-bottom: 24px;
-        }
-        .promo-advanced a {
-          color: var(--secondary-text-color);
         }
         :host([narrow]) ha-card {
           background-color: var(--primary-background-color);
