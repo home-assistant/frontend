@@ -1,14 +1,25 @@
-import { mdiCloudLock } from "@mdi/js";
+import { mdiCellphoneCog, mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import {
+  ExternalConfig,
+  getExternalConfig,
+} from "../../../external_app/external_config";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -31,6 +42,18 @@ class HaConfigDashboard extends LitElement {
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
+
+  @state() private _externalConfig?: ExternalConfig;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    if (this.hass && this.hass.auth.external) {
+      getExternalConfig(this.hass.auth.external).then((conf) => {
+        this._externalConfig = conf;
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -86,6 +109,25 @@ class HaConfigDashboard extends LitElement {
                         ></ha-config-navigation>
                       `
                     : ""}
+                  ${this._externalConfig?.hasSettingsScreen
+                    ? html`
+                        <ha-config-navigation
+                          .hass=${this.hass}
+                          .showAdvanced=${this.showAdvanced}
+                          .pages=${[
+                            {
+                              path: "#external-app-configuration",
+                              name: "Companion App",
+                              description: "Location and notifications",
+                              iconPath: mdiCellphoneCog,
+                              iconColor: "#37474F",
+                              core: true,
+                            },
+                          ]}
+                          @click=${this._handleExternalAppConfiguration}
+                        ></ha-config-navigation>
+                      `
+                    : ""}
                   <ha-config-navigation
                     .hass=${this.hass}
                     .showAdvanced=${this.showAdvanced}
@@ -95,6 +137,13 @@ class HaConfigDashboard extends LitElement {
         </ha-config-section>
       </ha-app-layout>
     `;
+  }
+
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass.auth.external!.fireMessage({
+      type: "config_screen/show",
+    });
   }
 
   static get styles(): CSSResultGroup {
