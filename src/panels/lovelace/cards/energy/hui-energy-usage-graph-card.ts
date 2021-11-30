@@ -27,10 +27,6 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
-import {
-  reduceSumStatisticsByDay,
-  reduceSumStatisticsByMonth,
-} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -298,11 +294,6 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
     this._start = energyData.start;
     this._end = energyData.end || endOfToday();
 
@@ -368,12 +359,7 @@ export class HuiEnergyUsageGraphCard
       const totalStats: { [start: string]: number } = {};
       const sets: { [statId: string]: { [start: string]: number } } = {};
       statIds!.forEach((id) => {
-        const stats =
-          dayDifference > 35
-            ? reduceSumStatisticsByMonth(energyData.stats[id])
-            : dayDifference > 2
-            ? reduceSumStatisticsByDay(energyData.stats[id])
-            : energyData.stats[id];
+        const stats = energyData.stats[id];
         if (!stats) {
           return;
         }
