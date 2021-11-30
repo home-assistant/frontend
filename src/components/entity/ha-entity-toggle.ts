@@ -141,12 +141,12 @@ export class HaEntityToggle extends LitElement {
     });
 
     setTimeout(async () => {
-      // If after 2 seconds we have not received a state update
+      // If after 10 seconds we have not received a state update
       // reset the switch to it's original state.
       if (this.stateObj === currentState) {
         this._isOn = isOn(this.stateObj);
       }
-    }, 2000);
+    }, 10000);
   }
 
   static get styles(): CSSResultGroup {
