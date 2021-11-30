@@ -7,9 +7,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -62,17 +59,10 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
-
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div
-          class="text-content ${classMap({
-            pointer,
-          })}"
+          class="text-content"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config.hold_action),
@@ -87,6 +77,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
                   .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${this._config.format}
+                  capitalize
                 ></hui-timestamp-display>
               `
             : computeStateDisplay(
@@ -107,9 +98,6 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     return css`
       div {
         text-align: right;
-      }
-      .pointer {
-        cursor: pointer;
       }
     `;
   }

@@ -9,11 +9,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-paper-dropdown-menu";
@@ -26,10 +22,9 @@ import {
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceRow } from "./types";
 
@@ -68,42 +63,28 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
-
     return html`
-      <state-badge
-        .stateObj=${stateObj}
-        .stateColor=${this._config.state_color}
-        .overrideIcon=${this._config.icon}
-        .overrideImage=${this._config.image}
-        class=${classMap({
-          pointer,
-        })}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this._config!.hold_action),
-          hasDoubleClick: hasAction(this._config!.double_tap_action),
-        })}
-        tabindex=${ifDefined(pointer ? "0" : undefined)}
-      ></state-badge>
-      <ha-paper-dropdown-menu
-        .label=${this._config.name || computeStateName(stateObj)}
-        .value=${stateObj.state}
-        .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-        @iron-select=${this._selectedChanged}
-        @click=${stopPropagation}
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        hideName
       >
-        <paper-listbox slot="dropdown-content">
-          ${stateObj.attributes.options
-            ? stateObj.attributes.options.map(
-                (option) => html` <paper-item>${option}</paper-item> `
-              )
-            : ""}
-        </paper-listbox>
-      </ha-paper-dropdown-menu>
+        <ha-paper-dropdown-menu
+          .label=${this._config.name || computeStateName(stateObj)}
+          .value=${stateObj.state}
+          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          @iron-select=${this._selectedChanged}
+          @click=${stopPropagation}
+        >
+          <paper-listbox slot="dropdown-content">
+            ${stateObj.attributes.options
+              ? stateObj.attributes.options.map(
+                  (option) => html` <paper-item>${option}</paper-item> `
+                )
+              : ""}
+          </paper-listbox>
+        </ha-paper-dropdown-menu>
+      </hui-generic-entity-row>
     `;
   }
 

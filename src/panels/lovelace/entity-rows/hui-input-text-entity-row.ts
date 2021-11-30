@@ -1,7 +1,5 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  css,
-  CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
@@ -79,14 +77,6 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     ev.target.blur();
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-    `;
   }
 }
 
