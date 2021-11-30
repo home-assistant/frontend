@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  DOMAINS_HIDE_MORE_INFO,
+  DOMAINS_HIDE_DEFAULT_MORE_INFO,
   DOMAINS_WITH_MORE_INFO,
 } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -40,7 +40,7 @@ export const domainMoreInfoType = (domain: string): string => {
   if (DOMAINS_WITH_MORE_INFO.includes(domain)) {
     return domain;
   }
-  if (DOMAINS_HIDE_MORE_INFO.includes(domain)) {
+  if (DOMAINS_HIDE_DEFAULT_MORE_INFO.includes(domain)) {
     return "hidden";
   }
   return "default";

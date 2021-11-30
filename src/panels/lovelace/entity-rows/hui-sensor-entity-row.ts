@@ -77,7 +77,6 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
                   .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${this._config.format}
-                  capitalize
                 ></hui-timestamp-display>
               `
             : computeStateDisplay(
