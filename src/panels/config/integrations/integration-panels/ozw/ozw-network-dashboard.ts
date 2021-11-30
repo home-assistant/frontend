@@ -6,7 +6,6 @@ import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import {
   fetchOZWNetworkStatistics,
   fetchOZWNetworkStatus,

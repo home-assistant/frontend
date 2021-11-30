@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -11,7 +10,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 // eslint-disable-next-line lit/prefer-static-styles
 const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
@@ -94,26 +93,22 @@ export class HaComboBox extends LitElement {
         >
           ${this.value
             ? html`
-                <mwc-icon-button
+                <ha-icon-button
                   .label=${this.hass.localize("ui.components.combo-box.clear")}
+                  .path=${mdiClose}
                   slot="suffix"
                   class="clear-button"
                   @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>
+                ></ha-icon-button>
               `
             : ""}
 
-          <mwc-icon-button
+          <ha-icon-button
             .label=${this.hass.localize("ui.components.combo-box.show")}
+            .path=${this._opened ? mdiMenuUp : mdiMenuDown}
             slot="suffix"
             class="toggle-button"
-          >
-            <ha-svg-icon
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            ></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
@@ -146,7 +141,7 @@ export class HaComboBox extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

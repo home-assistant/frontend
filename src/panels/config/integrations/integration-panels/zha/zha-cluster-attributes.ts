@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -78,7 +79,8 @@ export class ZHAClusterAttributes extends LitElement {
           <ha-icon-button
             class="toggle-help-icon"
             @click=${this._onHelpTap}
-            icon="hass:help-circle"
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>

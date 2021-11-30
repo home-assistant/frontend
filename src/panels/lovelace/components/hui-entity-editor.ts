@@ -10,10 +10,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import type { SortableEvent } from "sortablejs";
-import Sortable, {
-  AutoScroll,
-  OnSpill,
-} from "sortablejs/modular/sortable.core.esm";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -21,6 +17,8 @@ import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "../entity-rows/types";
+
+let Sortable;
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -34,7 +32,7 @@ export class HuiEntityEditor extends LitElement {
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?: Sortable;
+  private _sortable?;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -86,11 +84,6 @@ export class HuiEntityEditor extends LitElement {
     `;
   }
 
-  protected firstUpdated(): void {
-    Sortable.mount(OnSpill);
-    Sortable.mount(new AutoScroll());
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -128,7 +121,17 @@ export class HuiEntityEditor extends LitElement {
     this._renderEmptySortable = false;
   }
 
-  private _createSortable() {
+  private async _createSortable() {
+    if (!Sortable) {
+      const sortableImport = await import(
+        "sortablejs/modular/sortable.core.esm"
+      );
+
+      Sortable = sortableImport.Sortable;
+      Sortable.mount(sortableImport.OnSpill);
+      Sortable.mount(sortableImport.AutoScroll());
+    }
+
     this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
       animation: 150,
       fallbackClass: "sortable-fallback",

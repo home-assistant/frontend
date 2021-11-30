@@ -3,7 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
-import { stringCompare } from "../../../src/common/string/compare";
+import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
@@ -20,7 +20,9 @@ class HassioAddons extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        <h1>${this.supervisor.localize("dashboard.addons")}</h1>
+        ${!atLeastVersion(this.hass.config.version, 2021, 12)
+          ? html` <h1>${this.supervisor.localize("dashboard.addons")}</h1> `
+          : ""}
         <div class="card-group">
           ${!this.supervisor.supervisor.addons?.length
             ? html`
@@ -33,7 +35,7 @@ class HassioAddons extends LitElement {
                 </ha-card>
               `
             : this.supervisor.supervisor.addons
-                .sort((a, b) => stringCompare(a.name, b.name))
+                .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
                 .map(
                   (addon) => html`
                     <ha-card .addon=${addon} @click=${this._addonTapped}>

@@ -22,15 +22,38 @@ const getMeta = () => {
     const svg = fs.readFileSync(`${ICON_PATH}/${icon.name}.svg`, {
       encoding,
     });
-    return { path: svg.match(/ d="([^"]+)"/)[1], name: icon.name };
+    return {
+      path: svg.match(/ d="([^"]+)"/)[1],
+      name: icon.name,
+      tags: icon.tags,
+      aliases: icon.aliases,
+    };
   });
 };
 
 const addRemovedMeta = (meta) => {
   const file = fs.readFileSync(REMOVED_ICONS_PATH, { encoding });
   const removed = JSON.parse(file);
-  const combinedMeta = [...meta, ...removed];
+  const removedMeta = removed.map((removeIcon) => ({
+    path: removeIcon.path,
+    name: removeIcon.name,
+    tags: [],
+    aliases: [],
+  }));
+  const combinedMeta = [...meta, ...removedMeta];
   return combinedMeta.sort((a, b) => a.name.localeCompare(b.name));
+};
+
+const homeAutomationTag = "Home Automation";
+
+const orderMeta = (meta) => {
+  const homeAutomationMeta = meta.filter((icon) =>
+    icon.tags.includes(homeAutomationTag)
+  );
+  const otherMeta = meta.filter(
+    (icon) => !icon.tags.includes(homeAutomationTag)
+  );
+  return [...homeAutomationMeta, ...otherMeta];
 };
 
 const splitBySize = (meta) => {
@@ -77,8 +100,10 @@ const findDifferentiator = (curString, prevString) => {
 };
 
 gulp.task("gen-icons-json", (done) => {
-  const meta = addRemovedMeta(getMeta());
-  const split = splitBySize(meta);
+  const meta = getMeta();
+
+  const metaAndRemoved = addRemovedMeta(meta);
+  const split = splitBySize(metaAndRemoved);
 
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -114,6 +139,19 @@ gulp.task("gen-icons-json", (done) => {
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconMetadata.json"),
     JSON.stringify({ version: package.version, parts })
+  );
+
+  fs.writeFileSync(
+    path.resolve(OUTPUT_DIR, "iconList.json"),
+    JSON.stringify(
+      orderMeta(meta).map((icon) => ({
+        name: icon.name,
+        keywords: [
+          ...icon.tags.map((t) => t.toLowerCase().replace(/\s\/\s/g, " ")),
+          ...icon.aliases,
+        ],
+      }))
+    )
   );
 
   done();

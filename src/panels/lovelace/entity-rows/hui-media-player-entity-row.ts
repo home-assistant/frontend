@@ -1,3 +1,16 @@
+import {
+  mdiPause,
+  mdiPlay,
+  mdiPlayPause,
+  mdiPower,
+  mdiSkipNext,
+  mdiSkipPrevious,
+  mdiStop,
+  mdiVolumeHigh,
+  mdiVolumeMinus,
+  mdiVolumeOff,
+  mdiVolumePlus,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -102,7 +115,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
-              icon="hass:skip-previous"
+              .path=${mdiSkipPrevious}
               @click=${this._previousTrack}
             ></ha-icon-button>
           `
@@ -117,7 +130,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           supportsFeature(stateObj, SUPPORT_PAUSE)))
         ? html`
             <ha-icon-button
-              icon=${this._computeControlIcon(stateObj)}
+              .path=${this._computeControlIcon(stateObj)}
               @click=${this._playPauseStop}
             ></ha-icon-button>
           `
@@ -126,7 +139,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
-              icon="hass:skip-next"
+              .path=${mdiSkipNext}
               @click=${this._nextTrack}
             ></ha-icon-button>
           `
@@ -148,7 +161,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
-                  icon="hass:power"
+                  .path=${mdiPower}
                   @click=${this._togglePower}
                 ></ha-icon-button>
               `
@@ -161,7 +174,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
-                  icon="hass:power"
+                  .path=${mdiPower}
                   @click=${this._togglePower}
                 ></ha-icon-button>
               `
@@ -177,9 +190,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
                   ? html`
                       <ha-icon-button
-                        .icon=${stateObj.attributes.is_volume_muted
-                          ? "hass:volume-off"
-                          : "hass:volume-high"}
+                        .path=${stateObj.attributes.is_volume_muted
+                          ? mdiVolumeOff
+                          : mdiVolumeHigh}
                         @click=${this._toggleMute}
                       ></ha-icon-button>
                     `
@@ -200,11 +213,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                     supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
                   ? html`
                       <ha-icon-button
-                        icon="hass:volume-minus"
+                        .path=${mdiVolumeMinus}
                         @click=${this._volumeDown}
                       ></ha-icon-button>
                       <ha-icon-button
-                        icon="hass:volume-plus"
+                        .path=${mdiVolumePlus}
                         @click=${this._volumeUp}
                       ></ha-icon-button>
                     `
@@ -238,12 +251,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   private _computeControlIcon(stateObj: HassEntity): string {
     return stateObj.state === "on"
-      ? "hass:play-pause"
+      ? mdiPlayPause
       : stateObj.state !== "playing"
-      ? "hass:play"
+      ? mdiPlay
       : supportsFeature(stateObj, SUPPORT_PAUSE)
-      ? "hass:pause"
-      : "hass:stop";
+      ? mdiPause
+      : mdiStop;
   }
 
   private _togglePower(): void {

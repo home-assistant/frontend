@@ -15,12 +15,13 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -77,6 +78,18 @@ class HassioAddonConfig extends LitElement {
     this.addon.translations.en?.configuration?.[entry.name].name ||
     entry.name;
 
+  private _schema = memoizeOne((schema: HaFormSchema[]): HaFormSchema[] =>
+    // @ts-expect-error supervisor does not implement [string, string] for select.options[]
+    schema.map((entry) =>
+      entry.type === "select"
+        ? {
+            ...entry,
+            options: entry.options.map((option) => [option, option]),
+          }
+        : entry
+    )
+  );
+
   private _filteredShchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>
       schema.filter((entry) => entry.name in options || entry.required)
@@ -100,9 +113,11 @@ class HassioAddonConfig extends LitElement {
           </h2>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button slot="trigger">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .label=${this.hass.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
               <mwc-list-item .disabled=${!this._canShowSchema}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
@@ -125,12 +140,14 @@ class HassioAddonConfig extends LitElement {
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
-                .schema=${this._showOptional
-                  ? this.addon.schema!
-                  : this._filteredShchema(
-                      this.addon.options,
-                      this.addon.schema!
-                    )}
+                .schema=${this._schema(
+                  this._showOptional
+                    ? this.addon.schema!
+                    : this._filteredShchema(
+                        this.addon.options,
+                        this.addon.schema!
+                      )
+                )}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}

@@ -174,6 +174,10 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         display: block;
         margin-top: 48px;
       }
+      ha-auth-flow {
+        display: block;
+        margin-top: 24px;
+      }
     `;
   }
 }

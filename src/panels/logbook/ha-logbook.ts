@@ -15,7 +15,6 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
@@ -151,12 +150,13 @@ class HaLogbook extends LitElement {
                 html`
                   <state-badge
                     .hass=${this.hass}
-                    .overrideIcon=${item.icon ??
-                    domainIcon(domain, stateObj, item.state)}
+                    .overrideIcon=${item.icon}
                     .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
                       ? ""
                       : stateObj?.attributes.entity_picture_local ||
                         stateObj?.attributes.entity_picture}
+                    .stateObj=${stateObj}
+                    .stateColor=${false}
                   ></state-badge>
                 `
               : ""}
@@ -210,6 +210,7 @@ class HaLogbook extends LitElement {
                 <ha-relative-time
                   .hass=${this.hass}
                   .datetime=${item.when}
+                  capitalize
                 ></ha-relative-time>
                 ${item.domain === "automation" &&
                 item.context_id! in this.traceContexts
@@ -221,6 +222,7 @@ class HaLogbook extends LitElement {
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
+                        @click=${this._close}
                         >${this.hass.localize(
                           "ui.components.logbook.show_trace"
                         )}</a
@@ -251,6 +253,10 @@ class HaLogbook extends LitElement {
     fireEvent(this, "hass-more-info", {
       entityId: entityId,
     });
+  }
+
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
   }
 
   static get styles(): CSSResultGroup {

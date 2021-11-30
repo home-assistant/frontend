@@ -54,7 +54,9 @@ class HuiEnergySolarGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -91,13 +93,13 @@ class HuiEnergySolarGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card indicates how much of the solar energy you produced
-                  was used by your home instead of being returned to the grid.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                  )}
                   <br /><br />
-                  If this number is typically very low, indicating excess solar
-                  production, you might want to consider charging a home battery
-                  or electric car from your solar panels at times of high solar
-                  production.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                  )}
                 </span>
               </paper-tooltip>
               <ha-gauge
@@ -110,11 +112,19 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Self-consumed solar energy</div>
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
+                )}
+              </div>
             `
           : totalSolarProduction === 0
-          ? "You have not produced any solar energy"
-          : "Self-consumed solar energy couldn't be calculated"}
+          ? this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
+            )
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+            )}
       </ha-card>
     `;
   }

@@ -179,7 +179,7 @@ export interface StateCondition extends BaseCondition {
   condition: "state";
   entity_id: string;
   attribute?: string;
-  state: string | number;
+  state: string | number | string[];
   for?: string | number | ForDict;
 }
 
@@ -194,10 +194,10 @@ export interface NumericStateCondition extends BaseCondition {
 
 export interface SunCondition extends BaseCondition {
   condition: "sun";
-  after_offset: number;
-  before_offset: number;
-  after: "sunrise" | "sunset";
-  before: "sunrise" | "sunset";
+  after_offset?: number;
+  before_offset?: number;
+  after?: "sunrise" | "sunset";
+  before?: "sunrise" | "sunset";
 }
 
 export interface ZoneCondition extends BaseCondition {

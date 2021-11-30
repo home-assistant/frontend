@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -7,9 +8,12 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import "./ha-password-manager-polyfill";
 import { property, state } from "lit/decorators";
+import "../components/ha-alert";
+import "../components/ha-checkbox";
+import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-form/ha-form";
+import "../components/ha-formfield";
 import "../components/ha-markdown";
 import { AuthProvider } from "../data/auth";
 import {
@@ -17,6 +21,7 @@ import {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
@@ -31,11 +36,43 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _state: State = "loading";
 
-  @state() private _stepData: any = {};
+  @state() private _stepData?: Record<string, any>;
 
   @state() private _step?: DataEntryFlowStep;
 
   @state() private _errorMessage?: string;
+
+  @state() private _submitting = false;
+
+  @state() private _storeToken = false;
+
+  willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (!changedProps.has("_step")) {
+      return;
+    }
+
+    if (!this._step) {
+      this._stepData = undefined;
+      return;
+    }
+
+    const oldStep = changedProps.get("_step") as HaAuthFlow["_step"];
+
+    if (
+      !oldStep ||
+      this._step.flow_id !== oldStep.flow_id ||
+      (this._step.type === "form" &&
+        oldStep.type === "form" &&
+        this._step.step_id !== oldStep.step_id)
+    ) {
+      this._stepData =
+        this._step.type === "form"
+          ? computeInitialHaFormData(this._step.data_schema)
+          : undefined;
+    }
+  }
 
   protected render() {
     return html`
@@ -76,6 +113,24 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     if (changedProps.has("authProvider")) {
       this._providerChanged(this.authProvider);
     }
+
+    if (!changedProps.has("_step") || this._step?.type !== "form") {
+      return;
+    }
+
+    // 100ms to give all the form elements time to initialize.
+    setTimeout(() => {
+      const form = this.renderRoot.querySelector("ha-form");
+      if (form) {
+        (form as any).focus();
+      }
+    }, 100);
+
+    setTimeout(() => {
+      this.renderRoot.querySelector(
+        "ha-password-manager-polyfill"
+      )!.boundingRect = this.getBoundingClientRect();
+    }, 500);
   }
 
   private _renderForm(): TemplateResult {
@@ -87,27 +142,33 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         return html`
           ${this._renderStep(this._step)}
           <div class="action">
-            <mwc-button raised @click=${this._handleSubmit}
-              >${this._step.type === "form"
-                ? this.localize("ui.panel.page-authorize.form.next")
-                : this.localize(
-                    "ui.panel.page-authorize.form.start_over"
-                  )}</mwc-button
+            <mwc-button
+              raised
+              @click=${this._handleSubmit}
+              .disabled=${this._submitting}
             >
+              ${this._step.type === "form"
+                ? this.localize("ui.panel.page-authorize.form.next")
+                : this.localize("ui.panel.page-authorize.form.start_over")}
+            </mwc-button>
           </div>
         `;
       case "error":
         return html`
-          <div class="error">
+          <ha-alert alert-type="error">
             ${this.localize(
               "ui.panel.page-authorize.form.error",
               "error",
               this._errorMessage
             )}
-          </div>
+          </ha-alert>
         `;
       case "loading":
-        return html` ${this.localize("ui.panel.page-authorize.form.working")} `;
+        return html`
+          <ha-alert alert-type="info">
+            ${this.localize("ui.panel.page-authorize.form.working")}
+          </ha-alert>
+        `;
       default:
         return html``;
     }
@@ -140,14 +201,33 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .data=${this._stepData}
             .schema=${step.data_schema}
             .error=${step.errors}
+            .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
+          ${this.clientId === genClientId() &&
+          !["select_mfa_module", "mfa"].includes(step.step_id)
+            ? html`
+                <ha-formfield
+                  class="store-token"
+                  .label=${this.localize("ui.panel.page-authorize.store_token")}
+                >
+                  <ha-checkbox
+                    .checked=${this._storeToken}
+                    @change=${this._storeTokenChanged}
+                  ></ha-checkbox>
+                </ha-formfield>
+              `
+            : ""}
         `;
       default:
         return html``;
     }
+  }
+
+  private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
+    this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
@@ -189,7 +269,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           return;
         }
 
-        await this._updateStep(data);
+        this._step = data;
+        this._state = "step";
       } else {
         this._state = "error";
         this._errorMessage = data.message;
@@ -216,41 +297,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     if (this.oauth2State) {
       url += `&state=${encodeURIComponent(this.oauth2State)}`;
     }
+    if (this._storeToken) {
+      url += `&storeToken=true`;
+    }
 
     document.location.assign(url);
-  }
-
-  private async _updateStep(step: DataEntryFlowStep) {
-    let stepData: any = null;
-    if (
-      this._step &&
-      (step.flow_id !== this._step.flow_id ||
-        (step.type === "form" &&
-          this._step.type === "form" &&
-          step.step_id !== this._step.step_id))
-    ) {
-      stepData = {};
-    }
-    this._step = step;
-    this._state = "step";
-    if (stepData != null) {
-      this._stepData = stepData;
-    }
-
-    await this.updateComplete;
-    // 100ms to give all the form elements time to initialize.
-    setTimeout(() => {
-      const form = this.renderRoot.querySelector("ha-form");
-      if (form) {
-        (form as any).focus();
-      }
-    }, 100);
-
-    setTimeout(() => {
-      this.renderRoot.querySelector(
-        "ha-password-manager-polyfill"
-      )!.boundingRect = this.getBoundingClientRect();
-    }, 500);
   }
 
   private _stepDataChanged(ev: CustomEvent) {
@@ -297,9 +348,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       this._providerChanged(this.authProvider);
       return;
     }
-    this._state = "loading";
-    // To avoid a jumping UI.
-    this.style.setProperty("min-height", `${this.offsetHeight}px`);
+    this._submitting = true;
 
     const postData = { ...this._stepData, client_id: this.clientId };
 
@@ -316,29 +365,28 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._redirect(newStep.result);
         return;
       }
-      await this._updateStep(newStep);
+      this._step = newStep;
+      this._state = "step";
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error submitting step", err);
       this._state = "error";
       this._errorMessage = this._unknownError();
     } finally {
-      this.style.setProperty("min-height", "");
+      this._submitting = false;
     }
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        /* So we can set min-height to avoid jumping during loading */
-        display: block;
-      }
       .action {
         margin: 24px 0 8px;
         text-align: center;
       }
-      .error {
-        color: red;
+      /* Align with the rest of the form. */
+      .store-token {
+        margin-top: 10px;
+        margin-left: -16px;
       }
     `;
   }

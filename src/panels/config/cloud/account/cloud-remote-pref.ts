@@ -99,16 +99,12 @@ export class CloudRemotePref extends LitElement {
               )}</mwc-button
             >
           </a>
-          ${remote_certificate
-            ? html`
-                <div class="spacer"></div>
-                <mwc-button @click=${this._openCertInfo}>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.remote.certificate_info"
-                  )}
-                </mwc-button>
-              `
-            : ""}
+          <div class="spacer"></div>
+          <mwc-button @click=${this._openCertInfo}>
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.certificate_info"
+            )}
+          </mwc-button>
         </div>
       </ha-card>
     `;

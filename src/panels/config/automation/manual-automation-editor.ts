@@ -267,7 +267,10 @@ export class HaManualAutomationEditor extends LitElement {
     const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
       ?.mode;
 
-    if (mode === this.config!.mode) {
+    if (
+      mode === this.config!.mode ||
+      (!this.config!.mode && mode === MODES[0])
+    ) {
       return;
     }
     const value = {

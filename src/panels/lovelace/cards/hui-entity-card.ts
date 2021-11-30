@@ -14,9 +14,11 @@ import { computeActiveState } from "../../../common/entity/compute_active_state"
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  isNumericState,
+} from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -115,15 +117,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       ? this._config.attribute in stateObj.attributes
       : !UNAVAILABLE_STATES.includes(stateObj.state);
 
+    const name = this._config.name || computeStateName(stateObj);
+
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <div class="header">
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
-          </div>
+          <div class="name" .title=${name}>${name}</div>
           <div class="icon">
-            <ha-icon
-              .icon=${this._config.icon || stateIcon(stateObj)}
+            <ha-state-icon
+              .icon=${this._config.icon}
+              .state=${stateObj}
               data-domain=${ifDefined(
                 this._config.state_color ||
                   (domain === "light" && this._config.state_color !== false)
@@ -131,7 +134,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   : undefined
               )}
               data-state=${stateObj ? computeActiveState(stateObj) : ""}
-            ></ha-icon>
+            ></ha-state-icon>
           </div>
         </div>
         <div class="info">
@@ -143,7 +146,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     stateObj.attributes[this._config.attribute!]
                   )
                 : this.hass.localize("state.default.unknown")
-              : stateObj.attributes.unit_of_measurement
+              : isNumericState(stateObj)
               ? formatNumber(stateObj.state, this.hass.locale)
               : computeStateDisplay(
                   this.hass.localize,

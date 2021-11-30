@@ -1,26 +1,27 @@
+import { mdiStar } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResultGroup,
   html,
-  nothing,
   LitElement,
+  nothing,
   TemplateResult,
 } from "lit";
-import { customElement, state, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import {
   Adapter,
-  NetworkConfig,
-  IPv6ConfiguredAddress,
   IPv4ConfiguredAddress,
+  IPv6ConfiguredAddress,
+  NetworkConfig,
 } from "../data/network";
-import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
-import "./ha-icon";
+import "./ha-svg-icon";
 
 const format_addresses = (
   addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]
@@ -92,7 +93,8 @@ export class HaNetwork extends LitElement {
                 <span slot="heading">
                   Adapter: ${adapter.name}
                   ${adapter.default
-                    ? html`<ha-icon .icon="hass:star"></ha-icon> (Default)`
+                    ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>
+                        (Default)`
                     : ""}
                 </span>
                 <span slot="description">

@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMagnify } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -11,11 +10,15 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import "../../components/ha-icon-button";
 import "../../components/ha-svg-icon";
+import { HomeAssistant } from "../../types";
 import { fireEvent } from "../dom/fire_event";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public filter?: string;
 
   @property({ type: Boolean, attribute: "no-label-float" })
@@ -50,13 +53,12 @@ class SearchInput extends LitElement {
         </slot>
         ${this.filter &&
         html`
-          <mwc-icon-button
+          <ha-icon-button
             slot="suffix"
             @click=${this._clearSearch}
-            title="Clear"
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.clear")}
+            .path=${mdiClose}
+          ></ha-icon-button>
         `}
       </paper-input>
     `;
@@ -90,10 +92,10 @@ class SearchInput extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon,
-      mwc-icon-button {
+      ha-icon-button {
         color: var(--primary-text-color);
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
       }
       ha-svg-icon.prefix {

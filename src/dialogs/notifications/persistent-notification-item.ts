@@ -31,6 +31,7 @@ export class HuiPersistentNotificationItem extends LitElement {
             <ha-relative-time
               .hass=${this.hass}
               .datetime=${this.notification.created_at}
+              capitalize
             ></ha-relative-time>
             <paper-tooltip animation-delay="0">
               ${this._computeTooltip(this.hass, this.notification)}

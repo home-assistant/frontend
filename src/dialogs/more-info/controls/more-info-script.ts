@@ -28,6 +28,7 @@ class MoreInfoScript extends LitElement {
               <ha-relative-time
                 .hass=${this.hass}
                 .datetime=${this.stateObj.attributes.last_triggered}
+                capitalize
               ></ha-relative-time>
             `
           : this.hass.localize("ui.components.relative_time.never")}

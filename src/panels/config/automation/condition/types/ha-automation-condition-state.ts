@@ -1,5 +1,5 @@
 import "@polymer/paper-input/paper-input";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import "../../../../../components/entity/ha-entity-attribute-picker";
@@ -11,6 +11,7 @@ import {
   handleChangeEvent,
 } from "../ha-automation-condition-row";
 import "../../../../../components/ha-duration-input";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -20,6 +21,23 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
+  }
+
+  public willUpdate(changedProperties: PropertyValues): boolean {
+    if (
+      changedProperties.has("condition") &&
+      Array.isArray(this.condition?.state)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_state_array_support"))
+      );
+      // We have to stop the update if state is an array.
+      // Otherwise the state will be changed to a comma-separated string by the input element.
+      return false;
+    }
+    return true;
   }
 
   protected render() {

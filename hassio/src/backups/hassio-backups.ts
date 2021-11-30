@@ -23,7 +23,8 @@ import {
 } from "../../../src/components/data-table/ha-data-table";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import "../../../src/components/ha-icon-button";
+import "../../../src/components/ha-svg-icon";
 import {
   fetchHassioBackups,
   friendlyFolderName,
@@ -31,6 +32,7 @@ import {
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -40,9 +42,9 @@ import "../../../src/layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
-import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
+import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
@@ -156,7 +158,7 @@ export class HassioBackups extends LitElement {
     }
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${supervisorTabs}
+        .tabs=${supervisorTabs(this.hass)}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .searchLabel=${this.supervisor.localize("search")}
@@ -179,9 +181,11 @@ export class HassioBackups extends LitElement {
           slot="toolbar-icon"
           @action=${this._handleAction}
         >
-          <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize("common.menu")}
+            .path=${mdiDotsVertical}
+            slot="trigger"
+          ></ha-icon-button>
           <mwc-list-item>
             ${this.supervisor?.localize("common.reload")}
           </mwc-list-item>
@@ -216,13 +220,15 @@ export class HassioBackups extends LitElement {
                       </mwc-button>
                     `
                   : html`
-                      <mwc-icon-button
+                      <ha-icon-button
+                        .label=${this.supervisor.localize(
+                          "snapshot.delete_selected"
+                        )}
+                        .path=${mdiDelete}
                         id="delete-btn"
                         class="warning"
                         @click=${this._deleteSelected}
-                      >
-                        <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                      </mwc-icon-button>
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="delete-btn">
                         ${this.supervisor.localize("backup.delete_selected")}
                       </paper-tooltip>
@@ -368,7 +374,7 @@ export class HassioBackups extends LitElement {
           margin-right: -12px;
         }
         .header-btns > mwc-button,
-        .header-btns > mwc-icon-button {
+        .header-btns > ha-icon-button {
           margin: 8px;
         }
       `,

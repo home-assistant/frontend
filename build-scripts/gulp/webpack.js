@@ -173,6 +173,7 @@ gulp.task("webpack-dev-server-gallery", () =>
     compiler: webpack(bothBuilds(createGalleryConfig, { isProdBuild: false })),
     contentBase: paths.gallery_output_root,
     port: 8100,
+    listenHost: "0.0.0.0",
   })
 );
 

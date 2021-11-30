@@ -2,8 +2,10 @@ import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-circular-progress";
+import "../../components/ha-icon";
+import "../../components/ha-icon-button";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style-dialog";
 
@@ -17,62 +19,38 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
         .error {
           color: red;
         }
-        @media all and (max-width: 500px) {
-          ha-paper-dialog {
-            margin: 0;
-            width: 100%;
-            max-height: calc(100% - var(--header-height));
-
-            position: fixed !important;
-            bottom: 0px;
-            left: 0px;
-            right: 0px;
-            overflow: scroll;
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius: 0px;
-          }
-        }
-
-        ha-paper-dialog {
-          border-radius: 2px;
-        }
-        ha-paper-dialog p {
+        p {
           color: var(--secondary-text-color);
         }
-
         .icon {
-          float: right;
+          text-align: right;
         }
       </style>
-      <ha-paper-dialog
-        id="mp3dialog"
-        with-backdrop
-        opened="{{_opened}}"
-        on-opened-changed="_openedChanged"
+      <ha-dialog
+        open="[[_opened]]"
+        on-closed="closeDialog"
+        heading="[[localize('ui.panel.mailbox.playback_title')]]"
       >
-        <h2>
-          [[localize('ui.panel.mailbox.playback_title')]]
+        <div>
           <div class="icon">
             <template is="dom-if" if="[[_loading]]">
               <ha-circular-progress active></ha-circular-progress>
             </template>
-            <ha-icon-button
-              id="delicon"
-              on-click="openDeleteDialog"
-              icon="hass:delete"
-            ></ha-icon-button>
+            <ha-icon-button id="delicon" on-click="openDeleteDialog">
+              <ha-icon icon="hass:delete"></ha-icon>
+            </ha-icon-button>
           </div>
-        </h2>
-        <div id="transcribe"></div>
-        <div>
-          <template is="dom-if" if="[[_errorMsg]]">
-            <div class="error">[[_errorMsg]]</div>
-          </template>
-          <audio id="mp3" preload="none" controls>
-            <source id="mp3src" src="" type="audio/mpeg" />
-          </audio>
+          <div id="transcribe"></div>
+          <div>
+            <template is="dom-if" if="[[_errorMsg]]">
+              <div class="error">[[_errorMsg]]</div>
+            </template>
+            <audio id="mp3" preload="none" controls>
+              <source id="mp3src" src="" type="audio/mpeg" />
+            </audio>
+          </div>
         </div>
-      </ha-paper-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -161,13 +139,8 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     });
   }
 
-  _openedChanged(ev) {
-    // Closed dialog by clicking on the overlay
-    // Check against dialogClosedCallback to make sure we didn't change
-    // programmatically
-    if (!ev.detail.value) {
-      this._dialogDone();
-    }
+  closeDialog() {
+    this._dialogDone();
   }
 
   _showLoading(displayed) {

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-input/paper-input";
 import {
   css,

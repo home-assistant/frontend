@@ -119,6 +119,7 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="hour"
           type="number"
+          inputmode="numeric"
           value="{{hour}}"
           label="[[hourLabel]]"
           on-change="_shouldFormatHour"
@@ -141,6 +142,7 @@ export class PaperTimeInput extends PolymerElement {
           class$="[[_computeClassNames(enableSecond)]]"
           id="min"
           type="number"
+          inputmode="numeric"
           value="{{min}}"
           label="[[minLabel]]"
           on-change="_formatMin"
@@ -163,6 +165,7 @@ export class PaperTimeInput extends PolymerElement {
           class$="[[_computeClassNames(enableMillisecond)]]"
           id="sec"
           type="number"
+          inputmode="numeric"
           value="{{sec}}"
           label="[[secLabel]]"
           on-change="_formatSec"

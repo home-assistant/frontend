@@ -12,8 +12,8 @@ export const slugify = (value: string, delimiter = "_") => {
     .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
     .replace(/&/g, `${delimiter}and${delimiter}`) // Replace & with 'and'
     .replace(/[^\w-]+/g, "") // Remove all non-word characters
-    .replace(/-/, delimiter) // Replace - with delimiter
-    .replace(new RegExp(`/${delimiter}${delimiter}+/`, "g"), delimiter) // Replace multiple delimiters with single delimiter
-    .replace(new RegExp(`/^${delimiter}+/`), "") // Trim delimiter from start of text
-    .replace(new RegExp(`/-+$/`), ""); // Trim delimiter from end of text
+    .replace(/-/g, delimiter) // Replace - with delimiter
+    .replace(new RegExp(`(${delimiter})\\1+`, "g"), "$1") // Replace multiple delimiters with single delimiter
+    .replace(new RegExp(`^${delimiter}+`), "") // Trim delimiter from start of text
+    .replace(new RegExp(`${delimiter}+$`), ""); // Trim delimiter from end of text
 };

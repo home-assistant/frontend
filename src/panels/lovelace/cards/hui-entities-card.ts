@@ -231,7 +231,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        overflow: hidden;
       }
       .card-header {
         display: flex;
@@ -261,7 +260,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       #states > div > * {
-        overflow: hidden;
+        overflow: clip visible;
       }
 
       #states > div {
@@ -290,7 +289,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
-      !("type" in entityConf) && this._config!.state_color
+      (!("type" in entityConf) || entityConf.type === "conditional") &&
+        this._config!.state_color
         ? ({
             state_color: true,
             ...(entityConf as EntityConfig),

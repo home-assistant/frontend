@@ -24,7 +24,7 @@ class HaMarkdownElement extends ReactiveElement {
 
   private async _render() {
     this.innerHTML = await renderMarkdown(
-      this.content,
+      String(this.content),
       {
         breaks: this.breaks,
         gfm: true,

@@ -1,6 +1,6 @@
+import "../../../layouts/hass-error-screen";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-svg-icon";
 import {
   EnergyPreferencesValidation,
   getEnergyPreferenceValidation,
@@ -10,11 +10,10 @@ import {
   getEnergyPreferences,
 } from "../../../data/energy";
 import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
-import { configSections } from "../ha-panel-config";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
@@ -69,18 +68,16 @@ class HaConfigEnergy extends LitElement {
     }
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config"}
-        .route=${this.route}
-        .tabs=${configSections.experiences}
+        .header=${this.hass.localize("ui.panel.config.energy.caption")}
       >
         <ha-alert>
-          After setting up a new device, it can take up to 2 hours for new data
-          to arrive in your energy dashboard.
+          ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
         <div class="container">
           <ha-energy-grid-settings
@@ -115,7 +112,7 @@ class HaConfigEnergy extends LitElement {
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

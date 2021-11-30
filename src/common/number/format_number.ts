@@ -1,5 +1,14 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 import { round } from "./round";
+
+/**
+ * Returns true if the entity is considered numeric based on the attributes it has
+ * @param stateObj The entity state object
+ */
+export const isNumericState = (stateObj: HassEntity): boolean =>
+  !!stateObj.attributes.unit_of_measurement ||
+  !!stateObj.attributes.state_class;
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData

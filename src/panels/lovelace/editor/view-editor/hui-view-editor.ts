@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -94,7 +94,7 @@ export class HuiViewEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @blur=${this._handleTitleBlur}
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.icon"
           )} (${this.hass.localize(
@@ -104,7 +104,7 @@ export class HuiViewEditor extends LitElement {
           .placeholder=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <paper-input
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.url"

@@ -1,5 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { HaFormSchema } from "../components/ha-form/ha-form";
+import type { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
 
 export interface ZHAEntityReference extends HassEntity {
@@ -34,7 +34,7 @@ export interface ZHADevice {
 export interface Neighbor {
   ieee: string;
   nwk: string;
-  lqi: number;
+  lqi: string;
 }
 
 export interface ZHADeviceEndpoint {

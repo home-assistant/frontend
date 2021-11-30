@@ -65,10 +65,11 @@ class HaGallery extends PolymerElement {
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-icon-button
-              icon="hass:arrow-left"
               on-click="_backTapped"
               class$="[[_computeHeaderButtonClass(_demo)]]"
-            ></ha-icon-button>
+            >
+              <ha-icon icon="hass:arrow-left"></ha-icon>
+            </ha-icon-button>
             <div main-title>
               [[_withDefault(_demo, "Home Assistant Gallery")]]
             </div>
@@ -175,11 +176,6 @@ class HaGallery extends PolymerElement {
     this.addEventListener("alert-dismissed-clicked", () =>
       this.$.notifications.showDialog({ message: "Alert dismissed clicked" })
     );
-
-    this.addEventListener("alert-action-clicked", () =>
-      this.$.notifications.showDialog({ message: "Alert action clicked" })
-    );
-
     this.addEventListener("hass-more-info", (ev) => {
       if (ev.detail.entityId) {
         this.$.notifications.showDialog({

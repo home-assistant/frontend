@@ -13,12 +13,11 @@ import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
-  InstallationType,
+  fetchInstallationType,
   fetchOnboardingOverview,
   OnboardingResponses,
   OnboardingStep,
   onboardIntegrationStep,
-  fetchInstallationType,
 } from "../data/onboarding";
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
@@ -69,8 +68,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _steps?: OnboardingStep[];
 
-  @state() private _installation_type?: InstallationType;
-
   protected render(): TemplateResult {
     const step = this._curStep()!;
 
@@ -90,7 +87,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           ? html`<onboarding-restore-backup
               .localize=${this.localize}
               .restoring=${this._restoring}
-              .installtionType=${this._installation_type}
               @restoring=${this._restoringBackup}
             >
             </onboarding-restore-backup>`
