@@ -42,9 +42,7 @@ class HaFaded extends LitElement {
 
   private _setShowContent() {
     const height = this._slottedHeight;
-    if (height !== 0 && height <= this.fadedHeight + 50) {
-      this._contentShown = true;
-    }
+    this._contentShown = height !== 0 && height <= this.fadedHeight + 50;
   }
 
   protected firstUpdated(changedProps) {
