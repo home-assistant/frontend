@@ -41,10 +41,6 @@ import {
 } from "../../../../common/number/format_number";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { FrontendLocaleData } from "../../../../data/translation";
-import {
-  reduceSumStatisticsByMonth,
-  reduceSumStatisticsByDay,
-} from "../../../../data/history";
 import { formatTime } from "../../../../common/datetime/format_time";
 
 @customElement("hui-energy-gas-graph-card")
@@ -247,11 +243,6 @@ export class HuiEnergyGasGraphCard
       .getPropertyValue("--energy-gas-color")
       .trim();
 
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
     gasSources.forEach((source, idx) => {
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
@@ -268,16 +259,7 @@ export class HuiEnergyGasGraphCard
 
       // Process gas consumption data.
       if (source.stat_energy_from in energyData.stats) {
-        const stats =
-          dayDifference > 35
-            ? reduceSumStatisticsByMonth(
-                energyData.stats[source.stat_energy_from]
-              )
-            : dayDifference > 2
-            ? reduceSumStatisticsByDay(
-                energyData.stats[source.stat_energy_from]
-              )
-            : energyData.stats[source.stat_energy_from];
+        const stats = energyData.stats[source.stat_energy_from];
 
         for (const point of stats) {
           if (point.sum === null) {
