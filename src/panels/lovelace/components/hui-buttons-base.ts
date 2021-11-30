@@ -65,6 +65,8 @@ export class HuiButtonsBase extends LitElement {
       :host {
         display: flex;
         justify-content: space-evenly;
+        flex-wrap: wrap;
+        padding: 0 8px;
       }
       div {
         cursor: pointer;

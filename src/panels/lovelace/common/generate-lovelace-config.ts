@@ -87,7 +87,8 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  renderFooterEntities = true
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -146,12 +147,28 @@ export const computeCards = (
         show_forecast: false,
       };
       cards.push(cardConfig);
-    } else if (domain === "scene" || domain === "script") {
-      footerEntities.push({
+    } else if (
+      renderFooterEntities &&
+      (domain === "scene" || domain === "script")
+    ) {
+      const conf: typeof footerEntities[0] = {
         entity: entityId,
         show_icon: true,
         show_name: true,
-      });
+      };
+      let name: string | undefined;
+      if (
+        titlePrefix &&
+        stateObj &&
+        // eslint-disable-next-line no-cond-assign
+        (name = stripPrefixFromEntityName(
+          computeStateName(stateObj),
+          titlePrefix
+        ))
+      ) {
+        conf.name = name;
+      }
+      footerEntities.push(conf);
     } else if (
       domain === "sensor" &&
       stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
@@ -175,6 +192,12 @@ export const computeCards = (
 
       entities.push(entityConf);
     }
+  }
+
+  // If we ended up with footer entities but no normal entities,
+  // render the footer entities as normal entities.
+  if (entities.length === 0 && footerEntities.length > 0) {
+    return computeCards(states, entityCardOptions, false);
   }
 
   if (entities.length > 0 || footerEntities.length > 0) {
