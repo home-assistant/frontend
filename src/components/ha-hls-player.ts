@@ -280,8 +280,7 @@ class HaHLSPlayer extends LitElement {
 
       ha-alert {
         display: block;
-        padding-top: 50px;
-        padding-bottom: 50px;
+        padding: 100px 16px;
       }
     `;
   }
