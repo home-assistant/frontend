@@ -2,7 +2,7 @@ import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import {
   any,
   array,
@@ -13,6 +13,7 @@ import {
   string,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { StackCardConfig } from "../../cards/types";
@@ -108,36 +109,33 @@ export class HuiStackCardEditor
                     )}
                   </mwc-button>
 
-                  <mwc-icon-button
+                  <ha-icon-button
                     .disabled=${selected === 0}
-                    .title=${this.hass!.localize(
+                    .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.move_before"
                     )}
+                    .path=${mdiArrowLeft}
                     @click=${this._handleMove}
                     .move=${-1}
-                  >
-                    <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
 
-                  <mwc-icon-button
-                    .title=${this.hass!.localize(
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.move_after"
                     )}
+                    .path=${mdiArrowRight}
                     .disabled=${selected === numcards - 1}
                     @click=${this._handleMove}
                     .move=${1}
-                  >
-                    <ha-svg-icon .path=${mdiArrowRight}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
 
-                  <mwc-icon-button
-                    .title=${this.hass!.localize(
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_card.delete"
                     )}
+                    .path=${mdiDelete}
                     @click=${this._handleDeleteCard}
-                  >
-                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 </div>
 
                 <hui-card-element-editor

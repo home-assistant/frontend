@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -11,6 +9,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 const ALERT_ICONS = {
@@ -23,7 +22,6 @@ const ALERT_ICONS = {
 declare global {
   interface HASSDomEvents {
     "alert-dismissed-clicked": undefined;
-    "alert-action-clicked": undefined;
   }
 }
 
@@ -36,8 +34,6 @@ class HaAlert extends LitElement {
     | "warning"
     | "error"
     | "success" = "info";
-
-  @property({ attribute: "action-text" }) public actionText = "";
 
   @property({ type: Boolean }) public dismissable = false;
 
@@ -52,7 +48,9 @@ class HaAlert extends LitElement {
         })}"
       >
         <div class="icon ${this.title ? "" : "no-title"}">
-          <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
+          <slot name="icon">
+            <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
+          </slot>
         </div>
         <div class="content">
           <div class="main-content">
@@ -60,19 +58,15 @@ class HaAlert extends LitElement {
             <slot></slot>
           </div>
           <div class="action">
-            ${this.actionText
-              ? html`<mwc-button
-                  @click=${this._action_clicked}
-                  .label=${this.actionText}
-                ></mwc-button>`
-              : this.dismissable
-              ? html`<mwc-icon-button
-                  @click=${this._dismiss_clicked}
-                  aria-label="Dismiss alert"
-                >
-                  <ha-svg-icon .path=${mdiClose}> </ha-svg-icon>
-                </mwc-icon-button> `
-              : ""}
+            <slot name="action">
+              ${this.dismissable
+                ? html`<ha-icon-button
+                    @click=${this._dismiss_clicked}
+                    label="Dismiss alert"
+                    .path=${mdiClose}
+                  ></ha-icon-button>`
+                : ""}
+            </slot>
           </div>
         </div>
       </div>
@@ -81,10 +75,6 @@ class HaAlert extends LitElement {
 
   private _dismiss_clicked() {
     fireEvent(this, "alert-dismissed-clicked");
-  }
-
-  private _action_clicked() {
-    fireEvent(this, "alert-action-clicked");
   }
 
   static styles = css`
@@ -97,7 +87,7 @@ class HaAlert extends LitElement {
     .issue-type.rtl {
       flex-direction: row-reverse;
     }
-    .issue-type::before {
+    .issue-type::after {
       position: absolute;
       top: 0;
       right: 0;
@@ -109,16 +99,10 @@ class HaAlert extends LitElement {
       border-radius: 4px;
     }
     .icon {
-      margin-right: 8px;
-      width: 24px;
+      z-index: 1;
     }
     .icon.no-title {
       align-self: center;
-    }
-    .issue-type.rtl > .icon {
-      margin-right: 0px;
-      margin-left: 8px;
-      width: 24px;
     }
     .issue-type.rtl > .content {
       flex-direction: row-reverse;
@@ -130,44 +114,54 @@ class HaAlert extends LitElement {
       align-items: center;
       width: 100%;
     }
+    .action {
+      z-index: 1;
+      width: min-content;
+      --mdc-theme-primary: var(--primary-text-color);
+    }
     .main-content {
       overflow-wrap: anywhere;
+      margin-left: 8px;
+      margin-right: 0;
+    }
+    .issue-type.rtl > .content > .main-content {
+      margin-left: 0;
+      margin-right: 8px;
     }
     .title {
       margin-top: 2px;
       font-weight: bold;
     }
-    mwc-button {
+    .action mwc-button,
+    .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
-    }
-    mwc-icon-button {
       --mdc-icon-button-size: 36px;
     }
     .issue-type.info > .icon {
       color: var(--info-color);
     }
-    .issue-type.info::before {
+    .issue-type.info::after {
       background-color: var(--info-color);
     }
 
     .issue-type.warning > .icon {
       color: var(--warning-color);
     }
-    .issue-type.warning::before {
+    .issue-type.warning::after {
       background-color: var(--warning-color);
     }
 
     .issue-type.error > .icon {
       color: var(--error-color);
     }
-    .issue-type.error::before {
+    .issue-type.error::after {
       background-color: var(--error-color);
     }
 
     .issue-type.success > .icon {
       color: var(--success-color);
     }
-    .issue-type.success::before {
+    .issue-type.success::after {
       background-color: var(--success-color);
     }
   `;

@@ -4,7 +4,6 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
@@ -16,7 +15,9 @@ import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-checkbox";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -65,6 +66,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           font-size: var(
             --paper-input-container-shared-input-style_-_font-size
           );
+        }
+
+        th.attributes {
+          position: relative;
+        }
+
+        th.attributes ha-checkbox {
+          position: absolute;
+          bottom: -8px;
         }
 
         :host([rtl]) .entities th {
@@ -165,11 +175,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               raised
               >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
             >
-            <mwc-icon-button
+            <ha-icon-button
               on-click="entityIdChanged"
               label="[[localize('ui.common.refresh')]]"
-              ><ha-svg-icon path="[[refreshIcon()]]"></ha-svg-icon
-            ></mwc-icon-button>
+              path="[[refreshIcon()]]"
+            ></ha-icon-button>
           </div>
         </div>
         <div class="info">
@@ -196,12 +206,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <tr>
             <th>[[localize('ui.panel.developer-tools.tabs.states.entity')]]</th>
             <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
-            <th hidden$="[[narrow]]">
+            <th hidden$="[[narrow]]" class="attributes">
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
-              <paper-checkbox
-                checked="{{_showAttributes}}"
+              <ha-checkbox
+                checked="[[_showAttributes]]"
                 on-change="saveAttributeCheckboxState"
-              ></paper-checkbox>
+                reducedTouchTarget
+              ></ha-checkbox>
             </th>
           </tr>
           <tr>
@@ -544,6 +555,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   saveAttributeCheckboxState(ev) {
+    this._showAttributes = ev.target.checked;
     try {
       localStorage.setItem("devToolsShowAttributes", ev.target.checked);
     } catch (e) {

@@ -1,4 +1,30 @@
 /** Return an icon representing a cover state. */
+import {
+  mdiArrowUpBox,
+  mdiArrowDownBox,
+  mdiGarage,
+  mdiGarageOpen,
+  mdiGateArrowRight,
+  mdiGate,
+  mdiGateOpen,
+  mdiDoorOpen,
+  mdiDoorClosed,
+  mdiCircle,
+  mdiWindowShutter,
+  mdiWindowShutterOpen,
+  mdiBlinds,
+  mdiBlindsOpen,
+  mdiWindowClosed,
+  mdiWindowOpen,
+  mdiArrowExpandHorizontal,
+  mdiArrowUp,
+  mdiArrowCollapseHorizontal,
+  mdiArrowDown,
+  mdiCircleSlice8,
+  mdiArrowSplitVertical,
+  mdiCurtains,
+  mdiCurtainsClosed,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 
 export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
@@ -8,74 +34,84 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
     case "garage":
       switch (state) {
         case "opening":
-          return "hass:arrow-up-box";
+          return mdiArrowUpBox;
         case "closing":
-          return "hass:arrow-down-box";
+          return mdiArrowDownBox;
         case "closed":
-          return "hass:garage";
+          return mdiGarage;
         default:
-          return "hass:garage-open";
+          return mdiGarageOpen;
       }
     case "gate":
       switch (state) {
         case "opening":
         case "closing":
-          return "hass:gate-arrow-right";
+          return mdiGateArrowRight;
         case "closed":
-          return "hass:gate";
+          return mdiGate;
         default:
-          return "hass:gate-open";
+          return mdiGateOpen;
       }
     case "door":
-      return open ? "hass:door-open" : "hass:door-closed";
+      return open ? mdiDoorOpen : mdiDoorClosed;
     case "damper":
-      return open ? "hass:circle" : "hass:circle-slice-8";
+      return open ? mdiCircle : mdiCircleSlice8;
     case "shutter":
       switch (state) {
         case "opening":
-          return "hass:arrow-up-box";
+          return mdiArrowUpBox;
         case "closing":
-          return "hass:arrow-down-box";
+          return mdiArrowDownBox;
         case "closed":
-          return "hass:window-shutter";
+          return mdiWindowShutter;
         default:
-          return "hass:window-shutter-open";
+          return mdiWindowShutterOpen;
+      }
+    case "curtain":
+      switch (state) {
+        case "opening":
+          return mdiArrowSplitVertical;
+        case "closing":
+          return mdiArrowCollapseHorizontal;
+        case "closed":
+          return mdiCurtainsClosed;
+        default:
+          return mdiCurtains;
       }
     case "blind":
-    case "curtain":
     case "shade":
       switch (state) {
         case "opening":
-          return "hass:arrow-up-box";
+          return mdiArrowUpBox;
         case "closing":
-          return "hass:arrow-down-box";
+          return mdiArrowDownBox;
         case "closed":
-          return "hass:blinds";
+          return mdiBlinds;
         default:
-          return "hass:blinds-open";
+          return mdiBlindsOpen;
       }
     case "window":
       switch (state) {
         case "opening":
-          return "hass:arrow-up-box";
+          return mdiArrowUpBox;
         case "closing":
-          return "hass:arrow-down-box";
+          return mdiArrowDownBox;
         case "closed":
-          return "hass:window-closed";
+          return mdiWindowClosed;
         default:
-          return "hass:window-open";
+          return mdiWindowOpen;
       }
   }
 
   switch (state) {
     case "opening":
-      return "hass:arrow-up-box";
+      return mdiArrowUpBox;
     case "closing":
-      return "hass:arrow-down-box";
+      return mdiArrowDownBox;
     case "closed":
-      return "hass:window-closed";
+      return mdiWindowClosed;
     default:
-      return "hass:window-open";
+      return mdiWindowOpen;
   }
 };
 
@@ -84,9 +120,9 @@ export const computeOpenIcon = (stateObj: HassEntity): string => {
     case "awning":
     case "door":
     case "gate":
-      return "hass:arrow-expand-horizontal";
+      return mdiArrowExpandHorizontal;
     default:
-      return "hass:arrow-up";
+      return mdiArrowUp;
   }
 };
 
@@ -95,8 +131,8 @@ export const computeCloseIcon = (stateObj: HassEntity): string => {
     case "awning":
     case "door":
     case "gate":
-      return "hass:arrow-collapse-horizontal";
+      return mdiArrowCollapseHorizontal;
     default:
-      return "hass:arrow-down";
+      return mdiArrowDown;
   }
 };

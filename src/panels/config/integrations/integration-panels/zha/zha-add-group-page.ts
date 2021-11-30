@@ -90,7 +90,7 @@ export class ZHAAddGroupPage extends LitElement {
           >
           </zha-device-endpoint-data-table>
 
-          <div class="paper-dialog-buttons">
+          <div class="buttons">
             <mwc-button
               .disabled=${!this._groupName ||
               this._groupName === "" ||
@@ -168,11 +168,11 @@ export class ZHAAddGroupPage extends LitElement {
         ha-config-section *:last-child {
           padding-bottom: 24px;
         }
-        .paper-dialog-buttons {
+        .buttons {
           align-items: flex-end;
           padding: 8px;
         }
-        .paper-dialog-buttons .warning {
+        .buttons .warning {
           --mdc-theme-primary: var(--error-color);
         }
       `,

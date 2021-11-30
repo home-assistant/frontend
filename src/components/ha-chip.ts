@@ -9,24 +9,14 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-icon";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "chip-clicked": { index: string };
-  }
-}
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
-  @property() public index = 0;
-
   @property({ type: Boolean }) public hasIcon = false;
 
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip" .index=${this.index}>
+      <div class="mdc-chip">
         ${this.hasIcon
           ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
               <slot name="icon"></slot>

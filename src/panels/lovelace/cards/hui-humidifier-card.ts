@@ -1,3 +1,4 @@
+import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -158,7 +159,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <ha-icon-button
-          icon="hass:dots-vertical"
+          .path=${mdiDotsVertical}
           class="more-info"
           @click=${this._handleMoreInfo}
           tabindex="0"
@@ -173,7 +174,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info">${name}</div>
+          <div id="info" .title=${name}>${name}</div>
         </div>
       </ha-card>
     `;

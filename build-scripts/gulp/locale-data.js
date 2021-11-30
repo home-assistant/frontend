@@ -4,9 +4,6 @@ const del = require("del");
 const path = require("path");
 const gulp = require("gulp");
 const fs = require("fs");
-const merge = require("gulp-merge-json");
-const rename = require("gulp-rename");
-const transform = require("gulp-json-transform");
 const paths = require("../paths");
 
 const outDir = "build/locale-data";

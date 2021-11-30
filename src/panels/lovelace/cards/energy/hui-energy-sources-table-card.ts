@@ -69,7 +69,9 @@ export class HuiEnergySourcesTableCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     let totalGrid = 0;
@@ -134,14 +136,18 @@ export class HuiEnergySourcesTableCard
                   role="columnheader"
                   scope="col"
                 >
-                  Source
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.source"
+                  )}
                 </th>
                 <th
                   class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
                   role="columnheader"
                   scope="col"
                 >
-                  Energy
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.energy"
+                  )}
                 </th>
                 ${showCosts
                   ? html` <th
@@ -149,7 +155,9 @@ export class HuiEnergySourcesTableCard
                       role="columnheader"
                       scope="col"
                     >
-                      Cost
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.cost"
+                      )}
                     </th>`
                   : ""}
               </tr>
@@ -290,7 +298,9 @@ export class HuiEnergySourcesTableCard
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
-                      Battery total
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
+                      )}
                     </th>
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
@@ -423,7 +433,11 @@ export class HuiEnergySourcesTableCard
               ${types.grid
                 ? html` <tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">Grid total</th>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
+                      )}
+                    </th>
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
@@ -524,7 +538,9 @@ export class HuiEnergySourcesTableCard
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
-                      Total costs
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
+                      )}
                     </th>
                     <td class="mdc-data-table__cell"></td>
                     <td

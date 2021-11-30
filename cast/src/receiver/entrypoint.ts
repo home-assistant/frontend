@@ -8,6 +8,9 @@ import { ReceivedMessage } from "./types";
 
 const lovelaceController = new HcMain();
 document.body.append(lovelaceController);
+lovelaceController.addEventListener("cast-view-changed", (ev) => {
+  playDummyMedia(ev.detail.title);
+});
 
 const mediaPlayer = document.createElement("cast-media-player");
 mediaPlayer.style.display = "none";
@@ -25,6 +28,31 @@ const setTouchControlsVisibility = (visible: boolean) => {
     (document.body.querySelector("touch-controls") as HTMLElement | null);
   if (controls) {
     controls.style.display = visible ? "initial" : "none";
+  }
+};
+
+let timeOut: number | undefined;
+
+const playDummyMedia = (viewTitle?: string) => {
+  const loadRequestData = new cast.framework.messages.LoadRequestData();
+  loadRequestData.autoplay = true;
+  loadRequestData.media = new cast.framework.messages.MediaInformation();
+  loadRequestData.media.contentId =
+    "https://cast.home-assistant.io/images/google-nest-hub.png";
+  loadRequestData.media.contentType = "image/jpeg";
+  loadRequestData.media.streamType = cast.framework.messages.StreamType.NONE;
+  const metadata = new cast.framework.messages.GenericMediaMetadata();
+  metadata.title = viewTitle;
+  loadRequestData.media.metadata = metadata;
+
+  loadRequestData.requestId = 0;
+  playerManager.load(loadRequestData);
+  if (timeOut) {
+    clearTimeout(timeOut);
+    timeOut = undefined;
+  }
+  if (castContext.getDeviceCapabilities().touch_input_supported) {
+    timeOut = window.setTimeout(() => playDummyMedia(viewTitle), 540000); // repeat every 9 minutes to keep it active (gets deactivated after 10 minutes)
   }
 };
 
@@ -51,6 +79,7 @@ const showMediaPlayer = () => {
       --progress-color: #03a9f4;
       --splash-image: url('https://home-assistant.io/images/cast/splash.png');
       --splash-size: cover;
+      --background-color: #41bdf5;
     }
     `;
     document.head.appendChild(style);
@@ -62,22 +91,6 @@ options.disableIdleTimeout = true;
 options.customNamespaces = {
   [CAST_NS]: cast.framework.system.MessageType.JSON,
 };
-
-// The docs say we need to set options.touchScreenOptimizeApp = true
-// https://developers.google.com/cast/docs/caf_receiver/customize_ui#accessing_ui_controls
-// This doesn't work.
-// @ts-ignore
-options.touchScreenOptimizedApp = true;
-
-// The class reference say we can set a uiConfig in options to set it
-// https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.CastReceiverOptions#uiConfig
-// This doesn't work either.
-// @ts-ignore
-options.uiConfig = new cast.framework.ui.UiConfig();
-// @ts-ignore
-options.uiConfig.touchScreenOptimizedApp = true;
-
-castContext.setInactivityTimeout(86400); // 1 day
 
 castContext.addCustomMessageListener(
   CAST_NS,
@@ -103,6 +116,12 @@ const playerManager = castContext.getPlayerManager();
 playerManager.setMessageInterceptor(
   cast.framework.messages.MessageType.LOAD,
   (loadRequestData) => {
+    if (
+      loadRequestData.media.contentId ===
+      "https://cast.home-assistant.io/images/google-nest-hub.png"
+    ) {
+      return loadRequestData;
+    }
     // We received a play media command, hide Lovelace and show media player
     showMediaPlayer();
     const media = loadRequestData.media;

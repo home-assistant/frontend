@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";

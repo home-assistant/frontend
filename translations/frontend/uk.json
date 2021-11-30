@@ -103,6 +103,16 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "stages": {
+                        "deprecated": "Застарілий",
+                        "experimental": "Експериментальний"
+                    }
+                }
+            }
+        },
         "backup": {
             "delete_backup_confirm": "видалити",
             "delete_selected": "Видалити обрані знімки",
@@ -310,7 +320,7 @@
                     "text": "Введіть назву нового приміщення.",
                     "title": "Додати приміщення"
                 },
-                "add_new": "Додати приміщення ...",
+                "add_new": "Додати приміщення …",
                 "area": "Приміщення",
                 "clear": "Очистити",
                 "no_areas": "Не знайдено жодного приміщення",
@@ -353,7 +363,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Завантаження історії стану ...",
+                "loading_history": "Завантаження історії стану …",
                 "no_history_found": "Немає історії станів."
             },
             "logbook": {
@@ -597,6 +607,7 @@
                 "history": "Історія",
                 "last_changed": "Востаннє змінено",
                 "last_updated": "Останнє оновлення",
+                "logbook": "Журнал",
                 "person": {
                     "create_zone": "Створити зону з поточного місцезнаходження"
                 },
@@ -612,6 +623,7 @@
                     "last_triggered": "Спрацьовано востаннє"
                 },
                 "settings": "Налаштування об'єкта",
+                "show_more": "Показати більше",
                 "sun": {
                     "elevation": "Висота над горизонтом",
                     "rising": "Схід сонця",
@@ -772,7 +784,7 @@
             "title": "Сповіщення"
         },
         "notification_toast": {
-            "connection_lost": "З'єднання втрачено. Повторне підключення ...",
+            "connection_lost": "З'єднання втрачено. Повторне підключення …",
             "dismiss": "Відхилити",
             "service_call_failed": "Не вдалося викликати службу {service}.",
             "started": "Home Assistant запущений!",
@@ -1175,7 +1187,7 @@
                         "importing": "Завантаження проекту...",
                         "raw_blueprint": "Вміст проекту",
                         "save_btn": "Імпортувати проект",
-                        "saving": "Імпорт проекту...",
+                        "saving": "Імпорт проекту…",
                         "unsupported_blueprint": "Цей проект не підтримується",
                         "url": "URL-адреса проекту"
                     },
@@ -1185,16 +1197,23 @@
                         "add_blueprint": "Імпортувати проект",
                         "confirm_delete_header": "Видалити цей проект?",
                         "confirm_delete_text": "Ви впевнені, що хочете видалити цей проект?",
+                        "create_automation": "Створити автоматизацію",
+                        "create_script": "Створити скрипт",
                         "delete_blueprint": "Видалити проект",
                         "discover_more": "Знайти більше проектів",
                         "header": "Редактор проектів",
                         "headers": {
                             "domain": "Домен",
                             "file_name": "Ім'я файлу",
-                            "name": "Ім'я"
+                            "name": "Ім'я",
+                            "type": "Тип"
                         },
                         "introduction": "У цьому розділі параметрів можна імпортувати нові та керувати наявними проектами.",
                         "learn_more": "Докладніше про використання проектів",
+                        "types": {
+                            "automation": "Автоматизація",
+                            "script": "Скрипт"
+                        },
                         "use_blueprint": "Створити автоматизацію"
                     }
                 },
@@ -1216,7 +1235,7 @@
                         },
                         "connected": "Під'єднаний",
                         "connection_status": "Статус підключення до хмари",
-                        "fetching_subscription": "Отримання підписки ...",
+                        "fetching_subscription": "Отримання підписки …",
                         "google": {
                             "config_documentation": "Документація з налаштування",
                             "devices_pin": "PIN-код пристроїв безпеки",
@@ -1255,7 +1274,7 @@
                             "disable_hook_error_msg": "Не вдалося вимкнути Webhook:",
                             "info": "Всьому, що налаштовано на ініціювання через Webhook можуть бути призначені публічні URL, щоб дозволити Вам відправляти дані в Home Assistant з будь-якого місця, не відкриваючи ваш сервер в інтернет.",
                             "link_learn_more": "Дізнайтеся більше про створення автоматизації на базі Webhook.",
-                            "loading": "Завантаження ...",
+                            "loading": "Завантаження …",
                             "manage": "Керування",
                             "no_hooks_yet": "Схоже, у вас ще немає Webhooks. Почніть із налаштування ",
                             "no_hooks_yet2": " або створивши ",
@@ -1368,7 +1387,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?"
-                    }
+                    },
+                    "learn_more": "Дізнатися більше"
                 },
                 "core": {
                     "caption": "Основні",
@@ -1422,13 +1442,13 @@
                     "add_prompt": "{name} немає для цього пристрою. Ви можете додати, натиснувши кнопку + вище.",
                     "automation": {
                         "actions": {
-                            "caption": "Коли щось спрацьовує ...",
+                            "caption": "Коли щось спрацьовує …",
                             "no_actions": "Немає дій",
                             "unknown_action": "Невідома дія"
                         },
                         "automations": "Автоматизації",
                         "conditions": {
-                            "caption": "Робити щось, тільки якщо ...",
+                            "caption": "Робити щось, тільки якщо …",
                             "no_conditions": "Немає умов",
                             "unknown_condition": "Невідома умова"
                         },
@@ -1472,10 +1492,12 @@
                     "enabled_label": "Відображати пристрій",
                     "entities": {
                         "add_entities_lovelace": "Додати сутності до Lovelace UI",
+                        "control": "Елементи керування",
                         "disabled_entities": "Показати {count} {count, plural,\n  one {прихований об'єкт}\n  other {прихованих об'єктів}\n}",
                         "entities": "Сутності",
                         "hide_disabled": "Не показувати приховані",
-                        "none": "Цей пристрій не має сутностей"
+                        "none": "Цей пристрій не має сутностей",
+                        "sensor": "Сенсори"
                     },
                     "name": "Назва",
                     "no_devices": "Немає пристроїв",
@@ -1507,6 +1529,57 @@
                     "update": "Оновити",
                     "update_device_error": "Помилка оновлення пристрою"
                 },
+                "energy": {
+                    "gas": {
+                        "dialog": {
+                            "cost_entity": "Використати сутність з поточною ціною",
+                            "cost_entity_input": "Сутність з поточною ціною",
+                            "cost_number": "Використати статичну ціну",
+                            "cost_number_input": "Ціна за м³",
+                            "cost_number_suffix": "{currency}/м³",
+                            "cost_stat_input": "Загальна сума витрат сутності",
+                            "gas_usage": "Використання газу",
+                            "m3_or_kWh": "м³ або кВт-год"
+                        },
+                        "gas_consumption": "Споживання газу"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "Такі сутності мають негативне значення, тоді як очікується позитивне:",
+                                "title": "Сутність має негативний стан"
+                            },
+                            "entity_not_defined": {
+                                "description": "Перевірте інтеграцію або конфігурацію, яка надає:",
+                                "title": "Сутність не визначена"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Такі сутності мають стан, який неможливо проаналізувати як число:",
+                                "title": "Сутність має нечислове значення"
+                            },
+                            "entity_unavailable": {
+                                "description": "Стан цих налаштованих сутностей наразі недоступний:",
+                                "title": "Сутність недоступна"
+                            },
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "Такі сутності не мають очікуваного класу стану \"total_increasing\"",
+                                "title": "Неочікуваний клас стану"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "Такі сутності не мають очікуваних одиниць вимірювання \"кВт·год\" або \"Вт-год\":",
+                                "title": "Неочікувана одиниця вимірювання"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "Так сутності не мають очікуваних одиниць вимірювання \"{currency}/кВт-год\" або \"{currency}/Вт-год\":",
+                                "title": "Неочікувана одиниця вимірювання"
+                            },
+                            "recorder_untracked": {
+                                "description": "Диктофон настроєно на виключення цих налаштованих сутностей:",
+                                "title": "Сутність не відстежується"
+                            }
+                        }
+                    }
+                },
                 "entities": {
                     "caption": "Сутності",
                     "description": "Огляд всіх відомих об'єктів.",
@@ -1532,6 +1605,7 @@
                         "header": "Сутності",
                         "headers": {
                             "area": "Приміщення",
+                            "disabled_by": "Вимкнено користувачем",
                             "entity_id": "Ідентифікатор сутності",
                             "integration": "Інтеграція",
                             "name": "Назва",
@@ -1881,7 +1955,7 @@
                         "complete": "Оновлення вузла завершено",
                         "description": "Повторне опитування вузла і оновлення класів команд, можливостей і значень вузла.",
                         "node_status": "Статус вузла",
-                        "refreshing_description": "Оновлення інформації про вузол ...",
+                        "refreshing_description": "Оновлення інформації про вузол …",
                         "start_refresh_button": "Почати оновлення",
                         "step": "Крок",
                         "title": "Оновити інформацію про вузол",
@@ -2167,7 +2241,7 @@
                         "no_devices_found": "Не знайдено жодного пристрою, переконайтесь, що вони перебувають у режимі сполучення, і не дайте їм спати, поки йде процес виявлення.",
                         "pairing_mode": "Переконайтеся, що пристрої, які підключаються знаходяться в режимі сполучення. Щоб дізнатися, як активувати режим сполучення, ознайомтеся з інструкцією для Вашого пристрою.",
                         "search_again": "Повторити пошук",
-                        "spinner": "Пошук пристроїв ZHA Zigbee ..."
+                        "spinner": "Пошук пристроїв ZHA Zigbee …"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибути вибраного кластера",
@@ -2292,7 +2366,7 @@
                         "network_started": "Мережа Z-Wave працює",
                         "network_started_note_all_queried": "Всі вузли були опитані.",
                         "network_started_note_some_queried": "Активні вузли були опитані. Сплячі вузли будуть опитані, коли вийдуть з режиму сну.",
-                        "network_starting": "Запуск мережі Z-Wave ...",
+                        "network_starting": "Запуск мережі Z-Wave …",
                         "network_starting_note": "Це може зайняти деякий час в залежності від розміру Вашої мережі.",
                         "network_stopped": "Мережа Z-Wave вимкнена"
                     },
@@ -2365,8 +2439,17 @@
                     "common": {
                         "reconfigure_server": "Налаштувати сервер повторно"
                     },
+                    "device_info": {
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Версія {version}"
+                    },
                     "node_config": {
                         "parameter": "Параметр"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Немає"
+                        }
                     }
                 }
             },
@@ -2456,6 +2539,44 @@
                         "no_devices": "Ця сторінка дозволяє керувати пристроями, однак, схоже, у вас ще немає налаштованих пристроїв. Щоб почати, перейдіть на сторінку інтеграції.",
                         "title": "Ласкаво просимо додому"
                     },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "non_fossil_energy_consumed": "Витрачена невикопна енергія",
+                            "non_fossil_energy_not_calculated": "Не вдалося розрахувати спожиту невикопну енергію"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Використання енергії"
+                        },
+                        "energy_distribution": {
+                            "battery": "Акумулятор",
+                            "gas": "Газ",
+                            "go_to_energy_dashboard": "Перейти до панелі енергії",
+                            "grid": "Мережа",
+                            "home": "Дім",
+                            "non_fossil": "Невикопна",
+                            "solar": "Сонячна"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Прогноз {name}",
+                            "production": "Виробництво {name}"
+                        },
+                        "energy_sources_table": {
+                            "cost": "Вартість",
+                            "energy": "Енергія",
+                            "source": "Джерело",
+                            "total_costs": "Загальна вартість"
+                        },
+                        "energy_usage_graph": {
+                            "total_consumed": "Усього спожито {num} кВт-год",
+                            "total_returned": "Усього повернуто {num} кВт·год"
+                        },
+                        "grid_neutrality_gauge": {
+                            "grid_neutrality_not_calculated": "Не вдалося розрахувати нейтральність мережі",
+                            "net_consumed_grid": "Спожито з мережі",
+                            "net_returned_grid": "Повернено до мережі"
+                        },
+                        "loading": "Завантаження..."
+                    },
                     "entities": {
                         "never_triggered": "Ніколи не спрацьовувало"
                     },
@@ -2480,13 +2601,22 @@
                         "reorder_items": "Змінити порядок елементів"
                     },
                     "starting": {
-                        "description": "Home Assistant запускається, будь ласка, зачекайте ..."
+                        "description": "Home Assistant запускається, будь ласка, зачекайте …"
                     }
                 },
                 "changed_toast": {
                     "message": "Конфігурацію Lovelace було оновлено, хочете оновити?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "День",
+                        "month": "Місяць",
+                        "next": "Далі",
+                        "previous": "Назад",
+                        "today": "Сьогодні",
+                        "week": "Тиждень",
+                        "year": "Рік"
+                    },
                     "timestamp-display": {
                         "invalid": "Невірна часова мітка",
                         "invalid_format": "Невірний формат відображення"
@@ -2718,7 +2848,10 @@
                         "weather-forecast": {
                             "description": "Карта прогнозу погоди відображає погоду. Може бути корисна на пристроях, що розміщуються на стіні.",
                             "name": "Прогноз погоди",
-                            "show_forecast": "Показати прогноз"
+                            "show_both": "Показати поточну погоду та прогноз",
+                            "show_forecast": "Показати прогноз",
+                            "show_only_current": "Показати лише поточну погоду",
+                            "show_only_forecast": "Показати лише прогноз"
                         }
                     },
                     "cardpicker": {
@@ -2736,7 +2869,8 @@
                         "none": "Не вибрано"
                     },
                     "edit_badges": {
-                        "panel_mode": "Ці значки не відображатимуться, оскільки ця вкладка знаходиться в \"Режимі панелі\"."
+                        "panel_mode": "Ці значки не відображатимуться, оскільки ця вкладка знаходиться в \"Режимі панелі\".",
+                        "view_no_badges": "Поточний тип перегляду не підтримує значки."
                     },
                     "edit_card": {
                         "add": "Додати картку",
@@ -2999,7 +3133,8 @@
                 },
                 "initializing": "Ініціалізація",
                 "logging_in_with": "Провайдер аутентифікації: ** {authProviderName} **.",
-                "pick_auth_provider": "Або увійти за допомогою"
+                "pick_auth_provider": "Або увійти за допомогою",
+                "store_token": "Залишатись в системі"
             },
             "page-demo": {
                 "cards": {

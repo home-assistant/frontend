@@ -47,6 +47,7 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
+import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -118,30 +119,24 @@ class HUIRoot extends LitElement {
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.menu.exit_edit_mode"
                     )}
-                    title=${this.hass!.localize("ui.panel.lovelace.menu.close")}
+                    .path=${mdiClose}
                     @click=${this._editModeDisable}
-                  >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
-                    <mwc-icon-button
-                      aria-label=${this.hass!.localize(
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}
-                      title=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
-                      )}
+                      .path=${mdiPencil}
                       class="edit-icon"
                       @click=${this._editLovelace}
-                    >
-                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </div>
                   <a
                     href=${documentationUrl(this.hass, "/lovelace/")}
@@ -149,26 +144,21 @@ class HUIRoot extends LitElement {
                     class="menu-link"
                     target="_blank"
                   >
-                    <mwc-icon-button
-                      title=${this.hass!.localize(
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
                         "ui.panel.lovelace.menu.help"
                       )}
-                    >
-                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiHelpCircle}
+                    ></ha-icon-button>
                   </a>
                   <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button
+                    <ha-icon-button
                       slot="trigger"
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}
                       .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
-                    >
-                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
                     ${__DEMO__ /* No unused entities available in the demo */
                       ? ""
                       : html`
@@ -278,28 +268,23 @@ class HUIRoot extends LitElement {
                   ${!this.narrow &&
                   this._conversation(this.hass.config.components)
                     ? html`
-                        <mwc-icon-button
+                        <ha-icon-button
                           .label=${this.hass!.localize(
                             "ui.panel.lovelace.menu.start_conversation"
                           )}
+                          .path=${mdiMicrophone}
                           @click=${this._showVoiceCommandDialog}
-                        >
-                          <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
-                        </mwc-icon-button>
+                        ></ha-icon-button>
                       `
                     : ""}
                   <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button
+                    <ha-icon-button
                       slot="trigger"
                       .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}
-                    >
-                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
                     ${this.narrow &&
                     this._conversation(this.hass.config.components)
                       ? html`
@@ -448,9 +433,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <ha-icon-button-arrow-prev
                                   .hass=${this.hass}
-                                  .title=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_left"
-                                  )}
                                   .label=${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_left"
                                   )}
@@ -480,9 +462,6 @@ class HUIRoot extends LitElement {
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
                                   .hass=${this.hass}
-                                  .title=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_right"
-                                  )}
                                   .label=${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
                                   )}
@@ -498,15 +477,14 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <mwc-icon-button
+                          <ha-icon-button
                             id="add-view"
                             @click=${this._addView}
-                            title=${this.hass!.localize(
+                            .label=${this.hass!.localize(
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}
-                          >
-                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                          </mwc-icon-button>
+                            .path=${mdiPlus}
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-tabs>
@@ -735,7 +713,8 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _moveViewLeft() {
+  private _moveViewLeft(ev) {
+    ev.stopPropagation();
     if (this._curView === 0) {
       return;
     }
@@ -746,7 +725,8 @@ class HUIRoot extends LitElement {
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
-  private _moveViewRight() {
+  private _moveViewRight(ev) {
+    ev.stopPropagation();
     if ((this._curView! as number) + 1 === this.lovelace!.config.views.length) {
       return;
     }

@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -42,9 +42,12 @@ export class HaConfigHelpers extends LitElement {
       icon: {
         title: "",
         type: "icon",
-        template: (icon, helper: any) => html`
-          <ha-icon .icon=${icon || domainIcon(helper.type)}></ha-icon>
-        `,
+        template: (icon, helper: any) =>
+          icon
+            ? html` <ha-icon .icon=${icon}></ha-icon> `
+            : html`<ha-svg-icon
+                .path=${domainIcon(helper.type)}
+              ></ha-svg-icon>`,
       },
       name: {
         title: this.hass.localize(
@@ -93,7 +96,7 @@ export class HaConfigHelpers extends LitElement {
                 tabindex="0"
                 style="display:inline-block; position: relative;"
               >
-                <ha-icon icon="hass:pencil-off"></ha-icon>
+                <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
                 <paper-tooltip animation-delay="0" position="left">
                   ${this.hass.localize(
                     "ui.panel.config.entities.picker.status.readonly"

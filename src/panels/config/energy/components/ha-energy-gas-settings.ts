@@ -5,17 +5,18 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import {
   EnergyPreferences,
-  saveEnergyPreferences,
-  GasSourceTypeEnergyPreference,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
+  GasSourceTypeEnergyPreference,
   getEnergyGasUnitCategory,
+  saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -75,7 +76,9 @@ export class EnergyGasSettings extends LitElement {
                 ></ha-energy-validation-result>
               `
           )}
-          <h3>Gas consumption</h3>
+          <h3>
+            ${this.hass.localize("ui.panel.config.energy.gas.gas_consumption")}
+          </h3>
           ${gasSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
             return html`
@@ -90,18 +93,24 @@ export class EnergyGasSettings extends LitElement {
                     ? computeStateName(entityState)
                     : source.stat_energy_from}</span
                 >
-                <mwc-icon-button @click=${this._editSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-            <mwc-button @click=${this._addSource}>Add gas source</mwc-button>
+            <mwc-button @click=${this._addSource}
+              >${this.hass.localize(
+                "ui.panel.config.energy.gas.add_gas_source"
+              )}</mwc-button
+            >
           </div>
         </div>
       </ha-card>
@@ -143,7 +152,7 @@ export class EnergyGasSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;

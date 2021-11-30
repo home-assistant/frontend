@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -33,9 +34,10 @@ export class HuiInputListEditor extends LitElement {
             ><ha-icon-button
               slot="suffix"
               class="clear-button"
-              icon="hass:close"
+              .path=${mdiClose}
               no-ripple
               @click=${this._removeEntry}
+              .label=${this.hass!.localize("ui.common.clear")}
               >Clear</ha-icon-button
             ></paper-input
           >

@@ -35,6 +35,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
   __VERSION__: JSON.stringify(env.version()),
   __DEMO__: false,
+  __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
   "process.env.NODE_ENV": JSON.stringify(
@@ -164,6 +165,7 @@ module.exports.config = {
   cast({ isProdBuild, latestBuild }) {
     const entry = {
       launcher: path.resolve(paths.cast_dir, "src/launcher/entrypoint.ts"),
+      media: path.resolve(paths.cast_dir, "src/media/entrypoint.ts"),
     };
 
     if (latestBuild) {
@@ -194,6 +196,9 @@ module.exports.config = {
       publicPath: publicPath(latestBuild, paths.hassio_publicPath),
       isProdBuild,
       latestBuild,
+      defineOverlay: {
+        __SUPERVISOR__: true,
+      },
     };
   },
 
@@ -206,6 +211,9 @@ module.exports.config = {
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
+      defineOverlay: {
+        __DEMO__: true,
+      },
     };
   },
 };

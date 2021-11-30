@@ -17,6 +17,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -374,7 +375,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config"}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenDevices}
@@ -407,17 +408,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             </a>`
           : html``}
         <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
               "ui.panel.config.devices.picker.filter.filter"
             )}
-            .title=${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.filter"
-            )}
-          >
-            <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiFilterVariant}
+          ></ha-icon-button>
           <mwc-list-item
             @request-selected=${this._showDisabledChanged}
             graphic="control"

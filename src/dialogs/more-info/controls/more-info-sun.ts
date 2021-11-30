@@ -73,9 +73,6 @@ class MoreInfoSun extends LitElement {
         display: inline-block;
         white-space: nowrap;
       }
-      ha-relative-time::first-letter {
-        text-transform: lowercase;
-      }
       hr {
         border-color: var(--divider-color);
         border-bottom: none;

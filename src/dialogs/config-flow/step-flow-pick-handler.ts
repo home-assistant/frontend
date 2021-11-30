@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import { domainToName } from "../../data/integration";
@@ -59,7 +60,7 @@ class StepFlowPickHandler extends LitElement {
         return fuse.search(filter).map((result) => result.item);
       }
       return handlers.sort((a, b) =>
-        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+        caseInsensitiveStringCompare(a.name, b.name)
       );
     }
   );
@@ -74,6 +75,7 @@ class StepFlowPickHandler extends LitElement {
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
+        .hass=${this.hass}
         autofocus
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
@@ -100,7 +102,7 @@ class StepFlowPickHandler extends LitElement {
                         domain: handler.slug,
                         type: "icon",
                         useFallback: true,
-                        darkOptimized: this.hass.selectedTheme?.dark,
+                        darkOptimized: this.hass.themes?.darkMode,
                       })}
                       referrerpolicy="no-referrer"
                     />

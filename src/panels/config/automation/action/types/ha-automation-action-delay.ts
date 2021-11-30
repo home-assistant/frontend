@@ -40,6 +40,9 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   protected render() {
     return html`<ha-duration-input
+      .label=${this.hass.localize(
+        `ui.panel.config.automation.editor.actions.type.delay.delay`
+      )}
       .data=${this._timeData}
       enableMillisecond
       @value-changed=${this._valueChanged}

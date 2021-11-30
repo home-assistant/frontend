@@ -49,7 +49,7 @@ export class DialogEnergySolarSettings
     this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptySolarEnergyPreference());
+      : emptySolarEnergyPreference();
     this._forecast = this._source.config_entry_solar_forecast !== null;
   }
 
@@ -72,7 +72,7 @@ export class DialogEnergySolarSettings
             .path=${mdiSolarPower}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Configure solar panels`}
+          ${this.hass.localize("ui.panel.config.energy.solar.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -82,18 +82,28 @@ export class DialogEnergySolarSettings
           .includeUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
-          .label=${`Solar production energy (kWh)`}
-          entities-only
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_energy"
+          )}
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
-        <h3>Solar production forecast</h3>
+        <h3>
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_forecast"
+          )}
+        </h3>
         <p>
-          Adding solar production forecast information will allow you to quickly
-          see your expected production for today.
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_forecast_description"
+          )}
         </p>
 
-        <ha-formfield label="Don't forecast production">
+        <ha-formfield
+          label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.dont_forecast_production"
+          )}
+        >
           <ha-radio
             value="false"
             name="forecast"
@@ -101,7 +111,11 @@ export class DialogEnergySolarSettings
             @change=${this._handleForecastChanged}
           ></ha-radio>
         </ha-formfield>
-        <ha-formfield label="Forecast Production">
+        <ha-formfield
+          label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.forecast_production"
+          )}
+        >
           <ha-radio
             value="true"
             name="forecast"
@@ -122,7 +136,7 @@ export class DialogEnergySolarSettings
                       src=${brandsUrl({
                         domain: entry.domain,
                         type: "icon",
-                        darkOptimized: this.hass.selectedTheme?.dark,
+                        darkOptimized: this.hass.themes?.darkMode,
                       })}
                     />${entry.title}
                   </div>`}
@@ -138,7 +152,9 @@ export class DialogEnergySolarSettings
                 </ha-formfield>`
               )}
               <mwc-button @click=${this._addForecast}>
-                Add forecast
+                ${this.hass.localize(
+                  "ui.panel.config.energy.solar.dialog.add_forecast"
+                )}
               </mwc-button>
             </div>`
           : ""}

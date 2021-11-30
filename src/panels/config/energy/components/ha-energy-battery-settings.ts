@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-settings-row";
 import {
   BatterySourceTypeEnergyPreference,
@@ -14,8 +15,8 @@ import {
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -78,7 +79,11 @@ export class EnergyBatterySettings extends LitElement {
               `
           )}
 
-          <h3>Battery systems</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.battery.battery_systems"
+            )}
+          </h3>
           ${batterySources.map((source) => {
             const fromEntityState = this.hass.states[source.stat_energy_from];
             const toEntityState = this.hass.states[source.stat_energy_to];
@@ -101,19 +106,23 @@ export class EnergyBatterySettings extends LitElement {
                       : source.stat_energy_to}</span
                   >
                 </div>
-                <mwc-icon-button @click=${this._editSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
             <mwc-button @click=${this._addSource}
-              >Add battery system</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.energy.battery.add_battery_system"
+              )}</mwc-button
             >
           </div>
         </div>
@@ -154,7 +163,7 @@ export class EnergyBatterySettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;

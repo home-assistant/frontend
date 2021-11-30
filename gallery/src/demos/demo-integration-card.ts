@@ -187,6 +187,7 @@ const createEntityRegistryEntries = (
     device_id: "mock-device-id",
     area_id: null,
     disabled_by: null,
+    entity_category: null,
     entity_id: "binary_sensor.updater",
     name: null,
     icon: null,
@@ -211,6 +212,7 @@ const createDeviceRegistryEntries = (
     area_id: null,
     name_by_user: null,
     disabled_by: null,
+    configuration_url: null,
   },
 ];
 

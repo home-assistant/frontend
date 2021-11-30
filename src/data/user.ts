@@ -57,3 +57,19 @@ export const deleteUser = async (hass: HomeAssistant, userId: string) =>
     type: "config/auth/delete",
     user_id: userId,
   });
+
+export const computeUserInitials = (name: string) => {
+  if (!name) {
+    return "?";
+  }
+  return (
+    name
+      .trim()
+      // Split by space and take first 3 words
+      .split(" ")
+      .slice(0, 3)
+      // Of each word, take first letter
+      .map((s) => s.substr(0, 1))
+      .join("")
+  );
+};

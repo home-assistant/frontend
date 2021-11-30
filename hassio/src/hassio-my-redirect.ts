@@ -34,6 +34,9 @@ const REDIRECTS: Redirects = {
   supervisor_store: {
     redirect: "/hassio/store",
   },
+  supervisor_addons: {
+    redirect: "/hassio/dashboard",
+  },
   supervisor_addon: {
     redirect: "/hassio/addon",
     params: {

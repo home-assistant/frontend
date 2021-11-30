@@ -14,7 +14,7 @@
                     "header": "Rede",
                     "host": "Host"
                 },
-                "no_configuration": "Este complemento non expón a configuración para que poidas xogar con ...",
+                "no_configuration": "Este complemento non expón a configuración para que poidas xogar con …",
                 "options": {
                     "edit_in_ui": "Editar en IU",
                     "edit_in_yaml": "Editar en YAML",
@@ -486,6 +486,7 @@
             "quick-bar": {
                 "commands": {
                     "navigation": {
+                        "energy": "Enerxía",
                         "tag": "Etiquetas"
                     },
                     "types": {
@@ -601,6 +602,9 @@
                         "email_address": "Enderezo electrónico"
                     }
                 },
+                "common": {
+                    "learn_more": "Saber máis"
+                },
                 "devices": {
                     "confirm_disable_config_entry": "Non hai máis dispositivos para a entrada de configuración {entry_name} . Queres deshabilitar a entrada de configuración?",
                     "enabled_description": "Os dispositivos desactivados non se amosarán e as entidades que pertencen ao dispositivo desactivaranse e non se engadirán ao Asistente doméstico.",
@@ -612,8 +616,47 @@
                     }
                 },
                 "energy": {
+                    "caption": "Enerxía",
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_number": "Usar prezo fixo",
+                                "cost_number_input": "Prezo por kWh"
+                            }
+                        }
+                    },
                     "solar": {
                         "sub": "Permita a Home Assistant monitorear sus paneles solares y obtener "
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "As seguintes entidades teñen un estado negativo mentres agardan un estado positivo",
+                                "title": "A entidade ten un estado negativo"
+                            },
+                            "entity_not_defined": {
+                                "description": "Comproba a integración ou a configuración que proporciona:",
+                                "title": "Entidade non definida"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "As seguintes entidades teñen un estado que non pode ser analizado como un número",
+                                "title": "A entidade ten un esrado non numérico"
+                            },
+                            "entity_unavailable": {
+                                "description": "O estado das entidades configuradas non está dispoñible actualmente",
+                                "title": "Entidade non dispoñible"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "As seguintes entidades non teñen as unidades de medida esperadas 'kWh' ou 'Wh'",
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "recorder_untracked": {
+                                "title": "Entidade sen seguimento"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -623,6 +666,9 @@
                             "show_disabled": "Amosar entidades desactivadas",
                             "show_readonly": "Amosar entidades de só lectura",
                             "show_unavailable": "Amosar entidades non dispoñibles"
+                        },
+                        "headers": {
+                            "disabled_by": "Deshabilitado por"
                         }
                     }
                 },

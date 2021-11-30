@@ -18,11 +18,17 @@ import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-checkbox";
+import "./ha-icon-button";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+
+const showOptionalToggle = (field) =>
+  field.selector &&
+  !field.required &&
+  !("boolean" in field.selector && field.default);
 
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: {
@@ -185,7 +191,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.fields.some((field) => field.selector && !field.required)
+        serviceData?.fields.some((field) => showOptionalToggle(field))
     );
 
     return html`<ha-service-picker
@@ -204,12 +210,10 @@ export class HaServiceControl extends LitElement {
               target="_blank"
               rel="noreferrer"
             >
-              <mwc-icon-button>
-                <ha-svg-icon
-                  path=${mdiHelpCircle}
-                  class="help-icon"
-                ></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                class="help-icon"
+              ></ha-icon-button>
             </a>`
           : ""}
       </div>
@@ -254,14 +258,15 @@ export class HaServiceControl extends LitElement {
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
-        : serviceData?.fields.map((dataField) =>
-            dataField.selector &&
-            (!dataField.advanced ||
-              this.showAdvanced ||
-              (this._value?.data &&
-                this._value.data[dataField.key] !== undefined))
+        : serviceData?.fields.map((dataField) => {
+            const showOptional = showOptionalToggle(dataField);
+            return dataField.selector &&
+              (!dataField.advanced ||
+                this.showAdvanced ||
+                (this._value?.data &&
+                  this._value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
-                  ${dataField.required
+                  ${!showOptional
                     ? hasOptional
                       ? html`<div slot="prefix" class="checkbox-spacer"></div>`
                       : ""
@@ -274,9 +279,9 @@ export class HaServiceControl extends LitElement {
                         slot="prefix"
                       ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
-                  <span slot="description">${dataField?.description}</span
-                  ><ha-selector
-                    .disabled=${!dataField.required &&
+                  <span slot="description">${dataField?.description}</span>
+                  <ha-selector
+                    .disabled=${showOptional &&
                     !this._checkedKeys.has(dataField.key) &&
                     (!this._value?.data ||
                       this._value.data[dataField.key] === undefined)}
@@ -288,23 +293,35 @@ export class HaServiceControl extends LitElement {
                     this._value.data[dataField.key] !== undefined
                       ? this._value.data[dataField.key]
                       : dataField.default}
-                  ></ha-selector
-                ></ha-settings-row>`
-              : ""
-          )} `;
+                  ></ha-selector>
+                </ha-settings-row>`
+              : "";
+          })}`;
   }
 
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
+    let data;
+
     if (checked) {
       this._checkedKeys.add(key);
+      const defaultValue = this._getServiceInfo(
+        this._value?.service,
+        this.hass.services
+      )?.fields.find((field) => field.key === key)?.default;
+      if (defaultValue) {
+        data = {
+          ...this._value?.data,
+          [key]: defaultValue,
+        };
+      }
     } else {
       this._checkedKeys.delete(key);
-      const data = { ...this._value?.data };
-
+      data = { ...this._value?.data };
       delete data[key];
-
+    }
+    if (data) {
       fireEvent(this, "value-changed", {
         value: {
           ...this._value,

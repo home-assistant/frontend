@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 
 export interface SuggestCardDialogParams {
+  cardTitle?: string;
   lovelaceConfig?: LovelaceConfig;
   yaml?: boolean;
   saveConfig?: (config: LovelaceConfig) => void;

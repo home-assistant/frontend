@@ -141,7 +141,8 @@ const REDIRECTS: Redirects = {
     redirect: "/config/info",
   },
   customize: {
-    redirect: "/config/customize",
+    // customize was removed in 2021.12, fallback to dashboard
+    redirect: "/config/dashboard",
   },
   profile: {
     redirect: "/profile/dashboard",
@@ -218,7 +219,7 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      let error = "Unknown error";
+      let error: string;
       switch (this._error) {
         case "not_supported":
           error =

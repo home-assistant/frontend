@@ -1,68 +1,58 @@
-import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  CoverEntity,
+  isFullyClosedTilt,
+  isFullyOpenTilt,
+  supportsCloseTilt,
+  supportsOpenTilt,
+  supportsStopTilt,
+} from "../data/cover";
 import { UNAVAILABLE } from "../data/entity";
 import { HomeAssistant } from "../types";
-import CoverEntity from "../util/cover-model";
 import "./ha-icon-button";
 
 @customElement("ha-cover-tilt-controls")
 class HaCoverTiltControls extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) stateObj!: HassEntity;
-
-  @state() private _entityObj?: CoverEntity;
-
-  public willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has("stateObj")) {
-      this._entityObj = new CoverEntity(this.hass, this.stateObj);
-    }
-  }
+  @property({ attribute: false }) stateObj!: CoverEntity;
 
   protected render(): TemplateResult {
-    if (!this._entityObj) {
+    if (!this.stateObj) {
       return html``;
     }
 
     return html` <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsOpenTilt,
+          invisible: !supportsOpenTilt(this.stateObj),
         })}
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.dialogs.more_info_control.open_tilt_cover"
         )}
-        icon="hass:arrow-top-right"
+        .path=${mdiArrowTopRight}
         @click=${this._onOpenTiltTap}
         .disabled=${this._computeOpenDisabled()}
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsStopTilt,
+          invisible: !supportsStopTilt(this.stateObj),
         })}
-        label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
-        icon="hass:stop"
+        .label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
+        .path=${mdiStop}
         @click=${this._onStopTiltTap}
         .disabled=${this.stateObj.state === UNAVAILABLE}
       ></ha-icon-button>
       <ha-icon-button
         class=${classMap({
-          invisible: !this._entityObj.supportsCloseTilt,
+          invisible: !supportsCloseTilt(this.stateObj),
         })}
-        label=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.dialogs.more_info_control.close_tilt_cover"
         )}
-        icon="hass:arrow-bottom-left"
+        .path=${mdiArrowBottomLeft}
         @click=${this._onCloseTiltTap}
         .disabled=${this._computeClosedDisabled()}
       ></ha-icon-button>`;
@@ -73,7 +63,7 @@ class HaCoverTiltControls extends LitElement {
       return true;
     }
     const assumedState = this.stateObj.attributes.assumed_state === true;
-    return this._entityObj.isFullyOpenTilt && !assumedState;
+    return isFullyOpenTilt(this.stateObj) && !assumedState;
   }
 
   private _computeClosedDisabled(): boolean {
@@ -81,22 +71,28 @@ class HaCoverTiltControls extends LitElement {
       return true;
     }
     const assumedState = this.stateObj.attributes.assumed_state === true;
-    return this._entityObj.isFullyClosedTilt && !assumedState;
+    return isFullyClosedTilt(this.stateObj) && !assumedState;
   }
 
   private _onOpenTiltTap(ev): void {
     ev.stopPropagation();
-    this._entityObj.openCoverTilt();
+    this.hass.callService("cover", "open_cover_tilt", {
+      entity_id: this.stateObj.entity_id,
+    });
   }
 
   private _onCloseTiltTap(ev): void {
     ev.stopPropagation();
-    this._entityObj.closeCoverTilt();
+    this.hass.callService("cover", "close_cover_tilt", {
+      entity_id: this.stateObj.entity_id,
+    });
   }
 
   private _onStopTiltTap(ev): void {
     ev.stopPropagation();
-    this._entityObj.stopCoverTilt();
+    this.hass.callService("cover", "stop_cover_tilt", {
+      entity_id: this.stateObj.entity_id,
+    });
   }
 
   static get styles(): CSSResultGroup {

@@ -237,7 +237,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Laai tans toestandsgeskiedenis ...",
+                "loading_history": "Laai tans toestandsgeskiedenis …",
                 "no_history_found": "Geen toestandsgeskiedenis gevind nie."
             },
             "media-browser": {
@@ -417,7 +417,7 @@
             "title": "Kennisgewings"
         },
         "notification_toast": {
-            "connection_lost": "Konneksie verlore. Herkoppel tans...",
+            "connection_lost": "Konneksie verlore. Herkoppel tans…",
             "service_call_failed": "Het misluk om diens {service} te roep."
         },
         "panel": {
@@ -1046,7 +1046,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "Opsoek na ZHA Zigbee-toestelle..."
+                        "spinner": "Opsoek na ZHA Zigbee-toestelle…"
                     },
                     "clusters": {
                         "header": "clusters",
@@ -1125,7 +1125,7 @@
                         "network_started": "Z-Wave Netwerk is Aangeskakel",
                         "network_started_note_all_queried": "Alle knooppunte is nagevra",
                         "network_started_note_some_queried": "Aktiewe Knooppunte is nagevra. Slapende Knooppunte sal nagevra word sodra hulle ontwaak.",
-                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan...",
+                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan…",
                         "network_starting_note": "Afhangend van die grootte van u netwerk, kan dit 'n rukkie duur.",
                         "network_stopped": "Z-Wave Netwerk het Gestop"
                     },
@@ -1179,6 +1179,11 @@
                     "states": {
                         "title": "State"
                     },
+                    "statistics": {
+                        "issues": {
+                            "no_state": "Daar is geen staat vir hierdie entiteit beskikbaar nie."
+                        }
+                    },
                     "templates": {
                         "title": "Template"
                     }
@@ -1217,7 +1222,7 @@
                         "clear_items": "Maak die gemerkte items skoon"
                     },
                     "starting": {
-                        "description": "Home Assistant begin tans, wag asseblief ..."
+                        "description": "Home Assistant begin tans, wag asseblief …"
                     }
                 },
                 "changed_toast": {

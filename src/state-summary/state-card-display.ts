@@ -47,6 +47,7 @@ export class StateCardDisplay extends LitElement {
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}
                 format="datetime"
+                capitalize
               ></hui-timestamp-display>`
             : computeStateDisplay(
                 this.hass!.localize,

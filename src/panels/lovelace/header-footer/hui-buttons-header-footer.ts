@@ -1,5 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
@@ -26,11 +27,21 @@ export class HuiButtonsHeaderFooter
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {
     this._configEntities = processConfigEntities(config.entities).map(
-      (entityConfig) => ({
-        tap_action: { action: "toggle" },
-        hold_action: { action: "more-info" },
-        ...entityConfig,
-      })
+      (entityConfig) => {
+        const conf = {
+          tap_action: { action: "toggle" },
+          hold_action: { action: "more-info" },
+          ...entityConfig,
+        };
+        if (computeDomain(entityConfig.entity) === "scene") {
+          conf.tap_action = {
+            action: "call-service",
+            service: "scene.turn_on",
+            target: { entity_id: conf.entity },
+          };
+        }
+        return conf;
+      }
     );
   }
 

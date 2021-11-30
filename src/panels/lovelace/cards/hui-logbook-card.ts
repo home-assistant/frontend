@@ -241,7 +241,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
     const lastDate = this._lastLogbookDate || hoursToShowDate;
     const now = new Date();
-    let newEntries;
+    let newEntries: LogbookEntry[];
 
     try {
       [newEntries] = await Promise.all([
@@ -256,6 +256,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       ]);
     } catch (err: any) {
       this._error = err.message;
+      return;
     }
 
     const logbookEntries = this._logbookEntries

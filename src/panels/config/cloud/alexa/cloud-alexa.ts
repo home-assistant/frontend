@@ -116,25 +116,22 @@ class CloudAlexa extends LitElement {
         ? exposedCards
         : notExposedCards;
 
-      const iconButton = html`<mwc-icon-button
+      const iconButton = html`<ha-icon-button
         slot="trigger"
         class=${classMap({
           exposed: isExposed!,
           "not-exposed": !isExposed,
         })}
         .disabled=${!emptyFilter}
-        .title=${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
-      >
-        <ha-svg-icon
-          .path=${config.should_expose !== null
-            ? isExposed
-              ? mdiCheckboxMarked
-              : mdiCloseBox
-            : isDomainExposed
-            ? mdiCheckboxMultipleMarked
-            : mdiCloseBoxMultiple}
-        ></ha-svg-icon>
-      </mwc-icon-button>`;
+        .label=${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
+        .path=${config.should_expose !== null
+          ? isExposed
+            ? mdiCheckboxMarked
+            : mdiCloseBox
+          : isDomainExposed
+          ? mdiCheckboxMultipleMarked
+          : mdiCloseBoxMultiple}
+      ></ha-icon-button>`;
 
       target.push(html`
         <ha-card>

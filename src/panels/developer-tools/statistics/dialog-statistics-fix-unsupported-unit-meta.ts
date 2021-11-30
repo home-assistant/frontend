@@ -37,10 +37,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         heading="Unsupported unit in recorded statistics"
       >
         <p>
-          The unit of the statistics in your database for this entity is not a
-          supported unit for the device class of the entity,
-          ${this._params.issue.data.device_class}. It should be
-          ${this._params.issue.data.supported_unit}.
+          The unit ${this._params.issue.data.metadata_unit} of the statistics in
+          your database for this entity is not a supported unit for the device
+          class of the entity, ${this._params.issue.data.device_class}. It
+          should be ${this._params.issue.data.supported_unit}.
         </p>
         <p>
           Do you want to update the unit of the history statistics to

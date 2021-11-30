@@ -84,7 +84,7 @@ export class HaIntegrationHeader extends LitElement {
           src=${brandsUrl({
             domain: this.domain,
             type: "icon",
-            darkOptimized: this.hass.selectedTheme?.dark,
+            darkOptimized: this.hass.themes?.darkMode,
           })}
           referrerpolicy="no-referrer"
           @error=${this._onImageError}

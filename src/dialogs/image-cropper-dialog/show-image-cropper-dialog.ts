@@ -4,7 +4,7 @@ export interface CropOptions {
   round: boolean;
   type?: "image/jpeg" | "image/png";
   quality?: number;
-  aspectRatio: number;
+  aspectRatio?: number;
 }
 
 export interface HaImageCropperDialogParams {

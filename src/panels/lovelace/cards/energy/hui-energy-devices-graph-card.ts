@@ -6,7 +6,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { addHours } from "date-fns";
+import { addHours, differenceInDays } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -155,29 +155,20 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    const dayDifference = differenceInDays(
+      energyData.end || new Date(),
+      energyData.start
+    );
+
     this._data = await fetchStatistics(
       this.hass,
       addHours(energyData.start, -1),
       energyData.end,
       energyData.prefs.device_consumption.map(
         (device) => device.stat_consumption
-      )
+      ),
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
-
-    const statisticsData = Object.values(this._data!);
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];
     const borderColor: string[] = [];
@@ -185,7 +176,9 @@ export class HuiEnergyDevicesGraphCard
 
     const datasets: ChartDataset<"bar", ParsedDataType<"bar">[]>[] = [
       {
-        label: "Energy usage",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
+        ),
         borderColor,
         backgroundColor,
         data,

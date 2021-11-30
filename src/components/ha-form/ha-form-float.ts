@@ -1,9 +1,9 @@
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-textfield";
+import type { TextField } from "@material/mwc-textfield";
+import { css, html, LitElement, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
+import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {
@@ -13,9 +13,9 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
+  @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-input", true) private _input?: HTMLElement;
+  @query("mwc-textfield") private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -25,33 +25,66 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-input
+      <mwc-textfield
+        inputMode="decimal"
         .label=${this.label}
-        .value=${this._value}
+        .value=${this.data !== undefined ? this.data : ""}
+        .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        @value-changed=${this._valueChanged}
-      >
-        <span suffix slot="suffix">${this.suffix}</span>
-      </paper-input>
+        .suffix=${this.schema.description?.suffix}
+        .validationMessage=${this.schema.required ? "Required" : undefined}
+        @input=${this._valueChanged}
+      ></mwc-textfield>
     `;
   }
 
-  private get _value() {
-    return this.data;
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute("own-margin", !!this.schema.required);
+    }
   }
 
   private _valueChanged(ev: Event) {
-    const value: number | undefined = (ev.target as PaperInputElement).value
-      ? Number((ev.target as PaperInputElement).value)
-      : undefined;
-    if (this._value === value) {
+    const source = ev.target as TextField;
+    const rawValue = source.value.replace(",", ".");
+
+    let value: number | undefined;
+
+    if (rawValue.endsWith(".")) {
       return;
     }
+
+    if (rawValue !== "") {
+      value = parseFloat(rawValue);
+      if (isNaN(value)) {
+        value = undefined;
+      }
+    }
+
+    // Detect anything changed
+    if (this.data === value) {
+      // parseFloat will drop invalid text at the end, in that case update textfield
+      const newRawValue = value === undefined ? "" : String(value);
+      if (source.value !== newRawValue) {
+        source.value = newRawValue;
+      }
+      return;
+    }
+
     fireEvent(this, "value-changed", {
       value,
     });
   }
+
+  static styles = css`
+    :host([own-margin]) {
+      margin-bottom: 5px;
+    }
+    mwc-textfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {

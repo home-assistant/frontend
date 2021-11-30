@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import type { Corner } from "@material/mwc-menu";
 import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariant } from "@mdi/js";
@@ -12,7 +11,7 @@ import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import "./ha-area-picker";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 declare global {
   // for fire event
@@ -55,9 +54,10 @@ export class HaRelatedFilterButtonMenu extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button @click=${this._handleClick}>
-        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-      </mwc-icon-button>
+      <ha-icon-button
+        @click=${this._handleClick}
+        .path=${mdiFilterVariant}
+      ></ha-icon-button>
       <mwc-menu-surface
         .open=${this._open}
         .anchor=${this}

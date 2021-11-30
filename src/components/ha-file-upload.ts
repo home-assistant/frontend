@@ -1,13 +1,13 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 declare global {
   interface HASSDomEvents {
@@ -17,6 +17,8 @@ declare global {
 
 @customElement("ha-file-upload")
 export class HaFileUpload extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property() public accept!: string;
 
   @property() public icon!: string;
@@ -82,15 +84,21 @@ export class HaFileUpload extends LitElement {
                   ${this.value}
                 </iron-input>
                 ${this.value
-                  ? html`<mwc-icon-button
-                      slot="suffix"
-                      @click=${this._clearValue}
-                    >
-                      <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                    </mwc-icon-button>`
-                  : html`<mwc-icon-button slot="suffix">
-                      <ha-svg-icon .path=${this.icon}></ha-svg-icon>
-                    </mwc-icon-button>`}
+                  ? html`
+                      <ha-icon-button
+                        slot="suffix"
+                        @click=${this._clearValue}
+                        .label=${this.hass?.localize("ui.common.close") ||
+                        "close"}
+                        .path=${mdiClose}
+                      ></ha-icon-button>
+                    `
+                  : html`
+                      <ha-icon-button
+                        slot="suffix"
+                        .path=${this.icon}
+                      ></ha-icon-button>
+                    `}
               </paper-input-container>
             </label>
           `}
@@ -154,7 +162,7 @@ export class HaFileUpload extends LitElement {
         max-width: 125px;
         max-height: 125px;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         --mdc-icon-size: 20px;
       }

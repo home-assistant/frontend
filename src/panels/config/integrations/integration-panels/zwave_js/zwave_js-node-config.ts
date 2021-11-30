@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiCheckCircle,
   mdiCircle,

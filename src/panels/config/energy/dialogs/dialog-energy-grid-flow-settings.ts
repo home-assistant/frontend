@@ -46,10 +46,9 @@ export class DialogEnergyGridFlowSettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : (this._source =
-          params.direction === "from"
-            ? emptyFlowFromGridSourceEnergyPreference()
-            : emptyFlowToGridSourceEnergyPreference());
+      : params.direction === "from"
+      ? emptyFlowFromGridSourceEnergyPreference()
+      : emptyFlowToGridSourceEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -104,7 +103,6 @@ export class DialogEnergyGridFlowSettings
           .label=${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
-          entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
