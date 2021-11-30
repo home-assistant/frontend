@@ -15,11 +15,9 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-paper-dropdown-menu";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SelectEntity, setSelectOption } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
-import { handleAction } from "../common/handle-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -116,10 +114,6 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       this.shadowRoot!.querySelector("paper-listbox")!.selected =
         stateObj.attributes.options.indexOf(stateObj.state);
     }
-  }
-
-  private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   static get styles(): CSSResultGroup {
