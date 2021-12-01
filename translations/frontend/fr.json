@@ -1201,7 +1201,7 @@
                         "filter": "Recharger les entités de filtre",
                         "generic": "Recharger les entités de caméra IP générique",
                         "generic_thermostat": "Recharger les entités de thermostat générique",
-                        "group": "Recharger les groupes, les entités de groupe et notifier les services",
+                        "group": "Recharger les groupes, les entités de groupe et les services de notification",
                         "history_stats": "Recharger les entités des statistiques historiques",
                         "homekit": "Recharger HomeKit",
                         "input_boolean": "Recharger les entrées booléennes (input boolean)",
