@@ -306,11 +306,11 @@
     },
     "components": {
       "logbook": {
-        "entries_not_found": "No logbook entries found.",
+        "entries_not_found": "No logbook events found.",
         "by": "by",
         "by_service": "by service",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
-        "retrieval_error": "Error during logbook entry retrieval",
+        "retrieval_error": "Could not load logbook",
         "messages": {
           "was_away": "was detected away",
           "was_at_state": "was detected at {state}",
@@ -356,15 +356,15 @@
       },
       "target-picker": {
         "expand": "Expand",
-        "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
-        "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
+        "expand_area_id": "Split this area into separate devices and entities.",
+        "expand_device_id": "Split this device into separate entities.",
         "remove": "Remove",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
-        "add_area_id": "Pick area",
-        "add_device_id": "Pick device",
-        "add_entity_id": "Pick entity"
+        "add_area_id": "Choose area",
+        "add_device_id": "Choose device",
+        "add_entity_id": "Choose entity"
       },
       "user-picker": {
         "no_user": "No user",
@@ -412,11 +412,11 @@
         "error": {
           "no_supervisor": {
             "title": "No Supervisor",
-            "description": "No Supervisor found, so add-ons could not be loaded."
+            "description": "Add-ons are not supported."
           },
           "fetch_addons": {
-            "title": "Error fetching add-ons",
-            "description": "Fetching add-ons returned an error."
+            "title": "Error loading add-ons",
+            "description": "There was an error loading add-ons."
           }
         }
       },
@@ -694,7 +694,7 @@
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
-          "unavailable": "This entity is not currently available.",
+          "unavailable": "This entity is unavailable.",
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
@@ -703,7 +703,7 @@
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
           "delete": "Delete",
-          "confirm_delete": "Are you sure you want to delete this entry?",
+          "confirm_delete": "Are you sure you want to delete this event?",
           "update": "Update",
           "note": "Note: This might not work yet with all integrations.",
           "advanced": "Advanced settings",
@@ -927,7 +927,7 @@
         },
         "updates": {
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
-          "unable_to_fetch": "Unable to fetch available updates",
+          "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
           "more_updates": "+ {count} Updates",
           "show": "show"
@@ -1195,11 +1195,11 @@
         },
         "core": {
           "caption": "General",
-          "description": "Unit system, location, time zone & other general parameters",
+          "description": "Location, network and analytics",
           "section": {
             "core": {
               "header": "General Configuration",
-              "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+              "introduction": "Manage your location, network and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                 "location_name": "Name of your Home Assistant installation",
@@ -1397,7 +1397,7 @@
             },
             "server_management": {
               "heading": "Server management",
-              "introduction": "Control your Home Assistant server… from Home Assistant.",
+              "introduction": "Control your Home Assistant.",
               "restart": "Restart",
               "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
