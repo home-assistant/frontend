@@ -34,6 +34,7 @@ class HaConfigNavigation extends LitElement {
     for (const a of this.shadowRoot!.querySelectorAll("a")) {
       if (a.href.endsWith(this.focusedPath)) {
         a.querySelector("paper-icon-item")?.focus();
+        break;
       }
     }
   }
