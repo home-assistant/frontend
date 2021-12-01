@@ -21,18 +21,18 @@ import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-radio";
 import "../../../../../components/ha-switch";
 import {
-  grantSecurityClasses,
+  zwaveGrantSecurityClasses,
   InclusionStrategy,
   MINIMUM_QR_STRING_LENGTH,
-  parseQrCode,
-  provisionSmartStartNode,
+  zwaveParseQrCode,
+  provisionZwaveSmartStartNode,
   QRProvisioningInformation,
   RequestedGrant,
   SecurityClass,
-  stopInclusion,
-  subscribeAddNode,
-  supportsFeature,
-  validateDskAndEnterPin,
+  stopZwaveInclusion,
+  subscribeAddZwaveNode,
+  zwaveSupportsFeature,
+  zwaveValidateDskAndEnterPin,
   ZWaveFeature,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
@@ -598,7 +598,7 @@ class DialogZWaveJSAddNode extends LitElement {
     }
     let provisioningInfo: QRProvisioningInformation;
     try {
-      provisioningInfo = await parseQrCode(
+      provisioningInfo = await zwaveParseQrCode(
         this.hass,
         this._entryId!,
         qrCodeString
@@ -614,7 +614,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._qrProcessing = false;
     this._status = "loading";
     try {
-      await provisionSmartStartNode(
+      await provisionZwaveSmartStartNode(
         this.hass,
         this._entryId!,
         undefined,
@@ -641,7 +641,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "loading";
     this._error = undefined;
     try {
-      await validateDskAndEnterPin(
+      await zwaveValidateDskAndEnterPin(
         this.hass,
         this._entryId!,
         this._pinInput!.value as string
@@ -656,7 +656,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "loading";
     this._error = undefined;
     try {
-      await grantSecurityClasses(
+      await zwaveGrantSecurityClasses(
         this.hass,
         this._entryId!,
         this._securityClasses
@@ -676,7 +676,11 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private async _checkSmartStartSupport() {
     this._supportsSmartStart = (
-      await supportsFeature(this.hass, this._entryId!, ZWaveFeature.SmartStart)
+      await zwaveSupportsFeature(
+        this.hass,
+        this._entryId!,
+        ZWaveFeature.SmartStart
+      )
     ).supported;
   }
 
@@ -685,7 +689,7 @@ class DialogZWaveJSAddNode extends LitElement {
       return;
     }
     this._lowSecurity = false;
-    this._subscribed = subscribeAddNode(
+    this._subscribed = subscribeAddZwaveNode(
       this.hass,
       this._entryId!,
       (message) => {
@@ -711,7 +715,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
         if (message.event === "grant security classes") {
           if (this._inclusionStrategy === undefined) {
-            grantSecurityClasses(
+            zwaveGrantSecurityClasses(
               this.hass,
               this._entryId!,
               message.requested_grant.securityClasses,
@@ -759,7 +763,7 @@ class DialogZWaveJSAddNode extends LitElement {
       this._subscribed = undefined;
     }
     if (this._entryId) {
-      stopInclusion(this.hass, this._entryId);
+      stopZwaveInclusion(this.hass, this._entryId);
     }
     this._requestedGrant = undefined;
     this._dsk = undefined;

@@ -9,11 +9,11 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../../../data/auth";
 import {
-  fetchDataCollectionStatus,
-  fetchNetworkStatus,
-  fetchNodeStatus,
+  fetchZwaveDataCollectionStatus,
+  fetchZwaveNetworkStatus,
+  fetchZwaveNodeStatus,
   NodeStatus,
-  setDataCollectionPreference,
+  setZwaveDataCollectionPreference,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
@@ -317,8 +317,8 @@ class ZWaveJSConfigDashboard extends LitElement {
     }
 
     const [network, dataCollectionStatus] = await Promise.all([
-      fetchNetworkStatus(this.hass!, this.configEntryId),
-      fetchDataCollectionStatus(this.hass!, this.configEntryId),
+      fetchZwaveNetworkStatus(this.hass!, this.configEntryId),
+      fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
     ]);
 
     this._network = network;
@@ -340,7 +340,7 @@ class ZWaveJSConfigDashboard extends LitElement {
       return;
     }
     const nodeStatePromisses = this._network.controller.nodes.map((nodeId) =>
-      fetchNodeStatus(this.hass, this.configEntryId!, nodeId)
+      fetchZwaveNodeStatus(this.hass, this.configEntryId!, nodeId)
     );
     this._nodes = await Promise.all(nodeStatePromisses);
   }
@@ -364,7 +364,7 @@ class ZWaveJSConfigDashboard extends LitElement {
   }
 
   private _dataCollectionToggled(ev) {
-    setDataCollectionPreference(
+    setZwaveDataCollectionPreference(
       this.hass!,
       this.configEntryId!,
       ev.target.checked

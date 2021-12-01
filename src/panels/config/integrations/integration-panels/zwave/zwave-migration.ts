@@ -21,10 +21,10 @@ import {
 import {
   migrateZwave,
   ZWaveJsMigrationData,
-  fetchNetworkStatus as fetchZwaveJsNetworkStatus,
-  fetchNodeStatus,
-  getIdentifiersFromDevice,
-  subscribeNodeReady,
+  fetchZwaveNetworkStatus as fetchZwaveJsNetworkStatus,
+  fetchZwaveNodeStatus,
+  getZwaveJsIdentifiersFromDevice,
+  subscribeZwaveNodeReady,
 } from "../../../../../data/zwave_js";
 import {
   fetchMigrationConfig,
@@ -425,7 +425,7 @@ export class ZwaveMigration extends LitElement {
       this._zwaveJsEntryId!
     );
     const nodeStatePromisses = networkStatus.controller.nodes.map((nodeId) =>
-      fetchNodeStatus(this.hass, this._zwaveJsEntryId!, nodeId)
+      fetchZwaveNodeStatus(this.hass, this._zwaveJsEntryId!, nodeId)
     );
     const nodesNotReady = (await Promise.all(nodeStatePromisses)).filter(
       (node) => !node.ready
@@ -436,13 +436,18 @@ export class ZwaveMigration extends LitElement {
       return;
     }
     this._nodeReadySubscriptions = nodesNotReady.map((node) =>
-      subscribeNodeReady(this.hass, this._zwaveJsEntryId!, node.node_id, () => {
-        this._getZwaveJSNodesStatus();
-      })
+      subscribeZwaveNodeReady(
+        this.hass,
+        this._zwaveJsEntryId!,
+        node.node_id,
+        () => {
+          this._getZwaveJSNodesStatus();
+        }
+      )
     );
     const deviceReg = await fetchDeviceRegistry(this.hass);
     this._waitingOnDevices = deviceReg
-      .map((device) => getIdentifiersFromDevice(device))
+      .map((device) => getZwaveJsIdentifiersFromDevice(device))
       .filter(Boolean);
   }
 
