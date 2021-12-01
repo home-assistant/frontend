@@ -76,7 +76,7 @@ class HaConfigDashboard extends LitElement {
           ${isComponentLoaded(this.hass, "hassio") &&
           this.supervisorUpdates === undefined
             ? html``
-            : html`${this.supervisorUpdates !== null
+            : html`${this.supervisorUpdates?.length
                   ? html`<ha-card>
                       <ha-config-updates
                         .hass=${this.hass}
