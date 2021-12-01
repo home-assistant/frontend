@@ -210,6 +210,8 @@ export const DOMAINS_NO_POINTER_CLICK_IN_ROW = [
   "input_select",
   "input_text",
   "input_datetime",
+  "number",
+  "select",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
