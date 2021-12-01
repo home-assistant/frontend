@@ -144,7 +144,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       const entityId = toFetch.pop()!.entity_id;
       const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
       this._extDisabledEntityEntries![entityId] = entry;
-      this.requestUpdate();
+      this.requestUpdate("_extDisabledEntityEntries");
       worker();
     };
 
