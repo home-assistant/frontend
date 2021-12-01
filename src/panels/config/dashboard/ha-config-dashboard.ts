@@ -95,6 +95,7 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <ha-config-navigation
                           .hass=${this.hass}
+                          .narrow=${this.narrow}
                           .showAdvanced=${this.showAdvanced}
                           .pages=${[
                             {
@@ -113,6 +114,7 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <ha-config-navigation
                           .hass=${this.hass}
+                          .narrow=${this.narrow}
                           .showAdvanced=${this.showAdvanced}
                           .pages=${[
                             {
@@ -130,6 +132,7 @@ class HaConfigDashboard extends LitElement {
                     : ""}
                   <ha-config-navigation
                     .hass=${this.hass}
+                    .narrow=${this.narrow}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
