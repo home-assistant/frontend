@@ -1,7 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
-import type { Select } from "@material/mwc-select/mwc-select";
 import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import "@material/mwc-textfield/mwc-textfield";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
@@ -10,9 +7,7 @@ import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type QrScanner from "qr-scanner";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-alert";
 import { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-circular-progress";
@@ -34,10 +29,12 @@ import {
   zwaveSupportsFeature,
   zwaveValidateDskAndEnterPin,
   ZWaveFeature,
+  PlannedProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
+import "../../../../../components/ha-qr-scanner";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -53,6 +50,7 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _status?:
     | "loading"
     | "started"
+    | "started_specific"
     | "choose_strategy"
     | "qr_scan"
     | "interviewing"
@@ -85,13 +83,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  private _cameras?: QrScanner.Camera[];
-
-  private _qrScanner?: QrScanner;
-
   private _qrProcessing = false;
-
-  private _qrNotFoundCount = 0;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -106,8 +98,6 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   @query("#pin-input") private _pinInput?: PaperInputElement;
-
-  @query("video") private _videoEl?: HTMLVideoElement;
 
   protected render(): TemplateResult {
     if (!this._entryId) {
@@ -186,36 +176,10 @@ class DialogZWaveJSAddNode extends LitElement {
                 Search device
               </mwc-button>`
           : this._status === "qr_scan"
-          ? html`${this._cameras && this._cameras.length > 1
-                ? html`<mwc-select
-                    .label=${this.hass.localize(
-                      "ui.panel.config.zwave_js.add_node.select_camera"
-                    )}
-                    fixedMenuPosition
-                    naturalMenuWidth
-                    @closed=${stopPropagation}
-                    @selected=${this._cameraChanged}
-                  >
-                    ${this._cameras!.map(
-                      (camera) => html`
-                        <mwc-list-item .value=${camera.id}
-                          >${camera.label}</mwc-list-item
-                        >
-                      `
-                    )}
-                  </mwc-select>`
-                : ""}
-              ${this._error
-                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-                : ""}
-              ${navigator.mediaDevices
-                ? html`<div class="canvas-container"></div>
-                    <video></video>`
-                : html`<ha-alert alert-type="warning"
-                    >${window.location.protocol !== "https:"
-                      ? "You can only use your camera to scan a QR core when using HTTPS."
-                      : "Your browser doesn't support QR scanning."}</ha-alert
-                  >`}
+          ? html`<ha-qr-scanner
+                .localize=${this.hass.localize}
+                @qr-code-scanned=${this._qrCodeScanned}
+              ></ha-qr-scanner>
               <p>
                 If scanning doesn't work, you can enter the QR code value
                 manually:
@@ -224,6 +188,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 .label=${this.hass.localize(
                   "ui.panel.config.zwave_js.add_node.enter_qr_code"
                 )}
+                .disabled=${this._qrProcessing}
                 @keydown=${this._qrKeyDown}
               ></mwc-textfield>`
           : this._status === "validate_dsk_enter_pin"
@@ -310,6 +275,18 @@ class DialogZWaveJSAddNode extends LitElement {
                 Retry
               </mwc-button>
             `
+          : this._status === "started_specific"
+          ? html`<h3>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.searching_device"
+                )}
+              </h3>
+              <ha-circular-progress active></ha-circular-progress>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.follow_device_instructions"
+                )}
+              </p>`
           : this._status === "started"
           ? html`
               <div class="select-inclusion">
@@ -360,9 +337,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   : ""}
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.cancel_inclusion"
-                )}
+                ${this.hass.localize("ui.common.cancel")}
               </mwc-button>
             `
           : this._status === "interviewing"
@@ -529,62 +504,28 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private async _scanQRCode(): Promise<void> {
     this._unsubscribe();
-    this._status = "loading";
-    if (navigator.mediaDevices) {
-      const QrScanner = (await import("qr-scanner")).default;
-      if (!(await QrScanner.hasCamera())) {
-        this._error = "No camera found";
-        return;
-      }
-      QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
-      this._cameras = await QrScanner.listCameras(true);
-      this._status = "qr_scan";
-      await this.updateComplete;
-      this._qrScanner = new QrScanner(
-        this._videoEl!,
-        this._qrCodeScanned,
-        this._qrCodeError
-      );
-      try {
-        await this._qrScanner.start();
-      } catch (err: any) {
-        this._error = err;
-        return;
-      }
-      this.shadowRoot
-        ?.querySelector(".canvas-container")
-        // @ts-ignore
-        ?.appendChild(this._qrScanner.$canvas);
-      // @ts-ignore
-      this._qrScanner.$canvas.style.display = "block";
-    } else {
-      this._status = "qr_scan";
-    }
+    this._status = "qr_scan";
   }
 
   private _qrKeyDown(ev: KeyboardEvent) {
+    if (this._qrProcessing) {
+      return;
+    }
     if (ev.key === "Enter") {
-      this._qrCodeScanned((ev.target as TextField).value);
+      this._handleQrCodeScanned((ev.target as TextField).value);
     }
   }
 
-  private _qrCodeError = (err: any) => {
-    if (err === "No QR code found") {
-      this._qrNotFoundCount++;
-      if (this._qrNotFoundCount === 250) {
-        this._error = err;
-      }
+  private _qrCodeScanned(ev: CustomEvent): void {
+    if (this._qrProcessing) {
       return;
     }
-    this._error = err.message || err;
-    // eslint-disable-next-line no-console
-    console.log(err);
-  };
+    this._handleQrCodeScanned(ev.detail.value);
+  }
 
-  private _qrCodeScanned = async (qrCodeString: string): Promise<void> => {
+  private async _handleQrCodeScanned(qrCodeString: string): Promise<void> {
     this._error = undefined;
-    this._qrNotFoundCount = 0;
-    if (this._qrProcessing) {
+    if (this._status !== "qr_scan" || this._qrProcessing) {
       return;
     }
     this._qrProcessing = true;
@@ -608,27 +549,34 @@ class DialogZWaveJSAddNode extends LitElement {
       this._error = err.message;
       return;
     }
-    this._qrScanner!.stop();
-    this._qrScanner!.destroy();
-    this._qrScanner = undefined;
-    this._qrProcessing = false;
     this._status = "loading";
-    try {
-      await provisionZwaveSmartStartNode(
-        this.hass,
-        this._entryId!,
-        undefined,
-        provisioningInfo
-      );
-      this._status = "provisioned";
-    } catch (err: any) {
-      this._error = err.message;
+    // wait for QR scanner to be removed before resetting qr processing
+    this.updateComplete.then(() => {
+      this._qrProcessing = false;
+    });
+    if (provisioningInfo.version === 1) {
+      try {
+        await provisionZwaveSmartStartNode(
+          this.hass,
+          this._entryId!,
+          provisioningInfo
+        );
+        this._status = "provisioned";
+      } catch (err: any) {
+        this._error = err.message;
+        this._status = "failed";
+      }
+    } else if (provisioningInfo.version === 0) {
+      this._inclusionStrategy = InclusionStrategy.Security_S2;
+      // this._startInclusion(provisioningInfo);
+      this._startInclusion(undefined, undefined, {
+        dsk: "34673-15546-46480-39591-32400-22155-07715-45994",
+        security_classes: [0, 1, 7],
+      });
+    } else {
+      this._error = "This QR code is not supported";
       this._status = "failed";
     }
-  };
-
-  private _cameraChanged(ev: CustomEvent): void {
-    this._qrScanner?.setCamera((ev.target as Select).value);
   }
 
   private _handlePinKeyUp(ev: KeyboardEvent) {
@@ -682,19 +630,26 @@ class DialogZWaveJSAddNode extends LitElement {
         ZWaveFeature.SmartStart
       )
     ).supported;
+    this._supportsSmartStart = true;
   }
 
-  private _startInclusion(): void {
+  private _startInclusion(
+    qrProvisioningInformation?: QRProvisioningInformation,
+    qrCodeString?: string,
+    plannedProvisioningEntry?: PlannedProvisioningEntry
+  ): void {
     if (!this.hass) {
       return;
     }
     this._lowSecurity = false;
+    const specificDevice =
+      qrProvisioningInformation || qrCodeString || plannedProvisioningEntry;
     this._subscribed = subscribeAddZwaveNode(
       this.hass,
       this._entryId!,
       (message) => {
         if (message.event === "inclusion started") {
-          this._status = "started";
+          this._status = specificDevice ? "started_specific" : "started";
         }
         if (message.event === "inclusion failed") {
           this._unsubscribe();
@@ -749,7 +704,10 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         }
       },
-      this._inclusionStrategy
+      this._inclusionStrategy,
+      qrProvisioningInformation,
+      qrCodeString,
+      plannedProvisioningEntry
     );
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
@@ -783,12 +741,6 @@ class DialogZWaveJSAddNode extends LitElement {
     this._device = undefined;
     this._stages = undefined;
     this._error = undefined;
-    this._qrNotFoundCount = 0;
-    if (this._qrScanner) {
-      this._qrScanner.stop();
-      this._qrScanner.destroy();
-      this._qrScanner = undefined;
-    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -864,15 +816,6 @@ class DialogZWaveJSAddNode extends LitElement {
             margin-left: 0;
             margin-top: 16px;
           }
-        }
-
-        canvas {
-          width: 100%;
-        }
-
-        mwc-select {
-          width: 100%;
-          margin-bottom: 16px;
         }
 
         mwc-textfield {

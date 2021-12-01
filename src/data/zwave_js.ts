@@ -88,10 +88,10 @@ export interface QRProvisioningInformation {
   supportedProtocols?: Protocols[] | undefined;
 }
 
-interface PlannedProvisioningEntry {
+export interface PlannedProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
-  securityClasses: SecurityClass[];
+  security_classes: SecurityClass[];
 }
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
@@ -269,12 +269,18 @@ export const subscribeAddZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   callbackFunction: (message: any) => void,
-  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default
+  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
+  qr_provisioning_information?: QRProvisioningInformation,
+  qr_code_string?: string,
+  planned_provisioning_entry?: PlannedProvisioningEntry
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage((message) => callbackFunction(message), {
     type: "zwave_js/add_node",
     entry_id: entry_id,
     inclusion_strategy,
+    qr_code_string,
+    qr_provisioning_information,
+    planned_provisioning_entry,
   });
 
 export const stopZwaveInclusion = (hass: HomeAssistant, entry_id: string) =>
@@ -332,8 +338,8 @@ export const zwaveParseQrCode = (
 export const provisionZwaveSmartStartNode = (
   hass: HomeAssistant,
   entry_id: string,
-  qr_code_string?: string,
   qr_provisioning_information?: QRProvisioningInformation,
+  qr_code_string?: string,
   planned_provisioning_entry?: PlannedProvisioningEntry
 ): Promise<QRProvisioningInformation> =>
   hass.callWS({
