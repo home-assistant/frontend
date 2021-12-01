@@ -32,9 +32,9 @@ import {
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
 import {
-  fetchNodeConfigParameters,
-  fetchNodeMetadata,
-  setNodeConfigParameter,
+  fetchZwaveNodeConfigParameters,
+  fetchZwaveNodeMetadata,
+  setZwaveNodeConfigParameter,
   ZWaveJSNodeConfigParams,
   ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
@@ -377,7 +377,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private async _updateConfigParameter(target, value) {
     const nodeId = getNodeId(this._device!);
     try {
-      const result = await setNodeConfigParameter(
+      const result = await setZwaveNodeConfigParameter(
         this.hass,
         this.configEntryId!,
         nodeId!,
@@ -429,8 +429,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
 
     [this._nodeMetadata, this._config] = await Promise.all([
-      fetchNodeMetadata(this.hass, this.configEntryId, nodeId!),
-      fetchNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeMetadata(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
     ]);
   }
 

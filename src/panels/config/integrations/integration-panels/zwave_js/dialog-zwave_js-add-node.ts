@@ -1,30 +1,40 @@
 import "@material/mwc-button/mwc-button";
-import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import type { TextField } from "@material/mwc-textfield/mwc-textfield";
+import "@material/mwc-textfield/mwc-textfield";
+import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
+import { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-radio";
 import "../../../../../components/ha-switch";
 import {
-  grantSecurityClasses,
+  zwaveGrantSecurityClasses,
   InclusionStrategy,
+  MINIMUM_QR_STRING_LENGTH,
+  zwaveParseQrCode,
+  provisionZwaveSmartStartNode,
+  QRProvisioningInformation,
   RequestedGrant,
   SecurityClass,
-  stopInclusion,
-  subscribeAddNode,
-  validateDskAndEnterPin,
+  stopZwaveInclusion,
+  subscribeAddZwaveNode,
+  zwaveSupportsFeature,
+  zwaveValidateDskAndEnterPin,
+  ZWaveFeature,
+  PlannedProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
-import "../../../../../components/ha-radio";
-import { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-alert";
+import "../../../../../components/ha-qr-scanner";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -40,11 +50,14 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _status?:
     | "loading"
     | "started"
+    | "started_specific"
     | "choose_strategy"
+    | "qr_scan"
     | "interviewing"
     | "failed"
     | "timed_out"
     | "finished"
+    | "provisioned"
     | "validate_dsk_enter_pin"
     | "grant_security_classes";
 
@@ -64,9 +77,13 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _lowSecurity = false;
 
+  @state() private _supportsSmartStart?: boolean;
+
   private _addNodeTimeoutHandle?: number;
 
   private _subscribed?: Promise<UnsubscribeFunc>;
+
+  private _qrProcessing = false;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -76,6 +93,7 @@ class DialogZWaveJSAddNode extends LitElement {
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
     this._entryId = params.entry_id;
     this._status = "loading";
+    this._checkSmartStartSupport();
     this._startInclusion();
   }
 
@@ -157,6 +175,22 @@ class DialogZWaveJSAddNode extends LitElement {
               >
                 Search device
               </mwc-button>`
+          : this._status === "qr_scan"
+          ? html`<ha-qr-scanner
+                .localize=${this.hass.localize}
+                @qr-code-scanned=${this._qrCodeScanned}
+              ></ha-qr-scanner>
+              <p>
+                If scanning doesn't work, you can enter the QR code value
+                manually:
+              </p>
+              <mwc-textfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.enter_qr_code"
+                )}
+                .disabled=${this._qrProcessing}
+                @keydown=${this._qrKeyDown}
+              ></mwc-textfield>`
           : this._status === "validate_dsk_enter_pin"
           ? html`
                 <p>
@@ -241,18 +275,28 @@ class DialogZWaveJSAddNode extends LitElement {
                 Retry
               </mwc-button>
             `
+          : this._status === "started_specific"
+          ? html`<h3>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.searching_device"
+                )}
+              </h3>
+              <ha-circular-progress active></ha-circular-progress>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.follow_device_instructions"
+                )}
+              </p>`
           : this._status === "started"
           ? html`
-              <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b
-                      >${this.hass.localize(
-                        "ui.panel.config.zwave_js.add_node.controller_in_inclusion_mode"
-                      )}</b
-                    >
-                  </p>
+              <div class="select-inclusion">
+                <div class="outline">
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.searching_device"
+                    )}
+                  </h2>
+                  <ha-circular-progress active></ha-circular-progress>
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -263,15 +307,37 @@ class DialogZWaveJSAddNode extends LitElement {
                       class="link"
                       @click=${this._chooseInclusionStrategy}
                     >
-                      Advanced inclusion
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.add_node.choose_inclusion_strategy"
+                      )}
                     </button>
                   </p>
                 </div>
+                ${this._supportsSmartStart
+                  ? html` <div class="outline">
+                      <h2>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.add_node.qr_code"
+                        )}
+                      </h2>
+                      <ha-svg-icon .path=${mdiQrcodeScan}></ha-svg-icon>
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.add_node.qr_code_paragraph"
+                        )}
+                      </p>
+                      <p>
+                        <mwc-button @click=${this._scanQRCode}>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.add_node.scan_qr_code"
+                          )}
+                        </mwc-button>
+                      </p>
+                    </div>`
+                  : ""}
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.cancel_inclusion"
-                )}
+                ${this.hass.localize("ui.common.cancel")}
               </mwc-button>
             `
           : this._status === "interviewing"
@@ -310,16 +376,18 @@ class DialogZWaveJSAddNode extends LitElement {
           : this._status === "failed"
           ? html`
               <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
                 <div class="status">
-                  <p>
-                    ${this.hass.localize(
+                  <ha-alert
+                    alert-type="error"
+                    .title=${this.hass.localize(
                       "ui.panel.config.zwave_js.add_node.inclusion_failed"
                     )}
-                  </p>
+                  >
+                    ${this._error ||
+                    this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.check_logs"
+                    )}
+                  </ha-alert>
                   ${this._stages
                     ? html` <div class="stages">
                         ${this._stages.map(
@@ -391,6 +459,23 @@ class DialogZWaveJSAddNode extends LitElement {
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
+          : this._status === "provisioned"
+          ? html` <div class="flex-container">
+                <ha-svg-icon
+                  .path=${mdiCheckCircle}
+                  class="success"
+                ></ha-svg-icon>
+                <div class="status">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.add_node.provisioning_finished"
+                    )}
+                  </p>
+                </div>
+              </div>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+              </mwc-button>`
           : ""}
       </ha-dialog>
     `;
@@ -417,6 +502,83 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   }
 
+  private async _scanQRCode(): Promise<void> {
+    this._unsubscribe();
+    this._status = "qr_scan";
+  }
+
+  private _qrKeyDown(ev: KeyboardEvent) {
+    if (this._qrProcessing) {
+      return;
+    }
+    if (ev.key === "Enter") {
+      this._handleQrCodeScanned((ev.target as TextField).value);
+    }
+  }
+
+  private _qrCodeScanned(ev: CustomEvent): void {
+    if (this._qrProcessing) {
+      return;
+    }
+    this._handleQrCodeScanned(ev.detail.value);
+  }
+
+  private async _handleQrCodeScanned(qrCodeString: string): Promise<void> {
+    this._error = undefined;
+    if (this._status !== "qr_scan" || this._qrProcessing) {
+      return;
+    }
+    this._qrProcessing = true;
+    if (
+      qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
+      !qrCodeString.startsWith("90")
+    ) {
+      this._qrProcessing = false;
+      this._error = `Invalid QR code (${qrCodeString})`;
+      return;
+    }
+    let provisioningInfo: QRProvisioningInformation;
+    try {
+      provisioningInfo = await zwaveParseQrCode(
+        this.hass,
+        this._entryId!,
+        qrCodeString
+      );
+    } catch (err: any) {
+      this._qrProcessing = false;
+      this._error = err.message;
+      return;
+    }
+    this._status = "loading";
+    // wait for QR scanner to be removed before resetting qr processing
+    this.updateComplete.then(() => {
+      this._qrProcessing = false;
+    });
+    if (provisioningInfo.version === 1) {
+      try {
+        await provisionZwaveSmartStartNode(
+          this.hass,
+          this._entryId!,
+          provisioningInfo
+        );
+        this._status = "provisioned";
+      } catch (err: any) {
+        this._error = err.message;
+        this._status = "failed";
+      }
+    } else if (provisioningInfo.version === 0) {
+      this._inclusionStrategy = InclusionStrategy.Security_S2;
+      // this._startInclusion(provisioningInfo);
+      this._startInclusion(undefined, undefined, {
+        dsk: "34673-15546-46480-39591-32400-22155-07715-45994",
+        security_classes: [0, 1, 7],
+      });
+    } else {
+      this._error = "This QR code is not supported";
+      this._status = "failed";
+    }
+  }
+
   private _handlePinKeyUp(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
       this._validateDskAndEnterPin();
@@ -427,7 +589,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "loading";
     this._error = undefined;
     try {
-      await validateDskAndEnterPin(
+      await zwaveValidateDskAndEnterPin(
         this.hass,
         this._entryId!,
         this._pinInput!.value as string
@@ -442,7 +604,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "loading";
     this._error = undefined;
     try {
-      await grantSecurityClasses(
+      await zwaveGrantSecurityClasses(
         this.hass,
         this._entryId!,
         this._securityClasses
@@ -460,17 +622,33 @@ class DialogZWaveJSAddNode extends LitElement {
     this._startInclusion();
   }
 
-  private _startInclusion(): void {
+  private async _checkSmartStartSupport() {
+    this._supportsSmartStart = (
+      await zwaveSupportsFeature(
+        this.hass,
+        this._entryId!,
+        ZWaveFeature.SmartStart
+      )
+    ).supported;
+  }
+
+  private _startInclusion(
+    qrProvisioningInformation?: QRProvisioningInformation,
+    qrCodeString?: string,
+    plannedProvisioningEntry?: PlannedProvisioningEntry
+  ): void {
     if (!this.hass) {
       return;
     }
     this._lowSecurity = false;
-    this._subscribed = subscribeAddNode(
+    const specificDevice =
+      qrProvisioningInformation || qrCodeString || plannedProvisioningEntry;
+    this._subscribed = subscribeAddZwaveNode(
       this.hass,
       this._entryId!,
       (message) => {
         if (message.event === "inclusion started") {
-          this._status = "started";
+          this._status = specificDevice ? "started_specific" : "started";
         }
         if (message.event === "inclusion failed") {
           this._unsubscribe();
@@ -491,7 +669,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
         if (message.event === "grant security classes") {
           if (this._inclusionStrategy === undefined) {
-            grantSecurityClasses(
+            zwaveGrantSecurityClasses(
               this.hass,
               this._entryId!,
               message.requested_grant.securityClasses,
@@ -525,7 +703,10 @@ class DialogZWaveJSAddNode extends LitElement {
           }
         }
       },
-      this._inclusionStrategy
+      this._inclusionStrategy,
+      qrProvisioningInformation,
+      qrCodeString,
+      plannedProvisioningEntry
     );
     this._addNodeTimeoutHandle = window.setTimeout(() => {
       this._unsubscribe();
@@ -539,7 +720,7 @@ class DialogZWaveJSAddNode extends LitElement {
       this._subscribed = undefined;
     }
     if (this._entryId) {
-      stopInclusion(this.hass, this._entryId);
+      stopZwaveInclusion(this.hass, this._entryId);
     }
     this._requestedGrant = undefined;
     this._dsk = undefined;
@@ -558,6 +739,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = undefined;
     this._device = undefined;
     this._stages = undefined;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -576,10 +758,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .warning {
           color: var(--warning-color);
-        }
-
-        .failed {
-          color: var(--error-color);
         }
 
         .stages {
@@ -608,6 +786,39 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .flex-column ha-formfield {
           padding: 8px 0;
+        }
+
+        .select-inclusion {
+          display: flex;
+          align-items: center;
+        }
+
+        .select-inclusion .outline:nth-child(2) {
+          margin-left: 16px;
+        }
+
+        .select-inclusion .outline {
+          border: 1px solid var(--divider-color);
+          border-radius: 4px;
+          padding: 16px;
+          min-height: 250px;
+          text-align: center;
+          flex: 1;
+        }
+
+        @media all and (max-width: 500px) {
+          .select-inclusion {
+            flex-direction: column;
+          }
+
+          .select-inclusion .outline:nth-child(2) {
+            margin-left: 0;
+            margin-top: 16px;
+          }
+        }
+
+        mwc-textfield {
+          width: 100%;
         }
 
         ha-svg-icon {

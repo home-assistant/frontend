@@ -10,8 +10,8 @@ import {
   computeDeviceName,
 } from "../../../../../data/device_registry";
 import {
-  fetchNetworkStatus,
-  healNode,
+  fetchZwaveNetworkStatus,
+  healZwaveNode,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -206,7 +206,7 @@ class DialogZWaveJSHealNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchNetworkStatus(
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
       this.hass!,
       this.entry_id!
     );
@@ -221,7 +221,11 @@ class DialogZWaveJSHealNode extends LitElement {
     }
     this._status = "started";
     try {
-      this._status = (await healNode(this.hass, this.entry_id!, this.node_id!))
+      this._status = (await healZwaveNode(
+        this.hass,
+        this.entry_id!,
+        this.node_id!
+      ))
         ? "finished"
         : "failed";
     } catch (err: any) {
