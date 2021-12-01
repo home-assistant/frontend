@@ -13,6 +13,8 @@ import { HomeAssistant } from "../../../types";
 class HaConfigNavigation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property() public showAdvanced!: boolean;
 
   @property() public pages!: PageNavigation[];
@@ -64,7 +66,7 @@ class HaConfigNavigation extends LitElement {
                           </div>
                         `}
                   </paper-item-body>
-                  <ha-icon-next></ha-icon-next>
+                  ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
                 </paper-icon-item>
               </a>
             `
