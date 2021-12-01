@@ -32,6 +32,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-svg-icon";
 import {
   computeDeviceName,
@@ -41,6 +42,7 @@ import {
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import {
   activateScene,
@@ -120,6 +122,22 @@ export class HaSceneEditor extends SubscribeMixin(
   @state() private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
   private _activateContextId?: string;
+
+  @state() private _saving = false;
+
+  // undefined means not set in this session
+  // null means picked nothing.
+  @state() private _updatedAreaId?: string | null;
+
+  // Callback to be called when scene is set.
+  private _scenesSet?: () => void;
+
+  private _getRegistryAreaId = memoizeOne(
+    (entries: EntityRegistryEntry[], entity_id: string) => {
+      const entry = entries.find((ent) => ent.entity_id === entity_id);
+      return entry ? entry.area_id : null;
+    }
+  );
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -287,6 +305,16 @@ export class HaSceneEditor extends SubscribeMixin(
                         @value-changed=${this._valueChanged}
                       >
                       </ha-icon-picker>
+                      <ha-area-picker
+                        .hass=${this.hass}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.scene.editor.area"
+                        )}
+                        .name=${"area"}
+                        .value=${this._sceneAreaIdWithUpdates || ""}
+                        @value-changed=${this._areaChanged}
+                      >
+                      </ha-area-picker>
                     </div>
                   </ha-card>
                 </ha-config-section>
@@ -444,8 +472,9 @@ export class HaSceneEditor extends SubscribeMixin(
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.scene.editor.save")}
           extended
+          .disabled=${this._saving}
           @click=${this._saveScene}
-          class=${classMap({ dirty: this._dirty })}
+          class=${classMap({ dirty: this._dirty, saving: this._saving })}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -474,12 +503,15 @@ export class HaSceneEditor extends SubscribeMixin(
       this._config = {
         name: this.hass.localize("ui.panel.config.scene.editor.default_name"),
         entities: {},
-        ...initData,
+        ...initData?.config,
       };
       this._initEntities(this._config);
-      if (initData) {
-        this._dirty = true;
+      if (initData?.areaId) {
+        this._updatedAreaId = initData.areaId;
       }
+      this._dirty =
+        initData !== undefined &&
+        (initData.areaId !== undefined || initData.config !== undefined);
     }
 
     if (changedProps.has("_entityRegistryEntries")) {
@@ -513,6 +545,9 @@ export class HaSceneEditor extends SubscribeMixin(
       !this._scene
     ) {
       this._setScene();
+    }
+    if (this._scenesSet && changedProps.has("scenes")) {
+      this._scenesSet();
     }
   }
 
@@ -689,6 +724,21 @@ export class HaSceneEditor extends SubscribeMixin(
     this._dirty = true;
   }
 
+  private _areaChanged(ev: CustomEvent) {
+    const newValue = ev.detail.value === "" ? null : ev.detail.value;
+
+    if (newValue === (this._sceneAreaIdWithUpdates || "")) {
+      return;
+    }
+
+    if (newValue === this._sceneAreaIdCurrent) {
+      this._updatedAreaId = undefined;
+    } else {
+      this._updatedAreaId = newValue;
+      this._dirty = true;
+    }
+  }
+
   private _stateChanged(event: HassEvent) {
     if (
       event.context.id !== this._activateContextId &&
@@ -749,13 +799,16 @@ export class HaSceneEditor extends SubscribeMixin(
       // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-    showSceneEditor({
-      ...this._config,
-      id: undefined,
-      name: `${this._config?.name} (${this.hass.localize(
-        "ui.panel.config.scene.picker.duplicate"
-      )})`,
-    });
+    showSceneEditor(
+      {
+        ...this._config,
+        id: undefined,
+        name: `${this._config?.name} (${this.hass.localize(
+          "ui.panel.config.scene.picker.duplicate"
+        )})`,
+      },
+      this._sceneAreaIdCurrent || undefined
+    );
   }
 
   private _calculateStates(): SceneEntities {
@@ -792,7 +845,41 @@ export class HaSceneEditor extends SubscribeMixin(
     const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
     this._config = { ...this._config!, entities: this._calculateStates() };
     try {
+      this._saving = true;
       await saveScene(this.hass, id, this._config);
+
+      if (this._updatedAreaId !== undefined) {
+        let scene =
+          this._scene ||
+          this.scenes.find(
+            (entity: SceneEntity) => entity.attributes.id === id
+          );
+
+        if (!scene) {
+          try {
+            await new Promise<void>((resolve, reject) => {
+              setTimeout(reject, 3000);
+              this._scenesSet = resolve;
+            });
+            scene = this.scenes.find(
+              (entity: SceneEntity) => entity.attributes.id === id
+            );
+          } catch (err) {
+            // We do nothing.
+          } finally {
+            this._scenesSet = undefined;
+          }
+        }
+
+        if (scene) {
+          await updateEntityRegistryEntry(this.hass, scene.entity_id, {
+            area_id: this._updatedAreaId,
+          });
+        }
+
+        this._updatedAreaId = undefined;
+      }
+
       this._dirty = false;
 
       if (!this.sceneId) {
@@ -804,11 +891,28 @@ export class HaSceneEditor extends SubscribeMixin(
         message: err.body.message || err.message,
       });
       throw err;
+    } finally {
+      this._saving = false;
     }
   }
 
   protected handleKeyboardSave() {
     this._saveScene();
+  }
+
+  private get _sceneAreaIdWithUpdates(): string | undefined | null {
+    return this._updatedAreaId !== undefined
+      ? this._updatedAreaId
+      : this._sceneAreaIdCurrent;
+  }
+
+  private get _sceneAreaIdCurrent(): string | undefined | null {
+    return this._scene
+      ? this._getRegistryAreaId(
+          this._entityRegistryEntries,
+          this._scene.entity_id
+        )
+      : undefined;
   }
 
   static get styles(): CSSResultGroup {
@@ -876,6 +980,9 @@ export class HaSceneEditor extends SubscribeMixin(
         }
         ha-fab.dirty {
           bottom: 0;
+        }
+        ha-fab.saving {
+          opacity: var(--light-disabled-opacity);
         }
       `,
     ];

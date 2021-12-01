@@ -18,10 +18,15 @@ export const SCENE_IGNORED_DOMAINS = [
   "zone",
 ];
 
-let inititialSceneEditorData: Partial<SceneConfig> | undefined;
+let inititialSceneEditorData:
+  | { config?: Partial<SceneConfig>; areaId?: string }
+  | undefined;
 
-export const showSceneEditor = (data?: Partial<SceneConfig>) => {
-  inititialSceneEditorData = data;
+export const showSceneEditor = (
+  config?: Partial<SceneConfig>,
+  areaId?: string
+) => {
+  inititialSceneEditorData = { config, areaId };
   navigate("/config/scene/edit/new");
 };
 
