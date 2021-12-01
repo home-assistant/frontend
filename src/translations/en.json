@@ -1900,6 +1900,7 @@
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "name": "Name",
             "icon": "Icon",
+            "area": "Area",
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
