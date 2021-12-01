@@ -9139,6 +9139,7 @@ fsevents@^1.2.7:
     prettier: ^2.4.1
     proxy-polyfill: ^0.3.2
     punycode: ^2.1.1
+    qr-scanner: ^1.3.0
     qrcode: ^1.4.4
     regenerator-runtime: ^0.13.8
     require-dir: ^1.2.0
@@ -13004,6 +13005,13 @@ fsevents@^1.2.7:
   dependencies:
     escape-goat: ^2.0.0
   checksum: d9f6a6187f9d03d26d31956c1769958f44cf4d687f4971cbf04c4c674cd3afa40407e71d6361095fe31bb0161e3f503eae8d6e71fcfdd7a1b758238ede62d780
+  languageName: node
+  linkType: hard
+
+"qr-scanner@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "qr-scanner@npm:1.3.0"
+  checksum: 421ff00626252d0f9e50550fb550a463166e4d0438baffb469c9450079f1f802f6df22784509bb571ef50ece81aecaadc00f91d442959f37655ad29710c81c8b
   languageName: node
   linkType: hard
 
