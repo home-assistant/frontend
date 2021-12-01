@@ -630,7 +630,6 @@ class DialogZWaveJSAddNode extends LitElement {
         ZWaveFeature.SmartStart
       )
     ).supported;
-    this._supportsSmartStart = true;
   }
 
   private _startInclusion(
