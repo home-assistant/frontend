@@ -13,6 +13,7 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "@material/mwc-list/mwc-list-item";
 import "../../../components/ha-icon-next";
+import "@material/mwc-list/mwc-list";
 
 @customElement("ha-dialog-new-automation")
 class DialogNewAutomation extends LitElement implements HassDialog {
