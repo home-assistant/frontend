@@ -23,6 +23,10 @@ class HaBluePrintPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  public open() {
+    this.shadowRoot!.querySelector("paper-dropdown-menu-light")!.open();
+  }
+
   private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
     if (!blueprints) {
       return [];
