@@ -1,12 +1,12 @@
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-button-menu";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-icon-button";
-import "./ha-svg-icon";
-import { mdiDotsVertical } from "@mdi/js";
 import { HomeAssistant } from "../types";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "./ha-button-menu";
+import "./ha-icon-button";
+import "./ha-svg-icon";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;
@@ -37,13 +37,11 @@ export class HaIconOverflowMenu extends LitElement {
               corner="BOTTOM_START"
               absolute
             >
-              <mwc-icon-button
-                .title=${this.hass.localize("ui.common.menu")}
+              <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
+                .path=${mdiDotsVertical}
                 slot="trigger"
-              >
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
 
               ${this.items.map(
                 (item) => html`

@@ -864,7 +864,8 @@
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
-        "no_template_editor_support": "Templates not supported in visual editor"
+        "no_template_editor_support": "Templates not supported in visual editor",
+        "no_state_array_support": "Multiple state values not supported in visual editor"
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -898,7 +899,6 @@
       "dismiss": "Dismiss"
     },
     "sidebar": {
-      "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
@@ -929,7 +929,7 @@
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to fetch available updates",
           "version_available": "Version {version_available} is available",
-          "show_all_updates": "Show all updates",
+          "more_updates": "+ {count} Updates",
           "show": "show"
         },
         "areas": {
@@ -3030,6 +3030,7 @@
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
             },
             "energy_distribution": {
+              "title_today": "Energy distribution today",
               "grid": "Grid",
               "gas": "Gas",
               "solar": "Solar",

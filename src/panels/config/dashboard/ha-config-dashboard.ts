@@ -1,22 +1,33 @@
-import "./ha-config-updates";
-import { mdiCloudLock } from "@mdi/js";
+import { mdiCellphoneCog, mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import {
+  ExternalConfig,
+  getExternalConfig,
+} from "../../../external_app/external_config";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
-import { extractSearchParam } from "../../../common/url/search-params";
+import "./ha-config-updates";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -32,6 +43,18 @@ class HaConfigDashboard extends LitElement {
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
+
+  @state() private _externalConfig?: ExternalConfig;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    if (this.hass && this.hass.auth.external) {
+      getExternalConfig(this.hass.auth.external).then((conf) => {
+        this._externalConfig = conf;
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -87,30 +110,42 @@ class HaConfigDashboard extends LitElement {
                         ></ha-config-navigation>
                       `
                     : ""}
+                  ${this._externalConfig?.hasSettingsScreen
+                    ? html`
+                        <ha-config-navigation
+                          .hass=${this.hass}
+                          .showAdvanced=${this.showAdvanced}
+                          .pages=${[
+                            {
+                              path: "#external-app-configuration",
+                              name: "Companion App",
+                              description: "Location and notifications",
+                              iconPath: mdiCellphoneCog,
+                              iconColor: "#37474F",
+                              core: true,
+                            },
+                          ]}
+                          @click=${this._handleExternalAppConfiguration}
+                        ></ha-config-navigation>
+                      `
+                    : ""}
                   <ha-config-navigation
                     .hass=${this.hass}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                     .focusedPath=${extractSearchParam("focusedPath")}
                   ></ha-config-navigation>
-                </ha-card>
-                ${!this.showAdvanced
-                  ? html`
-                      <div class="promo-advanced">
-                        ${this.hass.localize(
-                          "ui.panel.config.advanced_mode.hint_enable"
-                        )}
-                        <a href="/profile"
-                          >${this.hass.localize(
-                            "ui.panel.config.advanced_mode.link_profile_page"
-                          )}</a
-                        >.
-                      </div>
-                    `
-                  : ""}`}
+                </ha-card>`}
         </ha-config-section>
       </ha-app-layout>
     `;
+  }
+
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass.auth.external!.fireMessage({
+      type: "config_screen/show",
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -140,14 +175,6 @@ class HaConfigDashboard extends LitElement {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
-        }
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
-          margin-bottom: 24px;
-        }
-        .promo-advanced a {
-          color: var(--secondary-text-color);
         }
         :host([narrow]) ha-card {
           background-color: var(--primary-background-color);

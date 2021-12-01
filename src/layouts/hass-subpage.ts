@@ -91,7 +91,7 @@ class HassSubpage extends LitElement {
         box-sizing: border-box;
       }
       .toolbar a {
-        color: var(--app-header-text-color);
+        color: var(--sidebar-text-color);
         text-decoration: none;
       }
 
