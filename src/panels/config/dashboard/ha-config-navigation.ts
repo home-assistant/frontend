@@ -1,6 +1,13 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
@@ -18,6 +25,21 @@ class HaConfigNavigation extends LitElement {
   @property() public showAdvanced!: boolean;
 
   @property() public pages!: PageNavigation[];
+
+  @property() public focusedPath?: string | null;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (!this.focusedPath) {
+      return;
+    }
+    for (const a of this.shadowRoot!.querySelectorAll("a")) {
+      if (a.href.endsWith(this.focusedPath)) {
+        a.querySelector("paper-icon-item")?.focus();
+        break;
+      }
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
