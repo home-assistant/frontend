@@ -173,7 +173,8 @@ export class HassioBackups extends LitElement {
         clickable
         selectable
         hasFab
-        main-page
+        .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
+        back-path="/config"
         supervisor
       >
         <ha-button-menu

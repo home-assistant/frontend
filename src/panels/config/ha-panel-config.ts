@@ -64,7 +64,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     },
     {
       path: "/config/helpers",
-      name: "Helpers",
+      name: "Automation Helpers",
       description: "Elements that help build automations",
       iconPath: mdiTools,
       iconColor: "#4D2EA4",

@@ -29,7 +29,8 @@ class HassioDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${supervisorTabs(this.hass)}
-        main-page
+        .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
+        back-path="/config"
         supervisor
         hasFab
       >

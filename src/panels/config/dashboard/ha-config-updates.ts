@@ -29,7 +29,7 @@ class HaConfigUpdates extends LitElement {
   @state() private _showAll = false;
 
   protected render(): TemplateResult {
-    if (!this.supervisorUpdates) {
+    if (!this.supervisorUpdates?.length) {
       return html``;
     }
 
