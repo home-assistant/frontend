@@ -315,10 +315,7 @@ class HaAutomationPicker extends LitElement {
   };
 
   private _createNew() {
-    if (
-      isComponentLoaded(this.hass, "cloud") ||
-      isComponentLoaded(this.hass, "blueprint")
-    ) {
+    if (isComponentLoaded(this.hass, "blueprint")) {
       showNewAutomationDialog(this);
     } else {
       navigate("/config/automation/edit/new");
