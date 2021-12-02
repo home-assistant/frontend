@@ -188,13 +188,38 @@ export const DOMAINS_WITH_MORE_INFO = [
   "weather",
 ];
 
-/** Domains that show no more info dialog. */
-export const DOMAINS_HIDE_MORE_INFO = [
+/** Domains that do not show the default more info dialog content (e.g. the attribute section)
+ *  and do not have a separate more info (so not in DOMAINS_WITH_MORE_INFO). */
+export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "input_number",
   "input_select",
   "input_text",
   "number",
   "scene",
+  "select",
+];
+
+/** Domains that render an input element instead of a text value when rendered in a row.
+ *  Those rows should then not show a cursor pointer when hovered (which would normally
+ *  be the default) unless the element itself enforces it (e.g. a button). Also those elements
+ *  should not act as a click target to open the more info dialog (the row name and state icon
+ *  still do of course) as the click might instead e.g. activate the input field that this row shows.
+ */
+export const DOMAINS_INPUT_ROW = [
+  "cover",
+  "fan",
+  "humidifier",
+  "input_boolean",
+  "input_datetime",
+  "input_number",
+  "input_select",
+  "input_text",
+  "light",
+  "lock",
+  "media_player",
+  "number",
+  "scene",
+  "script",
   "select",
 ];
 
