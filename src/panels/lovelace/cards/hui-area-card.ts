@@ -1,4 +1,13 @@
 import "@material/mwc-ripple";
+import {
+  mdiFan,
+  mdiLightbulbMultiple,
+  mdiLightbulbMultipleOff,
+  mdiRun,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
+  mdiWaterPercent,
+} from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -9,14 +18,13 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { navigate } from "../../../common/navigate";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -35,26 +43,32 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { toggleEntity } from "../common/entity/toggle-entity";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
 
-const SENSOR_DOMAINS = new Set(["sensor", "binary_sensor"]);
+const SENSOR_DOMAINS = ["sensor"];
 
-const SENSOR_DEVICE_CLASSES = new Set([
-  "temperature",
-  "humidity",
-  "motion",
-  "door",
-  "aqi",
-]);
+const ALERT_DOMAINS = ["binary_sensor"];
 
-const TOGGLE_DOMAINS = new Set(["light", "fan", "switch"]);
+const DEVICE_CLASSES = {
+  sensor: ["temperature", "humidity"],
+  binary_sensor: ["motion"],
+};
+
+const TOGGLE_DOMAINS = ["light", "switch", "fan"];
+
+const DOMAIN_ICONS = {
+  light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
+  switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
+  fan: { on: mdiFan, off: mdiFan },
+  sensor: { humidity: mdiWaterPercent },
+  binary_sensor: {
+    motion: mdiRun,
+  },
+};
 
 @customElement("hui-area-card")
 export class HuiAreaCard
@@ -80,7 +94,7 @@ export class HuiAreaCard
 
   @state() private _areas?: AreaRegistryEntry[];
 
-  private _memberships = memoizeOne(
+  private _entitiesByDomain = memoizeOne(
     (
       areaId: string,
       devicesInArea: Set<string>,
@@ -97,43 +111,90 @@ export class HuiAreaCard
         )
         .map((entry) => entry.entity_id);
 
-      const sensorEntities: HassEntity[] = [];
-      const entitiesToggle: HassEntity[] = [];
+      const entitiesByDomain: { [domain: string]: HassEntity[] } = {};
 
       for (const entity of entitiesInArea) {
         const domain = computeDomain(entity);
-        if (!TOGGLE_DOMAINS.has(domain) && !SENSOR_DOMAINS.has(domain)) {
+        if (
+          !TOGGLE_DOMAINS.includes(domain) &&
+          !SENSOR_DOMAINS.includes(domain) &&
+          !ALERT_DOMAINS.includes(domain)
+        ) {
           continue;
         }
-
         const stateObj: HassEntity | undefined = states[entity];
 
         if (!stateObj) {
           continue;
         }
 
-        if (entitiesToggle.length < 3 && TOGGLE_DOMAINS.has(domain)) {
-          entitiesToggle.push(stateObj);
+        if (
+          (SENSOR_DOMAINS.includes(domain) || ALERT_DOMAINS.includes(domain)) &&
+          !DEVICE_CLASSES[domain].includes(
+            stateObj.attributes.device_class || ""
+          )
+        ) {
           continue;
         }
 
-        if (
-          sensorEntities.length < 3 &&
-          SENSOR_DOMAINS.has(domain) &&
-          stateObj.attributes.device_class &&
-          SENSOR_DEVICE_CLASSES.has(stateObj.attributes.device_class)
-        ) {
-          sensorEntities.push(stateObj);
+        if (!(domain in entitiesByDomain)) {
+          entitiesByDomain[domain] = [];
         }
-
-        if (sensorEntities.length === 3 && entitiesToggle.length === 3) {
-          break;
-        }
+        entitiesByDomain[domain].push(stateObj);
       }
 
-      return { sensorEntities, entitiesToggle };
+      return entitiesByDomain;
     }
   );
+
+  private _isOn(domain: string, deviceClass?: string): boolean | undefined {
+    const entities = this._entitiesByDomain(
+      this._config!.area,
+      this._devicesInArea(this._config!.area, this._devices!),
+      this._entities!,
+      this.hass.states
+    )[domain];
+    if (!entities) {
+      return undefined;
+    }
+    return (
+      deviceClass
+        ? entities.filter(
+            (entity) => entity.attributes.device_class === deviceClass
+          )
+        : entities
+    ).some((entity) => !STATES_OFF.includes(entity.state));
+  }
+
+  private _average(domain: string, deviceClass?: string): string | undefined {
+    const entities = this._entitiesByDomain(
+      this._config!.area,
+      this._devicesInArea(this._config!.area, this._devices!),
+      this._entities!,
+      this.hass.states
+    )[domain].filter((entity) =>
+      deviceClass ? entity.attributes.device_class === deviceClass : true
+    );
+    if (!entities) {
+      return undefined;
+    }
+    let uom;
+    const values = entities.filter((entity) => {
+      if (!entity.attributes.unit_of_measurement) {
+        return false;
+      }
+      if (!uom) {
+        uom = entity.attributes.unit_of_measurement;
+        return true;
+      }
+      return entity.attributes.unit_of_measurement === uom;
+    });
+    if (!values.length) {
+      return undefined;
+    }
+    const sum = values.reduce((a, b) => a + Number(b.state), 0);
+    return `${formatNumber(sum / values.length, this.hass!.locale)} ${uom}`;
+  }
 
   private _area = memoizeOne(
     (areaId: string | undefined, areas: AreaRegistryEntry[]) =>
@@ -212,22 +273,18 @@ export class HuiAreaCard
       return false;
     }
 
-    const { sensorEntities, entitiesToggle } = this._memberships(
+    const entities = this._entitiesByDomain(
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
       this.hass.states
     );
 
-    for (const stateObj of sensorEntities) {
-      if (oldHass!.states[stateObj.entity_id] !== stateObj) {
-        return true;
-      }
-    }
-
-    for (const stateObj of entitiesToggle) {
-      if (oldHass!.states[stateObj.entity_id] !== stateObj) {
-        return true;
+    for (const domainEntities of Object.values(entities)) {
+      for (const stateObj of domainEntities) {
+        if (oldHass!.states[stateObj.entity_id] !== stateObj) {
+          return true;
+        }
       }
     }
 
@@ -245,13 +302,12 @@ export class HuiAreaCard
       return html``;
     }
 
-    const { sensorEntities, entitiesToggle } = this._memberships(
+    const entitiesByDomain = this._entitiesByDomain(
       this._config.area,
       this._devicesInArea(this._config.area, this._devices),
       this._entities,
       this.hass.states
     );
-
     const area = this._area(this._config.area, this._areas);
 
     if (area === null) {
@@ -262,62 +318,83 @@ export class HuiAreaCard
       `;
     }
 
+    const sensors: TemplateResult[] = [];
+    SENSOR_DOMAINS.forEach((domain) => {
+      if (!(domain in entitiesByDomain)) {
+        return;
+      }
+      DEVICE_CLASSES[domain].forEach((deviceClass) => {
+        if (
+          entitiesByDomain[domain].some(
+            (entity) => entity.attributes.device_class === deviceClass
+          )
+        ) {
+          sensors.push(html`
+            ${DOMAIN_ICONS[domain][deviceClass]
+              ? html`<ha-svg-icon
+                  .path=${DOMAIN_ICONS[domain][deviceClass]}
+                ></ha-svg-icon>`
+              : ""}
+            ${this._average(domain, deviceClass)}
+          `);
+        }
+      });
+    });
+
     return html`
       <ha-card
         style=${styleMap({
           "background-image": `url(${this.hass.hassUrl(area.picture)})`,
         })}
       >
-        <div class="container">
-          <div class="sensors">
-            ${sensorEntities.map(
-              (stateObj) => html`
-                <span
-                  .entity=${stateObj.entity_id}
-                  @click=${this._handleMoreInfo}
-                >
-                  <ha-state-icon .state=${stateObj}></ha-state-icon>
-                  ${computeDomain(stateObj.entity_id) === "binary_sensor"
-                    ? ""
-                    : html`
-                        ${computeStateDisplay(
-                          this.hass!.localize,
-                          stateObj,
-                          this.hass!.locale
-                        )}
-                      `}
-                </span>
-              `
-            )}
+        <div
+          class="container ${this._config.navigation_path ? "navigate" : ""}"
+          @click=${this._handleNavigation}
+        >
+          <div class="alerts">
+            ${ALERT_DOMAINS.map((domain) => {
+              if (!(domain in entitiesByDomain)) {
+                return "";
+              }
+              return DEVICE_CLASSES[domain].map((deviceClass) =>
+                this._isOn(domain, deviceClass)
+                  ? html`
+                      ${DOMAIN_ICONS[domain][deviceClass]
+                        ? html`<ha-svg-icon
+                            .path=${DOMAIN_ICONS[domain][deviceClass]}
+                          ></ha-svg-icon>`
+                        : ""}
+                    `
+                  : ""
+              );
+            })}
           </div>
           <div class="bottom">
-            <div
-              class="name ${this._config.navigation_path ? "navigate" : ""}"
-              @click=${this._handleNavigation}
-            >
-              ${area.name}
+            <div>
+              <div class="name">${area.name}</div>
+              ${sensors.length
+                ? html`<div class="sensors">${sensors}</div>`
+                : ""}
             </div>
             <div class="buttons">
-              ${entitiesToggle.map(
-                (stateObj) => html`
-                  <ha-icon-button
-                    class=${classMap({
-                      off: stateObj.state === "off",
-                    })}
-                    .entity=${stateObj.entity_id}
-                    .actionHandler=${actionHandler({
-                      hasHold: true,
-                    })}
-                    @action=${this._handleAction}
-                  >
-                    <state-badge
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      stateColor
-                    ></state-badge>
-                  </ha-icon-button>
-                `
-              )}
+              ${TOGGLE_DOMAINS.map((domain) => {
+                if (!(domain in entitiesByDomain)) {
+                  return "";
+                }
+
+                const on = this._isOn(domain)!;
+                return TOGGLE_DOMAINS.includes(domain)
+                  ? html`
+                      <ha-icon-button
+                        class=${on ? "on" : "off"}
+                        .path=${DOMAIN_ICONS[domain][on ? "on" : "off"]}
+                        .domain=${domain}
+                        @click=${this._toggle}
+                      >
+                      </ha-icon-button>
+                    `
+                  : "";
+              })}
             </div>
           </div>
         </div>
@@ -343,25 +420,26 @@ export class HuiAreaCard
     }
   }
 
-  private _handleMoreInfo(ev) {
-    const entity = (ev.currentTarget as any).entity;
-    fireEvent(this, "hass-more-info", { entityId: entity });
-  }
-
   private _handleNavigation() {
     if (this._config!.navigation_path) {
       navigate(this._config!.navigation_path);
     }
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    const entity = (ev.currentTarget as any).entity as string;
-    if (ev.detail.action === "hold") {
-      fireEvent(this, "hass-more-info", { entityId: entity });
-    } else if (ev.detail.action === "tap") {
-      toggleEntity(this.hass, entity);
-      forwardHaptic("light");
+  private _toggle(ev: Event) {
+    ev.stopPropagation();
+    const domain = (ev.currentTarget as any).domain as string;
+    if (TOGGLE_DOMAINS.includes(domain)) {
+      this.hass.callService(
+        domain,
+        this._isOn(domain) ? "turn_off" : "turn_on",
+        undefined,
+        {
+          area_id: this._config!.area,
+        }
+      );
     }
+    forwardHaptic("light");
   }
 
   static get styles(): CSSResultGroup {
@@ -376,21 +454,36 @@ export class HuiAreaCard
       .container {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(0, 0, 0, 0.4);
+        background: linear-gradient(
+          0,
+          rgba(33, 33, 33, 0.9) 0%,
+          rgba(33, 33, 33, 0) 45%
+        );
       }
 
       .sensors {
-        color: white;
-        font-size: 18px;
-        flex: 1;
+        color: #e3e3e3;
+        font-size: 16px;
+        --mdc-icon-size: 24px;
+        opacity: 0.6;
+        margin-top: 8px;
+      }
+
+      .alerts {
         padding: 16px;
-        --mdc-icon-size: 28px;
-        cursor: pointer;
+      }
+
+      .alerts ha-svg-icon {
+        background: var(--accent-color);
+        color: var(--text-accent-color, var(--text-primary-color));
+        padding: 8px;
+        border-radius: 50%;
       }
 
       .name {
@@ -402,23 +495,22 @@ export class HuiAreaCard
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 8px 8px 16px;
+        padding: 16px;
       }
 
-      .name.navigate {
+      .navigate {
         cursor: pointer;
-      }
-
-      state-badge {
-        --ha-icon-display: inline;
       }
 
       ha-icon-button {
         color: white;
-        background-color: var(--area-button-color, rgb(175, 175, 175, 0.5));
+        background-color: var(--area-button-color, #727272b2);
         border-radius: 50%;
         margin-left: 8px;
         --mdc-icon-button-size: 44px;
+      }
+      .on {
+        color: var(--paper-item-icon-active-color, #fdd835);
       }
     `;
   }
