@@ -194,7 +194,7 @@ class UpdateAvailableCard extends LitElement {
                 <ha-progress-button
                   .disabled=${!this._version ||
                   (this._shouldCreateBackup &&
-                    this.supervisor.info.state !== "running")}
+                    this.supervisor.info?.state !== "running")}
                   @click=${this._update}
                   raised
                 >
@@ -224,7 +224,11 @@ class UpdateAvailableCard extends LitElement {
   }
 
   get _shouldCreateBackup(): boolean {
-    return this.shadowRoot?.querySelector("ha-checkbox")?.checked || true;
+    const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
+    if (checkbox) {
+      return checkbox.checked;
+    }
+    return true;
   }
 
   get _version(): string {
