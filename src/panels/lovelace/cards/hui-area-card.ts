@@ -362,7 +362,9 @@ export class HuiAreaCard
           ? html`<hui-image
               .config=${this._config}
               .hass=${this.hass}
-              .image=${this.hass.hassUrl(area.picture)}
+              .image=${area.picture
+                ? this.hass.hassUrl(area.picture)
+                : undefined}
               .cameraImage=${cameraEntityId}
               aspectRatio="16:9"
             ></hui-image>`
