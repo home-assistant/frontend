@@ -13,7 +13,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getColorByIndex } from "../../common/color/colors";
+import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import {
@@ -59,6 +59,8 @@ class StatisticsChart extends LitElement {
 
   @state() private _chartOptions?: ChartOptions;
 
+  private _computedStyle?: CSSStyleDeclaration;
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
   }
@@ -70,6 +72,10 @@ class StatisticsChart extends LitElement {
     if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
       this._generateData();
     }
+  }
+
+  public firstUpdated() {
+    this._computedStyle = getComputedStyle(this);
   }
 
   protected render(): TemplateResult {
@@ -261,7 +267,7 @@ class StatisticsChart extends LitElement {
       ) => {
         if (!dataValues) return;
         if (timestamp > endTime) {
-          // Drop datapoints that are after the requested endTime. This could happen if
+          // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
@@ -280,7 +286,7 @@ class StatisticsChart extends LitElement {
         prevValues = dataValues;
       };
 
-      const color = getColorByIndex(colorIndex);
+      const color = getGraphColorByIndex(colorIndex, this._computedStyle!);
       colorIndex++;
 
       const statTypes: this["statTypes"] = [];
