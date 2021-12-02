@@ -9,7 +9,7 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { DOMAINS_NO_POINTER_CLICK_IN_ROW } from "../../../common/const";
+import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -144,7 +144,7 @@ class HuiGenericEntityRow extends LitElement {
               : ""}
           </div>`
         : html``}
-      ${!DOMAINS_NO_POINTER_CLICK_IN_ROW.includes(domain)
+      ${!DOMAINS_INPUT_ROW.includes(domain)
         ? html` <div
             class="text-content ${classMap({
               pointer,
