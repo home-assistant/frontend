@@ -58,8 +58,14 @@ class DialogNewAutomation extends LitElement implements HassDialog {
           </mwc-list-item>
           <li divider role="separator"></li>
           <mwc-list-item hasmeta twoline @click=${this._blank}>
-            Start empty
-            <span slot="secondary">Create a new automation from scratch</span>
+            ${this.hass.localize(
+              "ui.panel.config.automation.dialog_new.start_empty"
+            )}
+            <span slot="secondary">
+              ${this.hass.localize(
+                "ui.panel.config.automation.dialog_new.start_empty_description"
+              )}
+            </span>
             <ha-icon-next slot="meta"></ha-icon-next
           ></mwc-list-item>
         </mwc-list>
