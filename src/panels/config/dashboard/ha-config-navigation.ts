@@ -47,7 +47,7 @@ class HaConfigNavigation extends LitElement {
         canShowPage(this.hass, page)
           ? html`
               <a href=${page.path} aria-role="option" tabindex="-1">
-                <paper-icon-item>
+                <paper-icon-item @click=${this._entryClicked}>
                   <div
                     class=${page.iconColor ? "icon-background" : ""}
                     slot="item-icon"
@@ -95,6 +95,10 @@ class HaConfigNavigation extends LitElement {
           : ""
       )}
     `;
+  }
+
+  private _entryClicked(ev) {
+    ev.currentTarget.blur();
   }
 
   static get styles(): CSSResultGroup {
