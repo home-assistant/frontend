@@ -42,8 +42,7 @@ class HassioDashboard extends LitElement {
           )}
         </span>
         <div class="content">
-          ${this.hass.config.version.includes("dev") ||
-          !atLeastVersion(this.hass.config.version, 2021, 12)
+          ${!atLeastVersion(this.hass.config.version, 2021, 12)
             ? html`
                 <hassio-update
                   .hass=${this.hass}
