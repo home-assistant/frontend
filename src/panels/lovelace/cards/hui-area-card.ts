@@ -38,6 +38,7 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -166,7 +167,11 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         : entities
-    ).some((entity) => !STATES_OFF.includes(entity.state));
+    ).some(
+      (entity) =>
+        !UNAVAILABLE_STATES.includes(entity.state) &&
+        !STATES_OFF.includes(entity.state)
+    );
   }
 
   private _average(domain: string, deviceClass?: string): string | undefined {
