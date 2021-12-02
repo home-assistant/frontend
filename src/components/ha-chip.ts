@@ -14,11 +14,17 @@ import { customElement, property } from "lit/decorators";
 export class HaChip extends LitElement {
   @property({ type: Boolean }) public hasIcon = false;
 
+  @property({ type: Boolean }) public noText = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="mdc-chip">
         ${this.hasIcon
-          ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
+          ? html`<div
+              class="mdc-chip__icon mdc-chip__icon--leading ${this.noText
+                ? "no-text"
+                : ""}"
+            >
               <slot name="icon"></slot>
             </div>`
           : null}
@@ -50,6 +56,10 @@ export class HaChip extends LitElement {
       .mdc-chip__icon--leading {
         --mdc-icon-size: 20px;
         color: var(--ha-chip-icon-color, var(--ha-chip-text-color));
+      }
+      .mdc-chip
+        .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden).no-text {
+        margin-right: -4px;
       }
     `;
   }
