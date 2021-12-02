@@ -370,9 +370,7 @@ class HaSidebar extends LitElement {
   private _renderPanels(panels: PanelInfo[]) {
     return panels.map((panel) =>
       this._renderPanel(
-        panel.url_path === "hassio"
-          ? "config/dashboard?focusedPath=hassio"
-          : panel.url_path,
+        panel.url_path,
         panel.url_path === this.hass.defaultPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
@@ -395,7 +393,11 @@ class HaSidebar extends LitElement {
     return html`
       <a
         aria-role="option"
-        href=${`/${urlPath}`}
+        href=${`/${
+          urlPath === "hassio"
+            ? "config/dashboard/?focusedPath=hassio"
+            : urlPath
+        }`}
         data-panel=${urlPath}
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
