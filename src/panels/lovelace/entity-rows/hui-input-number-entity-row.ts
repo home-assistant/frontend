@@ -132,7 +132,6 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     return css`
       :host {
         display: block;
-        cursor: pointer;
       }
       .flex {
         display: flex;
