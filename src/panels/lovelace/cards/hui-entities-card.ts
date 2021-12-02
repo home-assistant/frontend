@@ -134,7 +134,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config.header) {
-      this._headerElement = createHeaderFooterElement(this._config.header);
+      this._headerElement = createHeaderFooterElement(
+        this._config.header
+      ) as LovelaceHeaderFooter;
+      this._headerElement.type = "header";
       if (this._hass) {
         this._headerElement.hass = this._hass;
       }
@@ -143,7 +146,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config.footer) {
-      this._footerElement = createHeaderFooterElement(this._config.footer);
+      this._footerElement = createHeaderFooterElement(
+        this._config.footer
+      ) as LovelaceHeaderFooter;
+      this._footerElement.type = "footer";
       if (this._hass) {
         this._footerElement.hass = this._hass;
       }
