@@ -153,12 +153,7 @@ export const getWeatherUnit = (
   measure: string
 ): string => {
   switch (measure) {
-    case "pressure":
-      return hass.config.unit_system.pressure || "";
-    case "wind_speed":
-      return hass.config.unit_system.wind_speed || "";
     case "visibility":
-    case "length":
       return hass.config.unit_system.length || "";
     case "precipitation":
       return hass.config.unit_system.accumulated_precipitation || "";
