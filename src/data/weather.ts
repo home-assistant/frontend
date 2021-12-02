@@ -152,17 +152,11 @@ export const getWeatherUnit = (
   hass: HomeAssistant,
   measure: string
 ): string => {
-  const lengthUnit = hass.config.unit_system.length || "";
   switch (measure) {
-    case "pressure":
-      return lengthUnit === "km" ? "hPa" : "inHg";
-    case "wind_speed":
-      return `${lengthUnit}/h`;
     case "visibility":
-    case "length":
-      return lengthUnit;
+      return hass.config.unit_system.length || "";
     case "precipitation":
-      return lengthUnit === "km" ? "mm" : "in";
+      return hass.config.unit_system.accumulated_precipitation || "";
     case "humidity":
     case "precipitation_probability":
       return "%";
