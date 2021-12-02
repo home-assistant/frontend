@@ -17,6 +17,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
@@ -346,11 +347,16 @@ export class HuiAreaCard
     return html`
       <ha-card
         style=${styleMap({
-          "background-image": `url(${this.hass.hassUrl(area.picture)})`,
+          "background-image": area.picture
+            ? `url(${this.hass.hassUrl(area.picture)})`
+            : "",
         })}
       >
         <div
-          class="container ${this._config.navigation_path ? "navigate" : ""}"
+          class="container ${classMap({
+            navigate: this._config.navigation_path !== undefined,
+            placeholder: area.picture === null,
+          })}"
           @click=${this._handleNavigation}
         >
           <div class="alerts">
@@ -467,6 +473,15 @@ export class HuiAreaCard
           rgba(33, 33, 33, 0.9) 0%,
           rgba(33, 33, 33, 0) 45%
         );
+      }
+
+      .container.placeholder::before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
       }
 
       .sensors {
