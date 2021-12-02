@@ -18,7 +18,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -54,12 +53,14 @@ const SENSOR_DOMAINS = ["sensor"];
 
 const ALERT_DOMAINS = ["binary_sensor"];
 
+const TOGGLE_DOMAINS = ["light", "switch", "fan"];
+
+const OTHER_DOMAINS = ["camera"];
+
 const DEVICE_CLASSES = {
   sensor: ["temperature"],
   binary_sensor: ["motion"],
 };
-
-const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
@@ -119,7 +120,8 @@ export class HuiAreaCard
         if (
           !TOGGLE_DOMAINS.includes(domain) &&
           !SENSOR_DOMAINS.includes(domain) &&
-          !ALERT_DOMAINS.includes(domain)
+          !ALERT_DOMAINS.includes(domain) &&
+          !OTHER_DOMAINS.includes(domain)
         ) {
           continue;
         }
@@ -344,18 +346,26 @@ export class HuiAreaCard
       });
     });
 
+    let cameraEntityId: string | undefined;
+    if ("camera" in entitiesByDomain) {
+      cameraEntityId = entitiesByDomain.camera[0].entity_id;
+    }
+
     return html`
-      <ha-card
-        style=${styleMap({
-          "background-image": area.picture
-            ? `url(${this.hass.hassUrl(area.picture)})`
-            : "",
-        })}
-      >
+      <ha-card class=${area.picture ? "image" : ""}>
+        ${area.picture || cameraEntityId
+          ? html`<hui-image
+              .config=${this._config}
+              .hass=${this.hass}
+              .image=${this.hass.hassUrl(area.picture)}
+              .cameraImage=${cameraEntityId}
+              aspectRatio="16:9"
+            ></hui-image>`
+          : ""}
+
         <div
           class="container ${classMap({
             navigate: this._config.navigation_path !== undefined,
-            placeholder: area.picture === null,
           })}"
           @click=${this._handleNavigation}
         >
@@ -459,6 +469,10 @@ export class HuiAreaCard
         background-size: cover;
       }
 
+      ha-card.image {
+        padding-bottom: 0;
+      }
+
       .container {
         display: flex;
         flex-direction: column;
@@ -475,7 +489,7 @@ export class HuiAreaCard
         );
       }
 
-      .container.placeholder::before {
+      ha-card:not(.image) .container::before {
         position: absolute;
         content: "";
         width: 100%;
