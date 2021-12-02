@@ -28,7 +28,7 @@ class HaConfigNavigation extends LitElement {
 
   @property() public focusedPath?: string | null;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     if (!this.focusedPath) {
       return;
