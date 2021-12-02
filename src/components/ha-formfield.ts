@@ -5,6 +5,22 @@ import { customElement } from "lit/decorators";
 @customElement("ha-formfield")
 // @ts-expect-error
 export class HaFormfield extends Formfield {
+  protected _labelClick() {
+    const input = this.input;
+    if (input) {
+      input.focus();
+      switch (input.tagName) {
+        case "HA-CHECKBOX":
+        case "HA-RADIO":
+          (input as any).checked = !(input as any).checked;
+          break;
+        default:
+          input.click();
+          break;
+      }
+    }
+  }
+
   protected static get styles(): CSSResultGroup {
     return [
       Formfield.styles,
