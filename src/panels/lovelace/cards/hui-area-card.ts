@@ -54,7 +54,7 @@ const SENSOR_DOMAINS = ["sensor"];
 const ALERT_DOMAINS = ["binary_sensor"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature", "humidity"],
+  sensor: ["temperature"],
   binary_sensor: ["motion"],
 };
 
@@ -193,7 +193,9 @@ export class HuiAreaCard
       return undefined;
     }
     const sum = values.reduce((a, b) => a + Number(b.state), 0);
-    return `${formatNumber(sum / values.length, this.hass!.locale)} ${uom}`;
+    return `${formatNumber(sum / values.length, this.hass!.locale, {
+      maximumFractionDigits: 1,
+    })} ${uom}`;
   }
 
   private _area = memoizeOne(
