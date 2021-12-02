@@ -35,7 +35,11 @@ class HassioDashboard extends LitElement {
         hasFab
       >
         <span slot="header">
-          ${this.supervisor.localize("panel.dashboard")}
+          ${this.supervisor.localize(
+            atLeastVersion(this.hass.config.version, 2021, 12)
+              ? "panel.addons"
+              : "panel.dashboard"
+          )}
         </span>
         <div class="content">
           ${this.hass.config.version.includes("dev") ||
