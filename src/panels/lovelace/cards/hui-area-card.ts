@@ -1,6 +1,5 @@
 import "@material/mwc-ripple";
 import {
-  mdiFan,
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
@@ -23,6 +22,7 @@ import memoizeOne from "memoize-one";
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
@@ -63,7 +63,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
-  fan: { on: mdiFan, off: mdiFan },
+  fan: { on: domainIcon("fan"), off: domainIcon("fan") },
   sensor: { humidity: mdiWaterPercent },
   binary_sensor: {
     motion: mdiRun,
