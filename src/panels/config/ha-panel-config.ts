@@ -74,7 +74,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/hassio",
       name: "Add-ons & Backups",
       description: "Create backups, check logs or reboot your system",
-      iconPath: mdiHomeAssistant,
+      iconPath: mdiPuzzle,
       iconColor: "#4084CD",
       component: "hassio",
     },
