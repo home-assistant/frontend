@@ -60,6 +60,8 @@ export class HuiGraphHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property() public type!: "header" | "footer";
+
   @property() protected _config?: GraphHeaderFooterConfig;
 
   @state() private _coordinates?: number[][];

@@ -1,4 +1,5 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
@@ -18,6 +19,8 @@ export class HuiButtonsHeaderFooter
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property() public type!: "header" | "footer";
 
   @state() private _configEntities?: EntityConfig[];
 
@@ -47,12 +50,43 @@ export class HuiButtonsHeaderFooter
 
   protected render(): TemplateResult | void {
     return html`
+      ${this.type === "footer"
+        ? html`<li class="divider footer" role="separator"></li>`
+        : ""}
       <hui-buttons-base
         .hass=${this.hass}
         .configEntities=${this._configEntities}
+        class=${classMap({
+          footer: this.type === "footer",
+          header: this.type === "header",
+        })}
       ></hui-buttons-base>
+      ${this.type === "header"
+        ? html`<li class="divider header" role="separator"></li>`
+        : ""}
     `;
   }
+
+  static styles = css`
+    .divider {
+      height: 0;
+      margin: 16px 0;
+      list-style-type: none;
+      border: none;
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      border-bottom-color: var(--divider-color);
+    }
+    .divider.header {
+      margin-top: 0;
+    }
+    hui-buttons-base.footer {
+      --padding-bottom: 16px;
+    }
+    hui-buttons-base.header {
+      --padding-top: 16px;
+    }
+  `;
 }
 
 declare global {
