@@ -2,7 +2,7 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getColorByIndex } from "../../common/color/colors";
+import { getGraphColorByIndex } from "../../common/color/colors";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { numberFormatToLocale } from "../../common/number/format_number";
@@ -71,7 +71,7 @@ const getColor = (
     stateColorMap.set(stateString, color);
     return color;
   }
-  const color = getColorByIndex(colorIndex);
+  const color = getGraphColorByIndex(colorIndex, computedStyles);
   colorIndex++;
   stateColorMap.set(stateString, color);
   return color;
