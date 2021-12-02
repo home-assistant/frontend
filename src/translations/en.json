@@ -1440,7 +1440,8 @@
               "input_label": "What should this automation do?",
               "create": "Create"
             },
-            "start_empty": "Start with an empty automation"
+            "start_empty": "Start with an empty automation",
+            "start_empty_description": "Create a new automation from scratch"
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
