@@ -39,6 +39,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { SceneEntity } from "../../../data/scene";
 import { ScriptEntity } from "../../../data/script";
 import { AutomationEntity } from "../../../data/automation";
+import { groupBy } from "../../../common/util/group-by";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -135,14 +136,8 @@ class HaConfigAreaPage extends LitElement {
       this.entities
     );
 
-    const sceneEntities = entities.filter(
-      (entity) => computeDomain(entity.entity_id) === "scene"
-    );
-    const scriptEntities = entities.filter(
-      (entity) => computeDomain(entity.entity_id) === "script"
-    );
-    const automationEntities = entities.filter(
-      (entity) => computeDomain(entity.entity_id) === "automation"
+    const grouped = groupBy(entities, (entity) =>
+      computeDomain(entity.entity_id)
     );
 
     return html`
@@ -269,9 +264,9 @@ class HaConfigAreaPage extends LitElement {
                       "ui.panel.config.devices.automation.automations"
                     )}
                   >
-                    ${automationEntities.length
+                    ${grouped.automation?.length
                       ? html`<h3>Assigned to this area:</h3>
-                          ${automationEntities.map((entity) => {
+                          ${grouped.automation.map((entity) => {
                             const entityState = this.hass.states[
                               entity.entity_id
                             ] as AutomationEntity | undefined;
@@ -282,7 +277,7 @@ class HaConfigAreaPage extends LitElement {
                       : ""}
                     ${this._related?.automation?.filter(
                       (entityId) =>
-                        !automationEntities.find(
+                        !grouped.automation?.find(
                           (entity) => entity.entity_id === entityId
                         )
                     ).length
@@ -296,7 +291,7 @@ class HaConfigAreaPage extends LitElement {
                               : "";
                           })}`
                       : ""}
-                    ${!automationEntities.length &&
+                    ${!grouped.automation?.length &&
                     !this._related?.automation?.length
                       ? html`
                           <paper-item class="no-link"
@@ -318,9 +313,9 @@ class HaConfigAreaPage extends LitElement {
                       "ui.panel.config.devices.scene.scenes"
                     )}
                   >
-                    ${sceneEntities.length
+                    ${grouped.scene?.length
                       ? html`<h3>Assigned to this area:</h3>
-                          ${sceneEntities.map((entity) => {
+                          ${grouped.scene.map((entity) => {
                             const entityState =
                               this.hass.states[entity.entity_id];
                             return entityState
@@ -330,7 +325,7 @@ class HaConfigAreaPage extends LitElement {
                       : ""}
                     ${this._related?.scene?.filter(
                       (entityId) =>
-                        !sceneEntities.find(
+                        !grouped.scene?.find(
                           (entity) => entity.entity_id === entityId
                         )
                     ).length
@@ -342,7 +337,7 @@ class HaConfigAreaPage extends LitElement {
                               : "";
                           })}`
                       : ""}
-                    ${!sceneEntities.length && !this._related?.scene?.length
+                    ${!grouped.scene?.length && !this._related?.scene?.length
                       ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
@@ -361,9 +356,9 @@ class HaConfigAreaPage extends LitElement {
                       "ui.panel.config.devices.script.scripts"
                     )}
                   >
-                    ${scriptEntities.length
+                    ${grouped.script?.length
                       ? html`<h3>Assigned to this area:</h3>
-                          ${scriptEntities.map((entity) => {
+                          ${grouped.script.map((entity) => {
                             const entityState = this.hass.states[
                               entity.entity_id
                             ] as ScriptEntity | undefined;
@@ -374,7 +369,7 @@ class HaConfigAreaPage extends LitElement {
                       : ""}
                     ${this._related?.script?.filter(
                       (entityId) =>
-                        !scriptEntities.find(
+                        !grouped.script?.find(
                           (entity) => entity.entity_id === entityId
                         )
                     ).length
@@ -388,7 +383,7 @@ class HaConfigAreaPage extends LitElement {
                               : "";
                           })}`
                       : ""}
-                    ${!scriptEntities.length && !this._related?.script?.length
+                    ${!grouped.script?.length && !this._related?.script?.length
                       ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
