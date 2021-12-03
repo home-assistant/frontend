@@ -171,7 +171,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               >
                 ${OVERRIDE_DEVICE_CLASSES[domain].map(
                   (deviceClass: string) => html`
-                    <paper-item .itemValue=${String(deviceClass)}>
+                    <paper-item .itemValue=${deviceClass}>
                       ${this.hass.localize(
                         `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                       )}
@@ -307,8 +307,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (ev.detail.value === null) {
       return;
     }
-    const value = (ev.detail.value as any).itemValue;
-    this._deviceClass = value === "null" ? null : value;
+    this._deviceClass = (ev.detail.value as any).itemValue;
   }
 
   private _areaPicked(ev: CustomEvent) {
