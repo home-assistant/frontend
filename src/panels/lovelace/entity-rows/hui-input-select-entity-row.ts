@@ -110,7 +110,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
+      hui-generic-entity-row {
         display: flex;
         align-items: center;
       }
