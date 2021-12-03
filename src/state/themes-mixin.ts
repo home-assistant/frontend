@@ -85,7 +85,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
-      this.hass.themes.theme = themeName;
+      this._updateHass({
+          themes: { ...this.hass.themes!, theme: themeName },
+      });
 
       applyThemesOnElement(
         document.documentElement,
