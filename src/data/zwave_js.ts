@@ -362,7 +362,7 @@ export const provisionZwaveSmartStartNode = (
   planned_provisioning_entry?: PlannedProvisioningEntry
 ): Promise<QRProvisioningInformation> =>
   hass.callWS({
-    type: "zwave_js/unprovision_smart_start_node",
+    type: "zwave_js/provision_smart_start_node",
     entry_id,
     qr_code_string,
     qr_provisioning_information,
