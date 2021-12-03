@@ -50,11 +50,8 @@ export class HaConfigAreasDashboard extends LitElement {
         let noServicesInArea = 0;
         let noEntitiesInArea = 0;
 
-        const devicesInArea = new Set();
-
         for (const device of devices) {
           if (device.area_id === area.area_id) {
-            devicesInArea.add(device.id);
             if (device.entry_type === "service") {
               noServicesInArea++;
             } else {
@@ -64,11 +61,7 @@ export class HaConfigAreasDashboard extends LitElement {
         }
 
         for (const entity of entities) {
-          if (
-            entity.area_id
-              ? entity.area_id === area.area_id
-              : devicesInArea.has(entity.device_id)
-          ) {
+          if (entity.area_id === area.area_id) {
             noEntitiesInArea++;
           }
         }
