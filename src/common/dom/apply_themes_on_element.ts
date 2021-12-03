@@ -24,8 +24,8 @@ let PROCESSED_THEMES: Record<string, ProcessedTheme> = {};
  *
  * element: Element to apply theme on.
  * themes: HASS theme information.
- * selectedTheme: Selected theme.
- * themeSettings: Settings such as selected dark mode and colors.
+ * selectedTheme: Selected theme (used to override the globally active theme for this element).
+ * themeSettings: Settings such as selected colors.
  */
 export const applyThemesOnElement = (
   element,
@@ -34,15 +34,11 @@ export const applyThemesOnElement = (
   themeSettings?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
   // If there is no explicitly desired theme provided, we automatically
-  // use the active one from hass.themes.
-  const themeToApply =
-    selectedTheme ||
-    (themeSettings && themeSettings?.theme !== undefined
-      ? selectedTheme || themeSettings?.theme
-      : themes.theme);
+  // use the active one from `themes`.
+  const themeToApply = selectedTheme || themes.theme;
 
   // If there is no explicitly desired dark mode provided, we automatically
-  // use the active one from hass.themes.
+  // use the active one from `themes`.
   const darkMode =
     themeSettings && themeSettings?.dark !== undefined
       ? themeSettings?.dark
@@ -63,7 +59,7 @@ export const applyThemesOnElement = (
     const primaryColor = themeSettings?.primaryColor;
     const accentColor = themeSettings?.accentColor;
 
-    if (themeSettings?.dark && primaryColor) {
+    if (darkMode && primaryColor) {
       themeRules["app-header-background-color"] = hexBlend(
         primaryColor,
         "#121212",

@@ -159,17 +159,13 @@ export class DemoHaAlert extends LitElement {
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: false,
-      },
-      "default",
-      { dark: true }
-    );
+    applyThemesOnElement(this.shadowRoot!.querySelector(".dark"), {
+      default_theme: "default",
+      default_dark_theme: "default",
+      themes: {},
+      darkMode: true,
+      theme: "default",
+    });
   }
 
   static get styles() {

@@ -38,18 +38,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
-        applyThemesOnElement(
-          document.documentElement,
-          {
-            default_theme: "default",
-            default_dark_theme: null,
-            themes: {},
-            darkMode: false,
-            theme: "default",
-          },
-          "default",
-          { dark: true }
-        );
+        applyThemesOnElement(document.documentElement, {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: true,
+          theme: "default",
+        });
       }
     }
 
