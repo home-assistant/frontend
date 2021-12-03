@@ -1,10 +1,10 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import {
-  startOfToday,
+  addHours,
+  differenceInDays,
   endOfToday,
   isToday,
-  differenceInDays,
-  addHours,
+  startOfToday,
 } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -17,7 +17,7 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { labDarken } from "../../../../common/color/lab";
+import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
@@ -477,10 +477,12 @@ export class HuiEnergyUsageGraphCard
       Object.entries(sources).forEach(([statId, source], idx) => {
         const data: ChartDataset<"bar">[] = [];
         const entity = this.hass.states[statId];
+
+        const modifiedColor = this.hass.themes.darkMode
+          ? labBrighten(rgb2lab(hex2rgb(colors[type])), idx)
+          : labDarken(rgb2lab(hex2rgb(colors[type])), idx);
         const borderColor =
-          idx > 0
-            ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(colors[type])), idx)))
-            : colors[type];
+          idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : colors[type];
 
         data.push({
           label:
