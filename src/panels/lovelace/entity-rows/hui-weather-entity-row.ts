@@ -9,8 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
@@ -67,10 +65,9 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+    const pointer = !(
+      this._config.tap_action && this._config.tap_action.action !== "none"
+    );
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
@@ -106,7 +103,16 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       >
         ${this._config.name || computeStateName(stateObj)}
       </div>
-      <div class="attributes">
+      <div
+        class="attributes ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
         <div>
           ${UNAVAILABLE_STATES.includes(stateObj.state)
             ? computeStateDisplay(

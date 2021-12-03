@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { reinterviewNode } from "../../../../../data/zwave_js";
+import { reinterviewZwaveNode } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSReinterviewNodeDialogParams } from "./show-dialog-zwave_js-reinterview-node";
@@ -157,7 +157,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._subscribed = reinterviewNode(
+    this._subscribed = reinterviewZwaveNode(
       this.hass,
       this.entry_id!,
       this.node_id!,

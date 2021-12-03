@@ -2909,17 +2909,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:6.4.95":
-  version: 6.4.95
-  resolution: "@mdi/js@npm:6.4.95"
-  checksum: 76055821b0b611090f1fadff3cb93b0d2c05f7c52778a0e8966abe1c85d3aae8312c497e91882bb8cb02bf9235edda901da944099553afb2dbacafb11ed40b18
+"@mdi/js@npm:6.5.95":
+  version: 6.5.95
+  resolution: "@mdi/js@npm:6.5.95"
+  checksum: b1db7713d216c119f584bf973514a2f9d8f2e671e91bf19ce8e56cfa7a9843c0a060328e794507ac31f2bded1032123294f39ff8e987ea5acb2719ab522ef146
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:6.4.95":
-  version: 6.4.95
-  resolution: "@mdi/svg@npm:6.4.95"
-  checksum: 118945d58484dfa686b3127fabbbbf8e20c20ce1989d158cd270e3da53e22fd30d3c285e3f5d0472f602a9842f2adb8321d853f85ff397ccf8bfefa846bd729e
+"@mdi/svg@npm:6.5.95":
+  version: 6.5.95
+  resolution: "@mdi/svg@npm:6.5.95"
+  checksum: 2d45221d042d52d54c85eaf672a5f3697ed5201607fa38a6e235ee2e60d1c3c25d456a284f19ce47b5f06418cacfee29e8fecf6580b8c28538fd26044becaf1a
   languageName: node
   linkType: hard
 
@@ -9037,8 +9037,8 @@ fsevents@^1.2.7:
     "@material/mwc-tab-bar": 0.25.3
     "@material/mwc-textfield": 0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0
-    "@mdi/js": 6.4.95
-    "@mdi/svg": 6.4.95
+    "@mdi/js": 6.5.95
+    "@mdi/svg": 6.5.95
     "@open-wc/dev-server-hmr": ^0.0.2
     "@polymer/app-layout": ^3.1.0
     "@polymer/iron-flex-layout": ^3.0.1
@@ -9113,7 +9113,7 @@ fsevents@^1.2.7:
     gulp-rename: ^2.0.0
     gulp-zopfli-green: ^3.0.1
     hls.js: ^1.0.11
-    home-assistant-js-websocket: ^5.11.1
+    home-assistant-js-websocket: ^5.11.3
     html-minifier: ^4.0.0
     husky: ^1.3.1
     idb-keyval: ^5.1.3
@@ -9139,6 +9139,7 @@ fsevents@^1.2.7:
     prettier: ^2.4.1
     proxy-polyfill: ^0.3.2
     punycode: ^2.1.1
+    qr-scanner: ^1.3.0
     qrcode: ^1.4.4
     regenerator-runtime: ^0.13.8
     require-dir: ^1.2.0
@@ -9183,10 +9184,10 @@ fsevents@^1.2.7:
   languageName: unknown
   linkType: soft
 
-"home-assistant-js-websocket@npm:^5.11.1":
-  version: 5.11.1
-  resolution: "home-assistant-js-websocket@npm:5.11.1"
-  checksum: 4b3f4310ea15f758a47082ddde06ed46eeddcae490a59a16dbcec4fb798507a5cc4761b9e880261aed9f83335475abea8356d5239c081774caa335e5e76fba50
+"home-assistant-js-websocket@npm:^5.11.3":
+  version: 5.11.3
+  resolution: "home-assistant-js-websocket@npm:5.11.3"
+  checksum: 3ab90e5105c5f379d77fb23ab53eaec2789be7bf1fd507a7520d9cf329d36942b8e978a591b822cff96100630d43bd036a4e25e2f49c40d0c56a111808fb90a5
   languageName: node
   linkType: hard
 
@@ -13004,6 +13005,13 @@ fsevents@^1.2.7:
   dependencies:
     escape-goat: ^2.0.0
   checksum: d9f6a6187f9d03d26d31956c1769958f44cf4d687f4971cbf04c4c674cd3afa40407e71d6361095fe31bb0161e3f503eae8d6e71fcfdd7a1b758238ede62d780
+  languageName: node
+  linkType: hard
+
+"qr-scanner@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "qr-scanner@npm:1.3.0"
+  checksum: 421ff00626252d0f9e50550fb550a463166e4d0438baffb469c9450079f1f802f6df22784509bb571ef50ece81aecaadc00f91d442959f37655ad29710c81c8b
   languageName: node
   linkType: hard
 

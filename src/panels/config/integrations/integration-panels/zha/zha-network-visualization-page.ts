@@ -233,11 +233,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(neighbor.lqi),
+              color: this._getLQI(parseInt(neighbor.lqi)),
             });
           } else {
             edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + neighbor.lqi) / 2
+              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
             );
             edges[idx].label += "/" + neighbor.lqi;
           }

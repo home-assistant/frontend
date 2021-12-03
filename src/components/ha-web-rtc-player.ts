@@ -80,6 +80,9 @@ class HaWebRtcPlayer extends LitElement {
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
+    peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    peerConnection.addTransceiver("video", { direction: "recvonly" });
+
     const offerOptions: RTCOfferOptions = {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,

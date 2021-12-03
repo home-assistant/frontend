@@ -82,9 +82,9 @@ export class HaDeviceCard extends LitElement {
     const device = devices.find((dev) => dev.id === deviceId);
     return device
       ? computeDeviceName(device, this.hass)
-      : `(${this.hass.localize(
-          "ui.panel.config.integrations.config_entry.device_unavailable"
-        )})`;
+      : `<${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.unknown_via_device"
+        )}>`;
   }
 
   static get styles(): CSSResultGroup {

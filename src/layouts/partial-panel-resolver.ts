@@ -11,7 +11,7 @@ import { deepEqual } from "../common/util/deep-equal";
 import { getDefaultPanel } from "../data/panel";
 import { CustomPanelInfo } from "../data/panel_custom";
 import { HomeAssistant, Panels } from "../types";
-import { removeInitSkeleton } from "../util/init-skeleton";
+import { removeLaunchScreen } from "../util/launch-screen";
 import {
   HassRouterPage,
   RouteOptions,
@@ -226,7 +226,7 @@ class PartialPanelResolver extends HassRouterPage {
     ) {
       await this.rebuild();
       await this.pageRendered;
-      removeInitSkeleton();
+      removeLaunchScreen();
     }
   }
 }

@@ -63,6 +63,13 @@ class DialogThingtalk extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  public closeInitDialog() {
+    if (this._placeholders) {
+      return;
+    }
+    this.closeDialog();
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -82,7 +89,7 @@ class DialogThingtalk extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        @closed=${this.closeInitDialog}
         .heading=${this.hass.localize(
           `ui.panel.config.automation.thingtalk.task_selection.header`
         )}

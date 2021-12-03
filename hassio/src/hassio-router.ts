@@ -35,6 +35,10 @@ class HassioRouter extends HassRouterPage {
       backups: "dashboard",
       store: "dashboard",
       system: "dashboard",
+      "update-available": {
+        tag: "update-available-dashboard",
+        load: () => import("./update-available/update-available-dashboard"),
+      },
       addon: {
         tag: "hassio-addon-dashboard",
         load: () => import("./addon-view/hassio-addon-dashboard"),

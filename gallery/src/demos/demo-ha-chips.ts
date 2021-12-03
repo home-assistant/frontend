@@ -3,6 +3,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-chip";
+import "../../../src/components/ha-chip-set";
 import "../../../src/components/ha-svg-icon";
 
 const chips: {
@@ -22,8 +23,8 @@ const chips: {
   },
 ];
 
-@customElement("demo-ha-chip")
-export class DemoHaChip extends LitElement {
+@customElement("demo-ha-chips")
+export class DemoHaChips extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card header="ha-chip demo">
@@ -41,6 +42,23 @@ export class DemoHaChip extends LitElement {
           )}
         </div>
       </ha-card>
+      <ha-card header="ha-chip-set demo">
+        <div class="card-content">
+          <ha-chip-set>
+            ${chips.map(
+              (chip) => html`
+                <ha-chip .hasIcon=${chip.icon !== undefined}>
+                  ${chip.icon
+                    ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
+                      </ha-svg-icon>`
+                    : ""}
+                  ${chip.content}
+                </ha-chip>
+              `
+            )}
+          </ha-chip-set>
+        </div>
+      </ha-card>
     `;
   }
 
@@ -50,12 +68,19 @@ export class DemoHaChip extends LitElement {
         max-width: 600px;
         margin: 24px auto;
       }
+      ha-chip {
+        margin-bottom: 4px;
+      }
+      .card-content {
+        display: flex;
+        flex-direction: column;
+      }
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-chip": DemoHaChip;
+    "demo-ha-chips": DemoHaChips;
   }
 }

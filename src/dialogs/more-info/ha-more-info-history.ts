@@ -1,3 +1,4 @@
+import { startOfYesterday } from "date-fns";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -22,6 +23,8 @@ export class MoreInfoHistory extends LitElement {
 
   @state() private _stateHistory?: HistoryResult;
 
+  private _showMoreHref = "";
+
   private _throttleGetStateHistory = throttle(() => {
     this._getStateHistory();
   }, 10000);
@@ -31,14 +34,12 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
-    const href = "/history?entity_id=" + this.entityId;
-
     return html`${isComponentLoaded(this.hass, "history")
       ? html` <div class="header">
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
-            <a href=${href} @click=${this._close}
+            <a href=${this._showMoreHref} @click=${this._close}
               >${this.hass.localize(
                 "ui.dialogs.more_info_control.show_more"
               )}</a
@@ -62,6 +63,10 @@ export class MoreInfoHistory extends LitElement {
       if (!this.entityId) {
         return;
       }
+
+      this._showMoreHref = `/history?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       this._throttleGetStateHistory();
       return;

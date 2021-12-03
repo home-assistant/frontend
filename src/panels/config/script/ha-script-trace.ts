@@ -108,7 +108,7 @@ export class HaScriptTrace extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
       >
         ${this.narrow
           ? html`<span slot="header"> ${title} </span>

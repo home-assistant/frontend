@@ -172,6 +172,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           {
             area_id: "",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
+            picture: null,
           },
         ];
       }
@@ -295,6 +296,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           {
             area_id: "",
             name: this.hass.localize("ui.components.area-picker.no_match"),
+            picture: null,
           },
         ];
       }
@@ -306,6 +308,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
             {
               area_id: "add_new",
               name: this.hass.localize("ui.components.area-picker.add_new"),
+              picture: null,
             },
           ];
     }
@@ -340,7 +343,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-value-path="area_id"
         item-id-path="area_id"
         item-label-path="name"
-        .value=${this._value}
+        .value=${this.value}
         .disabled=${this.disabled}
         ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
@@ -431,12 +434,24 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
             name,
           });
           this._areas = [...this._areas!, area];
+          (this.comboBox as any).items = this._getAreas(
+            this._areas!,
+            this._devices!,
+            this._entities!,
+            this.includeDomains,
+            this.excludeDomains,
+            this.includeDeviceClasses,
+            this.deviceFilter,
+            this.entityFilter,
+            this.noAdd
+          );
           this._setValue(area.area_id);
         } catch (err: any) {
           showAlertDialog(this, {
-            text: this.hass.localize(
+            title: this.hass.localize(
               "ui.components.area-picker.add_dialog.failed_create_area"
             ),
+            text: err.message,
           });
         }
       },

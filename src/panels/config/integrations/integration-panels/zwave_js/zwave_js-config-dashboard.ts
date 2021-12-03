@@ -1,21 +1,30 @@
 import "@material/mwc-button/mwc-button";
-import { mdiAlertCircle, mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiCheckCircle,
+  mdiCircle,
+  mdiPlus,
+  mdiRefresh,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../../../data/auth";
 import {
-  fetchDataCollectionStatus,
-  fetchNetworkStatus,
-  fetchNodeStatus,
+  fetchZwaveDataCollectionStatus,
+  fetchZwaveNetworkStatus,
+  fetchZwaveNodeStatus,
+  fetchZwaveProvisioningEntries,
   NodeStatus,
-  setDataCollectionPreference,
+  setZwaveDataCollectionPreference,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
+  ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import {
   ConfigEntry,
@@ -36,6 +45,7 @@ import { showZWaveJSHealNetworkDialog } from "./show-dialog-zwave_js-heal-networ
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import { computeRTL } from "../../../../../common/util/compute_rtl";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends LitElement {
@@ -54,6 +64,8 @@ class ZWaveJSConfigDashboard extends LitElement {
   @state() private _network?: ZWaveJSNetwork;
 
   @state() private _nodes?: ZWaveJSNodeStatus[];
+
+  @state() private _provisioningEntries?: ZwaveJSProvisioningEntry[];
 
   @state() private _status = "unknown";
 
@@ -75,6 +87,9 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+
+    const notReadyDevices =
+      this._nodes?.filter((node) => !node.ready).length ?? 0;
 
     return html`
       <hass-tabs-subpage
@@ -128,31 +143,24 @@ class ZWaveJSConfigDashboard extends LitElement {
                               ${this.hass.localize(
                                 `ui.panel.config.zwave_js.network_status.${this._status}`
                               )}<br />
-                              <small
-                                >${this._network.client.ws_server_url}</small
-                              >
+                              <small>
+                                ${this.hass.localize(
+                                  `ui.panel.config.zwave_js.dashboard.devices`,
+                                  {
+                                    count:
+                                      this._network.controller.nodes.length,
+                                  }
+                                )}
+                                ${notReadyDevices > 0
+                                  ? html`(${this.hass.localize(
+                                      `ui.panel.config.zwave_js.dashboard.not_ready`,
+                                      { count: notReadyDevices }
+                                    )})`
+                                  : ""}
+                              </small>
                             </div>
                           `
                         : ``}
-                    </div>
-                    <div class="secondary">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.driver_version"
-                      )}:
-                      ${this._network.client.driver_version}<br />
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.server_version"
-                      )}:
-                      ${this._network.client.server_version}<br />
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.home_id"
-                      )}:
-                      ${this._network.controller.home_id}<br />
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.nodes_ready"
-                      )}:
-                      ${this._nodes?.filter((node) => node.ready).length ?? 0} /
-                      ${this._network.controller.nodes.length}
                     </div>
                   </div>
                   <div class="card-actions">
@@ -172,22 +180,66 @@ class ZWaveJSConfigDashboard extends LitElement {
                         )}
                       </mwc-button>
                     </a>
-                    <mwc-button @click=${this._addNodeClicked}>
+                    ${this._provisioningEntries?.length
+                      ? html`<a
+                          href=${`provisioned?config_entry=${this.configEntryId}`}
+                          ><mwc-button>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.provisioned_devices"
+                            )}
+                          </mwc-button></a
+                        >`
+                      : ""}
+                  </div>
+                </ha-card>
+                <ha-card header="Diagnostics">
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.driver_version"
+                    )}:
+                    ${this._network.client.driver_version}<br />
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.server_version"
+                    )}:
+                    ${this._network.client.server_version}<br />
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.home_id"
+                    )}:
+                    ${this._network.controller.home_id}<br />
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.server_url"
+                    )}:
+                    ${this._network.client.ws_server_url}<br />
+                  </div>
+                  <div class="card-actions">
+                    <mwc-button
+                      @click=${this._dumpDebugClicked}
+                      .disabled=${this._status === "connecting"}
+                    >
                       ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.add_node"
+                        "ui.panel.config.zwave_js.dashboard.dump_debug"
                       )}
                     </mwc-button>
-                    <mwc-button @click=${this._removeNodeClicked}>
+                    <mwc-button
+                      @click=${this._removeNodeClicked}
+                      .disabled=${this._status === "connecting"}
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.remove_node"
                       )}
                     </mwc-button>
-                    <mwc-button @click=${this._healNetworkClicked}>
+                    <mwc-button
+                      @click=${this._healNetworkClicked}
+                      .disabled=${this._status === "connecting"}
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.heal_network"
                       )}
                     </mwc-button>
-                    <mwc-button @click=${this._openOptionFlow}>
+                    <mwc-button
+                      @click=${this._openOptionFlow}
+                      .disabled=${this._status === "connecting"}
+                    >
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.reconfigure_server"
                       )}
@@ -229,12 +281,19 @@ class ZWaveJSConfigDashboard extends LitElement {
                 </ha-card>
               `
             : ``}
-          <button class="link dump" @click=${this._dumpDebugClicked}>
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.dashboard.dump_debug"
-            )}
-          </button>
         </ha-config-section>
+        <ha-fab
+          slot="fab"
+          .label=${this.hass.localize(
+            "ui.panel.config.zwave_js.common.add_node"
+          )}
+          .disabled=${this._status === "connecting"}
+          extended
+          ?rtl=${computeRTL(this.hass)}
+          @click=${this._addNodeClicked}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -316,10 +375,14 @@ class ZWaveJSConfigDashboard extends LitElement {
       return;
     }
 
-    const [network, dataCollectionStatus] = await Promise.all([
-      fetchNetworkStatus(this.hass!, this.configEntryId),
-      fetchDataCollectionStatus(this.hass!, this.configEntryId),
-    ]);
+    const [network, dataCollectionStatus, provisioningEntries] =
+      await Promise.all([
+        fetchZwaveNetworkStatus(this.hass!, this.configEntryId),
+        fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
+        fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
+      ]);
+
+    this._provisioningEntries = provisioningEntries;
 
     this._network = network;
 
@@ -340,7 +403,7 @@ class ZWaveJSConfigDashboard extends LitElement {
       return;
     }
     const nodeStatePromisses = this._network.controller.nodes.map((nodeId) =>
-      fetchNodeStatus(this.hass, this.configEntryId!, nodeId)
+      fetchZwaveNodeStatus(this.hass, this.configEntryId!, nodeId)
     );
     this._nodes = await Promise.all(nodeStatePromisses);
   }
@@ -364,7 +427,7 @@ class ZWaveJSConfigDashboard extends LitElement {
   }
 
   private _dataCollectionToggled(ev) {
-    setDataCollectionPreference(
+    setZwaveDataCollectionPreference(
       this.hass!,
       this.configEntryId!,
       ev.target.checked
@@ -486,7 +549,6 @@ class ZWaveJSConfigDashboard extends LitElement {
         .network-status div.heading {
           display: flex;
           align-items: center;
-          margin-bottom: 16px;
         }
 
         .network-status div.heading .icon {

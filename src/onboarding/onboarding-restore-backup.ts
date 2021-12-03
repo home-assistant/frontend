@@ -2,15 +2,15 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
-import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import { fetchInstallationType } from "../data/onboarding";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
 import "./onboarding-loading";
-import { fetchInstallationType, InstallationType } from "../data/onboarding";
 
 declare global {
   interface HASSDomEvents {
@@ -25,9 +25,6 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   @property() public language!: string;
 
   @property({ type: Boolean }) public restoring = false;
-
-  @property({ attribute: false })
-  public installationType?: InstallationType;
 
   protected render(): TemplateResult {
     return this.restoring

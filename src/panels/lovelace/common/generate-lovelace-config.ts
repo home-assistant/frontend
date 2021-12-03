@@ -25,6 +25,7 @@ import {
   ThermostatCardConfig,
 } from "../cards/types";
 import { LovelaceRowConfig } from "../entity-rows/types";
+import { ButtonsHeaderFooterConfig } from "../header-footer/types";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -86,7 +87,8 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  renderFooterEntities = true
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -96,6 +98,8 @@ export const computeCards = (
   const titlePrefix = entityCardOptions.title
     ? `${entityCardOptions.title} `.toLowerCase()
     : undefined;
+
+  const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
@@ -144,6 +148,28 @@ export const computeCards = (
       };
       cards.push(cardConfig);
     } else if (
+      renderFooterEntities &&
+      (domain === "scene" || domain === "script")
+    ) {
+      const conf: typeof footerEntities[0] = {
+        entity: entityId,
+        show_icon: true,
+        show_name: true,
+      };
+      let name: string | undefined;
+      if (
+        titlePrefix &&
+        stateObj &&
+        // eslint-disable-next-line no-cond-assign
+        (name = stripPrefixFromEntityName(
+          computeStateName(stateObj),
+          titlePrefix
+        ))
+      ) {
+        conf.name = name;
+      }
+      footerEntities.push(conf);
+    } else if (
       domain === "sensor" &&
       stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
     ) {
@@ -168,15 +194,39 @@ export const computeCards = (
     }
   }
 
-  if (entities.length > 0) {
-    cards.unshift({
+  // If we ended up with footer entities but no normal entities,
+  // render the footer entities as normal entities.
+  if (entities.length === 0 && footerEntities.length > 0) {
+    return computeCards(states, entityCardOptions, false);
+  }
+
+  if (entities.length > 0 || footerEntities.length > 0) {
+    const card: EntitiesCardConfig = {
       type: "entities",
       entities,
       ...entityCardOptions,
-    });
+    };
+    if (footerEntities.length > 0) {
+      card.footer = {
+        type: "buttons",
+        entities: footerEntities,
+      } as ButtonsHeaderFooterConfig;
+    }
+    cards.unshift(card);
   }
 
-  return cards;
+  if (cards.length < 2) {
+    return cards;
+  }
+
+  return [
+    {
+      type: "grid",
+      square: false,
+      columns: 1,
+      cards,
+    },
+  ];
 };
 
 const computeDefaultViewStates = (
@@ -398,7 +448,9 @@ export const generateDefaultViewConfig = (
 
     if (grid && grid.flow_from.length > 0) {
       areaCards.push({
-        title: "Energy distribution today",
+        title: localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
+        ),
         type: "energy-distribution",
         link_dashboard: true,
       });

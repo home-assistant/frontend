@@ -91,7 +91,7 @@ export class DialogDeviceAutomation extends LitElement {
           }.create`
         )}
       >
-        <div @chip-clicked=${this.closeDialog}>
+        <div @entry-selected=${this.closeDialog}>
           ${this._triggers.length ||
           this._conditions.length ||
           this._actions.length
