@@ -17,7 +17,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
-import "../../../components/map/ha-entity-marker";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
