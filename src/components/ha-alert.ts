@@ -121,6 +121,7 @@ class HaAlert extends LitElement {
     }
     .main-content {
       overflow-wrap: anywhere;
+      word-break: break-word;
       margin-left: 8px;
       margin-right: 0;
     }
