@@ -2,11 +2,8 @@ import { LitElement, html, css } from "lit";
 import { property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
 
 class HaEntityMarker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "entity-id" }) public entityId?: string;
 
   @property({ attribute: "entity-name" }) public entityName?: string;
@@ -22,13 +19,11 @@ class HaEntityMarker extends LitElement {
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
       >
-        ${this.entityPicture
+        ${this.entityPicture && this.hass
           ? html`<div
               class="entity-picture"
               style=${styleMap({
-                "background-image": `url(${this.hass.hassUrl(
-                  this.entityPicture
-                )})`,
+                "background-image": `url(${this.entityPicture})`,
               })}
             ></div>`
           : this.entityName}
@@ -69,3 +64,9 @@ class HaEntityMarker extends LitElement {
 }
 
 customElements.define("ha-entity-marker", HaEntityMarker);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-entity-marker": HaEntityMarker;
+  }
+}
