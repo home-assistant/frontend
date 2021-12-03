@@ -239,7 +239,7 @@ export class DialogAddUser extends LitElement {
     this._isAdmin = ev.target.checked;
   }
 
-  private async _localOnlyChanged(ev): Promise<void> {
+  private _localOnlyChanged(ev): void {
     this._localOnly = ev.target.checked;
   }
 
