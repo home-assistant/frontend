@@ -23,9 +23,9 @@ let PROCESSED_THEMES: Record<string, ProcessedTheme> = {};
  * Apply a theme to an element by setting the CSS variables on it.
  *
  * element: Element to apply theme on.
- * themes: HASS theme information.
+ * themes: HASS theme information (e.g. active dark mode and globally active theme name).
  * selectedTheme: Selected theme (used to override the globally active theme for this element).
- * themeSettings: Settings such as selected colors.
+ * themeSettings: Additional settings such as selected colors.
  */
 export const applyThemesOnElement = (
   element,
