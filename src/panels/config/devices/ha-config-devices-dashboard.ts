@@ -35,6 +35,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -362,6 +363,10 @@ export class HaConfigDeviceDashboard extends LitElement {
       this.hass.localize
     );
     const includeZHAFab = filteredDomains.includes("zha");
+    const includeZJSFab =
+      filteredDomains.includes("zwave_js") &&
+      // We only show this when we have exactly 1 entry.
+      this.entries.filter((entry) => entry.domain === "zwave_js").length === 1;
     const activeFilters = this._activeFilters(
       this.entries,
       this._searchParms,
@@ -394,9 +399,20 @@ export class HaConfigDeviceDashboard extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
         clickable
-        .hasFab=${includeZHAFab}
+        .hasFab=${includeZHAFab || includeZJSFab}
       >
-        ${includeZHAFab
+        ${includeZJSFab
+          ? html`
+              <ha-fab
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+                @click=${this._showZJSAddDeviceDialog}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
@@ -479,6 +495,13 @@ export class HaConfigDeviceDashboard extends LitElement {
       navigate(window.location.pathname, { replace: true });
     }
     this._showDisabled = true;
+  }
+
+  private _showZJSAddDeviceDialog() {
+    showZWaveJSAddNodeDialog(this, {
+      entry_id: this.entries.find((entry) => entry.domain === "zwave_js")!
+        .entry_id,
+    });
   }
 
   static get styles(): CSSResultGroup {
