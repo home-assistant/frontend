@@ -79,6 +79,11 @@ function copyFonts(staticDir) {
   );
 }
 
+function copyQrScannerWorker(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+  copyFileDir(npmPath("qr-scanner/qr-scanner-worker.min.js"), staticPath("js"));
+}
+
 function copyMapPanel(staticDir) {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
@@ -125,6 +130,9 @@ gulp.task("copy-static-app", async () => {
 
   // Panel assets
   copyMapPanel(staticDir);
+
+  // Qr Scanner assets
+  copyQrScannerWorker(staticDir);
 });
 
 gulp.task("copy-static-demo", async () => {

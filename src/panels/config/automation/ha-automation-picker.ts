@@ -225,7 +225,7 @@ class HaAutomationPicker extends LitElement {
         back-path="/config"
         id="entity_id"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
         .activeFilters=${this._activeFilters}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._automations(this.automations, this._filteredAutomations)}
@@ -315,10 +315,7 @@ class HaAutomationPicker extends LitElement {
   };
 
   private _createNew() {
-    if (
-      isComponentLoaded(this.hass, "cloud") ||
-      isComponentLoaded(this.hass, "blueprint")
-    ) {
+    if (isComponentLoaded(this.hass, "blueprint")) {
       showNewAutomationDialog(this);
     } else {
       navigate("/config/automation/edit/new");

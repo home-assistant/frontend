@@ -21,6 +21,8 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   capabilities: Record<string, unknown>;
   original_name?: string;
   original_icon?: string;
+  device_class?: string;
+  original_device_class?: string;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -32,6 +34,7 @@ export interface UpdateEntityRegistryEntryResult {
 export interface EntityRegistryEntryUpdateParams {
   name?: string | null;
   icon?: string | null;
+  device_class?: string | null;
   area_id?: string | null;
   disabled_by?: string | null;
   new_entity_id?: string;
@@ -66,7 +69,7 @@ export const computeEntityRegistryName = (
     return entry.name;
   }
   const state = hass.states[entry.entity_id];
-  return state ? computeStateName(state) : null;
+  return state ? computeStateName(state) : entry.entity_id;
 };
 
 export const getExtendedEntityRegistryEntry = (

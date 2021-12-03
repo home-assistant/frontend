@@ -60,6 +60,8 @@ export class HuiGraphHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property() public type!: "header" | "footer";
+
   @property() protected _config?: GraphHeaderFooterConfig;
 
   @state() private _coordinates?: number[][];
@@ -193,21 +195,13 @@ export class HuiGraphHeaderFooter
       this._stateHistory!.push(...stateHistory[0]);
     }
 
-    const limits =
-      this._config!.limits === undefined &&
-      this._stateHistory?.some(
-        (entity) => entity.attributes?.unit_of_measurement === "%"
-      )
-        ? { min: 0, max: 100 }
-        : this._config!.limits;
-
     this._coordinates =
       coordinates(
         this._stateHistory,
         this._config!.hours_to_show!,
         500,
         this._config!.detail!,
-        limits
+        this._config!.limits
       ) || [];
 
     this._date = endTime;

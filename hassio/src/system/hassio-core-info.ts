@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -12,7 +12,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../src/data/hassio/common";
-import { restartCore, updateCore } from "../../../src/data/supervisor/core";
+import { restartCore } from "../../../src/data/supervisor/core";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -22,7 +22,6 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
 import "../components/supervisor-metric";
-import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-core-info")
@@ -67,14 +66,15 @@ class HassioCoreInfo extends LitElement {
               <span slot="description">
                 core-${this.supervisor.core.version_latest}
               </span>
-              ${this.supervisor.core.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.core.update_available
                 ? html`
-                    <ha-progress-button
-                      .title=${this.supervisor.localize("common.update")}
-                      @click=${this._coreUpdate}
-                    >
-                      ${this.supervisor.localize("common.update")}
-                    </ha-progress-button>
+                    <a href="/hassio/update-available/core">
+                      <mwc-button
+                        .label=${this.supervisor.localize("common.show")}
+                      >
+                      </mwc-button>
+                    </a>
                   `
                 : ""}
             </ha-settings-row>
@@ -160,27 +160,6 @@ class HassioCoreInfo extends LitElement {
     }
   }
 
-  private async _coreUpdate(): Promise<void> {
-    showDialogSupervisorUpdate(this, {
-      supervisor: this.supervisor,
-      name: "Home Assistant Core",
-      version: this.supervisor.core.version_latest,
-      backupParams: {
-        name: `core_${this.supervisor.core.version}`,
-        folders: ["homeassistant"],
-        homeassistant: true,
-      },
-      updateHandler: async () => this._updateCore(),
-    });
-  }
-
-  private async _updateCore(): Promise<void> {
-    await updateCore(this.hass);
-    fireEvent(this, "supervisor-collection-refresh", {
-      collection: "core",
-    });
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -238,6 +217,9 @@ class HassioCoreInfo extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
+        }
+        a {
+          text-decoration: none;
         }
       `,
     ];

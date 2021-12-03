@@ -274,7 +274,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       ha-chip {
         --ha-chip-background-color: var(--alarm-state-color);
-        --ha-chip-text-color: var(--text-primary-color);
+        --primary-text-color: var(--text-primary-color);
         line-height: initial;
       }
 

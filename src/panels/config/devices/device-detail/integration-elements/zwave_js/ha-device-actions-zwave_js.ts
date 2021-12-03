@@ -10,7 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  getIdentifiersFromDevice,
+  getZwaveJsIdentifiersFromDevice,
   ZWaveJSNodeIdentifiers,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
@@ -34,7 +34,7 @@ export class HaDeviceActionsZWaveJS extends LitElement {
       this._entryId = this.device.config_entries[0];
 
       const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getIdentifiersFromDevice(this.device);
+        getZwaveJsIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }

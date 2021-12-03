@@ -90,7 +90,7 @@ export class HaConfigUsers extends LitElement {
           width: "80px",
           template: (is_active) =>
             is_active
-              ? html`<ha-svg-icon .path=${mdiCheck}> </ha-svg-icon>`
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
         },
         system_generated: {
@@ -103,8 +103,19 @@ export class HaConfigUsers extends LitElement {
           width: "160px",
           template: (generated) =>
             generated
-              ? html`<ha-svg-icon .path=${mdiCheck}> </ha-svg-icon>`
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
               : "",
+        },
+        local_only: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.local"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "160px",
+          template: (local) =>
+            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
         },
       };
 

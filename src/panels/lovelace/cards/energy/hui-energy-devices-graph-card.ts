@@ -6,7 +6,7 @@ import {
   ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
-import { addHours } from "date-fns";
+import { addHours, differenceInDays } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -155,13 +155,19 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    const dayDifference = differenceInDays(
+      energyData.end || new Date(),
+      energyData.start
+    );
+
     this._data = await fetchStatistics(
       this.hass,
       addHours(energyData.start, -1),
       energyData.end,
       energyData.prefs.device_consumption.map(
         (device) => device.stat_consumption
-      )
+      ),
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
 
     const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];

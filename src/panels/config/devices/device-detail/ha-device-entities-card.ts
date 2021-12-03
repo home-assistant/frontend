@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/state-badge";
@@ -25,6 +25,10 @@ import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
+import {
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../../../data/entity_registry";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -37,6 +41,11 @@ export class HaDeviceEntitiesCard extends LitElement {
   @property() public entities!: EntityRegistryStateEntry[];
 
   @property() public showDisabled = false;
+
+  @state() private _extDisabledEntityEntries?: Record<
+    string,
+    ExtEntityRegistryEntry
+  >;
 
   private _entityRows: Array<LovelaceRow | HuiErrorCard> = [];
 
@@ -60,7 +69,13 @@ export class HaDeviceEntitiesCard extends LitElement {
               <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
                 ${this.entities.map((entry: EntityRegistryStateEntry) => {
                   if (entry.disabled_by) {
-                    disabledEntities.push(entry);
+                    if (this._extDisabledEntityEntries) {
+                      disabledEntities.push(
+                        this._extDisabledEntityEntries[entry.entity_id] || entry
+                      );
+                    } else {
+                      disabledEntities.push(entry);
+                    }
                     return "";
                   }
                   return this.hass.states[entry.entity_id]
@@ -115,6 +130,28 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   private _toggleShowDisabled() {
     this.showDisabled = !this.showDisabled;
+    if (!this.showDisabled || this._extDisabledEntityEntries !== undefined) {
+      return;
+    }
+    this._extDisabledEntityEntries = {};
+    const toFetch = this.entities.filter((entry) => entry.disabled_by);
+
+    const worker = async () => {
+      if (toFetch.length === 0) {
+        return;
+      }
+
+      const entityId = toFetch.pop()!.entity_id;
+      const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+      this._extDisabledEntityEntries![entityId] = entry;
+      this.requestUpdate("_extDisabledEntityEntries");
+      worker();
+    };
+
+    // Fetch 3 in parallel
+    worker();
+    worker();
+    worker();
   }
 
   private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
@@ -125,9 +162,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     const element = createRowElement(config);
     if (this.hass) {
       element.hass = this.hass;
-      const state = this.hass.states[entry.entity_id];
+      const stateObj = this.hass.states[entry.entity_id];
       const name = stripPrefixFromEntityName(
-        computeStateName(state),
+        computeStateName(stateObj),
         `${this.deviceName} `.toLowerCase()
       );
       if (name) {
@@ -141,6 +178,11 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {
+    const name =
+      entry.stateName ||
+      entry.name ||
+      (entry as ExtEntityRegistryEntry).original_name;
+
     return html`
       <paper-icon-item
         class="disabled-entry"
@@ -153,9 +195,9 @@ export class HaDeviceEntitiesCard extends LitElement {
         ></ha-svg-icon>
         <paper-item-body>
           <div class="name">
-            ${entry.stateName
+            ${name
               ? stripPrefixFromEntityName(
-                  entry.stateName,
+                  name,
                   `${this.deviceName} `.toLowerCase()
                 )
               : entry.entity_id}

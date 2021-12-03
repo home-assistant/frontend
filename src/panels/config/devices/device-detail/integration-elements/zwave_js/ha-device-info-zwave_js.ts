@@ -13,8 +13,8 @@ import {
   getConfigEntries,
 } from "../../../../../../data/config_entries";
 import {
-  fetchNodeStatus,
-  getIdentifiersFromDevice,
+  fetchZwaveNodeStatus,
+  getZwaveJsIdentifiersFromDevice,
   nodeStatus,
   ZWaveJSNodeStatus,
   ZWaveJSNodeIdentifiers,
@@ -42,7 +42,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
       const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getIdentifiersFromDevice(this.device);
+        getZwaveJsIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
@@ -76,7 +76,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       zwaveJsConfEntries++;
     }
 
-    this._node = await fetchNodeStatus(this.hass, this._entryId, this._nodeId);
+    this._node = await fetchZwaveNodeStatus(
+      this.hass,
+      this._entryId,
+      this._nodeId
+    );
   }
 
   protected render(): TemplateResult {

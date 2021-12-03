@@ -20,7 +20,7 @@ class ErrorLogCard extends LitElement {
                 <ha-icon-button
                   .path=${mdiRefresh}
                   @click=${this._refreshErrorLog}
-                  .label=${this.hass!.localize("ui.common.refresh")}
+                  .label=${this.hass.localize("ui.common.refresh")}
                 ></ha-icon-button>
                 <div class="card-content error-log">${this._errorHTML}</div>
               </ha-card>
@@ -38,6 +38,7 @@ class ErrorLogCard extends LitElement {
     super.firstUpdated(changedProps);
 
     if (this.hass?.config.safe_mode) {
+      this.hass.loadFragmentTranslation("config");
       this._refreshErrorLog();
     }
   }
