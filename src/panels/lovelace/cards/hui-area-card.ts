@@ -203,7 +203,10 @@ export class HuiAreaCard
     if (!values.length) {
       return undefined;
     }
-    const sum = values.reduce((total, entity) => total + Number(entity.state), 0);
+    const sum = values.reduce(
+      (total, entity) => total + Number(entity.state),
+      0
+    );
     return `${formatNumber(sum / values.length, this.hass!.locale, {
       maximumFractionDigits: 1,
     })} ${uom}`;
