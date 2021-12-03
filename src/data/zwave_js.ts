@@ -205,6 +205,16 @@ export const enum NodeStatus {
   Alive,
 }
 
+export interface ZwaveJSProvisioningEntry {
+  /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
+  dsk: string;
+  securityClasses: SecurityClass[];
+  /**
+   * Additional properties to be stored in this provisioning entry, e.g. the device ID from a scanned QR code
+   */
+  [prop: string]: any;
+}
+
 export interface RequestedGrant {
   /**
    * An array of security classes that are requested or to be granted.
@@ -263,6 +273,15 @@ export const setZwaveDataCollectionPreference = (
     type: "zwave_js/update_data_collection_preference",
     entry_id,
     opted_in,
+  });
+
+export const fetchZwaveProvisioningEntries = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<any> =>
+  hass.callWS({
+    type: "zwave_js/get_provisioning_entries",
+    entry_id,
   });
 
 export const subscribeAddZwaveNode = (
@@ -343,11 +362,24 @@ export const provisionZwaveSmartStartNode = (
   planned_provisioning_entry?: PlannedProvisioningEntry
 ): Promise<QRProvisioningInformation> =>
   hass.callWS({
-    type: "zwave_js/provision_smart_start_node",
+    type: "zwave_js/unprovision_smart_start_node",
     entry_id,
     qr_code_string,
     qr_provisioning_information,
     planned_provisioning_entry,
+  });
+
+export const unprovisionZwaveSmartStartNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  dsk?: string,
+  node_id?: number
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/unprovision_smart_start_node",
+    entry_id,
+    dsk,
+    node_id,
   });
 
 export const fetchZwaveNodeStatus = (
