@@ -3,7 +3,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle } from "../../../../resources/styles";
+import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
 
@@ -68,7 +68,7 @@ class DialogCloudCertificate extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      haStyleDialog,
       css`
         ha-dialog {
           --mdc-dialog-max-width: 535px;
