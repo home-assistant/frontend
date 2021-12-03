@@ -41,10 +41,9 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
-const DOMAINS_ALWAYS_OVERRIDE_DEVICE_CLASS = new Set(["cover"]);
 const OVERRIDE_DEVICE_CLASSES = {
-  cover: ["garage", "window", "door", "opening"],
-  binary_sensor: ["garage_door", "window", "door", "opening"],
+  cover: ["window", "door", "garage"],
+  binary_sensor: ["window", "door", "garage_door", "opening"],
 };
 
 @customElement("entity-registry-settings")
@@ -157,8 +156,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
-        ${DOMAINS_ALWAYS_OVERRIDE_DEVICE_CLASS.has(domain) ||
-        OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass)
+        ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
+        (domain === "cover" && this.entry.original_device_class === null)
           ? html`<ha-paper-dropdown-menu
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
@@ -172,9 +171,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               >
                 ${OVERRIDE_DEVICE_CLASSES[domain].map(
                   (deviceClass: string) => html`
-                    <paper-item .itemValue=${deviceClass}>
+                    <paper-item .itemValue=${String(deviceClass)}>
                       ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${deviceClass}`
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                       )}
                     </paper-item>
                   `
@@ -308,7 +307,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (ev.detail.value === null) {
       return;
     }
-    this._deviceClass = (ev.detail.value as any).itemValue;
+    const value = (ev.detail.value as any).itemValue;
+    this._deviceClass = value === "null" ? null : value;
   }
 
   private _areaPicked(ev: CustomEvent) {
