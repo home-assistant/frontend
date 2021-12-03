@@ -101,17 +101,13 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this._fetchAuthProviders();
 
     if (matchMedia("(prefers-color-scheme: dark)").matches) {
-      applyThemesOnElement(
-        document.documentElement,
-        {
-          default_theme: "default",
-          default_dark_theme: null,
-          themes: {},
-          darkMode: false,
-        },
-        "default",
-        { dark: true }
-      );
+      applyThemesOnElement(document.documentElement, {
+        default_theme: "default",
+        default_dark_theme: null,
+        themes: {},
+        darkMode: true,
+        theme: "default",
+      });
     }
 
     if (!this.redirectUri) {
