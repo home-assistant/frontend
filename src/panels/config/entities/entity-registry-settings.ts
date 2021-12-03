@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
+import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -16,6 +17,7 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
@@ -39,6 +41,11 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
+const OVERRIDE_DEVICE_CLASSES = {
+  cover: ["window", "door", "garage"],
+  binary_sensor: ["window", "door", "garage_door", "opening"],
+};
+
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -50,6 +57,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _icon!: string;
 
   @state() private _entityId!: string;
+
+  @state() private _deviceClass?: string;
 
   @state() private _areaId?: string | null;
 
@@ -85,6 +94,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._error = undefined;
       this._name = this.entry.name || "";
       this._icon = this.entry.icon || "";
+      this._deviceClass =
+        this.entry.device_class || this.entry.original_device_class;
       this._origEntityId = this.entry.entity_id;
       this._areaId = this.entry.area_id;
       this._entityId = this.entry.entity_id;
@@ -102,9 +113,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
     const stateObj: HassEntity | undefined =
       this.hass.states[this.entry.entity_id];
-    const invalidDomainUpdate =
-      computeDomain(this._entityId.trim()) !==
-      computeDomain(this.entry.entity_id);
+
+    const domain = computeDomain(this.entry.entity_id);
+
+    const invalidDomainUpdate = computeDomain(this._entityId.trim()) !== domain;
+
     return html`
       ${!stateObj
         ? html`
@@ -143,6 +156,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
+        ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
+        (domain === "cover" && this.entry.original_device_class === null)
+          ? html`<ha-paper-dropdown-menu
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.device_class"
+              )}
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                attr-for-selected="item-value"
+                .selected=${this._deviceClass}
+                @selected-item-changed=${this._deviceClassChanged}
+              >
+                ${OVERRIDE_DEVICE_CLASSES[domain].map(
+                  (deviceClass: string) => html`
+                    <paper-item .itemValue=${String(deviceClass)}>
+                      ${this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                      )}
+                    </paper-item>
+                  `
+                )}
+              </paper-listbox>
+            </ha-paper-dropdown-menu>`
+          : ""}
         <paper-input
           .value=${this._entityId}
           @value-changed=${this._entityIdChanged}
@@ -264,6 +302,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._entityId = ev.detail.value;
   }
 
+  private _deviceClassChanged(ev: PolymerChangedEvent<PaperItemElement>): void {
+    this._error = undefined;
+    if (ev.detail.value === null) {
+      return;
+    }
+    const value = (ev.detail.value as any).itemValue;
+    this._deviceClass = value === "null" ? null : value;
+  }
+
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
@@ -289,6 +336,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
+      device_class: this._deviceClass || null,
       new_entity_id: this._entityId.trim(),
     };
     if (
@@ -377,6 +425,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding: 8px;
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
+        }
+        ha-paper-dropdown-menu {
+          width: 100%;
         }
         ha-switch {
           margin-right: 16px;
