@@ -35,6 +35,10 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { SceneEntity } from "../../../data/scene";
+import { ScriptEntity } from "../../../data/script";
+import { AutomationEntity } from "../../../data/automation";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -131,6 +135,16 @@ class HaConfigAreaPage extends LitElement {
       this.entities
     );
 
+    const sceneEntities = entities.filter(
+      (entity) => computeDomain(entity.entity_id) === "scene"
+    );
+    const scriptEntities = entities.filter(
+      (entity) => computeDomain(entity.entity_id) === "script"
+    );
+    const automationEntities = entities.filter(
+      (entity) => computeDomain(entity.entity_id) === "automation"
+    );
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -221,19 +235,22 @@ class HaConfigAreaPage extends LitElement {
               )}
             >
               ${entities.length
-                ? entities.map(
-                    (entity) =>
-                      html`
-                        <paper-item
-                          @click=${this._openEntity}
-                          .entity=${entity}
-                        >
-                          <paper-item-body>
-                            ${computeEntityRegistryName(this.hass, entity)}
-                          </paper-item-body>
-                          <ha-icon-next></ha-icon-next>
-                        </paper-item>
-                      `
+                ? entities.map((entity) =>
+                    ["scene", "script", "automation"].includes(
+                      computeDomain(entity.entity_id)
+                    )
+                      ? ""
+                      : html`
+                          <paper-item
+                            @click=${this._openEntity}
+                            .entity=${entity}
+                          >
+                            <paper-item-body>
+                              ${computeEntityRegistryName(this.hass, entity)}
+                            </paper-item-body>
+                            <ha-icon-next></ha-icon-next>
+                          </paper-item>
+                        `
                   )
                 : html`
                     <paper-item class="no-link"
@@ -251,48 +268,44 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.automation.automations"
                     )}
-                    >${this._related?.automation?.length
-                      ? this._related.automation.map((automation) => {
-                          const entityState = this.hass.states[automation];
-                          return entityState
-                            ? html`
-                                <div>
-                                  <a
-                                    href=${ifDefined(
-                                      entityState.attributes.id
-                                        ? `/config/automation/edit/${entityState.attributes.id}`
-                                        : undefined
-                                    )}
-                                  >
-                                    <paper-item
-                                      .disabled=${!entityState.attributes.id}
-                                    >
-                                      <paper-item-body>
-                                        ${computeStateName(entityState)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
-                                  </a>
-                                  ${!entityState.attributes.id
-                                    ? html`
-                                        <paper-tooltip animation-delay="0">
-                                          ${this.hass.localize(
-                                            "ui.panel.config.devices.cant_edit"
-                                          )}
-                                        </paper-tooltip>
-                                      `
-                                    : ""}
-                                </div>
-                              `
-                            : "";
-                        })
-                      : html`
+                  >
+                    ${automationEntities.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${automationEntities.map((entity) => {
+                            const entityState = this.hass.states[
+                              entity.entity_id
+                            ] as AutomationEntity | undefined;
+                            return entityState
+                              ? this._renderAutomation(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.automation?.filter(
+                      (entityId) =>
+                        !automationEntities.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.automation.map((scene) => {
+                            const entityState = this.hass.states[scene] as
+                              | AutomationEntity
+                              | undefined;
+                            return entityState
+                              ? this._renderAutomation(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!automationEntities.length &&
+                    !this._related?.automation?.length
+                      ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
                               "ui.panel.config.devices.automation.no_automations"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -304,48 +317,40 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.scene.scenes"
                     )}
-                    >${this._related?.scene?.length
-                      ? this._related.scene.map((scene) => {
-                          const entityState = this.hass.states[scene];
-                          return entityState
-                            ? html`
-                                <div>
-                                  <a
-                                    href=${ifDefined(
-                                      entityState.attributes.id
-                                        ? `/config/scene/edit/${entityState.attributes.id}`
-                                        : undefined
-                                    )}
-                                  >
-                                    <paper-item
-                                      .disabled=${!entityState.attributes.id}
-                                    >
-                                      <paper-item-body>
-                                        ${computeStateName(entityState)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
-                                  </a>
-                                  ${!entityState.attributes.id
-                                    ? html`
-                                        <paper-tooltip animation-delay="0">
-                                          ${this.hass.localize(
-                                            "ui.panel.config.devices.cant_edit"
-                                          )}
-                                        </paper-tooltip>
-                                      `
-                                    : ""}
-                                </div>
-                              `
-                            : "";
-                        })
-                      : html`
+                  >
+                    ${sceneEntities.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${sceneEntities.map((entity) => {
+                            const entityState =
+                              this.hass.states[entity.entity_id];
+                            return entityState
+                              ? this._renderScene(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.scene?.filter(
+                      (entityId) =>
+                        !sceneEntities.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.scene.map((scene) => {
+                            const entityState = this.hass.states[scene];
+                            return entityState
+                              ? this._renderScene(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!sceneEntities.length && !this._related?.scene?.length
+                      ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
                               "ui.panel.config.devices.scene.no_scenes"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -355,31 +360,43 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.script.scripts"
                     )}
-                    >${this._related?.script?.length
-                      ? this._related.script.map((script) => {
-                          const entityState = this.hass.states[script];
-                          return entityState
-                            ? html`
-                                <a
-                                  href=${`/config/script/edit/${entityState.entity_id}`}
-                                >
-                                  <paper-item>
-                                    <paper-item-body>
-                                      ${computeStateName(entityState)}
-                                    </paper-item-body>
-                                    <ha-icon-next></ha-icon-next>
-                                  </paper-item>
-                                </a>
-                              `
-                            : "";
-                        })
-                      : html`
-                          <paper-item class="no-link">
-                            ${this.hass.localize(
+                  >
+                    ${scriptEntities.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${scriptEntities.map((entity) => {
+                            const entityState = this.hass.states[
+                              entity.entity_id
+                            ] as ScriptEntity | undefined;
+                            return entityState
+                              ? this._renderScript(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.script?.filter(
+                      (entityId) =>
+                        !scriptEntities.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.script.map((scene) => {
+                            const entityState = this.hass.states[scene] as
+                              | ScriptEntity
+                              | undefined;
+                            return entityState
+                              ? this._renderScript(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!scriptEntities.length && !this._related?.script?.length
+                      ? html`
+                          <paper-item class="no-link"
+                            >${this.hass.localize(
                               "ui.panel.config.devices.script.no_scripts"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -387,6 +404,63 @@ class HaConfigAreaPage extends LitElement {
         </div>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _renderScene(entityState: SceneEntity) {
+    return html`<div>
+      <a
+        href=${ifDefined(
+          entityState.attributes.id
+            ? `/config/scene/edit/${entityState.attributes.id}`
+            : undefined
+        )}
+      >
+        <paper-item .disabled=${!entityState.attributes.id}>
+          <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+          <ha-icon-next></ha-icon-next>
+        </paper-item>
+      </a>
+      ${!entityState.attributes.id
+        ? html`
+            <paper-tooltip animation-delay="0">
+              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+            </paper-tooltip>
+          `
+        : ""}
+    </div>`;
+  }
+
+  private _renderAutomation(entityState: AutomationEntity) {
+    return html`<div>
+      <a
+        href=${ifDefined(
+          entityState.attributes.id
+            ? `/config/automation/edit/${entityState.attributes.id}`
+            : undefined
+        )}
+      >
+        <paper-item .disabled=${!entityState.attributes.id}>
+          <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+          <ha-icon-next></ha-icon-next>
+        </paper-item>
+      </a>
+      ${!entityState.attributes.id
+        ? html`
+            <paper-tooltip animation-delay="0">
+              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+            </paper-tooltip>
+          `
+        : ""}
+    </div>`;
+  }
+
+  private _renderScript(entityState: ScriptEntity) {
+    return html`<a href=${`/config/script/edit/${entityState.entity_id}`}>
+      <paper-item>
+        <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+        <ha-icon-next></ha-icon-next>
+      </paper-item>
+    </a>`;
   }
 
   private async _findRelated() {
@@ -455,6 +529,13 @@ class HaConfigAreaPage extends LitElement {
           opacity: var(--dark-primary-opacity);
           display: flex;
           align-items: center;
+        }
+
+        h3 {
+          margin: 0;
+          padding: 0 16px;
+          font-weight: 500;
+          color: var(--secondary-text-color);
         }
 
         img {
