@@ -188,7 +188,10 @@ export class HuiAreaCard
     }
     let uom;
     const values = entities.filter((entity) => {
-      if (!entity.attributes.unit_of_measurement) {
+      if (
+        !entity.attributes.unit_of_measurement ||
+        isNaN(Number(entity.state))
+      ) {
         return false;
       }
       if (!uom) {
@@ -200,7 +203,10 @@ export class HuiAreaCard
     if (!values.length) {
       return undefined;
     }
-    const sum = values.reduce((a, b) => a + Number(b.state), 0);
+    const sum = values.reduce(
+      (total, entity) => total + Number(entity.state),
+      0
+    );
     return `${formatNumber(sum / values.length, this.hass!.locale, {
       maximumFractionDigits: 1,
     })} ${uom}`;
