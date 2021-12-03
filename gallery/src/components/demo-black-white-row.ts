@@ -59,6 +59,7 @@ class DemoBlackWhiteRow extends LitElement {
         default_dark_theme: "default",
         themes: {},
         darkMode: false,
+        theme: "default",
       },
       "default",
       { dark: true }

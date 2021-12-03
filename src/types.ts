@@ -84,9 +84,12 @@ export interface CurrentUser {
 }
 
 // Currently selected theme and its settings. These are the values stored in local storage.
+// Note: These values are not meant to be used at runtime to check whether dark mode is active
+// or which theme name to use, as this interface represents the config data for the theme picker.
+// The actually active dark mode and theme name can be read from hass.themes.
 export interface ThemeSettings {
   theme: string;
-  // Radio box selection for theme picker. Do not use in cards as
+  // Radio box selection for theme picker. Do not use in Lovelace rendering as
   // it can be undefined == auto.
   // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;

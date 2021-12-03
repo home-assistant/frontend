@@ -33,31 +33,37 @@ export const applyThemesOnElement = (
   selectedTheme?: string,
   themeSettings?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
-  let cacheKey = selectedTheme;
-  let themeRules: Partial<ThemeVars> = {};
+  // If there is no explicitly desired theme provided, we automatically
+  // use the active one from hass.themes.
+  const themeToApply =
+    selectedTheme ||
+    (themeSettings && themeSettings?.theme !== undefined
+      ? selectedTheme || themeSettings?.theme
+      : themes.theme);
 
   // If there is no explicitly desired dark mode provided, we automatically
   // use the active one from hass.themes.
-  if (!themeSettings || themeSettings?.dark === undefined) {
-    themeSettings = {
-      ...themeSettings,
-      dark: themes.darkMode,
-    };
-  }
+  const darkMode =
+    themeSettings && themeSettings?.dark !== undefined
+      ? themeSettings?.dark
+      : themes.darkMode;
 
-  if (themeSettings.dark) {
+  let cacheKey = themeToApply;
+  let themeRules: Partial<ThemeVars> = {};
+
+  if (darkMode) {
     cacheKey = `${cacheKey}__dark`;
     themeRules = { ...darkStyles };
   }
 
-  if (selectedTheme === "default") {
+  if (themeToApply === "default") {
     // Determine the primary and accent colors from the current settings.
     // Fallbacks are implicitly the HA default blue and orange or the
     // derived "darkStyles" values, depending on the light vs dark mode.
-    const primaryColor = themeSettings.primaryColor;
-    const accentColor = themeSettings.accentColor;
+    const primaryColor = themeSettings?.primaryColor;
+    const accentColor = themeSettings?.accentColor;
 
-    if (themeSettings.dark && primaryColor) {
+    if (themeSettings?.dark && primaryColor) {
       themeRules["app-header-background-color"] = hexBlend(
         primaryColor,
         "#121212",
@@ -98,17 +104,17 @@ export const applyThemesOnElement = (
   // Custom theme logic (not relevant for default theme, since it would override
   // the derived calculations from above)
   if (
-    selectedTheme &&
-    selectedTheme !== "default" &&
-    themes.themes[selectedTheme]
+    themeToApply &&
+    themeToApply !== "default" &&
+    themes.themes[themeToApply]
   ) {
     // Apply theme vars that are relevant for all modes (but extract the "modes" section first)
-    const { modes, ...baseThemeRules } = themes.themes[selectedTheme];
+    const { modes, ...baseThemeRules } = themes.themes[themeToApply];
     themeRules = { ...themeRules, ...baseThemeRules };
 
     // Apply theme vars for the specific mode if available
     if (modes) {
-      if (themeSettings?.dark) {
+      if (darkMode) {
         themeRules = { ...themeRules, ...modes.dark };
       } else {
         themeRules = { ...themeRules, ...modes.light };

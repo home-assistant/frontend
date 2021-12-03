@@ -45,6 +45,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             default_dark_theme: null,
             themes: {},
             darkMode: false,
+            theme: "default",
           },
           "default",
           { dark: true }
@@ -89,6 +90,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
+      this.hass.themes.theme = themeName;
 
       applyThemesOnElement(
         document.documentElement,

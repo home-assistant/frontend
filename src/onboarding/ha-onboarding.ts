@@ -140,6 +140,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           default_dark_theme: null,
           themes: {},
           darkMode: false,
+          theme: "default",
         },
         "default",
         { dark: true }
