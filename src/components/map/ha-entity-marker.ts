@@ -19,7 +19,7 @@ class HaEntityMarker extends LitElement {
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
       >
-        ${this.entityPicture && this.hass
+        ${this.entityPicture
           ? html`<div
               class="entity-picture"
               style=${styleMap({
