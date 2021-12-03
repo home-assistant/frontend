@@ -11,7 +11,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
@@ -136,7 +135,6 @@ class HaConfigDashboard extends LitElement {
                     .narrow=${this.narrow}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
-                    .focusedPath=${extractSearchParam("focusedPath")}
                   ></ha-config-navigation>
                 </ha-card>`}
         </ha-config-section>
