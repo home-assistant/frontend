@@ -19,10 +19,12 @@ import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
+  fetchZwaveProvisioningEntries,
   NodeStatus,
   setZwaveDataCollectionPreference,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
+  ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import {
   ConfigEntry,
@@ -63,6 +65,8 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _nodes?: ZWaveJSNodeStatus[];
 
+  @state() private _provisioningEntries?: ZwaveJSProvisioningEntry[];
+
   @state() private _status = "unknown";
 
   @state() private _icon = mdiCircle;
@@ -85,7 +89,7 @@ class ZWaveJSConfigDashboard extends LitElement {
     }
 
     const notReadyDevices =
-      this._nodes?.filter((node) => node.ready).length ?? 0;
+      this._nodes?.filter((node) => !node.ready).length ?? 0;
 
     return html`
       <hass-tabs-subpage
@@ -176,6 +180,16 @@ class ZWaveJSConfigDashboard extends LitElement {
                         )}
                       </mwc-button>
                     </a>
+                    ${this._provisioningEntries?.length
+                      ? html`<a
+                          href=${`provisioned?config_entry=${this.configEntryId}`}
+                          ><mwc-button>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.provisioned_devices"
+                            )}
+                          </mwc-button></a
+                        >`
+                      : ""}
                   </div>
                 </ha-card>
                 <ha-card header="Diagnostics">
@@ -361,10 +375,14 @@ class ZWaveJSConfigDashboard extends LitElement {
       return;
     }
 
-    const [network, dataCollectionStatus] = await Promise.all([
-      fetchZwaveNetworkStatus(this.hass!, this.configEntryId),
-      fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
-    ]);
+    const [network, dataCollectionStatus, provisioningEntries] =
+      await Promise.all([
+        fetchZwaveNetworkStatus(this.hass!, this.configEntryId),
+        fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
+        fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
+      ]);
+
+    this._provisioningEntries = provisioningEntries;
 
     this._network = network;
 
