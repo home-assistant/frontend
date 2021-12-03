@@ -8,7 +8,6 @@ import {
   mdiCog,
   mdiFormatListBulletedType,
   mdiHammer,
-  mdiHomeAssistant,
   mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
@@ -53,7 +52,7 @@ import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
+const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
@@ -63,7 +62,6 @@ const SORT_VALUE_URL_PATHS = {
   logbook: 3,
   history: 4,
   "developer-tools": 9,
-  hassio: 10,
   config: 11,
 };
 
@@ -72,7 +70,6 @@ const PANEL_ICONS = {
   config: mdiCog,
   "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
-  hassio: mdiHomeAssistant,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
   lovelace: mdiViewDashboard,
@@ -156,6 +153,7 @@ const computePanels = memoizeOne(
 
     Object.values(panels).forEach((panel) => {
       if (
+        panel.url_path === "hassio" ||
         hiddenPanels.includes(panel.url_path) ||
         (!panel.title && panel.url_path !== defaultPanel)
       ) {
@@ -340,10 +338,8 @@ class HaSidebar extends LitElement {
       this._hiddenPanels
     );
 
-    // Show the update-available as beeing part of configuration
-    const selectedPanel = this.route.path?.startsWith(
-      "/hassio/update-available"
-    )
+    // Show the supervisor as beeing part of configuration
+    const selectedPanel = this.route.path?.startsWith("/hassio/")
       ? "config"
       : this.hass.panelUrl;
 
@@ -393,11 +389,7 @@ class HaSidebar extends LitElement {
     return html`
       <a
         aria-role="option"
-        href=${`/${
-          urlPath === "hassio"
-            ? "config/dashboard/?focusedPath=hassio"
-            : urlPath
-        }`}
+        href=${`/${urlPath}`}
         data-panel=${urlPath}
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
