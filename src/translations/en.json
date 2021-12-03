@@ -694,6 +694,20 @@
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
+          "device_class": "Show as",
+          "device_classes": {
+            "binary_sensor": {
+              "door": "Door",
+              "garage_door": "Garage door",
+              "window": "Window",
+              "opening": "Other"
+            },
+            "cover": {
+              "door": "Door",
+              "garage": "Garage door",
+              "window": "Window"
+            }
+          },
           "unavailable": "This entity is unavailable.",
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
