@@ -153,7 +153,6 @@ const computePanels = memoizeOne(
 
     Object.values(panels).forEach((panel) => {
       if (
-        panel.url_path === "hassio" ||
         hiddenPanels.includes(panel.url_path) ||
         (!panel.title && panel.url_path !== defaultPanel)
       ) {
