@@ -3251,7 +3251,7 @@
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",
-              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
+              "description": "The Alarm Panel card allows you to arm and disarm your alarm control panel integrations."
             },
             "area": {
               "name": "Area",
