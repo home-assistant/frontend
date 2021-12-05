@@ -59,7 +59,9 @@ export class HuiAreaCardEditor
           .value=${this._area}
           .placeholder=${this._area}
           .configValue=${"area"}
-          .label=${this.hass.localize("ui.dialogs.entity_registry.editor.area")}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.area.name"
+          )}
           @value-changed=${this._valueChanged}
         ></ha-area-picker>
         <paper-input
