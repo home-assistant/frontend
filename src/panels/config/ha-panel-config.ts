@@ -72,7 +72,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     },
     {
       path: "/hassio",
-      name: "Add-ons & Backups (Supervisor)",
+      name: "Add-ons, Backups & Supervisor",
       description: "Create backups, check logs or reboot your system",
       iconPath: mdiHomeAssistant,
       iconColor: "#4084CD",
