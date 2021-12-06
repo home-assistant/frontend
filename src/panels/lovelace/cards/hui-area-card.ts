@@ -367,7 +367,7 @@ export class HuiAreaCard
     }
 
     return html`
-      <ha-card class=${area.picture ? "image" : ""}>
+      <ha-card class=${area.picture || cameraEntityId ? "image" : ""}>
         ${area.picture || cameraEntityId
           ? html`<hui-image
               .config=${this._config}
