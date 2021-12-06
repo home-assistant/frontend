@@ -98,6 +98,8 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _unprovision = async (ev) => {
+    const dsk = ev.currentTarget.provisioningEntry.dsk;
+
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
@@ -114,11 +116,7 @@ class ZWaveJSProvisioned extends LitElement {
       return;
     }
 
-    await unprovisionZwaveSmartStartNode(
-      this.hass,
-      this.configEntryId,
-      ev.currentTarget.provisioningEntry.dsk
-    );
+    await unprovisionZwaveSmartStartNode(this.hass, this.configEntryId, dsk);
     this._fetchData();
   };
 }
