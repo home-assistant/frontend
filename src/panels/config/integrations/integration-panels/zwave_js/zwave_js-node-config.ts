@@ -327,10 +327,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (!("states" in item.metadata)) {
       return false;
     }
-    if (!(0 in item.metadata.states) || !(1 in item.metadata.states)) {
+    if (Object.keys(item.metadata.states).length !== 2) {
       return false;
     }
-    if (Object.keys(item.metadata.states).length !== 2) {
+    if (!(0 in item.metadata.states) || !(1 in item.metadata.states)) {
       return false;
     }
     if (
