@@ -5,5 +5,4 @@ export const forDictStruct = object({
   hours: optional(number()),
   minutes: optional(number()),
   seconds: optional(number()),
-  milliseconds: optional(number()),
 });
