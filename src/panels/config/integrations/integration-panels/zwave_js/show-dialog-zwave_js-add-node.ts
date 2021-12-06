@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSAddNodeDialogParams {
   entry_id: string;
+  addedCallback?: () => void;
 }
 
 export const loadAddNodeDialog = () => import("./dialog-zwave_js-add-node");

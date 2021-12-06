@@ -45,6 +45,8 @@ export interface ZWaveJSAddNodeDevice {
 class DialogZWaveJSAddNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() private _params?: ZWaveJSAddNodeDialogParams;
+
   @state() private _entryId?: string;
 
   @state() private _status?:
@@ -91,6 +93,7 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
+    this._params = params;
     this._entryId = params.entry_id;
     this._status = "loading";
     this._checkSmartStartSupport();
@@ -562,6 +565,9 @@ class DialogZWaveJSAddNode extends LitElement {
           provisioningInfo
         );
         this._status = "provisioned";
+        if (this._params?.addedCallback) {
+          this._params.addedCallback();
+        }
       } catch (err: any) {
         this._error = err.message;
         this._status = "failed";
@@ -693,6 +699,9 @@ class DialogZWaveJSAddNode extends LitElement {
         if (message.event === "interview completed") {
           this._unsubscribe();
           this._status = "finished";
+          if (this._params?.addedCallback) {
+            this._params.addedCallback();
+          }
         }
 
         if (message.event === "interview stage completed") {
