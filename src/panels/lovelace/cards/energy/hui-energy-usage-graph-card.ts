@@ -478,11 +478,15 @@ export class HuiEnergyUsageGraphCard
         const data: ChartDataset<"bar">[] = [];
         const entity = this.hass.states[statId];
 
-        const modifiedColor = this.hass.themes.darkMode
-          ? labBrighten(rgb2lab(hex2rgb(colors[type])), idx)
-          : labDarken(rgb2lab(hex2rgb(colors[type])), idx);
-        const borderColor =
-          idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : colors[type];
+        const modifiedColor =
+          idx > 0
+            ? this.hass.themes.darkMode
+              ? labBrighten(rgb2lab(hex2rgb(colors[type])), idx)
+              : labDarken(rgb2lab(hex2rgb(colors[type])), idx)
+            : undefined;
+        const borderColor = modifiedColor
+          ? rgb2hex(lab2rgb(modifiedColor))
+          : colors[type];
 
         data.push({
           label:

@@ -171,11 +171,15 @@ export class HuiEnergySourcesTableCard
                   ) || 0;
                 totalSolar += energy;
 
-                const modifiedColor = this.hass.themes.darkMode
-                  ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
-                  : labDarken(rgb2lab(hex2rgb(solarColor)), idx);
-                const color =
-                  idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : solarColor;
+                const modifiedColor =
+                  idx > 0
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(solarColor)), idx)
+                    : undefined;
+                const color = modifiedColor
+                  ? rgb2hex(lab2rgb(modifiedColor))
+                  : solarColor;
 
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
@@ -231,18 +235,24 @@ export class HuiEnergySourcesTableCard
                   ) || 0;
                 totalBattery += energyFrom - energyTo;
 
-                const modifiedFromColor = this.hass.themes.darkMode
-                  ? labBrighten(rgb2lab(hex2rgb(batteryFromColor)), idx)
-                  : labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx);
-                const fromColor =
+                const modifiedFromColor =
                   idx > 0
-                    ? rgb2hex(lab2rgb(modifiedFromColor))
-                    : batteryFromColor;
-                const modifiedToColor = this.hass.themes.darkMode
-                  ? labBrighten(rgb2lab(hex2rgb(batteryToColor)), idx)
-                  : labDarken(rgb2lab(hex2rgb(batteryToColor)), idx);
-                const toColor =
-                  idx > 0 ? rgb2hex(lab2rgb(modifiedToColor)) : batteryToColor;
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                    : undefined;
+                const fromColor = modifiedFromColor
+                  ? rgb2hex(lab2rgb(modifiedFromColor))
+                  : batteryFromColor;
+                const modifiedToColor =
+                  idx > 0
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(batteryToColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(batteryToColor)), idx)
+                    : undefined;
+                const toColor = modifiedToColor
+                  ? rgb2hex(lab2rgb(modifiedToColor))
+                  : batteryToColor;
 
                 return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
@@ -331,13 +341,15 @@ export class HuiEnergySourcesTableCard
                     totalGridCost += cost;
                   }
 
-                  const modifiedColor = this.hass.themes.darkMode
-                    ? labBrighten(rgb2lab(hex2rgb(consumptionColor)), idx)
-                    : labDarken(rgb2lab(hex2rgb(consumptionColor)), idx);
-                  const color =
+                  const modifiedColor =
                     idx > 0
-                      ? rgb2hex(lab2rgb(modifiedColor))
-                      : consumptionColor;
+                      ? this.hass.themes.darkMode
+                        ? labBrighten(rgb2lab(hex2rgb(consumptionColor)), idx)
+                        : labDarken(rgb2lab(hex2rgb(consumptionColor)), idx)
+                      : undefined;
+                  const color = modifiedColor
+                    ? rgb2hex(lab2rgb(modifiedColor))
+                    : consumptionColor;
 
                   return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
@@ -392,11 +404,15 @@ export class HuiEnergySourcesTableCard
                     totalGridCost += cost;
                   }
 
-                  const modifiedColor = this.hass.themes.darkMode
-                    ? labBrighten(rgb2lab(hex2rgb(returnColor)), idx)
-                    : labDarken(rgb2lab(hex2rgb(returnColor)), idx);
-                  const color =
-                    idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : returnColor;
+                  const modifiedColor =
+                    idx > 0
+                      ? this.hass.themes.darkMode
+                        ? labBrighten(rgb2lab(hex2rgb(returnColor)), idx)
+                        : labDarken(rgb2lab(hex2rgb(returnColor)), idx)
+                      : undefined;
+                  const color = modifiedColor
+                    ? rgb2hex(lab2rgb(modifiedColor))
+                    : returnColor;
 
                   return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
@@ -475,11 +491,15 @@ export class HuiEnergySourcesTableCard
                   totalGasCost += cost;
                 }
 
-                const modifiedColor = this.hass.themes.darkMode
-                  ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
-                  : labDarken(rgb2lab(hex2rgb(gasColor)), idx);
-                const color =
-                  idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : gasColor;
+                const modifiedColor =
+                  idx > 0
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
+                    : undefined;
+                const color = modifiedColor
+                  ? rgb2hex(lab2rgb(modifiedColor))
+                  : gasColor;
 
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">

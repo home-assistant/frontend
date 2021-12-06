@@ -258,11 +258,15 @@ export class HuiEnergySolarGraphCard
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
-      const modifiedColor = this.hass.themes.darkMode
-        ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
-        : labDarken(rgb2lab(hex2rgb(solarColor)), idx);
-      const borderColor =
-        idx > 0 ? rgb2hex(lab2rgb(modifiedColor)) : solarColor;
+      const modifiedColor =
+        idx > 0
+          ? this.hass.themes.darkMode
+            ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
+            : labDarken(rgb2lab(hex2rgb(solarColor)), idx)
+          : undefined;
+      const borderColor = modifiedColor
+        ? rgb2hex(lab2rgb(modifiedColor))
+        : solarColor;
 
       let prevValue: number | null = null;
       let prevStart: string | null = null;
