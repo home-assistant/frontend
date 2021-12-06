@@ -117,7 +117,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       name: "Companion App",
       description: "Location and notifications",
       iconPath: mdiCellphoneCog,
-      iconColor: "#6A1B9A",
+      iconColor: "#8E24AA",
     },
     {
       path: "/config/core",
