@@ -27,7 +27,7 @@ class HaConfigNavigation extends LitElement {
       ${this.pages.map((page) =>
         (
           page.path === "#external-app-configuration"
-            ? !this.externalConfig?.hasSettingsScreen
+            ? this.externalConfig?.hasSettingsScreen
             : canShowPage(this.hass, page)
         )
           ? html`
