@@ -1,17 +1,27 @@
 import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { assert, literal, object, optional, string, union } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-duration-input";
 import { StateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { forDictStruct } from "../../structs";
 import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
-import "../../../../../components/ha-duration-input";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+
+const stateConditionStruct = object({
+  condition: literal("state"),
+  entity_id: string(),
+  attribute: optional(string()),
+  state: string(),
+  for: optional(union([string(), forDictStruct])),
+});
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -23,19 +33,14 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { entity_id: "", state: "" };
   }
 
-  public willUpdate(changedProperties: PropertyValues): boolean {
-    if (
-      changedProperties.has("condition") &&
-      Array.isArray(this.condition?.state)
-    ) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_state_array_support"))
-      );
-      // We have to stop the update if state is an array.
-      // Otherwise the state will be changed to a comma-separated string by the input element.
-      return false;
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("condition")) {
+      try {
+        assert(this.condition, stateConditionStruct);
+      } catch (e: any) {
+        fireEvent(this, "ui-mode-not-available", e);
+        return false;
+      }
     }
     return true;
   }
