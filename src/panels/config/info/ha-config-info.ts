@@ -197,8 +197,8 @@ class HaConfigInfo extends LitElement {
         }
         ha-logo-svg {
           padding: 12px;
-          height: 192px;
-          width: 192px;
+          height: 180px;
+          width: 180px;
         }
       `,
     ];
