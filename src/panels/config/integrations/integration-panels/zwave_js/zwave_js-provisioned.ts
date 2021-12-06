@@ -48,11 +48,11 @@ class ZWaveJSProvisioned extends LitElement {
         filterable: true,
         grows: true,
       },
-      securityClasses: {
+      security_classes: {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.provisioned.security_classes"
         ),
-        width: "15%",
+        width: "30%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -60,7 +60,7 @@ class ZWaveJSProvisioned extends LitElement {
           securityClasses
             .map((secClass) =>
               this.hass.localize(
-                `ui.panel.config.zwave_js.security_classes.${SecurityClass[secClass]}`
+                `ui.panel.config.zwave_js.security_classes.${SecurityClass[secClass]}.title`
               )
             )
             .join(", "),
@@ -70,6 +70,7 @@ class ZWaveJSProvisioned extends LitElement {
           "ui.panel.config.zwave_js.provisioned.unprovison"
         ),
         type: "icon-button",
+        width: "100px",
         template: (_info, provisioningEntry: any) => html`
           <ha-icon-button
             .label=${this.hass.localize(
@@ -118,6 +119,7 @@ class ZWaveJSProvisioned extends LitElement {
       this.configEntryId,
       ev.currentTarget.provisioningEntry.dsk
     );
+    this._fetchData();
   };
 }
 

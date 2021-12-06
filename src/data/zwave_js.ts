@@ -208,7 +208,7 @@ export const enum NodeStatus {
 export interface ZwaveJSProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
-  securityClasses: SecurityClass[];
+  security_classes: SecurityClass[];
   /**
    * Additional properties to be stored in this provisioning entry, e.g. the device ID from a scanned QR code
    */
@@ -278,7 +278,7 @@ export const setZwaveDataCollectionPreference = (
 export const fetchZwaveProvisioningEntries = (
   hass: HomeAssistant,
   entry_id: string
-): Promise<any> =>
+): Promise<ZwaveJSProvisioningEntry[]> =>
   hass.callWS({
     type: "zwave_js/get_provisioning_entries",
     entry_id,
