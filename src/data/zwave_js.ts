@@ -209,10 +209,10 @@ export interface ZwaveJSProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
   security_classes: SecurityClass[];
-  /**
-   * Additional properties to be stored in this provisioning entry, e.g. the device ID from a scanned QR code
-   */
-  [prop: string]: any;
+  additional_properties: {
+    nodeId?: number;
+    [prop: string]: any;
+  };
 }
 
 export interface RequestedGrant {

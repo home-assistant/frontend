@@ -1,4 +1,4 @@
-import { mdiDelete } from "@mdi/js";
+import { mdiCheckCircle, mdiDelete } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -42,6 +42,24 @@ class ZWaveJSProvisioned extends LitElement {
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
+      included: {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.provisioned.included"
+        ),
+        type: "icon-button",
+        width: "100px",
+        template: (_info, provisioningEntry: any) =>
+          provisioningEntry.additional_properties.nodeId
+            ? html`
+                <ha-svg-icon
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zwave_js.provisioned.included"
+                  )}
+                  .path=${mdiCheckCircle}
+                ></ha-svg-icon>
+              `
+            : "",
+      },
       dsk: {
         title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
