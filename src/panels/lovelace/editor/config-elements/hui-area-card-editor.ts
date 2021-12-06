@@ -50,7 +50,7 @@ export class HuiAreaCardEditor
     return this._config!.theme || "";
   }
 
-  get _show_camera(): string {
+  get _show_camera(): boolean {
     return this._config!.show_camera || false;
   }
 
