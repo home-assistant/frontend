@@ -96,7 +96,11 @@ export class HaDateInput extends LitElement {
       attr-for-value="value"
       .i18n=${i18n}
     >
-      <paper-input .label=${this.label} no-label-float>
+      <paper-input
+        .label=${this.label}
+        .disabled=${this.disabled}
+        no-label-float
+      >
         <ha-svg-icon slot="suffix" .path=${mdiCalendar}></ha-svg-icon>
       </paper-input>
     </vaadin-date-picker-light>`;
