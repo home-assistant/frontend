@@ -224,7 +224,7 @@ class HaBlueprintOverview extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automations}
+        .tabs=${configSections.blueprints}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
