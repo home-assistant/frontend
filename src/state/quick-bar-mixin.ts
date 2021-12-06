@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
+import { showDeveloperToolDialog } from "../dialogs/developert-tools/show-dialog-developer-tools";
 import {
   QuickBarParams,
   showQuickBar,
@@ -32,6 +33,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
+        d: () => showDeveloperToolDialog(this),
       });
     }
 
