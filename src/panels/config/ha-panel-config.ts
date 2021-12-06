@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiBadgeAccountHorizontal,
+  mdiCellphoneCog,
   mdiCog,
   mdiDevices,
   mdiHomeAssistant,
@@ -110,6 +111,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiAccount,
       iconColor: "#E48629",
       components: ["person", "zone", "users"],
+    },
+    {
+      path: "#external-app-configuration",
+      name: "Companion App",
+      description: "Location and notifications",
+      iconPath: mdiCellphoneCog,
+      iconColor: "#81009D",
     },
     {
       path: "/config/core",

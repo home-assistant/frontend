@@ -1,4 +1,4 @@
-import { mdiCellphoneCog, mdiCloudLock } from "@mdi/js";
+import { mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -110,29 +110,10 @@ class HaConfigDashboard extends LitElement {
                         ></ha-config-navigation>
                       `
                     : ""}
-                  ${this._externalConfig?.hasSettingsScreen
-                    ? html`
-                        <ha-config-navigation
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .showAdvanced=${this.showAdvanced}
-                          .pages=${[
-                            {
-                              path: "#external-app-configuration",
-                              name: "Companion App",
-                              description: "Location and notifications",
-                              iconPath: mdiCellphoneCog,
-                              iconColor: "#37474F",
-                              core: true,
-                            },
-                          ]}
-                          @click=${this._handleExternalAppConfiguration}
-                        ></ha-config-navigation>
-                      `
-                    : ""}
                   <ha-config-navigation
                     .hass=${this.hass}
                     .narrow=${this.narrow}
+                    .externalConfig=${this._externalConfig}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
@@ -140,13 +121,6 @@ class HaConfigDashboard extends LitElement {
         </ha-config-section>
       </ha-app-layout>
     `;
-  }
-
-  private _handleExternalAppConfiguration(ev: Event) {
-    ev.preventDefault();
-    this.hass.auth.external!.fireMessage({
-      type: "config_screen/show",
-    });
   }
 
   static get styles(): CSSResultGroup {
