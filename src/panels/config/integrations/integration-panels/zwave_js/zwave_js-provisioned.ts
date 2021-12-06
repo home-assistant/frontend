@@ -46,7 +46,7 @@ class ZWaveJSProvisioned extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.provisioned.included"
         ),
-        type: "icon-button",
+        type: "icon",
         width: "100px",
         template: (_info, provisioningEntry: any) =>
           provisioningEntry.additional_properties.nodeId
