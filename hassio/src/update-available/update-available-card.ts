@@ -48,7 +48,6 @@ import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
 import { SUPERVISOR_UPDATE_NAMES } from "../../../src/panels/config/dashboard/ha-config-updates";
 import { HomeAssistant, Route } from "../../../src/types";
-import { documentationUrl } from "../../../src/util/documentation-url";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
 declare global {
@@ -60,7 +59,6 @@ declare global {
 type updateType = "os" | "supervisor" | "core" | "addon";
 
 const changelogUrl = (
-  hass: HomeAssistant,
   entry: updateType,
   version: string
 ): string | undefined => {
@@ -68,17 +66,19 @@ const changelogUrl = (
     return undefined;
   }
   if (entry === "core") {
-    return version?.includes("dev")
+    return version.includes("dev")
       ? "https://github.com/home-assistant/core/commits/dev"
-      : documentationUrl(hass, "/latest-release-notes/");
+      : version.includes("b")
+      ? "https://next.home-assistant.io/latest-release-notes/"
+      : "https://www.home-assistant.io/latest-release-notes/";
   }
   if (entry === "os") {
-    return version?.includes("dev")
+    return version.includes("dev")
       ? "https://github.com/home-assistant/operating-system/commits/dev"
       : `https://github.com/home-assistant/operating-system/releases/tag/${version}`;
   }
   if (entry === "supervisor") {
-    return version?.includes("dev")
+    return version.includes("dev")
       ? "https://github.com/home-assistant/supervisor/commits/main"
       : `https://github.com/home-assistant/supervisor/releases/tag/${version}`;
   }
@@ -120,7 +120,7 @@ class UpdateAvailableCard extends LitElement {
       return html``;
     }
 
-    const changelog = changelogUrl(this.hass, this._updateType, this._version);
+    const changelog = changelogUrl(this._updateType, this._version);
 
     return html`
       <ha-card

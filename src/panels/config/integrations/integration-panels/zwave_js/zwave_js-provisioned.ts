@@ -1,4 +1,4 @@
-import { mdiDelete } from "@mdi/js";
+import { mdiCheckCircle, mdiCloseCircleOutline, mdiDelete } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -42,17 +42,42 @@ class ZWaveJSProvisioned extends LitElement {
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
+      included: {
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.provisioned.included"
+        ),
+        type: "icon",
+        width: "100px",
+        template: (_info, provisioningEntry: any) =>
+          provisioningEntry.additional_properties.nodeId
+            ? html`
+                <ha-svg-icon
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zwave_js.provisioned.included"
+                  )}
+                  .path=${mdiCheckCircle}
+                ></ha-svg-icon>
+              `
+            : html`
+                <ha-svg-icon
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zwave_js.provisioned.not_included"
+                  )}
+                  .path=${mdiCloseCircleOutline}
+                ></ha-svg-icon>
+              `,
+      },
       dsk: {
         title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),
         sortable: true,
         filterable: true,
         grows: true,
       },
-      securityClasses: {
+      security_classes: {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.provisioned.security_classes"
         ),
-        width: "15%",
+        width: "30%",
         hidden: narrow,
         filterable: true,
         sortable: true,
@@ -60,7 +85,7 @@ class ZWaveJSProvisioned extends LitElement {
           securityClasses
             .map((secClass) =>
               this.hass.localize(
-                `ui.panel.config.zwave_js.security_classes.${SecurityClass[secClass]}`
+                `ui.panel.config.zwave_js.security_classes.${SecurityClass[secClass]}.title`
               )
             )
             .join(", "),
@@ -70,6 +95,7 @@ class ZWaveJSProvisioned extends LitElement {
           "ui.panel.config.zwave_js.provisioned.unprovison"
         ),
         type: "icon-button",
+        width: "100px",
         template: (_info, provisioningEntry: any) => html`
           <ha-icon-button
             .label=${this.hass.localize(
@@ -97,6 +123,8 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _unprovision = async (ev) => {
+    const dsk = ev.currentTarget.provisioningEntry.dsk;
+
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
@@ -113,11 +141,8 @@ class ZWaveJSProvisioned extends LitElement {
       return;
     }
 
-    await unprovisionZwaveSmartStartNode(
-      this.hass,
-      this.configEntryId,
-      ev.currentTarget.provisioningEntry.dsk
-    );
+    await unprovisionZwaveSmartStartNode(this.hass, this.configEntryId, dsk);
+    this._fetchData();
   };
 }
 

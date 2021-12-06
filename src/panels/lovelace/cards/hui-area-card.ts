@@ -25,6 +25,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
+import { subscribeOne } from "../../../common/util/subscribe-one";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -83,8 +84,11 @@ export class HuiAreaCard
     return document.createElement("hui-area-card-editor");
   }
 
-  public static getStubConfig(): AreaCardConfig {
-    return { type: "area", area: "" };
+  public static async getStubConfig(
+    hass: HomeAssistant
+  ): Promise<AreaCardConfig> {
+    const areas = await subscribeOne(hass.connection, subscribeAreaRegistry);
+    return { type: "area", area: areas[0]?.area_id || "" };
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -358,12 +362,12 @@ export class HuiAreaCard
     });
 
     let cameraEntityId: string | undefined;
-    if ("camera" in entitiesByDomain) {
+    if (this._config.show_camera && "camera" in entitiesByDomain) {
       cameraEntityId = entitiesByDomain.camera[0].entity_id;
     }
 
     return html`
-      <ha-card class=${area.picture ? "image" : ""}>
+      <ha-card class=${area.picture || cameraEntityId ? "image" : ""}>
         ${area.picture || cameraEntityId
           ? html`<hui-image
               .config=${this._config}
