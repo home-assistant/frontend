@@ -57,22 +57,22 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     {
       path: "/config/automation",
       name: "Automations & Scenes",
-      description: "Automations, blueprints, scenes and scripts",
+      description: "Automations, helpers, scenes and scripts",
       iconPath: mdiRobot,
       iconColor: "#518C43",
-      components: ["automation", "blueprint", "scene", "script"],
-    },
-    {
-      path: "/config/helpers",
-      name: "Automation Helpers",
-      description: "Elements that help build automations",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
       core: true,
     },
     {
+      path: "/config/blueprint",
+      name: "Blueprints",
+      description: "Manage blueprints",
+      iconPath: mdiPaletteSwatch,
+      iconColor: "#4D2EA4",
+      component: "blueprint",
+    },
+    {
       path: "/hassio",
-      name: "Add-ons & Backups (Supervisor)",
+      name: "Add-ons, Backups & Supervisor",
       description: "Create backups, check logs or reboot your system",
       iconPath: mdiHomeAssistant,
       iconColor: "#4084CD",
@@ -156,18 +156,19 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   automations: [
     {
-      component: "blueprint",
-      path: "/config/blueprint",
-      translationKey: "ui.panel.config.blueprint.caption",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#518C43",
-    },
-    {
       component: "automation",
       path: "/config/automation",
       translationKey: "ui.panel.config.automation.caption",
       iconPath: mdiRobot,
       iconColor: "#518C43",
+    },
+    {
+      component: "helpers",
+      path: "/config/helpers",
+      translationKey: "ui.panel.config.helpers.caption",
+      iconPath: mdiTools,
+      iconColor: "#4D2EA4",
+      core: true,
     },
     {
       component: "scene",
@@ -184,14 +185,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#518C43",
     },
   ],
-  helpers: [
+  blueprints: [
     {
-      component: "helpers",
-      path: "/config/helpers",
-      translationKey: "ui.panel.config.helpers.caption",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
-      core: true,
+      component: "blueprint",
+      path: "/config/blueprint",
+      translationKey: "ui.panel.config.blueprint.caption",
+      iconPath: mdiPaletteSwatch,
+      iconColor: "#518C43",
     },
   ],
   tags: [
