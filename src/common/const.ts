@@ -221,6 +221,7 @@ export const DOMAINS_INPUT_ROW = [
   "scene",
   "script",
   "select",
+  "switch",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */

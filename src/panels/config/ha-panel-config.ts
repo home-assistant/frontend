@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiBadgeAccountHorizontal,
+  mdiCellphoneCog,
   mdiCog,
   mdiDevices,
   mdiHomeAssistant,
@@ -57,22 +58,22 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     {
       path: "/config/automation",
       name: "Automations & Scenes",
-      description: "Automations, blueprints, scenes and scripts",
+      description: "Manage automations, scenes, scripts and helpers",
       iconPath: mdiRobot,
       iconColor: "#518C43",
-      components: ["automation", "blueprint", "scene", "script"],
-    },
-    {
-      path: "/config/helpers",
-      name: "Automation Helpers",
-      description: "Elements that help build automations",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
       core: true,
     },
     {
+      path: "/config/blueprint",
+      name: "Blueprints",
+      description: "Manage blueprints",
+      iconPath: mdiPaletteSwatch,
+      iconColor: "#64B5F6",
+      component: "blueprint",
+    },
+    {
       path: "/hassio",
-      name: "Add-ons & Backups (Supervisor)",
+      name: "Add-ons, Backups & Supervisor",
       description: "Create backups, check logs or reboot your system",
       iconPath: mdiHomeAssistant,
       iconColor: "#4084CD",
@@ -110,6 +111,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiAccount,
       iconColor: "#E48629",
       components: ["person", "zone", "users"],
+    },
+    {
+      path: "#external-app-configuration",
+      name: "Companion App",
+      description: "Location and notifications",
+      iconPath: mdiCellphoneCog,
+      iconColor: "#8E24AA",
     },
     {
       path: "/config/core",
@@ -156,13 +164,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   automations: [
     {
-      component: "blueprint",
-      path: "/config/blueprint",
-      translationKey: "ui.panel.config.blueprint.caption",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#518C43",
-    },
-    {
       component: "automation",
       path: "/config/automation",
       translationKey: "ui.panel.config.automation.caption",
@@ -183,8 +184,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiScriptText,
       iconColor: "#518C43",
     },
-  ],
-  helpers: [
     {
       component: "helpers",
       path: "/config/helpers",
@@ -192,6 +191,15 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiTools,
       iconColor: "#4D2EA4",
       core: true,
+    },
+  ],
+  blueprints: [
+    {
+      component: "blueprint",
+      path: "/config/blueprint",
+      translationKey: "ui.panel.config.blueprint.caption",
+      iconPath: mdiPaletteSwatch,
+      iconColor: "#518C43",
     },
   ],
   tags: [
@@ -447,9 +455,19 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("title");
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
+      this.addEventListener("connection-status", (ev) => {
+        if (ev.detail === "connected") {
+          this._updateCloudStatus();
+        }
+      });
     }
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorUpdates();
+      this.addEventListener("connection-status", (ev) => {
+        if (ev.detail === "connected") {
+          this._loadSupervisorUpdates();
+        }
+      });
     } else {
       this._supervisorUpdates = null;
     }

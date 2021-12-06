@@ -411,6 +411,7 @@ class ZWaveJSConfigDashboard extends LitElement {
   private async _addNodeClicked() {
     showZWaveJSAddNodeDialog(this, {
       entry_id: this.configEntryId!,
+      addedCallback: () => this._fetchData(),
     });
   }
 

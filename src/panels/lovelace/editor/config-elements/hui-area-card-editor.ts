@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-area-picker";
 import { HomeAssistant } from "../../../../types";
@@ -11,6 +11,8 @@ import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-formfield";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -18,6 +20,7 @@ const cardConfigStruct = assign(
     area: optional(string()),
     navigation_path: optional(string()),
     theme: optional(string()),
+    show_camera: optional(boolean()),
   })
 );
 
@@ -47,6 +50,10 @@ export class HuiAreaCardEditor
     return this._config!.theme || "";
   }
 
+  get _show_camera(): boolean {
+    return this._config!.show_camera || false;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -59,9 +66,23 @@ export class HuiAreaCardEditor
           .value=${this._area}
           .placeholder=${this._area}
           .configValue=${"area"}
-          .label=${this.hass.localize("ui.dialogs.entity_registry.editor.area")}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.area.name"
+          )}
           @value-changed=${this._valueChanged}
         ></ha-area-picker>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.area.show_camera"
+          )}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked=${this._show_camera}
+            .configValue=${"show_camera"}
+            @change=${this._valueChanged}
+          ></ha-switch>
+        </ha-formfield>
         <paper-input
           .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.action-editor.navigation_path"
@@ -86,7 +107,8 @@ export class HuiAreaCardEditor
       return;
     }
     const target = ev.target! as EditorTarget;
-    const value = ev.detail.value;
+    const value =
+      target.checked !== undefined ? target.checked : ev.detail.value;
 
     if (this[`_${target.configValue}`] === value) {
       return;

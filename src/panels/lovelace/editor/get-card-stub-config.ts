@@ -13,7 +13,7 @@ export const getCardStubConfig = async (
   const elClass = await getCardElementClass(type);
 
   if (elClass && elClass.getStubConfig) {
-    const classStubConfig = elClass.getStubConfig(
+    const classStubConfig = await elClass.getStubConfig(
       hass,
       entities,
       entitiesFallback

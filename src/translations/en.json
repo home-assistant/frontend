@@ -878,8 +878,7 @@
         "key_missing": "Required key ''{key}'' is missing.",
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
-        "no_template_editor_support": "Templates not supported in visual editor",
-        "no_state_array_support": "Multiple state values not supported in visual editor"
+        "no_template_editor_support": "Templates not supported in visual editor"
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -1514,7 +1513,7 @@
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
-                    "for": "Duration",
+                    "for": "Duration (optional)",
                     "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
                   }
                 },
@@ -1537,9 +1536,9 @@
                 "state": {
                   "label": "State",
                   "attribute": "Attribute (optional)",
-                  "from": "From",
-                  "for": "For",
-                  "to": "To"
+                  "from": "From (optional)",
+                  "for": "For (optional)",
+                  "to": "To (optional)"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -2897,6 +2896,8 @@
             "dsk": "DSK",
             "security_classes": "Security classes",
             "unprovison": "Unprovison",
+            "included": "Included",
+            "not_included": "Not Included",
             "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
             "confirm_unprovision_text": "If you unprovision the device it will not be added to Home Assistant when it is powered on. If it is already added to Home Assistant, removing the provisioned device will not remove it from Home Assistant."
           },
@@ -3251,11 +3252,12 @@
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",
-              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
+              "description": "The Alarm Panel card allows you to arm and disarm your alarm control panel integrations."
             },
             "area": {
               "name": "Area",
-              "description": "The Area card automatically displays entities of a specific area."
+              "description": "The Area card automatically displays entities of a specific area.",
+              "show_camera": "Show camera feed instead of area picture"
             },
             "calendar": {
               "name": "Calendar",
