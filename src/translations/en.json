@@ -1514,7 +1514,7 @@
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
-                    "for": "Duration",
+                    "for": "Duration (optional)",
                     "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
                   }
                 },
@@ -1537,9 +1537,9 @@
                 "state": {
                   "label": "State",
                   "attribute": "Attribute (optional)",
-                  "from": "From",
-                  "for": "For",
-                  "to": "To"
+                  "from": "From (optional)",
+                  "for": "For (optional)",
+                  "to": "To (optional)"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
