@@ -1,4 +1,4 @@
-import { mdiCheckCircle, mdiDelete } from "@mdi/js";
+import { mdiCheckCircle, mdiCloseCircleOutline, mdiDelete } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -58,7 +58,14 @@ class ZWaveJSProvisioned extends LitElement {
                   .path=${mdiCheckCircle}
                 ></ha-svg-icon>
               `
-            : "",
+            : html`
+                <ha-svg-icon
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zwave_js.provisioned.not_included"
+                  )}
+                  .path=${mdiCloseCircleOutline}
+                ></ha-svg-icon>
+              `,
       },
       dsk: {
         title: this.hass.localize("ui.panel.config.zwave_js.provisioned.dsk"),

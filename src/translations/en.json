@@ -2898,6 +2898,7 @@
             "security_classes": "Security classes",
             "unprovison": "Unprovison",
             "included": "Included",
+            "not_included": "Not Included",
             "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
             "confirm_unprovision_text": "If you unprovision the device it will not be added to Home Assistant when it is powered on. If it is already added to Home Assistant, removing the provisioned device will not remove it from Home Assistant."
           },
