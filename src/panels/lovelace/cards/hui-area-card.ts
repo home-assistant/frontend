@@ -358,7 +358,7 @@ export class HuiAreaCard
     });
 
     let cameraEntityId: string | undefined;
-    if ("camera" in entitiesByDomain) {
+    if (this._config.show_camera && "camera" in entitiesByDomain) {
       cameraEntityId = entitiesByDomain.camera[0].entity_id;
     }
 
