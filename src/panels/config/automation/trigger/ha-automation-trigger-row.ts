@@ -68,7 +68,7 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   }
 
   let newTrigger: Trigger;
-  if (!newVal) {
+  if (newVal === undefined || newVal === "") {
     newTrigger = { ...element.trigger };
     delete newTrigger[name];
   } else {
