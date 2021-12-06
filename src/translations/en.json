@@ -3255,7 +3255,8 @@
             },
             "area": {
               "name": "Area",
-              "description": "The Area card automatically displays entities of a specific area."
+              "description": "The Area card automatically displays entities of a specific area.",
+              "show_camera": "Show camera feed instead of area image"
             },
             "calendar": {
               "name": "Calendar",
