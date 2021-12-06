@@ -1,6 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
+import "../../../components/ha-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -40,13 +41,14 @@ class HaConfigInfo extends LitElement {
             href=${documentationUrl(this.hass, "")}
             target="_blank"
             rel="noreferrer"
-            ><img
-              src="/static/icons/favicon-192x192.png"
-              height="192"
-              alt=${this.hass.localize(
+          >
+            <ha-logo-svg
+              title=${this.hass.localize(
                 "ui.panel.config.info.home_assistant_logo"
               )}
-          /></a>
+            >
+            </ha-logo-svg>
+          </a>
           <br />
           <h2>Home Assistant ${hass.connection.haVersion}</h2>
           <p>
@@ -192,6 +194,11 @@ class HaConfigInfo extends LitElement {
           max-width: 600px;
           margin: 0 auto;
           padding-bottom: 16px;
+        }
+        ha-logo-svg {
+          padding: 12px;
+          height: 192px;
+          width: 192px;
         }
       `,
     ];
