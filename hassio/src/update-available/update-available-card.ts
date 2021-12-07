@@ -120,7 +120,7 @@ class UpdateAvailableCard extends LitElement {
       return html``;
     }
 
-    const changelog = changelogUrl(this._updateType, this._version);
+    const changelog = changelogUrl(this._updateType, this._version_latest);
 
     return html`
       <ha-card
