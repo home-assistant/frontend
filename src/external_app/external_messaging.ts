@@ -1,3 +1,4 @@
+import { Connection } from "home-assistant-js-websocket";
 import {
   externalForwardConnectionEvents,
   externalForwardHaptics,
@@ -35,10 +36,21 @@ interface ExternalMessageResultError {
   error: ExternalError;
 }
 
-type ExternalMessage = ExternalMessageResult | ExternalMessageResultError;
+interface ExternalMessageRestart {
+  id: number;
+  type: "command";
+  command: "restart";
+}
+
+type ExternalMessage =
+  | ExternalMessageResult
+  | ExternalMessageResultError
+  | ExternalMessageRestart;
 
 export class ExternalMessaging {
   public commands: { [msgId: number]: CommandInFlight } = {};
+
+  public connection?: Connection;
 
   public cache: Record<string, any> = {};
 
@@ -80,6 +92,19 @@ export class ExternalMessaging {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Receiving message from external app", msg);
+    }
+
+    if (msg.type === "command") {
+      if (!this.connection) {
+        // eslint-disable-next-line no-console
+        console.warn("Received command without having connection set", msg);
+      } else if (msg.command === "restart") {
+        this.connection.socket.close();
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn("Received unknown command", msg.command, msg);
+      }
+      return;
     }
 
     const pendingCmd = this.commands[msg.id];
