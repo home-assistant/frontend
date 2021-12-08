@@ -109,6 +109,7 @@ export default class HaAutomationConditionRow extends LitElement {
             : ""}
           <ha-automation-condition-editor
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            @value-changed=${this._handleChangeEvent}
             .yamlMode=${this._yamlMode}
             .hass=${this.hass}
             .condition=${this.condition}
@@ -124,6 +125,12 @@ export default class HaAutomationConditionRow extends LitElement {
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
+    }
+  }
+
+  private _handleChangeEvent(ev: CustomEvent) {
+    if (ev.detail.yaml) {
+      this._warnings = undefined;
     }
   }
 
