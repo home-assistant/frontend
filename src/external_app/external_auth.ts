@@ -2,7 +2,7 @@
  * Auth class that connects to a native app for authentication.
  */
 import { Auth } from "home-assistant-js-websocket";
-import { ExternalMessaging, Message } from "./external_messaging";
+import { ExternalMessaging, EMMessage } from "./external_messaging";
 
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
@@ -36,7 +36,7 @@ declare global {
           postMessage(payload: BasePayload);
         };
         externalBus: {
-          postMessage(payload: Message);
+          postMessage(payload: EMMessage);
         };
       };
     };
