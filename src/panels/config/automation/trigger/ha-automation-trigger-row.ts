@@ -291,6 +291,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
+    this._warnings = undefined;
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 

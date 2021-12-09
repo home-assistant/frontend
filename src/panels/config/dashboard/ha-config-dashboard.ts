@@ -131,7 +131,7 @@ class HaConfigDashboard extends LitElement {
           border-bottom: var(--app-header-border-bottom);
           --header-height: 55px;
         }
-        ha-card:last-child {
+        :host(:not([narrow])) ha-card:last-child {
           margin-bottom: 24px;
         }
         ha-config-section {
@@ -152,7 +152,7 @@ class HaConfigDashboard extends LitElement {
           padding-bottom: 0;
         }
         :host([narrow]) ha-card {
-          background-color: var(--primary-background-color);
+          border-radius: 0;
           box-shadow: unset;
         }
 
