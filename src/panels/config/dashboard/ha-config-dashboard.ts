@@ -152,7 +152,6 @@ class HaConfigDashboard extends LitElement {
           padding-bottom: 0;
         }
         :host([narrow]) ha-card {
-          background-color: var(--primary-background-color);
           box-shadow: unset;
         }
 
