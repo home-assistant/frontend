@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
-import type { Select } from "@material/mwc-select/mwc-select";
+import { mdiCamera } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type QrScanner from "qr-scanner";
@@ -8,6 +8,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { LocalizeFunc } from "../common/translations/localize";
 import "./ha-alert";
+import "./ha-button-menu";
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
@@ -58,29 +59,37 @@ class HaQrScanner extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`${this._cameras && this._cameras.length > 1
-      ? html`<mwc-select
-          .label=${this.localize(
-            "ui.panel.config.zwave_js.add_node.select_camera"
-          )}
-          fixedMenuPosition
-          naturalMenuWidth
-          @closed=${stopPropagation}
-          @selected=${this._cameraChanged}
-        >
-          ${this._cameras!.map(
-            (camera) => html`
-              <mwc-list-item .value=${camera.id}>${camera.label}</mwc-list-item>
-            `
-          )}
-        </mwc-select>`
-      : ""}
-    ${this._error
+    return html`${this._error
       ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
       : ""}
     ${navigator.mediaDevices
       ? html`<video></video>
-          <div id="canvas-container"></div>`
+          <div id="canvas-container">
+            ${this._cameras && this._cameras.length > 1
+              ? html`<ha-button-menu
+                  corner="BOTTOM_START"
+                  fixed
+                  @closed=${stopPropagation}
+                >
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.localize(
+                      "ui.panel.config.zwave_js.add_node.select_camera"
+                    )}
+                    .path=${mdiCamera}
+                  ></ha-icon-button>
+                  ${this._cameras!.map(
+                    (camera) => html`
+                      <mwc-list-item
+                        .value=${camera.id}
+                        @click=${this._cameraChanged}
+                        >${camera.label}</mwc-list-item
+                      >
+                    `
+                  )}
+                </ha-button-menu>`
+              : ""}
+          </div>`
       : html`<ha-alert alert-type="warning"
           >${!window.isSecureContext
             ? "You can only use your camera to scan a QR core when using HTTPS."
@@ -135,16 +144,23 @@ class HaQrScanner extends LitElement {
   };
 
   private _cameraChanged(ev: CustomEvent): void {
-    this._qrScanner?.setCamera((ev.target as Select).value);
+    this._qrScanner?.setCamera((ev.target as any).value);
   }
 
   static styles = css`
     canvas {
       width: 100%;
     }
-    mwc-select {
-      width: 100%;
-      margin-bottom: 16px;
+    #canvas-container {
+      position: relative;
+    }
+    ha-button-menu {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: #727272b2;
+      color: white;
+      border-radius: 50%;
     }
   `;
 }
