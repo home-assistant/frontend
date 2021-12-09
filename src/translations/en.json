@@ -928,9 +928,47 @@
       },
       "config": {
         "header": "Configure Home Assistant",
-        "advanced_mode": {
-          "hint_enable": "Missing config options? Enable advanced mode on",
-          "link_profile_page": "your profile page"
+        "dashboard": {
+          "devices": {
+            "title": "Devices & Services",
+            "description": "Integrations, devices, entities and areas"
+          },
+          "automations": {
+            "title": "Automations & Scenes",
+            "description": "Manage automations, scenes, scripts and helpers"
+          },
+          "blueprints": {
+            "title": "Blueprints",
+            "description": "Manage blueprints"
+          },
+          "supervisor": {
+            "title": "Add-ons, Backups & Supervisor",
+            "description": "Create backups, check logs or reboot your system"
+          },
+          "dashboards": {
+            "title": "Dashboards",
+            "description": "Create customized sets of cards to control your home"
+          },
+          "energy": {
+            "title": "Energy",
+            "description": "Monitor your energy production and consumption"
+          },
+          "tags": {
+            "title": "Tags",
+            "description": "Trigger automations when a NFC tag, QR code, etc. is scanned"
+          },
+          "people": {
+            "title": "People & Zones",
+            "description": "Manage the people and zones that Home Assistant tracks"
+          },
+          "companion": {
+            "title": "Companion App",
+            "description": "Location and notifications"
+          },
+          "settings": {
+            "title": "Settings",
+            "description": "Basic settings, server controls, logs and info"
+          }
         },
         "common": {
           "editor": {
@@ -2813,7 +2851,7 @@
             "node_id": "Device ID",
             "home_id": "Home ID",
             "source": "Source",
-            "close": "Close",
+            "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",

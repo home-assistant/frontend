@@ -698,7 +698,7 @@ class HUIRoot extends LitElement {
 
   private _navigateToView(path: string | number, replace?: boolean) {
     if (!this.lovelace!.editMode) {
-      navigate(`${this.route!.prefix}/${path}`, { replace });
+      navigate(`${this.route!.prefix}/${path}${location.search}`, { replace });
       return;
     }
     navigate(`${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`, {

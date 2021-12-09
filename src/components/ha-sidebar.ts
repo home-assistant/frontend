@@ -43,6 +43,7 @@ import {
   PersistentNotification,
   subscribeNotifications,
 } from "../data/persistent_notification";
+import { getExternalConfig } from "../external_app/external_config";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
@@ -266,6 +267,11 @@ class HaSidebar extends LitElement {
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
+
+    // Temporary workaround for a bug in Android. Can be removed in Home Assistant 2022.2
+    if (this.hass.auth.external) {
+      getExternalConfig(this.hass.auth.external);
+    }
   }
 
   protected updated(changedProps) {
