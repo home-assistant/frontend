@@ -122,14 +122,20 @@ class HaDurationInput extends LitElement {
       value %= 60;
     }
 
+    const newValue: HaDurationData = {
+      hours,
+      minutes,
+      seconds: this._seconds,
+    };
+
+    if (this.enableMillisecond || this._milliseconds) {
+      newValue.milliseconds = this._milliseconds;
+    }
+
+    newValue[unit] = value;
+
     fireEvent(this, "value-changed", {
-      value: {
-        hours,
-        minutes,
-        seconds: this._seconds,
-        milliseconds: this._milliseconds,
-        ...{ [unit]: value },
-      },
+      value: newValue,
     });
   }
 }
