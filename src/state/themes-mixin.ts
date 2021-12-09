@@ -131,5 +131,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           (themeMeta.getAttribute("default-content") as string);
         themeMeta.setAttribute("content", themeColor);
       }
+
+      this.hass!.auth.external?.fireMessage({ type: "theme-update" });
     }
   };
