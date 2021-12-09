@@ -106,6 +106,7 @@ class DialogUserDetail extends LitElement {
                 .dir=${computeRTLDirection(this.hass)}
               >
                 <ha-switch
+                  .disabled=${user.system_generated}
                   .checked=${this._localOnly}
                   @change=${this._localOnlyChanged}
                 >
