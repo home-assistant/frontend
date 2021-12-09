@@ -2488,6 +2488,10 @@
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
         },
+        "mysensors": {
+          "title": "MySensors",
+          "description_nodelist": "List of Nodes"
+        },
         "ozw": {
           "common": {
             "zwave": "Z-Wave",

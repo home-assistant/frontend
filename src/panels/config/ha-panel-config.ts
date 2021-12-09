@@ -396,6 +396,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/mqtt/mqtt-config-panel"),
       },
+      mysensors: {
+        tag: "mysensors-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/mysensors/mysensors-config-panel"
+          ),
+      },
       ozw: {
         tag: "ozw-config-router",
         load: () =>
