@@ -2,16 +2,16 @@ import { assert } from "chai";
 
 import {
   ExternalMessaging,
-  InternalMessage,
+  Message,
 } from "../../src/external_app/external_messaging";
 
 // @ts-ignore
 global.__DEV__ = true;
 
 class MockExternalMessaging extends ExternalMessaging {
-  public mockSent: InternalMessage[] = [];
+  public mockSent: Message[] = [];
 
-  protected _sendExternal(msg: InternalMessage) {
+  protected _sendExternal(msg: Message) {
     this.mockSent.push(msg);
   }
 }

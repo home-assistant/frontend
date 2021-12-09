@@ -8,44 +8,44 @@ const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
   resolve: (data: any) => void;
-  reject: (err: ExternalError) => void;
+  reject: (err: EMError) => void;
 }
 
-export interface InternalMessage {
+export interface EMMessage {
   id?: number;
   type: string;
   payload?: unknown;
 }
 
-interface ExternalError {
+interface EMError {
   code: string;
   message: string;
 }
 
-interface ExternalMessageResult {
+interface EMMessageResultSuccess {
   id: number;
   type: "result";
   success: true;
   result: unknown;
 }
 
-interface ExternalMessageResultError {
+interface EMMessageResultError {
   id: number;
   type: "result";
   success: false;
-  error: ExternalError;
+  error: EMError;
 }
 
-interface ExternalMessageRestart {
+interface EMExternalMessageRestart {
   id: number;
   type: "command";
   command: "restart";
 }
 
 type ExternalMessage =
-  | ExternalMessageResult
-  | ExternalMessageResultError
-  | ExternalMessageRestart;
+  | EMMessageResultSuccess
+  | EMMessageResultError
+  | EMExternalMessageRestart;
 
 export class ExternalMessaging {
   public commands: { [msgId: number]: CommandInFlight } = {};
@@ -66,7 +66,7 @@ export class ExternalMessaging {
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T>(msg: InternalMessage): Promise<T> {
+  public sendMessage<T>(msg: EMMessage): Promise<T> {
     const msgId = ++this.msgId;
     msg.id = msgId;
 
@@ -81,7 +81,9 @@ export class ExternalMessaging {
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(msg: InternalMessage) {
+  public fireMessage(
+    msg: EMMessage | EMMessageResultSuccess | EMMessageResultError
+  ) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
@@ -100,6 +102,12 @@ export class ExternalMessaging {
         console.warn("Received command without having connection set", msg);
       } else if (msg.command === "restart") {
         this.connection.socket.close();
+        this.fireMessage({
+          id: msg.id,
+          type: "result",
+          success: true,
+          result: null,
+        });
       } else {
         // eslint-disable-next-line no-console
         console.warn("Received unknown command", msg.command, msg);
@@ -124,7 +132,7 @@ export class ExternalMessaging {
     }
   }
 
-  protected _sendExternal(msg: InternalMessage) {
+  protected _sendExternal(msg: EMMessage) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
