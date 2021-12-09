@@ -43,8 +43,7 @@ class HaConfigNavigation extends LitElement {
                   <paper-item-body two-line>
                     ${page.name ||
                     this.hass.localize(
-                      page.translationKey ||
-                        `ui.panel.config.${page.component}.caption`
+                      `ui.panel.config.dashboard.${page.translationKey}.title`
                     )}
                     ${page.component === "cloud" && (page.info as CloudStatus)
                       ? page.info.logged_in
@@ -68,7 +67,7 @@ class HaConfigNavigation extends LitElement {
                           <div secondary>
                             ${page.description ||
                             this.hass.localize(
-                              `ui.panel.config.${page.component}.description`
+                              `ui.panel.config.dashboard.${page.translationKey}.description`
                             )}
                           </div>
                         `}
