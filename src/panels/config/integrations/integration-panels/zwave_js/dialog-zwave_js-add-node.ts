@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import "@material/mwc-textfield/mwc-textfield";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
@@ -183,17 +182,9 @@ class DialogZWaveJSAddNode extends LitElement {
                 .localize=${this.hass.localize}
                 @qr-code-scanned=${this._qrCodeScanned}
               ></ha-qr-scanner>
-              <p>
-                If scanning doesn't work, you can enter the QR code value
-                manually:
-              </p>
-              <mwc-textfield
-                .label=${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.enter_qr_code"
-                )}
-                .disabled=${this._qrProcessing}
-                @keydown=${this._qrKeyDown}
-              ></mwc-textfield>`
+              <mwc-button slot="secondaryAction" @click=${this._startOver}>
+                ${this.hass.localize("ui.panel.config.zwave_js.common.back")}
+              </mwc-button>`
           : this._status === "validate_dsk_enter_pin"
           ? html`
                 <p>
@@ -274,7 +265,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 We have not found any device in inclusion mode. Make sure the
                 device is active and in inclusion mode.
               </p>
-              <mwc-button slot="primaryAction" @click=${this._startInclusion}>
+              <mwc-button slot="primaryAction" @click=${this._startOver}>
                 Retry
               </mwc-button>
             `
@@ -373,7 +364,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : this._status === "failed"
@@ -510,15 +501,6 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "qr_scan";
   }
 
-  private _qrKeyDown(ev: KeyboardEvent) {
-    if (this._qrProcessing) {
-      return;
-    }
-    if (ev.key === "Enter") {
-      this._handleQrCodeScanned((ev.target as TextField).value);
-    }
-  }
-
   private _qrCodeScanned(ev: CustomEvent): void {
     if (this._qrProcessing) {
       return;
@@ -574,11 +556,7 @@ class DialogZWaveJSAddNode extends LitElement {
       }
     } else if (provisioningInfo.version === 0) {
       this._inclusionStrategy = InclusionStrategy.Security_S2;
-      // this._startInclusion(provisioningInfo);
-      this._startInclusion(undefined, undefined, {
-        dsk: "34673-15546-46480-39591-32400-22155-07715-45994",
-        security_classes: [0, 1, 7],
-      });
+      this._startInclusion(provisioningInfo);
     } else {
       this._error = "This QR code is not supported";
       this._status = "failed";
@@ -636,6 +614,11 @@ class DialogZWaveJSAddNode extends LitElement {
         ZWaveFeature.SmartStart
       )
     ).supported;
+    this._supportsSmartStart = true;
+  }
+
+  private _startOver(_ev: Event) {
+    this._startInclusion();
   }
 
   private _startInclusion(

@@ -2851,7 +2851,7 @@
             "node_id": "Device ID",
             "home_id": "Home ID",
             "source": "Source",
-            "close": "Close",
+            "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
