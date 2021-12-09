@@ -100,6 +100,15 @@ export class ExternalMessaging {
       if (!this.connection) {
         // eslint-disable-next-line no-console
         console.warn("Received command without having connection set", msg);
+        this.fireMessage({
+          id: msg.id,
+          type: "result",
+          success: false,
+          error: {
+            code: "commands_not_init",
+            message: `Commands connection not set`,
+          },
+        });
       } else if (msg.command === "restart") {
         this.connection.socket.close();
         this.fireMessage({
@@ -111,6 +120,15 @@ export class ExternalMessaging {
       } else {
         // eslint-disable-next-line no-console
         console.warn("Received unknown command", msg.command, msg);
+        this.fireMessage({
+          id: msg.id,
+          type: "result",
+          success: false,
+          error: {
+            code: "unknown_command",
+            message: `Unknown command ${msg.command}`,
+          },
+        });
       }
       return;
     }
