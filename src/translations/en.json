@@ -939,7 +939,7 @@
           },
           "blueprints": {
             "title": "Blueprints",
-            "description": "Manage blueprints"
+            "description": "Pre-made automations and scripts by the community"
           },
           "supervisor": {
             "title": "Add-ons, Backups & Supervisor",
