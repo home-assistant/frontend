@@ -538,6 +538,13 @@
       },
       "attributes": {
         "expansion_header": "Attributes"
+      },
+      "qr-scanner": {
+        "select_camera": "Select camera",
+        "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
+        "not_supported": "Your browser doesn't support QR scanning.",
+        "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below, then press enter.",
+        "enter_qr_code": "Enter QR code value"
       }
     },
     "dialogs": {
@@ -2920,8 +2927,6 @@
             "qr_code": "QR Code",
             "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
             "scan_qr_code": "Scan QR code",
-            "enter_qr_code": "Enter QR code value",
-            "select_camera": "Select camera",
             "inclusion_failed": "The device could not be added.",
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",

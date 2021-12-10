@@ -1,5 +1,7 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
+import "@material/mwc-textfield/mwc-textfield";
+import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { mdiCamera } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -74,7 +76,7 @@ class HaQrScanner extends LitElement {
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.localize(
-                      "ui.panel.config.zwave_js.add_node.select_camera"
+                      "ui.components.qr_scanner.select_camera"
                     )}
                     .path=${mdiCamera}
                   ></ha-icon-button>
@@ -90,11 +92,16 @@ class HaQrScanner extends LitElement {
                 </ha-button-menu>`
               : ""}
           </div>`
-      : html`<ha-alert alert-type="warning"
-          >${!window.isSecureContext
-            ? "You can only use your camera to scan a QR core when using HTTPS."
-            : "Your browser doesn't support QR scanning."}</ha-alert
-        >`}`;
+      : html`<ha-alert alert-type="warning">
+            ${!window.isSecureContext
+              ? this.localize("ui.components.qr_scanner.only_https_supported")
+              : this.localize("ui.components.qr_scanner.not_supported")}
+          </ha-alert>
+          ${this.localize("ui.components.qr_scanner.manual_input")}
+          <mwc-textfield
+            .label=${this.localize("ui.components.qr_scanner.enter_qr_code")}
+            @keydown=${this._qrKeyDown}
+          ></mwc-textfield>`}`;
   }
 
   private async _loadQrScanner() {
@@ -142,6 +149,12 @@ class HaQrScanner extends LitElement {
     this._qrNotFoundCount = 0;
     fireEvent(this, "qr-code-scanned", { value: qrCodeString });
   };
+
+  private _qrKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      this._qrCodeScanned((ev.target as TextField).value);
+    }
+  }
 
   private _cameraChanged(ev: CustomEvent): void {
     this._qrScanner?.setCamera((ev.target as any).value);
