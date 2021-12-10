@@ -2515,7 +2515,7 @@
             "admin": "Administrator",
             "group": "Group",
             "active": "Active",
-            "local_only": "Can only login from the local network",
+            "local_only": "Can only log in from the local network",
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "system_generated_users_not_editable": "Unable to update system generated users.",
