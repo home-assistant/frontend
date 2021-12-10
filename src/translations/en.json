@@ -297,6 +297,7 @@
       "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
+      "overflow_menu": "Overflow menu",
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
@@ -421,6 +422,7 @@
         }
       },
       "related-filter-menu": {
+        "filter": "Filter",
         "filter_by_entity": "Filter by entity",
         "filter_by_device": "Filter by device",
         "filter_by_area": "Filter by area",
