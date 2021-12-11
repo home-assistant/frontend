@@ -56,6 +56,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     return html`
       <ha-icon-button
         @click=${this._handleClick}
+        .label=${this.hass.localize("ui.components.related-filter-menu.filter")}
         .path=${mdiFilterVariant}
       ></ha-icon-button>
       <mwc-menu-surface

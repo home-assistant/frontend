@@ -30,7 +30,7 @@ class HaCoverTiltControls extends LitElement {
           invisible: !supportsOpenTilt(this.stateObj),
         })}
         .label=${this.hass.localize(
-          "ui.dialogs.more_info_control.open_tilt_cover"
+          "ui.dialogs.more_info_control.cover.open_tilt_cover"
         )}
         .path=${mdiArrowTopRight}
         @click=${this._onOpenTiltTap}
@@ -40,7 +40,9 @@ class HaCoverTiltControls extends LitElement {
         class=${classMap({
           invisible: !supportsStopTilt(this.stateObj),
         })}
-        .label=${this.hass.localize("ui.dialogs.more_info_control.stop_cover")}
+        .label=${this.hass.localize(
+          "ui.dialogs.more_info_control.cover.stop_cover"
+        )}
         .path=${mdiStop}
         @click=${this._onStopTiltTap}
         .disabled=${this.stateObj.state === UNAVAILABLE}
@@ -50,7 +52,7 @@ class HaCoverTiltControls extends LitElement {
           invisible: !supportsCloseTilt(this.stateObj),
         })}
         .label=${this.hass.localize(
-          "ui.dialogs.more_info_control.close_tilt_cover"
+          "ui.dialogs.more_info_control.cover.close_tilt_cover"
         )}
         .path=${mdiArrowBottomLeft}
         @click=${this._onCloseTiltTap}
