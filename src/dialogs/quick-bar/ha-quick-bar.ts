@@ -521,7 +521,13 @@ export class QuickBar extends LitElement {
           if (page.component) {
             const info = this._getNavigationInfoFromConfig(page);
 
-            if (info) {
+            // Add to list, but only if we do not already have an entry for the same path and component
+            if (
+              info &&
+              !items.some(
+                (e) => e.path === info.path && e.component === info.component
+              )
+            ) {
               items.push(info);
             }
           }
