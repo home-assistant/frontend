@@ -197,6 +197,8 @@
         "media_play_pause": "Play/pause",
         "media_next_track": "Next",
         "media_previous_track": "Previous",
+        "media_seek_backward": "Seek backward",
+        "media_seek_forward": "Seek forward",
         "text_to_speak": "Text to speak"
       },
       "persistent_notification": {

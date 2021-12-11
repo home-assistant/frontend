@@ -619,6 +619,8 @@
                 "media_play": "Abspielen",
                 "media_play_pause": "Spielen/Pause",
                 "media_previous_track": "Vorheriger Titel",
+                "media_seek_backward": "Zurückspulen",
+                "media_seek_forward": "Vorspulen",
                 "sound_mode": "Sound-Modus",
                 "source": "Quelle",
                 "text_to_speak": "Text zum Sprechen",

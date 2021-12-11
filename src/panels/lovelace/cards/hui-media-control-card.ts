@@ -47,7 +47,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MediaControlCardConfig } from "./types";
 
-// Number of seconds to replay/forward when clicking seek buttons
+// Number of seconds to seek backward/forward when clicking seek buttons
 const SEEK_BUTTON_INCREMENT = 30;
 // Duration in milliseconds to wait before seeking to new position after pressing seek buttons
 const SEEK_BUTTON_DEBOUNCE = 2 * 1000; // 2 seconds
@@ -300,18 +300,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ${supportsFeature(stateObj, SUPPORT_SEEK)
                               ? html`
                                   <ha-icon-button
-                                    class="seek-button replay"
+                                    class="seek-button backward"
                                     .label=${this.hass.localize(
-                                      `ui.card.media_player.seek_replay`
+                                      `ui.card.media_player.media_seek_backward`
                                     )}
                                     .path=${mdiRestore}
-                                    @click=${this._handleSeekReplay}
+                                    @click=${this._handleSeekBackward}
                                   >
                                   </ha-icon-button>
                                   <ha-icon-button
                                     class="seek-button forward"
                                     .label=${this.hass.localize(
-                                      `ui.card.media_player.seek_forward`
+                                      `ui.card.media_player.media_seek_forward`
                                     )}
                                     .path=${mdiReload}
                                     @click=${this._handleSeekForward}
@@ -584,7 +584,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _handleSeekReplay() {
+  private _handleSeekBackward() {
     this._seekDelta -= SEEK_BUTTON_INCREMENT;
     this._debouncedSeek();
   }
@@ -786,7 +786,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         font-size: 0.7em;
         font-weight: bold;
       }
-      .controls ha-icon-button.seek-button.replay::after {
+      .controls ha-icon-button.seek-button.backward::after {
         padding-left: 3px;
       }
       .controls ha-icon-button.seek-button.forward::after {
