@@ -178,7 +178,10 @@ class DialogZWaveJSAddNode extends LitElement {
                 Search device
               </mwc-button>`
           : this._status === "qr_scan"
-          ? html`<ha-qr-scanner
+          ? html`${this._error
+                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                : ""}
+              <ha-qr-scanner
                 .localize=${this.hass.localize}
                 @qr-code-scanned=${this._qrCodeScanned}
               ></ha-qr-scanner>
@@ -194,9 +197,9 @@ class DialogZWaveJSAddNode extends LitElement {
                 </p>
                 ${
                   this._error
-                    ? html`<ha-alert alert-type="error"
-                        >${this._error}</ha-alert
-                      >`
+                    ? html`<ha-alert alert-type="error">
+                        ${this._error}
+                      </ha-alert>`
                     : ""
                 }
                 <div class="flex-container">

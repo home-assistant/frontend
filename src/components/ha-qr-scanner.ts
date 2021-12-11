@@ -11,6 +11,7 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { LocalizeFunc } from "../common/translations/localize";
 import "./ha-alert";
 import "./ha-button-menu";
+import "@material/mwc-button/mwc-button";
 
 @customElement("ha-qr-scanner")
 class HaQrScanner extends LitElement {
@@ -27,6 +28,8 @@ class HaQrScanner extends LitElement {
   @query("video", true) private _video!: HTMLVideoElement;
 
   @query("#canvas-container", true) private _canvasContainer!: HTMLDivElement;
+
+  @query("mwc-textfield") private _manualInput?: TextField;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -76,7 +79,7 @@ class HaQrScanner extends LitElement {
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.localize(
-                      "ui.components.qr_scanner.select_camera"
+                      "ui.components.qr-scanner.select_camera"
                     )}
                     .path=${mdiCamera}
                   ></ha-icon-button>
@@ -94,14 +97,20 @@ class HaQrScanner extends LitElement {
           </div>`
       : html`<ha-alert alert-type="warning">
             ${!window.isSecureContext
-              ? this.localize("ui.components.qr_scanner.only_https_supported")
-              : this.localize("ui.components.qr_scanner.not_supported")}
+              ? this.localize("ui.components.qr-scanner.only_https_supported")
+              : this.localize("ui.components.qr-scanner.not_supported")}
           </ha-alert>
-          ${this.localize("ui.components.qr_scanner.manual_input")}
-          <mwc-textfield
-            .label=${this.localize("ui.components.qr_scanner.enter_qr_code")}
-            @keydown=${this._qrKeyDown}
-          ></mwc-textfield>`}`;
+          <p>${this.localize("ui.components.qr-scanner.manual_input")}</p>
+          <div class="row">
+            <mwc-textfield
+              .label=${this.localize("ui.components.qr-scanner.enter_qr_code")}
+              @keyup=${this._manualKeyup}
+              @paste=${this._manualPaste}
+            ></mwc-textfield>
+            <mwc-button @click=${this._manualSubmit}
+              >${this.localize("ui.common.submit")}</mwc-button
+            >
+          </div>`}`;
   }
 
   private async _loadQrScanner() {
@@ -150,10 +159,21 @@ class HaQrScanner extends LitElement {
     fireEvent(this, "qr-code-scanned", { value: qrCodeString });
   };
 
-  private _qrKeyDown(ev: KeyboardEvent) {
+  private _manualKeyup(ev: KeyboardEvent) {
     if (ev.key === "Enter") {
       this._qrCodeScanned((ev.target as TextField).value);
     }
+  }
+
+  private _manualPaste(ev: ClipboardEvent) {
+    this._qrCodeScanned(
+      // @ts-ignore
+      (ev.clipboardData || window.clipboardData).getData("text")
+    );
+  }
+
+  private _manualSubmit() {
+    this._qrCodeScanned(this._manualInput!.value);
   }
 
   private _cameraChanged(ev: CustomEvent): void {
@@ -174,6 +194,14 @@ class HaQrScanner extends LitElement {
       background: #727272b2;
       color: white;
       border-radius: 50%;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+    }
+    mwc-textfield {
+      flex: 1;
+      margin-right: 8px;
     }
   `;
 }

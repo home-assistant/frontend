@@ -291,6 +291,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "submit": "Submit",
       "rename": "Rename",
       "yes": "Yes",
       "no": "No",
@@ -543,7 +544,7 @@
         "select_camera": "Select camera",
         "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
-        "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below, then press enter.",
+        "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
         "enter_qr_code": "Enter QR code value"
       }
     },
