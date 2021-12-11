@@ -99,6 +99,8 @@ export class QuickBar extends LitElement {
 
   private _focusSet = false;
 
+  private _focusListElement?: ListItem | null;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
     this._initializeItemsIfNeeded();
@@ -317,7 +319,8 @@ export class QuickBar extends LitElement {
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
-      this._getItemAtIndex(1)?.focus();
+      this._focusSet = true;
+      this._focusListElement = this._getItemAtIndex(0);
     }
   }
 
@@ -350,6 +353,11 @@ export class QuickBar extends LitElement {
       this._initializeItemsIfNeeded();
       this._filter = this._search;
     } else {
+      if (this._focusSet && this._focusListElement) {
+        this._focusSet = false;
+        // @ts-ignore
+        this._focusListElement.rippleHandlers.endFocus();
+      }
       this._debouncedSetFilter(this._search);
     }
   }
@@ -366,12 +374,14 @@ export class QuickBar extends LitElement {
   private _setFocusFirstListItem() {
     // @ts-ignore
     this._getItemAtIndex(0)?.rippleHandlers.startFocus();
+    this._focusListElement = this._getItemAtIndex(0);
   }
 
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
     const isFirstListItem =
       (ev.target as HTMLElement).getAttribute("index") === "0";
+    this._focusListElement = ev.target as ListItem;
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
@@ -511,7 +521,13 @@ export class QuickBar extends LitElement {
           if (page.component) {
             const info = this._getNavigationInfoFromConfig(page);
 
-            if (info) {
+            // Add to list, but only if we do not already have an entry for the same path and component
+            if (
+              info &&
+              !items.some(
+                (e) => e.path === info.path && e.component === info.component
+              )
+            ) {
               items.push(info);
             }
           }
