@@ -3,8 +3,8 @@ import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-pr
 import {
   mdiDotsVertical,
   mdiPlayBoxMultiple,
-  mdiRotateLeft,
-  mdiRotateRight,
+  mdiReload,
+  mdiRestore,
 } from "@mdi/js";
 import {
   css,
@@ -300,18 +300,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ${supportsFeature(stateObj, SUPPORT_SEEK)
                               ? html`
                                   <ha-icon-button
+                                    class="seek-button replay"
                                     .label=${this.hass.localize(
                                       `ui.card.media_player.seek_replay`
                                     )}
-                                    .path=${mdiRotateLeft}
+                                    .path=${mdiRestore}
                                     @click=${this._handleSeekReplay}
                                   >
                                   </ha-icon-button>
                                   <ha-icon-button
+                                    class="seek-button forward"
                                     .label=${this.hass.localize(
                                       `ui.card.media_player.seek_forward`
                                     )}
-                                    .path=${mdiRotateRight}
+                                    .path=${mdiReload}
                                     @click=${this._handleSeekForward}
                                   >
                                   </ha-icon-button>
@@ -771,8 +773,27 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --mdc-icon-size: 30px;
       }
 
+      .controls ha-icon-button.seek-button {
+        position: relative;
+      }
+      .controls ha-icon-button.seek-button::after {
+        content: "${SEEK_BUTTON_INCREMENT}";
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.7em;
+        font-weight: bold;
+      }
+      .controls ha-icon-button.seek-button.replay::after {
+        padding-left: 3px;
+      }
+      .controls ha-icon-button.seek-button.forward::after {
+        padding-right: 3px;
+      }
+
       .controls .seek-delta {
-        margin-left: 12px;
         font-size: 1.2em;
       }
 
