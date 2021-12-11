@@ -291,12 +291,14 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "submit": "Submit",
       "rename": "Rename",
       "yes": "Yes",
       "no": "No",
       "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
+      "overflow_menu": "Overflow menu",
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
@@ -421,6 +423,7 @@
         }
       },
       "related-filter-menu": {
+        "filter": "Filter",
         "filter_by_entity": "Filter by entity",
         "filter_by_device": "Filter by device",
         "filter_by_area": "Filter by area",
@@ -538,6 +541,13 @@
       },
       "attributes": {
         "expansion_header": "Attributes"
+      },
+      "qr-scanner": {
+        "select_camera": "Select camera",
+        "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
+        "not_supported": "Your browser doesn't support QR scanning.",
+        "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
+        "enter_qr_code": "Enter QR code value"
       }
     },
     "dialogs": {
@@ -939,7 +949,7 @@
           },
           "blueprints": {
             "title": "Blueprints",
-            "description": "Manage blueprints"
+            "description": "Pre-made automations and scripts by the community"
           },
           "supervisor": {
             "title": "Add-ons, Backups & Supervisor",
@@ -1146,7 +1156,7 @@
               "cost_number": "Use a static price",
               "cost_number_input": "Price per {unit}",
               "gas_usage": "Gas usage",
-              "m3_or_kWh": "m³ or kWh"
+              "m3_or_kWh": "ft³, m³, Wh, kWh or MWh"
             }
           },
           "device_consumption": {
@@ -1187,19 +1197,19 @@
               },
               "entity_unexpected_unit_energy": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'kWh' or 'Wh':"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh':"
               },
               "entity_unexpected_unit_gas": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement 'kWh', 'm³' or 'ft³':"
+                "description": "The following entities do not have the expected units of measurement 'Wh', 'kWh' or 'MWh' for an energy sensor or 'm³' or 'ft³' for a gas sensor:"
               },
               "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'' or ''{currency}/MWh'':"
               },
               "entity_unexpected_unit_gas_price": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/m³'' or ''{currency}/ft³'':"
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh'', ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
@@ -2515,7 +2525,7 @@
             "admin": "Administrator",
             "group": "Group",
             "active": "Active",
-            "local_only": "Can only login from the local network",
+            "local_only": "Can only log in from the local network",
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "system_generated_users_not_editable": "Unable to update system generated users.",
@@ -2920,8 +2930,6 @@
             "qr_code": "QR Code",
             "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
             "scan_qr_code": "Scan QR code",
-            "enter_qr_code": "Enter QR code value",
-            "select_camera": "Select camera",
             "inclusion_failed": "The device could not be added.",
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",

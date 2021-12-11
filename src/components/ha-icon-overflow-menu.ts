@@ -29,7 +29,7 @@ export class HaIconOverflowMenu extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.narrow
-        ? html` <!-- Collapsed Representation for Small Screens -->
+        ? html` <!-- Collapsed representation for small screens -->
             <ha-button-menu
               @click=${this._handleIconOverflowMenuOpened}
               @closed=${this._handleIconOverflowMenuClosed}
@@ -59,8 +59,7 @@ export class HaIconOverflowMenu extends LitElement {
               )}
             </ha-button-menu>`
         : html`
-            <!-- Icon Representation for Big Screens -->
-
+            <!-- Icon representation for big screens -->
             ${this.items.map((item) =>
               item.narrowOnly
                 ? ""
@@ -70,13 +69,12 @@ export class HaIconOverflowMenu extends LitElement {
                           ${item.tooltip}
                         </paper-tooltip>`
                       : ""}
-                    <mwc-icon-button
+                    <ha-icon-button
                       @click=${item.action}
                       .label=${item.label}
+                      .path=${item.path}
                       .disabled=${item.disabled}
-                    >
-                      <ha-svg-icon .path=${item.path}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </div> `
             )}
           `}
