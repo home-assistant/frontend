@@ -1,6 +1,11 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiPlayBoxMultiple,
+  mdiRotateLeft,
+  mdiRotateRight,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -41,6 +46,11 @@ import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MediaControlCardConfig } from "./types";
+
+// Number of seconds to replay/forward when clicking seek buttons
+const SEEK_BUTTON_INCREMENT = 30;
+// Duration in milliseconds to wait before seeking to new position after pressing seek buttons
+const SEEK_BUTTON_DEBOUNCE = 2 * 1000; // 2 seconds
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -89,6 +99,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _seekTimeout?: number;
+
+  @state() private _seekDelta = 0;
+
   public getCardSize(): number {
     return 3;
   }
@@ -134,6 +148,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
+    }
+    if (this._seekTimeout) {
+      clearTimeout(this._seekTimeout);
+      this._seekTimeout = undefined;
+      this._seekDelta = 0;
     }
   }
 
@@ -278,6 +297,31 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                 </ha-icon-button>
                               `
                             )}
+                            ${supportsFeature(stateObj, SUPPORT_SEEK)
+                              ? html`
+                                  <ha-icon-button
+                                    .label=${this.hass.localize(
+                                      `ui.card.media_player.seek_replay`
+                                    )}
+                                    .path=${mdiRotateLeft}
+                                    @click=${this._handleSeekReplay}
+                                  >
+                                  </ha-icon-button>
+                                  <ha-icon-button
+                                    .label=${this.hass.localize(
+                                      `ui.card.media_player.seek_forward`
+                                    )}
+                                    .path=${mdiRotateRight}
+                                    @click=${this._handleSeekForward}
+                                  >
+                                  </ha-icon-button>
+                                  ${this._seekDelta
+                                    ? html`<span class="seek-delta"
+                                        >${this._formatSeekDelta()}</span
+                                      >`
+                                    : ""}
+                                `
+                              : ""}
                             ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                               ? html`
                                   <ha-icon-button
@@ -538,6 +582,52 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _handleSeekReplay() {
+    this._seekDelta -= SEEK_BUTTON_INCREMENT;
+    this._debouncedSeek();
+  }
+
+  private _handleSeekForward() {
+    this._seekDelta += SEEK_BUTTON_INCREMENT;
+    this._debouncedSeek();
+  }
+
+  private _debouncedSeek() {
+    if (this._seekTimeout) {
+      clearTimeout(this._seekTimeout);
+    }
+    this._seekTimeout = window.setTimeout(
+      () => this._executeSeek(),
+      SEEK_BUTTON_DEBOUNCE
+    );
+  }
+
+  private _executeSeek() {
+    const currentPosition = getCurrentProgress(this._stateObj!);
+    let newPosition = currentPosition + this._seekDelta;
+    newPosition = Math.min(
+      newPosition,
+      this._stateObj!.attributes.media_duration!
+    );
+    newPosition = Math.max(newPosition, 0);
+
+    this.hass!.callService("media_player", "media_seek", {
+      entity_id: this._config!.entity,
+      seek_position: newPosition,
+    });
+    this._seekDelta = 0;
+    this._seekTimeout = undefined;
+  }
+
+  private _formatSeekDelta() {
+    const prefixSign = this._seekDelta > 0 ? "+" : "-";
+    const absoluteDelta = Math.abs(this._seekDelta);
+    const minutes = Math.floor(absoluteDelta / 60);
+    const seconds = absoluteDelta % 60;
+
+    return `${prefixSign}${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }
+
   private async _setColors(): Promise<void> {
     if (!this._image) {
       return;
@@ -679,6 +769,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .controls ha-icon-button {
         --mdc-icon-button-size: 44px;
         --mdc-icon-size: 30px;
+      }
+
+      .controls .seek-delta {
+        margin-left: 12px;
+        font-size: 1.2em;
       }
 
       ha-icon-button[action="media_play"],
