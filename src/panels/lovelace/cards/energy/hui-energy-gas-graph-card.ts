@@ -26,7 +26,7 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { labDarken } from "../../../../common/color/lab";
+import { labBrighten, labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
   getEnergyDataCollection,
@@ -247,10 +247,15 @@ export class HuiEnergyGasGraphCard
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
-      const borderColor =
+      const modifiedColor =
         idx > 0
-          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(gasColor)), idx)))
-          : gasColor;
+          ? this.hass.themes.darkMode
+            ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
+            : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
+          : undefined;
+      const borderColor = modifiedColor
+        ? rgb2hex(lab2rgb(modifiedColor))
+        : gasColor;
 
       let prevValue: number | null = null;
       let prevStart: string | null = null;
