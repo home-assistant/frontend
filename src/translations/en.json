@@ -688,7 +688,7 @@
           "open_cover": "Open cover",
           "close_cover": "Close cover",
           "open_tilt_cover": "Open cover tilt",
-          "close_tile_cover": "Close cover tilt",
+          "close_tilt_cover": "Close cover tilt",
           "stop_cover": "Stop cover from moving"
         }
       },
@@ -3023,7 +3023,8 @@
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages…",
-            "log_level_changed": "Log Level changed to: {level}"
+            "log_level_changed": "Log Level changed to: {level}",
+            "download_logs": "Download logs"
           }
         }
       },
