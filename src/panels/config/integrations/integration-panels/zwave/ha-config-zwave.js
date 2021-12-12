@@ -129,7 +129,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <span
               >[[localize('ui.panel.config.zwave.node_management.header')]]</span
             >
-            <ha-icon-button class="toggle-help-icon" on-click="toggleHelp">
+            <ha-icon-button
+              class="toggle-help-icon"
+              on-click="toggleHelp"
+              label="[[localize('ui.common.help')]]"
+            >
               <ha-icon icon="hass:help-circle"></ha-icon>
             </ha-icon-button>
           </div>
