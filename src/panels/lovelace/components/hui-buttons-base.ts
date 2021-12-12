@@ -50,6 +50,7 @@ export class HuiButtonsBase extends LitElement {
                       .stateObj=${stateObj}
                       .overrideIcon=${entityConf.icon}
                       .overrideImage=${entityConf.image}
+                      class=${name ? "" : "no-text"}
                       stateColor
                       slot="icon"
                     ></state-badge>
@@ -85,9 +86,21 @@ export class HuiButtonsBase extends LitElement {
           flex-wrap: wrap;
         }
         state-badge {
+          display: inline-flex;
           line-height: inherit;
-          text-align: start;
           color: var(--secondary-text-color);
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          margin-left: -4px;
+          margin-top: -2px;
+        }
+        state-badge.no-text {
+          width: 26px;
+          height: 26px;
+          margin-left: -3px;
+          margin-top: -3px;
         }
         ha-chip {
           padding: 4px;
