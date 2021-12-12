@@ -77,7 +77,9 @@ class HassioBackupDialog
           <ha-header-bar>
             <span slot="title">${this._backup.name}</span>
             <ha-icon-button
-              .label=${this.hass?.localize("common.close") || "close"}
+              .label=${this._dialogParams.supervisor?.localize(
+                "common.close"
+              ) || "Close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -114,7 +116,9 @@ class HassioBackupDialog
               @closed=${stopPropagation}
             >
               <ha-icon-button
-                .label=${this.hass!.localize("common.menu")}
+                .label=${this._dialogParams.supervisor?.localize(
+                  "common.menu"
+                ) || "Menu"}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>

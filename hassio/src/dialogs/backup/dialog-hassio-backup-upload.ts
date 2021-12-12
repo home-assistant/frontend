@@ -17,27 +17,27 @@ export class DialogHassioBackupUpload
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _params?: HassioBackupUploadDialogParams;
+  @state() private _dialogParams?: HassioBackupUploadDialogParams;
 
   public async showDialog(
     params: HassioBackupUploadDialogParams
   ): Promise<void> {
-    this._params = params;
+    this._dialogParams = params;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
-    if (this._params && !this._params.onboarding) {
-      if (this._params.reloadBackup) {
-        this._params.reloadBackup();
+    if (this._dialogParams && !this._dialogParams.onboarding) {
+      if (this._dialogParams.reloadBackup) {
+        this._dialogParams.reloadBackup();
       }
     }
-    this._params = undefined;
+    this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._dialogParams) {
       return html``;
     }
 
@@ -52,9 +52,11 @@ export class DialogHassioBackupUpload
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title"> Upload backup </span>
+            <span slot="title">Upload backup</span>
             <ha-icon-button
-              .label=${this.hass?.localize("common.close") || "close"}
+              .label=${this._dialogParams.supervisor?.localize(
+                "common.close"
+              ) || "Close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -71,7 +73,7 @@ export class DialogHassioBackupUpload
 
   private _backupUploaded(ev) {
     const backup = ev.detail.backup;
-    this._params?.showBackup(backup.slug);
+    this._dialogParams?.showBackup(backup.slug);
     this.closeDialog();
   }
 

@@ -186,7 +186,7 @@ class HassioHostInfo extends LitElement {
 
           <ha-button-menu corner="BOTTOM_START">
             <ha-icon-button
-              .label=${this.hass.localize("common.menu")}
+              .label=${this.supervisor.localize("common.menu")}
               .path=${mdiDotsVertical}
               slot="trigger"
             ></ha-icon-button>
