@@ -18,13 +18,9 @@ export class HaChip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip">
+      <div class="mdc-chip ${this.noText ? "no-text" : ""}">
         ${this.hasIcon
-          ? html`<div
-              class="mdc-chip__icon mdc-chip__icon--leading ${this.noText
-                ? "no-text"
-                : ""}"
-            >
+          ? html`<div class="mdc-chip__icon mdc-chip__icon--leading">
               <slot name="icon"></slot>
             </div>`
           : null}
@@ -49,6 +45,10 @@ export class HaChip extends LitElement {
         color: var(--ha-chip-text-color, var(--primary-text-color));
       }
 
+      .mdc-chip.no-text {
+        padding: 0 10px;
+      }
+
       .mdc-chip:hover {
         color: var(--ha-chip-text-color, var(--primary-text-color));
       }
@@ -57,8 +57,8 @@ export class HaChip extends LitElement {
         --mdc-icon-size: 20px;
         color: var(--ha-chip-icon-color, var(--ha-chip-text-color));
       }
-      .mdc-chip
-        .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden).no-text {
+      .mdc-chip.no-text
+        .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
         margin-right: -4px;
       }
     `;
