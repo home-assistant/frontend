@@ -19,7 +19,7 @@ import {
   svg,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -427,6 +427,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         @click=${this._handleAction}
         tabindex="0"
         .path=${modeIcons[mode]}
+        .label=${this.hass!.localize(`component.climate.state._.${mode}`)}
       >
       </ha-icon-button>
     `;
