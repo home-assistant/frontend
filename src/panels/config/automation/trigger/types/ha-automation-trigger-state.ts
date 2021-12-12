@@ -50,6 +50,13 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     if (!changedProperties.has("trigger")) {
       return true;
     }
+    if (
+      this.trigger.for &&
+      typeof this.trigger.for === "object" &&
+      this.trigger.for.milliseconds === 0
+    ) {
+      delete this.trigger.for.milliseconds;
+    }
     // Check for templates in trigger. If found, revert to YAML mode.
     if (this.trigger && hasTemplate(this.trigger)) {
       fireEvent(
