@@ -393,7 +393,7 @@ class HaSidebar extends LitElement {
   ) {
     return html`
       <a
-        aria-role="option"
+        role="option"
         href=${`/${urlPath}`}
         data-panel=${urlPath}
         tabindex="-1"
@@ -498,7 +498,7 @@ class HaSidebar extends LitElement {
     >
       <paper-icon-item
         class="notifications"
-        aria-role="option"
+        role="option"
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
@@ -529,7 +529,7 @@ class HaSidebar extends LitElement {
       href="/profile"
       data-panel="panel"
       tabindex="-1"
-      aria-role="option"
+      role="option"
       aria-label=${this.hass.localize("panel.profile")}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
