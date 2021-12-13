@@ -157,18 +157,20 @@ export class HaConfigServerControl extends LitElement {
                   "ui.panel.config.server_control.section.server_management.restart"
                 )}
               </ha-call-service-button>
-              <ha-call-service-button
-                class="warning"
-                .hass=${this.hass}
-                domain="homeassistant"
-                service="stop"
-                confirmation=${this.hass.localize(
-                  "ui.panel.config.server_control.section.server_management.confirm_stop"
-                )}
-                >${this.hass.localize(
-                  "ui.panel.config.server_control.section.server_management.stop"
-                )}
-              </ha-call-service-button>
+              ${!this.hass.config.components.includes("hassio")
+                ? html`<ha-call-service-button
+                    class="warning"
+                    .hass=${this.hass}
+                    domain="homeassistant"
+                    service="stop"
+                    confirmation=${this.hass.localize(
+                      "ui.panel.config.server_control.section.server_management.confirm_stop"
+                    )}
+                    >${this.hass.localize(
+                      "ui.panel.config.server_control.section.server_management.stop"
+                    )}
+                  </ha-call-service-button>`
+                : ""}
             </div>
           </ha-card>
 
