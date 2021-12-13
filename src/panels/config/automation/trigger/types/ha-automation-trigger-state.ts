@@ -28,7 +28,7 @@ const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
     platform: literal("state"),
-    entity_id: string(),
+    entity_id: optional(string()),
     attribute: optional(string()),
     from: optional(string()),
     to: optional(string()),
