@@ -224,6 +224,9 @@ class UpdateAvailableCard extends LitElement {
   }
 
   get _shouldCreateBackup(): boolean {
+    if (this._updateType && !["core", "addon"].includes(this._updateType)) {
+      return false;
+    }
     const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
     if (checkbox) {
       return checkbox.checked;
