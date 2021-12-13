@@ -66,7 +66,7 @@ export class HaFormString extends LitElement implements HaFormElement {
       ${isPassword
         ? html`<ha-icon-button
             toggles
-            label="Toggle between masked and clear password"
+            label="Show / hide password"
             @click=${this._toggleUnmaskedPassword}
             tabindex="-1"
             .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
