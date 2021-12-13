@@ -208,6 +208,7 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
 export const DOMAINS_INPUT_ROW = [
   "cover",
   "fan",
+  "group",
   "humidifier",
   "input_boolean",
   "input_datetime",
