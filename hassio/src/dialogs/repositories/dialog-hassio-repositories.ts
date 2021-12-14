@@ -90,6 +90,9 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
                     <ha-icon-button
+                      .disabled=${this._dialogParams!.supervisor.supervisor.addons.some(
+                        (addon) => addon.repository === repo.slug
+                      )}
                       .slug=${repo.slug}
                       .label=${this._dialogParams!.supervisor.localize(
                         "dialog.repositories.remove"
