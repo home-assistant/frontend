@@ -922,6 +922,7 @@
       "dismiss": "Dismiss"
     },
     "sidebar": {
+      "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
