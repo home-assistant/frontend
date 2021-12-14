@@ -143,7 +143,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <h1>
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
-      <ha-expansion-panel header="Set state">
+      <ha-expansion-panel header="Set state" outlined>
         <p>
           [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
           [[localize('ui.panel.developer-tools.tabs.states.description2')]]
