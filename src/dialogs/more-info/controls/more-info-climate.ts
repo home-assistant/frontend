@@ -103,8 +103,9 @@ class MoreInfoClimate extends LitElement {
             stateObj.attributes.temperature !== null
               ? html`
                   <ha-climate-control
+                    .hass=${this.hass}
                     .value=${stateObj.attributes.temperature}
-                    .units=${hass.config.unit_system.temperature}
+                    .unit=${hass.config.unit_system.temperature}
                     .step=${temperatureStepSize}
                     .min=${stateObj.attributes.min_temp}
                     .max=${stateObj.attributes.max_temp}
@@ -118,8 +119,9 @@ class MoreInfoClimate extends LitElement {
               stateObj.attributes.target_temp_high !== null)
               ? html`
                   <ha-climate-control
+                    .hass=${this.hass}
                     .value=${stateObj.attributes.target_temp_low}
-                    .units=${hass.config.unit_system.temperature}
+                    .unit=${hass.config.unit_system.temperature}
                     .step=${temperatureStepSize}
                     .min=${stateObj.attributes.min_temp}
                     .max=${stateObj.attributes.target_temp_high}
@@ -127,8 +129,9 @@ class MoreInfoClimate extends LitElement {
                     @change=${this._targetTemperatureLowChanged}
                   ></ha-climate-control>
                   <ha-climate-control
+                    .hass=${this.hass}
                     .value=${stateObj.attributes.target_temp_high}
-                    .units=${hass.config.unit_system.temperature}
+                    .unit=${hass.config.unit_system.temperature}
                     .step=${temperatureStepSize}
                     .min=${stateObj.attributes.target_temp_low}
                     .max=${stateObj.attributes.max_temp}
