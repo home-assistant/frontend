@@ -65,6 +65,9 @@ class MoreInfoMediaPlayer extends LitElement {
                       action=${control.action}
                       @click=${this._handleClick}
                       .path=${control.icon}
+                      .label=${this.hass.localize(
+                        `ui.card.media_player.${control.action}`
+                      )}
                     >
                     </ha-icon-button>
                   `
