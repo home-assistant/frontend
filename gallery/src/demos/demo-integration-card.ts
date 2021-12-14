@@ -206,6 +206,7 @@ const createDeviceRegistryEntries = (
     model: "Mock Device",
     name: "Tag Reader",
     sw_version: null,
+    hw_version: "1.0.0",
     id: "mock-device-id",
     identifiers: [],
     via_device_id: null,
