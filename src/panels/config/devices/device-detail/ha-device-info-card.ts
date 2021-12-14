@@ -66,6 +66,17 @@ export class HaDeviceCard extends LitElement {
                 </div>
               `
             : ""}
+          ${this.device.hw_version
+            ? html`
+                <div class="extra-info">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.hardware",
+                    "version",
+                    this.device.hw_version
+                  )}
+                </div>
+              `
+            : ""}
           <slot></slot>
         </div>
         <slot name="actions"></slot>

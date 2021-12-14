@@ -2444,6 +2444,7 @@
             "manuf": "by {manufacturer}",
             "via": "Connected via",
             "firmware": "Firmware: {version}",
+            "hardware": "Hardware: {version}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
             "area": "In {area}",
