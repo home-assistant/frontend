@@ -23,9 +23,6 @@ export const setInputDateTimeValue = (
   time: string | undefined = undefined,
   date: string | undefined = undefined
 ) => {
-  if (time !== undefined) {
-    time = time.split("+")[0];
-  }
   const param = { entity_id: entityId, time, date };
   hass.callService(entityId.split(".", 1)[0], "set_datetime", param);
 };
