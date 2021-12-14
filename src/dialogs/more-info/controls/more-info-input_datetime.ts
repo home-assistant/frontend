@@ -74,7 +74,7 @@ class MoreInfoInputDatetime extends LitElement {
       this.hass!,
       this.stateObj!.entity_id,
       this.stateObj!.attributes.has_time
-        ? this.stateObj!.state.split(" ")[1].split("+")[0]
+        ? this.stateObj!.state.split(" ")[1]
         : undefined,
       ev.detail.value
     );
