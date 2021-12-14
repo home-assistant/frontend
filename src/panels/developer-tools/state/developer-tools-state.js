@@ -143,7 +143,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <h1>
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
-      <ha-expansion-panel header="Set state" outlined>
+      <ha-expansion-panel
+        header="Set state"
+        outlined
+        expanded="[[_expanded]]"
+        on-expanded-changed="expandedChanged"
+      >
         <p>
           [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
           [[localize('ui.panel.developer-tools.tabs.states.description2')]]
@@ -353,6 +358,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
 
+      _expanded: {
+        type: Boolean,
+        value: false,
+      },
+
       narrow: {
         type: Boolean,
         reflectToAttribute: true,
@@ -376,6 +386,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entity = state;
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
+    this._expanded = true;
     ev.preventDefault();
   }
 
@@ -393,6 +404,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entity = state;
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
+    this._expanded = true;
+  }
+
+  expandedChanged(ev) {
+    this._expanded = ev.detail.expanded;
   }
 
   entityMoreInfo(ev) {
