@@ -95,7 +95,7 @@ class OZWConfigDashboard extends LitElement {
                     <ha-card>
                       <a
                         href="/config/ozw/network/${instance.ozw_instance}"
-                        aria-role="option"
+                        role="option"
                         tabindex="-1"
                       >
                         <paper-icon-item>

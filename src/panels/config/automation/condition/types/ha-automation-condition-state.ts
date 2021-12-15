@@ -17,9 +17,9 @@ import {
 
 const stateConditionStruct = object({
   condition: literal("state"),
-  entity_id: string(),
+  entity_id: optional(string()),
   attribute: optional(string()),
-  state: string(),
+  state: optional(string()),
   for: optional(union([string(), forDictStruct])),
 });
 

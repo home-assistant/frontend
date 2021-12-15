@@ -195,8 +195,14 @@
         "turn_off": "Turn off",
         "media_play": "Play",
         "media_play_pause": "Play/pause",
-        "media_next_track": "Next",
-        "media_previous_track": "Previous",
+        "media_pause": "Pause",
+        "media_stop": "Stop",
+        "media_next_track": "Next track",
+        "media_previous_track": "Previous track",
+        "media_volume_up": "Volume up",
+        "media_volume_down": "Volume down",
+        "media_volume_mute": "Volume mute",
+        "media_volume_unmute": "Volume unmute",
         "text_to_speak": "Text to speak"
       },
       "persistent_notification": {
@@ -689,7 +695,7 @@
           "close_cover": "Close cover",
           "open_tilt_cover": "Open cover tilt",
           "close_tilt_cover": "Close cover tilt",
-          "stop_cover": "Stop cover from moving"
+          "stop_cover": "Stop cover"
         }
       },
       "entity_registry": {
@@ -922,6 +928,7 @@
       "dismiss": "Dismiss"
     },
     "sidebar": {
+      "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
@@ -4269,7 +4276,8 @@
       "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Click update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "creating_backup": "Creating backup of {name}"
+      "creating_backup": "Creating backup of {name}",
+      "no_update": "No update available for {name}"
     },
     "confirm": {
       "restart": {

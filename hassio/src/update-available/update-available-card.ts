@@ -132,7 +132,13 @@ class UpdateAvailableCard extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-          ${this._action === null
+          ${this._version === this._version_latest
+            ? html`<p>
+                ${this.supervisor.localize("update_available.no_update", {
+                  name: this._name,
+                })}
+              </p>`
+            : this._action === null
             ? html`
                 ${this._changelogContent
                   ? html`
@@ -177,7 +183,7 @@ class UpdateAvailableCard extends LitElement {
                       )}
                 </p>`}
         </div>
-        ${this._action === null
+        ${this._version !== this._version_latest && this._action === null
           ? html`
               <div class="card-actions">
                 ${changelog
@@ -224,6 +230,9 @@ class UpdateAvailableCard extends LitElement {
   }
 
   get _shouldCreateBackup(): boolean {
+    if (this._updateType && !["core", "addon"].includes(this._updateType)) {
+      return false;
+    }
     const checkbox = this.shadowRoot?.querySelector("ha-checkbox");
     if (checkbox) {
       return checkbox.checked;
