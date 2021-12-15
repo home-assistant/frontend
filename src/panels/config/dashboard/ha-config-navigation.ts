@@ -31,7 +31,7 @@ class HaConfigNavigation extends LitElement {
             : canShowPage(this.hass, page)
         )
           ? html`
-              <a href=${page.path} aria-role="option" tabindex="-1">
+              <a href=${page.path} role="option" tabindex="-1">
                 <paper-icon-item @click=${this._entryClicked}>
                   <div
                     class=${page.iconColor ? "icon-background" : ""}

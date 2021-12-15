@@ -95,8 +95,11 @@ class OnboardingCreateUser extends LitElement {
   private _handleValueChanged(
     ev: PolymerChangedEvent<HaFormDataContainer>
   ): void {
+    const nameChanged = ev.detail.value.name !== this._newUser.name;
     this._newUser = ev.detail.value;
-    this._maybePopulateUsername();
+    if (nameChanged) {
+      this._maybePopulateUsername();
+    }
     this._formError.password_confirm =
       this._newUser.password !== this._newUser.password_confirm
         ? this.localize(

@@ -46,6 +46,7 @@ class HaAlert extends LitElement {
           rtl: this.rtl,
           [this.alertType]: true,
         })}"
+        role="alert"
       >
         <div class="icon ${this.title ? "" : "no-title"}">
           <slot name="icon">
