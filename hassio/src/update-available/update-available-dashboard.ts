@@ -46,6 +46,7 @@ class UpdateAvailableDashboard extends LitElement {
       update-available-card {
         margin: auto;
         margin-top: 16px;
+        margin-bottom: 24px;
         max-width: 600px;
       }
     `;
