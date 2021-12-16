@@ -263,3 +263,26 @@ export const UNIT_F = "°F";
 
 /** Entity ID of the default view. */
 export const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
+
+/** State attributes which should not be shown in more-info window */
+export const LOGICAL_STATE_ATTRIBUTES = [
+  "assumed_state",
+  "attribution",
+  "custom_ui_more_info",
+  "custom_ui_state_card",
+  "device_class",
+  "editable",
+  "emulated_hue_name",
+  "emulated_hue",
+  "entity_picture",
+  "friendly_name",
+  "haaska_hidden",
+  "haaska_name",
+  "icon",
+  "initial_state",
+  "last_reset",
+  "restored",
+  "state_class",
+  "supported_features",
+  "unit_of_measurement",
+];

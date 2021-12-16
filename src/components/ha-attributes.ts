@@ -1,9 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { LOGICAL_STATE_ATTRIBUTES } from "../common/const";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
-import hassAttributeUtil, {
+import {
   formatAttributeName,
   formatAttributeValue,
 } from "../util/hass-attributes-util";
@@ -25,7 +26,7 @@ class HaAttributes extends LitElement {
     }
 
     const attributes = this.computeDisplayAttributes(
-      hassAttributeUtil.LOGIC_STATE_ATTRIBUTES.concat(
+      LOGICAL_STATE_ATTRIBUTES.concat(
         this.extraFilters ? this.extraFilters.split(",") : []
       )
     );
