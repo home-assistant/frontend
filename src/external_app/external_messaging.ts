@@ -110,7 +110,7 @@ export class ExternalMessaging {
           },
         });
       } else if (msg.command === "restart") {
-        this.connection.socket.close();
+        this.connection.reconnect(true);
         this.fireMessage({
           id: msg.id,
           type: "result",
