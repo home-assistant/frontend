@@ -61,6 +61,7 @@ const hassAttributeUtil = {
       "current",
       "date",
       "energy",
+      "frequency",
       "gas",
       "humidity",
       "illuminance",
