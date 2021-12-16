@@ -112,6 +112,7 @@ export const FIXED_DOMAIN_ICONS = {
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
+  apparent_power: mdiFlash,
   aqi: mdiAirFilter,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
   carbon_dioxide: mdiMoleculeCo2,
@@ -134,6 +135,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   power: mdiFlash,
   power_factor: mdiAngleAcute,
   pressure: mdiGauge,
+  reactive_power: mdiFlash,
   signal_strength: mdiWifi,
   sulphur_dioxide: mdiMolecule,
   temperature: mdiThermometer,
