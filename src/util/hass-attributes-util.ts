@@ -2,8 +2,8 @@ const hassAttributeUtil = {
   DOMAIN_DEVICE_CLASS: {
     binary_sensor: [
       "battery",
-      "co",
-      "co2",
+      "carbon_monoxide",
+      "carbon_dioxide",
       "cold",
       "connectivity",
       "door",
