@@ -25,7 +25,7 @@ class HaAttributes extends LitElement {
     }
 
     const attributes = this.computeDisplayAttributes(
-      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+      hassAttributeUtil.LOGIC_STATE_ATTRIBUTES.concat(
         this.extraFilters ? this.extraFilters.split(",") : []
       )
     );
