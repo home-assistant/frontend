@@ -214,6 +214,7 @@ export const DOMAINS_INPUT_ROW = [
   "group",
   "humidifier",
   "input_boolean",
+  "input_button",
   "input_datetime",
   "input_number",
   "input_select",
