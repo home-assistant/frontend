@@ -1461,7 +1461,8 @@
               "telegram": "Telegram notify services",
               "smtp": "SMTP notify services",
               "mqtt": "Manually configured MQTT entities",
-              "rpi_gpio": "Raspberry Pi GPIO entities"
+              "rpi_gpio": "Raspberry Pi GPIO entities",
+              "timer": "Timers"
             },
             "server_management": {
               "heading": "Server management",
