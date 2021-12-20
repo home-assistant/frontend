@@ -133,6 +133,7 @@ class HassioAddonInfo extends LitElement {
               .narrow=${this.narrow}
               .supervisor=${this.supervisor}
               .addonSlug=${this.addon.slug}
+              @update-complete=${this._updateComplete}
             ></update-available-card>
           `
         : ""}
@@ -863,6 +864,15 @@ class HassioAddonInfo extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
+  }
+
+  private _updateComplete() {
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "install",
+    };
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _installClicked(ev: CustomEvent): Promise<void> {
