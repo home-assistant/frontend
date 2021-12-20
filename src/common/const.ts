@@ -206,6 +206,8 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
  *  still do of course) as the click might instead e.g. activate the input field that this row shows.
  */
 export const DOMAINS_INPUT_ROW = [
+  "automation",
+  "button",
   "cover",
   "fan",
   "group",
