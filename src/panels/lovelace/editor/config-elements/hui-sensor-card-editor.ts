@@ -4,7 +4,16 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, number, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  literal,
+  number,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
@@ -26,7 +35,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
-    graph: optional(string()),
+    graph: optional(union([literal("line"), literal("none")])),
     unit: optional(string()),
     detail: optional(number()),
     theme: optional(string()),

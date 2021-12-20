@@ -27,6 +27,7 @@ import { StatisticType } from "../../../../data/history";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -41,10 +42,20 @@ const cardConfigStruct = assign(
     entities: array(entitiesConfigStruct),
     title: optional(string()),
     days_to_show: optional(number()),
+    period: optional(
+      union([
+        literal("5minute"),
+        literal("hour"),
+        literal("day"),
+        literal("month"),
+      ])
+    ),
     chart_type: optional(union([literal("bar"), literal("line")])),
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
   })
 );
+
+const periods = ["5minute", "hour", "day", "month"];
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -71,6 +82,10 @@ export class HuiStatisticsGraphCardEditor
 
   get _days_to_show(): number {
     return this._config!.days_to_show || 30;
+  }
+
+  get _period(): string {
+    return this._config!.period || "hour";
   }
 
   get _chart_type(): StatisticsGraphCardConfig["chart_type"] {
@@ -102,6 +117,30 @@ export class HuiStatisticsGraphCardEditor
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
         ></paper-input>
+        <paper-dropdown-menu
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.statistics-graph.period"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .configValue=${"period"}
+          @iron-select=${this._periodSelected}
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            attr-for-selected="period"
+            .selected=${this._period}
+          >
+            ${periods.map(
+              (period) =>
+                html`<paper-item .period=${period}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                  )}
+                </paper-item>`
+            )}
+          </paper-listbox>
+        </paper-dropdown-menu>
         <paper-input
           type="number"
           .label="${this.hass.localize(
@@ -201,10 +240,22 @@ export class HuiStatisticsGraphCardEditor
     });
   }
 
+  private _periodSelected(ev: CustomEvent) {
+    const newPeriod = ev.detail.item
+      .period as StatisticsGraphCardConfig["period"];
+    if (newPeriod === this._period) {
+      return;
+    }
+    fireEvent(this, "config-changed", {
+      config: { ...this._config!, period: newPeriod },
+    });
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
+
     const target = ev.target! as EditorTarget;
 
     const newValue = ev.detail?.value || target.value;
