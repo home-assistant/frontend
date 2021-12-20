@@ -137,7 +137,7 @@ export const LocalStorage =
         configurable: true,
       },
       finisher(cls: typeof ReactiveElement) {
-        if (subscribe) {
+        if (property && subscribe) {
           const connectedCallback = cls.prototype.connectedCallback;
           const disconnectedCallback = cls.prototype.disconnectedCallback;
           cls.prototype.connectedCallback = function () {
