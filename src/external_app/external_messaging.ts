@@ -36,16 +36,16 @@ interface EMMessageResultError {
   error: EMError;
 }
 
-interface EMExternalMessageRestart {
+interface EMExternalMessageReconnect {
   id: number;
   type: "command";
-  command: "restart";
+  command: "reconnect";
 }
 
 type ExternalMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageRestart;
+  | EMExternalMessageReconnect;
 
 export class ExternalMessaging {
   public commands: { [msgId: number]: CommandInFlight } = {};
@@ -109,7 +109,7 @@ export class ExternalMessaging {
             message: `Commands connection not set`,
           },
         });
-      } else if (msg.command === "restart") {
+      } else if (msg.command === "reconnect") {
         this.connection.reconnect(true);
         this.fireMessage({
           id: msg.id,
