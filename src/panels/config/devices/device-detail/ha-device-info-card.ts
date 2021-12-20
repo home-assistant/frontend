@@ -118,9 +118,9 @@ export class HaDeviceCard extends LitElement {
         word-wrap: break-word;
       }
       .manuf,
-      .entity-id,
       .model {
         color: var(--secondary-text-color);
+        word-wrap: break-word;
       }
     `;
   }
