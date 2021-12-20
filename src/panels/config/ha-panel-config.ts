@@ -398,6 +398,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/ozw/ozw-config-router"),
       },
+      recorder: {
+        tag: "recorder-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/recorder/recorder-config-panel"
+          ),
+      },
       zwave_js: {
         tag: "zwave_js-config-router",
         load: () =>

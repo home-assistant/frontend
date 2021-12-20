@@ -2677,6 +2677,12 @@
             "cancel_command": "Cancel Command"
           }
         },
+        "recorder": {
+          "commit_interval": "Commit interval",
+          "documentation": "Documentation",
+          "include_all_label": "Include all entities (default)",
+          "purge_keep_days": "Days to keep"
+        },
         "zha": {
           "common": {
             "clusters": "Clusters",

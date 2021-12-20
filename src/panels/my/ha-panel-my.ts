@@ -54,6 +54,10 @@ const REDIRECTS: Redirects = {
     component: "mqtt",
     redirect: "/config/mqtt",
   },
+  config_recorder: {
+    component: "recorder",
+    redirect: "/config/recorder",
+  },
   config_zha: {
     component: "zha",
     redirect: "/config/zha/dashboard",

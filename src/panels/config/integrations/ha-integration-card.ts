@@ -48,6 +48,7 @@ import "./ha-integration-header";
 const integrationsWithPanel = {
   hassio: "/hassio/dashboard",
   mqtt: "/config/mqtt",
+  recorder: "/config/recorder",
   zha: "/config/zha/dashboard",
   ozw: "/config/ozw/dashboard",
   zwave: "/config/zwave",

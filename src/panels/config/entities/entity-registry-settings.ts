@@ -230,7 +230,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </div>
           </div>
         </div>
-
+        TODO add switch for recorder include/exclude
         ${this.entry.device_id
           ? html`<ha-expansion-panel
               .header=${this.hass.localize(
