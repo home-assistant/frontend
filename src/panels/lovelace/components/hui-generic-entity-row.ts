@@ -50,8 +50,11 @@ class HuiGenericEntityRow extends LitElement {
     }
 
     const domain = computeDomain(this.config.entity);
+    // By default, we always show a pointer, since if there is no explicit configuration provided,
+    // the frontend always assumes "more-info" in the action handler. We only need to hide the pointer
+    // if the tap action is explicitly set to "none".
     const pointer = !(
-      this.config.tap_action && this.config.tap_action.action !== "none"
+      this.config.tap_action && this.config.tap_action.action === "none"
     );
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
