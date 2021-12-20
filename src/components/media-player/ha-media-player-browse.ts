@@ -44,7 +44,7 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
-import "../ha-card";
+import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
@@ -603,7 +603,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
       );
     }
-    const observer = this._interactionObserver;
+    const observer = this._interactionObserver!;
     this._thumbnails.forEach((thumbnailCard) => {
       observer.observe(thumbnailCard);
     });
