@@ -30,6 +30,7 @@ import type {
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
+import { getSignedPath } from "./auth";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_type?: any;
@@ -193,6 +194,20 @@ export const browseLocalMediaPlayer = (
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
+
+export const getSignedThumbnailPath = async (
+  hass: HomeAssistant,
+  relativeUrl: string
+): Promise<string> => {
+  const thumbnailUrl = new URL(hass.hassUrl(relativeUrl));
+  const signedPath = await getSignedPath(hass, thumbnailUrl.pathname);
+  const updatedUrl = new URL(hass.hassUrl(signedPath.path));
+  // Append any query parameters from the original url onto the udpated url
+  for (const pair of thumbnailUrl.searchParams) {
+    updatedUrl.searchParams.append(pair[0], pair[1]);
+  }
+  return updatedUrl.toString();
+};
 
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
   let progress = stateObj.attributes.media_position!;

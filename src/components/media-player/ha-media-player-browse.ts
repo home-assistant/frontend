@@ -18,6 +18,7 @@ import {
   eventOptions,
   property,
   query,
+  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -30,6 +31,7 @@ import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
+  getSignedThumbnailPath,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
   MediaPickedEvent,
@@ -84,18 +86,25 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query(".content") private _content?: HTMLDivElement;
 
+  @queryAll(".lazythumbnail") private _thumbnails?: HaCard[];
+
   private _headerOffsetHeight = 0;
 
   private _resizeObserver?: ResizeObserver;
 
+  private _interactionObserver?: InteractionObserver;
+
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
+    this.updateComplete.then(() => this._attachResizeObserver());
   }
 
   public disconnectedCallback(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
+    }
+    if (this._interactionObserver) {
+      this._interactionObserver.disconnect();
     }
   }
 
@@ -259,11 +268,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <div class="ha-card-parent">
                           <ha-card
                             outlined
-                            style=${styleMap({
-                              backgroundImage: child.thumbnail
-                                ? `url(${child.thumbnail})`
-                                : "none",
-                            })}
+                            class=${child.thumbnail ? "lazythumbnail" : ""}
+                            data-src=${child.thumbnail
+                              ? `${child.thumbnail}`
+                              : ""}
                           >
                             ${!child.thumbnail
                               ? html`
@@ -329,7 +337,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       >
                         <div
                           class="graphic"
-                          style=${ifDefined(
+                          data-style=${ifDefined(
                             mediaClass.show_list_images && child.thumbnail
                               ? `background-image: url(${child.thumbnail})`
                               : undefined
@@ -391,7 +399,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   protected firstUpdated(): void {
     this._measureCard();
-    this._attachObserver();
+    this._attachResizeObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -402,6 +410,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._mediaPlayerItems.length
     ) {
       this._setHeaderHeight();
+      this._attachInteractionObserver();
     }
 
     if (
@@ -553,7 +562,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  private async _attachObserver(): Promise<void> {
+  private async _attachResizeObserver(): Promise<void> {
     if (!this._resizeObserver) {
       await installResizeObserver();
       this._resizeObserver = new ResizeObserver(
@@ -562,6 +571,42 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     this._resizeObserver.observe(this);
+  }
+
+  /**
+   * Load thumbnails for images on demand as they become visible.
+   */
+  private async _attachInteractionObserver(): Promise<void> {
+    if (!this._interactionObserver) {
+      this._interactionObserver = new IntersectionObserver(
+        async (entries, observer) => {
+          await Promise.all(
+            entries.map(async (entry) => {
+              if (!entry.isIntersecting) {
+                return;
+              }
+              const thumbnailCard = entry.target as HACard;
+              let thumbnailUrl = thumbnailCard.dataset.src;
+              // Any thumbnails served by the API required authentication
+              if (thumbnailUrl.startsWith("/")) {
+                thumbnailUrl = await getSignedThumbnailPath(
+                  this.hass,
+                  thumbnailUrl
+                );
+              }
+              thumbnailCard.style =
+                "background-image:url(" + thumbnailUrl + ")";
+              observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
+              this.requestUpdate();
+            })
+          );
+        }
+      );
+    }
+    const observer = this._interactionObserver;
+    this._thumbnails.forEach((thumbnailCard) => {
+      observer.observe(thumbnailCard);
+    });
   }
 
   private _closeDialogAction(): void {
