@@ -337,7 +337,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       >
                         <div
                           class="graphic"
-                          data-style=${ifDefined(
+                          style=${ifDefined(
                             mediaClass.show_list_images && child.thumbnail
                               ? `background-image: url(${child.thumbnail})`
                               : undefined
