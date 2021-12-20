@@ -1461,7 +1461,8 @@
               "telegram": "Telegram notify services",
               "smtp": "SMTP notify services",
               "mqtt": "Manually configured MQTT entities",
-              "rpi_gpio": "Raspberry Pi GPIO entities"
+              "rpi_gpio": "Raspberry Pi GPIO entities",
+              "timer": "Timers"
             },
             "server_management": {
               "heading": "Server management",
@@ -2444,6 +2445,7 @@
             "manuf": "by {manufacturer}",
             "via": "Connected via",
             "firmware": "Firmware: {version}",
+            "hardware": "Hardware: {version}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
             "area": "In {area}",
@@ -4465,7 +4467,8 @@
       "repositories": {
         "title": "Manage add-on repositories",
         "add": "Add",
-        "remove": "Remove"
+        "remove": "Remove",
+        "used": "Repository is in use for installed add-ons and can't be removed."
       },
       "restart_addon": {
         "confirm_text": "Restart add-on",

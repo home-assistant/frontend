@@ -350,9 +350,7 @@ export class SupervisorBackupContent extends LitElement {
     if (folders?.length) {
       data.folders = folders;
     }
-    if (this.homeAssistant) {
-      data.homeassistant = this.homeAssistant;
-    }
+    data.homeassistant = this.homeAssistant;
 
     return data;
   }
