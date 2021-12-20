@@ -577,6 +577,9 @@ export class HaMediaPlayerBrowse extends LitElement {
    * Load thumbnails for images on demand as they become visible.
    */
   private async _attachInteractionObserver(): Promise<void> {
+    if (!this._thumbnails) {
+      return;
+    }
     if (!this._interactionObserver) {
       this._interactionObserver = new IntersectionObserver(
         async (entries, observer) => {
@@ -585,10 +588,13 @@ export class HaMediaPlayerBrowse extends LitElement {
               if (!entry.isIntersecting) {
                 return;
               }
-              const thumbnailCard = entry.target as HACard;
+              const thumbnailCard = entry.target as HaCard;
               let thumbnailUrl = thumbnailCard.dataset.src;
-              // Any thumbnails served by the API required authentication
+              if (!thumbnailUrl) {
+                return;
+              }
               if (thumbnailUrl.startsWith("/")) {
+                // Thumbnails served by local API require authentication
                 thumbnailUrl = await getSignedThumbnailPath(
                   this.hass,
                   thumbnailUrl
