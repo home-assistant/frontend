@@ -38,10 +38,10 @@ class HaPanelDevService extends LitElement {
 
   @state() private _uiAvailable = true;
 
-  @LocalStorage("panel-dev-service-state-service-data", true)
+  @LocalStorage("panel-dev-service-state-service-data", true, false)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
 
-  @LocalStorage("panel-dev-service-state-yaml-mode", true)
+  @LocalStorage("panel-dev-service-state-yaml-mode", true, false)
   private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;

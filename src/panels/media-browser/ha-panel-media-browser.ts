@@ -27,7 +27,7 @@ class PanelMediaBrowser extends LitElement {
   public narrow!: boolean;
 
   // @ts-ignore
-  @LocalStorage("mediaBrowseEntityId", true)
+  @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {

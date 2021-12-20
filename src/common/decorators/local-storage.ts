@@ -5,7 +5,10 @@ import type { ClassElement } from "../../types";
 type Callback = (oldValue: any, newValue: any) => void;
 
 class Storage {
-  constructor() {
+  constructor(subscribe = true) {
+    if (!subscribe) {
+      return;
+    }
     window.addEventListener("storage", (ev: StorageEvent) => {
       if (ev.key && this.hasKey(ev.key)) {
         this._storage[ev.key] = ev.newValue
@@ -80,15 +83,18 @@ class Storage {
   }
 }
 
-const storage = new Storage();
+const subscribeStorage = new Storage();
 
 export const LocalStorage =
   (
     storageKey?: string,
     property?: boolean,
+    subscribe = true,
     propertyOptions?: PropertyDeclaration
   ): any =>
   (clsElement: ClassElement) => {
+    const storage = subscribe ? subscribeStorage : new Storage(false);
+
     const key = String(clsElement.key);
     storageKey = storageKey || String(clsElement.key);
     const initVal = clsElement.initializer
@@ -97,7 +103,7 @@ export const LocalStorage =
 
     storage.addFromStorage(storageKey);
 
-    const subscribe = (el: ReactiveElement): UnsubscribeFunc =>
+    const subscribeChanges = (el: ReactiveElement): UnsubscribeFunc =>
       storage.subscribeChanges(storageKey!, (oldValue) => {
         el.requestUpdate(clsElement.key, oldValue);
       });
@@ -131,17 +137,19 @@ export const LocalStorage =
         configurable: true,
       },
       finisher(cls: typeof ReactiveElement) {
-        if (property) {
+        if (subscribe) {
           const connectedCallback = cls.prototype.connectedCallback;
           const disconnectedCallback = cls.prototype.disconnectedCallback;
           cls.prototype.connectedCallback = function () {
             connectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`] = subscribe(this);
+            this[`__unbsubLocalStorage${key}`] = subscribeChanges(this);
           };
           cls.prototype.disconnectedCallback = function () {
             disconnectedCallback.call(this);
             this[`__unbsubLocalStorage${key}`]();
           };
+        }
+        if (property) {
           cls.createProperty(clsElement.key, {
             noAccessor: true,
             ...propertyOptions,
