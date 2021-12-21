@@ -15,6 +15,7 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
+import { termsSearchFunction } from "../../common/string/filter/terms";
 
 interface HassEntityWithCachedName extends HassEntity {
   friendly_name: string;
@@ -333,11 +334,12 @@ export class HaEntityPicker extends LitElement {
   }
 
   private _filterChanged(ev: CustomEvent): void {
-    const filterString = ev.detail.value.toLowerCase();
+    const filterString = ev.detail.value;
+    const filterFunction = termsSearchFunction(filterString);
     (this.comboBox as any).filteredItems = this._states.filter(
       (entityState) =>
-        entityState.entity_id.toLowerCase().includes(filterString) ||
-        computeStateName(entityState).toLowerCase().includes(filterString)
+        filterFunction(entityState.entity_id) ||
+        filterFunction(computeStateName(entityState))
     );
   }
 

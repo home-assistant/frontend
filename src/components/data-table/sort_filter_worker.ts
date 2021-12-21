@@ -7,25 +7,26 @@ import type {
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
+import { termsSearchFunction } from "../../common/string/filter/terms";
 
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  filter = filter.toUpperCase();
+  const filterFunction = termsSearchFunction(filter);
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          String(
-            column.filterKey
-              ? row[column.valueColumn || key][column.filterKey]
-              : row[column.valueColumn || key]
+          filterFunction(
+            String(
+              column.filterKey
+                ? row[column.valueColumn || key][column.filterKey]
+                : row[column.valueColumn || key]
+            )
           )
-            .toUpperCase()
-            .includes(filter)
         ) {
           return true;
         }
