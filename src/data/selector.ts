@@ -16,6 +16,7 @@ export interface EntitySelector {
     integration?: string;
     domain?: string;
     device_class?: string;
+    multiple?: boolean;
   };
 }
 
@@ -28,6 +29,7 @@ export interface DeviceSelector {
       domain?: EntitySelector["entity"]["domain"];
       device_class?: EntitySelector["entity"]["device_class"];
     };
+    multiple?: boolean;
   };
 }
 
@@ -50,6 +52,7 @@ export interface AreaSelector {
       manufacturer?: DeviceSelector["device"]["manufacturer"];
       model?: DeviceSelector["device"]["model"];
     };
+    multiple?: boolean;
   };
 }
 

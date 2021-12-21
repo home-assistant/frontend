@@ -4,7 +4,7 @@ import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { DeviceSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../device/ha-device-picker";
+import "../device/ha-device-multi-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
@@ -30,7 +30,7 @@ export class HaDeviceSelector extends LitElement {
   }
 
   protected render() {
-    return html`<ha-device-picker
+    return html`<ha-device-multi-picker
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
@@ -43,7 +43,8 @@ export class HaDeviceSelector extends LitElement {
         : undefined}
       .disabled=${this.disabled}
       allow-custom-entity
-    ></ha-device-picker>`;
+      .multiple=${this.selector.device.multiple}
+    ></ha-device-multi-picker>`;
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {

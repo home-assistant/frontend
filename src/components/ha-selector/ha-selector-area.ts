@@ -5,7 +5,7 @@ import { DeviceRegistryEntry } from "../../data/device_registry";
 import { EntityRegistryEntry } from "../../data/entity_registry";
 import { AreaSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../ha-area-picker";
+import "../ha-area-multi-picker";
 
 @customElement("ha-selector-area")
 export class HaAreaSelector extends LitElement {
@@ -34,11 +34,10 @@ export class HaAreaSelector extends LitElement {
   }
 
   protected render() {
-    return html`<ha-area-picker
+    return html`<ha-area-multi-picker
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
-      no-add
       .deviceFilter=${this._filterDevices}
       .entityFilter=${this._filterEntities}
       .includeDeviceClasses=${this.selector.area.entity?.device_class
@@ -48,7 +47,8 @@ export class HaAreaSelector extends LitElement {
         ? [this.selector.area.entity.domain]
         : undefined}
       .disabled=${this.disabled}
-    ></ha-area-picker>`;
+      .multiple=${this.selector.area.multiple}
+    ></ha-area-multi-picker>`;
   }
 
   private _filterEntities = (entity: EntityRegistryEntry): boolean => {
