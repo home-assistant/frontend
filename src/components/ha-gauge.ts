@@ -113,7 +113,7 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari ? `rotate(${this._angle})` : undefined
                 )}
               >
               `
@@ -126,7 +126,7 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari ? `rotate(${this._angle})` : undefined
                 )}
               >`
         }
