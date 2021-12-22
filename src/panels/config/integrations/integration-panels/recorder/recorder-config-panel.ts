@@ -3,19 +3,18 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/entity/ha-entities-picker";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
+import "./recorder-config-advanced";
 import "./recorder-filter-card";
 import {
   fetchRecorderConfig,
   RecorderConfig,
   updateRecorderConfig,
 } from "../../../../../data/recorder";
+import { documentationUrl } from "../../../../../util/documentation-url";
 
 @customElement("recorder-config-panel")
 class RecorderConfigPanel extends LitElement {
@@ -33,8 +32,31 @@ class RecorderConfigPanel extends LitElement {
     return html`
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
         <div class="content">
-          <ha-card header="Recorder settings">
+          <ha-card
+            header=${this.hass.localize(
+              "ui.panel.config.recorder.header.basic"
+            )}
+          >
             <div class="card-content">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.recorder.learn_more",
+                  "documentation",
+                  html`
+                    <a
+                      href=${documentationUrl(
+                        this.hass,
+                        "/integrations/recorder/#configure-filter"
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.recorder.documentation"
+                      )}</a
+                    >
+                  `
+                )}
+              </p>
               <div class="row">
                 <div class="flex">
                   ${this.hass.localize(
@@ -59,37 +81,40 @@ class RecorderConfigPanel extends LitElement {
               </div>
               <div class="row">
                 <div class="flex">
-                  ${this.hass.localize(
-                    "ui.panel.config.recorder.commit_interval"
-                  )}
+                  ${this.hass.localize("ui.panel.config.recorder.db_url")}
                 </div>
 
                 <paper-input
                   class="flex"
                   .label=${this.hass.localize(
-                    "ui.panel.config.recorder.commit_interval"
+                    "ui.panel.config.recorder.db_url"
                   )}
-                  name="commit_interval"
-                  type="number"
-                  .value=${this._config?.commit_interval}
+                  name="db_url"
+                  .value=${this._config?.db_url}
                   @value-changed=${this._handleChange}
                 >
-                  <span slot="suffix">
-                    ${this.hass.localize("ui.duration.second", "count")}
-                  </span>
                 </paper-input>
               </div>
             </div>
             <div class="card-actions">
-              <mwc-button @click=${this._submit}>Save / Update</mwc-button>
+              <mwc-button @click=${this._submit}
+                >${this.hass.localize("ui.common.save")}</mwc-button
+              >
             </div>
           </ha-card>
+
+          <recorder-config-advanced
+            .hass=${this.hass}
+            .config=${this._config}
+          ></recorder-config-advanced>
 
           <recorder-filter-card
             .hass=${this.hass}
             .filter=${this._config?.include}
             name="include"
-            header="Include entities"
+            header=${this.hass.localize(
+              "ui.panel.config.recorder.header.include"
+            )}
             hasAll
           ></recorder-filter-card>
 
@@ -97,7 +122,9 @@ class RecorderConfigPanel extends LitElement {
             .hass=${this.hass}
             .filter=${this._config?.exclude}
             name="exclude"
-            header="Exclude entities"
+            header=${this.hass.localize(
+              "ui.panel.config.recorder.header.exclude"
+            )}
           ></recorder-filter-card>
         </div>
       </hass-subpage>
@@ -125,8 +152,8 @@ class RecorderConfigPanel extends LitElement {
       return;
     }
     updateRecorderConfig(this.hass, {
-      commit_interval: this._config.commit_interval,
       purge_keep_days: this._config.purge_keep_days,
+      db_url: this._config.db_url,
     });
   }
 
@@ -146,8 +173,7 @@ class RecorderConfigPanel extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
-        ha-card,
-        recorder-filter-card {
+        .content > * {
           margin-bottom: 16px;
         }
         .card-actions {

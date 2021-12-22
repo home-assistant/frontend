@@ -2678,8 +2678,24 @@
           }
         },
         "recorder": {
+          "header": {
+            "advanced": "Advanced settings",
+            "basic": "Recorder settings",
+            "exclude": "Exclude entities",
+            "include": "Include entities"
+          },
+          "filter": {
+            "domains": "List of domains (one by line)",
+            "entity_globs": "List of globs (one by line)",
+            "entities": "Select entities to include/exclude"
+          },
+          "auto_purge": "Automatically purge",
           "commit_interval": "Commit interval",
-          "documentation": "Documentation",
+          "db_url": "Database URL (optional)",
+          "db_max_retries": "Max retries to connect",
+          "db_retry_wait": "Retry interval",
+          "documentation": "documentation",
+          "learn_more": "Learn more about configuration options in the {documentation}.",
           "include_all_label": "Include all entities (default)",
           "purge_keep_days": "Days to keep"
         },

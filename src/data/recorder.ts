@@ -3,6 +3,9 @@ import { HomeAssistant } from "../types";
 export interface RecorderConfig {
   auto_purge: boolean;
   commit_interval: number;
+  db_max_retries: number;
+  db_retry_wait: number;
+  db_url: string;
   exclude: RecorderFilter;
   include: RecorderFilter;
   purge_keep_days: number;

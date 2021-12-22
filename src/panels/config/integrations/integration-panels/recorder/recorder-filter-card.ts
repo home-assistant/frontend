@@ -4,15 +4,12 @@ import "@polymer/paper-input/paper-textarea";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-code-editor";
+import { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/entity/ha-entities-picker";
-import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
-import { documentationUrl } from "../../../../../util/documentation-url";
 import { updateRecorderConfig } from "../../../../../data/recorder";
-import { HaSwitch } from "../../../../../components/ha-switch";
 
 export interface Filter {
   domains: string[];
@@ -50,7 +47,7 @@ class RecorderFilterCard extends LitElement {
               label=${this.hass.localize(
                 "ui.panel.config.recorder.include_all_label"
               )}>
-              <ha-switch
+              <ha-checkbox
                 .checked=${this._includeAll}
                 @change=${this._includeAllChanged}
               >
@@ -60,23 +57,11 @@ class RecorderFilterCard extends LitElement {
           ${this.hasAll && this._includeAll
             ? ""
             : html`
-                <p>by domain (one by line)</p>
-                <p>
-                  <a
-                    href=${documentationUrl(
-                      this.hass,
-                      "/integrations/recorder/#configure-filter"
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    >${this.hass.localize(
-                      "ui.panel.config.recorder.documentation"
-                    )}</a
-                  >
-                </p>
                 <paper-textarea
                   .value=${this._domains}
-                  label="by domain (one by line)"
+                  label=${this.hass.localize(
+                    "ui.panel.config.recorder.filter.domains"
+                  )}
                   name="domains"
                   @value-changed=${this._valueChanged}
                   autocapitalize="none"
@@ -84,9 +69,11 @@ class RecorderFilterCard extends LitElement {
                   spellcheck="false"
                 ></paper-textarea>
 
-                <p>by glob (one by line)</p>
                 <paper-textarea
                   .value=${this._entity_globs}
+                  label=${this.hass.localize(
+                    "ui.panel.config.recorder.filter.entity_globs"
+                  )}
                   name="entity_globs"
                   @value-changed=${this._valueChanged}
                   autocapitalize="none"
@@ -94,17 +81,24 @@ class RecorderFilterCard extends LitElement {
                   spellcheck="false"
                 ></paper-textarea>
 
-                <p>with concrete list</p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.recorder.filter.entities"
+                  )}
+                </p>
                 <ha-entities-picker
                   .hass=${this.hass!}
                   .value=${this._entities}
                   @value-changed=${this._entitiesChanged}
+                  label="with concrete list"
                 >
                 </ha-entities-picker>
               `}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._submit}>Save / Update</mwc-button>
+          <mwc-button @click=${this._submit}
+            >${this.hass.localize("ui.common.save")}</mwc-button
+          >
         </div>
       </ha-card>
     `;
@@ -125,7 +119,7 @@ class RecorderFilterCard extends LitElement {
     if (!this.filter) {
       return;
     }
-    this._includeAll = (ev.target as HaSwitch).checked;
+    this._includeAll = (ev.target as HaCheckbox).checked;
     if (this._includeAll) {
       this.value = {
         domains: [],
@@ -183,9 +177,8 @@ class RecorderFilterCard extends LitElement {
           -moz-user-select: initial;
           display: block;
         }
-        ha-formfield {
-          display: block;
-          padding: 16px 8px;
+        paper-textarea {
+          padding-bottom: 16px;
         }
         .card-actions {
           text-align: right;
