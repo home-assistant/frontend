@@ -2756,6 +2756,7 @@
             "highlight_label": "Highlight Devices",
             "zoom_label": "Zoom To Device",
             "auto_zoom": "Auto Zoom",
+            "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
           },
           "group_binding": {
