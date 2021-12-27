@@ -1419,7 +1419,7 @@
         },
         "server_control": {
           "caption": "Server Controls",
-          "description": "Restart and stop the Home Assistant server",
+          "description": "Validate and restart the Home Assistant server",
           "section": {
             "validation": {
               "heading": "Configuration validation",
