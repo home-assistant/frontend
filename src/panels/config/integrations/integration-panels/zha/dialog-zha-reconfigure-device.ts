@@ -226,8 +226,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </h2>
 
-                ${this._clusterConfigurationStatuses &&
-                this._clusterConfigurationStatuses.size > 0
+                ${this._clusterConfigurationStatuses?.size > 0
                   ? html`
                       ${Array.from(
                         this._clusterConfigurationStatuses.values()
