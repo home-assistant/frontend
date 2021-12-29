@@ -634,7 +634,10 @@ export class HaSceneEditor extends SubscribeMixin(
       if (!entityReg.device_id) {
         continue;
       }
-      if (!this._devices.includes(entityReg.device_id)) {
+      if (
+        !this._devices.includes(entityReg.device_id) &&
+        config.entities[entityReg.entity_id].include_device
+      ) {
         this._devices = [...this._devices, entityReg.device_id];
       }
     }
@@ -646,18 +649,8 @@ export class HaSceneEditor extends SubscribeMixin(
     if (this._entities.includes(entityId)) {
       return;
     }
-    const entityRegistry = this._entityRegistryEntries.find(
-      (entityReg) => entityReg.entity_id === entityId
-    );
-    if (
-      entityRegistry?.device_id &&
-      !this._devices.includes(entityRegistry.device_id)
-    ) {
-      this._pickDevice(entityRegistry.device_id);
-    } else {
-      this._entities = [...this._entities, entityId];
-      this._storeState(entityId);
-    }
+    this._entities = [...this._entities, entityId];
+    this._storeState(entityId);
     this._dirty = true;
   }
 
@@ -817,12 +810,20 @@ export class HaSceneEditor extends SubscribeMixin(
 
   private _calculateStates(): SceneEntities {
     const output: SceneEntities = {};
-    this._entities.forEach((entityId) => {
-      const entityState = this._getCurrentState(entityId);
+    const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
+      this._entities.includes(entityReg.entity_id)
+    );
+
+    for (const entityReg of filteredEntityReg) {
+      const entityState = this._getCurrentState(entityReg.entity_id);
       if (entityState) {
-        output[entityId] = entityState;
+        output[entityReg.entity_id] = {
+          ...entityState,
+          include_device:
+            entityReg.device_id && this._devices.includes(entityReg.device_id),
+        };
       }
-    });
+    }
     return output;
   }
 
