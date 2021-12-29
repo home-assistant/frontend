@@ -636,7 +636,7 @@ export class HaSceneEditor extends SubscribeMixin(
       }
       if (
         !this._devices.includes(entityReg.device_id) &&
-        config.entities[entityReg.entity_id].include_device
+        !config.entities[entityReg.entity_id].entity_only
       ) {
         this._devices = [...this._devices, entityReg.device_id];
       }
@@ -819,8 +819,8 @@ export class HaSceneEditor extends SubscribeMixin(
       if (entityState) {
         output[entityReg.entity_id] = {
           ...entityState,
-          include_device:
-            entityReg.device_id && this._devices.includes(entityReg.device_id),
+          entity_only:
+            entityReg.device_id && !this._devices.includes(entityReg.device_id),
         };
       }
     }
