@@ -91,7 +91,7 @@ export class HaIntegrationHeader extends LitElement {
           @load=${this._onImageLoad}
         />
         <div class="info">
-          <div class="primary">${primary}</div>
+          <div class="primary" role="heading">${primary}</div>
           ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
         </div>
 
