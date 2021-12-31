@@ -21,7 +21,7 @@ if (isSafari) {
 }
 
 const companionAppOnAppleDevices =
-  /.*Home Assistant\/\d{4}\.\d{1,2}(\.\d)? \(io.robbie.HomeAssistant; build:\d{4}\.\d{3,}; (macOS|iOS|iPadOS) (\d{2}\.\d).*/;
+  /.*io\.robbie\.HomeAssistant([^;]+)?; [^;]+; (macOS|iOS|iPadOS) (\d{2}\.\d).*/;
 let companionAppSafariGOEQ152 = false;
 const companionAppMatch = companionAppOnAppleDevices.exec(navigator.userAgent);
 if (companionAppMatch) {
