@@ -21,14 +21,15 @@ if (isSafari) {
 }
 
 const companionAppOnAppleDevices =
-  /.*Home Assistant\/\d{4}\.\d{1,2}(\.\d)? \(io.robbie.HomeAssistant; build:\d{4}\.\d{3,}; (macOS|iOS) (\d{2}\.\d).*/;
+  /.*Home Assistant\/\d{4}\.\d{1,2}(\.\d)? \(io.robbie.HomeAssistant; build:\d{4}\.\d{3,}; (macOS|iOS|iPadOS) (\d{2}\.\d).*/;
 let companionAppSafariGOEQ152 = false;
 const companionAppMatch = companionAppOnAppleDevices.exec(navigator.userAgent);
 if (companionAppMatch) {
   const os = companionAppMatch[2];
   const version = parseFloat(companionAppMatch[3]);
   companionAppSafariGOEQ152 =
-    (os === "iOS" && version >= 15.2) || (os === "macOS" && version >= 12.1);
+    ((os === "iOS" || os === "iPadOS") && version >= 15.2) ||
+    (os === "macOS" && version >= 12.1);
 }
 
 const isSafari152 = companionAppSafariGOEQ152 || safariVersion >= 15.2;
