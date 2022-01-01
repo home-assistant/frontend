@@ -975,8 +975,8 @@
             "description": "Trigger automations when a NFC tag, QR code, etc. is scanned"
           },
           "people": {
-            "title": "People & Zones",
-            "description": "Manage the people and zones that Home Assistant tracks"
+            "title": "People, Zones & Users",
+            "description": "Manage the people and zones that Home Assistant tracks as well as users"
           },
           "companion": {
             "title": "Companion App",
