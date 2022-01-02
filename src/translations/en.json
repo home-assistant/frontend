@@ -976,7 +976,7 @@
           },
           "people": {
             "title": "People, Zones & Users",
-            "description": "Manage the people and zones that Home Assistant tracks as well as users"
+            "description": "Manage the people and zones that Home Assistant tracks"
           },
           "companion": {
             "title": "Companion App",
