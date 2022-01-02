@@ -419,7 +419,7 @@ export class QuickBar extends LitElement {
 
   private _generateCommandItems(): CommandItem[] {
     return [
-      ...this._generateReloadCommands(),
+      ...this._generateDomainReloadCommands(),
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
@@ -427,33 +427,55 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateReloadCommands(): CommandItem[] {
-    const reloadableDomains = componentsWithService(this.hass, "reload").sort();
+  private _generateDomainReloadCommands(): CommandItem[] {
+    // Get all domains that have a direct "reload" service
+    const reloadableDomains = componentsWithService(this.hass, "reload");
 
-    return reloadableDomains.map((domain) => {
-      const commandItem = {
-        primaryText:
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.reload.${domain}`
-          ) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(this.hass.localize, domain)
-          ),
-        action: () => this.hass.callService(domain, "reload"),
-        iconPath: mdiReload,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.reload`
+    const commands = reloadableDomains.map((domain) => ({
+      primaryText:
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(this.hass.localize, domain)
         ),
-      };
+      action: () => this.hass.callService(domain, "reload"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      ),
+    }));
 
-      return {
-        ...commandItem,
-        categoryKey: "reload",
-        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
-      };
+    // Add "frontend.reload_themes"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.themes"
+      ),
+      action: () => this.hass.callService("frontend", "reload_themes"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
     });
+
+    // Add "homeassistant.reload_core_config"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.core"
+      ),
+      action: () =>
+        this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    return commands.map((command) => ({
+      ...command,
+      categoryKey: "reload",
+      strings: [`${command.categoryText} ${command.primaryText}`],
+    }));
   }
 
   private _generateServerControlCommands(): CommandItem[] {
