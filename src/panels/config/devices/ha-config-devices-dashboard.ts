@@ -197,7 +197,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         ),
         model: device.model || "<unknown>",
         manufacturer: device.manufacturer || "<unknown>",
-        area: device.area_id ? areaLookup[device.area_id].name : undefined,
+        area: device.area_id ? areaLookup[device.area_id].name : "—",
         integration: device.config_entries.length
           ? device.config_entries
               .filter((entId) => entId in entryLookup)
