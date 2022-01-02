@@ -972,7 +972,7 @@
           },
           "tags": {
             "title": "Tags",
-            "description": "Trigger automations when a NFC tag, QR code, etc. is scanned"
+            "description": "Trigger automations when an NFC tag, QR code, etc. is scanned"
           },
           "people": {
             "title": "People & Zones",
@@ -1037,7 +1037,7 @@
         },
         "tag": {
           "caption": "Tags",
-          "description": "Trigger automations when a NFC tag, QR code, etc. is scanned",
+          "description": "Trigger automations when an NFC tag, QR code, etc. is scanned",
           "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
