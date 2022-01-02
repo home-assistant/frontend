@@ -419,7 +419,7 @@ export class QuickBar extends LitElement {
 
   private _generateCommandItems(): CommandItem[] {
     return [
-      ...this._generateDomainReloadCommands(),
+      ...this._generateReloadCommands(),
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
@@ -427,7 +427,7 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateDomainReloadCommands(): CommandItem[] {
+  private _generateReloadCommands(): CommandItem[] {
     // Get all domains that have a direct "reload" service
     const reloadableDomains = componentsWithService(this.hass, "reload");
 
