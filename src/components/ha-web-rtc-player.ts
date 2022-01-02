@@ -136,9 +136,8 @@ class HaWebRtcPlayer extends LitElement {
       this._remoteStream = undefined;
     }
     if (this._videoEl) {
-      const videoEl = this._videoEl;
-      videoEl.removeAttribute("src");
-      videoEl.load();
+      this._videoEl.removeAttribute("src");
+      this._videoEl.load();
     }
     if (this._peerConnection) {
       this._peerConnection.close();
