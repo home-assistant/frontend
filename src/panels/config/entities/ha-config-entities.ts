@@ -171,6 +171,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         template: (_, entry: any) => html`
           <ha-state-icon
+            title=${entry.entity.state}
             slot="item-icon"
             .state=${entry.entity}
           ></ha-state-icon>
@@ -284,7 +285,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   </paper-tooltip>
                 </div>
               `
-            : "",
+            : "—",
       },
     })
   );
@@ -377,7 +378,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           name: computeEntityRegistryName(this.hass!, entry),
           unavailable,
           restored,
-          area: area ? area.name : undefined,
+          area: area ? area.name : "—",
           status: restored
             ? this.hass.localize(
                 "ui.panel.config.entities.picker.status.restored"
