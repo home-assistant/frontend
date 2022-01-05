@@ -6,10 +6,11 @@ import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import { HomeAssistant } from "../../../src/types";
 import "./demo-card";
+import type { DemoCardConfig } from "./demo-card";
 
 @customElement("demo-cards")
 class DemoCards extends LitElement {
-  @property() public configs!: unknown[];
+  @property() public configs!: DemoCardConfig[];
 
   @property() public hass!: HomeAssistant;
 
