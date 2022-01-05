@@ -84,7 +84,7 @@ export class HaServiceControl extends LitElement {
 
       if (this.value) {
         // Set mandatory bools without a default value to false
-        let mandatoryBools = {};
+        const mandatoryBools = {};
         serviceData?.fields.forEach((field) => {
           if (
             field.selector &&
