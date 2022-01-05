@@ -64,7 +64,7 @@ const FAKE_HASS = {
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
   @property() private _demo =
-    document.location.hash.substring(1) || "demo-introduction";
+    document.location.hash.substring(1) || DEMOS_GROUPED[0].demos![0];
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
