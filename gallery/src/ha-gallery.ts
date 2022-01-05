@@ -7,7 +7,6 @@ import { until } from "lit/directives/until";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-// eslint-disable-next-line import/extensions
 import { DEMOS } from "../build/import-demos";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { SIDEBAR } from "./sidebar";
@@ -30,6 +29,8 @@ class HaGallery extends LitElement {
 
   @query("mwc-drawer")
   private _drawer!: HTMLElementTagNameMap["mwc-drawer"];
+
+  private _narrow = window.matchMedia("(max-width: 600px)").matches;
 
   render() {
     const sidebar: unknown[] = [];
@@ -66,7 +67,11 @@ class HaGallery extends LitElement {
     }
 
     return html`
-      <mwc-drawer open hasHeader type="dismissible">
+      <mwc-drawer
+        hasHeader
+        .open=${!this._narrow}
+        .type=${this._narrow ? "modal" : "dismissible"}
+      >
         <span slot="title">Home Assistant Design</span>
         <!-- <span slot="subtitle">subtitle</span> -->
         <div class="sidebar">${sidebar}</div>
@@ -112,7 +117,6 @@ class HaGallery extends LitElement {
     this.addEventListener("show-notification", (ev) =>
       this._notifications.showDialog({ message: ev.detail.message })
     );
-
     this.addEventListener("alert-dismissed-clicked", () =>
       this._notifications.showDialog({ message: "Alert dismissed clicked" })
     );
