@@ -74,14 +74,33 @@ export class HaServiceControl extends LitElement {
       | undefined
       | this["value"];
 
-    if (oldValue?.service !== this.value?.service) {
-      this._checkedKeys = new Set();
-    }
-
     const serviceData = this._getServiceInfo(
       this.value?.service,
       this.hass.services
     );
+
+    if (oldValue?.service !== this.value?.service) {
+      this._checkedKeys = new Set();
+
+      // Set mandatory bools without a default value to false
+      const mandatoryBools = serviceData?.fields.filter(
+        (field) =>
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector
+      ).reduce((total, field) => {
+        total[field.key] = false;
+        return total
+      }, {});
+      if (this.value) {
+        this.value.data = {
+          ...this.value?.data,
+          ...mandatoryBools,
+        };
+      }
+
+    }
 
     // Fetch the manifest if we have a service selected and the service domain changed.
     // If no service is selected, clear the manifest.
