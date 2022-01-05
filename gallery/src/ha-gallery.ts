@@ -16,7 +16,7 @@ const DEMOS_GROUPED: {
   demoStart?: string;
 }[] = [
   {
-    demos: ["demo-introduction"],
+    demos: ["introduction"],
   },
   {
     header: "Lovelace",
@@ -45,7 +45,7 @@ for (const group of Object.values(DEMOS_GROUPED)) {
   }
   if (group.demoStart !== undefined) {
     for (const demo of demosToProcess) {
-      if (demo.startsWith(`demo-${group.demoStart}`)) {
+      if (demo.startsWith(group.demoStart)) {
         group.demos.push(demo);
         demosToProcess.delete(demo);
       }
@@ -83,7 +83,9 @@ class HaGallery extends LitElement {
               ${group.header
                 ? html`<p class="section">${group.header}</p>`
                 : ""}
-              ${group.demos!.map((demo) => this._renderDemo(demo))}
+              ${group.demos!.map((demo) =>
+                this._renderDemo(demo, group.demoStart)
+              )}
             `
           )}
         </div>
@@ -95,9 +97,9 @@ class HaGallery extends LitElement {
               .path=${mdiMenu}
             ></ha-icon-button>
 
-            <div slot="title">${this._demo.substring(5)}</div>
+            <div slot="title">${this._demo}</div>
           </mwc-top-app-bar-fixed>
-          <div>${dynamicElement(this._demo)}</div>
+          <div>${dynamicElement(`demo-${this._demo}`)}</div>
         </div>
       </mwc-drawer>
       <notification-manager
@@ -107,12 +109,10 @@ class HaGallery extends LitElement {
     `;
   }
 
-  private _renderDemo(demo: string) {
+  private _renderDemo(demo: string, demoStart?: string) {
     return html`
       <a ?active=${this._demo === demo} href=${`#${demo}`}
-        >${demo.startsWith("demo-hui-")
-          ? demo.substring(9)
-          : demo.substring(5)}</a
+        >${demoStart === undefined ? demo : demo.substring(demoStart.length)}</a
       >
     `;
   }

@@ -25,7 +25,7 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
   for (const file of files) {
     const demoId = path.basename(file, ".ts");
     const demoPath = "../src/demos/" + demoId;
-    content += `  "${demoId}": () => import("${demoPath}"),\n`;
+    content += `  "${demoId.substring(5)}": () => import("${demoPath}"),\n`;
   }
 
   content += "};";
