@@ -22,6 +22,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@braintree/sanitize-url": "^5.0.2",
+    "@codemirror/autocomplete": "^0.19.9",
     "@codemirror/commands": "^0.19.5",
     "@codemirror/gutter": "^0.19.4",
     "@codemirror/highlight": "^0.19.6",

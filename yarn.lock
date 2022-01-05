@@ -1315,6 +1315,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@codemirror/autocomplete@npm:^0.19.9":
+  version: 0.19.9
+  resolution: "@codemirror/autocomplete@npm:0.19.9"
+  dependencies:
+    "@codemirror/language": ^0.19.0
+    "@codemirror/state": ^0.19.4
+    "@codemirror/text": ^0.19.2
+    "@codemirror/tooltip": ^0.19.0
+    "@codemirror/view": ^0.19.0
+    "@lezer/common": ^0.15.0
+  checksum: fe036f52ef52bd58addbb63815f5f6077a5cf2429e5630c9d7adbfe50be952dfb9c19b6ff91d21c7f362bddc57c902b89035977c8b8305ac0853c40990eb76ba
+  languageName: node
+  linkType: hard
+
 "@codemirror/commands@npm:^0.19.5":
   version: 0.19.5
   resolution: "@codemirror/commands@npm:0.19.5"
@@ -1465,10 +1479,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.4, @codemirror/text@npm:^0.19.5":
+"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.2, @codemirror/text@npm:^0.19.4, @codemirror/text@npm:^0.19.5":
   version: 0.19.5
   resolution: "@codemirror/text@npm:0.19.5"
   checksum: e8ff270e705fe7f9adb3c479845569f6bfb3d8033b70cb1da530f37d9088160713b7cda2b60106fa03df5dd82cd8bcde45662450dd42854006303101a0296892
+  languageName: node
+  linkType: hard
+
+"@codemirror/tooltip@npm:^0.19.0":
+  version: 0.19.10
+  resolution: "@codemirror/tooltip@npm:0.19.10"
+  dependencies:
+    "@codemirror/state": ^0.19.0
+    "@codemirror/view": ^0.19.0
+  checksum: f7731a806fddf96681763c4accd8e4828b725afa8593d68bee0c5bd72f4ac8cbecddb3da587ecf0b7c970e0a0f1868a0733060f1dc80c5c17d8ec8ce951c13bc
   languageName: node
   linkType: hard
 
@@ -9050,6 +9074,7 @@ fsevents@^1.2.7:
     "@babel/preset-env": ^7.15.6
     "@babel/preset-typescript": ^7.15.0
     "@braintree/sanitize-url": ^5.0.2
+    "@codemirror/autocomplete": ^0.19.9
     "@codemirror/commands": ^0.19.5
     "@codemirror/gutter": ^0.19.4
     "@codemirror/highlight": ^0.19.6

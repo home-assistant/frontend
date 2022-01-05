@@ -284,6 +284,7 @@ export class HaServiceControl extends LitElement {
         : ""}
       ${shouldRenderServiceDataYaml
         ? html`<ha-yaml-editor
+            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.components.service-control.service_data"
             )}

@@ -179,6 +179,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </p>
             <ha-code-editor
               mode="yaml"
+              hass="[[hass]]"
               value="[[_stateAttributes]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"

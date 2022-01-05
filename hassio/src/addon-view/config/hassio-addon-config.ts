@@ -152,6 +152,7 @@ class HassioAddonConfig extends LitElement {
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
                 .yamlSchema=${ADDON_YAML_SCHEMA}
+                .hass=${this.hass}
               ></ha-yaml-editor>`}
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`

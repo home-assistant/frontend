@@ -13,6 +13,7 @@ export { history, historyKeymap } from "@codemirror/history";
 export { rectangularSelection } from "@codemirror/rectangular-selection";
 export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 export { EditorState, Prec } from "@codemirror/state";
+export { autocompletion } from "@codemirror/autocomplete";
 export {
   drawSelection,
   EditorView,

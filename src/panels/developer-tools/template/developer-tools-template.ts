@@ -128,6 +128,7 @@ class HaPanelDevTemplate extends LitElement {
           </p>
           <ha-code-editor
             mode="jinja2"
+            .hass=${this.hass}
             .value=${this._template}
             .error=${this._error}
             autofocus

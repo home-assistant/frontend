@@ -1,8 +1,12 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
+import { HomeAssistant } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -24,6 +28,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property() public mode = "yaml";
 
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public readOnly = false;
@@ -31,6 +37,8 @@ export class HaCodeEditor extends ReactiveElement {
   @property() public error = false;
 
   @state() private _value = "";
+
+  private _states: HassEntity[] | null = [];
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
@@ -110,41 +118,92 @@ export class HaCodeEditor extends ReactiveElement {
 
   private async _load(): Promise<void> {
     this._loadedCodeMirror = await loadCodeMirror();
+    const extensions = [
+      this._loadedCodeMirror.lineNumbers(),
+      this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
+      this._loadedCodeMirror.history(),
+      this._loadedCodeMirror.highlightSelectionMatches(),
+      this._loadedCodeMirror.highlightActiveLine(),
+      this._loadedCodeMirror.drawSelection(),
+      this._loadedCodeMirror.rectangularSelection(),
+      this._loadedCodeMirror.keymap.of([
+        ...this._loadedCodeMirror.defaultKeymap,
+        ...this._loadedCodeMirror.searchKeymap,
+        ...this._loadedCodeMirror.historyKeymap,
+        ...this._loadedCodeMirror.tabKeyBindings,
+        saveKeyBinding,
+      ] as KeyBinding[]),
+      this._loadedCodeMirror.langCompartment.of(this._mode),
+      this._loadedCodeMirror.theme,
+      this._loadedCodeMirror.Prec.fallback(
+        this._loadedCodeMirror.highlightStyle
+      ),
+      this._loadedCodeMirror.readonlyCompartment.of(
+        this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
+      ),
+      this._loadedCodeMirror.EditorView.updateListener.of((update) =>
+        this._onUpdate(update)
+      ),
+    ];
+
+    if (!this.readOnly) {
+      this._states = this._getStates(this.hass);
+      extensions.push(
+        this._loadedCodeMirror.autocompletion({
+          override: [this._entityCompletions],
+        })
+      );
+    }
 
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
-        extensions: [
-          this._loadedCodeMirror.lineNumbers(),
-          this._loadedCodeMirror.EditorState.allowMultipleSelections.of(true),
-          this._loadedCodeMirror.history(),
-          this._loadedCodeMirror.highlightSelectionMatches(),
-          this._loadedCodeMirror.highlightActiveLine(),
-          this._loadedCodeMirror.drawSelection(),
-          this._loadedCodeMirror.rectangularSelection(),
-          this._loadedCodeMirror.keymap.of([
-            ...this._loadedCodeMirror.defaultKeymap,
-            ...this._loadedCodeMirror.searchKeymap,
-            ...this._loadedCodeMirror.historyKeymap,
-            ...this._loadedCodeMirror.tabKeyBindings,
-            saveKeyBinding,
-          ] as KeyBinding[]),
-          this._loadedCodeMirror.langCompartment.of(this._mode),
-          this._loadedCodeMirror.theme,
-          this._loadedCodeMirror.Prec.fallback(
-            this._loadedCodeMirror.highlightStyle
-          ),
-          this._loadedCodeMirror.readonlyCompartment.of(
-            this._loadedCodeMirror.EditorView.editable.of(!this.readOnly)
-          ),
-          this._loadedCodeMirror.EditorView.updateListener.of((update) =>
-            this._onUpdate(update)
-          ),
-        ],
+        extensions,
       }),
       root: this.shadowRoot!,
       parent: this.shadowRoot!,
     });
+  }
+
+  private _getStates = memoizeOne((hass: this["hass"]) => {
+    let states: HassEntity[] = [];
+    if (!hass) {
+      return [];
+    }
+    const entityIds = Object.keys(hass.states);
+
+    states = entityIds.sort().map((key) => hass!.states[key]);
+
+    if (!states.length) {
+      return null;
+    }
+
+    return states;
+  });
+
+  private _entityCompletions(
+    context: CompletionContext
+  ): CompletionResult | null | Promise<CompletionResult | null> {
+    const word = context.matchBefore(/\w*/);
+
+    if (
+      !this._states ||
+      !this._states.length ||
+      (word && word.from === word.to && !context.explicit)
+    ) {
+      return null;
+    }
+
+    const options = this._states.map((entity_state: HassEntity) => ({
+      type: "variable",
+      label: entity_state.entity_id,
+      info: entity_state.state,
+    }));
+
+    return {
+      from: Number(word?.from),
+      options,
+    };
   }
 
   private _blockKeyboardShortcuts() {
