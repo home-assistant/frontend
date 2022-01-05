@@ -131,6 +131,7 @@ export class HaServiceControl extends LitElement {
     }
 
     if (oldValue?.service !== this.value?.service) {
+      let updatedDefaultValue = false;
       if (this._value && serviceData) {
         // Set mandatory bools without a default value to false
         this._value.data ??= {};
@@ -142,8 +143,16 @@ export class HaServiceControl extends LitElement {
             "boolean" in field.selector &&
             this._value!.data![field.key] === undefined
           ) {
+            updatedDefaultValue = true;
             this._value!.data![field.key] = false;
           }
+        });
+      }
+      if (updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this._value,
+          },
         });
       }
     }
