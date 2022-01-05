@@ -110,6 +110,12 @@ export const theme = EditorView.theme({
     },
   },
 
+  ".cm-tooltip": {
+    color: "var(--primary-text-color)",
+    backgroundColor:
+      "var(--code-editor-background-color, var(--card-background-color))",
+  },
+
   ".cm-selectionMatch": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
   },

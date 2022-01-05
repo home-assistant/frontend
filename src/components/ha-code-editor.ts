@@ -150,7 +150,8 @@ export class HaCodeEditor extends ReactiveElement {
       this._states = this._getStates(this.hass);
       extensions.push(
         this._loadedCodeMirror.autocompletion({
-          override: [this._entityCompletions],
+          override: [this._entityCompletions.bind(this)],
+          maxRenderedOptions: 10,
         })
       );
     }
@@ -184,12 +185,12 @@ export class HaCodeEditor extends ReactiveElement {
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
-    const word = context.matchBefore(/\w*/);
+    const entityWord = context.matchBefore(/[a-z_]{3,}\./);
 
     if (
       !this._states ||
       !this._states.length ||
-      (word && word.from === word.to && !context.explicit)
+      (entityWord && entityWord.from === entityWord.to && !context.explicit)
     ) {
       return null;
     }
@@ -201,7 +202,7 @@ export class HaCodeEditor extends ReactiveElement {
     }));
 
     return {
-      from: Number(word?.from),
+      from: Number(entityWord?.from),
       options,
     };
   }
