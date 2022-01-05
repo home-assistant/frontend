@@ -74,33 +74,14 @@ export class HaServiceControl extends LitElement {
       | undefined
       | this["value"];
 
+    if (oldValue?.service !== this.value?.service) {
+      this._checkedKeys = new Set();
+    }
+
     const serviceData = this._getServiceInfo(
       this.value?.service,
       this.hass.services
     );
-
-    if (oldValue?.service !== this.value?.service) {
-      this._checkedKeys = new Set();
-
-      if (this.value) {
-        // Set mandatory bools without a default value to false
-        const mandatoryBools = {};
-        serviceData?.fields.forEach((field) => {
-          if (
-            field.selector &&
-            field.required &&
-            field.default === undefined &&
-            "boolean" in field.selector
-          ) {
-            mandatoryBools[field.key] = false;
-          }
-        });
-        this.value.data = {
-          ...this.value?.data,
-          ...mandatoryBools,
-        };
-      }
-    }
 
     // Fetch the manifest if we have a service selected and the service domain changed.
     // If no service is selected, clear the manifest.
@@ -147,6 +128,24 @@ export class HaServiceControl extends LitElement {
       delete this._value.data!.area_id;
     } else {
       this._value = this.value;
+    }
+
+    if (oldValue?.service !== this.value?.service) {
+      if (this._value && serviceData) {
+        // Set mandatory bools without a default value to false
+        this._value.data ??= {};
+        serviceData.fields.forEach((field) => {
+          if (
+            field.selector &&
+            field.required &&
+            field.default === undefined &&
+            "boolean" in field.selector &&
+            this._value!.data![field.key] === undefined
+          ) {
+            this._value!.data![field.key] = false;
+          }
+        });
+      }
     }
 
     if (this._value?.data) {
