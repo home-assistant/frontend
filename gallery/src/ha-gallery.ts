@@ -82,11 +82,19 @@ class HaGallery extends LitElement {
           ${DEMOS_GROUPED.map(
             (group) => html`
               ${group.header
-                ? html`<p class="section">${group.header}</p>`
-                : ""}
-              ${group.demos!.map((demo) =>
-                this._renderDemo(demo, group.demoStart)
-              )}
+                ? html`
+                    <details open>
+                      <summary class="section">${group.header}</summary>
+                      ${group.demos!.map((demo) =>
+                        this._renderDemo(demo, group.demoStart)
+                      )}
+                    </details>
+                  `
+                : html`
+                    ${group.demos!.map((demo) =>
+                      this._renderDemo(demo, group.demoStart)
+                    )}
+                  `}
             `
           )}
         </div>
@@ -187,8 +195,12 @@ class HaGallery extends LitElement {
         padding: 4px;
       }
 
-      .sidebar p {
-        margin: 1em 12px;
+      .sidebar details {
+        margin-top: 1em;
+      }
+
+      .sidebar summary {
+        cursor: pointer;
       }
 
       .sidebar a {
