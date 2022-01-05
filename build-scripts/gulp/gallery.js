@@ -84,7 +84,17 @@ gulp.task(
     ),
     "copy-static-gallery",
     "gen-index-gallery-dev",
-    env.useRollup() ? "rollup-dev-server-gallery" : "webpack-dev-server-gallery"
+    gulp.parallel(
+      env.useRollup()
+        ? "rollup-dev-server-gallery"
+        : "webpack-dev-server-gallery",
+      async function watchMarkdownFiles() {
+        gulp.watch(
+          path.resolve(paths.gallery_dir, "src/demos/*.markdown"),
+          gulp.series("gather-gallery-demos")
+        );
+      }
+    )
   )
 );
 
