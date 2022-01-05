@@ -1,36 +1,60 @@
-import { mdiArrowLeft, mdiChevronRight } from "@mdi/js";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import { mdiMenu } from "@mdi/js";
+import "@material/mwc-drawer";
+import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "../../src/components/ha-card";
-import "../../src/components/ha-svg-icon";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-import "../../src/styles/polymer-ha-style";
 // eslint-disable-next-line import/extensions
 import { DEMOS } from "../build/import-demos";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 
-const DEMOS_GROUPED = {
-  lovelace: [] as string[],
-  rest: [] as string[],
-};
+const DEMOS_GROUPED: {
+  header?: string;
+  demos?: string[];
+  demoStart?: string;
+}[] = [
+  {
+    demos: ["demo-introduction"],
+  },
+  {
+    header: "Lovelace",
+    demoStart: "hui-",
+  },
+  {
+    header: "Automation",
+    demoStart: "automation-",
+  },
+  {
+    header: "Rest",
+    demoStart: "",
+  },
+];
 
-for (const key of Object.keys(DEMOS)) {
-  if (key.startsWith("demo-hui")) {
-    DEMOS_GROUPED.lovelace.push(key);
-  } else {
-    DEMOS_GROUPED.rest.push(key);
+const demosToProcess = new Set(Object.keys(DEMOS));
+
+for (const group of Object.values(DEMOS_GROUPED)) {
+  if (group.demos) {
+    for (const demo of group.demos) {
+      demosToProcess.delete(demo);
+    }
+  }
+  if (!group.demos) {
+    group.demos = [];
+  }
+  if (group.demoStart !== undefined) {
+    for (const demo of demosToProcess) {
+      if (demo.startsWith(`demo-${group.demoStart}`)) {
+        group.demos.push(demo);
+        demosToProcess.delete(demo);
+      }
+    }
   }
 }
 
 const FAKE_HASS = {
-  // Just enough for computeRTL
+  // Just enough for computeRTL for notification-manager
   language: "en",
   translationMetadata: {
     translations: {},
@@ -39,92 +63,57 @@ const FAKE_HASS = {
 
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
-  @property() private _demo = document.location.hash.substring(1);
+  @property() private _demo =
+    document.location.hash.substring(1) || "demo-introduction";
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
 
+  @query("mwc-drawer")
+  private _drawer!: HTMLElementTagNameMap["mwc-drawer"];
+
   render() {
     return html`
-      <app-header-layout>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            ${this._demo
-              ? html`
-                  <ha-icon-button
-                    @click=${this._backTapped}
-                    .path=${mdiArrowLeft}
-                  ></ha-icon-button>
-                `
-              : ""}
-            <div main-title>${this._demo || "Home Assistant Gallery"}</div>
-          </app-toolbar>
-        </app-header>
-
-        <div class="content">
-          ${this._demo
-            ? html`${dynamicElement(this._demo)}`
-            : html`
-                <div class="pickers">
-                  <ha-card header="Lovelace Card Demos">
-                    <div class="card-content intro">
-                      <p>
-                        Lovelace has many different cards. Each card allows the
-                        user to tell a different story about what is going on in
-                        their house. These cards are very customizable, as no
-                        household is the same.
-                      </p>
-
-                      <p>
-                        This gallery helps our developers and designers to see
-                        all the different states that each card can be in.
-                      </p>
-
-                      <p>
-                        Check
-                        <a href="https://www.home-assistant.io/lovelace"
-                          >the official website</a
-                        >
-                        for instructions on how to get started with Lovelace.
-                      </p>
-                    </div>
-                    ${DEMOS_GROUPED.lovelace.map(
-                      (demo) => html`
-                        <a href=${`#${demo}`}>
-                          <paper-item>
-                            <paper-item-body
-                              >${demo.substring(9)}</paper-item-body
-                            >
-                            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-                          </paper-item>
-                        </a>
-                      `
-                    )}
-                  </ha-card>
-
-                  <ha-card header="Other Demos">
-                    <div class="card-content intro"></div>
-                    ${DEMOS_GROUPED.rest.map(
-                      (demo) => html`
-                        <a href=${`#${demo}`}>
-                          <paper-item>
-                            <paper-item-body
-                              >${demo.substring(5)}</paper-item-body
-                            >
-                            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-                          </paper-item>
-                        </a>
-                      `
-                    )}
-                  </ha-card>
-                </div>
-              `}
+      <mwc-drawer open hasHeader type="dismissible">
+        <span slot="title">Home Assistant Design</span>
+        <!-- <span slot="subtitle">subtitle</span> -->
+        <div class="sidebar">
+          ${DEMOS_GROUPED.map(
+            (group) => html`
+              ${group.header
+                ? html`<p class="section">${group.header}</p>`
+                : ""}
+              ${group.demos!.map((demo) => this._renderDemo(demo))}
+            `
+          )}
         </div>
-      </app-header-layout>
+        <div slot="appContent">
+          <mwc-top-app-bar-fixed>
+            <ha-icon-button
+              slot="navigationIcon"
+              @click=${this._menuTapped}
+              .path=${mdiMenu}
+            ></ha-icon-button>
+
+            <div slot="title">${this._demo.substring(5)}</div>
+          </mwc-top-app-bar-fixed>
+          <div>${dynamicElement(this._demo)}</div>
+        </div>
+      </mwc-drawer>
       <notification-manager
         .hass=${FAKE_HASS}
         id="notifications"
       ></notification-manager>
+    `;
+  }
+
+  private _renderDemo(demo: string) {
+    return html`
+      <a ?active=${this._demo === demo} href=${`#${demo}`}
+        >${demo.startsWith("demo-hui-")
+          ? demo.substring(9)
+          : demo.substring(5)}</a
+      >
     `;
   }
 
@@ -146,6 +135,8 @@ class HaGallery extends LitElement {
       }
     });
 
+    document.location.hash = this._demo;
+
     window.addEventListener("hashchange", () => {
       this._demo = document.location.hash.substring(1);
     });
@@ -158,8 +149,8 @@ class HaGallery extends LitElement {
     }
   }
 
-  _backTapped() {
-    document.location.hash = "";
+  _menuTapped() {
+    this._drawer.open = !this._drawer.open;
   }
 
   static styles = [
@@ -170,41 +161,40 @@ class HaGallery extends LitElement {
         -webkit-user-select: initial;
         -moz-user-select: initial;
       }
-      app-header-layout {
-        min-height: 100vh;
-      }
-      ha-icon-button.invisible {
-        visibility: hidden;
+
+      .section {
+        font-weight: bold;
       }
 
-      .pickers {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: start;
+      .sidebar {
+        padding: 4px;
       }
 
-      .pickers ha-card {
-        width: 400px;
-        display: block;
-        margin: 16px 8px;
+      .sidebar p {
+        margin: 1em 12px;
       }
 
-      .pickers ha-card:last-child {
-        margin-bottom: 16px;
-      }
-
-      .intro {
-        margin: -1em 0;
-      }
-
-      p a {
-        color: var(--primary-color);
-      }
-
-      a {
+      .sidebar a {
         color: var(--primary-text-color);
+        display: block;
+        padding: 4px 12px;
         text-decoration: none;
+        position: relative;
+      }
+
+      .sidebar a[active]::before {
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        right: 2px;
+        bottom: 0;
+        left: 2px;
+        pointer-events: none;
+        content: "";
+        transition: opacity 15ms linear;
+        will-change: opacity;
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
       }
     `,
   ];
