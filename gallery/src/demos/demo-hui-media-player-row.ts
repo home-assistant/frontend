@@ -73,6 +73,6 @@ class DemoHuiMediaPlayerRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-hui-media-player-row": DemoHuiMediaPlayerRow;
+    "demo-hui-media-player-rows": DemoHuiMediaPlayerRow;
   }
 }

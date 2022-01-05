@@ -92,6 +92,10 @@ class NotificationManager extends LitElement {
 customElements.define("notification-manager", NotificationManager);
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "notification-manager": NotificationManager;
+  }
+
   // for fire event
   interface HASSDomEvents {
     "hass-notification": ShowToastParams;

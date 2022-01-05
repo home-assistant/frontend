@@ -2126,6 +2126,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/drawer@npm:=14.0.0-canary.261f2db59.0":
+  version: 14.0.0-canary.261f2db59.0
+  resolution: "@material/drawer@npm:14.0.0-canary.261f2db59.0"
+  dependencies:
+    "@material/animation": 14.0.0-canary.261f2db59.0
+    "@material/base": 14.0.0-canary.261f2db59.0
+    "@material/dom": 14.0.0-canary.261f2db59.0
+    "@material/elevation": 14.0.0-canary.261f2db59.0
+    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
+    "@material/list": 14.0.0-canary.261f2db59.0
+    "@material/ripple": 14.0.0-canary.261f2db59.0
+    "@material/rtl": 14.0.0-canary.261f2db59.0
+    "@material/shape": 14.0.0-canary.261f2db59.0
+    "@material/theme": 14.0.0-canary.261f2db59.0
+    "@material/typography": 14.0.0-canary.261f2db59.0
+    tslib: ^2.1.0
+  checksum: 92146c61e00220f7aab80e3631c752e11147bee22e4a09e7bac21d233ae0aeff9545efe4d4a0fb10e889161ba06433ce9222bdcfda73de3ea54027cdadb3571a
+  languageName: node
+  linkType: hard
+
 "@material/elevation@npm:14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/elevation@npm:14.0.0-canary.261f2db59.0"
@@ -2340,6 +2360,20 @@ __metadata:
     tslib: ^2.0.1
     wicg-inert: ^3.0.0
   checksum: f9df62861ee81c010d7e5b0fcb7b18df1896a6ff60f4e00eca5a8f153da47ca4dd500bf97a727b06b3324a5d7afe738b6ce5604b605a51013afa5ebdbfa1e9a0
+  languageName: node
+  linkType: hard
+
+"@material/mwc-drawer@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-drawer@npm:0.25.3"
+  dependencies:
+    "@material/drawer": =14.0.0-canary.261f2db59.0
+    "@material/mwc-base": ^0.25.3
+    blocking-elements: ^0.1.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+    wicg-inert: ^3.0.0
+  checksum: 1195301cd943c1f7dae92ef33c383f5a2c3238d26fa44dd006d3c90d1c101cf17a5e67e491ef6ec49889a5cef682ea2f410397ac76be556cde1c8cb79f06874d
   languageName: node
   linkType: hard
 
@@ -2624,6 +2658,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/mwc-top-app-bar-fixed@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-top-app-bar-fixed@npm:0.25.3"
+  dependencies:
+    "@material/mwc-top-app-bar": ^0.25.3
+    "@material/top-app-bar": =14.0.0-canary.261f2db59.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: f142b0625b0b5bd9335b43db977a20502da49707415c69bb8df8ba3626f81cc4c8283aeeece6f20d3a401f370b33ac88a41ebdcaa04fe90d5b2067142b1c460c
+  languageName: node
+  linkType: hard
+
+"@material/mwc-top-app-bar@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-top-app-bar@npm:0.25.3"
+  dependencies:
+    "@material/mwc-base": ^0.25.3
+    "@material/top-app-bar": =14.0.0-canary.261f2db59.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: c71ad8f557232827bab4b0cdf69fc3aa8caa9aa84193a9b085d3504c7d5c7a8d1e17aab7ebcf84cd0983e2ada8c88cc28de3f1d3a824c0b4fb9ce2ba96b48912
+  languageName: node
+  linkType: hard
+
 "@material/notched-outline@npm:14.0.0-canary.261f2db59.0, @material/notched-outline@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/notched-outline@npm:14.0.0-canary.261f2db59.0"
@@ -2869,7 +2927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/top-app-bar@npm:14.0.0-canary.261f2db59.0":
+"@material/top-app-bar@npm:14.0.0-canary.261f2db59.0, @material/top-app-bar@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/top-app-bar@npm:14.0.0-canary.261f2db59.0"
   dependencies:
@@ -9022,6 +9080,7 @@ fsevents@^1.2.7:
     "@material/mwc-checkbox": 0.25.3
     "@material/mwc-circular-progress": 0.25.3
     "@material/mwc-dialog": 0.25.3
+    "@material/mwc-drawer": ^0.25.3
     "@material/mwc-fab": 0.25.3
     "@material/mwc-formfield": 0.25.3
     "@material/mwc-icon-button": "patch:@material/mwc-icon-button@0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch"
@@ -9036,6 +9095,7 @@ fsevents@^1.2.7:
     "@material/mwc-tab": 0.25.3
     "@material/mwc-tab-bar": 0.25.3
     "@material/mwc-textfield": 0.25.3
+    "@material/mwc-top-app-bar-fixed": ^0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0
     "@mdi/js": 6.5.95
     "@mdi/svg": 6.5.95

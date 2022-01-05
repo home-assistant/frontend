@@ -1,5 +1,6 @@
-import { html, LitElement, TemplateResult } from "lit";
-import { customElement } from "lit/decorators";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -38,8 +39,15 @@ const CONFIGS = [
 
 @customElement("demo-hui-iframe-card")
 class DemoIframe extends LitElement {
+  @query("demo-cards") private _demos!: HTMLElement;
+
   protected render(): TemplateResult {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    provideHass(this._demos);
   }
 }
 
