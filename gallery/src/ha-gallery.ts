@@ -3,6 +3,7 @@ import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { until } from "lit/directives/until";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
@@ -99,7 +100,23 @@ class HaGallery extends LitElement {
 
             <div slot="title">${this._demo}</div>
           </mwc-top-app-bar-fixed>
-          <div>${dynamicElement(`demo-${this._demo}`)}</div>
+          <div>
+            ${DEMOS[this._demo].description
+              ? html`
+                  ${until(
+                    DEMOS[this._demo].description().then(
+                      (content) => html`
+                        <ha-card .header=${this._demo}>
+                          <div class="card-content">${content}</div>
+                        </ha-card>
+                      `
+                    ),
+                    ""
+                  )}
+                `
+              : ""}
+            ${dynamicElement(`demo-${this._demo}`)}
+          </div>
         </div>
       </mwc-drawer>
       <notification-manager
@@ -145,7 +162,7 @@ class HaGallery extends LitElement {
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_demo") && this._demo) {
-      DEMOS[this._demo]();
+      DEMOS[this._demo].load();
     }
   }
 
@@ -195,6 +212,11 @@ class HaGallery extends LitElement {
         will-change: opacity;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
+      }
+
+      ha-card {
+        max-width: 600px;
+        margin: 16px auto;
       }
     `,
   ];

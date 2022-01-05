@@ -2,6 +2,7 @@
 const gulp = require("gulp");
 const fs = require("fs");
 const path = require("path");
+const marked = require("marked");
 
 const env = require("../env");
 const paths = require("../paths");
@@ -20,19 +21,46 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
     path.resolve(paths.gallery_dir, "src/demos")
   );
 
+  const galleryBuild = path.resolve(paths.gallery_dir, "build");
+  fs.mkdirSync(galleryBuild, { recursive: true });
+
   let content = "export const DEMOS = {\n";
 
   for (const file of files) {
+    if (!file.endsWith(".ts")) {
+      continue;
+    }
     const demoId = path.basename(file, ".ts");
-    const demoPath = "../src/demos/" + demoId;
-    content += `  "${demoId.substring(5)}": () => import("${demoPath}"),\n`;
+    const descriptionFile = path.resolve(
+      paths.gallery_dir,
+      "src/demos",
+      `${demoId}.markdown`
+    );
+    const hasDescription = fs.existsSync(descriptionFile);
+    if (hasDescription) {
+      const descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
+      fs.writeFileSync(
+        path.resolve(galleryBuild, `${demoId}-description.ts`),
+        `
+        import {html} from "lit";
+        export default html\`${marked(descriptionContent)}\`
+        `
+      );
+    }
+    const demoPath = `../src/demos/${demoId}`;
+    const descriptionPath = `./${demoId}-description`;
+    content += `  "${demoId.substring(5)}": {
+      ${
+        hasDescription
+          ? `description: () => import("${descriptionPath}").then(m => m.default),`
+          : ""
+      }
+      load: () => import("${demoPath}")
+    },\n`;
   }
 
   content += "};";
 
-  const galleryBuild = path.resolve(paths.gallery_dir, "build");
-
-  fs.mkdirSync(galleryBuild, { recursive: true });
   fs.writeFileSync(
     path.resolve(galleryBuild, "import-demos.ts"),
     content,
