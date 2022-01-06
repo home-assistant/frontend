@@ -1,8 +1,11 @@
+/* eslint-disable */
 // Run demo develop mode
 const gulp = require("gulp");
 const fs = require("fs");
 const path = require("path");
 const marked = require("marked");
+const glob = require("glob");
+const yaml = require("js-yaml");
 
 const env = require("../env");
 const paths = require("../paths");
@@ -18,7 +21,8 @@ require("./rollup.js");
 
 gulp.task("gather-gallery-demos", async function gatherDemos() {
   const demoDir = path.resolve(paths.gallery_dir, "src/demos");
-  const files = await fs.promises.readdir(demoDir);
+  // const files = await fs.promises.readdir(demoDir);
+  const files = glob.sync(path.resolve(demoDir, "**/*"));
 
   const galleryBuild = path.resolve(paths.gallery_dir, "build");
   fs.mkdirSync(galleryBuild, { recursive: true });
@@ -28,25 +32,32 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
   const processed = new Set();
 
   for (const file of files) {
-    let demoId = path.basename(
-      file,
-      file.endsWith(".ts") ? ".ts" : ".markdown"
-    );
+    if (fs.lstatSync(file).isDirectory()) {
+      continue;
+    }
+    demoId = file.substring(demoDir.length + 1, file.lastIndexOf("."));
 
-    // Can be processed if we saw demo or description before.
     if (processed.has(demoId)) {
       continue;
     }
-
     processed.add(demoId);
 
-    const demoFile = path.resolve(demoDir, `${demoId}.ts`);
+    const [category, name] = demoId.split("/", 2);
 
+    const demoFile = path.resolve(demoDir, `${demoId}.ts`);
     const descriptionFile = path.resolve(demoDir, `${demoId}.markdown`);
     const hasDemo = fs.existsSync(demoFile);
     const hasDescription = fs.existsSync(descriptionFile);
+    let metadata = {};
     if (hasDescription) {
-      const descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
+      let descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
+
+      if (descriptionContent.startsWith("---")) {
+        const metadataEnd = descriptionContent.indexOf("---\n", 3);
+        metadata = yaml.load(descriptionContent.substring(3, metadataEnd));
+        descriptionContent = descriptionContent.substring(metadataEnd + 4);
+      }
+      fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
       fs.writeFileSync(
         path.resolve(galleryBuild, `${demoId}-description.ts`),
         `
@@ -55,15 +66,14 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
         `
       );
     }
-    const demoPath = `../src/demos/${demoId}`;
-    const descriptionPath = `./${demoId}-description`;
-    content += `  "${demoId.substring(5)}": {
+    content += `  "${demoId}": {
+      metadata: ${JSON.stringify(metadata)},
       ${
         hasDescription
-          ? `description: () => import("${descriptionPath}").then(m => m.default),`
+          ? `description: () => import("./${demoId}-description").then(m => m.default),`
           : ""
       }
-      ${hasDemo ? `load: () => import("${demoPath}")` : ""}
+      ${hasDemo ? `load: () => import("../src/demos/${demoId}")` : ""}
 
     },\n`;
   }

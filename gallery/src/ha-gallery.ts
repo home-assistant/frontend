@@ -3,7 +3,6 @@ import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { until } from "lit/directives/until";
 import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
@@ -11,6 +10,7 @@ import { haStyle } from "../../src/resources/styles";
 import { DEMOS } from "../build/import-demos";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { SIDEBAR } from "./sidebar";
+import "./components/demo-description";
 
 const FAKE_HASS = {
   // Just enough for computeRTL for notification-manager
@@ -20,10 +20,13 @@ const FAKE_HASS = {
   },
 };
 
+console.log(SIDEBAR);
+
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
   @property() private _demo =
-    document.location.hash.substring(1) || SIDEBAR[0].demos![0];
+    document.location.hash.substring(1) ||
+    `${SIDEBAR[0].category}/${SIDEBAR[0].demos![0]}`;
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
@@ -37,28 +40,21 @@ class HaGallery extends LitElement {
     const sidebar: unknown[] = [];
 
     for (const group of SIDEBAR) {
-      let sectionOpen = false;
       const links: unknown[] = [];
 
       for (const demo of group.demos!) {
-        const active = this._demo === demo;
-        if (active) {
-          sectionOpen = true;
-        }
-
+        const key = `${group.category}/${demo}`;
+        const active = this._demo === key;
+        const title = DEMOS[key].metadata.title || demo;
         links.push(html`
-          <a ?active=${active} href=${`#${demo}`}
-            >${group.demoStart === undefined
-              ? demo
-              : demo.substring(group.demoStart.length)}</a
-          >
+          <a ?active=${active} href=${`#${group.category}/${demo}`}>${title}</a>
         `);
       }
 
       sidebar.push(
         group.header
           ? html`
-              <details ?open=${sectionOpen}>
+              <details>
                 <summary class="section">${group.header}</summary>
                 ${links}
               </details>
@@ -84,24 +80,13 @@ class HaGallery extends LitElement {
               .path=${mdiMenu}
             ></ha-icon-button>
 
-            <div slot="title">${this._demo}</div>
+            <div slot="title">
+              ${DEMOS[this._demo].metadata.title || this._demo.split("/")[1]}
+            </div>
           </mwc-top-app-bar-fixed>
           <div>
-            ${DEMOS[this._demo].description
-              ? html`
-                  ${until(
-                    DEMOS[this._demo].description().then(
-                      (content) => html`
-                        <ha-card>
-                          <div class="card-content">${content}</div>
-                        </ha-card>
-                      `
-                    ),
-                    ""
-                  )}
-                `
-              : ""}
-            ${dynamicElement(`demo-${this._demo}`)}
+            <demo-description .demo=${this._demo}></demo-description>
+            ${dynamicElement(`demo-${this._demo.replace("/", "-")}`)}
           </div>
         </div>
       </mwc-drawer>
@@ -143,6 +128,11 @@ class HaGallery extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("_demo") && DEMOS[this._demo].load) {
       DEMOS[this._demo].load();
+      const menuItem = this.shadowRoot!.querySelector(
+        `a[href="#${this._demo}"]`
+      )!;
+      // Make sure section is expanded
+      (menuItem.parentElement as any).open = true;
     }
   }
 
@@ -194,11 +184,6 @@ class HaGallery extends LitElement {
         will-change: opacity;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
-      }
-
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
       }
     `,
   ];
