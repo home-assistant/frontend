@@ -47,24 +47,32 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
     const demoFile = path.resolve(demoDir, `${demoId}.ts`);
     const descriptionFile = path.resolve(demoDir, `${demoId}.markdown`);
     const hasDemo = fs.existsSync(demoFile);
-    const hasDescription = fs.existsSync(descriptionFile);
+    let hasDescription = fs.existsSync(descriptionFile);
     let metadata = {};
     if (hasDescription) {
       let descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
 
       if (descriptionContent.startsWith("---")) {
-        const metadataEnd = descriptionContent.indexOf("---\n", 3);
+        const metadataEnd = descriptionContent.indexOf("---", 3);
         metadata = yaml.load(descriptionContent.substring(3, metadataEnd));
-        descriptionContent = descriptionContent.substring(metadataEnd + 4);
+        descriptionContent = descriptionContent
+          .substring(metadataEnd + 3)
+          .trim();
       }
-      fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
-      fs.writeFileSync(
-        path.resolve(galleryBuild, `${demoId}-description.ts`),
-        `
-        import {html} from "lit";
-        export default html\`${marked(descriptionContent)}\`
-        `
-      );
+
+      // If description is just metadata
+      if (descriptionContent === "") {
+        hasDescription = false;
+      } else {
+        fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
+        fs.writeFileSync(
+          path.resolve(galleryBuild, `${demoId}-description.ts`),
+          `
+          import {html} from "lit";
+          export default html\`${marked(descriptionContent)}\`
+          `
+        );
+      }
     }
     content += `  "${demoId}": {
       metadata: ${JSON.stringify(metadata)},
