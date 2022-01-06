@@ -4,6 +4,7 @@ import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { until } from "lit/directives/until";
+import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
@@ -137,7 +138,7 @@ class HaGallery extends LitElement {
 
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_demo") && this._demo) {
+    if (changedProps.has("_demo") && DEMOS[this._demo].load) {
       DEMOS[this._demo].load();
     }
   }
