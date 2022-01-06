@@ -88,7 +88,8 @@ class HaGallery extends LitElement {
             <demo-description .demo=${this._demo}></demo-description>
             ${dynamicElement(`demo-${this._demo.replace("/", "-")}`)}
             <div class="demo-footer">
-              ${DEMOS[this._demo].description
+              ${DEMOS[this._demo].description ||
+              Object.keys(DEMOS[this._demo].metadata).length > 0
                 ? html`
                     <a
                       href=${`${GITHUB_DEMO_URL}${this._demo}.markdown`}
