@@ -17,25 +17,33 @@ require("./entry-html.js");
 require("./rollup.js");
 
 gulp.task("gather-gallery-demos", async function gatherDemos() {
-  const files = await fs.promises.readdir(
-    path.resolve(paths.gallery_dir, "src/demos")
-  );
+  const demoDir = path.resolve(paths.gallery_dir, "src/demos");
+  const files = await fs.promises.readdir(demoDir);
 
   const galleryBuild = path.resolve(paths.gallery_dir, "build");
   fs.mkdirSync(galleryBuild, { recursive: true });
 
   let content = "export const DEMOS = {\n";
 
+  const processed = new Set();
+
   for (const file of files) {
-    if (!file.endsWith(".ts")) {
+    let demoId = path.basename(
+      file,
+      file.endsWith(".ts") ? ".ts" : ".markdown"
+    );
+
+    // Can be processed if we saw demo or description before.
+    if (processed.has(demoId)) {
       continue;
     }
-    const demoId = path.basename(file, ".ts");
-    const descriptionFile = path.resolve(
-      paths.gallery_dir,
-      "src/demos",
-      `${demoId}.markdown`
-    );
+
+    processed.add(demoId);
+
+    const demoFile = path.resolve(demoDir, `${demoId}.ts`);
+
+    const descriptionFile = path.resolve(demoDir, `${demoId}.markdown`);
+    const hasDemo = fs.existsSync(demoFile);
     const hasDescription = fs.existsSync(descriptionFile);
     if (hasDescription) {
       const descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
@@ -55,7 +63,8 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
           ? `description: () => import("${descriptionPath}").then(m => m.default),`
           : ""
       }
-      load: () => import("${demoPath}")
+      ${hasDemo ? `load: () => import("${demoPath}")` : ""}
+
     },\n`;
   }
 
@@ -84,7 +93,17 @@ gulp.task(
     ),
     "copy-static-gallery",
     "gen-index-gallery-dev",
-    env.useRollup() ? "rollup-dev-server-gallery" : "webpack-dev-server-gallery"
+    gulp.parallel(
+      env.useRollup()
+        ? "rollup-dev-server-gallery"
+        : "webpack-dev-server-gallery",
+      async function watchMarkdownFiles() {
+        gulp.watch(
+          path.resolve(paths.gallery_dir, "src/demos/*.markdown"),
+          gulp.series("gather-gallery-demos")
+        );
+      }
+    )
   )
 );
 
