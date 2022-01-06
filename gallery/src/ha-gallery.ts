@@ -7,9 +7,8 @@ import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-import { DEMOS } from "../build/import-demos";
+import { DEMOS, SIDEBAR } from "../build/import-demos";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
-import { SIDEBAR } from "./sidebar";
 import "./components/demo-description";
 
 const GITHUB_DEMO_URL =

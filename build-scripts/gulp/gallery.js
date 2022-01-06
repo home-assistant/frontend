@@ -78,7 +78,52 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
     },\n`;
   }
 
-  content += "};";
+  content += "};\n";
+
+  // Generate sidebar
+  const sidebar = require(path.resolve(paths.gallery_dir, "sidebar.js"));
+
+  const demosToProcess = {};
+  for (const key of processed) {
+    const [category, demo] = key.split("/", 2);
+    if (!(category in demosToProcess)) {
+      demosToProcess[category] = new Set();
+    }
+    demosToProcess[category].add(demo);
+  }
+
+  for (const group of Object.values(sidebar)) {
+    const toProcess = demosToProcess[group.category];
+    delete demosToProcess[group.category];
+
+    if (!toProcess) {
+      console.error("Unknown category", group.category);
+      continue;
+    }
+
+    // Any pre-defined groups will not be sorted.
+    if (group.demos) {
+      for (const demo of group.demos) {
+        if (!toProcess.delete(demo)) {
+          console.error("Found unreferenced demo", demo);
+        }
+      }
+    } else {
+      group.demos = [];
+    }
+    for (const demo of Array.from(toProcess).sort()) {
+      group.demos.push(demo);
+    }
+  }
+
+  for (const [category, demos] of Object.entries(demosToProcess)) {
+    sidebar.push({
+      category,
+      demos: Array.from(demos),
+    });
+  }
+
+  content += `export const SIDEBAR = ${JSON.stringify(sidebar, null, 2)};\n`;
 
   fs.writeFileSync(
     path.resolve(galleryBuild, "import-demos.ts"),
