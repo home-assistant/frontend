@@ -1,10 +1,6 @@
 import { DEMOS } from "../build/import-demos";
 
-export const SIDEBAR: {
-  header?: string;
-  demos?: string[];
-  demoStart?: string;
-}[] = [
+export const SIDEBAR: SidebarSection[] = [
   {
     demos: ["introduction"],
   },
@@ -39,9 +35,15 @@ export const SIDEBAR: {
   },
   {
     header: "Rest",
-    demoStart: "",
+    demoStart: "", // empty string matches all.
   },
 ];
+
+interface SidebarSection {
+  header?: string;
+  demos?: string[];
+  demoStart?: string;
+}
 
 const demosToProcess = new Set(Object.keys(DEMOS));
 
@@ -51,14 +53,15 @@ for (const group of Object.values(SIDEBAR)) {
     for (const demo of group.demos) {
       demosToProcess.delete(demo);
     }
-  }
-  if (!group.demos) {
+  } else {
     group.demos = [];
   }
+}
+for (const group of Object.values(SIDEBAR)) {
   if (group.demoStart !== undefined) {
     for (const demo of demosToProcess) {
       if (demo.startsWith(group.demoStart)) {
-        group.demos.push(demo);
+        group.demos!.push(demo);
         demosToProcess.delete(demo);
       }
     }

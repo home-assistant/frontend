@@ -159,10 +159,6 @@ class HaGallery extends LitElement {
         -moz-user-select: initial;
       }
 
-      .section {
-        font-weight: bold;
-      }
-
       .sidebar {
         padding: 4px;
       }
@@ -173,6 +169,8 @@ class HaGallery extends LitElement {
 
       .sidebar summary {
         cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 8px;
       }
 
       .sidebar a {
