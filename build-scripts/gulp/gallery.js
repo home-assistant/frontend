@@ -81,7 +81,10 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
   content += "};\n";
 
   // Generate sidebar
-  const sidebar = require(path.resolve(paths.gallery_dir, "sidebar.js"));
+  const sidebarPath = path.resolve(paths.gallery_dir, "sidebar.js");
+  // To make watch work during development
+  delete require.cache[sidebarPath];
+  const sidebar = require(sidebarPath);
 
   const demosToProcess = {};
   for (const key of processed) {
@@ -154,7 +157,10 @@ gulp.task(
         : "webpack-dev-server-gallery",
       async function watchMarkdownFiles() {
         gulp.watch(
-          path.resolve(paths.gallery_dir, "src/demos/*.markdown"),
+          [
+            path.resolve(paths.gallery_dir, "src/demos/**/*.markdown"),
+            path.resolve(paths.gallery_dir, "sidebar.js"),
+          ],
           gulp.series("gather-gallery-demos")
         );
       }
