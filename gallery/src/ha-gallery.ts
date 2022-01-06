@@ -133,6 +133,9 @@ class HaGallery extends LitElement {
 
     window.addEventListener("hashchange", () => {
       this._demo = document.location.hash.substring(1);
+      if (this._narrow) {
+        this._drawer.open = false;
+      }
     });
   }
 
