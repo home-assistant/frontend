@@ -92,7 +92,7 @@ class HaGallery extends LitElement {
                   ${until(
                     DEMOS[this._demo].description().then(
                       (content) => html`
-                        <ha-card .header=${this._demo}>
+                        <ha-card>
                           <div class="card-content">${content}</div>
                         </ha-card>
                       `
