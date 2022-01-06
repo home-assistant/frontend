@@ -22,8 +22,6 @@ const FAKE_HASS = {
   },
 };
 
-console.log(SIDEBAR);
-
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
   @property() private _demo =
@@ -156,7 +154,9 @@ class HaGallery extends LitElement {
         `a[href="#${this._demo}"]`
       )!;
       // Make sure section is expanded
-      (menuItem.parentElement as any).open = true;
+      if (menuItem.parentElement instanceof HTMLDetailsElement) {
+        menuItem.parentElement.open = true;
+      }
     }
   }
 

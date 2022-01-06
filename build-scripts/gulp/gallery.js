@@ -122,6 +122,7 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
   for (const [category, demos] of Object.entries(demosToProcess)) {
     sidebar.push({
       category,
+      header: category,
       demos: Array.from(demos),
     });
   }
