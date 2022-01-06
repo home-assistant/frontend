@@ -12,6 +12,9 @@ import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { SIDEBAR } from "./sidebar";
 import "./components/demo-description";
 
+const GITHUB_DEMO_URL =
+  "https://github.com/home-assistant/frontend/blob/dev/gallery/src/demos/";
+
 const FAKE_HASS = {
   // Just enough for computeRTL for notification-manager
   language: "en",
@@ -87,6 +90,28 @@ class HaGallery extends LitElement {
           <div>
             <demo-description .demo=${this._demo}></demo-description>
             ${dynamicElement(`demo-${this._demo.replace("/", "-")}`)}
+            <div class="demo-footer">
+              ${DEMOS[this._demo].description
+                ? html`
+                    <a
+                      href=${`${GITHUB_DEMO_URL}${this._demo}.markdown`}
+                      target="_blank"
+                    >
+                      Edit text
+                    </a>
+                  `
+                : ""}
+              ${DEMOS[this._demo].load
+                ? html`
+                    <a
+                      href=${`${GITHUB_DEMO_URL}${this._demo}.ts`}
+                      target="_blank"
+                    >
+                      Edit demo
+                    </a>
+                  `
+                : ""}
+            </div>
           </div>
         </div>
       </mwc-drawer>
@@ -184,6 +209,16 @@ class HaGallery extends LitElement {
         will-change: opacity;
         background-color: var(--sidebar-selected-icon-color);
         opacity: 0.12;
+      }
+
+      .demo-footer {
+        text-align: center;
+        margin: 16px 0;
+      }
+
+      .demo-footer a {
+        display: inline-block;
+        margin: 0 8px;
       }
     `,
   ];
