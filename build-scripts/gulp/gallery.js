@@ -21,7 +21,6 @@ require("./rollup.js");
 
 gulp.task("gather-gallery-demos", async function gatherDemos() {
   const demoDir = path.resolve(paths.gallery_dir, "src/demos");
-  // const files = await fs.promises.readdir(demoDir);
   const files = glob.sync(path.resolve(demoDir, "**/*"));
 
   const galleryBuild = path.resolve(paths.gallery_dir, "build");
