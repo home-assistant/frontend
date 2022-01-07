@@ -19,14 +19,14 @@ require("./service-worker.js");
 require("./entry-html.js");
 require("./rollup.js");
 
-gulp.task("gather-gallery-demos", async function gatherDemos() {
-  const demoDir = path.resolve(paths.gallery_dir, "src/demos");
-  const files = glob.sync(path.resolve(demoDir, "**/*"));
+gulp.task("gather-gallery-pages", async function gatherPages() {
+  const pageDir = path.resolve(paths.gallery_dir, "src/pages");
+  const files = glob.sync(path.resolve(pageDir, "**/*"));
 
   const galleryBuild = path.resolve(paths.gallery_dir, "build");
   fs.mkdirSync(galleryBuild, { recursive: true });
 
-  let content = "export const DEMOS = {\n";
+  let content = "export const PAGES = {\n";
 
   const processed = new Set();
 
@@ -34,17 +34,17 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
     if (fs.lstatSync(file).isDirectory()) {
       continue;
     }
-    demoId = file.substring(demoDir.length + 1, file.lastIndexOf("."));
+    const pageId = file.substring(pageDir.length + 1, file.lastIndexOf("."));
 
-    if (processed.has(demoId)) {
+    if (processed.has(pageId)) {
       continue;
     }
-    processed.add(demoId);
+    processed.add(pageId);
 
-    const [category, name] = demoId.split("/", 2);
+    const [category, name] = pageId.split("/", 2);
 
-    const demoFile = path.resolve(demoDir, `${demoId}.ts`);
-    const descriptionFile = path.resolve(demoDir, `${demoId}.markdown`);
+    const demoFile = path.resolve(pageDir, `${pageId}.ts`);
+    const descriptionFile = path.resolve(pageDir, `${pageId}.markdown`);
     const hasDemo = fs.existsSync(demoFile);
     let hasDescription = fs.existsSync(descriptionFile);
     let metadata = {};
@@ -63,24 +63,25 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
       if (descriptionContent === "") {
         hasDescription = false;
       } else {
+        descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
         fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
         fs.writeFileSync(
-          path.resolve(galleryBuild, `${demoId}-description.ts`),
+          path.resolve(galleryBuild, `${pageId}-description.ts`),
           `
           import {html} from "lit";
-          export default html\`${marked(descriptionContent)}\`
+          export default html\`${descriptionContent}\`
           `
         );
       }
     }
-    content += `  "${demoId}": {
+    content += `  "${pageId}": {
       metadata: ${JSON.stringify(metadata)},
       ${
         hasDescription
-          ? `description: () => import("./${demoId}-description").then(m => m.default),`
+          ? `description: () => import("./${pageId}-description").then(m => m.default),`
           : ""
       }
-      ${hasDemo ? `load: () => import("../src/demos/${demoId}")` : ""}
+      ${hasDemo ? `demo: () => import("../src/pages/${pageId}")` : ""}
 
     },\n`;
   }
@@ -93,51 +94,54 @@ gulp.task("gather-gallery-demos", async function gatherDemos() {
   delete require.cache[sidebarPath];
   const sidebar = require(sidebarPath);
 
-  const demosToProcess = {};
+  const pagesToProcess = {};
   for (const key of processed) {
-    const [category, demo] = key.split("/", 2);
-    if (!(category in demosToProcess)) {
-      demosToProcess[category] = new Set();
+    const [category, page] = key.split("/", 2);
+    if (!(category in pagesToProcess)) {
+      pagesToProcess[category] = new Set();
     }
-    demosToProcess[category].add(demo);
+    pagesToProcess[category].add(page);
   }
 
   for (const group of Object.values(sidebar)) {
-    const toProcess = demosToProcess[group.category];
-    delete demosToProcess[group.category];
+    const toProcess = pagesToProcess[group.category];
+    delete pagesToProcess[group.category];
 
     if (!toProcess) {
       console.error("Unknown category", group.category);
+      if (!group.pages) {
+        group.pages = [];
+      }
       continue;
     }
 
     // Any pre-defined groups will not be sorted.
-    if (group.demos) {
-      for (const demo of group.demos) {
+    if (group.pages) {
+      for (const demo of group.pages) {
         if (!toProcess.delete(demo)) {
           console.error("Found unreferenced demo", demo);
         }
       }
     } else {
-      group.demos = [];
+      group.pages = [];
     }
-    for (const demo of Array.from(toProcess).sort()) {
-      group.demos.push(demo);
+    for (const page of Array.from(toProcess).sort()) {
+      group.pages.push(page);
     }
   }
 
-  for (const [category, demos] of Object.entries(demosToProcess)) {
+  for (const [category, pages] of Object.entries(pagesToProcess)) {
     sidebar.push({
       category,
       header: category,
-      demos: Array.from(demos),
+      pages: Array.from(pages).sort(),
     });
   }
 
   content += `export const SIDEBAR = ${JSON.stringify(sidebar, null, 2)};\n`;
 
   fs.writeFileSync(
-    path.resolve(galleryBuild, "import-demos.ts"),
+    path.resolve(galleryBuild, "import-pages.ts"),
     content,
     "utf-8"
   );
@@ -155,7 +159,7 @@ gulp.task(
       "gen-icons-json",
       "build-translations",
       "build-locale-data",
-      "gather-gallery-demos"
+      "gather-gallery-pages"
     ),
     "copy-static-gallery",
     "gen-index-gallery-dev",
@@ -166,10 +170,10 @@ gulp.task(
       async function watchMarkdownFiles() {
         gulp.watch(
           [
-            path.resolve(paths.gallery_dir, "src/demos/**/*.markdown"),
+            path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
             path.resolve(paths.gallery_dir, "sidebar.js"),
           ],
-          gulp.series("gather-gallery-demos")
+          gulp.series("gather-gallery-pages")
         );
       }
     )
@@ -188,7 +192,7 @@ gulp.task(
       "gen-icons-json",
       "build-translations",
       "build-locale-data",
-      "gather-gallery-demos"
+      "gather-gallery-pages"
     ),
     "copy-static-gallery",
     env.useRollup() ? "rollup-prod-gallery" : "webpack-prod-gallery",

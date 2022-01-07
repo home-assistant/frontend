@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
 @customElement("ha-markdown")
-class HaMarkdown extends LitElement {
+export class HaMarkdown extends LitElement {
   @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
@@ -38,35 +38,35 @@ class HaMarkdown extends LitElement {
       ha-markdown-element > *:last-child {
         margin-bottom: 0;
       }
-      ha-markdown-element a {
+      a {
         color: var(--primary-color);
       }
-      ha-markdown-element img {
+      img {
         max-width: 100%;
       }
-      ha-markdown-element code,
+      code,
       pre {
         background-color: var(--markdown-code-background-color, none);
         border-radius: 3px;
       }
-      ha-markdown-element svg {
+      svg {
         background-color: var(--markdown-svg-background-color, none);
         color: var(--markdown-svg-color, none);
       }
-      ha-markdown-element code {
+      code {
         font-size: 85%;
         padding: 0.2em 0.4em;
       }
-      ha-markdown-element pre code {
+      pre code {
         padding: 0;
       }
-      ha-markdown-element pre {
+      pre {
         padding: 16px;
         overflow: auto;
         line-height: 1.45;
         font-family: var(--code-font-family, monospace);
       }
-      ha-markdown-element h2 {
+      h2 {
         font-size: 1.5em;
         font-weight: bold;
       }
