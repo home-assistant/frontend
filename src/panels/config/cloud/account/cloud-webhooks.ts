@@ -195,9 +195,17 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    this._localHooks = isComponentLoaded(this.hass!, "webhook")
-      ? await fetchWebhooks(this.hass!)
-      : [];
+    if (!isComponentLoaded(this.hass!, "webhook")) {
+      this._localHooks = [];
+    }
+    const hooks = await fetchWebhooks(this.hass!);
+    this._localHooks = hooks.filter(
+      (hook) =>
+        // Only hooks that are not limited to local requests are relevant
+        !hook.local_only &&
+        // Deleted webhooks -> nobody cares :)
+        (hook.domain !== "mobile_app" || hook.name !== "Deleted Webhook")
+    );
   }
 
   static get styles(): CSSResultGroup {
