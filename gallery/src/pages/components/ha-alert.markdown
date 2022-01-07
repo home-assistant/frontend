@@ -1,3 +1,7 @@
+---
+title: Alerts
+---
+
 The `<ha-alert>` element is used to display a message to the user that requires attention.
 
 The `header` option should not be used without a description.
