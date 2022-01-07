@@ -337,8 +337,8 @@ class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        // Only disable interpolation for sensors
-        const isStep = domain === "sensor";
+        // Only interpolate for sensors
+        const isStep = domain !== "sensor";
         addDataSet(name, isStep);
 
         let lastValue: number;
