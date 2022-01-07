@@ -30,7 +30,7 @@ jobs:
         env:
           CI: true
       - name: Build resources
-        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-demos
+        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
       - name: Run eslint
         run: yarn run lint:eslint
       - name: Run tsc
