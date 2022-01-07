@@ -99,7 +99,7 @@ class HaGallery extends LitElement {
                     </a>
                   `
                 : ""}
-              ${PAGES[this._page].load
+              ${PAGES[this._page].demo
                 ? html`
                     <a
                       href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
