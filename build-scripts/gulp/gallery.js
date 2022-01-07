@@ -117,9 +117,9 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
     // Any pre-defined groups will not be sorted.
     if (group.pages) {
-      for (const demo of group.pages) {
-        if (!toProcess.delete(demo)) {
-          console.error("Found unreferenced demo", demo);
+      for (const page of group.pages) {
+        if (!toProcess.delete(page)) {
+          console.error("Found unreferenced demo", page);
         }
       }
     } else {
