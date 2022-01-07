@@ -17,9 +17,7 @@ function createStatus() {
 }
 
 
-if [[ "${PULL_REQUEST}" == "false" ]]; then
-  gulp build-gallery
-else
+if [[ "${PULL_REQUEST}" == "true" ]]; then
   if [[ "$(curl -sSLf -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/home-assistant/frontend/pulls/${REVIEW_ID}" | jq '.labels[].name' -r)" =~ "$TARGET_LABEL" ]]; then
     createStatus "pending" "Building design preview" "https://app.netlify.com/sites/home-assistant-gallery/deploys/$BUILD_ID"
@@ -32,4 +30,6 @@ else
   else
     createStatus "success" "Build was not requested by PR label"
   fi
+elif [[ "${$INCOMING_HOOK_BODY}" == "NIGHTLY" ]]; then
+  gulp build-gallery
 fi
