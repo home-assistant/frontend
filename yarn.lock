@@ -3803,13 +3803,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/events@npm:*":
-  version: 3.0.0
-  resolution: "@types/events@npm:3.0.0"
-  checksum: 9a424c2da210957d5636e0763e8c9fc3aaeee35bf411284ddec62a56a6abe31de9c7c2e713dabdd8a76ff98b47db2bd52f61310be6609641d6234cc842ecbbe3
-  languageName: node
-  linkType: hard
-
 "@types/express-serve-static-core@npm:*":
   version: 4.17.13
   resolution: "@types/express-serve-static-core@npm:4.17.13"
@@ -3856,14 +3849,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@types/glob@npm:7.1.1"
+"@types/glob@npm:^7, @types/glob@npm:^7.1.1":
+  version: 7.2.0
+  resolution: "@types/glob@npm:7.2.0"
   dependencies:
-    "@types/events": "*"
     "@types/minimatch": "*"
     "@types/node": "*"
-  checksum: 9fb96d004c8e9ed25b305bc0d34c99c70c47c571740ca861cca92be4b28649786971703e9883f8ead0815b50225dbaf103a1df2d076923066f6bc0ab733a7be8
+  checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
   languageName: node
   linkType: hard
 
@@ -8666,9 +8658,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
-  version: 7.1.7
-  resolution: "glob@npm:7.1.7"
+"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "glob@npm:7.2.0"
   dependencies:
     fs.realpath: ^1.0.0
     inflight: ^1.0.4
@@ -8676,7 +8668,7 @@ fsevents@^1.2.7:
     minimatch: ^3.0.4
     once: ^1.3.0
     path-is-absolute: ^1.0.0
-  checksum: b61f48973bbdcf5159997b0874a2165db572b368b931135832599875919c237fc05c12984e38fe828e69aa8a921eb0e8a4997266211c517c9cfaae8a93988bb8
+  checksum: 78a8ea942331f08ed2e055cb5b9e40fe6f46f579d7fd3d694f3412fe5db23223d29b7fee1575440202e9a7ff9a72ab106a39fee39934c7bedafe5e5f8ae20134
   languageName: node
   linkType: hard
 
@@ -9123,6 +9115,7 @@ fsevents@^1.2.7:
     "@thomasloven/round-slider": 0.5.4
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": ^1.0.3
+    "@types/glob": ^7
     "@types/js-yaml": ^4
     "@types/leaflet": ^1
     "@types/leaflet-draw": ^1
@@ -9165,6 +9158,7 @@ fsevents@^1.2.7:
     fancy-log: ^1.3.3
     fs-extra: ^7.0.1
     fuse.js: ^6.0.0
+    glob: ^7.2.0
     google-timezones-json: ^1.0.2
     gulp: ^4.0.2
     gulp-foreach: ^0.1.0
