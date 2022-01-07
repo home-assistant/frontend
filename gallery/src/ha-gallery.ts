@@ -7,12 +7,12 @@ import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
-import { DEMOS, SIDEBAR } from "../build/import-demos";
+import { PAGES, SIDEBAR } from "../build/import-pages";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
-import "./components/demo-description";
+import "./components/page-description";
 
 const GITHUB_DEMO_URL =
-  "https://github.com/home-assistant/frontend/blob/dev/gallery/src/demos/";
+  "https://github.com/home-assistant/frontend/blob/dev/gallery/src/pages/";
 
 const FAKE_HASS = {
   // Just enough for computeRTL for notification-manager
@@ -24,9 +24,9 @@ const FAKE_HASS = {
 
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
-  @property() private _demo =
+  @property() private _page =
     document.location.hash.substring(1) ||
-    `${SIDEBAR[0].category}/${SIDEBAR[0].demos![0]}`;
+    `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
@@ -42,12 +42,12 @@ class HaGallery extends LitElement {
     for (const group of SIDEBAR) {
       const links: unknown[] = [];
 
-      for (const demo of group.demos!) {
-        const key = `${group.category}/${demo}`;
-        const active = this._demo === key;
-        const title = DEMOS[key].metadata.title || demo;
+      for (const page of group.pages!) {
+        const key = `${group.category}/${page}`;
+        const active = this._page === key;
+        const title = PAGES[key].metadata.title || page;
         links.push(html`
-          <a ?active=${active} href=${`#${group.category}/${demo}`}>${title}</a>
+          <a ?active=${active} href=${`#${group.category}/${page}`}>${title}</a>
         `);
       }
 
@@ -81,28 +81,28 @@ class HaGallery extends LitElement {
             ></ha-icon-button>
 
             <div slot="title">
-              ${DEMOS[this._demo].metadata.title || this._demo.split("/")[1]}
+              ${PAGES[this._page].metadata.title || this._page.split("/")[1]}
             </div>
           </mwc-top-app-bar-fixed>
           <div>
-            <demo-description .demo=${this._demo}></demo-description>
-            ${dynamicElement(`demo-${this._demo.replace("/", "-")}`)}
-            <div class="demo-footer">
-              ${DEMOS[this._demo].description ||
-              Object.keys(DEMOS[this._demo].metadata).length > 0
+            <page-description .page=${this._page}></page-description>
+            ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+            <div class="page-footer">
+              ${PAGES[this._page].description ||
+              Object.keys(PAGES[this._page].metadata).length > 0
                 ? html`
                     <a
-                      href=${`${GITHUB_DEMO_URL}${this._demo}.markdown`}
+                      href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
                       target="_blank"
                     >
                       Edit text
                     </a>
                   `
                 : ""}
-              ${DEMOS[this._demo].load
+              ${PAGES[this._page].load
                 ? html`
                     <a
-                      href=${`${GITHUB_DEMO_URL}${this._demo}.ts`}
+                      href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
                       target="_blank"
                     >
                       Edit demo
@@ -137,10 +137,10 @@ class HaGallery extends LitElement {
       }
     });
 
-    document.location.hash = this._demo;
+    document.location.hash = this._page;
 
     window.addEventListener("hashchange", () => {
-      this._demo = document.location.hash.substring(1);
+      this._page = document.location.hash.substring(1);
       if (this._narrow) {
         this._drawer.open = false;
       }
@@ -149,15 +149,20 @@ class HaGallery extends LitElement {
 
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_demo") && DEMOS[this._demo].load) {
-      DEMOS[this._demo].load();
-      const menuItem = this.shadowRoot!.querySelector(
-        `a[href="#${this._demo}"]`
-      )!;
-      // Make sure section is expanded
-      if (menuItem.parentElement instanceof HTMLDetailsElement) {
-        menuItem.parentElement.open = true;
-      }
+    if (!changedProps.has("_page")) {
+      return;
+    }
+
+    if (PAGES[this._page].demo) {
+      PAGES[this._page].demo();
+    }
+
+    const menuItem = this.shadowRoot!.querySelector(
+      `a[href="#${this._page}"]`
+    )!;
+    // Make sure section is expanded
+    if (menuItem.parentElement instanceof HTMLDetailsElement) {
+      menuItem.parentElement.open = true;
     }
   }
 
@@ -211,12 +216,12 @@ class HaGallery extends LitElement {
         opacity: 0.12;
       }
 
-      .demo-footer {
+      .page-footer {
         text-align: center;
         margin: 16px 0;
       }
 
-      .demo-footer a {
+      .page-footer a {
         display: inline-block;
         margin: 0 8px;
       }

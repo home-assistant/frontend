@@ -1,16 +1,17 @@
 module.exports = [
   {
-    category: "introduction",
-    demos: ["introduction"],
+    // This section has no header and so all page links are shown directly in the sidebar
+    category: "concepts",
+    pages: ["home"],
   },
 
   {
     category: "lovelace",
-    // Each section has a header
+    // Label for in the sidebar
     header: "Lovelace",
-    // Specify demos to make sure they are put on top.
-    demos: [],
-    // Add a demoStart to automatically gather demos based on their name
+    // Specify order of pages. Any pages in the category folder but not listed here will
+    // automatically be added after the pages listed here.
+    pages: ["introduction"],
   },
   {
     category: "automation",
@@ -19,22 +20,17 @@ module.exports = [
   {
     category: "components",
     header: "Components",
-    demos: [
-      "ha-alert",
-      "ha-bar",
-      "ha-chips",
-      "ha-faded",
-      "ha-form",
-      "ha-label-badge",
-      "ha-selector",
-    ],
   },
   {
     category: "more-info",
-    header: "More Info",
+    header: "More Info dialogs",
   },
   {
-    category: "rest",
-    header: "Rest",
+    category: "misc",
+    header: "Miscelaneous",
+  },
+  {
+    category: "design.home-assistant.io",
+    header: "Design Documentation",
   },
 ];
