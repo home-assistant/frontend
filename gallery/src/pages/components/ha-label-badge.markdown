@@ -1,3 +1,3 @@
 ---
-title: Ha Label Badge
+title: Label Badge
 ---

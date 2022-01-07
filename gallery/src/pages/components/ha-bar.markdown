@@ -1,3 +1,3 @@
 ---
-title: Ha Bar
+title: Progress Bars
 ---

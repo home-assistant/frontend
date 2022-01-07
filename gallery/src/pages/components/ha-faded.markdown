@@ -1,3 +1,3 @@
 ---
-title: Ha Faded
+title: Faded Content
 ---

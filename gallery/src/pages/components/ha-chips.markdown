@@ -1,3 +1,3 @@
 ---
-title: Ha Chips
+title: Chips
 ---
