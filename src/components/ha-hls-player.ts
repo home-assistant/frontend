@@ -98,7 +98,6 @@ class HaHLSPlayer extends LitElement {
   private async _startHls(): Promise<void> {
     this._error = undefined;
 
-    const videoEl = this._videoEl;
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
@@ -113,7 +112,7 @@ class HaHLSPlayer extends LitElement {
 
     if (!hlsSupported) {
       hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+        this._videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
     if (!hlsSupported) {
@@ -151,9 +150,9 @@ class HaHLSPlayer extends LitElement {
     if (useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, Hls, playlist_url);
+      this._renderHLSPolyfill(this._videoEl, Hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, playlist_url);
+      this._renderHLSNative(this._videoEl, playlist_url);
     }
   }
 
@@ -261,9 +260,10 @@ class HaHLSPlayer extends LitElement {
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
     }
-    const videoEl = this._videoEl;
-    videoEl.removeAttribute("src");
-    videoEl.load();
+    if (this._videoEl) {
+      this._videoEl.removeAttribute("src");
+      this._videoEl.load();
+    }
   }
 
   static get styles(): CSSResultGroup {
