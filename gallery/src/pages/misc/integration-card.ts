@@ -217,7 +217,7 @@ const createDeviceRegistryEntries = (
   },
 ];
 
-@customElement("demo-rest-integration-card")
+@customElement("demo-misc-integration-card")
 export class DemoIntegrationCard extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
@@ -352,6 +352,6 @@ export class DemoIntegrationCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-rest-integration-card": DemoIntegrationCard;
+    "demo-misc-integration-card": DemoIntegrationCard;
   }
 }
