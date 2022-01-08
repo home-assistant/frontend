@@ -5,7 +5,7 @@ import "../../../../src/components/ha-card";
 import { ActionHandlerEvent } from "../../../../src/data/lovelace";
 import { actionHandler } from "../../../../src/panels/lovelace/common/directives/action-handler-directive";
 
-@customElement("demo-rest-util-long-press")
+@customElement("demo-misc-util-long-press")
 export class DemoUtilLongPress extends LitElement {
   protected render(): TemplateResult {
     return html`
