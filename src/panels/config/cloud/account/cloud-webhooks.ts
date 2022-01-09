@@ -197,6 +197,7 @@ export class CloudWebhooks extends LitElement {
   private async _fetchData() {
     if (!isComponentLoaded(this.hass!, "webhook")) {
       this._localHooks = [];
+      return
     }
     const hooks = await fetchWebhooks(this.hass!);
     this._localHooks = hooks.filter(
