@@ -132,6 +132,7 @@ class HaPanelDevTemplate extends LitElement {
             .value=${this._template}
             .error=${this._error}
             autofocus
+            hasAutocomplete
             @value-changed=${this._templateChanged}
             dir="ltr"
           ></ha-code-editor>

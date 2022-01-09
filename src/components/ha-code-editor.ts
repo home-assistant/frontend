@@ -1,5 +1,9 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import {
+  CompletionContext,
+  CompletionResult,
+  Completion,
+} from "@codemirror/autocomplete";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -33,6 +37,8 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public readOnly = false;
+
+  @property({ type: Boolean }) public hasAutocomplete = false;
 
   @property() public error = false;
 
@@ -146,7 +152,7 @@ export class HaCodeEditor extends ReactiveElement {
       ),
     ];
 
-    if (!this.readOnly) {
+    if (!this.readOnly && this.hasAutocomplete) {
       this._states = this._getStates(this.hass);
       extensions.push(
         this._loadedCodeMirror.autocompletion({
@@ -195,11 +201,13 @@ export class HaCodeEditor extends ReactiveElement {
       return null;
     }
 
-    const options = this._states.map((entity_state: HassEntity) => ({
-      type: "variable",
-      label: entity_state.entity_id,
-      info: entity_state.state,
-    }));
+    const options: Completion[] = this._states.map(
+      (entity_state: HassEntity) => ({
+        type: "variable",
+        label: entity_state.entity_id,
+        info: entity_state.state,
+      })
+    );
 
     return {
       from: Number(entityWord?.from),
