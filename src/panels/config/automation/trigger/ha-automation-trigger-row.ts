@@ -290,6 +290,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (newId === (this.trigger.id ?? "")) {
       return;
     }
+    this._requestShowId = true;
     const value = { ...this.trigger };
     if (!newId) {
       delete value.id;
