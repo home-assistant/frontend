@@ -59,7 +59,7 @@ Using color to add meaning only provides a visual indication, which will not be 
 
 Actions must have a tab index of 0 so that they can be reached by keyboard-only users.
 
-## <a id="Specs"></a>Implementation
+## Implementation
 * CSS variable
 * Events
 
