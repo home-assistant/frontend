@@ -138,7 +138,7 @@ The `title ` option should not be used without a description.
 
 **Right to left**
 
-*Documentation comming soon*
+*Documentation coming soon*
 
 ### API
 **Properties/Attributes**
