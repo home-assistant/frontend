@@ -68,19 +68,22 @@ export const urlSyncMixin = <
             if (DEBUG) {
               console.log("remove state", ev.detail.dialog);
             }
-            this._ignoreNextPopState = true;
-            historyPromise.promise = new Promise((resolve) => {
-              historyResolve = resolve;
-            });
-            mainWindow.history.back();
+            if (history.length) {
+              this._ignoreNextPopState = true;
+              historyPromise.promise = new Promise((resolve) => {
+                historyResolve = resolve;
+              });
+              mainWindow.history.back();
+            }
           }
         };
 
         private _popstateChangeListener = (ev: PopStateEvent) => {
           if (this._ignoreNextPopState) {
             if (
-              ev.state?.oldState?.replaced ||
-              ev.state?.oldState?.dialogParams === null
+              history.length &&
+              (ev.state?.oldState?.replaced ||
+                ev.state?.oldState?.dialogParams === null)
             ) {
               // if the previous dialog was replaced, or we could not copy the params, and the current dialog is closed, we should also remove the previous dialog from history
               if (DEBUG) {
