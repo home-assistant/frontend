@@ -30,6 +30,6 @@ if [[ "${PULL_REQUEST}" == "true" ]]; then
   else
     createStatus "success" "Build was not requested by PR label"
   fi
-elif [[ "${$INCOMING_HOOK_BODY}" == "NIGHTLY" ]]; then
+elif [[ "$INCOMING_HOOK_BODY" == "NIGHTLY" ]]; then
   gulp build-gallery
 fi
