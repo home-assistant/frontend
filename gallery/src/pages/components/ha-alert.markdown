@@ -126,7 +126,7 @@ The `title ` option should not be used without a description.
 
 **Dismissable**
 
-*Documentation comming soon*
+*Documentation coming soon*
 
 **Slotted icon**
 
