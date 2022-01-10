@@ -87,8 +87,7 @@ Actions must have a tab index of 0 so that they can be reached by keyboard-only 
 
 The `title ` option should not be used without a description.
 
-<ha-alert alert-type="error">
-	<title>Error</title>
+<ha-alert alert-type="error" title="Error">
 	This is an error alert — <strong>check it out!</strong>
 </ha-alert>
 
