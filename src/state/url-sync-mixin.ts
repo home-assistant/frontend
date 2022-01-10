@@ -70,11 +70,11 @@ export const urlSyncMixin = <
             if (history.length) {
               this._ignoreNextPopState = true;
               historyPromise = new Promise((resolve) => {
-                historyResolve = resolve;
-              });
-              historyPromise.then(() => {
-                historyPromise = undefined;
-                historyResolve = undefined;
+                historyResolve = () => {
+                  resolve();
+                  historyResolve = undefined;
+                  historyPromise = undefined;
+                };
               });
               mainWindow.history.back();
             }
