@@ -24,7 +24,7 @@ The alert offers four severity levels that set a distinctive icon and color.
 | Design         | [Home Assistant DesignKit](https://www.figma.com/community/file/967153512097289521/Home-Assistant-DesignKit) (Figma) | Available |
 | Implementation | [Web Component](https://github.com/home-assistant/frontend/blob/dev/src/components/ha-alert.ts) (GitHub)            | Available |
 
-## <a id="Specs"></a>Guidelines
+## Guidelines
 ### Usage
 An alert displays a short, important message in a way that attracts the user's attention without interrupting the user's task.
 
