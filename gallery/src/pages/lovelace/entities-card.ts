@@ -11,10 +11,10 @@ const ENTITIES = [
   getEntity("group", "kitchen", "on", {
     entity_id: ["light.bed_light"],
     order: 8,
-    friendly_name: "Kitchen",
+    friendly_name: "Kitchen Group",
   }),
   getEntity("lock", "kitchen_door", "locked", {
-    friendly_name: "Kitchen Door",
+    friendly_name: "Kitchen Lock",
   }),
   getEntity("cover", "kitchen_window", "open", {
     friendly_name: "Kitchen Window",
@@ -22,7 +22,7 @@ const ENTITIES = [
   }),
   getEntity("scene", "romantic_lights", "scening", {
     entity_id: ["light.bed_light", "light.ceiling_lights"],
-    friendly_name: "Romantic lights",
+    friendly_name: "Romantic Scene",
   }),
   getEntity("device_tracker", "demo_paulus", "home", {
     source_type: "gps",
@@ -50,15 +50,51 @@ const ENTITIES = [
     friendly_name: "Ecobee",
     supported_features: 1014,
   }),
-  getEntity("input_number", "noise_allowance", 5, {
+  getEntity("input_number", "number", 5, {
     min: 0,
     max: 10,
     step: 1,
     mode: "slider",
     unit_of_measurement: "dB",
-    friendly_name: "Allowed Noise",
+    friendly_name: "Number",
     icon: "mdi:bell-ring",
   }),
+  getEntity("input_boolean", "toggle", "on", {
+    friendly_name: "Toggle",
+  }),
+  getEntity("input_datetime", "date_and_time", "2022-01-10 00:00:00", {
+    has_date: true,
+    has_time: true,
+    editable: true,
+    year: 2022,
+    month: 1,
+    day: 10,
+    hour: 0,
+    minute: 0,
+    second: 0,
+    timestamp: 1641801600,
+    friendly_name: "Date and Time",
+  }),
+  getEntity("input_select", "dropdown", "Soda", {
+    friendly_name: "Dropdown",
+    options: ["Soda", "Beer", "Wine"],
+  }),
+  getEntity("input_text", "text", "Inspiration", {
+    friendly_name: "Text",
+    mode: "text",
+  }),
+  getEntity("timer", "timer", "idle", {
+    friendly_name: "Timer",
+    duration: "0:05:00",
+  }),
+  getEntity("counter", "counter", "3", {
+    friendly_name: "Counter",
+    initial: 0,
+    step: 1,
+    minimum: 0,
+    maximum: 10,
+  }),
+
   getEntity("light", "unavailable", "unavailable", {
     friendly_name: "Bed Light",
   }),
@@ -70,7 +106,7 @@ const ENTITIES = [
     supported_features: 11,
   }),
   getEntity("scene", "unavailable", "unavailable", {
-    friendly_name: "Romantic lights",
+    friendly_name: "Romantic Scene",
   }),
   getEntity("device_tracker", "unavailable", "unavailable", {
     friendly_name: "Paulus",
@@ -105,7 +141,22 @@ const CONFIGS = [
     - light.bed_light
     - light.non_existing
     - climate.ecobee
-    - input_number.noise_allowance
+    - input_number.number
+    `,
+  },
+  {
+    heading: "Helpers",
+    config: `
+- type: entities
+  title: Helpers
+  entities:
+    - entity: input_boolean.toggle
+    - entity: input_datetime.date_and_time
+    - entity: input_number.number
+    - entity: input_select.dropdown
+    - entity: input_text.text
+    - entity: timer.timer
+    - entity: counter.counter
     `,
   },
   {
@@ -120,7 +171,7 @@ const CONFIGS = [
     - lock.kitchen_door
     - light.bed_light
     - climate.ecobee
-    - input_number.noise_allowance
+    - input_number.number
   title: Random group
     `,
   },
@@ -136,7 +187,7 @@ const CONFIGS = [
     - lock.kitchen_door
     - light.bed_light
     - climate.ecobee
-    - input_number.noise_allowance
+    - input_number.number
   title: Random group
   show_header_toggle: false
     `,
@@ -183,7 +234,7 @@ const CONFIGS = [
       icon: mdi:alarm-light
       name: Bed Light Custom Icon
     - climate.ecobee
-    - input_number.noise_allowance
+    - input_number.number
   title: Random group
   show_header_toggle: false
     `,
