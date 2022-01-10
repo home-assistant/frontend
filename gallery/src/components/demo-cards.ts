@@ -61,10 +61,6 @@ class DemoCards extends LitElement {
   }
 
   static styles = css`
-    #container {
-      min-height: calc(100vh - 128px);
-      background: var(--primary-background-color);
-    }
     .cards {
       display: flex;
       flex-wrap: wrap;

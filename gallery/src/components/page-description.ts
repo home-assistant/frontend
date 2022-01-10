@@ -14,13 +14,9 @@ class PageDescription extends HaMarkdown {
     }
     return html`
       ${until(
-        PAGES[this.page].description().then(
-          (content) => html`
-            <ha-card>
-              <div class="card-content">${content}</div>
-            </ha-card>
-          `
-        ),
+        PAGES[this.page]
+          .description()
+          .then((content) => html`<div class="root">${content}</div>`),
         ""
       )}
     `;
@@ -29,14 +25,14 @@ class PageDescription extends HaMarkdown {
   static styles = [
     HaMarkdown.styles,
     css`
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
+      .root {
+        max-width: 800px;
+        margin: 0 auto;
       }
-      .card-content > *:first-child {
+      .root > *:first-child {
         margin-top: 0;
       }
-      .card-content > *:last-child {
+      .root > *:last-child {
         margin-bottom: 0;
       }
     `,
