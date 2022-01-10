@@ -33,19 +33,19 @@ An alert displays a short, important message in a way that attracts the user's a
 
 ### Error alert
 Error alerts
-*Real world example comming soon*
+*Real world example coming soon*
 
 ### Warning alert
 Warning alerts
-*Real world example comming soon*
+*Real world example coming soon*
 
 ### Info alert
 Info alerts
-*Real world example comming soon*
+*Real world example coming soon*
 
 ### Success alert
 Success alerts
-*Real world example comming soon*
+*Real world example coming soon*
 
 ### Placement
 
@@ -154,7 +154,7 @@ The `title ` option should not be used without a description.
 
 **Events**
 
-*Documentation comming soon*
+*Documentation coming soon*
 
 **CSS Custom Properties**
 
