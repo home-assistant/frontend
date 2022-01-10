@@ -15,7 +15,7 @@ The alert offers four severity levels that set a distinctive icon and color.
 
 **Note:** This component is by [MUI](https://mui.com/components/alert/) and is not documented in the [Material Design guidelines](https://material.io).
 
-1. [Guidenlines](#guidenlines)
+1. [Guidelines](#guidelines)
 2. [Implementation](#implementation)
 
 ### Resources
