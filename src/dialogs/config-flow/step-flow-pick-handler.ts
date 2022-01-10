@@ -42,7 +42,7 @@ class StepFlowPickHandler extends LitElement {
 
   private _height?: number;
 
-  private _getHandlers = memoizeOne(
+  private _filterHandlers = memoizeOne(
     (h: string[], filter?: string, _localize?: LocalizeFunc) => {
       const handlers: HandlerObj[] = h.map((handler) => ({
         name: domainToName(this.hass.localize, handler),
@@ -66,11 +66,7 @@ class StepFlowPickHandler extends LitElement {
   );
 
   protected render(): TemplateResult {
-    const handlers = this._getHandlers(
-      this.handlers,
-      this._filter,
-      this.hass.localize
-    );
+    const handlers = this._getHandlers();
 
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
@@ -80,6 +76,7 @@ class StepFlowPickHandler extends LitElement {
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
         .label=${this.hass.localize("ui.panel.config.integrations.search")}
+        @keypress=${this._maybeSubmit}
       ></search-input>
       <div
         style=${styleMap({
@@ -164,6 +161,14 @@ class StepFlowPickHandler extends LitElement {
     }
   }
 
+  private _getHandlers() {
+    return this._filterHandlers(
+      this.handlers,
+      this._filter,
+      this.hass.localize
+    );
+  }
+
   private async _filterChanged(e) {
     this._filter = e.detail.value;
   }
@@ -172,6 +177,20 @@ class StepFlowPickHandler extends LitElement {
     fireEvent(this, "handler-picked", {
       handler: ev.currentTarget.handler.slug,
     });
+  }
+
+  private _maybeSubmit(ev: KeyboardEvent) {
+    if (ev.key !== "Enter") {
+      return;
+    }
+
+    const handlers = this._getHandlers();
+
+    if (handlers.length > 0) {
+      fireEvent(this, "handler-picked", {
+        handler: handlers[0].slug,
+      });
+    }
   }
 
   static get styles(): CSSResultGroup {
