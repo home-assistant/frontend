@@ -343,8 +343,8 @@ class DataEntryFlowDialog extends LitElement {
     this._unsubDevices = subscribeDeviceRegistry(
       this.hass.connection,
       (devices) => {
-        this._devices = devices.filter((device) =>
-          device.config_entries.includes(configEntryId)
+        this._devices = devices.filter(
+          (device) => device.config_entries[0] === configEntryId
         );
       }
     );
