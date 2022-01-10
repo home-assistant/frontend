@@ -107,8 +107,7 @@ The `title ` option should not be used without a description.
 </ha-alert>
 
 ```html
-<ha-alert alert-type="error">
-	<title>Error</title>
+<ha-alert alert-type="error" title="Error">
 	This is an error alert — <strong>check it out!</strong>
 </ha-alert>
 <ha-alert alert-type="warning">
