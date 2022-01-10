@@ -1,7 +1,14 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -35,6 +42,8 @@ class StepFlowPickHandler extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public handlers!: string[];
+
+  @property() public initialFilter?: string;
 
   @state() private _filter?: string;
 
@@ -136,6 +145,13 @@ class StepFlowPickHandler extends LitElement {
             `}
       </div>
     `;
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    if (this._filter === undefined && this.initialFilter !== undefined) {
+      this._filter = this.initialFilter;
+    }
+    super.willUpdate(changedProps);
   }
 
   protected firstUpdated(changedProps) {
