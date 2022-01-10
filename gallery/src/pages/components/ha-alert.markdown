@@ -158,4 +158,4 @@ The `title ` option should not be used without a description.
 
 **CSS Custom Properties**
 
-*Documentation comming soon*
+*Documentation coming soon*
