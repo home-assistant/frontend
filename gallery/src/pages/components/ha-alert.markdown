@@ -134,7 +134,7 @@ The `title ` option should not be used without a description.
 
 **Slotted action**
 
-*Documentation comming soon*
+*Documentation coming soon*
 
 **Right to left**
 
