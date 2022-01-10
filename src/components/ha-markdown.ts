@@ -66,6 +66,14 @@ export class HaMarkdown extends LitElement {
         line-height: 1.45;
         font-family: var(--code-font-family, monospace);
       }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        line-height: initial;
+      }
       h2 {
         font-size: 1.5em;
         font-weight: bold;
