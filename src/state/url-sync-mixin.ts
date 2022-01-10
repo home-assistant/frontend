@@ -13,9 +13,8 @@ import { Constructor } from "../types";
 
 const DEBUG = false;
 
-export const historyPromise: { promise?: Promise<void> } = {
-  promise: undefined,
-};
+// eslint-disable-next-line import/no-mutable-exports
+export let historyPromise: Promise<void> | undefined;
 
 let historyResolve: undefined | (() => void);
 
@@ -70,8 +69,12 @@ export const urlSyncMixin = <
             }
             if (history.length) {
               this._ignoreNextPopState = true;
-              historyPromise.promise = new Promise((resolve) => {
+              historyPromise = new Promise((resolve) => {
                 historyResolve = resolve;
+              });
+              historyPromise.then(() => {
+                historyPromise = undefined;
+                historyResolve = undefined;
               });
               mainWindow.history.back();
             }
@@ -98,7 +101,6 @@ export const urlSyncMixin = <
             this._ignoreNextPopState = false;
             if (historyResolve) {
               historyResolve();
-              historyPromise.promise = historyResolve = undefined;
             }
             return;
           }
@@ -110,7 +112,6 @@ export const urlSyncMixin = <
           }
           if (historyResolve) {
             historyResolve();
-            historyPromise.promise = historyResolve = undefined;
           }
         };
 

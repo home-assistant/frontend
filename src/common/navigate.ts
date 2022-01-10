@@ -16,8 +16,8 @@ export interface NavigateOptions {
 export const navigate = (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
 
-  if (historyPromise.promise) {
-    historyPromise.promise.then(() => navigate(path, options));
+  if (historyPromise) {
+    historyPromise.then(() => navigate(path, options));
     return;
   }
 
