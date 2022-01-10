@@ -3,7 +3,6 @@ import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "../../src/components/ha-card";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
@@ -84,32 +83,36 @@ class HaGallery extends LitElement {
               ${PAGES[this._page].metadata.title || this._page.split("/")[1]}
             </div>
           </mwc-top-app-bar-fixed>
-          <div>
-            <page-description .page=${this._page}></page-description>
+          <div class="content">
+            ${PAGES[this._page].description
+              ? html`
+                  <page-description .page=${this._page}></page-description>
+                `
+              : ""}
             ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
-            <div class="page-footer">
-              ${PAGES[this._page].description ||
-              Object.keys(PAGES[this._page].metadata).length > 0
-                ? html`
-                    <a
-                      href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                      target="_blank"
-                    >
-                      Edit text
-                    </a>
-                  `
-                : ""}
-              ${PAGES[this._page].demo
-                ? html`
-                    <a
-                      href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
-                      target="_blank"
-                    >
-                      Edit demo
-                    </a>
-                  `
-                : ""}
-            </div>
+          </div>
+          <div class="page-footer">
+            ${PAGES[this._page].description ||
+            Object.keys(PAGES[this._page].metadata).length > 0
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                    target="_blank"
+                  >
+                    Edit text
+                  </a>
+                `
+              : ""}
+            ${PAGES[this._page].demo
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
+                    target="_blank"
+                  >
+                    Edit demo
+                  </a>
+                `
+              : ""}
           </div>
         </div>
       </mwc-drawer>
@@ -216,9 +219,26 @@ class HaGallery extends LitElement {
         opacity: 0.12;
       }
 
+      div[slot="appContent"] {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--primary-background-color);
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      page-description {
+        margin: 16px;
+      }
+
       .page-footer {
         text-align: center;
         margin: 16px 0;
+        padding-top: 16px;
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
       }
 
       .page-footer a {
