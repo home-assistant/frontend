@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -26,8 +25,10 @@ class DialogNewAutomation extends LitElement implements HassDialog {
   }
 
   public closeDialog(): void {
+    if (this._opened) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     this._opened = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -66,8 +67,8 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                 "ui.panel.config.automation.dialog_new.start_empty_description"
               )}
             </span>
-            <ha-icon-next slot="meta"></ha-icon-next
-          ></mwc-list-item>
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </mwc-list-item>
         </mwc-list>
       </ha-dialog>
     `;
@@ -75,7 +76,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   private async _blueprintPicked(ev: CustomEvent) {
     this.closeDialog();
-    await nextRender();
     showAutomationEditor({ use_blueprint: { path: ev.detail.value } });
   }
 
@@ -85,7 +85,6 @@ class DialogNewAutomation extends LitElement implements HassDialog {
 
   private async _blank() {
     this.closeDialog();
-    await nextRender();
     showAutomationEditor();
   }
 

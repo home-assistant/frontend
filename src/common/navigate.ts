@@ -1,3 +1,4 @@
+import { historyPromise } from "../state/url-sync-mixin";
 import { fireEvent } from "./dom/fire_event";
 import { mainWindow } from "./dom/get_main_window";
 
@@ -14,6 +15,11 @@ export interface NavigateOptions {
 
 export const navigate = (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
+
+  if (historyPromise) {
+    historyPromise.then(() => navigate(path, options));
+    return;
+  }
 
   if (__DEMO__) {
     if (replace) {
