@@ -130,7 +130,7 @@ The `title ` option should not be used without a description.
 
 **Slotted icon**
 
-*Documentation comming soon*
+*Documentation coming soon*
 
 **Slotted action**
 
