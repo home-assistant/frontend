@@ -13,6 +13,12 @@ import { Constructor } from "../types";
 
 const DEBUG = false;
 
+export const historyPromise: { promise?: Promise<void> } = {
+  promise: undefined,
+};
+
+let historyResolve: undefined | (() => void);
+
 export const urlSyncMixin = <
   T extends Constructor<ReactiveElement & ProvideHassElement>
 >(
@@ -63,6 +69,9 @@ export const urlSyncMixin = <
               console.log("remove state", ev.detail.dialog);
             }
             this._ignoreNextPopState = true;
+            historyPromise.promise = new Promise((resolve) => {
+              historyResolve = resolve;
+            });
             mainWindow.history.back();
           }
         };
@@ -80,7 +89,14 @@ export const urlSyncMixin = <
               mainWindow.history.back();
               return;
             }
+            if (DEBUG) {
+              console.log("ignore popstate");
+            }
             this._ignoreNextPopState = false;
+            if (historyResolve) {
+              historyResolve();
+              historyPromise.promise = historyResolve = undefined;
+            }
             return;
           }
           if (ev.state && "dialog" in ev.state) {
@@ -88,6 +104,10 @@ export const urlSyncMixin = <
               console.log("popstate", ev);
             }
             this._handleDialogStateChange(ev.state);
+          }
+          if (historyResolve) {
+            historyResolve();
+            historyPromise.promise = historyResolve = undefined;
           }
         };
 
