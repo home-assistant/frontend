@@ -75,8 +75,8 @@ export const urlSyncMixin = <
                   historyResolve = undefined;
                   historyPromise = undefined;
                 };
+                mainWindow.history.back();
               });
-              mainWindow.history.back();
             }
           }
         };
