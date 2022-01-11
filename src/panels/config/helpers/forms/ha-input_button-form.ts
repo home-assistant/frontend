@@ -13,11 +13,11 @@ class HaInputButtonForm extends LitElement {
 
   @property() public new?: boolean;
 
-  private _item?: InputButton;
-
   @state() private _name!: string;
 
   @state() private _icon!: string;
+
+  private _item?: InputButton;
 
   set item(item: InputButton) {
     this._item = item;
