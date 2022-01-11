@@ -1,3 +1,3 @@
 ---
-title: Editor Condition
+title: Conditions
 ---

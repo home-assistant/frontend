@@ -16,6 +16,13 @@ module.exports = [
   {
     category: "automation",
     header: "Automation",
+    pages: [
+      "editor-trigger",
+      "editor-condition",
+      "editor-action",
+      "trace",
+      "trace-timeline",
+    ],
   },
   {
     category: "components",
