@@ -192,7 +192,7 @@ class MoreInfoClimate extends LitElement {
           </div>
         </div>
 
-        ${supportPresetMode
+        ${supportPresetMode && stateObj.attributes.preset_modes
           ? html`
               <div class="container-preset_modes">
                 <ha-paper-dropdown-menu
@@ -220,7 +220,7 @@ class MoreInfoClimate extends LitElement {
               </div>
             `
           : ""}
-        ${supportFanMode
+        ${supportFanMode && stateObj.attributes.fan_modes
           ? html`
               <div class="container-fan_list">
                 <ha-paper-dropdown-menu
@@ -248,7 +248,7 @@ class MoreInfoClimate extends LitElement {
               </div>
             `
           : ""}
-        ${supportSwingMode
+        ${supportSwingMode && stateObj.attributes.swing_modes
           ? html`
               <div class="container-swing_list">
                 <ha-paper-dropdown-menu

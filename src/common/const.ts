@@ -76,7 +76,6 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiTextToSpeech,
   counter: mdiCounter,
-  device_tracker: mdiAccount,
   fan: mdiFan,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
@@ -104,7 +103,6 @@ export const FIXED_DOMAIN_ICONS = {
   siren: mdiBullhorn,
   simple_alarm: mdiBell,
   sun: mdiWhiteBalanceSunny,
-  switch: mdiFlash,
   timer: mdiTimerOutline,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
@@ -121,6 +119,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   current: mdiCurrentAc,
   date: mdiCalendar,
   energy: mdiLightningBolt,
+  frequency: mdiSineWave,
   gas: mdiGasCylinder,
   humidity: mdiWaterPercent,
   illuminance: mdiBrightness5,
@@ -145,6 +144,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [
+  "button",
   "climate",
   "cover",
   "configurator",
@@ -188,14 +188,45 @@ export const DOMAINS_WITH_MORE_INFO = [
   "weather",
 ];
 
-/** Domains that show no more info dialog. */
-export const DOMAINS_HIDE_MORE_INFO = [
+/** Domains that do not show the default more info dialog content (e.g. the attribute section)
+ *  and do not have a separate more info (so not in DOMAINS_WITH_MORE_INFO). */
+export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "input_number",
   "input_select",
   "input_text",
   "number",
   "scene",
   "select",
+];
+
+/** Domains that render an input element instead of a text value when displayed in a row.
+ *  Those rows should then not show a cursor pointer when hovered (which would normally
+ *  be the default) unless the element itself enforces it (e.g. a button). Also those elements
+ *  should not act as a click target to open the more info dialog (the row name and state icon
+ *  still do of course) as the click should instead e.g. activate the input field  or toggle
+ *  the button that this row shows.
+ */
+export const DOMAINS_INPUT_ROW = [
+  "automation",
+  "button",
+  "cover",
+  "fan",
+  "group",
+  "humidifier",
+  "input_boolean",
+  "input_datetime",
+  "input_number",
+  "input_select",
+  "input_text",
+  "light",
+  "lock",
+  "media_player",
+  "number",
+  "scene",
+  "script",
+  "select",
+  "switch",
+  "vacuum",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */

@@ -20,8 +20,8 @@ export const darkStyles = {
   "input-outlined-idle-border-color": "rgba(255, 255, 255, 0.38)",
   "input-outlined-hover-border-color": "rgba(255, 255, 255, 0.87)",
   "input-outlined-disabled-border-color": "rgba(255, 255, 255, 0.06)",
-  "input-fill-color": "rgb(10, 10, 10)",
-  "input-disabled-fill-color": "rgb(5, 5, 5)",
+  "input-fill-color": "rgba(255, 255, 255, 0.05)",
+  "input-disabled-fill-color": "rgba(255, 255, 255, 0.02)",
   "input-ink-color": "rgba(255, 255, 255, 0.87)",
   "input-label-ink-color": "rgba(255, 255, 255, 0.6)",
   "input-disabled-ink-color": "rgba(255, 255, 255, 0.37)",
@@ -95,6 +95,7 @@ export const derivedStyles = {
   "mdc-theme-text-disabled-on-light": "var(--disabled-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
   "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
+  "mdc-theme-text-hint-on-background": "var(--secondary-text-color)",
   "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
   "mdc-theme-error": "var(--error-color)",
   "app-header-text-color": "var(--text-primary-color)",
@@ -331,8 +332,8 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
+      --ha-dialog-border-radius: 0px;
     }
   }
   mwc-button.warning {

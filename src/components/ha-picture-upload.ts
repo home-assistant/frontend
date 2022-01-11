@@ -39,6 +39,7 @@ export class HaPictureUpload extends LitElement {
         .uploading=${this._uploading}
         .value=${this.value ? html`<img .src=${this.value} />` : ""}
         @file-picked=${this._handleFilePicked}
+        @change=${this._handleFileCleared}
         accept="image/png, image/jpeg, image/gif"
       ></ha-file-upload>
     `;
@@ -51,6 +52,10 @@ export class HaPictureUpload extends LitElement {
     } else {
       this._uploadFile(file);
     }
+  }
+
+  private async _handleFileCleared() {
+    this.value = null;
   }
 
   private async _cropFile(file: File) {

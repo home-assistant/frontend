@@ -26,6 +26,7 @@ const getMeta = () => {
       path: svg.match(/ d="([^"]+)"/)[1],
       name: icon.name,
       tags: icon.tags,
+      aliases: icon.aliases,
     };
   });
 };
@@ -37,6 +38,7 @@ const addRemovedMeta = (meta) => {
     path: removeIcon.path,
     name: removeIcon.name,
     tags: [],
+    aliases: [],
   }));
   const combinedMeta = [...meta, ...removedMeta];
   return combinedMeta.sort((a, b) => a.name.localeCompare(b.name));
@@ -99,6 +101,7 @@ const findDifferentiator = (curString, prevString) => {
 
 gulp.task("gen-icons-json", (done) => {
   const meta = getMeta();
+
   const metaAndRemoved = addRemovedMeta(meta);
   const split = splitBySize(metaAndRemoved);
 
@@ -138,11 +141,17 @@ gulp.task("gen-icons-json", (done) => {
     JSON.stringify({ version: package.version, parts })
   );
 
-  const orderedMeta = orderMeta(meta);
-
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconList.json"),
-    JSON.stringify(orderedMeta.map((icon) => icon.name))
+    JSON.stringify(
+      orderMeta(meta).map((icon) => ({
+        name: icon.name,
+        keywords: [
+          ...icon.tags.map((t) => t.toLowerCase().replace(/\s\/\s/g, " ")),
+          ...icon.aliases,
+        ],
+      }))
+    )
   );
 
   done();

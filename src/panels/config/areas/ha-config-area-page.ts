@@ -1,13 +1,17 @@
 import "@material/mwc-button";
-import { mdiCog } from "@mdi/js";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import { mdiImagePlus, mdiPencil } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-next";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
@@ -31,6 +35,11 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { SceneEntity } from "../../../data/scene";
+import { ScriptEntity } from "../../../data/script";
+import { AutomationEntity } from "../../../data/automation";
+import { groupBy } from "../../../common/util/group-by";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -127,32 +136,70 @@ class HaConfigAreaPage extends LitElement {
       this.entities
     );
 
+    const grouped = groupBy(entities, (entity) =>
+      computeDomain(entity.entity_id)
+    );
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
       >
-        ${this.narrow ? html` <span slot="header"> ${area.name} </span> ` : ""}
-
-        <ha-icon-button
-          slot="toolbar-icon"
-          .path=${mdiCog}
-          .entry=${area}
-          @click=${this._showSettings}
-          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
-        ></ha-icon-button>
+        ${this.narrow
+          ? html`<span slot="header"> ${area.name} </span>
+              <ha-icon-button
+                .path=${mdiPencil}
+                .entry=${area}
+                @click=${this._showSettings}
+                slot="toolbar-icon"
+                .label=${this.hass.localize(
+                  "ui.panel.config.areas.edit_settings"
+                )}
+              ></ha-icon-button>`
+          : ""}
 
         <div class="container">
           ${!this.narrow
             ? html`
                 <div class="fullwidth">
-                  <h1>${area.name}</h1>
+                  <h1>
+                    ${area.name}
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      .entry=${area}
+                      @click=${this._showSettings}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.areas.edit_settings"
+                      )}
+                    ></ha-icon-button>
+                  </h1>
                 </div>
               `
             : ""}
           <div class="column">
+            ${area.picture
+              ? html`<div class="img-container">
+                  <img src=${area.picture} /><ha-icon-button
+                    .path=${mdiPencil}
+                    .entry=${area}
+                    @click=${this._showSettings}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.areas.edit_settings"
+                    )}
+                    class="img-edit-btn"
+                  ></ha-icon-button>
+                </div>`
+              : html`<mwc-button
+                  .entry=${area}
+                  @click=${this._showSettings}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.areas.add_picture"
+                  )}
+                >
+                  <ha-svg-icon .path=${mdiImagePlus} slot="icon"></ha-svg-icon>
+                </mwc-button>`}
             <ha-card
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
@@ -181,20 +228,24 @@ class HaConfigAreaPage extends LitElement {
               .header=${this.hass.localize(
                 "ui.panel.config.areas.editor.linked_entities_caption"
               )}
-              >${entities.length
-                ? entities.map(
-                    (entity) =>
-                      html`
-                        <paper-item
-                          @click=${this._openEntity}
-                          .entity=${entity}
-                        >
-                          <paper-item-body>
-                            ${computeEntityRegistryName(this.hass, entity)}
-                          </paper-item-body>
-                          <ha-icon-next></ha-icon-next>
-                        </paper-item>
-                      `
+            >
+              ${entities.length
+                ? entities.map((entity) =>
+                    ["scene", "script", "automation"].includes(
+                      computeDomain(entity.entity_id)
+                    )
+                      ? ""
+                      : html`
+                          <paper-item
+                            @click=${this._openEntity}
+                            .entity=${entity}
+                          >
+                            <paper-item-body>
+                              ${computeEntityRegistryName(this.hass, entity)}
+                            </paper-item-body>
+                            <ha-icon-next></ha-icon-next>
+                          </paper-item>
+                        `
                   )
                 : html`
                     <paper-item class="no-link"
@@ -212,48 +263,44 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.automation.automations"
                     )}
-                    >${this._related?.automation?.length
-                      ? this._related.automation.map((automation) => {
-                          const entityState = this.hass.states[automation];
-                          return entityState
-                            ? html`
-                                <div>
-                                  <a
-                                    href=${ifDefined(
-                                      entityState.attributes.id
-                                        ? `/config/automation/edit/${entityState.attributes.id}`
-                                        : undefined
-                                    )}
-                                  >
-                                    <paper-item
-                                      .disabled=${!entityState.attributes.id}
-                                    >
-                                      <paper-item-body>
-                                        ${computeStateName(entityState)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
-                                  </a>
-                                  ${!entityState.attributes.id
-                                    ? html`
-                                        <paper-tooltip animation-delay="0">
-                                          ${this.hass.localize(
-                                            "ui.panel.config.devices.cant_edit"
-                                          )}
-                                        </paper-tooltip>
-                                      `
-                                    : ""}
-                                </div>
-                              `
-                            : "";
-                        })
-                      : html`
+                  >
+                    ${grouped.automation?.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${grouped.automation.map((entity) => {
+                            const entityState = this.hass.states[
+                              entity.entity_id
+                            ] as AutomationEntity | undefined;
+                            return entityState
+                              ? this._renderAutomation(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.automation?.filter(
+                      (entityId) =>
+                        !grouped.automation?.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.automation.map((scene) => {
+                            const entityState = this.hass.states[scene] as
+                              | AutomationEntity
+                              | undefined;
+                            return entityState
+                              ? this._renderAutomation(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!grouped.automation?.length &&
+                    !this._related?.automation?.length
+                      ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
                               "ui.panel.config.devices.automation.no_automations"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -265,48 +312,40 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.scene.scenes"
                     )}
-                    >${this._related?.scene?.length
-                      ? this._related.scene.map((scene) => {
-                          const entityState = this.hass.states[scene];
-                          return entityState
-                            ? html`
-                                <div>
-                                  <a
-                                    href=${ifDefined(
-                                      entityState.attributes.id
-                                        ? `/config/scene/edit/${entityState.attributes.id}`
-                                        : undefined
-                                    )}
-                                  >
-                                    <paper-item
-                                      .disabled=${!entityState.attributes.id}
-                                    >
-                                      <paper-item-body>
-                                        ${computeStateName(entityState)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
-                                  </a>
-                                  ${!entityState.attributes.id
-                                    ? html`
-                                        <paper-tooltip animation-delay="0">
-                                          ${this.hass.localize(
-                                            "ui.panel.config.devices.cant_edit"
-                                          )}
-                                        </paper-tooltip>
-                                      `
-                                    : ""}
-                                </div>
-                              `
-                            : "";
-                        })
-                      : html`
+                  >
+                    ${grouped.scene?.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${grouped.scene.map((entity) => {
+                            const entityState =
+                              this.hass.states[entity.entity_id];
+                            return entityState
+                              ? this._renderScene(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.scene?.filter(
+                      (entityId) =>
+                        !grouped.scene?.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.scene.map((scene) => {
+                            const entityState = this.hass.states[scene];
+                            return entityState
+                              ? this._renderScene(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!grouped.scene?.length && !this._related?.scene?.length
+                      ? html`
                           <paper-item class="no-link"
                             >${this.hass.localize(
                               "ui.panel.config.devices.scene.no_scenes"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -316,31 +355,43 @@ class HaConfigAreaPage extends LitElement {
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.script.scripts"
                     )}
-                    >${this._related?.script?.length
-                      ? this._related.script.map((script) => {
-                          const entityState = this.hass.states[script];
-                          return entityState
-                            ? html`
-                                <a
-                                  href=${`/config/script/edit/${entityState.entity_id}`}
-                                >
-                                  <paper-item>
-                                    <paper-item-body>
-                                      ${computeStateName(entityState)}
-                                    </paper-item-body>
-                                    <ha-icon-next></ha-icon-next>
-                                  </paper-item>
-                                </a>
-                              `
-                            : "";
-                        })
-                      : html`
-                          <paper-item class="no-link">
-                            ${this.hass.localize(
+                  >
+                    ${grouped.script?.length
+                      ? html`<h3>Assigned to this area:</h3>
+                          ${grouped.script.map((entity) => {
+                            const entityState = this.hass.states[
+                              entity.entity_id
+                            ] as ScriptEntity | undefined;
+                            return entityState
+                              ? this._renderScript(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${this._related?.script?.filter(
+                      (entityId) =>
+                        !grouped.script?.find(
+                          (entity) => entity.entity_id === entityId
+                        )
+                    ).length
+                      ? html`<h3>Targeting this area:</h3>
+                          ${this._related.script.map((scene) => {
+                            const entityState = this.hass.states[scene] as
+                              | ScriptEntity
+                              | undefined;
+                            return entityState
+                              ? this._renderScript(entityState)
+                              : "";
+                          })}`
+                      : ""}
+                    ${!grouped.script?.length && !this._related?.script?.length
+                      ? html`
+                          <paper-item class="no-link"
+                            >${this.hass.localize(
                               "ui.panel.config.devices.script.no_scripts"
                             )}</paper-item
                           >
-                        `}
+                        `
+                      : ""}
                   </ha-card>
                 `
               : ""}
@@ -348,6 +399,63 @@ class HaConfigAreaPage extends LitElement {
         </div>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _renderScene(entityState: SceneEntity) {
+    return html`<div>
+      <a
+        href=${ifDefined(
+          entityState.attributes.id
+            ? `/config/scene/edit/${entityState.attributes.id}`
+            : undefined
+        )}
+      >
+        <paper-item .disabled=${!entityState.attributes.id}>
+          <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+          <ha-icon-next></ha-icon-next>
+        </paper-item>
+      </a>
+      ${!entityState.attributes.id
+        ? html`
+            <paper-tooltip animation-delay="0">
+              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+            </paper-tooltip>
+          `
+        : ""}
+    </div>`;
+  }
+
+  private _renderAutomation(entityState: AutomationEntity) {
+    return html`<div>
+      <a
+        href=${ifDefined(
+          entityState.attributes.id
+            ? `/config/automation/edit/${entityState.attributes.id}`
+            : undefined
+        )}
+      >
+        <paper-item .disabled=${!entityState.attributes.id}>
+          <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+          <ha-icon-next></ha-icon-next>
+        </paper-item>
+      </a>
+      ${!entityState.attributes.id
+        ? html`
+            <paper-tooltip animation-delay="0">
+              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+            </paper-tooltip>
+          `
+        : ""}
+    </div>`;
+  }
+
+  private _renderScript(entityState: ScriptEntity) {
+    return html`<a href=${`/config/script/edit/${entityState.entity_id}`}>
+      <paper-item>
+        <paper-item-body> ${computeStateName(entityState)} </paper-item-body>
+        <ha-icon-next></ha-icon-next>
+      </paper-item>
+    </a>`;
   }
 
   private async _findRelated() {
@@ -390,6 +498,7 @@ class HaConfigAreaPage extends LitElement {
 
         try {
           await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
+          afterNextRender(() => history.back());
           return true;
         } catch (err: any) {
           return false;
@@ -403,7 +512,7 @@ class HaConfigAreaPage extends LitElement {
       haStyle,
       css`
         h1 {
-          margin-top: 0;
+          margin: 0;
           font-family: var(--paper-font-headline_-_font-family);
           -webkit-font-smoothing: var(
             --paper-font-headline_-_-webkit-font-smoothing
@@ -413,6 +522,20 @@ class HaConfigAreaPage extends LitElement {
           letter-spacing: var(--paper-font-headline_-_letter-spacing);
           line-height: var(--paper-font-headline_-_line-height);
           opacity: var(--dark-primary-opacity);
+          display: flex;
+          align-items: center;
+        }
+
+        h3 {
+          margin: 0;
+          padding: 0 16px;
+          font-weight: 500;
+          color: var(--secondary-text-color);
+        }
+
+        img {
+          border-radius: var(--ha-card-border-radius, 4px);
+          width: 100%;
         }
 
         .container {
@@ -457,6 +580,34 @@ class HaConfigAreaPage extends LitElement {
 
         paper-item.no-link {
           cursor: default;
+        }
+
+        ha-card > a:first-child {
+          display: block;
+        }
+        ha-card > *:first-child {
+          margin-top: -16px;
+        }
+        .img-container {
+          position: relative;
+        }
+        .img-edit-btn {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          display: none;
+        }
+        .img-container:hover .img-edit-btn {
+          display: block;
+        }
+        .img-edit-btn::before {
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: var(--card-background-color);
+          opacity: 0.5;
+          border-radius: 50%;
         }
       `,
     ];

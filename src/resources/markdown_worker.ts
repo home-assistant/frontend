@@ -11,6 +11,28 @@ interface WhiteList {
 let whiteListNormal: WhiteList | undefined;
 let whiteListSvg: WhiteList | undefined;
 
+// Override the default `onTagAttr` behavior to only render
+// our markdown checkboxes.
+// Returning undefined causes the default measure to be taken
+// in the xss library.
+const onTagAttr = (
+  tag: string,
+  name: string,
+  value: string
+): string | undefined => {
+  if (tag === "input") {
+    if (
+      (name === "type" && value === "checkbox") ||
+      name === "checked" ||
+      name === "disabled"
+    ) {
+      return undefined;
+    }
+    return "";
+  }
+  return undefined;
+};
+
 const renderMarkdown = (
   content: string,
   markedOptions: marked.MarkedOptions,
@@ -22,6 +44,7 @@ const renderMarkdown = (
   if (!whiteListNormal) {
     whiteListNormal = {
       ...(getDefaultWhiteList() as WhiteList),
+      input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
     };
@@ -45,6 +68,7 @@ const renderMarkdown = (
 
   return filterXSS(marked(content, markedOptions), {
     whiteList,
+    onTagAttr,
   });
 };
 

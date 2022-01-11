@@ -9,6 +9,10 @@ import QuickBarMixin from "../state/quick-bar-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
+  renderLaunchScreenInfoBox,
+  removeLaunchScreen,
+} from "../util/launch-screen";
+import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
@@ -30,8 +34,6 @@ const panelUrl = (path: string) => {
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _route: Route;
 
-  @state() private _error = false;
-
   private _panelUrl: string;
 
   private _haVersion?: string;
@@ -45,7 +47,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     const path = curPath();
 
     if (["", "/"].includes(path)) {
-      navigate(`/${getStorageDefaultPanelUrlPath()}`, { replace: true });
+      navigate(`/${getStorageDefaultPanelUrlPath()}${location.search}`, {
+        replace: true,
+      });
     }
     this._route = {
       prefix: "",
@@ -54,17 +58,22 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     this._panelUrl = panelUrl(path);
   }
 
-  protected render() {
-    const hass = this.hass;
+  protected renderHass() {
+    return html`
+      <home-assistant-main
+        .hass=${this.hass}
+        .route=${this._route}
+      ></home-assistant-main>
+    `;
+  }
 
-    return hass && hass.states && hass.config && hass.services
-      ? html`
-          <home-assistant-main
-            .hass=${this.hass}
-            .route=${this._route}
-          ></home-assistant-main>
-        `
-      : html`<ha-init-page .error=${this._error}></ha-init-page>`;
+  update(changedProps) {
+    if (this.hass?.states && this.hass.config && this.hass.services) {
+      this.render = this.renderHass;
+      this.update = super.update;
+      removeLaunchScreen();
+    }
+    super.update(changedProps);
   }
 
   protected firstUpdated(changedProps) {
@@ -109,6 +118,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         navigate(href);
       }
     });
+
+    // Render launch screen info box (loading data / error message)
+    // if Home Assistant is not loaded yet.
+    if (this.render !== this.renderHass) {
+      this._renderInitInfo(false);
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -163,7 +178,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       if (window.hassConnection) {
         result = await window.hassConnection;
       } else {
-        // In the edge case that
+        // In the edge case that core.ts loads before app.ts
         result = await new Promise((resolve) => {
           window.hassConnectionReady = resolve;
         });
@@ -173,7 +188,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err: any) {
-      this._error = true;
+      this._renderInitInfo(true);
     }
   }
 
@@ -228,6 +243,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._visiblePromiseResolve();
       this._visiblePromiseResolve = undefined;
     }
+  }
+
+  private _renderInitInfo(error: boolean) {
+    renderLaunchScreenInfoBox(
+      html`<ha-init-page .error=${error}></ha-init-page>`
+    );
   }
 }
 

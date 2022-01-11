@@ -131,7 +131,7 @@ export class HuiDialogSelectView extends LitElement {
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button slot="primaryAction" @click=${this._selectView}>
-          ${this.hass!.localize("ui.common.move")}
+          ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
         </mwc-button>
       </ha-dialog>
     `;

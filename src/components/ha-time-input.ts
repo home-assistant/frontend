@@ -27,7 +27,7 @@ export class HaTimeInput extends LitElement {
     const parts = this.value?.split(":") || [];
     let hours = parts[0];
     const numberHours = Number(parts[0]);
-    if (numberHours && useAMPM && numberHours > 12) {
+    if (numberHours && useAMPM && numberHours > 12 && numberHours < 24) {
       hours = String(numberHours - 12).padStart(2, "0");
     }
     if (useAMPM && numberHours === 0) {

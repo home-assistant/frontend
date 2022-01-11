@@ -8,14 +8,14 @@ import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-radio";
 
 @customElement("ha-automation-trigger-homeassistant")
-export default class HaHassTrigger extends LitElement {
+export class HaHassTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: HassTrigger;
 
   public static get defaultConfig() {
     return {
-      event: "start",
+      event: "start" as HassTrigger["event"],
     };
   }
 

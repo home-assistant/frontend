@@ -35,8 +35,9 @@ export class HuiDialogSuggestCard extends LitElement {
           entityId,
           this.hass.states[entityId],
         ]),
-        {},
-        true
+        {
+          title: params.cardTitle,
+        }
       );
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);

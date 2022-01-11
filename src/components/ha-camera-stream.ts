@@ -86,7 +86,7 @@ class HaCameraStream extends LitElement {
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
       return this._url
-        ? html` <ha-hls-player
+        ? html`<ha-hls-player
             autoplay
             playsinline
             .allowExoPlayer=${this.allowExoPlayer}
@@ -98,7 +98,7 @@ class HaCameraStream extends LitElement {
         : html``;
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC) {
-      return html` <ha-web-rtc-player
+      return html`<ha-web-rtc-player
         autoplay
         playsinline
         .muted=${this.muted}
@@ -115,23 +115,18 @@ class HaCameraStream extends LitElement {
       // Fallback when unable to fetch stream url
       return true;
     }
-    if (
-      !isComponentLoaded(this.hass!, "stream") ||
-      !supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
-    ) {
+    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
       // Steaming is not supported by the camera so fallback to MJPEG stream
       return true;
     }
     if (
-      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC &&
-      typeof RTCPeerConnection === "undefined"
+      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC
     ) {
-      // Stream requires WebRTC but browser does not support, so fallback to
-      // MJPEG stream.
-      return true;
+      // Browser support required for WebRTC
+      return typeof RTCPeerConnection === "undefined";
     }
-    // Render stream
-    return false;
+    // Server side stream component required for HLS
+    return !isComponentLoaded(this.hass!, "stream");
   }
 
   private async _getStreamUrl(): Promise<void> {

@@ -156,6 +156,7 @@ export interface MediaPlayerThumbnail {
 
 export interface ControlButton {
   icon: string;
+  // Used as key for action as well as tooltip and aria-label translation key
   action: string;
 }
 

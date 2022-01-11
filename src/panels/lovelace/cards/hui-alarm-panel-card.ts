@@ -8,17 +8,18 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
-import "../../../components/ha-label-badge";
+import "../../../components/ha-chip";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -144,19 +145,24 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const stateLabel = this._stateDisplay(stateObj.state);
+
     return html`
-      <ha-card
-        .header=${this._config.name ||
-        stateObj.attributes.friendly_name ||
-        this._stateDisplay(stateObj.state)}
-      >
-        <ha-label-badge
-          class=${classMap({ [stateObj.state]: true })}
-          .label=${this._stateIconLabel(stateObj.state)}
-          @click=${this._handleMoreInfo}
-        >
-          <ha-svg-icon .path=${alarmPanelIcon(stateObj.state)}></ha-svg-icon>
-        </ha-label-badge>
+      <ha-card>
+        <h1 class="card-header">
+          ${this._config.name ||
+          stateObj.attributes.friendly_name ||
+          stateLabel}
+          <ha-chip
+            hasIcon
+            class=${classMap({ [stateObj.state]: true })}
+            @click=${this._handleMoreInfo}
+          >
+            <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
+            </ha-svg-icon>
+            ${stateLabel}
+          </ha-chip>
+        </h1>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
             ? this._config.states!
@@ -215,23 +221,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _stateIconLabel(entityState: string): string {
-    const stateLabel = entityState.split("_").pop();
-    return stateLabel === "disarmed" ||
-      stateLabel === "triggered" ||
-      !stateLabel
-      ? ""
-      : this._stateDisplay(entityState);
-  }
-
   private _actionDisplay(entityState: string): string {
     return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
   }
 
   private _stateDisplay(entityState: string): string {
-    return this.hass!.localize(
-      `component.alarm_control_panel.state._.${entityState}`
-    );
+    return entityState === UNAVAILABLE
+      ? this.hass!.localize("state.default.unavailable")
+      : this.hass!.localize(
+          `component.alarm_control_panel.state._.${entityState}`
+        ) || entityState;
   }
 
   private _handlePadClick(e: MouseEvent): void {
@@ -273,15 +272,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-state-color: var(--alarm-color-armed);
       }
 
-      ha-label-badge {
-        --ha-label-badge-color: var(--alarm-state-color);
-        --label-badge-text-color: var(--alarm-state-color);
-        --label-badge-background-color: var(--card-background-color);
-        color: var(--alarm-state-color);
-        position: absolute;
-        right: 12px;
-        top: 8px;
-        cursor: pointer;
+      ha-chip {
+        --ha-chip-background-color: var(--alarm-state-color);
+        --primary-text-color: var(--text-primary-color);
+        line-height: initial;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .unavailable {
+        --alarm-state-color: var(--state-unavailable-color);
       }
 
       .disarmed {

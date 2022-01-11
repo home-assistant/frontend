@@ -90,6 +90,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
               .value=${this.condition.condition}
+              naturalMenuWidth
               @selected=${this._typeChanged}
             >
               ${this._processedTypes(this.hass.localize).map(
@@ -137,7 +138,8 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    // @ts-ignore
+    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
   }
 
   static get styles(): CSSResultGroup {

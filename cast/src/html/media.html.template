@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <style>
+      body {
+        --logo-image: url('https://www.home-assistant.io/images/home-assistant-logo.svg');
+        --logo-repeat: no-repeat;
+        --playback-logo-image: url('https://www.home-assistant.io/images/home-assistant-logo.svg');
+        --theme-hue: 200;
+        --progress-color: #03a9f4;
+        --splash-image: url('https://home-assistant.io/images/cast/splash.png');
+        --splash-size: cover;
+        --background-color: #41bdf5;
+      }
+    </style>
+    <script>
+      var _gaq=[['_setAccount','UA-57927901-10'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+  </head>
+  <body>
+    <%= renderTemplate('_js_base') %>
+
+    <cast-media-player></cast-media-player>
+
+    <script>
+      import("<%= latestMediaJS %>");
+      window.latestJS = true;
+    </script>
+
+    <script>
+      if (!window.latestJS) {
+        <% if (useRollup) { %>
+          _ls("/static/js/s.min.js").onload = function() {
+            System.import("<%= es5MediaJS %>");
+          };
+        <% } else { %>
+          _ls("<%= es5MediaJS %>");
+        <% } %>
+      }
+    </script>
+  </body>
+</html>

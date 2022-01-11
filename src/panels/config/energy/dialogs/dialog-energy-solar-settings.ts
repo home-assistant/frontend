@@ -85,7 +85,6 @@ export class DialogEnergySolarSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
-          entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
@@ -137,7 +136,7 @@ export class DialogEnergySolarSettings
                       src=${brandsUrl({
                         domain: entry.domain,
                         type: "icon",
-                        darkOptimized: this.hass.selectedTheme?.dark,
+                        darkOptimized: this.hass.themes?.darkMode,
                       })}
                     />${entry.title}
                   </div>`}

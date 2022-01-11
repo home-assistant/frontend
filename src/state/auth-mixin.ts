@@ -1,4 +1,3 @@
-import { askWrite } from "../common/auth/token_storage";
 import { subscribeUser, userCollection } from "../data/ws-user";
 import { Constructor } from "../types";
 import { clearState } from "../util/ha-pref-storage";
@@ -26,16 +25,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       subscribeUser(this.hass!.connection, (user) =>
         this._updateHass({ user })
       );
-
-      if (askWrite()) {
-        this.updateComplete
-          .then(() => import("../dialogs/ha-store-auth-card"))
-          .then(() => {
-            const el = document.createElement("ha-store-auth-card");
-            this.provideHass(el);
-            document.body.appendChild(el);
-          });
-      }
     }
 
     private async _handleLogout() {

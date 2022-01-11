@@ -8,6 +8,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import {
+  computeDeviceName,
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
@@ -50,7 +51,7 @@ class StepFlowCreateEntry extends LitElement {
                     html`
                       <div class="device">
                         <div>
-                          <b>${device.name}</b><br />
+                          <b>${computeDeviceName(device, this.hass)}</b><br />
                           ${device.model} (${device.manufacturer})
                         </div>
                         <ha-area-picker

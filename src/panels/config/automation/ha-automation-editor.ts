@@ -114,7 +114,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -464,7 +464,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ) {
         return;
       }
-      // Wait for dialog to complate closing
+      // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     showAutomationEditor({

@@ -252,6 +252,15 @@
                 "customize": {
                     "caption": "మార్పులు చేర్పులు"
                 },
+                "energy": {
+                    "validation": {
+                        "issues": {
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "దిగువ పేర్కొన్న సంస్థలకు ఆశించిన స్టేట్ క్లాస్ 'total_increasing' లేదు"
+                            }
+                        }
+                    }
+                },
                 "header": "కాన్ఫిగర్ Home Assistant",
                 "mqtt": {
                     "title": "MQTT"
@@ -291,6 +300,13 @@
                     },
                     "templates": {
                         "title": "టెంప్లేట్లు"
+                    }
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_badges": {
+                        "view_no_badges": "ప్రస్తుత వీక్షణ రకం ద్వారా బ్యాడ్జ్‌లకు మద్దతు లేదు."
                     }
                 }
             },

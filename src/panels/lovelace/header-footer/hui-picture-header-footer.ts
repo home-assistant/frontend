@@ -34,6 +34,8 @@ export class HuiPictureHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property() public type!: "header" | "footer";
+
   @property() protected _config?: PictureHeaderFooterConfig;
 
   public getCardSize(): number {

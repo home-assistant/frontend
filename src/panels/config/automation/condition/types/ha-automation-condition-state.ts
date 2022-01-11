@@ -1,16 +1,27 @@
 import "@polymer/paper-input/paper-input";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { assert, literal, object, optional, string, union } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-duration-input";
 import { StateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { forDictStruct } from "../../structs";
 import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
-import "../../../../../components/ha-duration-input";
+
+const stateConditionStruct = object({
+  condition: literal("state"),
+  entity_id: optional(string()),
+  attribute: optional(string()),
+  state: optional(string()),
+  for: optional(union([string(), forDictStruct])),
+});
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -20,6 +31,18 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
+  }
+
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("condition")) {
+      try {
+        assert(this.condition, stateConditionStruct);
+      } catch (e: any) {
+        fireEvent(this, "ui-mode-not-available", e);
+        return false;
+      }
+    }
+    return true;
   }
 
   protected render() {

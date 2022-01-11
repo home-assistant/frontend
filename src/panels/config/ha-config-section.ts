@@ -8,11 +8,15 @@ export class HaConfigSection extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
+  @property({ type: Boolean, attribute: "full-width" })
+  public fullWidth = false;
+
   protected render() {
     return html`
       <div
         class="content ${classMap({
           narrow: !this.isWide,
+          "full-width": this.fullWidth,
         })}"
       >
         <div class="header"><slot name="header"></slot></div>
@@ -110,6 +114,14 @@ export class HaConfigSection extends LitElement {
         padding-bottom: 20px;
         margin-right: 0;
         max-width: 500px;
+      }
+
+      .full-width {
+        padding: 0;
+      }
+
+      .full-width .layout {
+        flex-direction: column;
       }
     `;
   }

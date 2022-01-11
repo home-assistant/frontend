@@ -9,7 +9,7 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -31,6 +31,15 @@ class HuiGenericEntityRow extends LitElement {
 
   @property() public secondaryText?: string;
 
+  @property({ type: Boolean }) public hideName = false;
+
+  // Allows to control if this row should capture the user interaction, e.g. with its
+  // toggle switch, button or input field. Some domains dynamically decide what to show
+  // => static determination will not work => the caller has to pass the desired value in.
+  // Same applies for custom components that want to override the default behavior.
+  // Default behavior is controlled by DOMAINS_INPUT_ROW.
+  @property({ type: Boolean }) public catchInteraction?;
+
   protected render(): TemplateResult {
     if (!this.hass || !this.config) {
       return html``;
@@ -47,10 +56,13 @@ class HuiGenericEntityRow extends LitElement {
       `;
     }
 
-    const pointer =
-      (this.config.tap_action && this.config.tap_action.action !== "none") ||
-      (this.config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this.config.entity)));
+    const domain = computeDomain(this.config.entity);
+    // By default, we always show a pointer, since if there is no explicit configuration provided,
+    // the frontend always assumes "more-info" in the action handler. We only need to hide the pointer
+    // if the tap action is explicitly set to "none".
+    const pointer = !(
+      this.config.tap_action && this.config.tap_action.action === "none"
+    );
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
     const name = this.config.name ?? computeStateName(stateObj);
@@ -72,75 +84,90 @@ class HuiGenericEntityRow extends LitElement {
         })}
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
-      <div
-        class="info ${classMap({
-          pointer,
-          "text-content": !hasSecondary,
-        })}"
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this.config!.hold_action),
-          hasDoubleClick: hasAction(this.config!.double_tap_action),
-        })}
-        .title=${name}
-      >
-        ${name}
-        ${hasSecondary
-          ? html`
-              <div class="secondary">
-                ${this.secondaryText ||
-                (this.config.secondary_info === "entity-id"
-                  ? stateObj.entity_id
-                  : this.config.secondary_info === "last-changed"
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_changed}
-                        capitalize
-                      ></ha-relative-time>
-                    `
-                  : this.config.secondary_info === "last-updated"
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_updated}
-                        capitalize
-                      ></ha-relative-time>
-                    `
-                  : this.config.secondary_info === "last-triggered"
-                  ? stateObj.attributes.last_triggered
-                    ? html`
-                        <ha-relative-time
-                          .hass=${this.hass}
-                          .datetime=${stateObj.attributes.last_triggered}
-                          capitalize
-                        ></ha-relative-time>
-                      `
-                    : this.hass.localize(
-                        "ui.panel.lovelace.cards.entities.never_triggered"
-                      )
-                  : this.config.secondary_info === "position" &&
-                    stateObj.attributes.current_position !== undefined
-                  ? `${this.hass.localize("ui.card.cover.position")}: ${
-                      stateObj.attributes.current_position
-                    }`
-                  : this.config.secondary_info === "tilt-position" &&
-                    stateObj.attributes.current_tilt_position !== undefined
-                  ? `${this.hass.localize("ui.card.cover.tilt_position")}: ${
-                      stateObj.attributes.current_tilt_position
-                    }`
-                  : this.config.secondary_info === "brightness" &&
-                    stateObj.attributes.brightness
-                  ? html`${Math.round(
-                      (stateObj.attributes.brightness / 255) * 100
-                    )}
-                    %`
-                  : "")}
-              </div>
-            `
-          : ""}
-      </div>
-      <slot></slot>
+      ${!this.hideName
+        ? html` <div
+            class="info ${classMap({
+              pointer,
+              "text-content": !hasSecondary,
+            })}"
+            @action=${this._handleAction}
+            .actionHandler=${actionHandler({
+              hasHold: hasAction(this.config!.hold_action),
+              hasDoubleClick: hasAction(this.config!.double_tap_action),
+            })}
+            .title=${name}
+          >
+            ${this.config.name || computeStateName(stateObj)}
+            ${hasSecondary
+              ? html`
+                  <div class="secondary">
+                    ${this.secondaryText ||
+                    (this.config.secondary_info === "entity-id"
+                      ? stateObj.entity_id
+                      : this.config.secondary_info === "last-changed"
+                      ? html`
+                          <ha-relative-time
+                            .hass=${this.hass}
+                            .datetime=${stateObj.last_changed}
+                            capitalize
+                          ></ha-relative-time>
+                        `
+                      : this.config.secondary_info === "last-updated"
+                      ? html`
+                          <ha-relative-time
+                            .hass=${this.hass}
+                            .datetime=${stateObj.last_updated}
+                            capitalize
+                          ></ha-relative-time>
+                        `
+                      : this.config.secondary_info === "last-triggered"
+                      ? stateObj.attributes.last_triggered
+                        ? html`
+                            <ha-relative-time
+                              .hass=${this.hass}
+                              .datetime=${stateObj.attributes.last_triggered}
+                              capitalize
+                            ></ha-relative-time>
+                          `
+                        : this.hass.localize(
+                            "ui.panel.lovelace.cards.entities.never_triggered"
+                          )
+                      : this.config.secondary_info === "position" &&
+                        stateObj.attributes.current_position !== undefined
+                      ? `${this.hass.localize("ui.card.cover.position")}: ${
+                          stateObj.attributes.current_position
+                        }`
+                      : this.config.secondary_info === "tilt-position" &&
+                        stateObj.attributes.current_tilt_position !== undefined
+                      ? `${this.hass.localize(
+                          "ui.card.cover.tilt_position"
+                        )}: ${stateObj.attributes.current_tilt_position}`
+                      : this.config.secondary_info === "brightness" &&
+                        stateObj.attributes.brightness
+                      ? html`${Math.round(
+                          (stateObj.attributes.brightness / 255) * 100
+                        )}
+                        %`
+                      : "")}
+                  </div>
+                `
+              : ""}
+          </div>`
+        : html``}
+      ${this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain)
+        ? html` <div
+            class="text-content ${classMap({
+              pointer,
+            })}"
+            @action=${this._handleAction}
+            .actionHandler=${actionHandler({
+              hasHold: hasAction(this.config!.hold_action),
+              hasDoubleClick: hasAction(this.config!.double_tap_action),
+            })}
+          >
+            <slot></slot>
+          </div>`
+        : html`<slot></slot>`}
     `;
   }
 

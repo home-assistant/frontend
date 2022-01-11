@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "../../../../src/panels/lovelace/views/hui-view";
@@ -14,7 +15,7 @@ class HcLovelace extends LitElement {
 
   @property() public viewPath?: string | number;
 
-  public urlPath?: string | null;
+  @property() public urlPath: string | null = null;
 
   protected render(): TemplateResult {
     const index = this._viewIndex;
@@ -30,7 +31,7 @@ class HcLovelace extends LitElement {
       config: this.lovelaceConfig,
       rawConfig: this.lovelaceConfig,
       editMode: false,
-      urlPath: this.urlPath!,
+      urlPath: this.urlPath,
       enableFullEditMode: () => undefined,
       mode: "storage",
       locale: this.hass.locale,
@@ -54,6 +55,21 @@ class HcLovelace extends LitElement {
       const index = this._viewIndex;
 
       if (index !== undefined) {
+        const dashboardTitle = this.lovelaceConfig.title || this.urlPath;
+
+        const viewTitle =
+          this.lovelaceConfig.views[index].title ||
+          this.lovelaceConfig.views[index].path;
+
+        fireEvent(this, "cast-view-changed", {
+          title:
+            dashboardTitle || viewTitle
+              ? `${dashboardTitle || ""}${
+                  dashboardTitle && viewTitle ? ": " : ""
+                }${viewTitle || ""}`
+              : undefined,
+        });
+
         const configBackground =
           this.lovelaceConfig.views[index].background ||
           this.lovelaceConfig.background;
@@ -101,8 +117,15 @@ class HcLovelace extends LitElement {
   }
 }
 
+export interface CastViewChanged {
+  title: string | undefined;
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     "hc-lovelace": HcLovelace;
+  }
+  interface HASSDomEvents {
+    "cast-view-changed": CastViewChanged;
   }
 }

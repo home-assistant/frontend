@@ -118,7 +118,7 @@
                     "header": "Netværk",
                     "host": "Vært"
                 },
-                "no_configuration": "Dette tilføjelsesprogram har ingen konfiguration, som du kan tilpasse...",
+                "no_configuration": "Dette tilføjelsesprogram har ingen konfiguration, som du kan tilpasse…",
                 "options": {
                     "edit_in_ui": "Rediger i brugergrænsefladen",
                     "edit_in_yaml": "Rediger i YAML",
@@ -161,7 +161,7 @@
                         "title": "Adgang til Supervisor API"
                     },
                     "homeassistant_api": {
-                        "description": "Dette tilføjelsesprogram har tilladelse til at tilgå dit Home Assistant system via API kald. Denne tilstand håndterer også godkendelse for tilføjelsesprogrammet, hvilket gør det muligt for  tilføjelsesprogrammet at interagere med Home Assistant uden yderligere godkendelse.",
+                        "description": "Dette tilføjelsesprogram har tilladelse til at tilgå dit Home Assistant-system via API-kald. Denne tilstand håndterer også godkendelse for tilføjelsesprogrammet, hvilket gør det muligt for tilføjelsesprogrammet at interagere med Home Assistant uden yderligere godkendelsestokens.",
                         "title": "Adgang til Home Assistant API"
                     },
                     "host_network": {
@@ -179,6 +179,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "godkendelse",
+                        "core": "Core",
                         "docker": "docker",
                         "hardware": "hardware",
                         "hass": "hass",
@@ -203,6 +204,10 @@
                     "stage": {
                         "description": "Tilføjelsesprogrammer kan have en af tre faser:\n\n{icon_stable} **Stabil**: Disse tilføjelsesprogrammer er klar til brug i produktionen.\n\n{icon_experimental} **Eksperimentel**: Disse tilføjelsesprogrammer indeholde fejl og kan være ufærdige.\n\n{icon_deprecated} **Forældet**: Disse tilføjelsesprogrammer modtager ikke længere opdateringer.",
                         "title": "Fase for tilføjelsesprogram"
+                    },
+                    "stages": {
+                        "deprecated": "Udfaset",
+                        "experimental": "Eksperimentel"
                     }
                 },
                 "changelog": "Ændringshistorik",
@@ -273,20 +278,26 @@
             "confirm_password": "Bekræft backup kodeord",
             "could_not_create": "Kunne ikke oprette backup",
             "create": "Opret",
+            "create_backup": "Opret sikkerhedskopi",
             "create_blocked_not_running": "Det er ikke muligt at oprette et backup lige nu, fordi systemet er i tilstanden {state}.",
             "created": "Oprettet",
             "delete_backup_confirm": "Slet",
+            "delete_backup_title": "Slet sikkerhedskopi",
             "delete_selected": "Slet valgte backups",
             "enter_password": "Venligst indtast et kodeord.",
             "failed_to_delete": "Kunne ikke slette",
             "folders": "Mapper",
+            "full_backup": "Fuld sikkerhedskopiering",
             "name": "Navn",
+            "no_backups": "Du har ingen sikkerhedskopier endnu.",
+            "partial_backup": "Delvis sikkerhedskopiering",
             "password": "Kodeord",
             "password_protection": "Kodeordsbeskyttelse",
             "passwords_not_matching": "Kodeordene er forskellige",
             "select_type": "Vælg, hvad der skal gendannes",
             "selected": "{number} valgt",
-            "type": "Type"
+            "type": "Type",
+            "upload_backup": "Overfør sikkerhedskopi"
         },
         "common": {
             "cancel": "Annuller",
@@ -299,11 +310,12 @@
             "failed_to_restart_name": "Kunne ikke genstarte {name}",
             "failed_to_update_name": "Kunne ikke opdatere {name}",
             "learn_more": "Lær mere",
+            "menu": "Menu",
             "new_version_available": "Ny version tilgængelig",
             "newest_version": "Nyeste version",
             "no": "Nej",
             "refresh": "Opdater",
-            "release_notes": "Udgivelses noter",
+            "release_notes": "Udgivelsesnoter",
             "reload": "Genindlæs",
             "reset_defaults": "Gendan standardindstillinger",
             "reset_options": "Nulstil indstillinger",
@@ -339,6 +351,9 @@
             "no_addons": "Du har endnu ikke installeret nogen tilføjelsesprogrammer. Gå over til butikken for tilføjelsesprogrammer for at komme i gang!"
         },
         "dialog": {
+            "datadisk_move": {
+                "title": "Flyt datadisk"
+            },
             "hardware": {
                 "attributes": "Attributter",
                 "device_path": "Enhedssti",
@@ -387,6 +402,9 @@
                 "text": "Vil du genstarte tilføjelsesprogrammet med ændringerne?"
             },
             "update": {
+                "backup": "Sikkerhedskopi",
+                "create_backup": "Opret en sikkerhedskopi af {name}, før du opdaterer",
+                "creating_backup": "Opretter sikkerhedskopi af {name}",
                 "updating": "Opdaterer {name} til version {version}"
             }
         },
@@ -400,6 +418,7 @@
             "not_supported": "Denne omdirigering understøttes ikke af din Home Assistant installation. Kontroller {link} for de understøttede omdirigeringer og den version, de blev introduceret i."
         },
         "panel": {
+            "backups": "Sikkerhedskopier",
             "dashboard": "Betjeningspanel",
             "store": "Butik for tilføjelsesprogrammer",
             "system": "System"
@@ -412,8 +431,8 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Core CPU forbrug",
-                "ram_usage": "Core RAM forbrug"
+                "cpu_usage": "Core CPU-forbrug",
+                "ram_usage": "Core RAM-forbrug"
             },
             "host": {
                 "change": "Ændre",
@@ -422,7 +441,7 @@
                 "confirm_shutdown": "Er du sikker på, at du vil lukke værten ned?",
                 "deployment": "Installation",
                 "docker_version": "Docker-version",
-                "emmc_lifetime_used": "Anvendt eMMC levetid",
+                "emmc_lifetime_used": "Anvendt eMMC-levetid",
                 "failed_to_get_hardware_list": "Hardwarelisten kunne ikke hentes",
                 "failed_to_import_from_usb": "Import fra USB mislykkedes",
                 "failed_to_reboot": "Genstart af vært mislykkedes",
@@ -432,11 +451,12 @@
                 "hostname": "Værtsnavn",
                 "import_from_usb": "Importer fra USB",
                 "ip_address": "IP-adresse",
+                "move_datadisk": "Flyt datadisk",
                 "new_hostname": "Indtast et nyt værtsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Genstart værten",
                 "shutdown_host": "Sluk vært",
-                "used_space": "Plads forbrug"
+                "used_space": "Anvendt plads"
             },
             "log": {
                 "get_logs": "Kunne ikke hente {provider} -logfiler, {error}",
@@ -448,7 +468,7 @@
                 "beta_release_items": "Dette omfatter betaversioner af:",
                 "beta_warning": "Betaversioner er henvendt til testere og tidlige brugere og kan indeholde ustabil kode",
                 "channel": "Kanal",
-                "cpu_usage": "Supervisor CPU forbrug",
+                "cpu_usage": "Supervisor CPU-forbrug",
                 "failed_to_reload": "Genindlæsning af Supervisor mislykkedes",
                 "failed_to_set_option": "Indstilling af Supervisor optioner myslykkedes",
                 "failed_to_update": "Opdatering af Supervisor mislykkedes",
@@ -456,7 +476,7 @@
                 "join_beta_description": "Få beta-opdateringer til Home Assistant (RCs), Supervisor og værtsmaskinen",
                 "leave_beta_action": "Forlad betakanal",
                 "leave_beta_description": "Få stabile opdateringer til Home Assistant, Supervisor og værtsmaskinen",
-                "ram_usage": "Supervisor RAM forbrug",
+                "ram_usage": "Supervisor RAM-forbrug",
                 "reload_supervisor": "Genindlæs Supervisor",
                 "search": "Søg",
                 "share_diagnostics": "Del diagnostik",
@@ -485,6 +505,7 @@
                     "network_manager": "Netværksadministrator",
                     "os": "Operativsystem",
                     "privileged": "Supervisor er ikke privilegeret",
+                    "software": "Ikke-understøttet software fundet",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Du anvender en ikke-understøttet installation",
@@ -512,6 +533,9 @@
             "automation": {
                 "last_triggered": "Senest udløst",
                 "trigger": "Udfør"
+            },
+            "button": {
+                "press": "Tryk"
             },
             "camera": {
                 "not_available": "Billedet er ikke tilgængeligt"
@@ -662,6 +686,7 @@
             "and": "og",
             "back": "Tilbage",
             "cancel": "Annuller",
+            "clear": "Ryd",
             "close": "Luk",
             "continue": "Fortsæt",
             "copied": "Kopieret",
@@ -670,9 +695,11 @@
             "disable": "Deaktiver",
             "enable": "Aktiver",
             "error_required": "Påkrævet",
+            "help": "Hjælp",
             "leave": "Forlad",
             "loading": "Indlæser",
             "menu": "Menu",
+            "move": "Flyt",
             "next": "Næste",
             "no": "Nej",
             "not_now": "Ikke nu",
@@ -711,7 +738,7 @@
                     "text": "Angiv navnet på det nye område.",
                     "title": "Tilføj nyt område"
                 },
-                "add_new": "Tilføj nyt område...",
+                "add_new": "Tilføj nyt område…",
                 "area": "Område",
                 "clear": "Ryd",
                 "no_areas": "Du har ikke nogen områder",
@@ -764,6 +791,7 @@
                 },
                 "entity-picker": {
                     "clear": "Ryd",
+                    "edit": "Rediger",
                     "entity": "Entitet",
                     "no_match": "Ingen matchende entiteter fundet",
                     "show_entities": "Vis entiteter"
@@ -771,7 +799,7 @@
             },
             "history_charts": {
                 "history_disabled": "Historikintegration deaktiveret",
-                "loading_history": "Indlæser tilstandshistorik...",
+                "loading_history": "Indlæser tilstandshistorik…",
                 "no_history_found": "Ingen tilstandshistorik fundet."
             },
             "logbook": {
@@ -917,7 +945,7 @@
                 "statistic": "Statistik"
             },
             "statistics_charts": {
-                "loading_statistics": "Indlæser statistik ...",
+                "loading_statistics": "Indlæser statistik …",
                 "no_statistics_found": "Ingen statistik fundet.",
                 "statistic_types": {
                     "max": "max",
@@ -1060,6 +1088,7 @@
                 "history": "Historik",
                 "last_changed": "Sidst ændret",
                 "last_updated": "Sidst opdateret",
+                "logbook": "Logbog",
                 "person": {
                     "create_zone": "Opret zone fra den aktuelle lokalitet"
                 },
@@ -1078,6 +1107,7 @@
                     "last_triggered": "Senest udført"
                 },
                 "settings": "Entitetsindstillinger",
+                "show_more": "Vis mere",
                 "sun": {
                     "elevation": "Elevation",
                     "rising": "Solopgang",
@@ -1291,14 +1321,14 @@
             "title": "Notifikationer"
         },
         "notification_toast": {
-            "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
+            "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen…",
             "dismiss": "Afvis",
             "integration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
             "triggered": "Udløste {name}",
-            "wrapping_up_startup": "Færdigører opstarten af Home Assistant. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig."
+            "wrapping_up_startup": "Færdigør opstarten af Home Assistant. Nogle funktioner er måske ikke tilgængelig før opstarten er færdig."
         },
         "panel": {
             "config": {
@@ -1715,7 +1745,7 @@
                         "importing": "Indlæser blueprint ...",
                         "raw_blueprint": "Blueprint indhold",
                         "save_btn": "Importer blueprint",
-                        "saving": "Importerer blueprint ...",
+                        "saving": "Importerer blueprint …",
                         "unsupported_blueprint": "Dette blueprint understøttes ikke",
                         "url": "Webadresse til blueprint"
                     },
@@ -1725,18 +1755,25 @@
                         "add_blueprint": "Importer blueprint",
                         "confirm_delete_header": "Slet dette blueprint?",
                         "confirm_delete_text": "Er du sikker på, at du vil slette dette blueprint?",
+                        "create_automation": "Opret automatisering",
+                        "create_script": "Opret script",
                         "delete_blueprint": "Slet blueprint",
                         "discover_more": "Find flere blueprints",
                         "header": "Blueprint Editor",
                         "headers": {
                             "domain": "Domæne",
                             "file_name": "Filnavn",
-                            "name": "Navn"
+                            "name": "Navn",
+                            "type": "Type"
                         },
                         "introduction": "Blueprint konfigurationen giver dig mulighed for at importere og administrere dine blueprints.",
                         "learn_more": "Lær mere om brugen af blueprints",
                         "share_blueprint": "Del blueprint",
                         "share_blueprint_no_url": "Kan ikke dele blueprint: ingen kilde-url",
+                        "types": {
+                            "automation": "Automatisering",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Opret automatisering"
                     }
                 },
@@ -1757,9 +1794,9 @@
                             "title": "Alexa"
                         },
                         "connected": "Forbundet",
-                        "connecting": "Forbinder...",
+                        "connecting": "Forbinder…",
                         "connection_status": "Cloud-forbindelsesstatus",
-                        "fetching_subscription": "Henter abonnement...",
+                        "fetching_subscription": "Henter abonnement…",
                         "google": {
                             "config_documentation": "Konfigurationsdokumentation",
                             "devices_pin": "Pinkode til sikkerhedsenheder",
@@ -1822,7 +1859,7 @@
                             "disable_hook_error_msg": "Webhook kunne ikke deaktiveres:",
                             "info": "Alt, hvad der er konfigureret til at blive udløst af en webhook, kan gives en offentligt tilgængelig webadresse, så du kan sende data tilbage til Home Assistant hvor som helst, uden at eksponere din instans til internettet.",
                             "link_learn_more": "Lær mere om at oprette webhook-drevne automatiseringer.",
-                            "loading": "Indlæser...",
+                            "loading": "Indlæser…",
                             "manage": "Administrer",
                             "no_hooks_yet": "Det ser ud til, at du endnu ikke har nogen webhooks. Kom godt i gang ved at konfigurere en ",
                             "no_hooks_yet2": "eller ved at oprette en",
@@ -1935,7 +1972,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?"
-                    }
+                    },
+                    "learn_more": "Lær mere"
                 },
                 "core": {
                     "caption": "Generelt",
@@ -1991,13 +2029,13 @@
                     "add_prompt": "Intet {name} er blevet tilføjet ved hjælp af denne enhed endnu. Du kan tilføje et ved at klikke på + knappen ovenfor.",
                     "automation": {
                         "actions": {
-                            "caption": "Når noget udløses...",
+                            "caption": "Når noget udløses…",
                             "no_actions": "Ingen handlinger",
                             "unknown_action": "Ukendt handling"
                         },
                         "automations": "Automatiseringer",
                         "conditions": {
-                            "caption": "Gør kun noget, hvis...",
+                            "caption": "Gør kun noget, hvis…",
                             "no_conditions": "Ingen betingelser",
                             "unknown_condition": "Ukendt betingelse"
                         },
@@ -2017,7 +2055,7 @@
                     "confirm_delete": "Er du sikker på, at du vil slette denne enhed?",
                     "confirm_disable_config_entry": "Der er ikke flere enheder til konfigurationen {entry_name} . Vil du i stedet deaktivere konfigurationen?",
                     "confirm_rename_entity_ids": "Vil du også omdøbe entitet-id'et for dine entiteter?",
-                    "confirm_rename_entity_ids_warning": "Dette ændrer ikke nogen konfiguration (automatiseringer, scripts, scener, dashboards mv.), der i øjeblikket bruger disse enheder! Du skal selv opdatere dem for at bruge de nye entitets-id'er!",
+                    "confirm_rename_entity_ids_warning": "Dette ændrer ikke nogen konfiguration (automatiseringer, scripts, scener, betjeningspaneler mv.), der i øjeblikket bruger disse enheder! Du skal selv opdatere dem for at bruge de nye entitets-id'er!",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -2037,18 +2075,26 @@
                         "integration": "Integration",
                         "user": "Bruger"
                     },
+                    "edit_settings": "Rediger indstillinger",
                     "enabled_cause": "Enheden er deaktiveret pga. {cause} .",
                     "enabled_description": "Deaktiverede enheder vises ikke, og entiteter, der hører til enheden, deaktiveres og tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktiver enhed",
                     "entities": {
                         "add_entities_lovelace": "Tilføj til Lovelace",
+                        "config": "Konfiguration",
+                        "control": "Kontrolelementer",
+                        "diagnostic": "Diagnostisk",
                         "disabled_entities": "+{count} {count, plural,\n  one {deaktiveret entitet}\n  other {deaktiverede entiteter}\n}",
                         "entities": "Entiteter",
                         "hide_disabled": "Skjul deaktiverede",
-                        "none": "Denne enhed har ingen entiteter"
+                        "none": "Denne enhed har ingen entiteter",
+                        "sensor": "Sensorer",
+                        "state": "Tilstand"
                     },
                     "name": "Navn",
                     "no_devices": "Ingen enheder",
+                    "open_configuration_url_device": "Besøg enhed",
+                    "open_configuration_url_service": "Besøg tjeneste",
                     "picker": {
                         "filter": {
                             "filter": "Filtrer",
@@ -2078,11 +2124,29 @@
                     "update_device_error": "Enhedsopdateringen fejlede"
                 },
                 "energy": {
+                    "battery": {
+                        "add_battery_system": "Tilføj batterisystem",
+                        "battery_systems": "Batterisystemer",
+                        "dialog": {
+                            "energy_into_battery": "Energi der går ind i batteriet (kWh)",
+                            "energy_out_of_battery": "Energi der kommer ud af batteriet (kWh)",
+                            "header": "Konfigurer batterisystem"
+                        },
+                        "learn_more": "Flere oplysninger om, hvordan du kommer i gang.",
+                        "sub": "Hvis du har et batterisystem, kan du konfigurere det til at overvåge, hvor meget energi der blev lagret og brugt fra dit batteri.",
+                        "title": "Lagring på hjemmebatteri"
+                    },
                     "caption": "Energi",
+                    "delete_integration": "Er du sikker på, at du vil slette denne integration? Det vil fjerne de entiteter, den leverer",
+                    "delete_source": "Er du sikker på, at du vil slette denne kilde?",
                     "description": "Overvåg din energiproduktion og dit forbrug",
                     "device_consumption": {
+                        "add_device": "Tilføj enhed",
                         "add_stat": "Vælg entitet til at overvåge energiforbrug fra",
+                        "devices": "Enheder",
                         "dialog": {
+                            "device_consumption_energy": "Enhedens energiforbrug (kWh)",
+                            "header": "Tilføj en enhed",
                             "selected_stat_intro": "Vælg den entitet, der måler enhedens energiforbrug."
                         },
                         "learn_more": "Flere oplysninger om, hvordan du kommer i gang.",
@@ -2090,7 +2154,33 @@
                         "sub": "Ved at spore energiforbruget for de enkelte enheder kan Home Assistant opdele dit energiforbrug efter enhed.",
                         "title": "Individuelle enheder"
                     },
+                    "gas": {
+                        "add_gas_source": "Tilføj gaskilde",
+                        "dialog": {
+                            "cost_entity": "Brug en entitet med den aktuelle pris",
+                            "cost_entity_input": "Entitet med den aktuelle pris pr. {unit}",
+                            "cost_number": "Anvend en fast pris",
+                            "cost_number_input": "Pris pr. {unit}",
+                            "cost_number_suffix": "{currency}/m³",
+                            "cost_para": "Vælg, hvordan Home Assistant skal holde styr på omkostningerne ved den forbrugte energi.",
+                            "cost_stat": "Brug en entitet, der overvåger de samlede omkostninger",
+                            "cost_stat_input": "Entitet med samlede omkostninger",
+                            "energy_stat": "Forbrugt energi (m³)",
+                            "gas_usage": "Gasforbrug",
+                            "header": "Konfigurer gasforbrug",
+                            "m3_or_kWh": "m³ eller kWh",
+                            "no_cost": "Spor ikke omkostninger",
+                            "paragraph": "Gasforbrug er den mængde gas du forbruger i hjemmet"
+                        },
+                        "gas_consumption": "Gasforbrug",
+                        "learn_more": "Flere oplysninger om, hvordan du kommer i gang.",
+                        "sub": "Lad Home Assistant overvåge dit gasforbrug.",
+                        "title": "Gasforbrug"
+                    },
                     "grid": {
+                        "add_co2_signal": "Tilføj CO2-signal-integration",
+                        "add_consumption": "Tilføj forbrug",
+                        "add_return": "Tilføj el-eksport",
                         "flow_dialog": {
                             "from": {
                                 "cost_entity": "Brug en entitet med den aktuelle pris",
@@ -2100,38 +2190,109 @@
                                 "cost_number_suffix": "{currency}/kWh",
                                 "cost_para": "Vælg, hvordan Home Assistant skal overvåge omkostningerne ved den forbrugte energi.",
                                 "cost_stat": "Brug en entitet, der overvåger de samlede omkostninger",
-                                "cost_stat_input": "Entitet med samlede omkostninger",
+                                "cost_stat_input": "Entitet med samlet pris",
                                 "energy_stat": "Forbrugt energi (kWh)",
-                                "header": "Konfigurer netforbrug",
+                                "header": "Konfigurer elnets-forbrug",
                                 "no_cost": "Spor ikke omkostninger",
-                                "paragraph": "Netforbrug er den energi dit hjem  modtager fra energinettet."
+                                "paragraph": "Elnets-forbrug er den energi dit hjem modtager fra elnettet."
                             },
                             "to": {
-                                "cost_entity": "Brug en enhed med den aktuelle enhedspris",
-                                "cost_entity_input": "Enhed med den aktuelle enhedspris",
+                                "cost_entity": "Brug en entitet med den aktuelle enhedspris",
+                                "cost_entity_input": "Entitet med den aktuelle enhedspris",
                                 "cost_number": "Brug en fast enhedspris",
                                 "cost_number_input": "Enhedspris pr. kWh",
                                 "cost_number_suffix": "{currency}/kWh",
-                                "cost_para": "Får du penge tilbage, når du sender energi til nettet?",
+                                "cost_para": "Får du penge tilbage, når du eksporterer energi til elnettet?",
                                 "cost_stat": "Brug en entitet, der måler det samlede modtagne beløb",
-                                "cost_stat_input": "Entitet\nmed modtaget kompensation",
-                                "energy_stat": "Energi sendt retur til nettet (kWh)",
-                                "header": "Konfigurer netproduktion",
+                                "cost_stat_input": "Entitet med samlet kompensation",
+                                "energy_stat": "Energi eksporteret til elnettet (kWh)",
+                                "header": "Konfigurer elnets-produktion",
                                 "no_cost": "Jeg får ikke penge tilbage",
-                                "paragraph": "Netproduktion er den energi, der sendes retur til energinettet fra dine solceller."
+                                "paragraph": "Elnets-produktion er den energi, der eksporteres til elnettet fra dine solceller."
                             }
                         },
+                        "grid_carbon_footprint": "CO2-aftryk fra elnettet",
+                        "grid_consumption": "Forbrug fra elnettet",
                         "learn_more": "Flere oplysninger om, hvordan du kommer i gang.",
-                        "sub": "Konfigurer den mængde energi, du forbruger fra nettet, og sender tilbage til nettet, hvis du producerer energi. Dette giver Home Assistant mulighed for at overvåge dit samlede   energiforbrug i hjemmet.",
+                        "return_to_grid": "Eksport til elnettet",
+                        "sub": "Konfigurer den mængde energi, du forbruger fra elnettet, og eksporterer til elnettet, hvis du producerer energi. Dette giver Home Assistant mulighed for at overvåge dit samlede energiforbrug i hjemmet.",
                         "title": "Elnet"
                     },
+                    "new_device_info": "Efter opsætning af en ny enhed kan det tage op til 2 timer, før nye data vises i dit energi-betjeningspanel.",
                     "solar": {
+                        "add_solar_production": "Tilføj solenergiproduktion",
+                        "dialog": {
+                            "add_forecast": "Tilføj prognose",
+                            "dont_forecast_production": "Forudsig ikke produktion",
+                            "forecast_production": "Forventet produktion",
+                            "header": "Konfigurer solpaneler",
+                            "solar_production_energy": "Solenergiproduktion (kWh)",
+                            "solar_production_forecast": "Prognose for solenergiproduktion",
+                            "solar_production_forecast_description": "Hvis du tilføjer en prognose for solenergiproduktion, kan du hurtigt se din forventede produktion for i dag."
+                        },
                         "learn_more": "Flere oplysninger om, hvordan du kommer i gang.",
+                        "solar_production": "Solenergiproduktion",
                         "stat_predicted_production": "Forventet energiproduktion fra solceller",
                         "stat_production": "Din energiproduktion fra solceller",
-                        "stat_return_to_grid": "Solenergi sendt tilbage til nettet",
+                        "stat_return_to_grid": "Solenergi eksporteret til elnettet",
                         "sub": "Lad Home Assistant overvåge dine solceller og give dig oplysninger om deres produktion.",
                         "title": "Solceller"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "Følgende entiteter har en negativ tilstand, mens der forventes en positiv tilstand:",
+                                "title": "Entiteten har en negativ tilstand"
+                            },
+                            "entity_not_defined": {
+                                "description": "Kontroller den integration eller konfiguration, der indeholder:",
+                                "title": "Entiteten er ikke defineret"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "description": "Følgende entiteter har tilstandsklassen ''measurement'', men 'last_reset' mangler:",
+                                "title": "Seneste nulstilling mangler"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Følgende entiteter har en tilstand, der ikke kan fortolkes som et tal:",
+                                "title": "Entiteten har en ikke-numerisk tilstand"
+                            },
+                            "entity_unavailable": {
+                                "description": "Tilstanden for disse konfigurerede entiteter er i øjeblikket ikke tilgængelig:",
+                                "title": "Entiteten er utilgængelig"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "Følgende entiteter har ikke den forventede enhedsklasse:",
+                                "title": "Uventet enhedsklasse"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "Følgende entiteter har ikke den forventede tilstandsklasse:",
+                                "title": "Uventet tilstandsklasse"
+                            },
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "Følgende entiteter har ikke den forventede tilstandsklasse \"total_increasing",
+                                "title": "Uventet tilstandsklasse"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "Følgende entiteter har ikke de forventede måleenheder 'kWh' eller 'Wh':",
+                                "title": "Uventet måleenhed"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "Følgende enheder har ikke de forventede måleenheder ''{currency}/kWh'' eller ''{currency}/Wh'':",
+                                "title": "Uventet måleenhed"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "Følgende entiteter har ikke de forventede måleenheder 'kWh', 'm³' eller 'ft³':",
+                                "title": "Uventet måleenhed"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "Følgende entiteter har ikke de forventede måleenheder ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/m³'' eller ''{currency}/ft³'':",
+                                "title": "Uventet måleenhed"
+                            },
+                            "recorder_untracked": {
+                                "description": "Optageren er konfigureret til at ekskludere disse konfigurerede entiteter:",
+                                "title": "Entiteten spores ikke"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -2563,7 +2724,7 @@
                         "complete": "Opdatering af noder er fuldført",
                         "description": "Dette vil få OpenZWave til at genindlæse en node og opdatere nodens kommandoklasser, funktioner og værdier.",
                         "node_status": "Nodestatus",
-                        "refreshing_description": "Opdaterer nodeoplysninger ...",
+                        "refreshing_description": "Opdaterer nodeoplysninger …",
                         "start_refresh_button": "Start opdatering",
                         "step": "Trin",
                         "title": "Opdater nodeoplysninger",
@@ -2851,7 +3012,7 @@
                         "no_devices_found": "Ingen enheder blev fundet. Sørg for at de er i parringstilstand og hold dem vågne mens der søges.",
                         "pairing_mode": "Sørg for, at dine enheder er i parringstilstand. Se enhedens vejledning i, hvordan du gør dette.",
                         "search_again": "Søg igen",
-                        "spinner": "Søger efter ZHA Zigbee-enheder..."
+                        "spinner": "Søger efter ZHA Zigbee-enheder…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Egenskaber for den valgte klynge",
@@ -2913,6 +3074,7 @@
                         "create_group": "Zigbee Home Automation - Opret gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
+                        "delete": "Slet gruppe",
                         "group_details": "Her er alle detaljer for den valgte Zigbee-gruppe.",
                         "group_id": "Gruppe-id",
                         "group_info": "Gruppeoplysninger",
@@ -2959,6 +3121,7 @@
                     },
                     "edit_home_zone": "Radius af hjemzonen kan ikke redigeres fra brugerfladen endnu. Træk markøren på kortet for at flytte hjemmezonen.",
                     "edit_home_zone_narrow": "Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Lokaliteten kan ændres fra den generelle konfiguration.",
+                    "edit_zone": "Rediger zone",
                     "go_to_core_config": "Gå til generel konfiguration?",
                     "home_zone_core_config": "Lokaliteten af din hjemmezone kan redigeres fra den generelle konfigurationsside. Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Vil du gå til den generelle konfiguration?",
                     "introduction": "Zoner giver dig mulighed for at angive bestemte områder på jorden. Når en person er inden for en zone, vil tilstanden antage navnet fra zonen. Zoner kan også bruges som udløser eller tilstand inde i automatiseringsopsætninger.",
@@ -2988,7 +3151,7 @@
                         "network_started": "Z-Wave-netværk startet",
                         "network_started_note_all_queried": "Alle knudepunkter er blevet forespurgt.",
                         "network_started_note_some_queried": "Vågne knudepunkter er blevet forespurgt. Sovende knudepunkter vil blive forespurgt, når de vågner.",
-                        "network_starting": "Starter Z-Wave-netværk...",
+                        "network_starting": "Starter Z-Wave-netværk…",
                         "network_starting_note": "Dette kan tage et stykke tid, afhængigt af netværkets størrelse.",
                         "network_stopped": "Z-Wave-netværk stoppet"
                     },
@@ -3203,6 +3366,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "Aktive lyttere",
                         "alert_event_type": "Hændelsestype er et obligatorisk felt",
                         "available_events": "Tilgængelige hændelser",
                         "count_listeners": " ({count} lyttere)",
@@ -3255,6 +3419,18 @@
                         "state_attributes": "Tilstandsegenskaber (YAML, valgfri)",
                         "title": "Tilstande"
                     },
+                    "statistics": {
+                        "entity": "Entitet",
+                        "fix_issue": {
+                            "fix": "Løs problem",
+                            "units_changed": {
+                                "fix": "Løs problem"
+                            }
+                        },
+                        "issue": "Problem",
+                        "no_issue": "Intet problem",
+                        "title": "Statistik"
+                    },
                     "templates": {
                         "all_listeners": "Denne skabelon lytter til alle ændringer til tilstande",
                         "description": "Skabeloner gengives ved hjælp af Jinja2-skabelonmotoren med nogle Home Assistant-specifikke udvidelser.",
@@ -3274,6 +3450,14 @@
                 }
             },
             "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "Overvåg individuelle enheder",
+                    "energy_distribution_title": "Energidistribution",
+                    "energy_gas_graph_title": "Gasforbrug",
+                    "energy_solar_graph_title": "Solenergiproduktion",
+                    "energy_sources_table_title": "Kilder",
+                    "energy_usage_graph_title": "Energiforbrug"
+                },
                 "charts": {
                     "by_device": "Forbrug pr. enhed",
                     "solar": "Solceller",
@@ -3281,7 +3465,7 @@
                 },
                 "setup": {
                     "back": "Tilbage",
-                    "done": "Vis overblik over mit energiforbrug",
+                    "done": "Vis mit energi-betjeningspanel",
                     "next": "Næste"
                 }
             },
@@ -3306,6 +3490,62 @@
                         "no_devices": "Denne side giver dig mulighed for at styre dine enheder, men det ser ud til, at du endnu ikke har konfigureret enheder. Gå til integrationssiden for at komme i gang.",
                         "title": "Velkommen hjem"
                     },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Dette kort angiver, hvor meget af den energi, der forbruges af dit hjem, der blev genereret ved hjælp af ikke-fossile brændstoffer som sol, vind og atomkraft. Jo højere, jo bedre!",
+                            "non_fossil_energy_consumed": "Ikke-fossil energi forbrugt",
+                            "non_fossil_energy_not_calculated": "Forbrugt ikke-fossil energi kunne ikke beregnes"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Energiforbrug"
+                        },
+                        "energy_distribution": {
+                            "battery": "Batteri",
+                            "gas": "Gas",
+                            "go_to_energy_dashboard": "Gå til energi-betjeningspanelet",
+                            "grid": "Elnet",
+                            "home": "Hjem",
+                            "non_fossil": "Ikke-fossilt",
+                            "solar": "Sol"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Prognose {name}",
+                            "production": "Produktion {name}"
+                        },
+                        "energy_sources_table": {
+                            "battery_total": "Batteritotal",
+                            "cost": "Pris",
+                            "energy": "Energi",
+                            "grid_total": "Total elnet",
+                            "source": "Kilde",
+                            "total_costs": "Samlet pris"
+                        },
+                        "energy_usage_graph": {
+                            "combined_from_grid": "Kombineret fra elnettet",
+                            "consumed_battery": "Forbrugt batteri",
+                            "consumed_solar": "Forbrugt solenergi",
+                            "total_consumed": "Forbrugt i alt {num} kWh",
+                            "total_returned": "Eksporteret i alt {num} kWh"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "Hvis nålen er i lilla, eksporterede du mere energi til elnettet, end du brugte fra det. Hvis den er i det blå, brugte du mere energi fra elnettet, end du eksporterede.",
+                            "energy_dependency": "Dette kort repræsenterer din energiafhængighed.",
+                            "grid_neutrality_not_calculated": "Elnets-neutralitet kunne ikke udregnes",
+                            "net_consumed_grid": "Nettoforbrug fra elnettet",
+                            "net_returned_grid": "Netto eksporteret til elnettet",
+                            "red_green_color_explain": "Hvis den er grøn, betyder det, at du har produceret mere energi, end du har forbrugt fra elnettet. Hvis den er rød, betyder det, at du har været afhængig af elnettet for en del af dit energiforbrug i hjemmet."
+                        },
+                        "loading": "Indlæser...",
+                        "no_data": "Der er ingen data at vise. Det kan tage op til 2 timer, før der kommer nye data, efter at du har konfigureret dit energibetjeningspanel.",
+                        "no_data_period": "Der er ingen data for denne periode.",
+                        "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Dette kort angiver, hvor meget af den solenergi, du har produceret, der blev brugt i dit hjem i stedet for at blive eksporteret til elnettet.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Hvis dette tal typisk er meget lavt, hvilket indikerer overskydende solproduktion, kan du overveje at oplade et hjemmebatteri eller elbil fra dine solpaneler i perioder med høj solproduktion.",
+                            "not_produced_solar_energy": "Du har ikke produceret noget solenergi",
+                            "self_consumed_solar_could_not_calc": "Egenforbrugt solenergi kunne ikke beregnes",
+                            "self_consumed_solar_energy": "Egenforbrugt solenergi"
+                        }
+                    },
                     "entities": {
                         "never_triggered": "Aldrig udløst"
                     },
@@ -3329,6 +3569,7 @@
                         "drag_and_drop": "Træk og slip",
                         "reorder_items": "Omarranger varer"
                     },
+                    "show_more_info": "Vis flere oplysninger",
                     "starting": {
                         "description": "Home Assistant starter. Vent venligst."
                     }
@@ -3337,6 +3578,15 @@
                     "message": "Lovelace-brugerfladekonfigurationen for dette betjeningspanel blev opdateret. Vil du genindlæse?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "Dag",
+                        "month": "Måned",
+                        "next": "Næste",
+                        "previous": "Forrige",
+                        "today": "I dag",
+                        "week": "Uge",
+                        "year": "År"
+                    },
                     "timestamp-display": {
                         "invalid": "Ugyldigt tidsstempel",
                         "invalid_format": "Ugyldigt visningsformat"
@@ -3576,7 +3826,10 @@
                         "weather-forecast": {
                             "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
                             "name": "Vejrudsigt",
-                            "show_forecast": "Vis vejrudsigt"
+                            "show_both": "Vis aktuelt vejr og vejrudsigt",
+                            "show_forecast": "Vis vejrudsigt",
+                            "show_only_current": "Vis kun aktuelt vejr",
+                            "show_only_forecast": "Vis kun vejrudsigt"
                         }
                     },
                     "cardpicker": {
@@ -3607,10 +3860,12 @@
                         "move": "Flyt til visning",
                         "move_after": "Flyt kortet efter",
                         "move_before": "Flyt kortet før",
+                        "move_down": "Flyt kort ned",
+                        "move_up": "Flyt kort op",
                         "options": "Flere indstillinger",
                         "pick_card": "Hvilket kort vil du tilføje?",
                         "pick_card_view_title": "Hvilket kort vil du tilføje til din {name}-visning?",
-                        "search_cards": "Søg kort",
+                        "search_cards": "Søg i kort",
                         "show_code_editor": "Vis kode-editor",
                         "show_visual_editor": "Vis visuel editor",
                         "toggle_editor": "Editor til/fra",
@@ -3706,7 +3961,8 @@
                     },
                     "select_view": {
                         "dashboard_label": "Betjeningspanel",
-                        "header": "Vælg en visning"
+                        "header": "Vælg en visning",
+                        "views_label": "Visning"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3769,6 +4025,9 @@
                 "delete_prompt": "Slet denne besked?",
                 "empty": "Du har ingen beskeder",
                 "playback_title": "Afspilning af besked"
+            },
+            "map": {
+                "edit_zones": "Rediger zoner"
             },
             "my": {
                 "component_not_loaded": "Denne omdirigering understøttes ikke af din Home Assistant installation. Du skal bruge integrationen {integration} for at kunne bruge denne omdirigering.",
@@ -3876,7 +4135,8 @@
                 "initializing": "Initialiserer",
                 "logging_in_to_with": "Logger ind på **{locationName}** med **{authProviderName}**.",
                 "logging_in_with": "Log ind med **{authProviderName}**.",
-                "pick_auth_provider": "Eller log ind med"
+                "pick_auth_provider": "Eller log ind med",
+                "store_token": "Forbliv logget ind"
             },
             "page-demo": {
                 "cards": {
@@ -3948,8 +4208,10 @@
                     "confirm_password": "Bekræft backup kodeord",
                     "description": "Alternativt kan du gendanne fra et tidligere backup.",
                     "folders": "Mapper",
+                    "full_backup": "Fuld sikkerhedskopiering",
                     "hide_log": "Skjul fuld log",
                     "in_progress": "Gendannelse er i gang",
+                    "partial_backup": "Delvis sikkerhedskopiering",
                     "password": "Kodeord",
                     "password_protection": "Kodeordsbeskyttelse",
                     "select_type": "Vælg, hvad der skal gendannes",
@@ -3996,6 +4258,7 @@
                     "header": "Tilpas rækkefølgen og skjul elementer fra sidepanelet"
                 },
                 "dashboard": {
+                    "default_dashboard_label": "Oversigt (standard)",
                     "description": "Vælg et standardbetjeningspanel for denne enhed.",
                     "dropdown_label": "Betjeningspanel",
                     "header": "Betjeningspanel"
@@ -4121,6 +4384,8 @@
         "sidebar": {
             "done": "Færdig",
             "external_app_configuration": "App-konfiguration",
+            "hide_panel": "Skjul panel",
+            "show_panel": "Vis panel",
             "sidebar_toggle": "Vis/skjul sidebjælke"
         }
     }

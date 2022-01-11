@@ -1,43 +1,45 @@
 import {
-  mdiBattery,
-  mdiBatteryOutline,
-  mdiBatteryCharging,
-  mdiThermometer,
-  mdiSnowflake,
-  mdiServerNetworkOff,
-  mdiServerNetwork,
-  mdiDoorClosed,
-  mdiDoorOpen,
-  mdiGarage,
-  mdiGarageOpen,
-  mdiPowerPlugOff,
-  mdiPowerPlug,
-  mdiCheckCircle,
   mdiAlertCircle,
-  mdiSmoke,
-  mdiFire,
+  mdiBattery,
+  mdiBatteryCharging,
+  mdiBatteryOutline,
   mdiBrightness5,
   mdiBrightness7,
+  mdiCheckboxMarkedCircle,
+  mdiCheckNetworkOutline,
+  mdiCloseNetworkOutline,
+  mdiCheckCircle,
+  mdiCropPortrait,
+  mdiDoorClosed,
+  mdiDoorOpen,
+  mdiFire,
+  mdiGarage,
+  mdiGarageOpen,
+  mdiHome,
+  mdiHomeOutline,
   mdiLock,
   mdiLockOpen,
-  mdiWaterOff,
-  mdiWater,
-  mdiWalk,
-  mdiRun,
-  mdiHomeOutline,
-  mdiHome,
-  mdiSquare,
-  mdiSquareOutline,
-  mdiMusicNoteOff,
   mdiMusicNote,
+  mdiMusicNoteOff,
   mdiPackage,
   mdiPackageUp,
-  mdiCropPortrait,
+  mdiPlay,
+  mdiPowerPlug,
+  mdiPowerPlugOff,
+  mdiRadioboxBlank,
+  mdiRun,
+  mdiSmoke,
+  mdiSnowflake,
+  mdiSquare,
+  mdiSquareOutline,
+  mdiStop,
+  mdiThermometer,
   mdiVibrate,
+  mdiWalk,
+  mdiWater,
+  mdiWaterOff,
   mdiWindowClosed,
   mdiWindowOpen,
-  mdiRadioboxBlank,
-  mdiCheckboxMarkedCircle,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 
@@ -53,7 +55,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "cold":
       return is_off ? mdiThermometer : mdiSnowflake;
     case "connectivity":
-      return is_off ? mdiServerNetworkOff : mdiServerNetwork;
+      return is_off ? mdiCloseNetworkOutline : mdiCheckNetworkOutline;
     case "door":
       return is_off ? mdiDoorClosed : mdiDoorOpen;
     case "garage_door":
@@ -85,6 +87,8 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
       return is_off ? mdiPowerPlugOff : mdiPowerPlug;
     case "presence":
       return is_off ? mdiHomeOutline : mdiHome;
+    case "running":
+      return is_off ? mdiStop : mdiPlay;
     case "sound":
       return is_off ? mdiMusicNoteOff : mdiMusicNote;
     case "update":

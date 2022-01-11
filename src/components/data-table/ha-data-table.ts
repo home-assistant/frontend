@@ -70,7 +70,7 @@ export interface DataTableSortColumnData {
 
 export interface DataTableColumnData extends DataTableSortColumnData {
   title: TemplateResult | string;
-  type?: "numeric" | "icon" | "icon-button";
+  type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
   template?: <T>(data: any, row: T) => TemplateResult | string;
   width?: string;
   maxWidth?: string;
@@ -281,15 +281,13 @@ export class HaDataTable extends LitElement {
               }
               const sorted = key === this._sortColumn;
               const classes = {
-                "mdc-data-table__header-cell--numeric": Boolean(
-                  column.type === "numeric"
-                ),
-                "mdc-data-table__header-cell--icon": Boolean(
-                  column.type === "icon"
-                ),
-                "mdc-data-table__header-cell--icon-button": Boolean(
-                  column.type === "icon-button"
-                ),
+                "mdc-data-table__header-cell--numeric":
+                  column.type === "numeric",
+                "mdc-data-table__header-cell--icon": column.type === "icon",
+                "mdc-data-table__header-cell--icon-button":
+                  column.type === "icon-button",
+                "mdc-data-table__header-cell--overflow-menu":
+                  column.type === "overflow-menu",
                 sortable: Boolean(column.sortable),
                 "not-sorted": Boolean(column.sortable && !sorted),
                 grows: Boolean(column.grows),
@@ -405,14 +403,14 @@ export class HaDataTable extends LitElement {
                                 <div
                                   role="cell"
                                   class="mdc-data-table__cell ${classMap({
-                                    "mdc-data-table__cell--numeric": Boolean(
-                                      column.type === "numeric"
-                                    ),
-                                    "mdc-data-table__cell--icon": Boolean(
-                                      column.type === "icon"
-                                    ),
+                                    "mdc-data-table__cell--numeric":
+                                      column.type === "numeric",
+                                    "mdc-data-table__cell--icon":
+                                      column.type === "icon",
                                     "mdc-data-table__cell--icon-button":
-                                      Boolean(column.type === "icon-button"),
+                                      column.type === "icon-button",
+                                    "mdc-data-table__cell--overflow-menu":
+                                      column.type === "overflow-menu",
                                     grows: Boolean(column.grows),
                                     forceLTR: Boolean(column.forceLTR),
                                   })}"
@@ -680,7 +678,7 @@ export class HaDataTable extends LitElement {
           padding-left: 16px;
           /* @noflip */
           padding-right: 0;
-          width: 56px;
+          width: 60px;
         }
         :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
         :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
@@ -769,40 +767,65 @@ export class HaDataTable extends LitElement {
           margin-left: -8px;
         }
 
+        .mdc-data-table__cell--overflow-menu,
+        .mdc-data-table__header-cell--overflow-menu,
         .mdc-data-table__header-cell--icon-button,
         .mdc-data-table__cell--icon-button {
-          width: 56px;
           padding: 8px;
         }
 
+        .mdc-data-table__header-cell--icon-button,
+        .mdc-data-table__cell--icon-button {
+          width: 56px;
+        }
+
+        .mdc-data-table__cell--overflow-menu,
         .mdc-data-table__cell--icon-button {
           color: var(--secondary-text-color);
           text-overflow: clip;
         }
 
         .mdc-data-table__header-cell--icon-button:first-child,
-        .mdc-data-table__cell--icon-button:first-child {
-          width: 64px;
-          padding-left: 16px;
-        }
-        :host([dir="rtl"])
-          .mdc-data-table__header-cell--icon-button:first-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--icon-button:first-child {
-          padding-left: auto;
-          padding-right: 16px;
-        }
-
+        .mdc-data-table__cell--icon-button:first-child,
         .mdc-data-table__header-cell--icon-button:last-child,
         .mdc-data-table__cell--icon-button:last-child {
           width: 64px;
-          padding-right: 16px;
-        }
-        :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
-        :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
-          padding-right: auto;
-          padding-left: 16px;
         }
 
+        .mdc-data-table__cell--overflow-menu:first-child,
+        .mdc-data-table__header-cell--overflow-menu:first-child,
+        .mdc-data-table__header-cell--icon-button:first-child,
+        .mdc-data-table__cell--icon-button:first-child {
+          padding-left: 16px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:first-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:first-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child {
+          padding-left: 8px;
+          padding-right: 16px;
+        }
+
+        .mdc-data-table__cell--overflow-menu:last-child,
+        .mdc-data-table__header-cell--overflow-menu:last-child,
+        .mdc-data-table__header-cell--icon-button:last-child,
+        .mdc-data-table__cell--icon-button:last-child {
+          padding-right: 16px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:last-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:last-child,
+        :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
+          padding-right: 8px;
+          padding-left: 16px;
+        }
+        .mdc-data-table__cell--overflow-menu,
+        .mdc-data-table__header-cell--overflow-menu {
+          overflow: initial;
+        }
         .mdc-data-table__cell--icon-button a {
           color: var(--secondary-text-color);
         }

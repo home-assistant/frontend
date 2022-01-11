@@ -17,7 +17,7 @@ import {
   rgb2lab,
   hex2rgb,
 } from "../../../../common/color/convert-color";
-import { labDarken } from "../../../../common/color/lab";
+import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/statistics-chart";
@@ -170,12 +170,17 @@ export class HuiEnergySourcesTableCard
                     this._data!.stats[source.stat_energy_from]
                   ) || 0;
                 totalSolar += energy;
-                const color =
+
+                const modifiedColor =
                   idx > 0
-                    ? rgb2hex(
-                        lab2rgb(labDarken(rgb2lab(hex2rgb(solarColor)), idx))
-                      )
-                    : solarColor;
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(solarColor)), idx)
+                    : undefined;
+                const color = modifiedColor
+                  ? rgb2hex(lab2rgb(modifiedColor))
+                  : solarColor;
+
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
                     <div
@@ -229,22 +234,26 @@ export class HuiEnergySourcesTableCard
                     this._data!.stats[source.stat_energy_to]
                   ) || 0;
                 totalBattery += energyFrom - energyTo;
-                const fromColor =
+
+                const modifiedFromColor =
                   idx > 0
-                    ? rgb2hex(
-                        lab2rgb(
-                          labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx)
-                        )
-                      )
-                    : batteryFromColor;
-                const toColor =
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                    : undefined;
+                const fromColor = modifiedFromColor
+                  ? rgb2hex(lab2rgb(modifiedFromColor))
+                  : batteryFromColor;
+                const modifiedToColor =
                   idx > 0
-                    ? rgb2hex(
-                        lab2rgb(
-                          labDarken(rgb2lab(hex2rgb(batteryToColor)), idx)
-                        )
-                      )
-                    : batteryToColor;
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(batteryToColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(batteryToColor)), idx)
+                    : undefined;
+                const toColor = modifiedToColor
+                  ? rgb2hex(lab2rgb(modifiedToColor))
+                  : batteryToColor;
+
                 return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
                       <div
@@ -331,14 +340,17 @@ export class HuiEnergySourcesTableCard
                   if (cost !== null) {
                     totalGridCost += cost;
                   }
-                  const color =
+
+                  const modifiedColor =
                     idx > 0
-                      ? rgb2hex(
-                          lab2rgb(
-                            labDarken(rgb2lab(hex2rgb(consumptionColor)), idx)
-                          )
-                        )
-                      : consumptionColor;
+                      ? this.hass.themes.darkMode
+                        ? labBrighten(rgb2lab(hex2rgb(consumptionColor)), idx)
+                        : labDarken(rgb2lab(hex2rgb(consumptionColor)), idx)
+                      : undefined;
+                  const color = modifiedColor
+                    ? rgb2hex(lab2rgb(modifiedColor))
+                    : consumptionColor;
+
                   return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
                       <div
@@ -391,12 +403,17 @@ export class HuiEnergySourcesTableCard
                   if (cost !== null) {
                     totalGridCost += cost;
                   }
-                  const color =
+
+                  const modifiedColor =
                     idx > 0
-                      ? rgb2hex(
-                          lab2rgb(labDarken(rgb2lab(hex2rgb(returnColor)), idx))
-                        )
-                      : returnColor;
+                      ? this.hass.themes.darkMode
+                        ? labBrighten(rgb2lab(hex2rgb(returnColor)), idx)
+                        : labDarken(rgb2lab(hex2rgb(returnColor)), idx)
+                      : undefined;
+                  const color = modifiedColor
+                    ? rgb2hex(lab2rgb(modifiedColor))
+                    : returnColor;
+
                   return html`<tr class="mdc-data-table__row">
                     <td class="mdc-data-table__cell cell-bullet">
                       <div
@@ -473,12 +490,17 @@ export class HuiEnergySourcesTableCard
                 if (cost !== null) {
                   totalGasCost += cost;
                 }
-                const color =
+
+                const modifiedColor =
                   idx > 0
-                    ? rgb2hex(
-                        lab2rgb(labDarken(rgb2lab(hex2rgb(gasColor)), idx))
-                      )
-                    : gasColor;
+                    ? this.hass.themes.darkMode
+                      ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
+                      : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
+                    : undefined;
+                const color = modifiedColor
+                  ? rgb2hex(lab2rgb(modifiedColor))
+                  : gasColor;
+
                 return html`<tr class="mdc-data-table__row">
                   <td class="mdc-data-table__cell cell-bullet">
                     <div

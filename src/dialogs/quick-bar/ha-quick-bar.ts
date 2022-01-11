@@ -99,6 +99,8 @@ export class QuickBar extends LitElement {
 
   private _focusSet = false;
 
+  private _focusListElement?: ListItem | null;
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
     this._initializeItemsIfNeeded();
@@ -317,7 +319,8 @@ export class QuickBar extends LitElement {
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
-      this._getItemAtIndex(1)?.focus();
+      this._focusSet = true;
+      this._focusListElement = this._getItemAtIndex(0);
     }
   }
 
@@ -350,6 +353,11 @@ export class QuickBar extends LitElement {
       this._initializeItemsIfNeeded();
       this._filter = this._search;
     } else {
+      if (this._focusSet && this._focusListElement) {
+        this._focusSet = false;
+        // @ts-ignore
+        this._focusListElement.rippleHandlers.endFocus();
+      }
       this._debouncedSetFilter(this._search);
     }
   }
@@ -366,12 +374,14 @@ export class QuickBar extends LitElement {
   private _setFocusFirstListItem() {
     // @ts-ignore
     this._getItemAtIndex(0)?.rippleHandlers.startFocus();
+    this._focusListElement = this._getItemAtIndex(0);
   }
 
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
     const isFirstListItem =
       (ev.target as HTMLElement).getAttribute("index") === "0";
+    this._focusListElement = ev.target as ListItem;
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
@@ -418,32 +428,54 @@ export class QuickBar extends LitElement {
   }
 
   private _generateReloadCommands(): CommandItem[] {
-    const reloadableDomains = componentsWithService(this.hass, "reload").sort();
+    // Get all domains that have a direct "reload" service
+    const reloadableDomains = componentsWithService(this.hass, "reload");
 
-    return reloadableDomains.map((domain) => {
-      const commandItem = {
-        primaryText:
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.reload.${domain}`
-          ) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(this.hass.localize, domain)
-          ),
-        action: () => this.hass.callService(domain, "reload"),
-        iconPath: mdiReload,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.reload`
+    const commands = reloadableDomains.map((domain) => ({
+      primaryText:
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(this.hass.localize, domain)
         ),
-      };
+      action: () => this.hass.callService(domain, "reload"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      ),
+    }));
 
-      return {
-        ...commandItem,
-        categoryKey: "reload",
-        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
-      };
+    // Add "frontend.reload_themes"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.themes"
+      ),
+      action: () => this.hass.callService("frontend", "reload_themes"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
     });
+
+    // Add "homeassistant.reload_core_config"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.core"
+      ),
+      action: () =>
+        this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    return commands.map((command) => ({
+      ...command,
+      categoryKey: "reload",
+      strings: [`${command.categoryText} ${command.primaryText}`],
+    }));
   }
 
   private _generateServerControlCommands(): CommandItem[] {
@@ -511,7 +543,13 @@ export class QuickBar extends LitElement {
           if (page.component) {
             const info = this._getNavigationInfoFromConfig(page);
 
-            if (info) {
+            // Add to list, but only if we do not already have an entry for the same path and component
+            if (
+              info &&
+              !items.some(
+                (e) => e.path === info.path && e.component === info.component
+              )
+            ) {
               items.push(info);
             }
           }

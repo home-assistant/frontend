@@ -17,6 +17,7 @@
         "calendar": "Kalender",
         "config": "Konfigurasi",
         "developer_tools": "Alat Pengembang",
+        "energy": "Energi",
         "history": "Riwayat",
         "logbook": "Catatan Log",
         "mailbox": "Kotak Pesan",
@@ -81,6 +82,7 @@
             "armed_custom_bypass": "Diaktifkan",
             "armed_home": "Diaktifkan",
             "armed_night": "Diaktifkan",
+            "armed_vacation": "Diaktifkan",
             "arming": "Mengaktifkan",
             "disarmed": "Nonaktif",
             "disarming": "Nonaktif",
@@ -272,20 +274,27 @@
             "confirm_password": "Konfirmasi kata sandi Backup",
             "could_not_create": "Tidak dapat membuat backup",
             "create": "Buat",
+            "create_backup": "Buat cadangan",
             "create_blocked_not_running": "Pembuatan backup tidak dapat dilakukan saat ini karena sistem dalam keadaan {state} .",
             "created": "Dibuat",
             "delete_backup_confirm": "hapus",
+            "delete_backup_text": "Ingin menghapus {number} {number, plural,\n  one {cadangan}\n  other {cadangan}\n}?",
+            "delete_backup_title": "Hapus cadangan",
             "delete_selected": "Hapus backup yang dipilih",
             "enter_password": "Masukkan kata sandi.",
             "failed_to_delete": "Gagal menghapus",
             "folders": "Folder",
+            "full_backup": "Cadangan lengkap",
             "name": "Nama",
+            "no_backups": "Anda belum memiliki cadangan.",
+            "partial_backup": "Cadangan parsial",
             "password": "Kata sandi",
             "password_protection": "Perlindungan kata sandi",
             "passwords_not_matching": "Kata sandi tidak cocok",
             "select_type": "Pilih yang akan dipulihkan",
             "selected": "{number} dipilih",
-            "type": "Jenis"
+            "type": "Jenis",
+            "upload_backup": "Unggah cadangan"
         },
         "common": {
             "cancel": "Batalkan",
@@ -338,6 +347,15 @@
             "no_addons": "Anda belum memasang add-on apa pun. Kunjungi toko add-on untuk memulai!"
         },
         "dialog": {
+            "datadisk_move": {
+                "cancel": "Batalkan",
+                "loading_devices": "Memuat perangkat",
+                "move": "Pindahkan",
+                "moving": "Memindahkan disk data",
+                "no_devices": "Tidak ditemukan perangkat terpasang yang cocok",
+                "select_device": "Pilih disk data baru",
+                "title": "Pindahkan disk data"
+            },
             "hardware": {
                 "attributes": "Atribut",
                 "device_path": "Jalur perangkat",
@@ -386,6 +404,9 @@
                 "text": "Ingin memulai ulang add-on disertai perubahan Anda?"
             },
             "update": {
+                "backup": "Cadangan",
+                "create_backup": "Buat cadangan {name} sebelum memperbarui",
+                "creating_backup": "Membuat cadangan {name}",
                 "updating": "Memperbarui {name} ke versi {version}"
             }
         },
@@ -399,6 +420,7 @@
             "not_supported": "Pengalihan ini tidak didukung oleh instans Home Assistant Anda. Periksa {link} tentang pengalihan yang didukung dan versi mana mulai diperkenalkan."
         },
         "panel": {
+            "backups": "Cadangan",
             "dashboard": "Dasbor",
             "store": "Toko Add-on",
             "system": "Sistem"
@@ -424,6 +446,7 @@
                 "emmc_lifetime_used": "Waktu Hidup eMMC yang Digunakan",
                 "failed_to_get_hardware_list": "Gagal mendapatkan daftar perangkat keras",
                 "failed_to_import_from_usb": "Gagal mengimpor dari USB",
+                "failed_to_move": "Gagal memindahkan disk data",
                 "failed_to_reboot": "Gagal me-reboot host",
                 "failed_to_set_hostname": "Gagal menyetel nama host",
                 "failed_to_shutdown": "Gagal mematikan host",
@@ -431,6 +454,7 @@
                 "hostname": "Nama host",
                 "import_from_usb": "Impor dari USB",
                 "ip_address": "Alamat IP",
+                "move_datadisk": "Pindahkan disk data",
                 "new_hostname": "Masukkan nama host baru:",
                 "operating_system": "Sistem Operasi",
                 "reboot_host": "Nyalakan ulang host",
@@ -476,6 +500,7 @@
                     "apparmor": "AppArmor tidak diaktifkan di host",
                     "container": "Kontainer diketahui menyebabkan masalah",
                     "content-trust": "Validasi kepercayaan konten dinonaktifkan",
+                    "content_trust": "Validasi kepercayaan konten dinonaktifkan",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfigurasi Docker",
                     "docker_version": "Versi Docker",
@@ -483,7 +508,9 @@
                     "lxc": "LXC",
                     "network_manager": "Manajer Jaringan",
                     "os": "Sistem Operasi",
+                    "os_agent": "Agen OS",
                     "privileged": "Supervisor tidak memiliki hak istimewa",
+                    "source_mods": "Modifikasi pada sumber",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Anda menjalankan instalasi yang tidak didukung",
@@ -738,6 +765,10 @@
             },
             "date-range-picker": {
                 "end_date": "Tanggal akhir",
+                "ranges": {
+                    "last_week": "Minggu lalu",
+                    "this_week": "Minggu ini"
+                },
                 "select": "Pilih",
                 "start_date": "Tanggal mulai"
             },
@@ -901,6 +932,13 @@
             },
             "service-picker": {
                 "service": "Layanan"
+            },
+            "statistics_charts": {
+                "statistic_types": {
+                    "mean": "rata-rata",
+                    "min": "min",
+                    "sum": "jumlah"
+                }
             },
             "target-picker": {
                 "add_area_id": "Pilih area",
@@ -1090,6 +1128,9 @@
                 "form": {
                     "header": "Opsi"
                 },
+                "loading": {
+                    "loading_flow": "Mohon tunggu sementara opsi untuk {integration} sedang diinisialisasi"
+                },
                 "success": {
                     "description": "Opsi berhasil disimpan."
                 }
@@ -1103,6 +1144,7 @@
                         "core": "Umum",
                         "customize": "Penyesuaian",
                         "devices": "Perangkat",
+                        "energy": "Energi",
                         "entities": "Entitas",
                         "helpers": "Pembantu",
                         "info": "Info",
@@ -1205,6 +1247,7 @@
             "zha_reconfigure_device": {
                 "attribute": "Atribut",
                 "battery_device_warning": "Anda perlu membangunkan perangkat bertenaga baterai sebelum memulai konfigurasi ulang. Lihat manual perangkat Anda untuk instruksi tentang cara membangunkan perangkat.",
+                "bind_header": "Pengaitan",
                 "button_hide": "Sembunyikan Detail",
                 "button_show": "Tampilkan Detail",
                 "cluster_header": "Klaster",
@@ -1764,6 +1807,7 @@
                             "instance_will_be_available": "Instans Anda akan tersedia di",
                             "link_learn_how_it_works": "Pelajari cara kerjanya",
                             "not_connected": "Tidak Terhubung",
+                            "reconnecting": "Tidak terhubung. Mencoba menghubungkan kembali.",
                             "remote_enabled": {
                                 "caption": "Terhubung secara otomatis",
                                 "description": "Aktifkan opsi ini untuk memastikan instans Home Assistant Anda selalu dapat diakses dari jarak jauh."
@@ -1904,7 +1948,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "Anda memiliki perubahan yang belum disimpan. Yakin ingin meninggalkan?"
-                    }
+                    },
+                    "learn_more": "Pelajari lebih lanjut"
                 },
                 "core": {
                     "caption": "Umum",
@@ -1912,6 +1957,7 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "Mata uang",
                                 "edit_requires_storage": "Editor dinonaktifkan karena konfigurasi disimpan dalam configuration.yaml.",
                                 "elevation": "Ketinggian",
                                 "elevation_meters": "meter",
@@ -2043,6 +2089,34 @@
                     "unnamed_device": "Perangkat tanpa nama",
                     "update": "Perbarui",
                     "update_device_error": "Gagal memperbarui perangkat"
+                },
+                "energy": {
+                    "battery": {
+                        "learn_more": "Informasi lebih lanjut tentang cara memulai.",
+                        "sub": "Jika Anda memiliki sistem dengan baterai, Anda dapat mengonfigurasinya untuk memantau berapa banyak energi yang disimpan dan digunakan dari baterai Anda.",
+                        "title": "Penyimpanan Baterai Rumah"
+                    },
+                    "caption": "Energi",
+                    "description": "Pantau produksi dan konsumsi energi Anda",
+                    "device_consumption": {
+                        "add_stat": "Pilih entitas untuk melacak energi",
+                        "dialog": {
+                            "selected_stat_intro": "Pilih entitas yang mewakili penggunaan energi perangkat."
+                        },
+                        "learn_more": "Informasi lebih lanjut tentang cara memulai.",
+                        "selected_stat": "Melacak energi untuk",
+                        "sub": "Melacak penggunaan energi masing-masing perangkat memungkinkan Home Assistant untuk memecah penggunaan energi Anda berdasarkan perangkat.",
+                        "title": "Perangkat individual"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_entity": "Gunakan entitas dengan harga saat ini",
+                            "cost_entity_input": "Entitas dengan harga saat ini",
+                            "cost_number": "Gunakan harga statis",
+                            "cost_number_input": "Harga per m³",
+                            "cost_number_suffix": "{currency}/m³"
+                        }
+                    }
                 },
                 "entities": {
                     "caption": "Entitas",
@@ -3793,8 +3867,10 @@
                     "confirm_password": "Konfirmasi kata sandi Backup",
                     "description": "Atau, Anda dapat memulihkan dari backup sebelumnya.",
                     "folders": "Folder",
+                    "full_backup": "Cadangan lengkap",
                     "hide_log": "Sembunyikan log lengkap",
                     "in_progress": "Pemulihan sedang berlangsung",
+                    "partial_backup": "Cadangan parsial",
                     "password": "Kata sandi",
                     "password_protection": "Perlindungan kata sandi",
                     "select_type": "Pilih yang akan dipulihkan",

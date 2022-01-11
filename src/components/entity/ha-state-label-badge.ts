@@ -14,7 +14,10 @@ import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { formatNumber } from "../../common/number/format_number";
+import {
+  formatNumber,
+  isNumericState,
+} from "../../common/number/format_number";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
@@ -77,7 +80,7 @@ export class HaStateLabelBadge extends LitElement {
     const domain = computeStateDomain(entityState);
 
     const showIcon = this.icon || this._computeShowIcon(domain, entityState);
-    const image = showIcon
+    const image = this.icon
       ? ""
       : this.image
       ? this.image
@@ -145,7 +148,7 @@ export class HaStateLabelBadge extends LitElement {
         return entityState.state === UNKNOWN ||
           entityState.state === UNAVAILABLE
           ? "-"
-          : entityState.attributes.unit_of_measurement
+          : isNumericState(entityState)
           ? formatNumber(entityState.state, this.hass!.locale)
           : computeStateDisplay(
               this.hass!.localize,

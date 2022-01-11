@@ -1,19 +1,33 @@
 import {
-  mdiAirHumidifierOff,
+  mdiAccount,
+  mdiAccountArrowRight,
   mdiAirHumidifier,
-  mdiLockOpen,
+  mdiAirHumidifierOff,
+  mdiBluetooth,
+  mdiBluetoothConnect,
+  mdiCalendar,
+  mdiCast,
+  mdiCastConnected,
+  mdiClock,
+  mdiEmoticonDead,
+  mdiFlash,
+  mdiGestureTapButton,
+  mdiLanConnect,
+  mdiLanDisconnect,
+  mdiLock,
   mdiLockAlert,
   mdiLockClock,
-  mdiLock,
-  mdiCastConnected,
-  mdiCast,
-  mdiEmoticonDead,
+  mdiLockOpen,
+  mdiPackageUp,
+  mdiPowerPlug,
+  mdiPowerPlugOff,
+  mdiRestart,
   mdiSleep,
   mdiTimerSand,
-  mdiZWave,
-  mdiClock,
-  mdiCalendar,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
   mdiWeatherNight,
+  mdiZWave,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 /**
@@ -41,8 +55,29 @@ export const domainIcon = (
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
 
+    case "button":
+      switch (stateObj?.attributes.device_class) {
+        case "restart":
+          return mdiRestart;
+        case "update":
+          return mdiPackageUp;
+        default:
+          return mdiGestureTapButton;
+      }
+
     case "cover":
       return coverIcon(compareState, stateObj);
+
+    case "device_tracker":
+      if (stateObj?.attributes.source_type === "router") {
+        return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
+      }
+      if (
+        ["bluetooth", "bluetooth_le"].includes(stateObj?.attributes.source_type)
+      ) {
+        return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
+      }
+      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
@@ -62,6 +97,16 @@ export const domainIcon = (
 
     case "media_player":
       return compareState === "playing" ? mdiCastConnected : mdiCast;
+
+    case "switch":
+      switch (stateObj?.attributes.device_class) {
+        case "outlet":
+          return state === "on" ? mdiPowerPlug : mdiPowerPlugOff;
+        case "switch":
+          return state === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+        default:
+          return mdiFlash;
+      }
 
     case "zwave":
       switch (compareState) {

@@ -52,6 +52,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     return html`
       <mwc-select
         fixedMenuPosition
+        naturalMenuWidth
         .label=${this.label}
         .value=${this.data}
         .disabled=${this.disabled}

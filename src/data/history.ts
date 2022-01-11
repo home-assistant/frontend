@@ -1,4 +1,3 @@
-import { addDays, addMonths, startOfDay, startOfMonth } from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -63,6 +62,7 @@ export interface Statistics {
 export interface StatisticValue {
   statistic_id: string;
   start: string;
+  end: string;
   last_reset: string | null;
   max: number | null;
   mean: number | null;
@@ -74,14 +74,28 @@ export interface StatisticValue {
 export interface StatisticsMetaData {
   unit_of_measurement: string;
   statistic_id: string;
+  source: string;
+  name?: string | null;
 }
 
 export type StatisticsValidationResult =
+  | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
   | StatisticsValidationResultUnitsChanged
   | StatisticsValidationResultUnsupportedUnitMetadata
   | StatisticsValidationResultUnsupportedUnitState;
+
+export interface StatisticsValidationResultNoState {
+  type: "no_state";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultEntityNoLongerRecorded {
+  type: "entity_no_longer_recorded";
+  data: { statistic_id: string };
+}
 
 export interface StatisticsValidationResultEntityNotRecorded {
   type: "entity_not_recorded";
@@ -336,7 +350,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: "hour" | "5minute" = "hour"
+  period: "5minute" | "hour" | "day" | "month" = "hour"
 ) =>
   hass.callWS<Statistics>({
     type: "history/statistics_during_period",
@@ -414,151 +428,3 @@ export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
 ) => stats.some((stat) => stat[type] !== null);
-
-// Merge the growth of multiple sum statistics into one
-const mergeSumGrowthStatistics = (stats: StatisticValue[][]) => {
-  const result = {};
-
-  stats.forEach((stat) => {
-    if (stat.length === 0) {
-      return;
-    }
-    let prevSum: number | null = null;
-    stat.forEach((statVal) => {
-      if (statVal.sum === null) {
-        return;
-      }
-      if (prevSum === null) {
-        prevSum = statVal.sum;
-        return;
-      }
-      const growth = statVal.sum - prevSum;
-      if (statVal.start in result) {
-        result[statVal.start] += growth;
-      } else {
-        result[statVal.start] = growth;
-      }
-      prevSum = statVal.sum;
-    });
-  });
-
-  return result;
-};
-
-/**
- * Get the growth of a statistic over the given period while applying a
- * per-period percentage.
- */
-export const calculateStatisticsSumGrowthWithPercentage = (
-  percentageStat: StatisticValue[],
-  sumStats: StatisticValue[][]
-): number | null => {
-  let sum: number | null = null;
-
-  if (sumStats.length === 0 || percentageStat.length === 0) {
-    return null;
-  }
-
-  const sumGrowthToProcess = mergeSumGrowthStatistics(sumStats);
-
-  percentageStat.forEach((percentageStatValue) => {
-    const sumGrowth = sumGrowthToProcess[percentageStatValue.start];
-    if (sumGrowth === undefined) {
-      return;
-    }
-    if (sum === null) {
-      sum = sumGrowth * (percentageStatValue.mean! / 100);
-    } else {
-      sum += sumGrowth * (percentageStatValue.mean! / 100);
-    }
-  });
-
-  return sum;
-};
-
-export const reduceSumStatisticsByDay = (
-  values: StatisticValue[]
-): StatisticValue[] => {
-  if (!values?.length) {
-    return [];
-  }
-  const result: StatisticValue[] = [];
-  if (
-    values.length > 1 &&
-    new Date(values[0].start).getDate() === new Date(values[1].start).getDate()
-  ) {
-    // add init value if the first value isn't end of previous period
-    result.push({
-      ...values[0]!,
-      start: startOfDay(addDays(new Date(values[0].start), -1)).toISOString(),
-    });
-  }
-  let lastValue: StatisticValue;
-  let prevDate: number | undefined;
-  for (const value of values) {
-    const date = new Date(value.start).getDate();
-    if (prevDate === undefined) {
-      prevDate = date;
-    }
-    if (prevDate !== date) {
-      // Last value of the day
-      result.push({
-        ...lastValue!,
-        start: startOfDay(new Date(lastValue!.start)).toISOString(),
-      });
-      prevDate = date;
-    }
-    lastValue = value;
-  }
-  // Add final value
-  result.push({
-    ...lastValue!,
-    start: startOfDay(new Date(lastValue!.start)).toISOString(),
-  });
-  return result;
-};
-
-export const reduceSumStatisticsByMonth = (
-  values: StatisticValue[]
-): StatisticValue[] => {
-  if (!values?.length) {
-    return [];
-  }
-  const result: StatisticValue[] = [];
-  if (
-    values.length > 1 &&
-    new Date(values[0].start).getMonth() ===
-      new Date(values[1].start).getMonth()
-  ) {
-    // add init value if the first value isn't end of previous period
-    result.push({
-      ...values[0]!,
-      start: startOfMonth(
-        addMonths(new Date(values[0].start), -1)
-      ).toISOString(),
-    });
-  }
-  let lastValue: StatisticValue;
-  let prevMonth: number | undefined;
-  for (const value of values) {
-    const month = new Date(value.start).getMonth();
-    if (prevMonth === undefined) {
-      prevMonth = month;
-    }
-    if (prevMonth !== month) {
-      // Last value of the month
-      result.push({
-        ...lastValue!,
-        start: startOfMonth(new Date(lastValue!.start)).toISOString(),
-      });
-      prevMonth = month;
-    }
-    lastValue = value;
-  }
-  // Add final value
-  result.push({
-    ...lastValue!,
-    start: startOfMonth(new Date(lastValue!.start)).toISOString(),
-  });
-  return result;
-};

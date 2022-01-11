@@ -209,6 +209,7 @@ class MoreInfoLight extends LitElement {
                 ? html`
                     <hr />
                     <ha-paper-dropdown-menu
+                      dynamic-align
                       .label=${this.hass.localize("ui.card.light.effect")}
                     >
                       <paper-listbox

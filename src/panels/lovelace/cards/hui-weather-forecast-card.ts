@@ -87,7 +87,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return this._config?.show_forecast !== false ? 5 : 2;
+    let cardSize = 0;
+    if (this._config?.show_current !== false) {
+      cardSize += 2;
+    }
+    if (this._config?.show_forecast !== false) {
+      cardSize += 3;
+    }
+    return cardSize;
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
@@ -168,6 +175,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       stateObj.attributes.forecast?.length
         ? stateObj.attributes.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
+    const weather = !forecast || this._config?.show_current !== false;
 
     let hourly: boolean | undefined;
     let dayNight: boolean | undefined;
@@ -202,74 +210,81 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
       >
-        <div class="content">
-          <div class="icon-image">
-            ${weatherStateIcon ||
-            html`
-              <ha-state-icon
-                class="weather-icon"
-                .state=${stateObj}
-              ></ha-state-icon>
-            `}
-          </div>
-          <div class="info">
-            <div class="name-state">
-              <div class="state">
-                ${computeStateDisplay(
-                  this.hass.localize,
-                  stateObj,
-                  this.hass.locale
-                )}
-              </div>
-              <div class="name" .title=${name}>${name}</div>
-            </div>
-            <div class="temp-attribute">
-              <div class="temp">
-                ${formatNumber(
-                  stateObj.attributes.temperature,
-                  this.hass.locale
-                )}&nbsp;<span>${getWeatherUnit(this.hass, "temperature")}</span>
-              </div>
-              <div class="attribute">
-                ${this._config.secondary_info_attribute !== undefined
-                  ? html`
-                      ${this._config.secondary_info_attribute in
-                      weatherAttrIcons
+        ${weather
+          ? html`
+              <div class="content">
+                <div class="icon-image">
+                  ${weatherStateIcon ||
+                  html`
+                    <ha-state-icon
+                      class="weather-icon"
+                      .state=${stateObj}
+                    ></ha-state-icon>
+                  `}
+                </div>
+                <div class="info">
+                  <div class="name-state">
+                    <div class="state">
+                      ${computeStateDisplay(
+                        this.hass.localize,
+                        stateObj,
+                        this.hass.locale
+                      )}
+                    </div>
+                    <div class="name" .title=${name}>${name}</div>
+                  </div>
+                  <div class="temp-attribute">
+                    <div class="temp">
+                      ${formatNumber(
+                        stateObj.attributes.temperature,
+                        this.hass.locale
+                      )}&nbsp;<span
+                        >${getWeatherUnit(this.hass, "temperature")}</span
+                      >
+                    </div>
+                    <div class="attribute">
+                      ${this._config.secondary_info_attribute !== undefined
                         ? html`
-                            <ha-svg-icon
-                              class="attr-icon"
-                              .path=${weatherAttrIcons[
-                                this._config.secondary_info_attribute
-                              ]}
-                            ></ha-svg-icon>
+                            ${this._config.secondary_info_attribute in
+                            weatherAttrIcons
+                              ? html`
+                                  <ha-svg-icon
+                                    class="attr-icon"
+                                    .path=${weatherAttrIcons[
+                                      this._config.secondary_info_attribute
+                                    ]}
+                                  ></ha-svg-icon>
+                                `
+                              : this.hass!.localize(
+                                  `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
+                                )}
+                            ${this._config.secondary_info_attribute ===
+                            "wind_speed"
+                              ? getWind(
+                                  this.hass,
+                                  stateObj.attributes.wind_speed,
+                                  stateObj.attributes.wind_bearing
+                                )
+                              : html`
+                                  ${formatNumber(
+                                    stateObj.attributes[
+                                      this._config.secondary_info_attribute
+                                    ],
+                                    this.hass.locale
+                                  )}
+                                  ${getWeatherUnit(
+                                    this.hass,
+                                    this._config.secondary_info_attribute
+                                  )}
+                                `}
                           `
-                        : this.hass!.localize(
-                            `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
-                          )}
-                      ${this._config.secondary_info_attribute === "wind_speed"
-                        ? getWind(
-                            this.hass,
-                            stateObj.attributes.wind_speed,
-                            stateObj.attributes.wind_bearing
-                          )
-                        : html`
-                            ${formatNumber(
-                              stateObj.attributes[
-                                this._config.secondary_info_attribute
-                              ],
-                              this.hass.locale
-                            )}
-                            ${getWeatherUnit(
-                              this.hass,
-                              this._config.secondary_info_attribute
-                            )}
-                          `}
-                    `
-                  : getSecondaryWeatherAttribute(this.hass, stateObj)}
+                        : getSecondaryWeatherAttribute(this.hass, stateObj)}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
+            `
+          : ""}
         ${forecast
           ? html`
               <div class="forecast">

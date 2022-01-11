@@ -8,6 +8,10 @@ import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 import { isSafari } from "../util/is_safari";
 
+// Safari version 15.2 and up behaves differently than other Safari versions.
+// https://github.com/home-assistant/frontend/issues/10766
+const isSafari152 = isSafari && /Version\/15\.[^0-1]/.test(navigator.userAgent);
+
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
   return (percentage * 180) / 100;
@@ -113,7 +117,9 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari
+                    ? `rotate(${this._angle}${isSafari152 ? "" : " 50 50"})`
+                    : undefined
                 )}
               >
               `
@@ -126,7 +132,9 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari
+                    ? `rotate(${this._angle}${isSafari152 ? "" : " 50 50"})`
+                    : undefined
                 )}
               >`
         }

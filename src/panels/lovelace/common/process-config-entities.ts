@@ -5,7 +5,8 @@ import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 export const processConfigEntities = <
   T extends EntityConfig | LovelaceRowConfig
 >(
-  entities: Array<T | string>
+  entities: Array<T | string>,
+  checkEntityId = true
 ): T[] => {
   if (!entities || !Array.isArray(entities)) {
     throw new Error("Entities need to be an array");
@@ -35,7 +36,7 @@ export const processConfigEntities = <
       throw new Error(`Invalid entity specified at position ${index}.`);
     }
 
-    if (!isValidEntityId((config as EntityConfig).entity!)) {
+    if (checkEntityId && !isValidEntityId((config as EntityConfig).entity!)) {
       throw new Error(
         `Invalid entity ID at position ${index}: ${
           (config as EntityConfig).entity

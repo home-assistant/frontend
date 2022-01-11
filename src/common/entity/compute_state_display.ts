@@ -4,7 +4,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTimeWithSeconds } from "../datetime/format_date_time";
 import { formatTimeWithSeconds } from "../datetime/format_time";
-import { formatNumber } from "../number/format_number";
+import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 
@@ -20,7 +20,8 @@ export const computeStateDisplay = (
     return localize(`state.default.${compareState}`);
   }
 
-  if (stateObj.attributes.unit_of_measurement) {
+  // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
+  if (isNumericState(stateObj)) {
     if (stateObj.attributes.device_class === "monetary") {
       try {
         return formatNumber(compareState, locale, {
@@ -31,15 +32,17 @@ export const computeStateDisplay = (
         // fallback to default
       }
     }
-    return `${formatNumber(compareState, locale)} ${
+    return `${formatNumber(compareState, locale)}${
       stateObj.attributes.unit_of_measurement
+        ? " " + stateObj.attributes.unit_of_measurement
+        : ""
     }`;
   }
 
   const domain = computeStateDomain(stateObj);
 
   if (domain === "input_datetime") {
-    if (state) {
+    if (state !== undefined) {
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
@@ -66,7 +69,7 @@ export const computeStateDisplay = (
           }
         }
         return state;
-      } catch {
+      } catch (_e) {
         // Formatting methods may throw error if date parsing doesn't go well,
         // just return the state string in that case.
         return state;
@@ -74,7 +77,18 @@ export const computeStateDisplay = (
     } else {
       // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
-      if (!stateObj.attributes.has_time) {
+      if (stateObj.attributes.has_date && stateObj.attributes.has_time) {
+        date = new Date(
+          stateObj.attributes.year,
+          stateObj.attributes.month - 1,
+          stateObj.attributes.day,
+          stateObj.attributes.hour,
+          stateObj.attributes.minute,
+          stateObj.attributes.second
+        );
+        return formatTimeWithSeconds(date, locale);
+      }
+      if (stateObj.attributes.has_date) {
         date = new Date(
           stateObj.attributes.year,
           stateObj.attributes.month - 1,
@@ -82,7 +96,7 @@ export const computeStateDisplay = (
         );
         return formatDate(date, locale);
       }
-      if (!stateObj.attributes.has_date) {
+      if (stateObj.attributes.has_time) {
         date = new Date();
         date.setHours(
           stateObj.attributes.hour,
@@ -91,16 +105,7 @@ export const computeStateDisplay = (
         );
         return formatTimeWithSeconds(date, locale);
       }
-
-      date = new Date(
-        stateObj.attributes.year,
-        stateObj.attributes.month - 1,
-        stateObj.attributes.day,
-        stateObj.attributes.hour,
-        stateObj.attributes.minute,
-        stateObj.attributes.second
-      );
-      return formatDateTimeWithSeconds(date, locale);
+      return stateObj.state;
     }
   }
 
@@ -117,6 +122,14 @@ export const computeStateDisplay = (
     domain === "input_number"
   ) {
     return formatNumber(compareState, locale);
+  }
+
+  // state of button is a timestamp
+  if (
+    domain === "button" ||
+    (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
+  ) {
+    return formatDateTimeWithSeconds(new Date(compareState), locale);
   }
 
   return (

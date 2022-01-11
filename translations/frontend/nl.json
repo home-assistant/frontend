@@ -82,9 +82,10 @@
             "armed_custom_bypass": "Ingeschakeld",
             "armed_home": "Actief",
             "armed_night": "Actief",
-            "arming": "Activeren",
+            "armed_vacation": "Ingeschakeld",
+            "arming": "Gaat aan",
             "disarmed": "Uit",
-            "disarming": "Uitschakelen",
+            "disarming": "Gaat uit",
             "pending": "Wacht",
             "triggered": "Gaat af"
         },
@@ -118,7 +119,7 @@
                     "header": "Netwerk",
                     "host": "Host"
                 },
-                "no_configuration": "Deze add-on laat geen configuratie zien waar je mee kunt spelen..",
+                "no_configuration": "Deze add-on laat geen configuratie zien waar je mee kunt spelen…",
                 "options": {
                     "edit_in_ui": "Bewerken in UI",
                     "edit_in_yaml": "Bewerken in YAML",
@@ -129,7 +130,7 @@
             },
             "dashboard": {
                 "action_error": {
-                    "get_changelog": "Ophalen logboek van de invoegtoepassing is mislukt",
+                    "get_changelog": "Ophalen changelog van add-on is mislukt",
                     "go_to_config": "Starten van de invoegtoepassing is mislukt - configuratie validatie mislukt!",
                     "install": "De installatie van de invoegtoepassing is mislukt",
                     "restart": "Herstarten van de invoegtoepassing is mislukt",
@@ -179,6 +180,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
+                        "core": "Core",
                         "docker": "docker",
                         "hardware": "hardware",
                         "hass": "hass",
@@ -203,6 +205,10 @@
                     "stage": {
                         "description": "Invoegtoepassingen kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen fouten bevatten en kunnen onvoltooid zijn.\n\n{icon_deprecated} **Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
                         "title": "Add-on stadium"
+                    },
+                    "stages": {
+                        "deprecated": "Verouderd",
+                        "experimental": "Experimenteel"
                     }
                 },
                 "changelog": "Wijzigingsoverzicht",
@@ -237,8 +243,8 @@
                 },
                 "protection_mode": {
                     "content": "Beschermingsmodus op deze add-on is uitgeschakeld! Dit geeft de add-on volledige toegang tot het hele systeem, wat veiligheidsrisico's toevoegt, en uw systeem kan beschadigen bij onjuist gebruik. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
-                    "enable": "Beveiligingsmodus inschakelen",
-                    "title": "Waarschuwing: Beschermingsmodus is uitgeschakeld!"
+                    "enable": "Inschakelen",
+                    "title": "Beschermingsmodus is uitgeschakeld!"
                 },
                 "ram_usage": "Add-on RAM-gebruik",
                 "rebuild": "herbouw",
@@ -269,24 +275,31 @@
             }
         },
         "backup": {
-            "addons": "Invoegtoepassingen",
-            "confirm_password": "Bevestig Backup-wachtwoord",
-            "could_not_create": "Kon geen backup maken",
+            "addons": "Add-ons",
+            "confirm_password": "Bevestig backup-wachtwoord",
+            "could_not_create": "Kon geen back-up maken",
             "create": "Maak",
-            "create_blocked_not_running": "Het maken van een backup is nu niet mogelijk omdat het systeem in {state} staat.",
+            "create_backup": "Maak back-up",
+            "create_blocked_not_running": "Het maken van een back-up is nu niet mogelijk omdat het systeem in {state} staat.",
             "created": "Gemaakt",
             "delete_backup_confirm": "verwijder",
-            "delete_selected": "Verwijder geselecteerde backups",
+            "delete_backup_text": "Wilt u {number} {number, plural,\n  one {back-up}\n  other {back-ups}\n} verwijderen?",
+            "delete_backup_title": "Verwijder back-up",
+            "delete_selected": "Verwijder geselecteerde back-ups",
             "enter_password": "Voer een wachtwoord in.",
             "failed_to_delete": "Verwijderen mislukt",
             "folders": "Mappen",
-            "name": "Backup naam",
-            "password": "Backup wachtwoord",
+            "full_backup": "Volledige back-up",
+            "name": "Back-up naam",
+            "no_backups": "U heeft nog geen back-ups.",
+            "partial_backup": "Gedeeltelijke back-up",
+            "password": "Back-up wachtwoord",
             "password_protection": "Wachtwoord bescherming",
             "passwords_not_matching": "De wachtwoorden komen niet overeen",
             "select_type": "Selecteer wat u wilt herstellen",
             "selected": "{number} geselecteerd",
-            "type": "Backup type"
+            "type": "Back-up type",
+            "upload_backup": "Upload back-up"
         },
         "common": {
             "cancel": "Annuleren",
@@ -299,6 +312,7 @@
             "failed_to_restart_name": "Herstarten {name} is mislukt",
             "failed_to_update_name": "Bijwerken {name} is mislukt",
             "learn_more": "Meer informatie",
+            "menu": "Menu",
             "new_version_available": "Nieuwe versie beschikbaar",
             "newest_version": "Nieuwste versie",
             "no": "Nee",
@@ -339,6 +353,17 @@
             "no_addons": "Je hebt nog geen add-ons geïnstalleerd. Ga naar de add-on store om te beginnen!"
         },
         "dialog": {
+            "datadisk_move": {
+                "cancel": "Annuleren",
+                "description": "U gebruikt momenteel '' {current_path} '' als datadisk. Als u gegevensschijven verplaatst, wordt uw apparaat opnieuw opgestart en dit duurt naar schatting {time} minuten. Uw Home Assistant-installatie is gedurende deze periode niet toegankelijk. Koppel de stroom niet los tijdens de verplaatsing!",
+                "loading_devices": "Apparaten laden",
+                "move": "Verplaats",
+                "moving": "Verplaatsen datadisk",
+                "moving_desc": "Herstarten en verplaatsen van datadisk. even geduld aub",
+                "no_devices": "Geen geschikte aangesloten apparaten gevonden",
+                "select_device": "Selecteer nieuwe datadisk",
+                "title": "Verplaats datadisk"
+            },
             "hardware": {
                 "attributes": "Attributen",
                 "device_path": "Apparaatpad",
@@ -387,6 +412,9 @@
                 "text": "Wilt u de invoegtoepassing opnieuw starten met uw wijzigingen?"
             },
             "update": {
+                "backup": "Back-up",
+                "create_backup": "Maak een backup van {name} voordat er wordt geüpdatet",
+                "creating_backup": "Back-up maken van {name}",
                 "updating": "Bijwerken van {name} naar versie {version}"
             }
         },
@@ -400,6 +428,7 @@
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
         },
         "panel": {
+            "backups": "Back-ups",
             "dashboard": "Dashboard",
             "store": "Add-on Store",
             "system": "Systeem"
@@ -425,6 +454,7 @@
                 "emmc_lifetime_used": "eMMC Levensduur Gebruikt",
                 "failed_to_get_hardware_list": "Kan geen hardware lijst krijgen",
                 "failed_to_import_from_usb": "Importeren vanaf USB mislukt",
+                "failed_to_move": "Verplaatsen van datadisk mislukt",
                 "failed_to_reboot": "Herstarten host mislukt",
                 "failed_to_set_hostname": "Instellen hostnaam mislukt",
                 "failed_to_shutdown": "Afsluiten host mislukt",
@@ -432,6 +462,7 @@
                 "hostname": "Hostnaam",
                 "import_from_usb": "Importeren van USB",
                 "ip_address": "IP-adres",
+                "move_datadisk": "Verplaats datadisk",
                 "new_hostname": "Voer een nieuwe hostnaam in:",
                 "operating_system": "Besturingssysteem",
                 "reboot_host": "Host herstarten",
@@ -477,6 +508,7 @@
                     "apparmor": "AppArmor is niet ingeschakeld op de host",
                     "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
                     "content-trust": "Validatie van content-trust is uitgeschakeld",
+                    "content_trust": "Validatie van content-trust is uitgeschakeld",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker Configuratie",
                     "docker_version": "Docker versie",
@@ -484,7 +516,10 @@
                     "lxc": "LXC",
                     "network_manager": "Netwerkmanager",
                     "os": "Besturingssysteem",
+                    "os_agent": "OS Agent",
                     "privileged": "Supervisor heeft onvoldoende toegangsrechten",
+                    "software": "Niet-ondersteunde software gedetecteerd",
+                    "source_mods": "Bronwijzigingen",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Je gebruikt een niet-ondersteunde installatie",
@@ -501,10 +536,11 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Inschakelen afwezig",
-                "arm_custom_bypass": "Gedeeltelijk actief",
-                "arm_home": "Inschakelen thuis",
-                "arm_night": "Inschakelen nacht",
+                "arm_away": "Inschakelen voor vertrek",
+                "arm_custom_bypass": "Inschakelen met overbrugging",
+                "arm_home": "Inschakelen voor thuis",
+                "arm_night": "Inschakelen voor 's nachts",
+                "arm_vacation": "Inschakelen voor vakantie",
                 "clear_code": "Wis",
                 "code": "Code",
                 "disarm": "Uitschakelen"
@@ -512,6 +548,9 @@
             "automation": {
                 "last_triggered": "Laatst uitgevoerd",
                 "trigger": "Uitvoeren"
+            },
+            "button": {
+                "press": "Klik"
             },
             "camera": {
                 "not_available": "Afbeelding niet beschikbaar"
@@ -662,6 +701,7 @@
             "and": "en",
             "back": "Terug",
             "cancel": "Annuleren",
+            "clear": "Wis",
             "close": "Sluiten",
             "continue": "Ga verder",
             "copied": "Gekopieerd",
@@ -670,9 +710,11 @@
             "disable": "Uitschakelen",
             "enable": "Inschakelen",
             "error_required": "Verplicht",
+            "help": "Help",
             "leave": "Verlaten",
             "loading": "Bezig met laden",
             "menu": "Menu",
+            "move": "Verplaats",
             "next": "Volgende",
             "no": "Nee",
             "not_now": "Niet nu",
@@ -711,7 +753,7 @@
                     "text": "Geef de naam op van het nieuwe gebied.",
                     "title": "Gebied toevoegen"
                 },
-                "add_new": "Nieuw gebied toevoegen...",
+                "add_new": "Nieuw gebied toevoegen…",
                 "area": "Gebied",
                 "clear": "Wis",
                 "no_areas": "Je hebt geen gebieden",
@@ -764,6 +806,7 @@
                 },
                 "entity-picker": {
                     "clear": "Wis",
+                    "edit": "Bewerken",
                     "entity": "Entiteit",
                     "no_match": "Geen overeenkomende entiteiten gevonden",
                     "show_entities": "Entiteiten weergeven"
@@ -771,7 +814,7 @@
             },
             "history_charts": {
                 "history_disabled": "Geschiedenis integratie uitgeschakeld",
-                "loading_history": "Geschiedenis laden ...",
+                "loading_history": "Geschiedenis laden…",
                 "no_history_found": "Geen geschiedenis gevonden"
             },
             "logbook": {
@@ -782,7 +825,9 @@
                     "became_unavailable": "is niet meer beschikbaar",
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
+                    "cleared_tampering": "sabotage gewist",
                     "detected_device_class": "{device_class} gedetecteerd",
+                    "detected_tampering": "ontdekte sabotage",
                     "is_closing": "aan het sluiten",
                     "is_opening": "Aan het openen",
                     "rose": "opkomst",
@@ -917,7 +962,7 @@
                 "statistic": "Statistiek"
             },
             "statistics_charts": {
-                "loading_statistics": "Statistieken laden...",
+                "loading_statistics": "Statistieken laden…",
                 "no_statistics_found": "Geen statistieken gevonden.",
                 "statistic_types": {
                     "max": "max",
@@ -930,8 +975,10 @@
                 "add_area_id": "Kies gebied",
                 "add_device_id": "Kies apparaat",
                 "add_entity_id": "Kies entiteit",
+                "expand": "Uitbreiden",
                 "expand_area_id": "Breid dit gebied uit in de afzonderlijke apparaten en entiteiten die het bevat. Na het uitbreiden zal het de apparaten en entiteiten niet bijwerken wanneer het gebied verandert.",
                 "expand_device_id": "Breid dit apparaat uit in afzonderlijke entiteiten. Na het uitbreiden worden de entiteiten niet bijgewerkt wanneer het apparaat verandert.",
+                "remove": "Verwijderen",
                 "remove_area_id": "Verwijder gebied",
                 "remove_device_id": "Verwijder apparaat",
                 "remove_entity_id": "Verwijder entiteit"
@@ -1060,6 +1107,7 @@
                 "history": "Geschiedenis",
                 "last_changed": "Laatst gewijzigd",
                 "last_updated": "Laatst bijgewerkt",
+                "logbook": "Logboek",
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
                 },
@@ -1078,6 +1126,7 @@
                     "last_triggered": "Laatst geactiveerd"
                 },
                 "settings": "Entiteit instellingen",
+                "show_more": "Toon meer",
                 "sun": {
                     "elevation": "Hoogtehoek",
                     "rising": "Opkomst",
@@ -1291,7 +1340,7 @@
             "title": "Notificaties"
         },
         "notification_toast": {
-            "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
+            "connection_lost": "Verbinding verbroken. Opnieuw verbinden…",
             "dismiss": "Afwijzen",
             "integration_starting": "{integration} starten, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
@@ -1318,6 +1367,7 @@
                         "confirmation_title": "Weet je zeker dat je dit gebied wilt verwijderen?"
                     },
                     "description": "Groepeer apparaten en entiteiten in gebieden",
+                    "edit_settings": "Gebied instellingen",
                     "editor": {
                         "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
@@ -1381,7 +1431,7 @@
                                 },
                                 "delay": {
                                     "delay": "Vertraging",
-                                    "label": "Vertraging"
+                                    "label": "Wacht tot de tijd voorbij is (vertraging)"
                                 },
                                 "device_id": {
                                     "action": "Actie",
@@ -1399,7 +1449,7 @@
                                     "label": "Apparaat"
                                 },
                                 "event": {
-                                    "event": "Gebeurtenis:",
+                                    "event": "Gebeurtenis",
                                     "label": "Gebeurtenis uitvoeren",
                                     "service_data": "Service data"
                                 },
@@ -1429,12 +1479,12 @@
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Ga verder op time-out",
-                                    "label": "Wacht op trigger",
+                                    "label": "Wacht op een trigger",
                                     "timeout": "Time-out (optioneel)"
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Ga verder op time-out",
-                                    "label": "Wacht",
+                                    "label": "Wacht op een template",
                                     "timeout": "Timeout (optioneel)",
                                     "wait_template": "Wachtsjabloon"
                                 }
@@ -1701,6 +1751,13 @@
                             "introduction": "Typ hieronder wat deze automatisering zou moeten doen, en we zullen proberen om het om te zetten in een Home Assistant automatisering.",
                             "language_note": "Opmerking: voorlopig wordt alleen Engels ondersteund."
                         }
+                    },
+                    "trace": {
+                        "download_trace": "Download trace",
+                        "edit_automation": "Automatisering wijzigen",
+                        "newer_trace": "Nieuwere trace",
+                        "older_trace": "Oudere trace",
+                        "refresh": "Ververs"
                     }
                 },
                 "blueprint": {
@@ -1715,7 +1772,7 @@
                         "importing": "Blueprint importeren ...",
                         "raw_blueprint": "Blueprint inhoud",
                         "save_btn": "Blueprint importeren",
-                        "saving": "Blueprint importeren ...",
+                        "saving": "Blueprint importeren …",
                         "unsupported_blueprint": "Deze Blueprint wordt niet ondersteund",
                         "url": "URL van de Blueprint"
                     },
@@ -1725,18 +1782,25 @@
                         "add_blueprint": "Blueprint importeren",
                         "confirm_delete_header": "Deze Blueprint verwijderen?",
                         "confirm_delete_text": "Weet je zeker dat je deze Blueprint wilt verwijderen?",
+                        "create_automation": "Automatisering maken",
+                        "create_script": "Script maken",
                         "delete_blueprint": "Verwijder Blueprint",
                         "discover_more": "Ontdek meer Blueprints",
                         "header": "Blueprinteditor",
                         "headers": {
                             "domain": "Domein",
                             "file_name": "Bestandsnaam",
-                            "name": "Naam"
+                            "name": "Naam",
+                            "type": "Type"
                         },
                         "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
                         "share_blueprint": "Deel Blueprint",
                         "share_blueprint_no_url": "Kan Blueprint niet delen: geen bron-URL",
+                        "types": {
+                            "automation": "Automatisering",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Automatisering maken"
                     }
                 },
@@ -1757,9 +1821,9 @@
                             "title": "Alexa"
                         },
                         "connected": "Verbonden",
-                        "connecting": "Verbinden...",
+                        "connecting": "Verbinden…",
                         "connection_status": "Cloud verbindingsstatus",
-                        "fetching_subscription": "Abonnement ophalen...",
+                        "fetching_subscription": "Abonnement ophalen…",
                         "google": {
                             "config_documentation": "Configuratie documentatie",
                             "devices_pin": "Pincode van beveiligingsapparaten",
@@ -1794,7 +1858,7 @@
                             "instance_will_be_available": "Uw exemplaar zal beschikbaar zijn op",
                             "link_learn_how_it_works": "Leer hoe het werkt",
                             "not_connected": "Niet verbonden",
-                            "reconnecting": "Opnieuw verbinden",
+                            "reconnecting": "Niet verbonden. Er wordt geprobeerd om opnieuw te verbinden.",
                             "remote_enabled": {
                                 "caption": "Automatisch verbinden",
                                 "description": "Schakel deze optie in om ervoor te zorgen dat uw Home Assistant instantie altijd op afstand toegankelijk is."
@@ -1822,7 +1886,7 @@
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
                             "info": "Alles wat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
                             "link_learn_more": "Meer informatie over het maken van door webhook aangedreven automatiseringen.",
-                            "loading": "Laden...",
+                            "loading": "Laden…",
                             "manage": "Beheer",
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet2": "of door het maken van een",
@@ -1898,7 +1962,7 @@
                         "forgot_password": "Wachtwoord vergeten?",
                         "introduction": "Home Assistant Cloud biedt u een veilige externe verbinding met uw Home Assistant terwijl u niet thuis bent. Hiermee kunt u ook verbinding maken met cloudservices: Amazon, Alexa en Google Assistant.",
                         "introduction2": "Deze service wordt uitgevoerd door onze partner ",
-                        "introduction2a": ", een bedrijf dat is opgericht door de oprichters van Home Assistent en Hass.io.",
+                        "introduction2a": ", een bedrijf dat is opgericht door de oprichters van Home Assistent.",
                         "introduction3": "Home Assistant Cloud is een abonnementsdienst met een gratis proefperiode van een maand. Geen betalingsinformatie nodig.",
                         "learn_more_link": "Meer informatie over Home Assistant Cloud",
                         "password": "Wachtwoord",
@@ -1921,7 +1985,7 @@
                         "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
                         "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
                         "information3": "Deze service wordt uitgevoerd door onze partner",
-                        "information3a": ", een bedrijf dat is opgericht door de oprichters van Home Assistant en Hass.io.",
+                        "information3a": ", een bedrijf dat is opgericht door de oprichters van Home Assistant.",
                         "information4": "Door het registreren van het account gaat u akkoord met de volgende voorwaarden.",
                         "link_privacy_policy": "Privacybeleid",
                         "link_terms_conditions": "Algemene voorwaarden",
@@ -1935,7 +1999,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?"
-                    }
+                    },
+                    "learn_more": "Leer meer"
                 },
                 "core": {
                     "caption": "Algemeen",
@@ -1991,13 +2056,13 @@
                     "add_prompt": "Er zijn nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
-                            "caption": "Wanneer iets wordt getriggerd...",
+                            "caption": "Wanneer iets wordt getriggerd…",
                             "no_actions": "Geen acties",
                             "unknown_action": "Onbekende actie"
                         },
                         "automations": "Automatiseringen",
                         "conditions": {
-                            "caption": "Doe alleen iets als...",
+                            "caption": "Doe alleen iets als…",
                             "no_conditions": "Geen toestanden",
                             "unknown_condition": "Onbekende toestand"
                         },
@@ -2037,18 +2102,26 @@
                         "integration": "Integratie",
                         "user": "Gebruiker"
                     },
+                    "edit_settings": "Wijzig instellingen",
                     "enabled_cause": "Het apparaat is uitgeschakeld door {cause}.",
                     "enabled_description": "Uitgeschakelde apparaten worden niet weergegeven en entiteiten die bij het apparaat horen, worden uitgeschakeld en niet toegevoegd aan Home Assistant.",
                     "enabled_label": "Schakel apparaat in",
                     "entities": {
                         "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",
+                        "config": "Configuratie",
+                        "control": "Bediening",
+                        "diagnostic": "Diagnose",
                         "disabled_entities": "+{count} {count, plural,\n  one {uitgeschakelde entiteit}\n  other {uitgeschakelde entiteiten}\n}",
                         "entities": "Entiteiten",
                         "hide_disabled": "Verberg uitgeschakeld",
-                        "none": "Dit apparaat heeft geen entiteiten"
+                        "none": "Dit apparaat heeft geen entiteiten",
+                        "sensor": "Sensoren",
+                        "state": "Toestand"
                     },
                     "name": "Naam",
                     "no_devices": "Geen apparaten",
+                    "open_configuration_url_device": "Naar apparaat",
+                    "open_configuration_url_service": "Naar service",
                     "picker": {
                         "filter": {
                             "filter": "Filter",
@@ -2078,11 +2151,29 @@
                     "update_device_error": "Bijwerken van het apparaat mislukt"
                 },
                 "energy": {
+                    "battery": {
+                        "add_battery_system": "Batterijsysteem toevoegen",
+                        "battery_systems": "Batterijsystemen",
+                        "dialog": {
+                            "energy_into_battery": "Energie die naar de batterij gaat (kWh)",
+                            "energy_out_of_battery": "Energie afkomstig van batterij (kWh)",
+                            "header": "Batterijsysteem configureren"
+                        },
+                        "learn_more": "Meer informatie over hoe u aan de slag kunt gaan.",
+                        "sub": "Als u een accusysteem hebt, kunt u het configureren om te controleren hoeveel energie uit uw accu is opgeslagen en verbruikt.",
+                        "title": "Accu-opslag voor thuis"
+                    },
                     "caption": "Energie",
+                    "delete_integration": "Weet u zeker dat u deze integratie wilt verwijderen? Het zal de entiteiten die het biedt verwijderen",
+                    "delete_source": "Weet je zeker dat je deze bron wilt verwijderen?",
                     "description": "Monitor uw energieproductie en verbruik",
                     "device_consumption": {
+                        "add_device": "Apparaat toevoegen",
                         "add_stat": "Kies entiteit om verbruik van bij te houden",
+                        "devices": "Apparaten",
                         "dialog": {
+                            "device_consumption_energy": "Apparaatconsumptie-energie (kWh)",
+                            "header": "Apparaat toevoegen",
                             "selected_stat_intro": "Selecteer de entiteit die het energieverbruik van het apparaat weergeeft."
                         },
                         "learn_more": "Meer informatie over hoe u aan de slag kunt gaan.",
@@ -2090,7 +2181,33 @@
                         "sub": "Door het energieverbruik van afzonderlijke apparaten bij te houden, kan Home Assistant uw energieverbruik per apparaat uitsplitsen.",
                         "title": "Individuele apparaten"
                     },
+                    "gas": {
+                        "add_gas_source": "Gasbron toevoegen",
+                        "dialog": {
+                            "cost_entity": "Gebruik een entiteit met de huidige prijs",
+                            "cost_entity_input": "Entiteit met de huidige prijs per {unit}",
+                            "cost_number": "Gebruik een vaste prijs",
+                            "cost_number_input": "Prijs per {unit}",
+                            "cost_number_suffix": "{currency}/m³",
+                            "cost_para": "Selecteer hoe Home Assistant de kosten van de verbruikte energie moet bijhouden.",
+                            "cost_stat": "Gebruik een entiteit die de totale kosten bijhoudt",
+                            "cost_stat_input": "Totale kosten entiteit",
+                            "energy_stat": "Verbruikte Energie (m³)",
+                            "gas_usage": "Gasverbruik",
+                            "header": "Gasverbruik configureren",
+                            "m3_or_kWh": "m³ of kWh",
+                            "no_cost": "Kosten niet bijhouden",
+                            "paragraph": "Gasverbruik is het gasvolume dat naar uw huis stroomt."
+                        },
+                        "gas_consumption": "Gasverbruik",
+                        "learn_more": "Meer informatie over hoe u aan de slag kunt gaan.",
+                        "sub": "Laat Home Assistant uw gasverbruik monitoren.",
+                        "title": "Gasverbruik"
+                    },
                     "grid": {
+                        "add_co2_signal": "CO2-signaalintegratie toevoegen",
+                        "add_consumption": "Verbruik toevoegen",
+                        "add_return": "Teruggave toevoegen",
                         "flow_dialog": {
                             "from": {
                                 "cost_entity": "Een entiteit met de huidige prijs gebruiken",
@@ -2111,27 +2228,98 @@
                                 "cost_entity_input": "Entiteit met het huidige tarief",
                                 "cost_number": "Gebruik een vaste prijs",
                                 "cost_number_input": "Prijs per kWh",
-                                "cost_number_suffix": "{currency} /kWh",
+                                "cost_number_suffix": "{currency}/kWh",
                                 "cost_para": "Krijg je geld terug als je energie teruglevert aan het net?",
                                 "cost_stat": "Een entiteit gebruiken die het totale ontvangen geld bijhoudt",
-                                "cost_stat_input": "Totale compensatie entiteit",
+                                "cost_stat_input": "Totale-vergoeding entiteit",
                                 "energy_stat": "Teruggeleverde energie (kWh)",
-                                "header": "Net productie configureren",
+                                "header": "Netproductie configureren",
                                 "no_cost": "Ik krijg geen geld terug",
                                 "paragraph": "Netproductie is de energie die van uw zonnepanelen naar het net stroomt."
                             }
                         },
+                        "grid_carbon_footprint": "CO2-voetafdruk van het net",
+                        "grid_consumption": "Netverbruik",
                         "learn_more": "Meer informatie over hoe u aan de slag kunt gaan.",
+                        "return_to_grid": "Geef terug aan het net",
                         "sub": "Configureer de verschillende tarieven voor de energie die u van het net verbruikt en als u energie teruglevert aan het net, de energie die u teruglevert aan het net. Hierdoor kan Home Assistant het energieverbruik van uw gehele huis bijhouden.",
                         "title": "Elektriciteitsnet"
                     },
+                    "new_device_info": "Er zijn geen gegevens om weer te geven. Het kan tot 2 uur duren voordat nieuwe gegevens binnenkomen nadat u uw energiedashboard heeft geconfigureerd.",
                     "solar": {
+                        "add_solar_production": "Zonneproductie toevoegen",
+                        "dialog": {
+                            "add_forecast": "Voorspelling toevoegen",
+                            "dont_forecast_production": "Maak geen voorspelling van de productie",
+                            "forecast_production": "Voorspelling productie",
+                            "header": "Zonnepanelen configureren",
+                            "solar_production_energy": "Zonneproductie energie (kWh)",
+                            "solar_production_forecast": "Voorspelling zonne-energieproductie",
+                            "solar_production_forecast_description": "Door informatie over de productie van zonne-energie toe te voegen, kunt u snel uw verwachte productie voor vandaag zien."
+                        },
                         "learn_more": "Meer informatie over hoe u aan de slag kunt gaan.",
+                        "solar_production": "Zonne-energieproductie",
                         "stat_predicted_production": "Voorspelling van uw zonne-energieproductie",
                         "stat_production": "Uw zonne-energieproductie",
                         "stat_return_to_grid": "Zonne-energie teruggeleverd aan het net",
                         "sub": "Laat Home Assistant uw zonnepanelen monitoren en u inzicht geven in hun prestaties.",
                         "title": "Zonnepanelen"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "De volgende entiteiten hebben een negatieve staat terwijl een positieve staat wordt verwacht:",
+                                "title": "Entiteit heeft een negatieve staat"
+                            },
+                            "entity_not_defined": {
+                                "description": "Controleer de integratie of uw configuratie die voorziet in:",
+                                "title": "Entiteit niet gedefinieerd"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "description": "De volgende entiteiten hebben de status klasse 'measurement' maar 'last_reset' ontbreekt:",
+                                "title": "Last reset ontbreekt"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "De volgende entiteiten hebben een staat die niet als getal kan worden weergegeven:",
+                                "title": "Entiteit heeft een niet-numerieke staat"
+                            },
+                            "entity_unavailable": {
+                                "description": "De status van deze geconfigureerde entiteiten is momenteel niet beschikbaar:",
+                                "title": "Entiteit niet beschikbaar"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "De volgende entiteiten hebben niet de verwachte device class:",
+                                "title": "Onverwachte device class"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "De volgende entiteiten hebben niet de verwachte status klasse",
+                                "title": "Onverwachte status klasse"
+                            },
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "De volgende entiteiten hebben niet de verwachte state class \"total_increasing\"",
+                                "title": "Onverwachte state class"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "De volgende entiteiten hebben niet de verwachte meeteenheden 'kWh' of 'Wh':",
+                                "title": "Onverwachte meeteenheid"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "De volgende entiteiten hebben niet de verwachte meeteenheden \"{currency}/kWh\" of \"{currency}/Wh\":",
+                                "title": "Onverwachte meeteenheid"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "De volgende entiteiten hebben niet de verwachte meeteenheden 'kWh', 'm³' of 'ft³':",
+                                "title": "Onverwachte meeteenheid"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "De volgende entiteiten hebben niet de verwachte meeteenheden '' {currency} /kWh'', '' {currency} /Wh'', '' {currency} /m³'' of '' {currency} /ft³'' :",
+                                "title": "Onverwachte meeteenheid"
+                            },
+                            "recorder_untracked": {
+                                "description": "De recorder is geconfigureerd om deze geconfigureerde entiteiten uit te sluiten:",
+                                "title": "Entiteit niet bijgehouden"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -2159,6 +2347,7 @@
                         "header": "Entiteiten",
                         "headers": {
                             "area": "Gebied",
+                            "disabled_by": "Uitgeschakeld door",
                             "entity_id": "Entiteits-ID",
                             "integration": "Integratie",
                             "name": "Naam",
@@ -2217,6 +2406,7 @@
                     "built_using": "Gebouwd met behulp van",
                     "caption": "Info",
                     "copy_github": "Voor GitHub",
+                    "copy_menu": "Kopieer menu",
                     "copy_raw": "Ruwe tekst",
                     "custom_uis": "Aangepaste UI's:",
                     "description": "Versie, systeemstatus en links naar documentatie",
@@ -2359,6 +2549,7 @@
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
+                    "copy": "Logboekinvoer kopiëren",
                     "custom_integration": "aangepaste integratie",
                     "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
@@ -2380,7 +2571,7 @@
                 "lovelace": {
                     "caption": "Lovelace-dashboards",
                     "dashboards": {
-                        "cant_edit_default": "Het standaard Lovelace-dashboard kan niet vanuit de gebruikersinterface worden bewerkt. Je kunt het verbergen door standaard een ander dashboard in te stellen.",
+                        "cant_edit_default": "Het standaard Lovelace-dashboard, Overzicht, kan niet vanuit de gebruikersinterface worden bewerkt. Je kunt het verbergen door standaard een ander dashboard in te stellen.",
                         "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
@@ -2388,6 +2579,8 @@
                             "yaml": "YAML-bestand"
                         },
                         "confirm_delete": "Weet je zeker dat je dit dashboard wilt verwijderen?",
+                        "confirm_delete_text": "Uw dashboard wordt permanent verwijderd.",
+                        "confirm_delete_title": "Verwijder {dashboard_title}?",
                         "default_dashboard": "Dit is het standaard dashboard",
                         "detail": {
                             "create": "Aanmaken",
@@ -2563,7 +2756,7 @@
                         "complete": "Knooppunt vernieuwen voltooid",
                         "description": "Dit zal OpenZWave vertellen om een knooppunt opnieuw te ondervragen en de opdrachtklassen, mogelijkheden en waarden van het knooppunt bij te werken.",
                         "node_status": "Knooppuntstatus",
-                        "refreshing_description": "Knooppuntinformatie vernieuwen...",
+                        "refreshing_description": "Knooppuntinformatie vernieuwen…",
                         "start_refresh_button": "Start Vernieuwen",
                         "step": "Stap",
                         "title": "Vernieuw knooppuntinformatie",
@@ -2851,7 +3044,7 @@
                         "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat de apparaten actief blijven gedurende het koppelen.",
                         "pairing_mode": "Zorg ervoor dat de apparaten in de koppelingsmodus staan. Kijk in de instructies van het apparaat hoe dit moet.",
                         "search_again": "Opnieuw zoeken",
-                        "spinner": "Zoeken naar ZHA Zigbee-apparaten ..."
+                        "spinner": "Zoeken naar ZHA Zigbee-apparaten …"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributen van het geselecteerde cluster",
@@ -2913,6 +3106,7 @@
                         "create_group": "Zigbee Home Automation - Aanmaken groep",
                         "create_group_details": "Voer de vereiste gegevens in om een nieuwe Zigbee groep te maken",
                         "creating_group": "Groep aanmaken",
+                        "delete": "Verwijder Groep",
                         "group_details": "Hier zijn alle details voor de geselecteerde Zigbee groep.",
                         "group_id": "Groep",
                         "group_info": "Groepsinformatie",
@@ -2959,6 +3153,7 @@
                     },
                     "edit_home_zone": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Sleep de markering op de kaart om de thuiszone te verplaatsen.",
                     "edit_home_zone_narrow": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. De locatie kan worden gewijzigd vanuit de algemene instellingen.",
+                    "edit_zone": "Wijzig Zone",
                     "go_to_core_config": "Ga naar de algemene instellingen?",
                     "home_zone_core_config": "De locatie van uw thuiszone kan worden bewerkt vanuit de algemene instellingen-pagina. De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Wil je naar de algemene instellingen gaan?",
                     "introduction": "Met zones kan je bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
@@ -2978,6 +3173,10 @@
                         "ozw": {
                             "header": "Migreren naar OpenZWave",
                             "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in bèta is."
+                        },
+                        "zwave_js": {
+                            "header": "Migreren naar Z-Wave JS",
+                            "introduction": "Deze integratie wordt niet langer onderhouden, en wij adviseren u om over te stappen naar de nieuwe Z-Wave JS-integratie. Deze wizard helpt u bij de migratie van de oude Z-Wave integratie naar de nieuwe Z-Wave JS-integratie."
                         }
                     },
                     "network_management": {
@@ -2988,7 +3187,7 @@
                         "network_started": "Z-Wave netwerk gestart",
                         "network_started_note_all_queried": "Alle knooppunten zijn opgevraagd.",
                         "network_started_note_some_queried": "Alle actieve knooppunten zijn opgevraagd. Inactieve knooppunten worden opgevraagd wanneer ze actief worden.",
-                        "network_starting": "Z-Wave netwerk starten...",
+                        "network_starting": "Z-Wave netwerk starten…",
                         "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van je netwerk.",
                         "network_stopped": "Z-Wave netwerk gestopt"
                     },
@@ -3059,57 +3258,80 @@
                         "cancel_inclusion": "Opname annuleren",
                         "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
-                        "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
-                        "inclusion_finished": "Het knooppunt is toegevoegd.",
+                        "inclusion_failed": "Het apparaat kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
+                        "inclusion_finished": "Het apaaraat is toegevoegd.",
                         "interview_failed": "Het apparaat \"interview\" is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
                         "interview_started": "Het apparaat wordt \"geïnterviewd\". Dit kan wat tijd kosten.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
                         "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
+                        "security_classes": {
+                            "S0_Legacy": {
+                                "description": "Voorbeeld: Oudere deursloten zonder S2-ondersteuning",
+                                "title": "S0 Legacy"
+                            },
+                            "S2_AccessControl": {
+                                "description": "Voorbeeld: Deursloten en garagedeuren",
+                                "title": "S2 Toegangscontrole"
+                            },
+                            "S2_Authenticated": {
+                                "description": "Voorbeeld: verlichting, sensoren en beveiligingssystemen",
+                                "title": "S2 Geauthenticeerd"
+                            },
+                            "S2_Unauthenticated": {
+                                "description": "Zoals S2 Geauthenticeerd, maar zonder verificatie dat het juiste apparaat is toegevoegd",
+                                "title": "S2 Niet-geverifieerd"
+                            }
+                        },
                         "start_inclusion": "Start Opname",
                         "start_secure_inclusion": "Start Veilige Opname",
-                        "title": "Voeg een Z-Wave knooppunt toe",
+                        "title": "Voeg een Z-Wave apparaat toe",
                         "use_secure_inclusion": "Gebruik veilige opname",
                         "view_device": "Bekijk apparaat"
                     },
                     "common": {
-                        "add_node": "Knooppunt toevoegen",
+                        "add_node": "Apparaat toevoegen",
                         "close": "Sluiten",
                         "heal_network": "Herstel netwerk",
                         "home_id": "Home ID",
                         "network": "Netwerk",
-                        "node_id": "Knooppunt-ID",
+                        "node_id": "Apparaat ID",
                         "reconfigure_server": "Herconfigureer server",
-                        "remove_node": "Knooppunt verwijderen",
+                        "remove_node": "Apparaat verwijderen",
                         "source": "Bron"
                     },
                     "dashboard": {
                         "driver_version": "Driver Versie",
-                        "dump_dead_nodes_text": "Sommige van uw knooppunten reageerden niet en worden verondersteld onbereikbaar te zijn. Deze worden niet volledig geëxporteerd.",
-                        "dump_dead_nodes_title": "Sommige van uw knooppunten zijn onbereikbaar",
+                        "dump_dead_nodes_text": "Sommige van uw apparaten reageerden niet en worden verondersteld onbereikbaar te zijn. Deze worden niet volledig geëxporteerd.",
+                        "dump_dead_nodes_title": "Sommige apparaten zijn onbereikbaar",
                         "dump_debug": "Download een dump van uw netwerk om problemen te diagnosticeren",
                         "dump_not_ready_confirm": "Downloaden",
-                        "dump_not_ready_text": "Als u een export maakt terwijl niet alle knooppunten gereed zijn, mist u mogelijk de benodigde gegevens. Geef uw netwerk wat tijd om alle knooppunten te doorzoeken. Wilt u doorgaan met de dump?",
-                        "dump_not_ready_title": "Nog niet alle knooppunten zijn gereed",
+                        "dump_not_ready_text": "Als u een export maakt terwijl niet alle apparaten gereed zijn, mist u mogelijk de benodigde gegevens. Geef uw netwerk wat tijd om alle apparaten op te halen. Wilt u doorgaan met de dump?",
+                        "dump_not_ready_title": "Nog niet alle apparaten zijn gereed",
                         "header": "Beheer je Z-Wave netwerk",
                         "home_id": "Home ID",
-                        "introduction": "Beheer uw Z-Wave netwerk en Z-Wave knooppunten",
-                        "nodes_ready": "Knooppunten gereed",
+                        "introduction": "Beheer uw Z-Wave netwerk en Z-Wave apparaten",
+                        "nodes_ready": "Apparaten gereed",
                         "server_version": "Server Versie"
                     },
                     "device_info": {
                         "device_config": "Configureer Apparaat",
-                        "heal_node": "Heal knooppunt",
-                        "node_ready": "Knooppunt gereed",
-                        "node_status": "Knooppuntstatus",
+                        "heal_node": "Heal apparaat",
+                        "highest_security": "Hoogste beveiliging",
+                        "is_secure": "Veilig",
+                        "node_ready": "Apparaat gereed",
+                        "node_status": "Apparaat status",
                         "reinterview_device": "Apparaat opnieuw interviewen",
                         "remove_failed": "Verwijder defect apparaat",
-                        "zwave_info": "Z-Wave info"
+                        "unknown": "Onbekend",
+                        "zwave_info": "Z-Wave info",
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Versie {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "Netwerkherstel is geannuleerd.",
                         "healing_complete": "Netwerkherstel is compleet.",
                         "healing_failed": "Herstellen mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
-                        "in_progress": "Netwerkherstel wordt uitgevoerd. Dit zal eveen duren.",
+                        "in_progress": "Netwerkherstel wordt uitgevoerd. Dit zal even duren.",
                         "introduction": "Start een netwerkherstel op uw Z-Wave netwerk. Een netwerkherstel zorgt ervoor dat alle apparaten hun routes naar de controller opnieuw berekenen en wordt aanbevolen als je recent apparaten of uw controller hebt verplaatst.",
                         "run_in_background": "U kunt dit dialoogvenster sluiten en het netwerkherstel zal voortzetten op de achtergrond.",
                         "start_heal": "Start herstellen",
@@ -3131,7 +3353,7 @@
                     "logs": {
                         "log_level": "Log niveau",
                         "log_level_changed": "Logboekniveau gewijzigd in: {level}",
-                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
+                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten…",
                         "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
@@ -3148,7 +3370,7 @@
                         "battery_device_notice": "Batterij-apparaten moeten wakker zijn om hun configuratie bij te werken. Raadpleeg de handleiding van uw toestel voor instructies over hoe u het toestel kunt wekken.",
                         "error_device_not_found": "Apparaat niet gevonden",
                         "header": "Z-Wave apparaatconfiguratie",
-                        "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
+                        "introduction": "Beheren en aanpassen van apparaat specifieke configuratieparameters voor het geselecteerde apparaat",
                         "parameter": "Parameter",
                         "parameter_is_read_only": "Deze parameter is alleen-lezen.",
                         "set_param_accepted": "De parameter is bijgewerkt.",
@@ -3177,19 +3399,40 @@
                         "in_progress": "Het verwijderen van het apparaat is bezig.",
                         "introduction": "Verwijder een defect apparaat uit uw Z-Wave-netwerk. Gebruik dit als u een apparaat niet normaal kunt uitsluiten omdat het kapot is.",
                         "removal_failed": "Het apparaat kon niet uit uw Z-Wave netwerk worden verwijderd.",
-                        "removal_finished": "Node {id} is verwijderd uit uw Z-Wave-netwerk.",
+                        "removal_finished": "Apparaat {id} is verwijderd uit uw Z-Wave-netwerk.",
                         "remove_device": "Verwijder apparaat",
                         "title": "Een mislukt Z-Wave-apparaat verwijderen"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
                         "controller_in_exclusion_mode": "Uw Z-Wave controller bevindt zich nu in de uitsluitingsmodus.",
-                        "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
-                        "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
+                        "exclusion_failed": "Hetapparaat kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
+                        "exclusion_finished": "Apparaat {id} is verwijderd uit het Z-Wave-netwerk.",
                         "follow_device_instructions": "Volg de instructies die bij uw apparaat zijn geleverd om uitsluiting op het apparaat te activeren.",
-                        "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
+                        "introduction": "Verwijder een apparaat uit uw Z-Wave-netwerk, en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
                         "start_exclusion": "Start uitsluiting",
-                        "title": "Een Z-Wave Node verwijderen"
+                        "title": "Een Z-Wave apparaat verwijderen"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Geen"
+                        },
+                        "S0_Legacy": {
+                            "description": "Voorbeeld: Legacy deursloten zonder S2-ondersteuning",
+                            "title": "S0 Legacy"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Voorbeeld: Deursloten en garagedeuren",
+                            "title": "S2 Toegangscontrole"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Voorbeeld: Verlichting, Sensoren en Beveiligingssystemen",
+                            "title": "S2 Geauthenticeerd"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Zoals S2 Geauthenticeerd, maar zonder verificatie dat het juiste apparaat is ingesloten",
+                            "title": "S2 Niet-geverifieerd"
+                        }
                     }
                 }
             },
@@ -3203,6 +3446,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "Actieve luisteraars",
                         "alert_event_type": "Het type gebeurtenis is een verplicht veld",
                         "available_events": "Beschikbare gebeurtenissen",
                         "count_listeners": " ({count} luisteraars)",
@@ -3255,6 +3499,31 @@
                         "state_attributes": "Status attributen (YAML, optioneel)",
                         "title": "Toestanden"
                     },
+                    "statistics": {
+                        "entity": "Entiteit",
+                        "fix_issue": {
+                            "fix": "Probleem oplossen",
+                            "units_changed": {
+                                "clear": "Verwijder alle oude statistische data voor deze entiteit",
+                                "fix": "Probleem oplossen",
+                                "title": "De eenheid van deze entiteit is gewijzigd",
+                                "update": "Wijzig de historische statistische van ''{metadata_unit}'' naar ''{state_unit}''"
+                            }
+                        },
+                        "issue": "Probleem",
+                        "issues": {
+                            "entity_no_longer_recorded": "Deze entiteit wordt niet meer opgenomen.",
+                            "entity_not_recorded": "Deze entiteit is uitgesloten van opname.",
+                            "no_state": "De status voor deze entiteit is niet beschikbaar.",
+                            "units_changed": "De eenheid van deze entiteit is gewijzigd van ''{metadata_unit}'' naar ''{state_unit}''.",
+                            "unsupported_state_class": "De state class \"{state_class}\" van deze entiteit wordt niet ondersteund.",
+                            "unsupported_unit": "De eenheid (''{state_unit}'') van deze entiteit komt niet overeen met een eenheid van apparaatklasse ''{device_class}''.",
+                            "unsupported_unit_metadata": "De eenheid (''{metadata_unit}'') van de opgenomen statistieken komt niet overeen met de ondersteunde eenheid ''{supported_unit}'' van apparaatklasse ''{device_class}''.",
+                            "unsupported_unit_state": "De eenheid ('' {state_unit} '') van deze entiteit komt niet overeen met een eenheid van device class '' {device_class} ''."
+                        },
+                        "no_issue": "Geen probleem",
+                        "title": "Statistieken"
+                    },
                     "templates": {
                         "all_listeners": "Deze template luistert naar alle gebeurtenissen met gewijzigde status.",
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
@@ -3274,6 +3543,14 @@
                 }
             },
             "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "Monitor individuele apparaten",
+                    "energy_distribution_title": "Energiedistributie",
+                    "energy_gas_graph_title": "Gasverbruik",
+                    "energy_solar_graph_title": "Zonne-energieproductie",
+                    "energy_sources_table_title": "Bronnen",
+                    "energy_usage_graph_title": "Energieverbruik"
+                },
                 "charts": {
                     "by_device": "Verbruik per apparaat",
                     "solar": "Zonne-energie",
@@ -3306,8 +3583,70 @@
                         "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties pagina om te beginnen.",
                         "title": "Welkom thuis"
                     },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Deze kaart geeft aan hoeveel van de energie die uw huis heeft verbruikt, is opgewekt met niet-fossiele brandstoffen zoals zon, wind en kernenergie. Hoe hoger, hoe beter!",
+                            "non_fossil_energy_consumed": "Niet-fossiele energie verbruikt",
+                            "non_fossil_energy_not_calculated": "Verbruikte niet-fossiele energie kon niet worden berekend"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Energieverbruik"
+                        },
+                        "energy_distribution": {
+                            "battery": "Batterij",
+                            "gas": "Gas",
+                            "go_to_energy_dashboard": "Ga naar energie dashboard",
+                            "grid": "Net",
+                            "home": "Thuis",
+                            "non_fossil": "Niet-fossiel",
+                            "solar": "Zonne-energie"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Verwachting {name}",
+                            "production": "Productie {name}"
+                        },
+                        "energy_sources_table": {
+                            "battery_total": "Batterij totaal",
+                            "cost": "Kostprijs",
+                            "energy": "Energie",
+                            "grid_total": "Net totaal",
+                            "source": "Bron",
+                            "total_costs": "Totale kosten"
+                        },
+                        "energy_usage_graph": {
+                            "combined_from_grid": "Gecombineerd van net",
+                            "consumed_battery": "Verbruik batterij",
+                            "consumed_solar": "Verbruik zonne-energie",
+                            "total_consumed": "Totaal verbruikt {num} kWh",
+                            "total_returned": "Totaal teruggeleverd {num} kWh"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "Als de naald in het paars staat, heeft u meer energie teruggegeven aan het net dan u ervan heeft verbruikt. Als de naald in het blauw staat, heeft u meer energie van het net verbruikt dan teruggegeven.",
+                            "energy_dependency": "Deze kaart geeft uw netto-energieverbruik weer.",
+                            "grid_neutrality_not_calculated": "Net neutraliteit kon niet berekend worden",
+                            "net_consumed_grid": "Verbruikte energie",
+                            "net_returned_grid": "Teruggeleverde energie",
+                            "red_green_color_explain": "Als het groen is, betekent dit dat je meer energie hebt opgewekt dan je van het net hebt verbruikt. Als het in het rood staat, betekent dit dat je voor een deel van het energieverbruik van je huis afhankelijk was van het net."
+                        },
+                        "loading": "Laden...",
+                        "no_data": "Er zijn geen gegevens om weer te geven. Het kan tot 2 uur duren voordat nieuwe gegevens binnenkomen nadat u uw energiedashboard heeft geconfigureerd.",
+                        "no_data_period": "Er zijn geen gegevens voor deze periode.",
+                        "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Deze kaart geeft aan hoeveel van de geproduceerde zonne-energie door uw huis is gebruikt in plaats van teruggeleverd aan het net.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Als dit aantal doorgaans erg laag is, wat wijst op een overmatige productie van zonne-energie, kunt u overwegen om een thuisbatterij of elektrische auto op te laden vanaf uw zonnepanelen in tijden van hoge zonneproductie.",
+                            "not_produced_solar_energy": "U heeft geen zonne-energie geproduceerd",
+                            "self_consumed_solar_could_not_calc": "Zelfverbruikte zonne-energie kon niet worden berekend",
+                            "self_consumed_solar_energy": "Zelf verbruikte zonne-energie"
+                        }
+                    },
                     "entities": {
                         "never_triggered": "Nooit uitgevoerd"
+                    },
+                    "iframe": {
+                        "error_secure_context": "Kan iframes verwijzend naar websites over {target_protocol} niet laden als Home Assistant verbinding maakt over {context_protocol}."
+                    },
+                    "map": {
+                        "reset_focus": "Reset focus"
                     },
                     "picture-elements": {
                         "call_service": "Roep service {name} aan",
@@ -3329,14 +3668,24 @@
                         "drag_and_drop": "Slepen en neerzetten",
                         "reorder_items": "Artikelen opnieuw ordenen"
                     },
+                    "show_more_info": "Toon meer informatie",
                     "starting": {
-                        "description": "Home Assistant is aan het opstarten, even geduld..."
+                        "description": "Home Assistant is aan het opstarten, even geduld…"
                     }
                 },
                 "changed_toast": {
                     "message": "De Lovelace UI-configuratie voor dit dashboard is bijgewerkt. Vernieuwen om wijzigingen te zien?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "Dag",
+                        "month": "Maand",
+                        "next": "Volgende",
+                        "previous": "Vorige",
+                        "today": "Vandaag",
+                        "week": "Week",
+                        "year": "Jaar"
+                    },
                     "timestamp-display": {
                         "invalid": "Ongeldige tijdstempel",
                         "invalid_format": "Ongeldige weergave formaat"
@@ -3358,9 +3707,9 @@
                     },
                     "card": {
                         "alarm-panel": {
-                            "available_states": "Beschikbare statussen",
-                            "description": "Met de Alarm Panel-kaart kunt u de integraties van uw alarmcentrale in- en uitschakelen.",
-                            "name": "Alarm paneel"
+                            "available_states": "Beschikbare toestanden",
+                            "description": "Met de alarmpaneelkaart kunt u de integraties van uw alarmcentrale in- en uitschakelen.",
+                            "name": "Alarmpaneel"
                         },
                         "button": {
                             "default_action_help": "De standaard actie is afhankelijk van de mogelijkheden van de entiteit. Deze kan worden omgeschakeld of meer informatie kan worden getoond.",
@@ -3576,7 +3925,10 @@
                         "weather-forecast": {
                             "description": "De Weather Forecast-kaart geeft het weer weer. Erg handig om op te nemen op interfaces die mensen aan de muur hangen.",
                             "name": "Weersverwachting",
-                            "show_forecast": "Toon Weersvoorspelling"
+                            "show_both": "Toon het huidige weer en weersvoorspelling",
+                            "show_forecast": "Toon Weersvoorspelling",
+                            "show_only_current": "Toon alleen het huidige weer",
+                            "show_only_forecast": "Toon alleen weersvoorspelling"
                         }
                     },
                     "cardpicker": {
@@ -3594,7 +3946,8 @@
                         "none": "Geen"
                     },
                     "edit_badges": {
-                        "panel_mode": "Deze badges worden niet weergegeven omdat deze weergave zich in de \"Paneelmodus\" bevindt."
+                        "panel_mode": "Deze badges worden niet weergegeven omdat deze weergave zich in de \"Paneelmodus\" bevindt.",
+                        "view_no_badges": "Badges worden niet ondersteund door het huidige weergavetype."
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
@@ -3607,6 +3960,8 @@
                         "move": "Verplaats naar weergave",
                         "move_after": "Verplaats kaart na",
                         "move_before": "Verplaats kaart voor",
+                        "move_down": "Verplaats card omlaag",
+                        "move_up": "Verplaats card omhoog",
                         "options": "Meer opties",
                         "pick_card": "Welke kaart wil je toevoegen?",
                         "pick_card_view_title": "Welke kaart wil je toevoegen aan je {name} weergave?",
@@ -3636,7 +3991,7 @@
                         "tab_visibility": "Zichtbaarheid",
                         "type": "Weergavetype",
                         "types": {
-                            "masonry": "tegelvorm",
+                            "masonry": "Tegelvorm (standaard)",
                             "panel": "Paneel (1 kaart)",
                             "sidebar": "Zijbalk"
                         },
@@ -3706,7 +4061,8 @@
                     },
                     "select_view": {
                         "dashboard_label": "Dashboard",
-                        "header": "Kies een weergave"
+                        "header": "Kies een weergave",
+                        "views_label": "Weergave"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3770,6 +4126,9 @@
                 "empty": "Je hebt geen berichten",
                 "playback_title": "Bericht afspelen"
             },
+            "map": {
+                "edit_zones": "Wijzig Zones"
+            },
             "my": {
                 "component_not_loaded": "Deze omleiding wordt niet ondersteund door uw Home Assistant-instantie. U heeft de integratie {integration} nodig om deze omleiding te gebruiken.",
                 "documentation": "documentatie",
@@ -3783,7 +4142,7 @@
                 "authorizing_client": "Je staat op het punt {clientId} toegang te geven tot je Home Assistant-instantie.",
                 "form": {
                     "error": "Fout: {error}",
-                    "next": "Volgende",
+                    "next": "Login",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -3876,7 +4235,8 @@
                 "initializing": "Initialiseren",
                 "logging_in_to_with": "Aanmelden bij **{locationName}** met **{authProviderName}**.",
                 "logging_in_with": "Aan het inloggen met **{authProviderName}**.",
-                "pick_auth_provider": "Of log in met"
+                "pick_auth_provider": "Of log in met",
+                "store_token": "Ik wil ingelogd blijven"
             },
             "page-demo": {
                 "cards": {
@@ -3944,17 +4304,19 @@
                 "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
                 "next": "Volgende",
                 "restore": {
-                    "addons": "Invoegtoepassingen",
-                    "confirm_password": "Bevestig Backup-wachtwoord",
-                    "description": "Je kunt ook herstellen vanaf een eerdere backup.",
+                    "addons": "Add-ons",
+                    "confirm_password": "Bevestig backup-wachtwoord",
+                    "description": "Je kunt ook herstellen vanaf een eerdere back-up.",
                     "folders": "Mappen",
+                    "full_backup": "Volledige back-up",
                     "hide_log": "Verberg volledig logboek",
                     "in_progress": "Herstel in uitvoering",
-                    "password": "Backup wachtwoord",
+                    "partial_backup": "Gedeeltelijke back-up",
+                    "password": "Back-up wachtwoord",
                     "password_protection": "Wachtwoord bescherming",
                     "select_type": "Selecteer wat u wilt herstellen",
                     "show_log": "Volledig logboek weergeven",
-                    "type": "Backup type"
+                    "type": "Back-up type"
                 },
                 "user": {
                     "create_account": "Account aanmaken",
@@ -3996,6 +4358,7 @@
                     "header": "Wijzig de volgorde en verberg items van de zijbalk"
                 },
                 "dashboard": {
+                    "default_dashboard_label": "Overzicht (standaard)",
                     "description": "Kies een standaard dashboard voor dit apparaat.",
                     "dropdown_label": "Dashboard",
                     "header": "Dashboard"
@@ -4121,6 +4484,8 @@
         "sidebar": {
             "done": "Klaar",
             "external_app_configuration": "App configuratie",
+            "hide_panel": "Paneel verbergen",
+            "show_panel": "Toon paneel",
             "sidebar_toggle": "Zijbalk in- en uitschakelen"
         }
     }

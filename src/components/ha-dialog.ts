@@ -38,6 +38,7 @@ export class HaDialog extends Dialog {
         .mdc-dialog {
           --mdc-dialog-scroll-divider-color: var(--divider-color);
           z-index: var(--dialog-z-index, 7);
+          -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
           backdrop-filter: var(--dialog-backdrop-filter, none);
         }
         .mdc-dialog__actions {
@@ -71,6 +72,10 @@ export class HaDialog extends Dialog {
           position: var(--dialog-surface-position, relative);
           top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
+          border-radius: var(
+            --ha-dialog-border-radius,
+            var(--ha-card-border-radius, 4px)
+          );
         }
         :host([flexContent]) .mdc-dialog .mdc-dialog__content {
           display: flex;
