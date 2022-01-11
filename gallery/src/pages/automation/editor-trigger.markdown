@@ -1,3 +1,3 @@
 ---
-title: Editor Trigger
+title: Triggers
 ---
