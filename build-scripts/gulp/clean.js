@@ -31,6 +31,6 @@ gulp.task("clean-hassio", () =>
 gulp.task(
   "clean-gallery",
   gulp.parallel("clean-translations", () =>
-    del([paths.gallery_output_root, paths.build_dir])
+    del([paths.gallery_output_root, paths.gallery_build, paths.build_dir])
   )
 );

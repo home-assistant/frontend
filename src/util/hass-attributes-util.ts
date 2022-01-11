@@ -39,6 +39,7 @@ const hassAttributeUtil = {
       "vibration",
       "window",
     ],
+    button: ["restart", "update"],
     cover: [
       "awning",
       "blind",

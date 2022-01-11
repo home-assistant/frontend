@@ -13,6 +13,11 @@ import { Constructor } from "../types";
 
 const DEBUG = false;
 
+// eslint-disable-next-line import/no-mutable-exports
+export let historyPromise: Promise<void> | undefined;
+
+let historyResolve: undefined | (() => void);
+
 export const urlSyncMixin = <
   T extends Constructor<ReactiveElement & ProvideHassElement>
 >(
@@ -62,16 +67,26 @@ export const urlSyncMixin = <
             if (DEBUG) {
               console.log("remove state", ev.detail.dialog);
             }
-            this._ignoreNextPopState = true;
-            mainWindow.history.back();
+            if (history.length) {
+              this._ignoreNextPopState = true;
+              historyPromise = new Promise((resolve) => {
+                historyResolve = () => {
+                  resolve();
+                  historyResolve = undefined;
+                  historyPromise = undefined;
+                };
+                mainWindow.history.back();
+              });
+            }
           }
         };
 
         private _popstateChangeListener = (ev: PopStateEvent) => {
           if (this._ignoreNextPopState) {
             if (
-              ev.state?.oldState?.replaced ||
-              ev.state?.oldState?.dialogParams === null
+              history.length &&
+              (ev.state?.oldState?.replaced ||
+                ev.state?.oldState?.dialogParams === null)
             ) {
               // if the previous dialog was replaced, or we could not copy the params, and the current dialog is closed, we should also remove the previous dialog from history
               if (DEBUG) {
@@ -80,7 +95,13 @@ export const urlSyncMixin = <
               mainWindow.history.back();
               return;
             }
+            if (DEBUG) {
+              console.log("ignore popstate");
+            }
             this._ignoreNextPopState = false;
+            if (historyResolve) {
+              historyResolve();
+            }
             return;
           }
           if (ev.state && "dialog" in ev.state) {
@@ -88,6 +109,9 @@ export const urlSyncMixin = <
               console.log("popstate", ev);
             }
             this._handleDialogStateChange(ev.state);
+          }
+          if (historyResolve) {
+            historyResolve();
           }
         };
 

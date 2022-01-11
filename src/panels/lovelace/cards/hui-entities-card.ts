@@ -134,7 +134,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config.header) {
-      this._headerElement = createHeaderFooterElement(this._config.header);
+      this._headerElement = createHeaderFooterElement(
+        this._config.header
+      ) as LovelaceHeaderFooter;
+      this._headerElement.type = "header";
       if (this._hass) {
         this._headerElement.hass = this._hass;
       }
@@ -143,7 +146,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     if (this._config.footer) {
-      this._footerElement = createHeaderFooterElement(this._config.footer);
+      this._footerElement = createHeaderFooterElement(
+        this._config.footer
+      ) as LovelaceHeaderFooter;
+      this._footerElement.type = "footer";
       if (this._hass) {
         this._footerElement.hass = this._hass;
       }
@@ -157,16 +163,16 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (!this._config || !this._hass) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldHass = changedProps.get("_hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | EntitiesCardConfig
       | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("_hass") &&
+        (!oldHass || oldHass.themes !== this._hass.themes)) ||
+      (changedProps.has("_config") &&
+        (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
@@ -231,7 +237,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        overflow: hidden;
       }
       .card-header {
         display: flex;
@@ -261,7 +266,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       #states > div > * {
-        overflow: hidden;
+        overflow: clip visible;
       }
 
       #states > div {
@@ -290,7 +295,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const element = createRowElement(
-      !("type" in entityConf) && this._config!.state_color
+      (!("type" in entityConf) || entityConf.type === "conditional") &&
+        this._config!.state_color
         ? ({
             state_color: true,
             ...(entityConf as EntityConfig),

@@ -179,6 +179,7 @@
                     "label": {
                         "apparmor": "Apparmor",
                         "auth": "autenticación",
+                        "core": "Núcleo",
                         "docker": "Docker",
                         "hardware": "Hardware",
                         "hass": "hass",
@@ -1060,6 +1061,7 @@
                 "history": "Historial",
                 "last_changed": "Último cambio",
                 "last_updated": "Última actualización",
+                "logbook": "Registro",
                 "person": {
                     "create_zone": "Crear zona desde ubicación actual"
                 },
@@ -1078,6 +1080,7 @@
                     "last_triggered": "Última activación"
                 },
                 "settings": "Configuración de la entidad",
+                "show_more": "Mostrar más",
                 "sun": {
                     "elevation": "Elevación",
                     "rising": "Salida del sol",
@@ -1725,18 +1728,25 @@
                         "add_blueprint": "Importar plano",
                         "confirm_delete_header": "¿Eliminar este plano?",
                         "confirm_delete_text": "¿Está seguro de que desea eliminar este plano?",
+                        "create_automation": "Crear automatización",
+                        "create_script": "Crear script",
                         "delete_blueprint": "Eliminar plano",
                         "discover_more": "Descubra más planos",
                         "header": "Editor de planos",
                         "headers": {
                             "domain": "Dominio",
                             "file_name": "Nombre del archivo",
-                            "name": "Nombre"
+                            "name": "Nombre",
+                            "type": "Tipo"
                         },
                         "introduction": "La configuración de planos le permite importar y administrar sus planos.",
                         "learn_more": "Obtenga más información sobre el uso de planos",
                         "share_blueprint": "Compartir plano",
                         "share_blueprint_no_url": "No se puede compartir el plano: no hay URL de origen",
+                        "types": {
+                            "automation": "Automatización",
+                            "script": "Script"
+                        },
                         "use_blueprint": "Crear automatización"
                     }
                 },
@@ -2042,10 +2052,12 @@
                     "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Agregar a Lovelace",
+                        "control": "Controles",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidad deshabilitada}\n  other {entidades deshabilitadas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Ocultar deshabilitadas",
-                        "none": "Este dispositivo no tiene entidades"
+                        "none": "Este dispositivo no tiene entidades",
+                        "sensor": "Sensores"
                     },
                     "name": "Nombre",
                     "no_devices": "Sin dispositivos",
@@ -3099,11 +3111,13 @@
                     "device_info": {
                         "device_config": "Configurar dispositivo",
                         "heal_node": "Nodo de curación",
+                        "highest_security": "Seguridad máxima",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del nodo",
                         "reinterview_device": "Dispositivo de reentrevista",
                         "remove_failed": "Quitar dispositivo fallido",
-                        "zwave_info": "Información de Z-Wave"
+                        "zwave_info": "Información de Z-Wave",
+                        "zwave_plus": "Z-Wave Plus"
                     },
                     "heal_network": {
                         "healing_cancelled": "Se canceló la recuperación de la red.",
@@ -3190,6 +3204,11 @@
                         "introduction": "Elimine un nodo de su red Z-Wave y elimine el dispositivo asociado y las entidades de Home Assistant.",
                         "start_exclusion": "Iniciar exclusión",
                         "title": "Eliminar un nodo Z-Wave"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Ninguno"
+                        }
                     }
                 }
             },
@@ -3254,6 +3273,11 @@
                         "state": "Estado",
                         "state_attributes": "Atributos del estado (YAML, opcional)",
                         "title": "Estados"
+                    },
+                    "statistics": {
+                        "issues": {
+                            "no_state": "No hay estado disponible para esta entidad"
+                        }
                     },
                     "templates": {
                         "all_listeners": "Esta plantilla escucha todos los eventos de cambio de estado.",

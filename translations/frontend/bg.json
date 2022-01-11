@@ -2872,6 +2872,7 @@
                     "device_info": {
                         "device_config": "Конфигуриране на устройство",
                         "node_status": "Състояние на възела",
+                        "zwave_plus": "Z-Wave Plus",
                         "zwave_plus_version": "Версия {version}"
                     },
                     "heal_network": {
@@ -2930,6 +2931,14 @@
                     "remove_node": {
                         "exclusion_failed": "Възелът не може да бъде премахнат. Моля, проверете журналите за повече информация.",
                         "title": "Премахване на Z-Wave възел"
+                    },
+                    "security_classes": {
+                        "S0_Legacy": {
+                            "title": "S0 наследено"
+                        },
+                        "S2_Authenticated": {
+                            "title": "S2 удостоверено"
+                        }
                     }
                 }
             },
@@ -3597,7 +3606,8 @@
                 "initializing": "Инициализиране",
                 "logging_in_to_with": "Влизане в **{locationName}** с **{authProviderName}**.",
                 "logging_in_with": "Вход с **{authProviderName}**.",
-                "pick_auth_provider": "Или влезте с"
+                "pick_auth_provider": "Или влезте с",
+                "store_token": "Запомни ме"
             },
             "page-demo": {
                 "cards": {

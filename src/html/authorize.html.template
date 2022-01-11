@@ -33,7 +33,7 @@
   <body>
     <div class="content">
       <div class="header">
-        <img src="/static/icons/favicon-192x192.png" height="52" />
+        <img src="/static/icons/favicon-192x192.png" height="52" alt="" />
         Home Assistant
       </div>
       <ha-authorize><p>Initializing</p></ha-authorize>

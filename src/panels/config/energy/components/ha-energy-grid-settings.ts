@@ -202,7 +202,7 @@ export class EnergyGridSettings extends LitElement {
                 src=${brandsUrl({
                   domain: "co2signal",
                   type: "icon",
-                  darkOptimized: this.hass.selectedTheme?.dark,
+                  darkOptimized: this.hass.themes?.darkMode,
                 })}
               />
               <span class="content">${entry.title}</span>
@@ -223,7 +223,7 @@ export class EnergyGridSettings extends LitElement {
                     src=${brandsUrl({
                       domain: "co2signal",
                       type: "icon",
-                      darkOptimized: this.hass.selectedTheme?.dark,
+                      darkOptimized: this.hass.themes?.darkMode,
                     })}
                   />
                   <mwc-button @click=${this._addCO2Sensor}>

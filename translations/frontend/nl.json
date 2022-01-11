@@ -549,6 +549,9 @@
                 "last_triggered": "Laatst uitgevoerd",
                 "trigger": "Uitvoeren"
             },
+            "button": {
+                "press": "Klik"
+            },
             "camera": {
                 "not_available": "Afbeelding niet beschikbaar"
             },
@@ -1446,7 +1449,7 @@
                                     "label": "Apparaat"
                                 },
                                 "event": {
-                                    "event": "Gebeurtenis:",
+                                    "event": "Gebeurtenis",
                                     "label": "Gebeurtenis uitvoeren",
                                     "service_data": "Service data"
                                 },

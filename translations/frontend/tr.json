@@ -77,12 +77,13 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Etkin",
+            "armed": "Aktif",
             "armed_away": "Aktif",
             "armed_custom_bypass": "Aktif",
             "armed_home": "Aktif",
             "armed_night": "Aktif",
-            "arming": "Etkinleştir",
+            "armed_vacation": "Aktif",
+            "arming": "Alarm etkinleşiyor",
             "disarmed": "Etkisiz",
             "disarming": "Etkisiz",
             "pending": "Askıda",
@@ -179,6 +180,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "kimlik doğrulaması",
+                        "core": "Çekirdek",
                         "docker": "docker",
                         "hardware": "donanım",
                         "hass": "hass",
@@ -203,6 +205,10 @@
                     "stage": {
                         "description": "Eklentiler üç aşamadan birine sahip olabilir: \n\n {icon_stable} ** Kararlı **: Bunlar, üretimde kullanılmaya hazır eklentilerdir. \n\n {icon_experimental} ** Deneysel **: Bunlar hatalar içerebilir ve tamamlanmamış olabilir. \n\n {icon_deprecated} ** Kullanımdan kaldırıldı **: Bu eklentiler artık herhangi bir güncelleme almayacak.",
                         "title": "Eklenti Aşaması"
+                    },
+                    "stages": {
+                        "deprecated": "Kullanımdan kaldırılmış",
+                        "experimental": "Deneysel"
                     }
                 },
                 "changelog": "Değişiklik günlüğü",
@@ -277,20 +283,22 @@
             "create_blocked_not_running": "{state} durumunda olduğundan şu anda anlık görüntü oluşturmak mümkün değil.",
             "created": "Oluşturuldu",
             "delete_backup_confirm": "Sil",
+            "delete_backup_text": "{number} {number, plural,\n  one {backup}\n  other {backups}\n} bunu silmek istiyor musunuz?",
             "delete_backup_title": "Yedeği Sil",
             "delete_selected": "Seçili yedekleri sil",
             "enter_password": "Lütfen bir parola girin.",
             "failed_to_delete": "Silinemedi",
             "folders": "Klasörler",
             "full_backup": "Tam Yedekleme",
-            "name": "Ad",
+            "name": "Yedek adı",
             "no_backups": "Henüz yedeğiniz yok.",
             "partial_backup": "Kısmi anlık görüntü",
             "password": "Parola",
             "password_protection": "Parola koruması",
+            "passwords_not_matching": "Şifreler uyuşmuyor",
             "select_type": "Nelerin geri yükleneceğini seçin",
             "selected": "{number} seçildi",
-            "type": "Tür",
+            "type": "Yedekleme türü",
             "upload_backup": "Anlık Görüntüyü Yükle"
         },
         "common": {
@@ -341,19 +349,27 @@
             "addon_new_version": "Yeni sürüm mevcut",
             "addon_running": "Eklenti çalışıyor",
             "addon_stopped": "Eklenti durduruldu",
-            "addons": "Eklentiler",
+            "addons": "Yüklü eklentiler",
             "no_addons": "Henüz yüklü eklentiniz yok. Başlamak için eklenti mağazasına gidin!"
         },
         "dialog": {
             "datadisk_move": {
                 "cancel": "İptal",
+                "description": "Şu anda {current_path} '' kullanıyorsunuz. Veri disklerini taşımak, cihazınızı yeniden başlatacak ve bu işlemin {time} dakika süreceği tahmin ediliyor. Bu süre zarfında Home Assistant kurulumunuza erişilemez. İşlem sırasında gücü kesmeyin!",
                 "loading_devices": "Cihazlar yükleniyor",
-                "move": "Taşı"
+                "move": "Taşı",
+                "moving": "Veri diskini taşıma",
+                "moving_desc": "Veri diski yeniden başlatılıyor ve taşınıyor. Lütfen sabırlı olun.",
+                "no_devices": "Uygun takılı cihaz bulunamadı",
+                "select_device": "Yeni veri diski seçin",
+                "title": "Veridiskini ta"
             },
             "hardware": {
                 "attributes": "Varlıklar",
+                "device_path": "Aygıt yolu",
                 "id": "ID",
                 "search": "Donanım ara",
+                "subsystem": "Alt sistem",
                 "title": "Donanım"
             },
             "network": {
@@ -397,6 +413,7 @@
             },
             "update": {
                 "backup": "Yedekleme",
+                "create_backup": "Güncellemeden önce {name} yedeğini oluşturun",
                 "creating_backup": "{name} anlık görüntüsü oluşturuluyor",
                 "updating": "{name} , {version} sürümüne güncelleniyor"
             }
@@ -405,6 +422,8 @@
             "error": "Bilinmeyen bir hata oluştu",
             "error_addon_no_ingress": "İstenen eklenti girişi desteklemiyor",
             "error_addon_not_found": "Eklenti bulunamadı",
+            "error_addon_not_installed": "İstenen eklenti yüklenmedi. Lütfen önce onu kurun",
+            "error_addon_not_started": "İstenen eklenti çalışmıyor. Lütfen önce başlatın",
             "faq_link": "Home Assistant SSS",
             "not_supported": "Bu yönlendirme, Home Assistant örneğiniz tarafından desteklenmiyor. Desteklenen yönlendirmeler ve bunların sunulduğu sürüm için {link} bağlantısını kontrol edin."
         },
@@ -435,6 +454,7 @@
                 "emmc_lifetime_used": "eMMC Kullanım Ömrü",
                 "failed_to_get_hardware_list": "Donanım listesi alınamadı",
                 "failed_to_import_from_usb": "USB'den içe aktarılamadı",
+                "failed_to_move": "Veri diski taşınamadı",
                 "failed_to_reboot": "Ana bilgisayar yeniden başlatılamadı",
                 "failed_to_set_hostname": "Ana bilgisayar adı ayarlanamadı",
                 "failed_to_shutdown": "Ana bilgisayar kapatılamadı",
@@ -442,6 +462,7 @@
                 "hostname": "Ana bilgisayar adı",
                 "import_from_usb": "USB'den içe aktar",
                 "ip_address": "IP Adresi",
+                "move_datadisk": "Veridiskini taşı",
                 "new_hostname": "Lütfen yeni bir ana bilgisayar adı girin:",
                 "operating_system": "İşletim sistemi",
                 "reboot_host": "Ana bilgisayarı yeniden başlatın",
@@ -467,7 +488,7 @@
                 "leave_beta_action": "Beta kanalından ayrıl",
                 "leave_beta_description": "Home Assistant, Süpervizör ve ana bilgisayar için kararlı güncellemeler alın",
                 "ram_usage": "Süpervizör RAM Kullanımı",
-                "reload_supervisor": "Süpervizörü Yeniden Yükleme",
+                "reload_supervisor": "Süpervizörü Yeniden Yükle",
                 "search": "Ara",
                 "share_diagnostics": "Tanılamayı Paylaş",
                 "share_diagnostics_description": "Kilitlenme raporlarını ve tanılama bilgilerini paylaşın.",
@@ -484,8 +505,10 @@
                 "unhealthy_title": "Kurulumunuz sağlıksız",
                 "unsupported_description": "Aşağıda, kurulumunuzla ilgili bulunan sorunların bir listesi verilmiştir, sorunları nasıl çözebileceğinizi öğrenmek için bağlantılara tıklayın.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor sunucuda aktif değil",
                     "container": "Sorunlara neden olduğu bilinen kapsayıcılar",
                     "content-trust": "İçerik güveni doğrulaması devre dışı bırakıldı",
+                    "content_trust": "İçerik güveni doğrulaması devre dışı bırakıldı",
                     "dbus": "DBUS",
                     "docker_configuration": "Docker Yapılandırması",
                     "docker_version": "Docker Sürümü",
@@ -495,6 +518,8 @@
                     "os": "İşletim sistemi",
                     "os_agent": "OS Aracısı",
                     "privileged": "Süpervizör ayrıcalıklı değil",
+                    "software": "Desteklenmeyen yazılım algılandı",
+                    "source_mods": "Kaynak değişiklikleri",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Desteklenmeyen bir kurulum çalıştırıyorsunuz",
@@ -523,6 +548,9 @@
             "automation": {
                 "last_triggered": "Son tetiklenme",
                 "trigger": "Eylemleri Çalıştırın"
+            },
+            "button": {
+                "press": "Basınız"
             },
             "camera": {
                 "not_available": "Resim mevcut değil"
@@ -686,6 +714,7 @@
             "leave": "Ayrıl",
             "loading": "Yükleniyor",
             "menu": "Menü",
+            "move": "Taşı",
             "next": "Sonraki",
             "no": "Hayır",
             "not_now": "Şimdi değil",
@@ -796,7 +825,9 @@
                     "became_unavailable": "ulaşılamaz hale geldi",
                     "changed_to_state": "{state} değiştirildi",
                     "cleared_device_class": "temizlendi ( {device_class} algılanmadı)",
+                    "cleared_tampering": "kurcalanma temizlendi",
                     "detected_device_class": "{device_class} algılandı",
+                    "detected_tampering": "kurcalanma algılandı",
                     "is_closing": "kapanıyor",
                     "is_opening": "açılıyor",
                     "rose": "gül",
@@ -819,6 +850,7 @@
                     "was_unplugged": "fişi çekildi",
                     "was_unsafe": "güvensiz"
                 },
+                "retrieval_error": "Günlük defteri girdisi alma sırasında hata oluştu",
                 "show_trace": "İzi göster"
             },
             "media-browser": {
@@ -934,6 +966,7 @@
                 "no_statistics_found": "İstatistik bulunamadı.",
                 "statistic_types": {
                     "max": "maksimum",
+                    "mean": "demek",
                     "min": "minimum",
                     "sum": "toplam"
                 }
@@ -960,6 +993,9 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Devre dışı bırakılırsa, {integration} için yeni keşfedilen varlıklar otomatik olarak Home Assistant'a eklenmez.",
                 "enable_new_entities_label": "Yeni eklenen varlıkları etkinleştir.",
+                "enable_polling_description": "Home Assistant, güncellemeler için {integration}",
+                "enable_polling_label": "Güncellemeler için kontrol etmeyi etkinleştirin.",
+                "restart_home_assistant": "Değişikliklerinizin etkili olması için Home Assistant'ı yeniden başlatmanız gerekir.",
                 "title": "{integration} için Sistem Seçenekleri",
                 "update": "Güncelle"
             },
@@ -1071,6 +1107,7 @@
                 "history": "Geçmiş",
                 "last_changed": "Son değişiklik",
                 "last_updated": "Son güncelleme",
+                "logbook": "Kayıt Defteri",
                 "person": {
                     "create_zone": "Geçerli konumdan bölge oluşturma"
                 },
@@ -1089,6 +1126,7 @@
                     "last_triggered": "Son Tetiklenen"
                 },
                 "settings": "Varlık ayarları",
+                "show_more": "Daha fazla göster",
                 "sun": {
                     "elevation": "Yükseklik",
                     "rising": "Yükseliyor",
@@ -1124,6 +1162,10 @@
             "options_flow": {
                 "form": {
                     "header": "Seçenekler"
+                },
+                "loading": {
+                    "loading_flow": "{integration} seçenekleri başlatılırken lütfen bekleyin",
+                    "loading_step": "{integration} için sonraki adım yükleniyor"
                 },
                 "success": {
                     "description": "Seçenekler başarıyla kaydedildi."
@@ -1281,7 +1323,8 @@
                 "observer": "Gözlemciyi Kontrol Edin",
                 "reboot": "Ana bilgisayarı yeniden başlatmayı deneyin",
                 "system_health": "Sistem Sağlığını Kontrol Edin",
-                "title": "Süpervizör paneli yüklenemedi!"
+                "title": "Süpervizör paneli yüklenemedi!",
+                "wait": "Yeni başladıysanız, Süpervizöre başlaması için yeterli zaman verdiğinizden emin olun."
             }
         },
         "login-form": {
@@ -1299,6 +1342,7 @@
         "notification_toast": {
             "connection_lost": "Bağlantı koptu. Yeniden bağlanıyor …",
             "dismiss": "Yoksay",
+            "integration_starting": "{integration} başlatılırsa, tamamlanana kadar her şey kullanılamaz.",
             "service_call_failed": "{service} çağrı yapılamadı.",
             "started": "Home Assistant başladı!",
             "starting": "Home Assistant başlıyor, arayüzün yüklenmesi için bekleyiniz",
@@ -1440,7 +1484,7 @@
                                 },
                                 "wait_template": {
                                     "continue_timeout": "Zaman aşımına devam et",
-                                    "label": "Bekle",
+                                    "label": "Bir şablon için bekleyin",
                                     "timeout": "Zaman aşımı (isteğe bağlı)",
                                     "wait_template": "Bekleme taslak"
                                 }
@@ -1525,7 +1569,9 @@
                                     }
                                 },
                                 "trigger": {
-                                    "label": "Tetik"
+                                    "id": "Tetikleyici Kimliği",
+                                    "label": "Tetik",
+                                    "no_triggers": "Kullanılabilir tetikleyici yok"
                                 },
                                 "zone": {
                                     "entity": "Konumlu girdi",
@@ -1571,6 +1617,7 @@
                             "delete_confirm": "Bunu silmek istediğinizden emin misiniz?",
                             "duplicate": "Yedekle",
                             "header": "Tetikleyiciler",
+                            "id": "Tetikleyici Kimliği (tetikleyici koşulu tarafından kullanılır)",
                             "introduction": "Tetikleyiciler, bir otomasyon kuralının işlenmesini başlatan şeydir. Aynı kural için birden çok tetikleyici belirtmek mümkündür. Bir tetikleyici başladıktan sonra, Home Assistant varsa koşulları doğrular ve eylemi çağırır.",
                             "learn_more": "Tetikleyiciler hakkında daha fazla bilgi edinin",
                             "name": "Tetik",
@@ -1735,18 +1782,25 @@
                         "add_blueprint": "Taslak ekle",
                         "confirm_delete_header": "Bu taslak silinsin mi?",
                         "confirm_delete_text": "Bu taslağı silmek istediğinizden emin misiniz?",
+                        "create_automation": "Otomasyon oluşturun",
+                        "create_script": "Senaryo oluşturun",
                         "delete_blueprint": "Taslağı sil",
                         "discover_more": "Daha Fazla Taslak Keşfedin",
                         "header": "Taslak Düzenleyici",
                         "headers": {
                             "domain": "Alan adı",
                             "file_name": "Dosya adı",
-                            "name": "Ad"
+                            "name": "Ad",
+                            "type": "Tür"
                         },
                         "introduction": "Taslak düzenleyici, taslakları oluşturmanıza ve düzenlemenize olanak tanır.",
                         "learn_more": "Taslaklar hakkında daha fazla bilgi edinin",
                         "share_blueprint": "Taslağı paylaş",
                         "share_blueprint_no_url": "Taslak paylaşılamıyor: kaynak url yok",
+                        "types": {
+                            "automation": "Otomasyon",
+                            "script": "Senaryo"
+                        },
                         "use_blueprint": "Otomasyon oluşturun"
                     }
                 },
@@ -2055,11 +2109,13 @@
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
                         "config": "Yapılandırma",
+                        "control": "Kontroller",
                         "diagnostic": "Teşhis",
                         "disabled_entities": "+{count} {count, plural,\n  one {engelli varlık}\n  other {engelli varlıklar}\n}",
                         "entities": "Varlıkları",
                         "hide_disabled": "Devre dışı olanları gizle",
                         "none": "Bu cihazın varlığı yok",
+                        "sensor": "Sensörler",
                         "state": "Durum"
                     },
                     "name": "Ad",
@@ -2091,22 +2147,32 @@
                     "scripts": "Komut dosyaları",
                     "unknown_error": "Bilinmeyen hata",
                     "unnamed_device": "Adsız cihaz",
-                    "update": "Güncelle"
+                    "update": "Güncelle",
+                    "update_device_error": "Cihaz güncellenemedi"
                 },
                 "energy": {
                     "battery": {
                         "add_battery_system": "Pil sistemi ekle",
                         "battery_systems": "Pil sistemleri",
+                        "dialog": {
+                            "energy_into_battery": "Aküye giren enerji (kWs)",
+                            "energy_out_of_battery": "Bataryadan çıkan enerji (kWs)",
+                            "header": "Pil sistemini yapılandırın"
+                        },
                         "learn_more": "Nasıl başlayacağınız hakkında daha fazla bilgi.",
                         "sub": "Bir pil sisteminiz varsa, pilinizden ne kadar enerji depolandığını ve kullanıldığını izlemek için yapılandırabilirsiniz.",
                         "title": "Ev Pilin Seviyesi"
                     },
                     "caption": "Enerji",
+                    "delete_integration": "Bu entegrasyonu silmek istediğinizden emin misiniz? Sağladığı varlıkları kaldıracak",
+                    "delete_source": "Bu kaynağı silmek istediğinizden emin misiniz?",
+                    "description": "Enerji üretiminizi ve tüketiminizi izleyin",
                     "device_consumption": {
                         "add_device": "Cihaz Ekle",
                         "add_stat": "Enerjiyi izlemek için varlık seçin",
                         "devices": "Cihazlar",
                         "dialog": {
+                            "device_consumption_energy": "Cihaz tüketim enerjisi (kWh)",
                             "header": "Bir cihaz ekle",
                             "selected_stat_intro": "Cihaz enerji kullanımını temsil eden varlığı seçin."
                         },
@@ -2118,12 +2184,23 @@
                     "gas": {
                         "add_gas_source": "Gaz kaynağı ekle",
                         "dialog": {
+                            "cost_entity": "Fiyatı olan bir varlık kullanın",
+                            "cost_entity_input": "{unit} başına geçerli fiyatı olan varlık",
+                            "cost_number": "Standart bir fiyat kullanın",
                             "cost_number_input": "M³ fiyatı",
                             "cost_number_suffix": "{currency}/m³",
+                            "cost_para": "Home Assistant'ın tüketilen enerjinin maliyetlerini nasıl takip edeceğini seçin.",
+                            "cost_stat": "Toplam maliyetleri izleyen bir varlık kullanın",
+                            "cost_stat_input": "Toplam Maliyet Varlığı",
+                            "energy_stat": "Tüketilen Enerji (m³)",
                             "gas_usage": "Gaz kullanımı",
-                            "m3_or_kWh": "m³ veya kWs"
+                            "header": "Gaz tüketimini yapılandırın",
+                            "m3_or_kWh": "m³ veya kWs",
+                            "no_cost": "Maliyetleri takip etmeyin",
+                            "paragraph": "Gaz tüketimi evinize akan gaz hacmidir."
                         },
                         "gas_consumption": "Gaz tüketimi",
+                        "learn_more": "Nasıl başlayacağınız hakkında daha fazla bilgi.",
                         "sub": "Home Assistant'ın gaz kullanımınızı izlemesine izin verin.",
                         "title": "Gaz Tüketimi"
                     },
@@ -2133,33 +2210,56 @@
                         "add_return": "Geri kazanım ekle",
                         "flow_dialog": {
                             "from": {
+                                "cost_entity": "Fiyatı olan bir varlık kullanın",
+                                "cost_entity_input": "Fiyatı olan bir varlık",
                                 "cost_number": "Standart bir fiyat kullanın",
                                 "cost_number_input": "kWs Ücreti",
                                 "cost_number_suffix": "{currency}/kWs",
+                                "cost_para": "Home Assistant'ın tüketilen enerjinin maliyetlerini nasıl takip edeceğini seçin.",
+                                "cost_stat": "Toplam maliyetleri izleyen bir varlık kullanın",
                                 "cost_stat_input": "Toplam Maliyet Varlığı",
-                                "energy_stat": "Tüketilen Enerji (kWs)"
+                                "energy_stat": "Tüketilen Enerji (kWs)",
+                                "header": "Şebeke tüketimini yapılandırın",
+                                "no_cost": "Maliyetleri takip etmeyin",
+                                "paragraph": "Şebeke tüketimi, enerji şebekesinden evinize akan enerjidir."
                             },
                             "to": {
+                                "cost_entity": "Geçerli oranı olan bir varlık kullanın",
+                                "cost_entity_input": "Mevcut kur ile varlık",
                                 "cost_number": "Statik bir oran kullanın",
                                 "cost_number_input": "kWs Ücreti",
                                 "cost_number_suffix": "{currency}/kWs",
                                 "cost_para": "Enerjiyi şebekeye geri verdiğinizde parayı geri alıyor musunuz?",
+                                "cost_stat": "Alınan toplam parayı izleyen bir varlık kullanın",
+                                "cost_stat_input": "Toplam Ücret Varlığı",
                                 "energy_stat": "Şebekeye geri dönen enerji (kWs)",
                                 "header": "Şebeke üretimini yapılandırın",
                                 "no_cost": "Parayı geri alamıyorum.",
                                 "paragraph": "Şebeke üretimi, güneş panellerinizden şebekeye akan enerjidir."
                             }
                         },
-                        "learn_more": "Nasıl başlayacağınız hakkında daha fazla bilgi."
+                        "grid_carbon_footprint": "Şebeke karbon ayak izi",
+                        "grid_consumption": "Şebeke tüketimi",
+                        "learn_more": "Nasıl başlayacağınız hakkında daha fazla bilgi.",
+                        "return_to_grid": "Şebekeye geri döndü",
+                        "sub": "Şebekeden tükettiğiniz enerji miktarını yapılandırın ve eğer enerji üretiyorsanız şebekeye geri verin. Bu, Home Assistant'ın tüm ev enerji kullanımınızı izlemesini sağlar.",
+                        "title": "Elektrik şebekesi"
                     },
+                    "new_device_info": "Yeni bir cihaz kurduktan sonra, yeni verilerin enerji kontrol panelinize ulaşması 2 saate kadar sürebilir.",
                     "solar": {
                         "add_solar_production": "Güneş enerjisi ürünü ekle",
                         "dialog": {
                             "add_forecast": "Tahmin ekle",
-                            "header": "Güneş panellerini yapılandır"
+                            "dont_forecast_production": "Üretimi tahmin etme",
+                            "forecast_production": "Üretim Tahmini",
+                            "header": "Güneş panellerini yapılandır",
+                            "solar_production_energy": "Güneş enerjisi (kWs)",
+                            "solar_production_forecast": "Güneş enerjisi üretimi tahmini",
+                            "solar_production_forecast_description": "Güneş enerjisi üretim tahmini bilgilerini eklemek, bugün için beklenen üretiminizi hızlı bir şekilde görmenizi sağlar."
                         },
                         "learn_more": "Nasıl başlayacağınız hakkında daha fazla bilgi.",
                         "solar_production": "Güneş enerjisi ürünü",
+                        "stat_predicted_production": "Güneş enerjisi üretiminizin tahmini",
                         "stat_production": "Güneş enerjisi üretiminiz",
                         "stat_return_to_grid": "Güneş enerjisi şebekeye geri döndü",
                         "sub": "Home Assistant'ın güneş panellerinizi izlemesine ve performansları hakkında size fikir vermesine izin verin.",
@@ -2167,7 +2267,36 @@
                     },
                     "validation": {
                         "issues": {
+                            "entity_negative_state": {
+                                "description": "Aşağıdaki varlıklar negatif bir duruma sahiptir, ancak pozitif bir durum beklenir:",
+                                "title": "Varlık olumsuz bir duruma sahip"
+                            },
+                            "entity_not_defined": {
+                                "description": "Aşağıdakileri sağlayan entegrasyonu veya yapılandırmanızı kontrol edin:",
+                                "title": "Varlık tanımlanmadı"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "description": "Aşağıdaki varlıkların durum sınıfı 'measurement' var ancak 'last_reset' eksik:",
+                                "title": "Son sıfırlama kayıp"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Aşağıdaki varlıklar, sayı olarak ayrıştırılamayan bir duruma sahiptir:",
+                                "title": "Varlık sayısal olmayan bir duruma sahip"
+                            },
+                            "entity_unavailable": {
+                                "description": "Bu yapılandırılmış varlıkların durumu şu anda mevcut değil:",
+                                "title": "Varlık kullanılamıyor"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "Aşağıdaki varlıklar, beklenen cihaz sınıfına sahip değil:",
+                                "title": "Beklenmeyen cihaz sınıfı"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "Aşağıdaki varlıklar beklenen durum sınıfına sahip değil:",
+                                "title": "Beklenmedik durum sınıfı"
+                            },
                             "entity_unexpected_state_class_total_increasing": {
+                                "description": "Aşağıdaki varlıklar, 'total_increasing' beklenen durum sınıfına sahip değil",
                                 "title": "Beklenmedik durum sınıfı"
                             },
                             "entity_unexpected_unit_energy": {
@@ -2177,6 +2306,18 @@
                             "entity_unexpected_unit_energy_price": {
                                 "description": "Devamındaki varlıklar bu ölçü birimlerini desteklemiyor ''{currency}/kWs'' veya ''{currency}/Ws'':",
                                 "title": "Beklenmedik durum sınıfı"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "Aşağıdaki kuruluşlar, beklenen 'kWs', 'm³' veya 'ft³' ölçü birimlerine sahip değildir:",
+                                "title": "Beklenmedik ölçü birimi"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "Aşağıdaki varlıklar beklenen ölçü birimlerine sahip değil '' {currency} /kWs'', '' {currency} /Ws'', '' {currency} /m³'' veya '' {currency} /ft³'' :",
+                                "title": "Beklenmedik ölçü birimi"
+                            },
+                            "recorder_untracked": {
+                                "description": "Kayıt cihazı, şu yapılandırılmış varlıkları hariç tutacak şekilde yapılandırılmıştır:",
+                                "title": "Varlık izlenmedi"
                             }
                         }
                     }
@@ -2206,6 +2347,7 @@
                         "header": "Varlıklar",
                         "headers": {
                             "area": "Alan",
+                            "disabled_by": "Tarafından devre dışı bırakıldı",
                             "entity_id": "Varlık kimliği",
                             "integration": "Entegrasyon",
                             "name": "Ad",
@@ -2310,7 +2452,9 @@
                             },
                             "disabled_cause": "{cause} tarafından devre dışı bırakıldı"
                         },
+                        "disable_error": "Entegrasyonun etkinleştirilmesi veya devre dışı bırakılması başarısız oldu",
                         "disable_restart_confirm": "Bu entegrasyonu devre dışı bırakmayı tamamlamak için Home Assistant'ı yeniden başlatın",
+                        "disabled_polling": "Güncellenen veriler için otomatik kontrol devre dışı bırakıldı",
                         "documentation": "Dökümanlar",
                         "enable_restart_confirm": "Bu entegrasyonu etkinleştirmeyi tamamlamak için Home Assistant'ı yeniden başlatın",
                         "entities": "{count} {count, plural,\n  one {varlık}\n  other {varlıklar}\n}",
@@ -2319,7 +2463,7 @@
                         "hub": "Şununla bağlı:",
                         "manuf": "üretici: {manufacturer}",
                         "no_area": "Alan Yok",
-                        "not_loaded": "Yüklenmedi, {logs_link} öğesini denetleyin",
+                        "not_loaded": "Yüklenmedi",
                         "provided_by_custom_integration": "Geliştirilmiş entegrasyon",
                         "reload": "Tekrar yükle",
                         "reload_confirm": "Entegrasyon yeniden yüklendi",
@@ -2352,7 +2496,9 @@
                         },
                         "finish": "Bitir",
                         "loading": {
-                            "fallback_title": "entegrasyon"
+                            "fallback_title": "entegrasyon",
+                            "loading_flow": "Lütfen {integration} kurulurken bekleyiniz",
+                            "loading_step": "{integration} için sonraki adım yükleniyor"
                         },
                         "next": "Sonraki",
                         "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
@@ -2392,7 +2538,7 @@
                     "none": "Henüz hiçbir şey yapılandırılmamış",
                     "none_found": "Hiçbir entegrasyon bulunamadı",
                     "none_found_detail": "Arama ölçütlerinizi ayarlayın.",
-                    "note_about_integrations": "Tüm entegrasyonlar henüz kullanıcı arayüzü üzerinden yapılandırılmiyor",
+                    "note_about_integrations": "Aramanızla eşleşen entegrasyon yok, kurmak istediğiniz entegrasyon henüz kullanıcı arayüzü üzerinden kurulamayabilir.",
                     "note_about_website_reference": "Daha fazlası için",
                     "reconfigure": "Yeniden Yapılandır",
                     "rename_dialog": "Bu yapılandırma girişinin adını düzenleyin",
@@ -2418,7 +2564,7 @@
                     "load_full_log": "Tam Home Assistant Günlüğünü Yükle",
                     "loading_log": "Hata günlüğü yükleniyor ...",
                     "multiple_messages": "ileti ilk önce {time} meydana geldi ve {counter} kez gösterildi",
-                    "no_errors": "Herhangi bir hata rapor edilmiştir.",
+                    "no_errors": "Hata bildirilmedi",
                     "no_issues": "Yeni bir sorun yok!",
                     "refresh": "Yenile"
                 },
@@ -2433,6 +2579,8 @@
                             "yaml": "YAML dosyası"
                         },
                         "confirm_delete": "Bu kontrol panelini silmek istediğinizden emin misiniz?",
+                        "confirm_delete_text": "Kontrol paneliniz kalıcı olarak silinecek.",
+                        "confirm_delete_title": "Sil {dashboard_title}?",
                         "default_dashboard": "Bu varsayılan kontrol paneli",
                         "detail": {
                             "create": "Oluştur",
@@ -2736,10 +2884,12 @@
                         },
                         "save_script": "Senaryoyu kaydet",
                         "sequence": "Sıra",
-                        "sequence_sentence": "Bu komut dosyasının eylem sırası."
+                        "sequence_sentence": "Bu komut dosyasının eylem sırası.",
+                        "show_trace": "İzi göster"
                     },
                     "picker": {
                         "add_script": "Senaryo ekle",
+                        "dev_script": "Hata ayıklama komut dosyası",
                         "duplicate": "Çoğaltma",
                         "duplicate_script": "Senaryoyu Çoğalt",
                         "edit_script": "Komut dosyasını düzenle",
@@ -3023,6 +3173,10 @@
                         "ozw": {
                             "header": "OpenZWave'e geçiş yapın",
                             "introduction": "Bu sihirbaz, eski Z-Wave entegrasyonundan şu anda beta sürümünde olan OpenZWave entegrasyonuna geçmenize yardımcı olacaktır."
+                        },
+                        "zwave_js": {
+                            "header": "Z-Wave JS'ye Geçiş",
+                            "introduction": "Bu entegrasyon artık sürdürülmemektedir ve yeni Z-Wave JS entegrasyonuna geçmenizi tavsiye ederiz. Bu sihirbaz, eski Z-Wave entegrasyonundan yeni Z-Wave JS entegrasyonuna geçiş yapmanıza yardımcı olacaktır."
                         }
                     },
                     "network_management": {
@@ -3104,58 +3258,102 @@
                         "cancel_inclusion": "Dahil Etmeyi İptal Et",
                         "controller_in_inclusion_mode": "Z-Wave kontrol cihazınız artık dahil etme modunda.",
                         "follow_device_instructions": "Cihazda eşleştirmeyi tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
-                        "inclusion_failed": "Düğüm eklenemedi. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
-                        "inclusion_finished": "Düğüm eklendi. Düğümün arka planda kurulumunu tamamladığımızda tüm varlıkların görünmesi birkaç dakika sürebilir.",
+                        "inclusion_failed": "Cihaz eklenemedi. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
+                        "inclusion_finished": "Cihaz eklendi.",
+                        "interview_failed": "Cihaz görüşmesi başarısız oldu. Günlüklerde ek bilgiler bulunabilir.",
+                        "interview_started": "Cihazla görüşülüyor. Bu biraz zaman alabilir.",
                         "introduction": "Bu sihirbaz, Z-Wave ağınıza bir düğüm eklerken size yol gösterecektir.",
                         "secure_inclusion_warning": "Güvenli cihazlar ek bant genişliği gerektirir; çok fazla güvenli cihaz Z-Wave ağınızı yavaşlatabilir. Yalnızca kilitler veya garaj kapısı açıcılar gibi bunu gerektiren cihazlar için güvenli dahil etme kullanmanızı öneririz.",
+                        "security_classes": {
+                            "S0_Legacy": {
+                                "description": "Örnek: S2 desteği olmayan eski Kapı Kilitleri",
+                                "title": "S0 Eski"
+                            },
+                            "S2_AccessControl": {
+                                "description": "Örnek: Kapı Kilitleri ve Garaj Kapıları",
+                                "title": "S2 Erişim Kontrolü"
+                            },
+                            "S2_Authenticated": {
+                                "description": "Örnek: Aydınlatma, Sensörler ve Güvenlik Sistemleri",
+                                "title": "S2 Kimliği Doğrulandı"
+                            },
+                            "S2_Unauthenticated": {
+                                "description": "S2 Kimliği Doğrulanmış gibi, ancak doğru cihazın dahil olduğu doğrulanmadı",
+                                "title": "S2 Kimliği Doğrulanmamış"
+                            }
+                        },
                         "start_inclusion": "Dahil Etmeye Başlayın",
                         "start_secure_inclusion": "Güvenli Dahil Etmeyi Başlatın",
-                        "title": "Bir Z-Wave Düğümü Ekleyin",
+                        "title": "Z-Wave Cihazı Ekle",
                         "use_secure_inclusion": "Güvenli dahil etme kullanın",
                         "view_device": "Cihazı Görüntüle"
                     },
                     "common": {
-                        "add_node": "Düğüm Ekle",
+                        "add_node": "Cihaz Ekle",
                         "close": "Kapat",
                         "heal_network": "Ağı İyileştir",
                         "home_id": "Ev kimliği",
                         "network": "Ağ",
-                        "node_id": "Düğüm Kimliği",
+                        "node_id": "Aygıt Kimliği",
                         "reconfigure_server": "Sunucuyu Yeniden Yapılandır",
-                        "remove_node": "Düğümü Kaldır",
+                        "remove_node": "Cihazı kaldır",
                         "source": "Kaynak"
                     },
                     "dashboard": {
                         "driver_version": "Sürücü Sürümü",
-                        "dump_dead_nodes_text": "Düğümlerinizden bazıları yanıt vermedi ve öldüğü varsayılıyor. Bunlar tamamen ihraç edilmeyecek.",
-                        "dump_dead_nodes_title": "Düğümlerinizden bazıları öldü",
+                        "dump_dead_nodes_text": "Bazı cihazlarınız yanıt vermedi ve öldüğü varsayılıyor. Bunlar tam olarak dışa aktarılmayacak.",
+                        "dump_dead_nodes_title": "Cihazlarınızdan bazıları bozuldu",
                         "dump_debug": "Sorunları tanılamaya yardımcı olmak için ağınızın dökümünün karşıdan yükle",
                         "dump_not_ready_confirm": "İndir",
-                        "dump_not_ready_text": "Tüm düğümler hazır değilken bir dışa aktarma oluşturursanız, gerekli verileri kaçırabilirsiniz. Ağınıza tüm düğümleri sorgulaması için biraz zaman tanıyın. Çöplükle devam etmek istiyor musun?",
-                        "dump_not_ready_title": "Henüz tüm düğümler hazır değil",
+                        "dump_not_ready_text": "Tüm cihazlar hazır değilken bir dışa aktarma oluşturursanız, gerekli verileri kaçırabilirsiniz. Ağınıza tüm cihazları sorgulaması için biraz zaman verin. Dökümle devam etmek istiyor musunuz?",
+                        "dump_not_ready_title": "Tüm cihazlar henüz hazır değil",
                         "header": "Z-Wave Ağınızı Yönetin",
                         "home_id": "Ev kimliği",
                         "introduction": "Z-Wave ağınızı ve Z-Wave düğümlerinizi yönetin",
-                        "nodes_ready": "Düğümler hazır",
+                        "nodes_ready": "Cihazlar hazır",
                         "server_version": "Sunucu Sürümü"
                     },
                     "device_info": {
                         "device_config": "Cihazı Yapılandır",
                         "heal_node": "Cihazı İyileştir",
-                        "node_ready": "Düğüm Hazır",
-                        "node_status": "Düğüm Durumu",
+                        "highest_security": "En Yüksek Güvenlik",
+                        "is_secure": "Güvenlik",
+                        "node_ready": "Cihaz Hazır",
+                        "node_status": "Aygıt Durumu",
+                        "reinterview_device": "Cihazı Yeniden Görüştür",
                         "remove_failed": "Başarısız Cihazı Kaldır",
-                        "zwave_info": "Z-Wave Bilgisi"
+                        "unknown": "Bilinmeyen",
+                        "zwave_info": "Z-Wave Bilgisi",
+                        "zwave_plus": "Z-Wave +",
+                        "zwave_plus_version": "Sürüm {version}"
                     },
                     "heal_network": {
-                        "start_heal": "İyileştirmeye Başlayın"
+                        "healing_cancelled": "Ağ iyileştirmesi iptal edildi.",
+                        "healing_complete": "Ağ iyileştirme tamamlandı.",
+                        "healing_failed": "İyileşme başarısız oldu. Günlüklerde ek bilgiler bulunabilir.",
+                        "in_progress": "Ağ iyileştirme işlemi devam ediyor. Bu biraz zaman alacak.",
+                        "introduction": "Z-Wave ağınızda bir ağ iyileştirmesi başlatın. Ağ iyileştirmesi, tüm cihazların kontrol cihazına giden rotalarını yeniden hesaplamasına neden olur ve cihazları veya kontrol cihazınızı yakın zamanda taşıdıysanız önerilir.",
+                        "run_in_background": "Bu iletişim kutusunu kapatabilirsiniz ve ağ iyileştirmesi arka planda devam edecektir.",
+                        "start_heal": "İyileştirmeye Başlayın",
+                        "stop_heal": "İyileşmeyi Durdur",
+                        "title": "Z-Wave Ağınızı iyileştirin",
+                        "traffic_warning": "İyileşme süreci, Z-Wave ağında büyük miktarda trafik oluşturur. Bu, iyileştirme devam ederken cihazların yavaş yanıt vermesine (veya hiç vermemesine) neden olabilir."
                     },
                     "heal_node": {
+                        "healing_complete": "{device} iyileştirildi.",
+                        "healing_failed": "{device} iyileştirilemedi.",
+                        "healing_failed_check_logs": "Günlüklerde ek bilgiler bulunabilir.",
+                        "in_progress": "{device} iyileştirme devam ediyor.",
+                        "introduction": "{device} a, rotalarını kontrolöre geri güncellemesini söyleyin. Cihazı veya kontrol cihazınızı yakın zamanda taşıdıysanız bu, iletişim sorunlarına yardımcı olabilir.",
+                        "network_heal_in_progress": "Bir Z-Wave ağ iyileştirmesi zaten devam ediyor. Lütfen tek bir cihazı iyileştirmeden önce bitmesini bekleyin.",
                         "start_heal": "Cihazı İyileştir",
-                        "title": "Bir Z-Wave Cihazını İyileştirin"
+                        "title": "Bir Z-Wave Cihazını İyileştirin",
+                        "traffic_warning": "İyileşme süreci, Z-Wave ağında büyük miktarda trafik oluşturur. Bu, iyileştirme devam ederken cihazların yavaş yanıt vermesine (veya hiç vermemesine) neden olabilir."
                     },
                     "logs": {
                         "log_level": "Günlük Düzeyi",
+                        "log_level_changed": "Günlük Düzeyi şu şekilde değiştirildi: {level}",
+                        "subscribed_to_logs": "Z-Wave JS Günlük Mesajlarına Abone Olundu…",
                         "title": "Z-Wave JS Günlükleri"
                     },
                     "navigation": {
@@ -3172,11 +3370,12 @@
                         "battery_device_notice": "Yapılandırmalarını güncellemek için pil cihazlarının uyanık olması gerekir. Cihazı nasıl uyandıracağınıza ilişkin talimatlar için lütfen cihazınızın kılavuzuna bakın.",
                         "error_device_not_found": "Cihaz bulunamadı",
                         "header": "Z-Wave Cihaz Yapılandırması",
-                        "introduction": "Seçilen cihaz için cihaza (düğüm) özel yapılandırma parametrelerini yönetin ve ayarlayın",
+                        "introduction": "Seçilen cihaz için cihaza özel konfigürasyon parametrelerini yönetin ve ayarlayın",
                         "parameter": "Parametre",
                         "parameter_is_read_only": "Bu parametre salt okunurdur.",
                         "set_param_accepted": "Parametre güncellendi.",
                         "set_param_error": "Bilinmeyen bir hata oluştu.",
+                        "set_param_queued": "Parametre değişikliği kuyruğa alındı ve cihaz uyandığında güncellenecek.",
                         "zwave_js_device_database": "Z-Wave JS Cihaz Veritabanı"
                     },
                     "node_status": {
@@ -3186,10 +3385,21 @@
                         "dead": "Ölü",
                         "unknown": "Bilinmeyen"
                     },
+                    "reinterview_node": {
+                        "battery_device_warning": "Yeniden görüşmeye başlamadan önce pille çalışan cihazları uyandırmanız gerekecektir. Cihazı nasıl uyandıracağınızla ilgili talimatlar için cihazınızın kılavuzuna bakın.",
+                        "in_progress": "Cihazla görüşülüyor. Bu biraz zaman alabilir.",
+                        "interview_complete": "Cihaz görüşmesi tamamlandı.",
+                        "interview_failed": "Cihaz görüşmesi başarısız oldu. Günlüklerde ek bilgiler bulunabilir.",
+                        "introduction": "Z-Wave ağınızdaki bir cihazla yeniden görüşme yapın. Cihazınızda eksik veya yanlış işlevsellik varsa bu özelliği kullanın.",
+                        "run_in_background": "Bu iletişim kutusunu kapatabilirsiniz ve görüşme arka planda devam edecektir.",
+                        "start_reinterview": "Yeniden görüşmeye başla",
+                        "title": "Bir Z-Wave Cihazıyla Yeniden Görüşme"
+                    },
                     "remove_failed_node": {
                         "in_progress": "Aygıt kaldırma işlemi devam ediyor.",
                         "introduction": "Arızalı bir cihazı Z-Wave ağınızdan kaldırın. Bir cihazı bozuk olduğu için normal olarak hariç tutamıyorsanız bunu kullanın.",
                         "removal_failed": "Cihaz, Z-Wave ağınızdan kaldırılamadı.",
+                        "removal_finished": "{id} aygıtı Z-Wave ağınızdan kaldırıldı.",
                         "remove_device": "Cihazı Kaldır",
                         "title": "Başarısız Bir Z-Wave Aygıtını Kaldırın"
                     },
@@ -3199,9 +3409,30 @@
                         "exclusion_failed": "Düğüm kaldırılamadı. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
                         "exclusion_finished": "{id} düğümü, Z-Wave ağınızdan kaldırıldı.",
                         "follow_device_instructions": "Cihazda hariç tutmayı tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
-                        "introduction": "Z-Wave ağınızdan bir düğümü kaldırın ve ilişkili cihazı ve varlıkları Home Assistant'tan kaldırın.",
+                        "introduction": "Z-Wave ağınızdan bir cihazı kaldırın ve ilişkili cihazı ve varlıkları Home Assistant'tan kaldırın.",
                         "start_exclusion": "Hariç Tutmayı Başlat",
-                        "title": "Bir Z-Wave Düğümünü Kaldırma"
+                        "title": "Bir Z-Wave Düğümünü Kaldı"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Hiçbiri"
+                        },
+                        "S0_Legacy": {
+                            "description": "Örnek: S2 desteği olmayan eski Kapı Kilitleri",
+                            "title": "S0 Eski"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Örnek: Kapı Kilitleri ve Garaj Kapıları",
+                            "title": "S2 Erişim Kontrolü"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Örnek: Aydınlatma, Sensörler ve Güvenlik Sistemleri",
+                            "title": "S2 Kimliği Doğrulandı"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "S2 Kimliği Doğrulanmış gibi, ancak doğru cihazın dahil olduğu doğrulanmadı",
+                            "title": "S2 Kimliği Doğrulanmamış"
+                        }
                     }
                 }
             },
@@ -3215,6 +3446,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "Etkin dinleyiciler",
                         "alert_event_type": "Olay türü zorunlu bir alandır",
                         "available_events": "Mevcut Etkinlikler",
                         "count_listeners": " ({count} dinleyiciler)",
@@ -3253,7 +3485,7 @@
                         "copy_id": "Kimliği panoya kopyala",
                         "current_entities": "Mevcut varlıklar",
                         "description1": "Home Assistant içersindeki bir cihazın görünümü ayarlayın.",
-                        "description2": "Bu, gerçek cihaz ile iletişim kurmayacaktır.",
+                        "description2": "Varlık bir cihaza aitse, o cihazla gerçek bir iletişim olmayacaktır.",
                         "entity": "Varlık",
                         "filter_attributes": "Nitelikleri filtrele",
                         "filter_entities": "Varlıkları filtrele",
@@ -3272,10 +3504,23 @@
                         "fix_issue": {
                             "fix": "Sorunu düzelt",
                             "units_changed": {
-                                "fix": "Sorunu düzelt"
+                                "clear": "Bu varlık için tüm eski istatistik verilerini sil",
+                                "fix": "Sorunu düzelt",
+                                "title": "Bu varlığın birimi değişti",
+                                "update": "{metadata_unit} '' olan geçmiş istatistik değerlerini {state_unit} '' olarak güncelleyin"
                             }
                         },
                         "issue": "Sorun",
+                        "issues": {
+                            "entity_no_longer_recorded": "Bu varlık artık kaydedilmiyor.",
+                            "entity_not_recorded": "Bu varlık kaydedilmiyor.",
+                            "no_state": "Bu varlık için uygun bir durum yok.",
+                            "units_changed": "Bu varlığın birimi '' {metadata_unit} '' iken '' {state_unit} '' olarak değiştirildi.",
+                            "unsupported_state_class": "Bu varlığın durum sınıfı '' {state_class} '' desteklenmiyor.",
+                            "unsupported_unit": "Bu varlığın birimi ('' {state_unit} ''), '' {device_class} '' cihaz sınıfının bir birimiyle eşleşmiyor.",
+                            "unsupported_unit_metadata": "Kaydedilen istatistiklerin birimi ('' {metadata_unit} ''), '' {device_class} '' {supported_unit}",
+                            "unsupported_unit_state": "Bu varlığın birimi ('' {state_unit} ''), '' {device_class} '' cihaz sınıfının bir birimiyle eşleşmiyor."
+                        },
                         "no_issue": "Sorun yok",
                         "title": "İstatistikler"
                     },
@@ -3340,6 +3585,7 @@
                     },
                     "energy": {
                         "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Bu kart, evinizin tükettiği enerjinin ne kadarının güneş, rüzgar ve nükleer gibi fosil olmayan yakıtlar kullanılarak üretildiğini gösterir. Ne kadar yüksek, o kadar iyi!",
                             "non_fossil_energy_consumed": "Fosil olmayan enerji tüketildi",
                             "non_fossil_energy_not_calculated": "Tüketilen fosil olmayan enerji hesaplanamadı"
                         },
@@ -3356,7 +3602,7 @@
                             "solar": "Güneş"
                         },
                         "energy_solar_graph": {
-                            "forecast": "Tahmin  {name}",
+                            "forecast": "Tahmin {name}",
                             "production": "{name} ürünü"
                         },
                         "energy_sources_table": {
@@ -3368,18 +3614,36 @@
                             "total_costs": "Toplam maliyetler"
                         },
                         "energy_usage_graph": {
+                            "combined_from_grid": "Şebeke ile birleştirilmiş",
                             "consumed_battery": "Tüketilen pil",
                             "consumed_solar": "Tüketilen güneş enerjisi",
+                            "total_consumed": "Toplam tüketilen {num} kWs",
                             "total_returned": "Toplam geri kazanılan {num} kWs"
                         },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "İğne mor renkteyse, tükettiğinizden daha fazla enerjiyi şebekeye geri verdiniz. Mavi renkteyse, şebekeden geri verdiğinizden daha fazla enerji tüketmişsinizdir.",
+                            "energy_dependency": "Bu kart net enerji kullanımınızı gösterir.",
+                            "grid_neutrality_not_calculated": "Şebeke tarafsızlığı hesaplanamadı",
+                            "net_consumed_grid": "Şebekede net tüketilen",
+                            "net_returned_grid": "Şebekeye geri döndü",
+                            "red_green_color_explain": "Yeşil ise, şebekeden tükettiğinizden daha fazla enerji ürettiğiniz anlamına gelir. Kırmızı ise, evinizin enerji tüketiminin bir kısmı için şebekeye güvendiğiniz anlamına gelir."
+                        },
                         "loading": "Yükleniyor ...",
+                        "no_data": "Gösterilecek veri yok. Enerji panonuzu yapılandırdıktan sonra yeni verilerin gelmesi 2 saate kadar sürebilir.",
+                        "no_data_period": "Bu dönem için veri yok.",
                         "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Bu kart, ürettiğiniz güneş enerjisinin ne kadarının şebekeye iade edilmek yerine eviniz tarafından kullanıldığını gösterir.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Bu sayı genellikle çok düşükse ve aşırı güneş enerjisi üretimine işaret ediyorsa, güneş enerjisi üretiminin yüksek olduğu zamanlarda güneş panellerinizden bir ev pilini veya elektrikli arabayı şarj etmeyi düşünebilirsiniz.",
                             "not_produced_solar_energy": "Güneş enerjisi üretiminiz henüz olmadı",
+                            "self_consumed_solar_could_not_calc": "Kendi kendine tüketilen güneş enerjisi hesaplanamadı",
                             "self_consumed_solar_energy": "Kendi kendine tüketilen güneş enerjisi"
                         }
                     },
                     "entities": {
                         "never_triggered": "Asla tetiklenmedi"
+                    },
+                    "iframe": {
+                        "error_secure_context": "Home Assistant {context_protocol} üzerinden hizmet veriyorsa, {target_protocol} kullanılarak web sitelerini işaret eden iframe'ler yüklenyemiyor."
                     },
                     "map": {
                         "reset_focus": "Odağı sıfırla"
@@ -3519,6 +3783,7 @@
                         "gauge": {
                             "description": "Gösterge kartı, sensör verilerini görsel olarak görmenizi sağlayan temel bir karttır.",
                             "name": "Ölçü",
+                            "needle_gauge": "İğne ölçer olarak gösterilsin mi?",
                             "severity": {
                                 "define": "Önem Tanımla?",
                                 "green": "Yeşil",
@@ -3660,7 +3925,10 @@
                         "weather-forecast": {
                             "description": "Hava Durumu kartı hava durumunu gösterir. Duvarda görüntülenen tablet arayüzlerinde kullanışlı olabilir.",
                             "name": "Hava Durumu tahmini",
-                            "show_forecast": "Tahmini Göster"
+                            "show_both": "Geçerli Hava Durumunu ve Tahmini göster",
+                            "show_forecast": "Tahmini Göster",
+                            "show_only_current": "Yalnızca geçerli Hava Durumunu göster",
+                            "show_only_forecast": "Yalnızca Tahmini göster"
                         }
                     },
                     "cardpicker": {
@@ -3724,7 +3992,7 @@
                         "type": "Kullanıcıyı görüntüle",
                         "types": {
                             "masonry": "Tek (varsayılan)",
-                            "panel": "Panel Modu?",
+                            "panel": "Panel (1 kart)",
                             "sidebar": "Kenar Çubuğu"
                         },
                         "visibility": {
@@ -3793,7 +4061,8 @@
                     },
                     "select_view": {
                         "dashboard_label": "Gösterge Paneli",
-                        "header": "Bir görünüm seçin"
+                        "header": "Bir görünüm seçin",
+                        "views_label": "Görünüm"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3873,7 +4142,7 @@
                 "authorizing_client": "{clientId}'ye Home Assistant erişim izni vermek üzeresiniz.",
                 "form": {
                     "error": "Hata: {error}",
-                    "next": "Sonraki",
+                    "next": "Oturum açma",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -3966,7 +4235,8 @@
                 "initializing": "Başlatılıyor",
                 "logging_in_to_with": "**{locationName}** ile **{authProviderName}** giriş.",
                 "logging_in_with": "**{authProviderName} ile giriş.",
-                "pick_auth_provider": "Veya oturum aç"
+                "pick_auth_provider": "Veya oturum aç",
+                "store_token": "Oturumumu açık tut"
             },
             "page-demo": {
                 "cards": {
@@ -4046,7 +4316,7 @@
                     "password_protection": "Parola koruması",
                     "select_type": "Nelerin geri yükleneceğini seçin",
                     "show_log": "Tam günlüğü göster",
-                    "type": "Tür"
+                    "type": "Yedekleme türü"
                 },
                 "user": {
                     "create_account": "Hesap Oluştur",
@@ -4088,6 +4358,7 @@
                     "header": "Sırayı değiştirin ve kenar çubuğundaki öğeleri gizleyin"
                 },
                 "dashboard": {
+                    "default_dashboard_label": "Genel bakış (varsayılan)",
                     "description": "Bu cihaz için varsayılan bir gösterge tablosu seçin.",
                     "dropdown_label": "Gösterge Paneli",
                     "header": "Gösterge Paneli"
@@ -4191,6 +4462,7 @@
                     "reset": "Sıfırla"
                 },
                 "time_format": {
+                    "description": "Saatlerin nasıl biçimlendirileceğini seçin.",
                     "dropdown_label": "Saat biçimi",
                     "formats": {
                         "12": "12 saat (AM/PM)",

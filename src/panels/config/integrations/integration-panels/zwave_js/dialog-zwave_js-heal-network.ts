@@ -7,10 +7,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
-  fetchNetworkStatus,
-  healNetwork,
-  stopHealNetwork,
-  subscribeHealNetworkProgress,
+  fetchZwaveNetworkStatus,
+  healZwaveNetwork,
+  stopHealZwaveNetwork,
+  subscribeHealZwaveNetworkProgress,
   ZWaveJSHealNetworkStatusMessage,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
@@ -202,13 +202,13 @@ class DialogZWaveJSHealNetwork extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchNetworkStatus(
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
       this.hass!,
       this.entry_id!
     );
     if (network.controller.is_heal_network_active) {
       this._status = "started";
-      this._subscribed = subscribeHealNetworkProgress(
+      this._subscribed = subscribeHealZwaveNetworkProgress(
         this.hass,
         this.entry_id!,
         this._handleMessage.bind(this)
@@ -220,9 +220,9 @@ class DialogZWaveJSHealNetwork extends LitElement {
     if (!this.hass) {
       return;
     }
-    healNetwork(this.hass, this.entry_id!);
+    healZwaveNetwork(this.hass, this.entry_id!);
     this._status = "started";
-    this._subscribed = subscribeHealNetworkProgress(
+    this._subscribed = subscribeHealZwaveNetworkProgress(
       this.hass,
       this.entry_id!,
       this._handleMessage.bind(this)
@@ -233,7 +233,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
     if (!this.hass) {
       return;
     }
-    stopHealNetwork(this.hass, this.entry_id!);
+    stopHealZwaveNetwork(this.hass, this.entry_id!);
     this._unsubscribe();
     this._status = "cancelled";
   }

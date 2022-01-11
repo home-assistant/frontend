@@ -355,6 +355,7 @@
         "dialog": {
             "datadisk_move": {
                 "cancel": "Annuler",
+                "description": "Vous utilisez actuellement '' {current_path} '' comme disque de données. Le déplacement des disques de données va redémarrer votre appareil et cela devrait prendre {time} minutes. Home Assistant ne sera pas accessible pendant cette période. Ne débranchez pas l'alimentation pendant le déplacement !",
                 "loading_devices": "Chargement des appareils",
                 "move": "Déplacer",
                 "moving": "Déplacement du disque de données",
@@ -547,6 +548,9 @@
             "automation": {
                 "last_triggered": "Dernier déclenchement",
                 "trigger": "Exécuter"
+            },
+            "button": {
+                "press": "Appui"
             },
             "camera": {
                 "not_available": "Image non disponible"
@@ -2147,6 +2151,7 @@
                 "energy": {
                     "battery": {
                         "add_battery_system": "Ajouter un système de batterie",
+                        "battery_systems": "Systèmes de batteries",
                         "learn_more": "Plus d'informations sur la façon de commencer.",
                         "sub": "Si vous avez un système de batterie, vous pouvez le configurer pour surveiller la quantité d'énergie stockée et utilisée à partir de votre batterie.",
                         "title": "Batterie de stockage domestique"
@@ -2168,6 +2173,7 @@
                         "title": "Appareils individuels"
                     },
                     "gas": {
+                        "add_gas_source": "Ajouter une source de gaz",
                         "dialog": {
                             "cost_entity": "Utiliser une entité avec le prix actuel",
                             "cost_entity_input": "Entité avec le prix actuel",
@@ -2180,14 +2186,17 @@
                             "energy_stat": "Énergie consommée (m³)",
                             "gas_usage": "Consommation de gaz",
                             "header": "Configurer la consommation de gaz",
+                            "m3_or_kWh": "m³ ou kWh",
                             "no_cost": "Ne pas suivre les coûts",
                             "paragraph": "La consommation de gaz est le volume de gaz qui circule vers votre maison."
                         },
+                        "gas_consumption": "Consommation de gaz",
                         "learn_more": "Plus d'informations sur la façon de débuter.",
                         "sub": "Laissez Home Assistant surveiller votre consommation de gaz.",
                         "title": "Consommation de gaz"
                     },
                     "grid": {
+                        "add_return": "Ajouter un retour",
                         "flow_dialog": {
                             "from": {
                                 "cost_entity": "Utiliser une entité avec le prix actuel",
@@ -2219,6 +2228,7 @@
                             }
                         },
                         "learn_more": "Plus d’informations sur la façon de commencer.",
+                        "return_to_grid": "Retourné au réseau",
                         "sub": "Configurer la quantité d'énergie que vous consommez du réseau et, si vous produisez de l'énergie, redonnez au réseau. Cela permet à Home Assistant de suivre votre consommation d'énergie dans toute la maison.",
                         "title": "Réseau électrique"
                     },
@@ -2229,6 +2239,7 @@
                             "dont_forecast_production": "Ne pas prévoir la production",
                             "forecast_production": "Prévision de la production",
                             "header": "Configurer les panneaux solaires",
+                            "solar_production_forecast": "Prévision de la production solaire",
                             "solar_production_forecast_description": "L'ajout d'informations sur les prévisions de production solaire vous permettra de voir rapidement votre production attendue pour aujourd'hui."
                         },
                         "learn_more": "Plus d’informations sur la façon de commencer.",
@@ -3243,6 +3254,7 @@
                                 "title": "Contrôle d'accès S2"
                             },
                             "S2_Authenticated": {
+                                "description": "Exemple: Éclairage, capteurs et systèmes de sécurité",
                                 "title": "Authentifié S2"
                             },
                             "S2_Unauthenticated": {
@@ -3283,13 +3295,16 @@
                     "device_info": {
                         "device_config": "Configurer l'appareil",
                         "heal_node": "Guérir le nœud",
+                        "highest_security": "Sécurité maximale",
                         "is_secure": "Sécurise",
                         "node_ready": "Nœud prêt",
                         "node_status": "État du nœud",
                         "reinterview_device": "Ré interviewer l'appareil",
                         "remove_failed": "Supprimer le périphérique défaillant",
                         "unknown": "Inconnu",
-                        "zwave_info": "Informations Z-Wave"
+                        "zwave_info": "Informations Z-Wave",
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Version {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "La guérison du réseau a été annulée.",
@@ -3461,12 +3476,17 @@
                             "units_changed": {
                                 "clear": "Supprimer toutes les anciennes données statistiques pour cette entité",
                                 "fix": "Resoudre le probleme",
-                                "title": "L'unité de cette entité a changé"
+                                "title": "L'unité de cette entité a changé",
+                                "update": "Mettre à jour les valeurs statistiques historiques de ''{metadata_unit}'' à ''{state_unit}''"
                             }
                         },
                         "issue": "Problème",
                         "issues": {
-                            "entity_not_recorded": "Cette entité est exclue de l'enregistrement."
+                            "entity_no_longer_recorded": "Cette entité n’est plus enregistrée.",
+                            "entity_not_recorded": "Cette entité est exclue de l'enregistrement.",
+                            "no_state": "Aucun état n’est disponible pour cette entité.",
+                            "units_changed": "L'unité de cette entité est passée de '' {metadata_unit} '' à '' {state_unit} ''.",
+                            "unsupported_unit": "L'unité ('' {state_unit} '') de cette entité ne correspond pas à une unité de classe d'appareil '' {device_class} ''."
                         },
                         "no_issue": "Pas de problème",
                         "title": "Statistiques"
@@ -3491,7 +3511,7 @@
             },
             "energy": {
                 "cards": {
-                    "energy_devices_graph_title": "Surveiller les appareils individuels",
+                    "energy_devices_graph_title": "Appareils surveiller",
                     "energy_distribution_title": "Distribution d'énergie",
                     "energy_gas_graph_title": "Consommation de gaz",
                     "energy_solar_graph_title": "Production solaire",
@@ -3542,7 +3562,8 @@
                             "battery": "Batterie",
                             "gas": "Gaz",
                             "go_to_energy_dashboard": "Accéder au tableau de bord énergétique",
-                            "home": "Accueil",
+                            "grid": "Grille",
+                            "home": "Maison",
                             "non_fossil": "Non fossile",
                             "solar": "Solaire"
                         },
@@ -3554,6 +3575,7 @@
                             "battery_total": "Batterie totale",
                             "cost": "Coût",
                             "energy": "Énergie",
+                            "grid_total": "Total du réseau",
                             "source": "Source",
                             "total_costs": "Coûts totaux"
                         },
@@ -3564,11 +3586,18 @@
                             "total_returned": "Total retourné {num} kWh"
                         },
                         "grid_neutrality_gauge": {
-                            "energy_dependency": "Cette carte représente votre dépendance énergétique."
+                            "color_explain": "Si l'aiguille est dans le violet, vous avez renvoyé plus d'énergie au réseau que vous n'en avez consommé. Si c'est dans le bleu, vous avez consommé plus d'énergie du réseau que vous n'en avez restitué.",
+                            "energy_dependency": "Cette carte représente votre dépendance énergétique.",
+                            "grid_neutrality_not_calculated": "La neutralité du réseau n'a pas pu être calculée",
+                            "net_consumed_grid": "Consommation nette du réseau",
+                            "net_returned_grid": "Net retourné au réseau",
+                            "red_green_color_explain": "S'il est vert, cela signifie que vous avez produit plus d'énergie que ce que vous avez consommé à partir du réseau. S'il est dans le rouge, cela signifie que vous dépendiez du réseau pour une partie de la consommation d'énergie de votre maison."
                         },
+                        "loading": "Chargement...",
                         "no_data": "Il n'y a pas de données à afficher. L'arrivée de nouvelles données peut prendre jusqu'à 2 heures après la configuration de votre tableau de bord énergétique.",
                         "no_data_period": "Il n'y a pas de données pour cette période.",
                         "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used_charge_home_bat": "Si ce nombre est généralement très faible, indiquant une production solaire excessive, vous pouvez envisager de charger une batterie domestique ou une voiture électrique à partir de vos panneaux solaires en période de forte production solaire.",
                             "not_produced_solar_energy": "Vous n'avez pas produit d'énergie solaire",
                             "self_consumed_solar_could_not_calc": "L'énergie solaire autoconsommée n'a pas pu être calculée",
                             "self_consumed_solar_energy": "Énergie solaire autoconsommée"

@@ -247,6 +247,44 @@ class InputNumberEntity extends Entity {
   }
 }
 
+class InputTextEntity extends Entity {
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "set_value") {
+      this.update("" + data.value);
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
+class InputSelectEntity extends Entity {
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "select_option") {
+      this.update("" + data.option);
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
 class ClimateEntity extends Entity {
   public async handleService(domain, service, data) {
     if (domain !== this.domain) {
@@ -301,6 +339,8 @@ const TYPES = {
   group: GroupEntity,
   input_boolean: ToggleEntity,
   input_number: InputNumberEntity,
+  input_text: InputTextEntity,
+  input_select: InputSelectEntity,
   light: LightEntity,
   lock: LockEntity,
   media_player: MediaPlayerEntity,

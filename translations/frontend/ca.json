@@ -549,6 +549,9 @@
                 "last_triggered": "Última execució",
                 "trigger": "Executa accions"
             },
+            "button": {
+                "press": "Prem"
+            },
             "camera": {
                 "not_available": "Imatge no disponible"
             },

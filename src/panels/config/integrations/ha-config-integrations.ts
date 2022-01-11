@@ -319,7 +319,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
       >
         ${this.narrow
           ? html`
@@ -425,6 +425,34 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .deviceRegistryEntries=${this._deviceRegistryEntries}
                   ></ha-integration-card>`
               )
+            : this._filter &&
+              !configEntriesInProgress.length &&
+              !groupedConfigEntries.size &&
+              this._configEntries.length
+            ? html`
+                <div class="empty-message">
+                  <h1>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found"
+                    )}
+                  </h1>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found_detail"
+                    )}
+                  </p>
+                  <mwc-button
+                    @click=${this._createFlow}
+                    unelevated
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.add_integration"
+                    )}
+                  ></mwc-button>
+                </div>
+              `
+            : // If we have a filter, never show a card
+            this._filter
+            ? ""
             : // If we're showing 0 cards, show empty state text
             (!this._showIgnored || ignoredConfigEntries.length === 0) &&
               (!this._showDisabled || disabledConfigEntries.size === 0) &&
@@ -446,25 +474,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       "ui.panel.config.integrations.add_integration"
                     )}
                   ></mwc-button>
-                </div>
-              `
-            : ""}
-          ${this._filter &&
-          !configEntriesInProgress.length &&
-          !groupedConfigEntries.size &&
-          this._configEntries.length
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found"
-                    )}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found_detail"
-                    )}
-                  </p>
                 </div>
               `
             : ""}
@@ -562,6 +571,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _createFlow() {
     showConfigFlowDialog(this, {
+      searchQuery: this._filter,
       dialogClosedCallback: () => {
         this._handleFlowUpdated();
       },

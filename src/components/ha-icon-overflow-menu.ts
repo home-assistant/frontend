@@ -1,12 +1,12 @@
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-button-menu";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-icon-button";
-import "./ha-svg-icon";
-import { mdiDotsVertical } from "@mdi/js";
 import { HomeAssistant } from "../types";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "./ha-button-menu";
+import "./ha-icon-button";
+import "./ha-svg-icon";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;
@@ -29,7 +29,7 @@ export class HaIconOverflowMenu extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.narrow
-        ? html` <!-- Collapsed Representation for Small Screens -->
+        ? html` <!-- Collapsed representation for small screens -->
             <ha-button-menu
               @click=${this._handleIconOverflowMenuOpened}
               @closed=${this._handleIconOverflowMenuClosed}
@@ -37,13 +37,11 @@ export class HaIconOverflowMenu extends LitElement {
               corner="BOTTOM_START"
               absolute
             >
-              <mwc-icon-button
-                .title=${this.hass.localize("ui.common.menu")}
+              <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
+                .path=${mdiDotsVertical}
                 slot="trigger"
-              >
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
 
               ${this.items.map(
                 (item) => html`
@@ -61,8 +59,7 @@ export class HaIconOverflowMenu extends LitElement {
               )}
             </ha-button-menu>`
         : html`
-            <!-- Icon Representation for Big Screens -->
-
+            <!-- Icon representation for big screens -->
             ${this.items.map((item) =>
               item.narrowOnly
                 ? ""
@@ -72,13 +69,12 @@ export class HaIconOverflowMenu extends LitElement {
                           ${item.tooltip}
                         </paper-tooltip>`
                       : ""}
-                    <mwc-icon-button
+                    <ha-icon-button
                       @click=${item.action}
                       .label=${item.label}
+                      .path=${item.path}
                       .disabled=${item.disabled}
-                    >
-                      <ha-svg-icon .path=${item.path}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </div> `
             )}
           `}

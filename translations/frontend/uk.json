@@ -103,6 +103,16 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "stages": {
+                        "deprecated": "Застарілий",
+                        "experimental": "Експериментальний"
+                    }
+                }
+            }
+        },
         "backup": {
             "delete_backup_confirm": "видалити",
             "delete_selected": "Видалити обрані знімки",
@@ -597,6 +607,7 @@
                 "history": "Історія",
                 "last_changed": "Востаннє змінено",
                 "last_updated": "Останнє оновлення",
+                "logbook": "Журнал",
                 "person": {
                     "create_zone": "Створити зону з поточного місцезнаходження"
                 },
@@ -612,6 +623,7 @@
                     "last_triggered": "Спрацьовано востаннє"
                 },
                 "settings": "Налаштування об'єкта",
+                "show_more": "Показати більше",
                 "sun": {
                     "elevation": "Висота над горизонтом",
                     "rising": "Схід сонця",
@@ -1185,16 +1197,23 @@
                         "add_blueprint": "Імпортувати проект",
                         "confirm_delete_header": "Видалити цей проект?",
                         "confirm_delete_text": "Ви впевнені, що хочете видалити цей проект?",
+                        "create_automation": "Створити автоматизацію",
+                        "create_script": "Створити скрипт",
                         "delete_blueprint": "Видалити проект",
                         "discover_more": "Знайти більше проектів",
                         "header": "Редактор проектів",
                         "headers": {
                             "domain": "Домен",
                             "file_name": "Ім'я файлу",
-                            "name": "Ім'я"
+                            "name": "Ім'я",
+                            "type": "Тип"
                         },
                         "introduction": "У цьому розділі параметрів можна імпортувати нові та керувати наявними проектами.",
                         "learn_more": "Докладніше про використання проектів",
+                        "types": {
+                            "automation": "Автоматизація",
+                            "script": "Скрипт"
+                        },
                         "use_blueprint": "Створити автоматизацію"
                     }
                 },
@@ -1473,10 +1492,12 @@
                     "enabled_label": "Відображати пристрій",
                     "entities": {
                         "add_entities_lovelace": "Додати сутності до Lovelace UI",
+                        "control": "Елементи керування",
                         "disabled_entities": "Показати {count} {count, plural,\n  one {прихований об'єкт}\n  other {прихованих об'єктів}\n}",
                         "entities": "Сутності",
                         "hide_disabled": "Не показувати приховані",
-                        "none": "Цей пристрій не має сутностей"
+                        "none": "Цей пристрій не має сутностей",
+                        "sensor": "Сенсори"
                     },
                     "name": "Назва",
                     "no_devices": "Немає пристроїв",
@@ -1516,8 +1537,11 @@
                             "cost_number": "Використати статичну ціну",
                             "cost_number_input": "Ціна за м³",
                             "cost_number_suffix": "{currency}/м³",
-                            "cost_stat_input": "Загальна сума витрат сутності"
-                        }
+                            "cost_stat_input": "Загальна сума витрат сутності",
+                            "gas_usage": "Використання газу",
+                            "m3_or_kWh": "м³ або кВт-год"
+                        },
+                        "gas_consumption": "Споживання газу"
                     },
                     "validation": {
                         "issues": {
@@ -2415,8 +2439,17 @@
                     "common": {
                         "reconfigure_server": "Налаштувати сервер повторно"
                     },
+                    "device_info": {
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Версія {version}"
+                    },
                     "node_config": {
                         "parameter": "Параметр"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Немає"
+                        }
                     }
                 }
             },
@@ -2506,6 +2539,44 @@
                         "no_devices": "Ця сторінка дозволяє керувати пристроями, однак, схоже, у вас ще немає налаштованих пристроїв. Щоб почати, перейдіть на сторінку інтеграції.",
                         "title": "Ласкаво просимо додому"
                     },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "non_fossil_energy_consumed": "Витрачена невикопна енергія",
+                            "non_fossil_energy_not_calculated": "Не вдалося розрахувати спожиту невикопну енергію"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Використання енергії"
+                        },
+                        "energy_distribution": {
+                            "battery": "Акумулятор",
+                            "gas": "Газ",
+                            "go_to_energy_dashboard": "Перейти до панелі енергії",
+                            "grid": "Мережа",
+                            "home": "Дім",
+                            "non_fossil": "Невикопна",
+                            "solar": "Сонячна"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Прогноз {name}",
+                            "production": "Виробництво {name}"
+                        },
+                        "energy_sources_table": {
+                            "cost": "Вартість",
+                            "energy": "Енергія",
+                            "source": "Джерело",
+                            "total_costs": "Загальна вартість"
+                        },
+                        "energy_usage_graph": {
+                            "total_consumed": "Усього спожито {num} кВт-год",
+                            "total_returned": "Усього повернуто {num} кВт·год"
+                        },
+                        "grid_neutrality_gauge": {
+                            "grid_neutrality_not_calculated": "Не вдалося розрахувати нейтральність мережі",
+                            "net_consumed_grid": "Спожито з мережі",
+                            "net_returned_grid": "Повернено до мережі"
+                        },
+                        "loading": "Завантаження..."
+                    },
                     "entities": {
                         "never_triggered": "Ніколи не спрацьовувало"
                     },
@@ -2537,6 +2608,15 @@
                     "message": "Конфігурацію Lovelace було оновлено, хочете оновити?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "День",
+                        "month": "Місяць",
+                        "next": "Далі",
+                        "previous": "Назад",
+                        "today": "Сьогодні",
+                        "week": "Тиждень",
+                        "year": "Рік"
+                    },
                     "timestamp-display": {
                         "invalid": "Невірна часова мітка",
                         "invalid_format": "Невірний формат відображення"
@@ -2768,7 +2848,10 @@
                         "weather-forecast": {
                             "description": "Карта прогнозу погоди відображає погоду. Може бути корисна на пристроях, що розміщуються на стіні.",
                             "name": "Прогноз погоди",
-                            "show_forecast": "Показати прогноз"
+                            "show_both": "Показати поточну погоду та прогноз",
+                            "show_forecast": "Показати прогноз",
+                            "show_only_current": "Показати лише поточну погоду",
+                            "show_only_forecast": "Показати лише прогноз"
                         }
                     },
                     "cardpicker": {
@@ -3050,7 +3133,8 @@
                 },
                 "initializing": "Ініціалізація",
                 "logging_in_with": "Провайдер аутентифікації: ** {authProviderName} **.",
-                "pick_auth_provider": "Або увійти за допомогою"
+                "pick_auth_provider": "Або увійти за допомогою",
+                "store_token": "Залишатись в системі"
             },
             "page-demo": {
                 "cards": {

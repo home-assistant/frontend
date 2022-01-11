@@ -1,7 +1,7 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import { getColorByIndex } from "../../common/color/colors";
+import { getGraphColorByIndex } from "../../common/color/colors";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -164,7 +164,7 @@ class StateHistoryChartLine extends LitElement {
       const pushData = (timestamp: Date, datavalues: any[] | null) => {
         if (!datavalues) return;
         if (timestamp > endTime) {
-          // Drop datapoints that are after the requested endTime. This could happen if
+          // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
@@ -190,7 +190,7 @@ class StateHistoryChartLine extends LitElement {
         color?: string
       ) => {
         if (!color) {
-          color = getColorByIndex(colorIndex);
+          color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -337,8 +337,8 @@ class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        // Only disable interpolation for sensors
-        const isStep = domain === "sensor";
+        // Only interpolate for sensors
+        const isStep = domain !== "sensor";
         addDataSet(name, isStep);
 
         let lastValue: number;

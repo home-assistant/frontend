@@ -9,7 +9,6 @@ import {
   mdiCog,
   mdiFormatListBulletedType,
   mdiHammer,
-  mdiHomeAssistant,
   mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
@@ -51,14 +50,14 @@ import {
 } from "../external_app/external_config";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant, PanelInfo } from "../types";
+import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
+const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
@@ -68,7 +67,6 @@ const SORT_VALUE_URL_PATHS = {
   logbook: 3,
   history: 4,
   "developer-tools": 9,
-  hassio: 10,
   config: 11,
 };
 
@@ -77,7 +75,6 @@ const PANEL_ICONS = {
   config: mdiCog,
   "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
-  hassio: mdiHomeAssistant,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
   lovelace: mdiViewDashboard,
@@ -189,6 +186,8 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
+  @property() public route!: Route;
+
   @property({ type: Boolean }) public alwaysExpand = false;
 
   @property({ type: Boolean }) public editMode = false;
@@ -277,6 +276,7 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
+
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
@@ -351,12 +351,17 @@ class HaSidebar extends LitElement {
       this._hiddenPanels
     );
 
+    // Show the supervisor as beeing part of configuration
+    const selectedPanel = this.route.path?.startsWith("/hassio/")
+      ? "config"
+      : this.hass.panelUrl;
+
     // prettier-ignore
     return html`
       <paper-listbox
         attr-for-selected="data-panel"
         class="ha-scrollbar"
-        .selected=${this.hass.panelUrl}
+        .selected=${selectedPanel}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
@@ -397,7 +402,7 @@ class HaSidebar extends LitElement {
   ) {
     return html`
       <a
-        aria-role="option"
+        role="option"
         href=${`/${urlPath}`}
         data-panel=${urlPath}
         tabindex="-1"
@@ -502,7 +507,7 @@ class HaSidebar extends LitElement {
     >
       <paper-icon-item
         class="notifications"
-        aria-role="option"
+        role="option"
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
@@ -533,7 +538,7 @@ class HaSidebar extends LitElement {
       href="/profile"
       data-panel="panel"
       tabindex="-1"
-      aria-role="option"
+      role="option"
       aria-label=${this.hass.localize("panel.profile")}
       @mouseenter=${this._itemMouseEnter}
       @mouseleave=${this._itemMouseLeave}
@@ -553,10 +558,12 @@ class HaSidebar extends LitElement {
   }
 
   private _renderExternalConfiguration() {
-    return html`${this._externalConfig && this._externalConfig.hasSettingsScreen
+    return html`${!this.hass.user?.is_admin &&
+    this._externalConfig &&
+    this._externalConfig.hasSettingsScreen
       ? html`
           <a
-            aria-role="option"
+            role="option"
             aria-label=${this.hass.localize(
               "ui.sidebar.external_app_configuration"
             )}
@@ -578,6 +585,13 @@ class HaSidebar extends LitElement {
           </a>
         `
       : ""}`;
+  }
+
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass.auth.external!.fireMessage({
+      type: "config_screen/show",
+    });
   }
 
   private get _tooltip() {
@@ -749,13 +763,6 @@ class HaSidebar extends LitElement {
 
   private _handleShowNotificationDrawer() {
     fireEvent(this, "hass-show-notifications");
-  }
-
-  private _handleExternalAppConfiguration(ev: Event) {
-    ev.preventDefault();
-    this.hass.auth.external!.fireMessage({
-      type: "config_screen/show",
-    });
   }
 
   private _toggleSidebar(ev: CustomEvent) {

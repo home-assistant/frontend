@@ -15,5 +15,5 @@ jobs:
       - name: Trigger Demo build
         run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_DEMO_DEV_BUILD_HOOK }}
 
-      - name: Trigger Gallery build
-        run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_GALLERY_DEV_BUILD_HOOK }}
+      - name: Trigger Design build
+        run: curl -X POST -d "NIGHTLY" https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_GALLERY_DEV_BUILD_HOOK }}

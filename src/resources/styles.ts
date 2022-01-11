@@ -95,6 +95,7 @@ export const derivedStyles = {
   "mdc-theme-text-disabled-on-light": "var(--disabled-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
   "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
+  "mdc-theme-text-hint-on-background": "var(--secondary-text-color)",
   "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
   "mdc-theme-error": "var(--error-color)",
   "app-header-text-color": "var(--text-primary-color)",
@@ -331,8 +332,8 @@ export const haStyleDialog = css`
       );
       --mdc-dialog-min-height: 100%;
       --mdc-dialog-max-height: 100%;
-      --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
+      --ha-dialog-border-radius: 0px;
     }
   }
   mwc-button.warning {

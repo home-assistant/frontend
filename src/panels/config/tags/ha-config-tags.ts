@@ -180,7 +180,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.experiences}
+        .tabs=${configSections.tags}
         .columns=${this._columns(
           this.narrow,
           this._canWriteTags,

@@ -1,32 +1,35 @@
 import {
   mdiAccount,
   mdiAccountArrowRight,
-  mdiAirHumidifierOff,
   mdiAirHumidifier,
-  mdiFlash,
+  mdiAirHumidifierOff,
   mdiBluetooth,
   mdiBluetoothConnect,
+  mdiCalendar,
+  mdiCast,
+  mdiCastConnected,
+  mdiClock,
+  mdiEmoticonDead,
+  mdiFlash,
+  mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
-  mdiLockOpen,
+  mdiLock,
   mdiLockAlert,
   mdiLockClock,
-  mdiLock,
-  mdiCastConnected,
-  mdiCast,
-  mdiEmoticonDead,
+  mdiLockOpen,
+  mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
+  mdiRestart,
   mdiSleep,
   mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
-  mdiZWave,
-  mdiClock,
-  mdiCalendar,
   mdiWeatherNight,
+  mdiZWave,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 /**
@@ -53,6 +56,16 @@ export const domainIcon = (
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
+
+    case "button":
+      switch (stateObj?.attributes.device_class) {
+        case "restart":
+          return mdiRestart;
+        case "update":
+          return mdiPackageUp;
+        default:
+          return mdiGestureTapButton;
+      }
 
     case "cover":
       return coverIcon(compareState, stateObj);

@@ -4,6 +4,7 @@ export interface Webhook {
   webhook_id: string;
   domain: string;
   name: string;
+  local_only: boolean;
 }
 export interface WebhookError {
   code: number;

@@ -18,6 +18,7 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -38,6 +39,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
+        }
+
+        ha-expansion-panel {
+          margin: 0 8px 16px;
         }
 
         .inputs {
@@ -135,72 +140,77 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 0;
         }
       </style>
-
-      <p>
-        [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
-        [[localize('ui.panel.developer-tools.tabs.states.description2')]]
-      </p>
-      <div class="state-wrapper flex layout horizontal">
-        <div class="inputs">
-          <ha-entity-picker
-            autofocus
-            hass="[[hass]]"
-            value="{{_entityId}}"
-            on-change="entityIdChanged"
-            allow-custom-entity
-          ></ha-entity-picker>
-          <paper-input
-            label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
-            required
-            autocapitalize="none"
-            autocomplete="off"
-            autocorrect="off"
-            spellcheck="false"
-            value="{{_state}}"
-            class="state-input"
-          ></paper-input>
-          <p>
-            [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
-          </p>
-          <ha-code-editor
-            mode="yaml"
-            value="[[_stateAttributes]]"
-            error="[[!validJSON]]"
-            on-value-changed="_yamlChanged"
-          ></ha-code-editor>
-          <div class="button-row">
-            <mwc-button
-              on-click="handleSetState"
-              disabled="[[!validJSON]]"
-              raised
-              >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
-            >
-            <ha-icon-button
-              on-click="entityIdChanged"
-              label="[[localize('ui.common.refresh')]]"
-              path="[[refreshIcon()]]"
-            ></ha-icon-button>
-          </div>
-        </div>
-        <div class="info">
-          <template is="dom-if" if="[[_entity]]">
-            <p>
-              <b
-                >[[localize('ui.panel.developer-tools.tabs.states.last_changed')]]:</b
-              ><br />[[lastChangedString(_entity)]]
-            </p>
-            <p>
-              <b
-                >[[localize('ui.panel.developer-tools.tabs.states.last_updated')]]:</b
-              ><br />[[lastUpdatedString(_entity)]]
-            </p>
-          </template>
-        </div>
-      </div>
-
       <h1>
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
+      <ha-expansion-panel
+        header="Set state"
+        outlined
+        expanded="[[_expanded]]"
+        on-expanded-changed="expandedChanged"
+      >
+        <p>
+          [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
+          [[localize('ui.panel.developer-tools.tabs.states.description2')]]
+        </p>
+        <div class="state-wrapper flex layout horizontal">
+          <div class="inputs">
+            <ha-entity-picker
+              autofocus
+              hass="[[hass]]"
+              value="{{_entityId}}"
+              on-change="entityIdChanged"
+              allow-custom-entity
+            ></ha-entity-picker>
+            <paper-input
+              label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
+              required
+              autocapitalize="none"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              value="{{_state}}"
+              class="state-input"
+            ></paper-input>
+            <p>
+              [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
+            </p>
+            <ha-code-editor
+              mode="yaml"
+              value="[[_stateAttributes]]"
+              error="[[!validJSON]]"
+              on-value-changed="_yamlChanged"
+            ></ha-code-editor>
+            <div class="button-row">
+              <mwc-button
+                on-click="handleSetState"
+                disabled="[[!validJSON]]"
+                raised
+                >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
+              >
+              <ha-icon-button
+                on-click="entityIdChanged"
+                label="[[localize('ui.common.refresh')]]"
+                path="[[refreshIcon()]]"
+              ></ha-icon-button>
+            </div>
+          </div>
+          <div class="info">
+            <template is="dom-if" if="[[_entity]]">
+              <p>
+                <b
+                  >[[localize('ui.panel.developer-tools.tabs.states.last_changed')]]:</b
+                ><br />[[lastChangedString(_entity)]]
+              </p>
+              <p>
+                <b
+                  >[[localize('ui.panel.developer-tools.tabs.states.last_updated')]]:</b
+                ><br />[[lastUpdatedString(_entity)]]
+              </p>
+            </template>
+          </div>
+        </div>
+      </ha-expansion-panel>
       <div class="table-wrapper">
         <table class="entities">
           <tr>
@@ -348,6 +358,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
 
+      _expanded: {
+        type: Boolean,
+        value: false,
+      },
+
       narrow: {
         type: Boolean,
         reflectToAttribute: true,
@@ -371,6 +386,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entity = state;
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
+    this._expanded = true;
     ev.preventDefault();
   }
 
@@ -388,6 +404,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entity = state;
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
+    this._expanded = true;
+  }
+
+  expandedChanged(ev) {
+    this._expanded = ev.detail.expanded;
   }
 
   entityMoreInfo(ev) {

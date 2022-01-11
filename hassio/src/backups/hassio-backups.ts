@@ -158,7 +158,7 @@ export class HassioBackups extends LitElement {
     }
     return html`
       <hass-tabs-subpage-data-table
-        .tabs=${supervisorTabs}
+        .tabs=${supervisorTabs(this.hass)}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .searchLabel=${this.supervisor.localize("search")}
@@ -173,7 +173,8 @@ export class HassioBackups extends LitElement {
         clickable
         selectable
         hasFab
-        main-page
+        .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
+        back-path="/config"
         supervisor
       >
         <ha-button-menu

@@ -7,10 +7,12 @@ import { HomeAssistant } from "../types";
 export interface AreaRegistryEntry {
   area_id: string;
   name: string;
+  picture: string | null;
 }
 
 export interface AreaRegistryEntryMutableParams {
   name: string;
+  picture?: string | null;
 }
 
 export const createAreaRegistryEntry = (

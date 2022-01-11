@@ -502,6 +502,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _entityRegMeetsFilter(entity: EntityRegistryEntry): boolean {
+    if (entity.entity_category) {
+      return false;
+    }
     if (
       this.includeDomains &&
       !this.includeDomains.includes(computeDomain(entity.entity_id))

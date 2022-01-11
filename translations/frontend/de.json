@@ -549,6 +549,9 @@
                 "last_triggered": "Zuletzt ausgelöst",
                 "trigger": "Aktionen ausführen"
             },
+            "button": {
+                "press": "Drücke"
+            },
             "camera": {
                 "not_available": "Bild nicht verfügbar"
             },
@@ -2118,7 +2121,7 @@
                     "name": "Name",
                     "no_devices": "Keine Geräte",
                     "open_configuration_url_device": "Gerät besuchen",
-                    "open_configuration_url_service": "Service besuchen",
+                    "open_configuration_url_service": "Dienst besuchen",
                     "picker": {
                         "filter": {
                             "filter": "Filter",
@@ -2494,7 +2497,7 @@
                         "finish": "Fertig",
                         "loading": {
                             "fallback_title": "die Integration",
-                            "loading_flow": "Bitte warte, während die {integration} eingerichtet wird",
+                            "loading_flow": "Bitte warte, während die Integration {integration} eingerichtet wird",
                             "loading_step": "Nächster Schritt für {integration} wird geladen"
                         },
                         "next": "Weiter",

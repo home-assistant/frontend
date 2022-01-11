@@ -218,7 +218,7 @@ export class HaConfigDevicePage extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
       >
         ${
@@ -293,7 +293,7 @@ export class HaConfigDevicePage extends LitElement {
                             src=${brandsUrl({
                               domain: integrations[0],
                               type: "logo",
-                              darkOptimized: this.hass.selectedTheme?.dark,
+                              darkOptimized: this.hass.themes?.darkMode,
                             })}
                             referrerpolicy="no-referrer"
                             @load=${this._onImageLoad}

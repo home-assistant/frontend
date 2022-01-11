@@ -80,6 +80,9 @@ class HaWebRtcPlayer extends LitElement {
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
+    peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    peerConnection.addTransceiver("video", { direction: "recvonly" });
+
     const offerOptions: RTCOfferOptions = {
       offerToReceiveAudio: true,
       offerToReceiveVideo: true,
@@ -133,9 +136,8 @@ class HaWebRtcPlayer extends LitElement {
       this._remoteStream = undefined;
     }
     if (this._videoEl) {
-      const videoEl = this._videoEl;
-      videoEl.removeAttribute("src");
-      videoEl.load();
+      this._videoEl.removeAttribute("src");
+      this._videoEl.load();
     }
     if (this._peerConnection) {
       this._peerConnection.close();

@@ -68,7 +68,7 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   }
 
   let newTrigger: Trigger;
-  if (!newVal) {
+  if (newVal === undefined || newVal === "") {
     newTrigger = { ...element.trigger };
     delete newTrigger[name];
   } else {
@@ -87,6 +87,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _requestShowId = false;
+
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string][] =>
       OPTIONS.map(
@@ -103,6 +105,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   protected render() {
     const selected = OPTIONS.indexOf(this.trigger.platform);
     const yamlMode = this._yamlMode || selected === -1;
+    const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
       <ha-card>
@@ -114,6 +117,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .label=${this.hass.localize("ui.common.menu")}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
+              <mwc-list-item>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.edit_id"
+                )}
+              </mwc-list-item>
               <mwc-list-item .disabled=${selected === -1}>
                 ${yamlMode
                   ? this.hass.localize(
@@ -189,14 +197,18 @@ export default class HaAutomationTriggerRow extends LitElement {
                   )}
                 </mwc-select>
 
-                <paper-input
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.id"
-                  )}
-                  .value=${this.trigger.id}
-                  @value-changed=${this._idChanged}
-                >
-                </paper-input>
+                ${showId
+                  ? html`
+                      <paper-input
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.triggers.id"
+                        )}
+                        .value=${this.trigger.id}
+                        @value-changed=${this._idChanged}
+                      >
+                      </paper-input>
+                    `
+                  : ""}
                 <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(
                     `ha-automation-trigger-${this.trigger.platform}`,
@@ -219,12 +231,15 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._switchYamlMode();
+        this._requestShowId = true;
         break;
       case 1:
-        fireEvent(this, "duplicate");
+        this._switchYamlMode();
         break;
       case 2:
+        fireEvent(this, "duplicate");
+        break;
+      case 3:
         this._onDelete();
         break;
     }
@@ -275,6 +290,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (newId === (this.trigger.id ?? "")) {
       return;
     }
+    this._requestShowId = true;
     const value = { ...this.trigger };
     if (!newId) {
       delete value.id;
@@ -291,6 +307,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
+    this._warnings = undefined;
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 

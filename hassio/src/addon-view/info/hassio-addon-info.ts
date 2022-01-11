@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import {
-  mdiArrowUpBoldCircle,
   mdiCheckCircle,
   mdiChip,
   mdiCircle,
@@ -49,7 +48,6 @@ import {
   startHassioAddon,
   stopHassioAddon,
   uninstallHassioAddon,
-  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -64,14 +62,14 @@ import {
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
-import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
-import { addonArchIsSupported } from "../../util/addon";
+import "../../update-available/update-available-card";
+import { addonArchIsSupported, extractChangelog } from "../../util/addon";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -91,6 +89,8 @@ const RATING_ICON = {
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -128,69 +128,13 @@ class HassioAddonInfo extends LitElement {
     return html`
       ${this.addon.update_available
         ? html`
-            <ha-card
-              .header="${this.supervisor.localize(
-                "common.update_available",
-                "count",
-                1
-              )}🎉"
-            >
-              <div class="card-content">
-                <hassio-card-content
-                  .hass=${this.hass}
-                  .title=${this.supervisor.localize(
-                    "addon.dashboard.new_update_available",
-                    "name",
-                    this.addon.name,
-                    "version",
-                    this.addon.version_latest
-                  )}
-                  .description=${this.supervisor.localize(
-                    "common.running_version",
-                    "version",
-                    this.addon.version
-                  )}
-                  icon=${mdiArrowUpBoldCircle}
-                  iconClass="update"
-                ></hassio-card-content>
-                ${!this.addon.available && addonStoreInfo
-                  ? !addonArchIsSupported(
-                      this.supervisor.info.supported_arch,
-                      this.addon.arch
-                    )
-                    ? html`
-                        <ha-alert alert-type="warning">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.not_available_arch"
-                          )}
-                        </ha-alert>
-                      `
-                    : html`
-                        <ha-alert alert-type="warning">
-                          ${this.supervisor.localize(
-                            "addon.dashboard.not_available_arch",
-                            "core_version_installed",
-                            this.supervisor.core.version,
-                            "core_version_needed",
-                            addonStoreInfo.homeassistant
-                          )}
-                        </ha-alert>
-                      `
-                  : ""}
-              </div>
-              <div class="card-actions">
-                ${this.addon.changelog
-                  ? html`
-                      <mwc-button @click=${this._openChangelog}>
-                        ${this.supervisor.localize("addon.dashboard.changelog")}
-                      </mwc-button>
-                    `
-                  : html`<span></span>`}
-                <mwc-button @click=${this._updateClicked}>
-                  ${this.supervisor.localize("common.update")}
-                </mwc-button>
-              </div>
-            </ha-card>
+            <update-available-card
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .supervisor=${this.supervisor}
+              .addonSlug=${this.addon.slug}
+              @update-complete=${this._updateComplete}
+            ></update-available-card>
           `
         : ""}
       ${!this.addon.protected
@@ -200,14 +144,18 @@ class HassioAddonInfo extends LitElement {
               .title=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.title"
               )}
-              .actionText=${this.supervisor.localize(
-                "addon.dashboard.protection_mode.enable"
-              )}
-              @alert-action-clicked=${this._protectionToggled}
             >
               ${this.supervisor.localize(
                 "addon.dashboard.protection_mode.content"
               )}
+              <mwc-button
+                slot="action"
+                .label=${this.supervisor.localize(
+                  "addon.dashboard.protection_mode.enable"
+                )}
+                @click=${this._protectionToggled}
+              >
+              </mwc-button>
             </ha-alert>
           `
         : ""}
@@ -899,22 +847,14 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
-      if (
-        content.includes(`# ${this.addon.version}`) &&
-        content.includes(`# ${this.addon.version_latest}`)
-      ) {
-        const newcontent = content.split(`# ${this.addon.version}`)[0];
-        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
-          // Only change the content if the new version still exist
-          // if the changelog does not have the newests version on top
-          // this will not be true, and we don't modify the content
-          content = newcontent;
-        }
-      }
+      const content = await fetchHassioAddonChangelog(
+        this.hass,
+        this.addon.slug
+      );
+
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
-        content,
+        content: extractChangelog(this.addon, content),
       });
     } catch (err: any) {
       showAlertDialog(this, {
@@ -924,6 +864,15 @@ class HassioAddonInfo extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
+  }
+
+  private _updateComplete() {
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "install",
+    };
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _installClicked(ev: CustomEvent): Promise<void> {
@@ -987,33 +936,6 @@ class HassioAddonInfo extends LitElement {
       });
     }
     button.progress = false;
-  }
-
-  private async _updateClicked(): Promise<void> {
-    showDialogSupervisorUpdate(this, {
-      supervisor: this.supervisor,
-      name: this.addon.name,
-      version: this.addon.version_latest,
-      backupParams: {
-        name: `addon_${this.addon.slug}_${this.addon.version}`,
-        addons: [this.addon.slug],
-        homeassistant: false,
-      },
-      updateHandler: async () => this._updateAddon(),
-    });
-  }
-
-  private async _updateAddon(): Promise<void> {
-    await updateHassioAddon(this.hass, this.addon.slug);
-    fireEvent(this, "supervisor-collection-refresh", {
-      collection: "addon",
-    });
-    const eventdata = {
-      success: true,
-      response: undefined,
-      path: "update",
-    };
-    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -1242,6 +1164,17 @@ class HassioAddonInfo extends LitElement {
 
         .addon-container > div:last-of-type {
           align-self: end;
+        }
+
+        ha-alert mwc-button {
+          --mdc-theme-primary: var(--primary-text-color);
+        }
+        a {
+          text-decoration: none;
+        }
+
+        update-available-card {
+          padding-bottom: 16px;
         }
 
         @media (max-width: 720px) {

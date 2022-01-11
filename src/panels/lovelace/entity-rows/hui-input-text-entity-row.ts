@@ -1,14 +1,7 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -74,19 +67,17 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     const element = this._inputEl;
     const stateObj = this.hass!.states[this._config!.entity];
 
+    // Filter out invalid text states
+    if (element.value && UNAVAILABLE_STATES.includes(element.value)) {
+      element.value = stateObj.state;
+      return;
+    }
+
     if (element.value !== stateObj.state) {
       setValue(this.hass!, stateObj.entity_id, element.value!);
     }
 
     ev.target.blur();
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-    `;
   }
 }
 

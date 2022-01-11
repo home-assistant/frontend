@@ -1,0 +1,3 @@
+---
+title: Picture Entity Card
+---

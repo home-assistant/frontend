@@ -165,6 +165,7 @@ module.exports.config = {
   cast({ isProdBuild, latestBuild }) {
     const entry = {
       launcher: path.resolve(paths.cast_dir, "src/launcher/entrypoint.ts"),
+      media: path.resolve(paths.cast_dir, "src/media/entrypoint.ts"),
     };
 
     if (latestBuild) {

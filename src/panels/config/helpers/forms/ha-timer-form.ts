@@ -25,7 +25,7 @@ class HaTimerForm extends LitElement {
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._duration = item.duration || "";
+      this._duration = item.duration || "00:00:00";
     } else {
       this._name = "";
       this._icon = "";

@@ -180,6 +180,7 @@
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "אימות",
+                        "core": "ליבה",
                         "docker": "docker",
                         "hardware": "חומרה",
                         "hass": "hass",
@@ -204,6 +205,10 @@
                     "stage": {
                         "description": "הרחבות יכולות להיות אחד משלושה שלבים:\n\n{icon_stable} **יציב**: אלו הרחבות המוכנות לשימוש במערכת מתפקדת.\n\n{icon_experimental} **נסיוני**: אלו עשויים להכיל באגים, וייתכן שהם לא גמורים.\n\n{icon_deprecated} **הוצא משימוש**: הרחבות אלו כבר לא יקבלו עדכונים.",
                         "title": "שלב הרחבה"
+                    },
+                    "stages": {
+                        "deprecated": "הוצא משימוש",
+                        "experimental": "ניסיוני"
                     }
                 },
                 "changelog": "יומן שינויים",
@@ -239,7 +244,7 @@
                 "protection_mode": {
                     "content": "מצב הגנה על הרחבה זו מושבת! פעולה זו מעניקה להרחבה גישה מלאה למערכת כולה, מה שמוסיף סיכוני אבטחה ועלול לגרום נזק למערכת בעת שימוש שגוי. הפוך את מצב ההגנה ללא זמין רק אם אתה יודע מה אתה עושה, עליך לתת אמון במקור של הרחבה זו.",
                     "enable": "אפשר",
-                    "title": "אזהרה: מצב ההגנה מושבת!"
+                    "title": "מצב ההגנה מושבת!"
                 },
                 "ram_usage": "שימוש ב-RAM של הרחבה",
                 "rebuild": "בנייה מחדש",
@@ -513,6 +518,7 @@
                     "os": "מערכת הפעלה",
                     "os_agent": "סוכן מערכת הפעלה",
                     "privileged": "אין הרשאות למפקח",
+                    "software": "זוהתה תוכנה שאינה נתמכת",
                     "source_mods": "שינויי מקור",
                     "systemd": "Systemd"
                 },
@@ -542,6 +548,9 @@
             "automation": {
                 "last_triggered": "הפעלה אחרונה",
                 "trigger": "הרץ פעולות"
+            },
+            "button": {
+                "press": "לחיצה"
             },
             "camera": {
                 "not_available": "התמונה אינה זמינה"
@@ -700,7 +709,7 @@
             "delete": "מחיקה",
             "disable": "השבת",
             "enable": "אפשר",
-            "error_required": "חובה",
+            "error_required": "נדרש",
             "help": "עזרה",
             "leave": "עזוב",
             "loading": "טוען",
@@ -1098,6 +1107,7 @@
                 "history": "היסטוריה",
                 "last_changed": "שינוי אחרון",
                 "last_updated": "עודכן לאחרונה",
+                "logbook": "יומן אירועים",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
                 },
@@ -1116,6 +1126,7 @@
                     "last_triggered": "גורם הפעיל לאחרונה"
                 },
                 "settings": "הגדרות ישות",
+                "show_more": "הצג עוד",
                 "sun": {
                     "elevation": "גובה",
                     "rising": "זורחת",
@@ -1419,8 +1430,8 @@
                                     "label": "תנאי"
                                 },
                                 "delay": {
-                                    "delay": "עיכוב",
-                                    "label": "עיכוב"
+                                    "delay": "משך",
+                                    "label": "המתנה שהזמן יעבור (עיכוב)"
                                 },
                                 "device_id": {
                                     "action": "פעולה",
@@ -1438,7 +1449,7 @@
                                     "label": "התקן"
                                 },
                                 "event": {
-                                    "event": "אירוע:",
+                                    "event": "אירוע",
                                     "label": "ירה אירוע",
                                     "service_data": "נתוני שירות"
                                 },
@@ -1473,7 +1484,7 @@
                                 },
                                 "wait_template": {
                                     "continue_timeout": "המשך בפסק הזמן",
-                                    "label": "לחכות",
+                                    "label": "המתנה לתבנית",
                                     "timeout": "זמן קצוב (אופציונלי)",
                                     "wait_template": "תבנית זמן"
                                 }
@@ -1771,18 +1782,25 @@
                         "add_blueprint": "יבוא שרטוט",
                         "confirm_delete_header": "למחוק את השרטוט הזה?",
                         "confirm_delete_text": "האם בוודאות ברצונך למחוק שרטוט זה?",
+                        "create_automation": "צור אוטומציה",
+                        "create_script": "צור סקריפט",
                         "delete_blueprint": "מחק שרטוט",
                         "discover_more": "גלה שרטוטים נוספים",
                         "header": "עורך השרטוטים",
                         "headers": {
                             "domain": "דומיין",
                             "file_name": "שם קובץ",
-                            "name": "שם"
+                            "name": "שם",
+                            "type": "סוּג"
                         },
                         "introduction": "התצורה של שרטוטים מאפשרת לך לייבא ולנהל את השרטוטים שלך.",
                         "learn_more": "למד עוד אודות שימוש בשרטוטים",
                         "share_blueprint": "שתף שרטוט",
                         "share_blueprint_no_url": "אין אפשרות לשתף שרטוט: אין כתובת URL",
+                        "types": {
+                            "automation": "אוטומציה",
+                            "script": "סקריפט"
+                        },
                         "use_blueprint": "צור אוטומציה"
                     }
                 },
@@ -2091,11 +2109,13 @@
                     "entities": {
                         "add_entities_lovelace": "הוספה לממשק Lovelace",
                         "config": "תצורה",
+                        "control": "פקדים",
                         "diagnostic": "אבחון",
                         "disabled_entities": "+{count, plural,\n  one {ישות אחת לא זמינה}\n  other {{count} ישויות לא זמינות}\n}",
                         "entities": "ישויות",
                         "hide_disabled": "הסתרת מושבתים",
                         "none": "למכשיר זה אין ישויות",
+                        "sensor": "חיישנים",
                         "state": "מצב"
                     },
                     "name": "שם",
@@ -3296,13 +3316,16 @@
                     "device_info": {
                         "device_config": "קביעת תצורה של התקן",
                         "heal_node": "ריפוי התקן",
+                        "highest_security": "האבטחה הגבוהה ביותר",
                         "is_secure": "מאובטח",
                         "node_ready": "התקן מוכן",
                         "node_status": "מצב התקן",
                         "reinterview_device": "מראיין את ההתקן מחדש",
                         "remove_failed": "הסרת התקן שנכשל",
                         "unknown": "לא ידוע",
-                        "zwave_info": "מידע Z-Wave"
+                        "zwave_info": "מידע Z-Wave",
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "גרסה {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "ריפוי הרשת בוטל.",
@@ -3389,6 +3412,27 @@
                         "introduction": "הסר התקן מרשת Z-Wave והסר את ההתקן והישויות המשויכים מ-Home Assistant.",
                         "start_exclusion": "התחל אי הכללה",
                         "title": "הסרת התקן Z-Wave"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "ללא"
+                        },
+                        "S0_Legacy": {
+                            "description": "דוגמה: מנעולי דלת מדור קודם ללא תמיכה ב-S2",
+                            "title": "מורשת S0"
+                        },
+                        "S2_AccessControl": {
+                            "description": "דוגמה: מנעולי דלת ודלתות מוסך",
+                            "title": "בקרת גישה S2"
+                        },
+                        "S2_Authenticated": {
+                            "description": "דוגמה: תאורה, חיישנים ומערכות אבטחה",
+                            "title": "S2 מאומת"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "כמו S2 מאומת, אך ללא אימות שההתקן הנכון כלול",
+                            "title": "S2 לא מאומת"
+                        }
                     }
                 }
             },
@@ -3468,7 +3512,9 @@
                         },
                         "issue": "בעיה",
                         "issues": {
+                            "entity_no_longer_recorded": "ישות זו אינה מתועדת עוד.",
                             "entity_not_recorded": "ישות זו אינה נכללת בהקלטה.",
+                            "no_state": "אין מצב זמין עבור ישות זו.",
                             "units_changed": "היחידה של ישות זו השתנתה מ-''{metadata_unit}'' אל ''{state_unit}''",
                             "unsupported_state_class": "מחלקת המצב ''{state_class}'' של ישות זו אינה נתמכת.",
                             "unsupported_unit": "היחידה (\"{state_unit}\") של ישות זו אינה תואמת ליחידה של מחלקת התקן ''{device_class}''.",
@@ -3575,7 +3621,8 @@
                             "total_returned": "סה\"כ הוחזר {num} קוט\"ש"
                         },
                         "grid_neutrality_gauge": {
-                            "energy_dependency": "הכרטיס הזה מייצג את תלות האנרגיה שלך.",
+                            "color_explain": "אם המחט בסגול, החזרת יותר אנרגיה לרשת ממה שצרכת ממנה. אם זה בכחול, צרכת יותר אנרגיה מהרשת ממה שהחזרת.",
+                            "energy_dependency": "כרטיס זה מציין את צריכת האנרגיה נטו שלך.",
                             "grid_neutrality_not_calculated": "לא היתה אפשרות לחשב את ניטרליות הרשת",
                             "net_consumed_grid": "נטו הנצרך מהרשת",
                             "net_returned_grid": "נטו חזרה לרשת",
@@ -3878,7 +3925,10 @@
                         "weather-forecast": {
                             "description": "כרטיס תחזית מזג האוויר מציג את מזג האוויר. מאוד שימושי לכלול בממשקים שאנשים מציגים על הקיר.",
                             "name": "תחזית מזג האוויר",
-                            "show_forecast": "הצג תחזית"
+                            "show_both": "הצגת מזג אוויר ותחזית נוכחיים",
+                            "show_forecast": "הצג תחזית",
+                            "show_only_current": "הצגת מזג אוויר נוכחי בלבד",
+                            "show_only_forecast": "הצגת תחזית בלבד"
                         }
                     },
                     "cardpicker": {
@@ -4185,7 +4235,8 @@
                 "initializing": "מאתחל",
                 "logging_in_to_with": "כניסה אל **{locationName}** באמצעות **{authProviderName}**.",
                 "logging_in_with": "מתחבר עם **{authProviderName}**.",
-                "pick_auth_provider": "או התחבר עם"
+                "pick_auth_provider": "או התחבר עם",
+                "store_token": "תשאיר אותי מחובר"
             },
             "page-demo": {
                 "cards": {
@@ -4277,7 +4328,7 @@
                     },
                     "error": {
                         "password_not_match": "הסיסמאות אינן תואמות",
-                        "required_fields": "מלא את כל השדות הדרושים"
+                        "required_fields": "יש למלא את כל השדות הדרושים"
                     },
                     "intro": "בואו נתחיל על ידי יצירת חשבון משתמש.",
                     "required_field": "נדרש"

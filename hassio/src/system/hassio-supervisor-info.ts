@@ -17,7 +17,6 @@ import {
   restartSupervisor,
   setSupervisorOption,
   SupervisorOptions,
-  updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
@@ -77,16 +76,15 @@ class HassioSupervisorInfo extends LitElement {
               <span slot="description">
                 supervisor-${this.supervisor.supervisor.version_latest}
               </span>
-              ${this.supervisor.supervisor.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.supervisor.update_available
                 ? html`
-                    <ha-progress-button
-                      .title=${this.supervisor.localize(
-                        "system.supervisor.update_supervisor"
-                      )}
-                      @click=${this._supervisorUpdate}
-                    >
-                      ${this.supervisor.localize("common.update")}
-                    </ha-progress-button>
+                    <a href="/hassio/update-available/supervisor">
+                      <mwc-button
+                        .label=${this.supervisor.localize("common.show")}
+                      >
+                      </mwc-button>
+                    </a>
                   `
                 : ""}
             </ha-settings-row>
@@ -153,24 +151,28 @@ class HassioSupervisorInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>`
                 : ""
-              : html`<ha-alert
-                  alert-type="warning"
-                  .actionText=${this.supervisor.localize("common.learn_more")}
-                  @alert-action-clicked=${this._unsupportedDialog}
-                >
+              : html`<ha-alert alert-type="warning">
                   ${this.supervisor.localize(
                     "system.supervisor.unsupported_title"
                   )}
+                  <mwc-button
+                    slot="action"
+                    .label=${this.supervisor.localize("common.learn_more")}
+                    @click=${this._unsupportedDialog}
+                  >
+                  </mwc-button>
                 </ha-alert>`}
             ${!this.supervisor.supervisor.healthy
-              ? html`<ha-alert
-                  alert-type="error"
-                  .actionText=${this.supervisor.localize("common.learn_more")}
-                  @alert-action-clicked=${this._unhealthyDialog}
-                >
+              ? html`<ha-alert alert-type="error">
                   ${this.supervisor.localize(
                     "system.supervisor.unhealthy_title"
                   )}
+                  <mwc-button
+                    slot="action"
+                    .label=${this.supervisor.localize("common.learn_more")}
+                    @click=${this._unhealthyDialog}
+                  >
+                  </mwc-button>
                 </ha-alert>`
               : ""}
           </div>
@@ -337,51 +339,6 @@ class HassioSupervisorInfo extends LitElement {
     }
   }
 
-  private async _supervisorUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize(
-        "confirm.update.title",
-        "name",
-        "Supervisor"
-      ),
-      text: this.supervisor.localize(
-        "confirm.update.text",
-        "name",
-        "Supervisor",
-        "version",
-        this.supervisor.supervisor.version_latest
-      ),
-      confirmText: this.supervisor.localize("common.update"),
-      dismissText: this.supervisor.localize("common.cancel"),
-    });
-
-    if (!confirmed) {
-      button.progress = false;
-      return;
-    }
-
-    try {
-      await updateSupervisor(this.hass);
-      fireEvent(this, "supervisor-collection-refresh", {
-        collection: "supervisor",
-      });
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.supervisor.localize(
-          "common.failed_to_update_name",
-          "name",
-          "Supervisor"
-        ),
-        text: extractApiErrorMessage(err),
-      });
-    } finally {
-      button.progress = false;
-    }
-  }
-
   private async _diagnosticsInformationDialog(): Promise<void> {
     await showAlertDialog(this, {
       title: this.supervisor.localize(
@@ -512,6 +469,12 @@ class HassioSupervisorInfo extends LitElement {
         ha-settings-row > div[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
+        }
+        ha-alert mwc-button {
+          --mdc-theme-primary: var(--primary-text-color);
+        }
+        a {
+          text-decoration: none;
         }
       `,
     ];

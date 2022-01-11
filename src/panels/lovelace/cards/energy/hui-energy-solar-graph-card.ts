@@ -1,9 +1,3 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
-import { classMap } from "lit/directives/class-map";
-import "../../../../components/ha-card";
 import {
   ChartData,
   ChartDataset,
@@ -17,16 +11,26 @@ import {
   isToday,
   startOfToday,
 } from "date-fns";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergySolarGraphCardConfig } from "../types";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import {
   hex2rgb,
   lab2rgb,
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { labDarken } from "../../../../common/color/lab";
+import { labBrighten, labDarken } from "../../../../common/color/lab";
+import { formatTime } from "../../../../common/datetime/format_time";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../../../common/number/format_number";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
 import {
   EnergyData,
   EnergySolarForecasts,
@@ -34,19 +38,11 @@ import {
   getEnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/chart/ha-chart-base";
-import {
-  formatNumber,
-  numberFormatToLocale,
-} from "../../../../common/number/format_number";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { FrontendLocaleData } from "../../../../data/translation";
-import {
-  reduceSumStatisticsByMonth,
-  reduceSumStatisticsByDay,
-} from "../../../../data/history";
-import { formatTime } from "../../../../common/datetime/format_time";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySolarGraphCardConfig } from "../types";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -262,10 +258,15 @@ export class HuiEnergySolarGraphCard
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
-      const borderColor =
+      const modifiedColor =
         idx > 0
-          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(solarColor)), idx)))
-          : solarColor;
+          ? this.hass.themes.darkMode
+            ? labBrighten(rgb2lab(hex2rgb(solarColor)), idx)
+            : labDarken(rgb2lab(hex2rgb(solarColor)), idx)
+          : undefined;
+      const borderColor = modifiedColor
+        ? rgb2hex(lab2rgb(modifiedColor))
+        : solarColor;
 
       let prevValue: number | null = null;
       let prevStart: string | null = null;
@@ -274,16 +275,7 @@ export class HuiEnergySolarGraphCard
 
       // Process solar production data.
       if (source.stat_energy_from in energyData.stats) {
-        const stats =
-          dayDifference > 35
-            ? reduceSumStatisticsByMonth(
-                energyData.stats[source.stat_energy_from]
-              )
-            : dayDifference > 2
-            ? reduceSumStatisticsByDay(
-                energyData.stats[source.stat_energy_from]
-              )
-            : energyData.stats[source.stat_energy_from];
+        const stats = energyData.stats[source.stat_energy_from];
 
         for (const point of stats) {
           if (point.sum === null) {

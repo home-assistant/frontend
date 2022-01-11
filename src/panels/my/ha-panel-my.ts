@@ -141,7 +141,8 @@ const REDIRECTS: Redirects = {
     redirect: "/config/info",
   },
   customize: {
-    redirect: "/config/customize",
+    // customize was removed in 2021.12, fallback to dashboard
+    redirect: "/config/dashboard",
   },
   profile: {
     redirect: "/profile/dashboard",

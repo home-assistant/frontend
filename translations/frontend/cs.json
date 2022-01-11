@@ -549,6 +549,9 @@
                 "last_triggered": "Naposledy spuštěno",
                 "trigger": "Spustit akce"
             },
+            "button": {
+                "press": "Stisknutí"
+            },
             "camera": {
                 "not_available": "Obrázek není k dispozici"
             },
@@ -1104,6 +1107,7 @@
                 "history": "Historie",
                 "last_changed": "Naposledy změněno",
                 "last_updated": "Poslední aktualizace",
+                "logbook": "Záznamy",
                 "person": {
                     "create_zone": "Vytvořit zónu z aktuálního umístění"
                 },
@@ -1122,6 +1126,7 @@
                     "last_triggered": "Naposledy spuštěno"
                 },
                 "settings": "Nastavení entity",
+                "show_more": "Zobrazit více",
                 "sun": {
                     "elevation": "Výška nad obzorem",
                     "rising": "Vychází",
@@ -2104,11 +2109,13 @@
                     "entities": {
                         "add_entities_lovelace": "Přidat do Lovelace",
                         "config": "Nastavení",
+                        "control": "Ovládací prvky",
                         "diagnostic": "Diagnostika",
                         "disabled_entities": "+{count} {count, plural,\n  one {zakázaná entita}\n  other {zakázaných entit}\n}",
                         "entities": "Entity",
                         "hide_disabled": "Skrýt zakázané",
                         "none": "Toto zařízení nemá žádné entity",
+                        "sensor": "Senzory",
                         "state": "Stav"
                     },
                     "name": "Jméno",
@@ -3409,6 +3416,22 @@
                     "security_classes": {
                         "None": {
                             "title": "Žádné"
+                        },
+                        "S0_Legacy": {
+                            "description": "Příklad: Starší zámky dveří bez podpory S2",
+                            "title": "S0 Starší verze"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Příklad: Zámky dveří a garážová vrata",
+                            "title": "S2 řízení přístupu"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Příklad: Osvětlení, senzory a bezpečnostní systémy",
+                            "title": "S2 Ověřeno"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Stejně jako S2 Ověřeno, ale bez ověření, zda je zahrnuto správné zařízení.",
+                            "title": "S2 Neověřeno"
                         }
                     }
                 }

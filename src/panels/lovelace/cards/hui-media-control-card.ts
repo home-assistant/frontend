@@ -235,6 +235,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             <div>
               <ha-icon-button
                 .path=${mdiDotsVertical}
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.cards.show_more_info"
+                )}
                 class="more-info"
                 @click=${this._handleMoreInfo}
               ></ha-icon-button>
@@ -544,7 +547,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     try {
-      const { foreground, background } = await extractColors(this._image);
+      const { foreground, background } = await extractColors(
+        this.hass.hassUrl(this._image)
+      );
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;
     } catch (err: any) {

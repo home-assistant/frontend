@@ -6,6 +6,8 @@ import {
   mdiBrightness5,
   mdiBrightness7,
   mdiCheckboxMarkedCircle,
+  mdiCheckNetworkOutline,
+  mdiCloseNetworkOutline,
   mdiCheckCircle,
   mdiCropPortrait,
   mdiDoorClosed,
@@ -26,8 +28,6 @@ import {
   mdiPowerPlugOff,
   mdiRadioboxBlank,
   mdiRun,
-  mdiServerNetwork,
-  mdiServerNetworkOff,
   mdiSmoke,
   mdiSnowflake,
   mdiSquare,
@@ -55,7 +55,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "cold":
       return is_off ? mdiThermometer : mdiSnowflake;
     case "connectivity":
-      return is_off ? mdiServerNetworkOff : mdiServerNetwork;
+      return is_off ? mdiCloseNetworkOutline : mdiCheckNetworkOutline;
     case "door":
       return is_off ? mdiDoorClosed : mdiDoorOpen;
     case "garage_door":

@@ -1329,14 +1329,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/gutter@npm:^0.19.3":
-  version: 0.19.3
-  resolution: "@codemirror/gutter@npm:0.19.3"
+"@codemirror/gutter@npm:^0.19.4":
+  version: 0.19.4
+  resolution: "@codemirror/gutter@npm:0.19.4"
   dependencies:
     "@codemirror/rangeset": ^0.19.0
     "@codemirror/state": ^0.19.0
     "@codemirror/view": ^0.19.0
-  checksum: bc3ab643418e71dfad0ecffb3d51207df5dcb71692c3c3db2e1d4a9215847a71093ddbeaf5dc18308b0540ee57e7d9ebbbecb3263b21c6046547c594135fbe1f
+  checksum: 5e3ed8c8aad85411651dd752ad5e634c918e47b271dcf74206181bee27acd6cc01c495a921abcdd614076e535c66387973104a7bd34c67d0655c4c4d1b951cc4
   languageName: node
   linkType: hard
 
@@ -1442,12 +1442,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^0.19.0, @codemirror/state@npm:^0.19.2":
-  version: 0.19.2
-  resolution: "@codemirror/state@npm:0.19.2"
+"@codemirror/state@npm:^0.19.0, @codemirror/state@npm:^0.19.2, @codemirror/state@npm:^0.19.3, @codemirror/state@npm:^0.19.4":
+  version: 0.19.4
+  resolution: "@codemirror/state@npm:0.19.4"
   dependencies:
     "@codemirror/text": ^0.19.0
-  checksum: 6460ff45d8ce20812a9abcb035a3e5f2a4adcb837c0efd00151b07c8e0bf617f6fdcf7668982b76c8e7bb447b0a83e7b8308817dac754c190c9495b49289bcaf
+  checksum: 2babd90a62c5f65dd4aaf7955c9c52fae4a46ad75c50a540eb95f2f31b6648873ea73c84d6c0a676d4eab335a4bce511a75fce656144758d04ca62b9a2b644c4
   languageName: node
   linkType: hard
 
@@ -1465,23 +1465,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.4":
-  version: 0.19.4
-  resolution: "@codemirror/text@npm:0.19.4"
-  checksum: 1467a13e60ef0d58f7ac7a043e4d21852e5a972f06656eb633164e1b6f8c464001b82c80651ecbe17386c0a530423cf8f83d9126f771055e7ab723096f727265
+"@codemirror/text@npm:^0.19.0, @codemirror/text@npm:^0.19.4, @codemirror/text@npm:^0.19.5":
+  version: 0.19.5
+  resolution: "@codemirror/text@npm:0.19.5"
+  checksum: e8ff270e705fe7f9adb3c479845569f6bfb3d8033b70cb1da530f37d9088160713b7cda2b60106fa03df5dd82cd8bcde45662450dd42854006303101a0296892
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:^0.19.0, @codemirror/view@npm:^0.19.9":
-  version: 0.19.9
-  resolution: "@codemirror/view@npm:0.19.9"
+"@codemirror/view@npm:^0.19.0, @codemirror/view@npm:^0.19.15":
+  version: 0.19.15
+  resolution: "@codemirror/view@npm:0.19.15"
   dependencies:
     "@codemirror/rangeset": ^0.19.0
-    "@codemirror/state": ^0.19.2
+    "@codemirror/state": ^0.19.3
     "@codemirror/text": ^0.19.0
     style-mod: ^4.0.0
     w3c-keyname: ^2.2.4
-  checksum: babb017be1506763f40775fc8501168aa94edf786b724840a0ba234cd6acf64315155c4533ed7d5a34f3829babab47551a42c731d87fdeb5870efcc84b6da00b
+  checksum: 7864fc4b5ba6d490a4b1b3416a6ef93108a70cc28a6261bbf34c484358d64d739c80c723aa3d0c8344ccb437aeea39020f7e5a6b10ae4438ed8d12df20a7e568
   languageName: node
   linkType: hard
 
@@ -2126,6 +2126,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/drawer@npm:=14.0.0-canary.261f2db59.0":
+  version: 14.0.0-canary.261f2db59.0
+  resolution: "@material/drawer@npm:14.0.0-canary.261f2db59.0"
+  dependencies:
+    "@material/animation": 14.0.0-canary.261f2db59.0
+    "@material/base": 14.0.0-canary.261f2db59.0
+    "@material/dom": 14.0.0-canary.261f2db59.0
+    "@material/elevation": 14.0.0-canary.261f2db59.0
+    "@material/feature-targeting": 14.0.0-canary.261f2db59.0
+    "@material/list": 14.0.0-canary.261f2db59.0
+    "@material/ripple": 14.0.0-canary.261f2db59.0
+    "@material/rtl": 14.0.0-canary.261f2db59.0
+    "@material/shape": 14.0.0-canary.261f2db59.0
+    "@material/theme": 14.0.0-canary.261f2db59.0
+    "@material/typography": 14.0.0-canary.261f2db59.0
+    tslib: ^2.1.0
+  checksum: 92146c61e00220f7aab80e3631c752e11147bee22e4a09e7bac21d233ae0aeff9545efe4d4a0fb10e889161ba06433ce9222bdcfda73de3ea54027cdadb3571a
+  languageName: node
+  linkType: hard
+
 "@material/elevation@npm:14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/elevation@npm:14.0.0-canary.261f2db59.0"
@@ -2340,6 +2360,20 @@ __metadata:
     tslib: ^2.0.1
     wicg-inert: ^3.0.0
   checksum: f9df62861ee81c010d7e5b0fcb7b18df1896a6ff60f4e00eca5a8f153da47ca4dd500bf97a727b06b3324a5d7afe738b6ce5604b605a51013afa5ebdbfa1e9a0
+  languageName: node
+  linkType: hard
+
+"@material/mwc-drawer@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-drawer@npm:0.25.3"
+  dependencies:
+    "@material/drawer": =14.0.0-canary.261f2db59.0
+    "@material/mwc-base": ^0.25.3
+    blocking-elements: ^0.1.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+    wicg-inert: ^3.0.0
+  checksum: 1195301cd943c1f7dae92ef33c383f5a2c3238d26fa44dd006d3c90d1c101cf17a5e67e491ef6ec49889a5cef682ea2f410397ac76be556cde1c8cb79f06874d
   languageName: node
   linkType: hard
 
@@ -2624,6 +2658,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material/mwc-top-app-bar-fixed@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-top-app-bar-fixed@npm:0.25.3"
+  dependencies:
+    "@material/mwc-top-app-bar": ^0.25.3
+    "@material/top-app-bar": =14.0.0-canary.261f2db59.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: f142b0625b0b5bd9335b43db977a20502da49707415c69bb8df8ba3626f81cc4c8283aeeece6f20d3a401f370b33ac88a41ebdcaa04fe90d5b2067142b1c460c
+  languageName: node
+  linkType: hard
+
+"@material/mwc-top-app-bar@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-top-app-bar@npm:0.25.3"
+  dependencies:
+    "@material/mwc-base": ^0.25.3
+    "@material/top-app-bar": =14.0.0-canary.261f2db59.0
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: c71ad8f557232827bab4b0cdf69fc3aa8caa9aa84193a9b085d3504c7d5c7a8d1e17aab7ebcf84cd0983e2ada8c88cc28de3f1d3a824c0b4fb9ce2ba96b48912
+  languageName: node
+  linkType: hard
+
 "@material/notched-outline@npm:14.0.0-canary.261f2db59.0, @material/notched-outline@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/notched-outline@npm:14.0.0-canary.261f2db59.0"
@@ -2869,7 +2927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/top-app-bar@npm:14.0.0-canary.261f2db59.0":
+"@material/top-app-bar@npm:14.0.0-canary.261f2db59.0, @material/top-app-bar@npm:=14.0.0-canary.261f2db59.0":
   version: 14.0.0-canary.261f2db59.0
   resolution: "@material/top-app-bar@npm:14.0.0-canary.261f2db59.0"
   dependencies:
@@ -2909,17 +2967,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:6.4.95":
-  version: 6.4.95
-  resolution: "@mdi/js@npm:6.4.95"
-  checksum: 76055821b0b611090f1fadff3cb93b0d2c05f7c52778a0e8966abe1c85d3aae8312c497e91882bb8cb02bf9235edda901da944099553afb2dbacafb11ed40b18
+"@mdi/js@npm:6.5.95":
+  version: 6.5.95
+  resolution: "@mdi/js@npm:6.5.95"
+  checksum: b1db7713d216c119f584bf973514a2f9d8f2e671e91bf19ce8e56cfa7a9843c0a060328e794507ac31f2bded1032123294f39ff8e987ea5acb2719ab522ef146
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:6.4.95":
-  version: 6.4.95
-  resolution: "@mdi/svg@npm:6.4.95"
-  checksum: 118945d58484dfa686b3127fabbbbf8e20c20ce1989d158cd270e3da53e22fd30d3c285e3f5d0472f602a9842f2adb8321d853f85ff397ccf8bfefa846bd729e
+"@mdi/svg@npm:6.5.95":
+  version: 6.5.95
+  resolution: "@mdi/svg@npm:6.5.95"
+  checksum: 2d45221d042d52d54c85eaf672a5f3697ed5201607fa38a6e235ee2e60d1c3c25d456a284f19ce47b5f06418cacfee29e8fecf6580b8c28538fd26044becaf1a
   languageName: node
   linkType: hard
 
@@ -3745,13 +3803,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/events@npm:*":
-  version: 3.0.0
-  resolution: "@types/events@npm:3.0.0"
-  checksum: 9a424c2da210957d5636e0763e8c9fc3aaeee35bf411284ddec62a56a6abe31de9c7c2e713dabdd8a76ff98b47db2bd52f61310be6609641d6234cc842ecbbe3
-  languageName: node
-  linkType: hard
-
 "@types/express-serve-static-core@npm:*":
   version: 4.17.13
   resolution: "@types/express-serve-static-core@npm:4.17.13"
@@ -3798,14 +3849,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@types/glob@npm:7.1.1"
+"@types/glob@npm:^7, @types/glob@npm:^7.1.1":
+  version: 7.2.0
+  resolution: "@types/glob@npm:7.2.0"
   dependencies:
-    "@types/events": "*"
     "@types/minimatch": "*"
     "@types/node": "*"
-  checksum: 9fb96d004c8e9ed25b305bc0d34c99c70c47c571740ca861cca92be4b28649786971703e9883f8ead0815b50225dbaf103a1df2d076923066f6bc0ab733a7be8
+  checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
   languageName: node
   linkType: hard
 
@@ -8608,9 +8658,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6":
-  version: 7.1.7
-  resolution: "glob@npm:7.1.7"
+"glob@npm:^7.0.3, glob@npm:^7.1.1, glob@npm:^7.1.2, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "glob@npm:7.2.0"
   dependencies:
     fs.realpath: ^1.0.0
     inflight: ^1.0.4
@@ -8618,7 +8668,7 @@ fsevents@^1.2.7:
     minimatch: ^3.0.4
     once: ^1.3.0
     path-is-absolute: ^1.0.0
-  checksum: b61f48973bbdcf5159997b0874a2165db572b368b931135832599875919c237fc05c12984e38fe828e69aa8a921eb0e8a4997266211c517c9cfaae8a93988bb8
+  checksum: 78a8ea942331f08ed2e055cb5b9e40fe6f46f579d7fd3d694f3412fe5db23223d29b7fee1575440202e9a7ff9a72ab106a39fee39934c7bedafe5e5f8ae20134
   languageName: node
   linkType: hard
 
@@ -8992,16 +9042,16 @@ fsevents@^1.2.7:
     "@babel/preset-typescript": ^7.15.0
     "@braintree/sanitize-url": ^5.0.2
     "@codemirror/commands": ^0.19.5
-    "@codemirror/gutter": ^0.19.3
+    "@codemirror/gutter": ^0.19.4
     "@codemirror/highlight": ^0.19.6
     "@codemirror/history": ^0.19.0
     "@codemirror/legacy-modes": ^0.19.0
     "@codemirror/rectangular-selection": ^0.19.1
     "@codemirror/search": ^0.19.2
-    "@codemirror/state": ^0.19.2
+    "@codemirror/state": ^0.19.4
     "@codemirror/stream-parser": ^0.19.2
-    "@codemirror/text": ^0.19.4
-    "@codemirror/view": ^0.19.9
+    "@codemirror/text": ^0.19.5
+    "@codemirror/view": ^0.19.15
     "@formatjs/intl-datetimeformat": ^4.2.5
     "@formatjs/intl-getcanonicallocales": ^1.8.0
     "@formatjs/intl-locale": ^2.4.40
@@ -9022,6 +9072,7 @@ fsevents@^1.2.7:
     "@material/mwc-checkbox": 0.25.3
     "@material/mwc-circular-progress": 0.25.3
     "@material/mwc-dialog": 0.25.3
+    "@material/mwc-drawer": ^0.25.3
     "@material/mwc-fab": 0.25.3
     "@material/mwc-formfield": 0.25.3
     "@material/mwc-icon-button": "patch:@material/mwc-icon-button@0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch"
@@ -9036,9 +9087,10 @@ fsevents@^1.2.7:
     "@material/mwc-tab": 0.25.3
     "@material/mwc-tab-bar": 0.25.3
     "@material/mwc-textfield": 0.25.3
+    "@material/mwc-top-app-bar-fixed": ^0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0
-    "@mdi/js": 6.4.95
-    "@mdi/svg": 6.4.95
+    "@mdi/js": 6.5.95
+    "@mdi/svg": 6.5.95
     "@open-wc/dev-server-hmr": ^0.0.2
     "@polymer/app-layout": ^3.1.0
     "@polymer/iron-flex-layout": ^3.0.1
@@ -9063,6 +9115,7 @@ fsevents@^1.2.7:
     "@thomasloven/round-slider": 0.5.4
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": ^1.0.3
+    "@types/glob": ^7
     "@types/js-yaml": ^4
     "@types/leaflet": ^1
     "@types/leaflet-draw": ^1
@@ -9105,6 +9158,7 @@ fsevents@^1.2.7:
     fancy-log: ^1.3.3
     fs-extra: ^7.0.1
     fuse.js: ^6.0.0
+    glob: ^7.2.0
     google-timezones-json: ^1.0.2
     gulp: ^4.0.2
     gulp-foreach: ^0.1.0
@@ -9113,7 +9167,7 @@ fsevents@^1.2.7:
     gulp-rename: ^2.0.0
     gulp-zopfli-green: ^3.0.1
     hls.js: ^1.0.11
-    home-assistant-js-websocket: ^5.11.1
+    home-assistant-js-websocket: ^6.0.1
     html-minifier: ^4.0.0
     husky: ^1.3.1
     idb-keyval: ^5.1.3
@@ -9139,6 +9193,7 @@ fsevents@^1.2.7:
     prettier: ^2.4.1
     proxy-polyfill: ^0.3.2
     punycode: ^2.1.1
+    qr-scanner: ^1.3.0
     qrcode: ^1.4.4
     regenerator-runtime: ^0.13.8
     require-dir: ^1.2.0
@@ -9183,10 +9238,10 @@ fsevents@^1.2.7:
   languageName: unknown
   linkType: soft
 
-"home-assistant-js-websocket@npm:^5.11.1":
-  version: 5.11.1
-  resolution: "home-assistant-js-websocket@npm:5.11.1"
-  checksum: 4b3f4310ea15f758a47082ddde06ed46eeddcae490a59a16dbcec4fb798507a5cc4761b9e880261aed9f83335475abea8356d5239c081774caa335e5e76fba50
+"home-assistant-js-websocket@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "home-assistant-js-websocket@npm:6.0.1"
+  checksum: 566d6de6a4eb0e05ca434a45433cfe6fdd6b5cb2008e9a165709e08335df1c9b70903564c479ab8d48c6f5468a9784f47697192f9023170d2d86d43a461d6126
   languageName: node
   linkType: hard
 
@@ -13004,6 +13059,13 @@ fsevents@^1.2.7:
   dependencies:
     escape-goat: ^2.0.0
   checksum: d9f6a6187f9d03d26d31956c1769958f44cf4d687f4971cbf04c4c674cd3afa40407e71d6361095fe31bb0161e3f503eae8d6e71fcfdd7a1b758238ede62d780
+  languageName: node
+  linkType: hard
+
+"qr-scanner@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "qr-scanner@npm:1.3.0"
+  checksum: 421ff00626252d0f9e50550fb550a463166e4d0438baffb469c9450079f1f802f6df22784509bb571ef50ece81aecaadc00f91d442959f37655ad29710c81c8b
   languageName: node
   linkType: hard
 

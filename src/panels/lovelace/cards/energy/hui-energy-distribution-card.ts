@@ -24,10 +24,7 @@ import {
   getEnergyDataCollection,
   getEnergyGasUnit,
 } from "../../../../data/energy";
-import {
-  calculateStatisticsSumGrowth,
-  calculateStatisticsSumGrowthWithPercentage,
-} from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
@@ -207,21 +204,13 @@ class HuiEnergyDistrubutionCard
     let homeHighCarbonCircumference: number | undefined;
 
     // This fallback is used in the demo
-    let electricityMapUrl = "https://www.electricitymap.org";
+    let electricityMapUrl = "https://app.electricitymap.org";
 
-    if (
-      this._data.co2SignalEntity &&
-      this._data.co2SignalEntity in this._data.stats
-    ) {
+    if (this._data.co2SignalEntity && this._data.fossilEnergyConsumption) {
       // Calculate high carbon consumption
-      const highCarbonEnergy = calculateStatisticsSumGrowthWithPercentage(
-        this._data.stats[this._data.co2SignalEntity],
-        types
-          .grid![0].flow_from.map(
-            (flow) => this._data!.stats[flow.stat_energy_from]
-          )
-          .filter(Boolean)
-      );
+      const highCarbonEnergy = Object.values(
+        this._data.fossilEnergyConsumption
+      ).reduce((sum, a) => sum + a, 0);
 
       const co2State = this.hass.states[this._data.co2SignalEntity];
 
