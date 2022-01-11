@@ -332,7 +332,7 @@ export class HaIntegrationCard extends LitElement {
             : ""}
           ${this.manifest &&
           (this.manifest.is_built_in || this.manifest.issue_tracker)
-            ? html` <a
+            ? html`<a
                 href=${integrationIssuesUrl(item.domain, this.manifest)}
                 rel="noreferrer"
                 target="_blank"
