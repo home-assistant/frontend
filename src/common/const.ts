@@ -27,6 +27,7 @@ import {
   mdiFormTextbox,
   mdiGasCylinder,
   mdiGauge,
+  mdiGestureTapButton,
   mdiGoogleAssistant,
   mdiGoogleCirclesCommunities,
   mdiHomeAssistant,
@@ -83,6 +84,7 @@ export const FIXED_DOMAIN_ICONS = {
   homekit: mdiHomeAutomation,
   image_processing: mdiImageFilterFrames,
   input_boolean: mdiToggleSwitchOutline,
+  input_button: mdiGestureTapButton,
   input_datetime: mdiCalendarClock,
   input_number: mdiRayVertex,
   input_select: mdiFormatListBulleted,
@@ -112,6 +114,7 @@ export const FIXED_DOMAIN_ICONS = {
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
+  apparent_power: mdiFlash,
   aqi: mdiAirFilter,
   // battery: mdiBattery, => not included by design since `sensorIcon()` will dynamically determine the icon
   carbon_dioxide: mdiMoleculeCo2,
@@ -134,6 +137,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   power: mdiFlash,
   power_factor: mdiAngleAcute,
   pressure: mdiGauge,
+  reactive_power: mdiFlash,
   signal_strength: mdiWifi,
   sulphur_dioxide: mdiMolecule,
   temperature: mdiThermometer,
@@ -148,6 +152,7 @@ export const DOMAINS_WITH_CARD = [
   "climate",
   "cover",
   "configurator",
+  "input_button",
   "input_select",
   "input_number",
   "input_text",
@@ -214,6 +219,7 @@ export const DOMAINS_INPUT_ROW = [
   "group",
   "humidifier",
   "input_boolean",
+  "input_button",
   "input_datetime",
   "input_number",
   "input_select",

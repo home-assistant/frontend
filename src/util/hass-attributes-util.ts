@@ -14,6 +14,7 @@ const hassAttributeUtil = {
   DOMAIN_DEVICE_CLASS: {
     binary_sensor: [
       "battery",
+      "carbon_monoxide",
       "cold",
       "connectivity",
       "door",
@@ -54,6 +55,7 @@ const hassAttributeUtil = {
     ],
     humidifier: ["dehumidifier", "humidifier"],
     sensor: [
+      "apparent_power",
       "aqi",
       "battery",
       "carbon_dioxide",
@@ -75,6 +77,7 @@ const hassAttributeUtil = {
       "power",
       "power_factor",
       "pressure",
+      "reactive_power",
       "signal_strength",
       "sulphur_dioxide",
       "temperature",
