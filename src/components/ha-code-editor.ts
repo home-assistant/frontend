@@ -7,7 +7,7 @@ import {
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
@@ -153,7 +153,7 @@ export class HaCodeEditor extends ReactiveElement {
     ];
 
     if (!this.readOnly && this.hasAutocomplete) {
-      this._states = this._getStates(this.hass);
+      this._states = this._getStates(this.hass!.states);
       extensions.push(
         this._loadedCodeMirror.autocompletion({
           override: [this._entityCompletions.bind(this)],
@@ -172,20 +172,19 @@ export class HaCodeEditor extends ReactiveElement {
     });
   }
 
-  private _getStates = memoizeOne((hass: this["hass"]) => {
-    let states: HassEntity[] = [];
-    if (!hass) {
+  private _getStates = memoizeOne((states: HassEntities | null | undefined) => {
+    if (!states) {
       return [];
     }
-    const entityIds = Object.keys(hass.states);
+    const entityIds = Object.keys(states)
+      .sort()
+      .map((key) => states[key]);
 
-    states = entityIds.sort().map((key) => hass!.states[key]);
-
-    if (!states.length) {
+    if (!entityIds.length) {
       return null;
     }
 
-    return states;
+    return entityIds;
   });
 
   private _entityCompletions(
