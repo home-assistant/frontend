@@ -203,7 +203,7 @@ export class HaConfigAreasDashboard extends LitElement {
         grid-gap: 16px 16px;
         padding: 8px 16px 16px;
         margin: 0 auto 64px auto;
-        max-width: 1000px;
+        max-width: 2000px;
       }
       .container > * {
         max-width: 500px;
