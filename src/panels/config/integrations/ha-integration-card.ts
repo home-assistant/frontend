@@ -33,6 +33,7 @@ import {
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
+import { integrationIssuesUrl } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -322,6 +323,23 @@ export class HaIntegrationCard extends LitElement {
                 <mwc-list-item hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
+                  )}<ha-svg-icon
+                    slot="meta"
+                    .path=${mdiOpenInNew}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              </a>`
+            : ""}
+          ${this.manifest &&
+          (this.manifest.is_built_in || this.manifest.issue_tracker)
+            ? html`<a
+                href=${integrationIssuesUrl(item.domain, this.manifest)}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <mwc-list-item hasMeta>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.known_issues"
                   )}<ha-svg-icon
                     slot="meta"
                     .path=${mdiOpenInNew}
