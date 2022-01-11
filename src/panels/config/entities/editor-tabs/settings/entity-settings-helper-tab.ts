@@ -25,6 +25,11 @@ import {
   updateInputBoolean,
 } from "../../../../../data/input_boolean";
 import {
+  deleteInputButton,
+  fetchInputButton,
+  updateInputButton,
+} from "../../../../../data/input_button";
+import {
   deleteInputDateTime,
   fetchInputDateTime,
   updateInputDateTime,
@@ -55,6 +60,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
 import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-input_boolean-form";
+import "../../../helpers/forms/ha-input_button-form";
 import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
@@ -68,6 +74,11 @@ const HELPERS = {
     fetch: fetchInputBoolean,
     update: updateInputBoolean,
     delete: deleteInputBoolean,
+  },
+  input_button: {
+    fetch: fetchInputButton,
+    update: updateInputButton,
+    delete: deleteInputButton,
   },
   input_text: {
     fetch: fetchInputText,
