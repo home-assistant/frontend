@@ -1,3 +1,3 @@
 ---
-title: Trace
+title: Trace Graphs
 ---

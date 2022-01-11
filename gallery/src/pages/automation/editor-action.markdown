@@ -1,3 +1,3 @@
 ---
-title: Editor Action
+title: Actions
 ---
