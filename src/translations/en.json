@@ -1242,6 +1242,7 @@
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
+            "input_button": "Button",
             "input_datetime": "Date and/or time",
             "counter": "Counter",
             "timer": "Timer"
@@ -1441,6 +1442,7 @@
               "person": "People",
               "zone": "Zones",
               "input_boolean": "Input booleans",
+              "input_button": "Input buttons",
               "input_text": "Input texts",
               "input_number": "Input numbers",
               "input_datetime": "Input date times",
