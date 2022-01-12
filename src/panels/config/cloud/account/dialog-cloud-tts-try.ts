@@ -4,7 +4,6 @@ import "@polymer/paper-input/paper-textarea";
 import type { PaperTextareaElement } from "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
@@ -29,8 +28,6 @@ export class DialogTryTts extends LitElement {
   @state() private _loadingExample = false;
 
   @state() private _params?: TryTtsDialogParams;
-
-  @query("#target") private _targetInput?: PaperListboxElement;
 
   @query("#message") private _messageInput?: PaperTextareaElement;
 
