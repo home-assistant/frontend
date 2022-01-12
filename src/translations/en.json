@@ -2478,7 +2478,8 @@
               "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload"
-            }
+            },
+            "open_configuration_url": "Visit external configuration page"
           },
           "config_flow": {
             "aborted": "Aborted",
