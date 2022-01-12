@@ -48,9 +48,9 @@ class HassioBackupDialog
   @query("supervisor-backup-content")
   private _backupContent!: SupervisorBackupContent;
 
-  public async showDialog(params: HassioBackupDialogParams) {
-    this._backup = await fetchHassioBackupInfo(this.hass, params.slug);
-    this._dialogParams = params;
+  public async showDialog(dialogParams: HassioBackupDialogParams) {
+    this._backup = await fetchHassioBackupInfo(this.hass, dialogParams.slug);
+    this._dialogParams = dialogParams;
     this._restoringBackup = false;
   }
 

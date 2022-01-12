@@ -20,9 +20,9 @@ export class DialogHassioBackupUpload
   @state() private _dialogParams?: HassioBackupUploadDialogParams;
 
   public async showDialog(
-    params: HassioBackupUploadDialogParams
+    dialogParams: HassioBackupUploadDialogParams
   ): Promise<void> {
-    this._dialogParams = params;
+    this._dialogParams = dialogParams;
     await this.updateComplete;
   }
 
@@ -52,7 +52,11 @@ export class DialogHassioBackupUpload
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">Upload backup</span>
+            <span slot="title"
+              >${this._dialogParams.supervisor?.localize(
+                "backup.upload_backup"
+              ) || "Upload backup"}</span
+            >
             <ha-icon-button
               .label=${this._dialogParams.supervisor?.localize(
                 "common.close"

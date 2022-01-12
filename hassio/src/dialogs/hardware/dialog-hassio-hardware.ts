@@ -39,8 +39,8 @@ class HassioHardwareDialog extends LitElement {
 
   @state() private _filter?: string;
 
-  public showDialog(params: HassioHardwareDialogParams) {
-    this._dialogParams = params;
+  public showDialog(dialogParams: HassioHardwareDialogParams) {
+    this._dialogParams = dialogParams;
   }
 
   public closeDialog() {
