@@ -1,9 +1,18 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import "../../../common/search/search-input";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
@@ -20,6 +29,8 @@ export class HaConfigLogs extends LitElement {
 
   @property() public route!: Route;
 
+  @state() private _filter?: string;
+
   @query("system-log-card", true) private systemLog?: SystemLogCard;
 
   public connectedCallback() {
@@ -29,7 +40,45 @@ export class HaConfigLogs extends LitElement {
     }
   }
 
+  private async _filterChanged(ev) {
+    this._filter = ev.detail.value;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    this._filter = extractSearchParam("filter") ?? "";
+  }
+
   protected render(): TemplateResult {
+    const search = this.narrow
+      ? html`
+          <div slot="header">
+            <search-input
+              class="header"
+              no-label-float
+              no-underline
+              @value-changed=${this._filterChanged}
+              .hass=${this.hass}
+              .filter=${this._filter}
+              .label=${this.hass.localize("ui.panel.config.logs.search")}
+            ></search-input>
+          </div>
+        `
+      : html`
+          <div class="search">
+            <search-input
+              autofocus
+              no-label-float
+              no-underline
+              @value-changed=${this._filterChanged}
+              .hass=${this.hass}
+              .filter=${this._filter}
+              .label=${this.hass.localize("ui.panel.config.logs.search")}
+            ></search-input>
+          </div>
+        `;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -38,8 +87,12 @@ export class HaConfigLogs extends LitElement {
         .route=${this.route}
         .tabs=${configSections.general}
       >
+        ${search}
         <div class="content">
-          <system-log-card .hass=${this.hass}></system-log-card>
+          <system-log-card
+            .hass=${this.hass}
+            .filter=${this._filter}
+          ></system-log-card>
           <error-log-card .hass=${this.hass}></error-log-card>
         </div>
       </hass-tabs-subpage>
@@ -54,6 +107,17 @@ export class HaConfigLogs extends LitElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
+        }
+
+        .search {
+          padding: 0 16px;
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        .search search-input {
+          position: relative;
+          top: 2px;
         }
 
         .content {

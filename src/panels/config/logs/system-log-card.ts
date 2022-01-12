@@ -22,6 +22,8 @@ import { formatSystemLogTime } from "./util";
 export class SystemLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() public filter?: string = "";
+
   public loaded = false;
 
   @state() private _items?: LoggedError[];
@@ -31,9 +33,40 @@ export class SystemLogCard extends LitElement {
     this._items = await fetchSystemLog(this.hass!);
   }
 
+  private _timestamp(item: LoggedError): string {
+    return formatSystemLogTime(item.timestamp, this.hass!.locale);
+  }
+
+  private _multipleMessages(item: LoggedError): string {
+    return this.hass.localize(
+      "ui.panel.config.logs.multiple_messages",
+      "time",
+      formatSystemLogTime(item.first_occurred, this.hass!.locale),
+      "counter",
+      item.count
+    );
+  }
+
   protected render(): TemplateResult {
     const integrations = this._items
       ? this._items.map((item) => getLoggedErrorIntegration(item))
+      : [];
+    const filteredItems = this._items
+      ? this._items.filter((item) => {
+          if (this.filter?.length) {
+            const filter = this.filter.toLowerCase();
+            return (
+              item.message.some((message) =>
+                message.toLowerCase().includes(filter)
+              ) ||
+              item.source[0].toLowerCase().includes(filter) ||
+              item.name.toLowerCase().includes(filter) ||
+              this._timestamp(item).toLowerCase().includes(filter) ||
+              this._multipleMessages(item).toLowerCase().includes(filter)
+            );
+          }
+          return item;
+        })
       : [];
     return html`
       <div class="system-log-intro">
@@ -51,17 +84,21 @@ export class SystemLogCard extends LitElement {
                         ${this.hass.localize("ui.panel.config.logs.no_issues")}
                       </div>
                     `
-                  : this._items.map(
+                  : filteredItems.length === 0 && this.filter?.length
+                  ? html`<div class="card-content">
+                      ${this.hass.localize(
+                        "ui.panel.config.logs.no_issues_search",
+                        "term",
+                        this.filter
+                      )}
+                    </div>`
+                  : filteredItems.map(
                       (item, idx) => html`
                         <paper-item @click=${this._openLog} .logItem=${item}>
                           <paper-item-body two-line>
                             <div class="row">${item.message[0]}</div>
                             <div secondary>
-                              ${formatSystemLogTime(
-                                item.timestamp,
-                                this.hass!.locale
-                              )}
-                              –
+                              ${this._timestamp(item)} –
                               ${html`(<span class=${item.level.toLowerCase()}
                                   >${this.hass.localize(
                                     "ui.panel.config.logs.level." +
@@ -81,19 +118,7 @@ export class SystemLogCard extends LitElement {
                                   }`
                                 : item.source[0]}
                               ${item.count > 1
-                                ? html`
-                                    -
-                                    ${this.hass.localize(
-                                      "ui.panel.config.logs.multiple_messages",
-                                      "time",
-                                      formatSystemLogTime(
-                                        item.first_occurred,
-                                        this.hass!.locale
-                                      ),
-                                      "counter",
-                                      item.count
-                                    )}
-                                  `
+                                ? html` - ${this._multipleMessages(item)} `
                                 : html``}
                             </div>
                           </paper-item-body>
