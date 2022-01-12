@@ -59,6 +59,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   private _autoZoom = true;
 
+  private _enablePhysics = true;
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
@@ -184,11 +186,21 @@ export class ZHANetworkVisualizationPage extends LitElement {
               )}
             >
               <ha-checkbox
-                @change=${this._handleCheckboxChange}
+                @change=${this._handleAutoZoomCheckboxChange}
                 .checked=${this._autoZoom}
               >
               </ha-checkbox>
             </ha-formfield>
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.zha.visualization.enable_physics"
+              )}
+              ><ha-checkbox
+                @change=${this._handlePhysicsCheckboxChange}
+                .checked=${this._enablePhysics}
+              >
+              </ha-checkbox
+            ></ha-formfield>
             <mwc-button @click=${this._refreshTopology}>
               ${this.hass!.localize(
                 "ui.panel.config.zha.visualization.refresh_topology"
@@ -374,8 +386,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return false;
   };
 
-  private _handleCheckboxChange(ev: Event) {
+  private _handleAutoZoomCheckboxChange(ev: Event) {
     this._autoZoom = (ev.target as HaCheckbox).checked;
+  }
+
+  private _handlePhysicsCheckboxChange(ev: Event) {
+    this._enablePhysics = (ev.target as HaCheckbox).checked;
+
+    this._network!.setOptions(
+      this._enablePhysics
+        ? {
+            physics: {
+              barnesHut: {
+                springConstant: 0,
+                avoidOverlap: 10,
+                damping: 0.09,
+              },
+            },
+          }
+        : { physics: false }
+    );
   }
 
   static get styles(): CSSResultGroup {
