@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
@@ -12,7 +12,6 @@ import {
 import type { IntegrationManifest } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
@@ -160,6 +159,10 @@ export class HaConfigFlowCard extends LitElement {
     .discovered {
       --state-color: var(--primary-color);
       --text-on-state-color: var(--text-primary-color);
+    }
+    a {
+      text-decoration: none;
+      color: var(--primary-color);
     }
   `;
 }
