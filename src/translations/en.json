@@ -2479,7 +2479,7 @@
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload"
             },
-            "open_configuration_url": "Visit external configuration page"
+            "open_configuration_url": "Visit device"
           },
           "config_flow": {
             "aborted": "Aborted",
