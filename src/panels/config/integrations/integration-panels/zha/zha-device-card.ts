@@ -91,9 +91,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
             ${entities.map(
               (entity) => html`
                 <state-badge
-                  @click="${this._openMoreInfo}"
+                  @click=${this._openMoreInfo}
                   .title=${entity.stateName!}
-                  .stateObj="${this.hass!.states[entity.entity_id]}"
+                  .stateObj=${this.hass!.states[entity.entity_id]}
                   slot="item-icon"
                 ></state-badge>
               `
@@ -186,7 +186,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         area_id: area,
       });
       this.device!.area_id = area;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",
@@ -218,9 +218,11 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         .device .manuf {
           color: var(--secondary-text-color);
           margin-bottom: 20px;
+          word-wrap: break-word;
         }
         .extra-info {
           margin-top: 8px;
+          word-wrap: break-word;
         }
         state-badge {
           cursor: pointer;

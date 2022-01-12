@@ -23,7 +23,7 @@ const DEFAULT_FILTER = "grayscale(100%)";
 const MAX_IMAGE_WIDTH = 640;
 const ASPECT_RATIO_DEFAULT = 9 / 16;
 
-enum LoadState {
+const enum LoadState {
   Loading = 1,
   Loaded = 2,
   Error = 3,
@@ -122,6 +122,9 @@ export class HuiImage extends LitElement {
         ? parseAspectRatio(this.aspectRatio)
         : null;
     }
+    if (this._loadState === LoadState.Loading && !this.cameraImage) {
+      this._loadState = LoadState.Loaded;
+    }
   }
 
   protected render(): TemplateResult {
@@ -189,7 +192,7 @@ export class HuiImage extends LitElement {
             : undefined,
           backgroundImage:
             useRatio && this._loadedImageSrc
-              ? `url(${this._loadedImageSrc})`
+              ? `url("${this._loadedImageSrc}")`
               : undefined,
           filter:
             this._loadState === LoadState.Loaded || this.cameraView === "live"

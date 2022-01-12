@@ -14,6 +14,7 @@ import { HaProgressButton } from "../../../components/buttons/ha-progress-button
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
@@ -174,23 +175,22 @@ class HaPanelDevService extends LitElement {
                     </h3>
                     ${this._serviceData?.service
                       ? html` <a
-                          href="${documentationUrl(
+                          href=${documentationUrl(
                             this.hass,
                             "/integrations/" +
                               computeDomain(this._serviceData?.service)
-                          )}"
-                          title="${this.hass.localize(
+                          )}
+                          title=${this.hass.localize(
                             "ui.components.service-control.integration_doc"
-                          )}"
+                          )}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <mwc-icon-button>
-                            <ha-svg-icon
-                              path=${mdiHelpCircle}
-                              class="help-icon"
-                            ></ha-svg-icon>
-                          </mwc-icon-button>
+                          <ha-icon-button
+                            class="help-icon"
+                            .path=${mdiHelpCircle}
+                            .label=${this.hass!.localize("ui.common.help")}
+                          ></ha-icon-button>
                         </a>`
                       : ""}
                   </div>`
@@ -307,7 +307,7 @@ class HaPanelDevService extends LitElement {
     }
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
-    } catch (err) {
+    } catch (err: any) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
@@ -372,7 +372,7 @@ class HaPanelDevService extends LitElement {
         let value: any = "";
         try {
           value = load(field.example);
-        } catch (err) {
+        } catch (err: any) {
           value = field.example;
         }
         example[field.key] = value;

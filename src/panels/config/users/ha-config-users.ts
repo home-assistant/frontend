@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiCheck, mdiPlus } from "@mdi/js";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -89,7 +89,9 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "80px",
           template: (is_active) =>
-            is_active ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+            is_active
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
         },
         system_generated: {
           title: this.hass.localize(
@@ -100,7 +102,20 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           width: "160px",
           template: (generated) =>
-            generated ? html`<ha-icon icon="hass:check"> </ha-icon>` : "",
+            generated
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
+        },
+        local_only: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.local"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "160px",
+          template: (local) =>
+            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
         },
       };
 
@@ -184,7 +199,7 @@ export class HaConfigUsers extends LitElement {
           await deleteUser(this.hass!, entry!.id);
           this._users = this._users!.filter((ent) => ent !== entry);
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },

@@ -3,7 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export enum LightColorModes {
+export const enum LightColorModes {
   UNKNOWN = "unknown",
   ONOFF = "onoff",
   BRIGHTNESS = "brightness",

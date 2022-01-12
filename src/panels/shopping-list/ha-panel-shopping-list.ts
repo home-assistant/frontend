@@ -12,6 +12,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
@@ -60,14 +61,13 @@ class PanelShoppingList extends LitElement {
             <div main-title>${this.hass.localize("panel.shopping_list")}</div>
             ${this._conversation(this.hass.config.components)
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass!.localize(
                       "ui.panel.shopping_list.start_conversation"
                     )}
+                    .path=${mdiMicrophone}
                     @click=${this._showVoiceCommandDialog}
-                  >
-                    <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </app-toolbar>

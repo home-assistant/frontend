@@ -52,9 +52,9 @@ export class ZwaveNodeConfig extends LitElement {
             ? html`
                 <div class="card-actions">
                   <paper-input
-                    .floatLabel="${this.hass!.localize(
+                    .floatLabel=${this.hass!.localize(
                       "ui.panel.config.zwave.common.wakeup_interval"
-                    )}"
+                    )}
                     type="number"
                     .value=${this._wakeupInput !== -1
                       ? this._wakeupInput

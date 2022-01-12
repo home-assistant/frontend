@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -10,6 +9,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
@@ -21,7 +21,6 @@ import {
   configSyncOS,
   rebootHost,
   shutdownHost,
-  updateOS,
 } from "../../../src/data/hassio/host";
 import {
   fetchNetworkInfo,
@@ -40,8 +39,9 @@ import {
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
-import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
+import { showHassioDatadiskDialog } from "../dialogs/datadisk/show-dialog-hassio-datadisk";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
+import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
@@ -105,11 +105,15 @@ class HassioHostInfo extends LitElement {
               <span slot="description">
                 ${this.supervisor.host.operating_system}
               </span>
-              ${this.supervisor.os.update_available
+              ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
+              this.supervisor.os.update_available
                 ? html`
-                    <ha-progress-button @click=${this._osUpdate}>
-                      ${this.supervisor.localize("commmon.update")}
-                    </ha-progress-button>
+                    <a href="/hassio/update-available/os">
+                      <mwc-button
+                        .label=${this.supervisor.localize("common.show")}
+                      >
+                      </mwc-button>
+                    </a>
                   `
                 : ""}
             </ha-settings-row>
@@ -180,20 +184,40 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu
-            corner="BOTTOM_START"
-            @action=${this._handleMenuAction}
-          >
-            <mwc-icon-button slot="trigger">
-              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-            </mwc-icon-button>
-            <mwc-list-item>
+          <ha-button-menu corner="BOTTOM_START">
+            <ha-icon-button
+              .label=${this.hass.localize("common.menu")}
+              .path=${mdiDotsVertical}
+              slot="trigger"
+            ></ha-icon-button>
+            <mwc-list-item
+              .action=${"hardware"}
+              @click=${this._handleMenuAction}
+            >
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
             ${this.supervisor.host.features.includes("haos")
-              ? html`<mwc-list-item>
-                  ${this.supervisor.localize("system.host.import_from_usb")}
-                </mwc-list-item>`
+              ? html`
+                  <mwc-list-item
+                    .action=${"import_from_usb"}
+                    @click=${this._handleMenuAction}
+                  >
+                    ${this.supervisor.localize("system.host.import_from_usb")}
+                  </mwc-list-item>
+                  ${this.supervisor.host.features.includes("os_agent") &&
+                  atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
+                    ? html`
+                        <mwc-list-item
+                          .action=${"move_datadisk"}
+                          @click=${this._handleMenuAction}
+                        >
+                          ${this.supervisor.localize(
+                            "system.host.move_datadisk"
+                          )}
+                        </mwc-list-item>
+                      `
+                    : ""}
+                `
               : ""}
           </ha-button-menu>
         </div>
@@ -216,22 +240,31 @@ class HassioHostInfo extends LitElement {
     return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev) {
+    switch ((ev.target as any).action) {
+      case "hardware":
         await this._showHardware();
         break;
-      case 1:
+      case "import_from_usb":
         await this._importFromUSB();
         break;
+      case "move_datadisk":
+        await this._moveDatadisk();
+        break;
     }
+  }
+
+  private _moveDatadisk(): void {
+    showHassioDatadiskDialog(this, {
+      supervisor: this.supervisor,
+    });
   }
 
   private async _showHardware(): Promise<void> {
     let hardware;
     try {
       hardware = await fetchHassioHardwareInfo(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_get_hardware_list"
@@ -261,7 +294,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await rebootHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
@@ -291,55 +324,11 @@ class HassioHostInfo extends LitElement {
 
     try {
       await shutdownHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_shutdown"),
-          text: extractApiErrorMessage(err),
-        });
-      }
-    }
-    button.progress = false;
-  }
-
-  private async _osUpdate(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.supervisor.localize(
-        "confirm.update.title",
-        "name",
-        "Home Assistant Operating System"
-      ),
-      text: this.supervisor.localize(
-        "confirm.update.text",
-        "name",
-        "Home Assistant Operating System",
-        "version",
-        this.supervisor.os.version_latest
-      ),
-      confirmText: this.supervisor.localize("common.update"),
-      dismissText: "no",
-    });
-
-    if (!confirmed) {
-      button.progress = false;
-      return;
-    }
-
-    try {
-      await updateOS(this.hass);
-      fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
-    } catch (err) {
-      if (this.hass.connection.connected) {
-        showAlertDialog(this, {
-          title: this.supervisor.localize(
-            "common.failed_to_update_name",
-            "name",
-            "Home Assistant Operating System"
-          ),
           text: extractApiErrorMessage(err),
         });
       }
@@ -370,7 +359,7 @@ class HassioHostInfo extends LitElement {
         fireEvent(this, "supervisor-collection-refresh", {
           collection: "host",
         });
-      } catch (err) {
+      } catch (err: any) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_set_hostname"),
           text: extractApiErrorMessage(err),
@@ -385,7 +374,7 @@ class HassioHostInfo extends LitElement {
       fireEvent(this, "supervisor-collection-refresh", {
         collection: "host",
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_import_from_usb"
@@ -463,6 +452,9 @@ class HassioHostInfo extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
+        }
+        a {
+          text-decoration: none;
         }
       `,
     ];

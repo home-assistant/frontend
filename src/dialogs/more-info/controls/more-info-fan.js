@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
@@ -97,17 +98,19 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <div class="direction">
             <div>[[localize('ui.card.fan.direction')]]</div>
             <ha-icon-button
-              icon="hass:rotate-left"
               on-click="onDirectionReverse"
               title="[[localize('ui.card.fan.reverse')]]"
               disabled="[[computeIsRotatingReverse(stateObj)]]"
-            ></ha-icon-button>
+            >
+              <ha-icon icon="hass:rotate-left"></ha-icon>
+            </ha-icon-button>
             <ha-icon-button
-              icon="hass:rotate-right"
               on-click="onDirectionForward"
               title="[[localize('ui.card.fan.forward')]]"
               disabled="[[computeIsRotatingForward(stateObj)]]"
-            ></ha-icon-button>
+            >
+              <ha-icon icon="hass:rotate-right"></ha-icon>
+            </ha-icon-button>
           </div>
         </div>
       </div>

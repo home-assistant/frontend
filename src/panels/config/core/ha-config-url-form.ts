@@ -120,7 +120,7 @@ class ConfigUrlForm extends LitElement {
         external_url: this._external_url || null,
         internal_url: this._internal_url || null,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     } finally {
       this._working = false;

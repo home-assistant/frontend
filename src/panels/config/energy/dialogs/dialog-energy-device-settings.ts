@@ -15,6 +15,7 @@ import "../../../../components/ha-formfield";
 import "../../../../components/entity/ha-entity-picker";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-device-settings")
 export class DialogEnergyDeviceSettings
@@ -54,7 +55,9 @@ export class DialogEnergyDeviceSettings
             .path=${mdiDevices}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Add a device`}
+          ${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.dialog.header"
+          )}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -67,8 +70,10 @@ export class DialogEnergyDeviceSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
-          .label=${`Device consumption energy (kWh)`}
-          entities-only
+          .includeDeviceClasses=${energyDeviceClasses}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
+          )}
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
@@ -98,8 +103,8 @@ export class DialogEnergyDeviceSettings
     try {
       await this._params!.saveCallback(this._device!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

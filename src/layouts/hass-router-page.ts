@@ -127,7 +127,9 @@ export class HassRouterPage extends ReactiveElement {
 
         // Update the url if we know where we're mounted.
         if (route) {
-          navigate(`${route.prefix}/${result}`, { replace: true });
+          navigate(`${route.prefix}/${result}${location.search}`, {
+            replace: true,
+          });
         }
       }
     }

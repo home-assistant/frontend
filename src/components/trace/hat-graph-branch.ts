@@ -88,7 +88,7 @@ export class HatGraphBranch extends LitElement {
           `
         : ""}
       <div id="branches">
-        <svg id="lines" width="${this._totalWidth}" height="${this._maxHeight}">
+        <svg id="lines" width=${this._totalWidth} height=${this._maxHeight}>
           ${this._branches.map((branch) => {
             if (branch.end) return "";
             return svg`

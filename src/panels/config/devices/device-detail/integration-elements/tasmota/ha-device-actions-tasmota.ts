@@ -14,7 +14,7 @@ export class HaDeviceActionsTasmota extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-button class="warning" @click="${this._confirmDeleteEntry}">
+      <mwc-button class="warning" @click=${this._confirmDeleteEntry}>
         ${this.hass.localize("ui.panel.config.devices.delete")}
       </mwc-button>
     `;

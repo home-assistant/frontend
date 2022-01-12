@@ -1,4 +1,5 @@
 import { AuthData } from "home-assistant-js-websocket";
+import { extractSearchParam } from "../url/search-params";
 
 const storage = window.localStorage || {};
 
@@ -30,10 +31,15 @@ export function askWrite() {
 
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
+
+  if (!tokenCache.writeEnabled && extractSearchParam("storeToken") === "true") {
+    tokenCache.writeEnabled = true;
+  }
+
   if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
-    } catch (err) {
+    } catch (err: any) {
       // write failed, ignore it. Happens if storage is full or private mode.
     }
   }
@@ -45,7 +51,6 @@ export function enableWrite() {
     saveTokens(tokenCache.tokens);
   }
 }
-
 export function loadTokens() {
   if (tokenCache.tokens === undefined) {
     try {
@@ -58,7 +63,7 @@ export function loadTokens() {
       } else {
         tokenCache.tokens = null;
       }
-    } catch (err) {
+    } catch (err: any) {
       tokenCache.tokens = null;
     }
   }

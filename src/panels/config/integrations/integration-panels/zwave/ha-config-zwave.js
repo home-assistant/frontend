@@ -3,7 +3,6 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
@@ -13,6 +12,7 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import { sortStatesByName } from "../../../../../common/entity/states_sort_by_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-menu-button";
@@ -104,28 +104,14 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <ha-config-section is-wide="[[isWide]]">
           <ha-card
             class="content"
-            header="[[localize('ui.panel.config.zwave.migration.ozw.header')]]"
+            header="[[localize('ui.panel.config.zwave.migration.zwave_js.header')]]"
           >
             <div class="card-content">
-              <p>
-                If you are experiencing problems with your Z-Wave devices, you
-                can migrate to the newer OZW integration, that is currently in
-                beta.
-              </p>
-              <p>
-                Be aware that the future of OZW is not guaranteed, as the
-                development has stopped.
-              </p>
-              <p>
-                If you are currently not experiencing issues with your Z-Wave
-                devices, we recommend you to wait for the successor of the OZW
-                integration, Z-Wave JS, that is in active development at the
-                moment.
-              </p>
+              [[localize('ui.panel.config.zwave.migration.zwave_js.introduction')]]
             </div>
             <div class="card-actions">
               <a href="/config/zwave/migration"
-                ><mwc-button>Start Migration to OZW</mwc-button></a
+                ><mwc-button>Start Migration to Z-Wave JS</mwc-button></a
               >
             </div>
           </ha-card>
@@ -146,8 +132,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <ha-icon-button
               class="toggle-help-icon"
               on-click="toggleHelp"
-              icon="hass:help-circle"
-            ></ha-icon-button>
+              label="[[localize('ui.common.help')]]"
+            >
+              <ha-icon icon="hass:help-circle"></ha-icon>
+            </ha-icon-button>
           </div>
           <span slot="introduction">
             [[localize('ui.panel.config.zwave.node_management.introduction')]]
@@ -323,12 +311,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   >
                 </div>
                 <div class="form-group">
-                  <paper-checkbox
-                    checked="{{entityIgnored}}"
-                    class="form-control"
+                  <ha-formfield
+                    label="[[localize('ui.panel.config.zwave.node_management.exclude_entity')]]"
                   >
-                    [[localize('ui.panel.config.zwave.node_management.exclude_entity')]]
-                  </paper-checkbox>
+                    <ha-checkbox
+                      checked="[[entityIgnored]]"
+                      class="form-control"
+                      on-change="entityIgnoredChanged"
+                    >
+                    </ha-checkbox>
+                  </ha-formfield>
                   <paper-input
                     disabled="{{entityIgnored}}"
                     label="[[localize('ui.panel.config.zwave.node_management.pooling_intensity')]]"
@@ -507,7 +499,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeEntities(selectedNode) {
-    if (!this.nodes || selectedNode === -1) return -1;
+    if (!this.nodes || selectedNode === -1) {
+      return -1;
+    }
     const nodeid = this.nodes[this.selectedNode].attributes.node_id;
     const hass = this.hass;
     return Object.keys(this.hass.states)
@@ -526,7 +520,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedNodeChanged(selectedNode) {
-    if (selectedNode === -1) return;
+    if (selectedNode === -1) {
+      return;
+    }
     this.selectedEntity = -1;
 
     this.hass
@@ -587,7 +583,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedEntityChanged(selectedEntity) {
-    if (selectedEntity === -1) return;
+    if (selectedEntity === -1) {
+      return;
+    }
     this.hass
       .callApi(
         "GET",
@@ -654,12 +652,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRefreshEntityServiceData(selectedEntity) {
-    if (selectedEntity === -1) return -1;
+    if (selectedEntity === -1) {
+      return -1;
+    }
     return { entity_id: this.entities[selectedEntity].entity_id };
   }
 
   computePollIntensityServiceData(entityPollingIntensity) {
-    if (!this.selectedNode === -1 || this.selectedEntity === -1) return -1;
+    if (this.selectedNode === -1 || this.selectedEntity === -1) {
+      return -1;
+    }
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value_id: this.entities[this.selectedEntity].attributes.value_id,
@@ -710,6 +712,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  entityIgnoredChanged(ev) {
+    this.entityIgnored = ev.target.checked;
   }
 }
 

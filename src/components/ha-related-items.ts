@@ -162,7 +162,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   <li>
                     <button
                       @click=${this._openMoreInfo}
-                      .entityId="${entityId}"
+                      .entityId=${entityId}
                       class="link"
                     >
                       ${entity.attributes.friendly_name || entityId}
@@ -187,7 +187,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${groupId}"
+                      .entityId=${groupId}
                     >
                       ${group.attributes.friendly_name || group.entity_id}
                     </button>
@@ -212,7 +212,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${sceneId}"
+                      .entityId=${sceneId}
                     >
                       ${scene.attributes.friendly_name || scene.entity_id}
                     </button>
@@ -239,7 +239,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${automationId}"
+                      .entityId=${automationId}
                     >
                       ${automation.attributes.friendly_name ||
                       automation.entity_id}
@@ -267,7 +267,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${scriptId}"
+                      .entityId=${scriptId}
                     >
                       ${script.attributes.friendly_name || script.entity_id}
                     </button>

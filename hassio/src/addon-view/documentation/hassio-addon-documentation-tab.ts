@@ -79,7 +79,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
         this.hass,
         this.addon!.slug
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.documentation.get_logs",
         "error",

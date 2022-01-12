@@ -31,8 +31,8 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
 
     return html`
       <ha-icon
-        .icon="${this._config.icon}"
-        .title="${computeTooltip(this.hass, this._config)}"
+        .icon=${this._config.icon}
+        .title=${computeTooltip(this.hass, this._config)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

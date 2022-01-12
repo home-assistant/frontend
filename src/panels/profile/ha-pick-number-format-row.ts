@@ -3,7 +3,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { formatNumber } from "../../common/string/format_number";
+import { formatNumber } from "../../common/number/format_number";
 import "../../components/ha-card";
 import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-settings-row";

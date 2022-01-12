@@ -108,7 +108,6 @@ class HassioAddonDashboard extends LitElement {
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
         .tabs=${addonTabs}
         supervisor
@@ -222,7 +221,7 @@ class HassioAddonDashboard extends LitElement {
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
-    } catch (err) {
+    } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
     }

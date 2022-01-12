@@ -15,18 +15,16 @@ import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "@material/mwc-button";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
-import {
-  calculateStatisticsSumGrowth,
-  calculateStatisticsSumGrowthWithPercentage,
-} from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
@@ -69,7 +67,9 @@ class HuiEnergyDistrubutionCard
     }
 
     if (!this._data) {
-      return html`Loading…`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -204,21 +204,13 @@ class HuiEnergyDistrubutionCard
     let homeHighCarbonCircumference: number | undefined;
 
     // This fallback is used in the demo
-    let electricityMapUrl = "https://www.electricitymap.org";
+    let electricityMapUrl = "https://app.electricitymap.org";
 
-    if (
-      this._data.co2SignalEntity &&
-      this._data.co2SignalEntity in this._data.stats
-    ) {
+    if (this._data.co2SignalEntity && this._data.fossilEnergyConsumption) {
       // Calculate high carbon consumption
-      const highCarbonEnergy = calculateStatisticsSumGrowthWithPercentage(
-        this._data.stats[this._data.co2SignalEntity],
-        types
-          .grid![0].flow_from.map(
-            (flow) => this._data!.stats[flow.stat_energy_from]
-          )
-          .filter(Boolean)
-      );
+      const highCarbonEnergy = Object.values(
+        this._data.fossilEnergyConsumption
+      ).reduce((sum, a) => sum + a, 0);
 
       const co2State = this.hass.states[this._data.co2SignalEntity];
 
@@ -266,14 +258,18 @@ class HuiEnergyDistrubutionCard
                 ${lowCarbonEnergy === undefined
                   ? html`<div class="spacer"></div>`
                   : html`<div class="circle-container low-carbon">
-                      <span class="label">Non-fossil</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_distribution.non_fossil"
+                        )}</span
+                      >
                       <a
                         class="circle"
                         href=${electricityMapUrl}
                         target="_blank"
                         rel="noopener no referrer"
                       >
-                        <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                         ${lowCarbonEnergy
                           ? formatNumber(lowCarbonEnergy, this.hass.locale, {
                               maximumFractionDigits: 1,
@@ -287,9 +283,13 @@ class HuiEnergyDistrubutionCard
                     </div>`}
                 ${hasSolarProduction
                   ? html`<div class="circle-container solar">
-                      <span class="label">Solar</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_distribution.solar"
+                        )}</span
+                      >
                       <div class="circle">
-                        <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                         ${formatNumber(
                           totalSolarProduction || 0,
                           this.hass.locale,
@@ -303,13 +303,17 @@ class HuiEnergyDistrubutionCard
                   : ""}
                 ${hasGas
                   ? html`<div class="circle-container gas">
-                      <span class="label">Gas</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_distribution.gas"
+                        )}</span
+                      >
                       <div class="circle">
-                        <ha-svg-icon .path="${mdiFire}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        m³
+                        ${getEnergyGasUnit(this.hass, prefs) || "m³"}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />
@@ -336,7 +340,7 @@ class HuiEnergyDistrubutionCard
           <div class="row">
             <div class="circle-container grid">
               <div class="circle">
-                <ha-svg-icon .path="${mdiTransmissionTower}"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
                 ${returnedToGrid !== null
                   ? html`<span class="return">
                       <ha-svg-icon
@@ -361,7 +365,11 @@ class HuiEnergyDistrubutionCard
                   kWh
                 </span>
               </div>
-              <span class="label">Grid</span>
+              <span class="label"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+                )}</span
+              >
             </div>
             <div class="circle-container home">
               <div
@@ -371,7 +379,7 @@ class HuiEnergyDistrubutionCard
                     homeLowCarbonCircumference === undefined,
                 })}"
               >
-                <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
                 ${formatNumber(totalHomeConsumption, this.hass.locale, {
                   maximumFractionDigits: 1,
                 })}
@@ -448,7 +456,11 @@ class HuiEnergyDistrubutionCard
                     </svg>`
                   : ""}
               </div>
-              <span class="label">Home</span>
+              <span class="label"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_distribution.home"
+                )}</span
+              >
             </div>
           </div>
           ${hasBattery
@@ -456,7 +468,7 @@ class HuiEnergyDistrubutionCard
                 <div class="spacer"></div>
                 <div class="circle-container battery">
                   <div class="circle">
-                    <ha-svg-icon .path="${mdiBatteryHigh}"></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
                     <span class="battery-in">
                       <ha-svg-icon
                         class="small"
@@ -478,7 +490,11 @@ class HuiEnergyDistrubutionCard
                       kWh</span
                     >
                   </div>
-                  <span class="label">Battery</span>
+                  <span class="label"
+                    >${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+                    )}</span
+                  >
                 </div>
                 <div class="spacer"></div>
               </div>`
@@ -658,7 +674,11 @@ class HuiEnergyDistrubutionCard
           ? html`
               <div class="card-actions">
                 <a href="/energy"
-                  ><mwc-button> Go to the energy dashboard </mwc-button></a
+                  ><mwc-button>
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
+                    )}
+                  </mwc-button></a
                 >
               </div>
             `
@@ -762,6 +782,8 @@ class HuiEnergyDistrubutionCard
       stroke-width: 4px;
       width: 100%;
       height: 100%;
+      top: 0;
+      left: 0;
     }
     .gas path,
     .gas circle {

@@ -35,9 +35,9 @@ export class HuiLovelaceEditor extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.edit_lovelace.title"
           )}
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
       </div>
     `;

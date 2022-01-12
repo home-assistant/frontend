@@ -23,9 +23,9 @@ customElements.whenDefined("hui-view").then(() => {
   // eslint-disable-next-line
   const HUIView = customElements.get("hui-view");
   // Patch HUI-VIEW to make the lovelace object available to the demo card
-  const oldCreateCard = HUIView.prototype.createCardElement;
+  const oldCreateCard = HUIView!.prototype.createCardElement;
 
-  HUIView.prototype.createCardElement = function (config) {
+  HUIView!.prototype.createCardElement = function (config) {
     const el = oldCreateCard.call(this, config);
     if (el.tagName === "HA-DEMO-CARD") {
       (el as HADemoCard).lovelace = this.lovelace;

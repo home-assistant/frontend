@@ -11,7 +11,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import { createAuthForUser } from "../../../data/auth";
@@ -48,6 +48,8 @@ export class DialogAddUser extends LitElement {
 
   @state() private _isAdmin?: boolean;
 
+  @state() private _localOnly?: boolean;
+
   @state() private _allowChangeName = true;
 
   public showDialog(params: AddUserDialogParams) {
@@ -57,6 +59,7 @@ export class DialogAddUser extends LitElement {
     this._password = "";
     this._passwordConfirm = "";
     this._isAdmin = false;
+    this._localOnly = false;
     this._error = undefined;
     this._loading = false;
 
@@ -87,7 +90,10 @@ export class DialogAddUser extends LitElement {
         @closed=${this._close}
         scrimClickAction
         escapeKeyAction
-        .heading=${this.hass.localize("ui.panel.config.users.add_user.caption")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.users.add_user.caption")
+        )}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -135,9 +141,9 @@ export class DialogAddUser extends LitElement {
           ></paper-input>
 
           <paper-input
-            label="${this.hass.localize(
+            label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
-            )}"
+            )}
             name="passwordConfirm"
             .value=${this._passwordConfirm}
             @value-changed=${this._handleValueChanged}
@@ -146,18 +152,36 @@ export class DialogAddUser extends LitElement {
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .errorMessage="${this.hass.localize(
+            .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
-            )}"
+            )}
           ></paper-input>
-
-          <ha-formfield
-            .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
-            .dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
-            </ha-switch>
-          </ha-formfield>
+          <div class="row">
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.config.users.editor.local_only"
+              )}
+              .dir=${computeRTLDirection(this.hass)}
+            >
+              <ha-switch
+                .checked=${this._localOnly}
+                @change=${this._localOnlyChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
+          <div class="row">
+            <ha-formfield
+              .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
+              .dir=${computeRTLDirection(this.hass)}
+            >
+              <ha-switch
+                .checked=${this._isAdmin}
+                @change=${this._adminChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
+          </div>
           ${!this._isAdmin
             ? html`
                 <br />
@@ -167,13 +191,6 @@ export class DialogAddUser extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button
-          slot="secondaryAction"
-          @click="${this._close}"
-          .disabled=${this._loading}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
@@ -222,6 +239,10 @@ export class DialogAddUser extends LitElement {
     this._isAdmin = ev.target.checked;
   }
 
+  private _localOnlyChanged(ev): void {
+    this._localOnly = ev.target.checked;
+  }
+
   private async _createUser(ev) {
     ev.preventDefault();
     if (!this._name || !this._username || !this._password) {
@@ -233,11 +254,14 @@ export class DialogAddUser extends LitElement {
 
     let user: User;
     try {
-      const userResponse = await createUser(this.hass, this._name, [
-        this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
-      ]);
+      const userResponse = await createUser(
+        this.hass,
+        this._name,
+        [this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER],
+        this._localOnly
+      );
       user = userResponse.user;
-    } catch (err) {
+    } catch (err: any) {
       this._loading = false;
       this._error = err.message;
       return;
@@ -250,7 +274,7 @@ export class DialogAddUser extends LitElement {
         this._username,
         this._password
       );
-    } catch (err) {
+    } catch (err: any) {
       await deleteUser(this.hass, user.id);
       this._loading = false;
       this._error = err.message;
@@ -270,8 +294,9 @@ export class DialogAddUser extends LitElement {
           --mdc-dialog-max-width: 500px;
           --dialog-z-index: 10;
         }
-        ha-switch {
-          margin-top: 8px;
+        .row {
+          display: flex;
+          padding: 8px 0;
         }
       `,
     ];

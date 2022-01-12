@@ -188,7 +188,7 @@ export class CloudTTSPref extends LitElement {
         tts_default_voice: [language, newGender],
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       this.savingPreferences = false;
       // eslint-disable-next-line no-console
       console.error(err);
@@ -212,7 +212,7 @@ export class CloudTTSPref extends LitElement {
         tts_default_voice: [language, gender],
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       this.savingPreferences = false;
       // eslint-disable-next-line no-console
       console.error(err);

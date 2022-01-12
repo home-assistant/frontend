@@ -2,30 +2,29 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getColorByIndex } from "../../common/color/colors";
+import { getGraphColorByIndex } from "../../common/color/colors";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { numberFormatToLocale } from "../../common/string/format_number";
+import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
 
-/** Binary sensor device classes for which the static colors for on/off need to be inverted.
- *  List the ones were "off" = good or normal state = should be rendered "green".
+/** Binary sensor device classes for which the static colors for on/off are NOT inverted.
+ *  List the ones were "on" = good or normal state => should be rendered "green".
+ *  Note: It is now a "not inverted" list (compared to the past) since we now have more inverted ones.
  */
-const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
-  "battery",
-  "door",
-  "garage_door",
-  "gas",
-  "lock",
-  "opening",
-  "problem",
-  "safety",
-  "smoke",
-  "window",
+const BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED = new Set([
+  "battery_charging",
+  "connectivity",
+  "light",
+  "moving",
+  "plug",
+  "power",
+  "presence",
+  "running",
 ]);
 
 const STATIC_STATE_COLORS = new Set([
@@ -46,7 +45,7 @@ const invertOnOff = (entityState?: HassEntity) =>
   entityState &&
   computeDomain(entityState.entity_id) === "binary_sensor" &&
   "device_class" in entityState.attributes &&
-  BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED.has(
+  !BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED.has(
     entityState.attributes.device_class!
   );
 
@@ -55,7 +54,11 @@ const getColor = (
   entityState: HassEntity,
   computedStyles: CSSStyleDeclaration
 ) => {
-  if (invertOnOff(entityState)) {
+  // Inversion is only valid for "on" or "off" state
+  if (
+    (stateString === "on" || stateString === "off") &&
+    invertOnOff(entityState)
+  ) {
     stateString = stateString === "on" ? "off" : "on";
   }
   if (stateColorMap.has(stateString)) {
@@ -68,7 +71,7 @@ const getColor = (
     stateColorMap.set(stateString, color);
     return color;
   }
-  const color = getColorByIndex(colorIndex);
+  const color = getGraphColorByIndex(colorIndex, computedStyles);
   colorIndex++;
   stateColorMap.set(stateString, color);
   return color;

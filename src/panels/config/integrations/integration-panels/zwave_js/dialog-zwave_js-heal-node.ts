@@ -1,6 +1,5 @@
 import "../../../../../components/ha-circular-progress";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiStethoscope, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,8 +10,8 @@ import {
   computeDeviceName,
 } from "../../../../../data/device_registry";
 import {
-  fetchNetworkStatus,
-  healNode,
+  fetchZwaveNetworkStatus,
+  healZwaveNode,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -207,7 +206,7 @@ class DialogZWaveJSHealNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchNetworkStatus(
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
       this.hass!,
       this.entry_id!
     );
@@ -222,11 +221,15 @@ class DialogZWaveJSHealNode extends LitElement {
     }
     this._status = "started";
     try {
-      this._status = (await healNode(this.hass, this.entry_id!, this.node_id!))
+      this._status = (await healZwaveNode(
+        this.hass,
+        this.entry_id!,
+        this.node_id!
+      ))
         ? "finished"
         : "failed";
-    } catch (error) {
-      this._error = error.message;
+    } catch (err: any) {
+      this._error = err.message;
       this._status = "failed";
     }
   }

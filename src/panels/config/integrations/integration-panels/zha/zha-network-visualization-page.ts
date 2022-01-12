@@ -14,7 +14,6 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-svg-icon";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   fetchDevices,
@@ -59,6 +58,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private _filter?: string;
 
   private _autoZoom = true;
+
+  private _enablePhysics = true;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -142,6 +143,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   class="header"
@@ -158,6 +160,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         <div class="header">
           ${!this.narrow
             ? html`<search-input
+                .hass=${this.hass}
                 no-label-float
                 no-underline
                 @value-changed=${this._handleSearchChange}
@@ -173,7 +176,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .deviceFilter=${(device) => this._filterDevices(device)}
+            .deviceFilter=${this._filterDevices}
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
           <div class="controls">
@@ -183,11 +186,21 @@ export class ZHANetworkVisualizationPage extends LitElement {
               )}
             >
               <ha-checkbox
-                @change=${this._handleCheckboxChange}
+                @change=${this._handleAutoZoomCheckboxChange}
                 .checked=${this._autoZoom}
               >
               </ha-checkbox>
             </ha-formfield>
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.zha.visualization.enable_physics"
+              )}
+              ><ha-checkbox
+                @change=${this._handlePhysicsCheckboxChange}
+                .checked=${this._enablePhysics}
+              >
+              </ha-checkbox
+            ></ha-formfield>
             <mwc-button @click=${this._refreshTopology}>
               ${this.hass!.localize(
                 "ui.panel.config.zha.visualization.refresh_topology"
@@ -232,11 +245,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(neighbor.lqi),
+              color: this._getLQI(parseInt(neighbor.lqi)),
             });
           } else {
             edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + neighbor.lqi) / 2
+              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
             );
             edges[idx].label += "/" + neighbor.lqi;
           }
@@ -359,7 +372,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     await refreshTopology(this.hass);
   }
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (!this.hass) {
       return false;
     }
@@ -371,10 +384,28 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     }
     return false;
+  };
+
+  private _handleAutoZoomCheckboxChange(ev: Event) {
+    this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  private _handleCheckboxChange(ev: Event) {
-    this._autoZoom = (ev.target as HaCheckbox).checked;
+  private _handlePhysicsCheckboxChange(ev: Event) {
+    this._enablePhysics = (ev.target as HaCheckbox).checked;
+
+    this._network!.setOptions(
+      this._enablePhysics
+        ? {
+            physics: {
+              barnesHut: {
+                springConstant: 0,
+                avoidOverlap: 10,
+                damping: 0.09,
+              },
+            },
+          }
+        : { physics: false }
+    );
   }
 
   static get styles(): CSSResultGroup {

@@ -30,7 +30,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     if (this._config.origConfig) {
       try {
         dumped = dump(this._config.origConfig);
-      } catch (err) {
+      } catch (err: any) {
         dumped = `[Error dumping ${this._config.origConfig}]`;
       }
     }
@@ -44,9 +44,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     return css`
       pre {
         font-family: var(--code-font-family, monospace);
-        text-overflow: ellipsis;
+        white-space: break-spaces;
         user-select: text;
-        overflow: hidden;
       }
     `;
   }

@@ -180,10 +180,10 @@ export function fuzzyScore(
     wordLow
   );
 
-  let row = 1;
+  let row: number;
   let column = 1;
-  let patternPos = patternStart;
-  let wordPos = wordStart;
+  let patternPos: number;
+  let wordPos: number;
 
   const hasStrongFirstMatch = [false];
 

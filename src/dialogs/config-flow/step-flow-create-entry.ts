@@ -8,6 +8,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import {
+  computeDeviceName,
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
@@ -50,7 +51,7 @@ class StepFlowCreateEntry extends LitElement {
                     html`
                       <div class="device">
                         <div>
-                          <b>${device.name}</b><br />
+                          <b>${computeDeviceName(device, this.hass)}</b><br />
                           ${device.model} (${device.manufacturer})
                         </div>
                         <ha-area-picker
@@ -65,7 +66,7 @@ class StepFlowCreateEntry extends LitElement {
             `}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}"
+        <mwc-button @click=${this._flowDone}
           >${localize(
             "ui.panel.config.integrations.config_flow.finish"
           )}</mwc-button
@@ -87,7 +88,7 @@ class StepFlowCreateEntry extends LitElement {
       await updateDeviceRegistryEntry(this.hass, device, {
         area_id: area,
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",

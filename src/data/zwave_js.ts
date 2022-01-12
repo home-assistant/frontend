@@ -2,6 +2,100 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 
+export const enum InclusionStrategy {
+  /**
+   * Always uses Security S2 if supported, otherwise uses Security S0 for certain devices which don't work without encryption and uses no encryption otherwise.
+   *
+   * Issues a warning if Security S0 or S2 is supported, but the secure bootstrapping fails.
+   *
+   * **This is the recommended** strategy and should be used unless there is a good reason not to.
+   */
+  Default = 0,
+  /**
+   * Include using SmartStart (requires Security S2).
+   * Issues a warning if Security S2 is not supported, or the secure bootstrapping fails.
+   *
+   * **Should be preferred** over **Default** if supported.
+   */
+  SmartStart,
+
+  /**
+   * Don't use encryption, even if supported.
+   *
+   * **Not recommended**, because S2 should be used where possible.
+   */
+  Insecure,
+  /**
+   * Use Security S0, even if a higher security mode is supported.
+   *
+   * Issues a warning if Security S0 is not supported or the secure bootstrapping fails.
+   *
+   * **Not recommended** because S0 should be used sparingly and S2 preferred whereever possible.
+   */
+  Security_S0,
+  /**
+   * Use Security S2 and issue a warning if it is not supported or the secure bootstrapping fails.
+   *
+   * **Not recommended** because the *Default* strategy is more versatile and user-friendly.
+   */
+  Security_S2,
+}
+
+export enum SecurityClass {
+  /**
+   * Used internally during inclusion of a node. Don't use this!
+   */
+  Temporary = -2,
+  /**
+   * `None` is used to indicate that a node is included without security.
+   * It is not meant as input to methods that accept a security class.
+   */
+  None = -1,
+  S2_Unauthenticated = 0,
+  S2_Authenticated = 1,
+  S2_AccessControl = 2,
+  S0_Legacy = 7,
+}
+
+/** A named list of Z-Wave features */
+export enum ZWaveFeature {
+  // Available starting with Z-Wave SDK 6.81
+  SmartStart,
+}
+
+enum QRCodeVersion {
+  S2 = 0,
+  SmartStart = 1,
+}
+
+enum Protocols {
+  ZWave = 0,
+  ZWaveLongRange = 1,
+}
+export interface QRProvisioningInformation {
+  version: QRCodeVersion;
+  securityClasses: SecurityClass[];
+  dsk: string;
+  genericDeviceClass: number;
+  specificDeviceClass: number;
+  installerIconType: number;
+  manufacturerId: number;
+  productType: number;
+  productId: number;
+  applicationVersion: string;
+  maxInclusionRequestInterval?: number | undefined;
+  uuid?: string | undefined;
+  supportedProtocols?: Protocols[] | undefined;
+}
+
+export interface PlannedProvisioningEntry {
+  /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
+  dsk: string;
+  security_classes: SecurityClass[];
+}
+
+export const MINIMUM_QR_STRING_LENGTH = 52;
+
 export interface ZWaveJSNodeIdentifiers {
   home_id: string;
   node_id: number;
@@ -28,6 +122,10 @@ export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
   status: number;
+  is_secure: boolean | string;
+  is_routing: boolean | null;
+  zwave_plus_version: number | null;
+  highest_security_class: SecurityClass | null;
 }
 
 export interface ZwaveJSNodeMetadata {
@@ -99,7 +197,7 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
-export enum NodeStatus {
+export const enum NodeStatus {
   Unknown,
   Asleep,
   Awake,
@@ -107,9 +205,48 @@ export enum NodeStatus {
   Alive,
 }
 
+export interface ZwaveJSProvisioningEntry {
+  /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
+  dsk: string;
+  security_classes: SecurityClass[];
+  additional_properties: {
+    nodeId?: number;
+    [prop: string]: any;
+  };
+}
+
+export interface RequestedGrant {
+  /**
+   * An array of security classes that are requested or to be granted.
+   * The granted security classes MUST be a subset of the requested ones.
+   */
+  securityClasses: SecurityClass[];
+  /** Whether client side authentication is requested or to be granted */
+  clientSideAuth: boolean;
+}
+
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
 
-export const fetchNetworkStatus = (
+export interface ZWaveJsMigrationData {
+  migration_device_map: Record<string, string>;
+  zwave_entity_ids: string[];
+  zwave_js_entity_ids: string[];
+  migration_entity_map: Record<string, string>;
+  migrated: boolean;
+}
+
+export const migrateZwave = (
+  hass: HomeAssistant,
+  entry_id: string,
+  dry_run = true
+): Promise<ZWaveJsMigrationData> =>
+  hass.callWS({
+    type: "zwave_js/migrate_zwave",
+    entry_id,
+    dry_run,
+  });
+
+export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<ZWaveJSNetwork> =>
@@ -118,7 +255,7 @@ export const fetchNetworkStatus = (
     entry_id,
   });
 
-export const fetchDataCollectionStatus = (
+export const fetchZwaveDataCollectionStatus = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<ZWaveJSDataCollectionStatus> =>
@@ -127,7 +264,7 @@ export const fetchDataCollectionStatus = (
     entry_id,
   });
 
-export const setDataCollectionPreference = (
+export const setZwaveDataCollectionPreference = (
   hass: HomeAssistant,
   entry_id: string,
   opted_in: boolean
@@ -138,7 +275,114 @@ export const setDataCollectionPreference = (
     opted_in,
   });
 
-export const fetchNodeStatus = (
+export const fetchZwaveProvisioningEntries = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<ZwaveJSProvisioningEntry[]> =>
+  hass.callWS({
+    type: "zwave_js/get_provisioning_entries",
+    entry_id,
+  });
+
+export const subscribeAddZwaveNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: any) => void,
+  inclusion_strategy: InclusionStrategy = InclusionStrategy.Default,
+  qr_provisioning_information?: QRProvisioningInformation,
+  qr_code_string?: string,
+  planned_provisioning_entry?: PlannedProvisioningEntry
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage((message) => callbackFunction(message), {
+    type: "zwave_js/add_node",
+    entry_id: entry_id,
+    inclusion_strategy,
+    qr_code_string,
+    qr_provisioning_information,
+    planned_provisioning_entry,
+  });
+
+export const stopZwaveInclusion = (hass: HomeAssistant, entry_id: string) =>
+  hass.callWS({
+    type: "zwave_js/stop_inclusion",
+    entry_id,
+  });
+
+export const zwaveGrantSecurityClasses = (
+  hass: HomeAssistant,
+  entry_id: string,
+  security_classes: SecurityClass[],
+  client_side_auth?: boolean
+) =>
+  hass.callWS({
+    type: "zwave_js/grant_security_classes",
+    entry_id,
+    security_classes,
+    client_side_auth,
+  });
+
+export const zwaveValidateDskAndEnterPin = (
+  hass: HomeAssistant,
+  entry_id: string,
+  pin: string
+) =>
+  hass.callWS({
+    type: "zwave_js/validate_dsk_and_enter_pin",
+    entry_id,
+    pin,
+  });
+
+export const zwaveSupportsFeature = (
+  hass: HomeAssistant,
+  entry_id: string,
+  feature: ZWaveFeature
+): Promise<{ supported: boolean }> =>
+  hass.callWS({
+    type: "zwave_js/supports_feature",
+    entry_id,
+    feature,
+  });
+
+export const zwaveParseQrCode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_code_string: string
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/parse_qr_code_string",
+    entry_id,
+    qr_code_string,
+  });
+
+export const provisionZwaveSmartStartNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  qr_provisioning_information?: QRProvisioningInformation,
+  qr_code_string?: string,
+  planned_provisioning_entry?: PlannedProvisioningEntry
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/provision_smart_start_node",
+    entry_id,
+    qr_code_string,
+    qr_provisioning_information,
+    planned_provisioning_entry,
+  });
+
+export const unprovisionZwaveSmartStartNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  dsk?: string,
+  node_id?: number
+): Promise<QRProvisioningInformation> =>
+  hass.callWS({
+    type: "zwave_js/unprovision_smart_start_node",
+    entry_id,
+    dsk,
+    node_id,
+  });
+
+export const fetchZwaveNodeStatus = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
@@ -149,7 +393,7 @@ export const fetchNodeStatus = (
     node_id,
   });
 
-export const fetchNodeMetadata = (
+export const fetchZwaveNodeMetadata = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
@@ -160,7 +404,7 @@ export const fetchNodeMetadata = (
     node_id,
   });
 
-export const fetchNodeConfigParameters = (
+export const fetchZwaveNodeConfigParameters = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
@@ -171,7 +415,7 @@ export const fetchNodeConfigParameters = (
     node_id,
   });
 
-export const setNodeConfigParameter = (
+export const setZwaveNodeConfigParameter = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number,
@@ -190,7 +434,7 @@ export const setNodeConfigParameter = (
   return hass.callWS(data);
 };
 
-export const reinterviewNode = (
+export const reinterviewZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number,
@@ -200,23 +444,23 @@ export const reinterviewNode = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/refresh_node_info",
-      entry_id: entry_id,
-      node_id: node_id,
+      entry_id,
+      node_id,
     }
   );
 
-export const healNode = (
+export const healZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
 ): Promise<boolean> =>
   hass.callWS({
     type: "zwave_js/heal_node",
-    entry_id: entry_id,
-    node_id: node_id,
+    entry_id,
+    node_id,
   });
 
-export const removeFailedNode = (
+export const removeFailedZwaveNode = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number,
@@ -226,30 +470,45 @@ export const removeFailedNode = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/remove_failed_node",
-      entry_id: entry_id,
-      node_id: node_id,
+      entry_id,
+      node_id,
     }
   );
 
-export const healNetwork = (
+export const healZwaveNetwork = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
     type: "zwave_js/begin_healing_network",
-    entry_id: entry_id,
+    entry_id,
   });
 
-export const stopHealNetwork = (
+export const stopHealZwaveNetwork = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
     type: "zwave_js/stop_healing_network",
-    entry_id: entry_id,
+    entry_id,
   });
 
-export const subscribeHealNetworkProgress = (
+export const subscribeZwaveNodeReady = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  callbackFunction: (message) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/node_ready",
+      entry_id,
+      node_id,
+    }
+  );
+
+export const subscribeHealZwaveNetworkProgress = (
   hass: HomeAssistant,
   entry_id: string,
   callbackFunction: (message: ZWaveJSHealNetworkStatusMessage) => void
@@ -258,11 +517,11 @@ export const subscribeHealNetworkProgress = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/subscribe_heal_network_progress",
-      entry_id: entry_id,
+      entry_id,
     }
   );
 
-export const getIdentifiersFromDevice = (
+export const getZwaveJsIdentifiersFromDevice = (
   device: DeviceRegistryEntry
 ): ZWaveJSNodeIdentifiers | undefined => {
   if (!device) {

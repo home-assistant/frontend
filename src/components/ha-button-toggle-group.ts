@@ -1,12 +1,10 @@
-import "@material/mwc-button/mwc-button";
-import type { Button } from "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
+import { Button } from "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
@@ -25,15 +23,13 @@ export class HaButtonToggleGroup extends LitElement {
       <div>
         ${this.buttons.map((button) =>
           button.iconPath
-            ? html`<mwc-icon-button
+            ? html`<ha-icon-button
                 .label=${button.label}
-                .title=${button.label}
+                .path=${button.iconPath}
                 .value=${button.value}
                 ?active=${this.active === button.value}
                 @click=${this._handleClick}
-              >
-                <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
-              </mwc-icon-button>`
+              ></ha-icon-button>`
             : html`<mwc-button
                 style=${styleMap({
                   width: this.fullWidth
@@ -78,16 +74,16 @@ export class HaButtonToggleGroup extends LitElement {
         --mdc-shape-small: 0;
         --mdc-button-outline-width: 1px 0 1px 1px;
       }
-      mwc-icon-button {
+      ha-icon-button {
         border: 1px solid var(--primary-color);
         border-right-width: 0px;
       }
-      mwc-icon-button,
+      ha-icon-button,
       mwc-button {
         position: relative;
         cursor: pointer;
       }
-      mwc-icon-button::before,
+      ha-icon-button::before,
       mwc-button::before {
         top: 0;
         left: 0;
@@ -100,23 +96,23 @@ export class HaButtonToggleGroup extends LitElement {
         content: "";
         transition: opacity 15ms linear, background-color 15ms linear;
       }
-      mwc-icon-button[active]::before,
+      ha-icon-button[active]::before,
       mwc-button[active]::before {
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
-      mwc-icon-button:first-child,
+      ha-icon-button:first-child,
       mwc-button:first-child {
         --mdc-shape-small: 4px 0 0 4px;
         border-radius: 4px 0 0 4px;
       }
-      mwc-icon-button:last-child,
+      ha-icon-button:last-child,
       mwc-button:last-child {
         border-radius: 0 4px 4px 0;
         border-right-width: 1px;
         --mdc-shape-small: 0 4px 4px 0;
         --mdc-button-outline-width: 1px;
       }
-      mwc-icon-button:only-child,
+      ha-icon-button:only-child,
       mwc-button:only-child {
         --mdc-shape-small: 4px;
         border-right-width: 1px;

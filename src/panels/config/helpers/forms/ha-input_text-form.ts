@@ -1,13 +1,14 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
+import type { HaRadio } from "../../../../components/ha-radio";
 import { InputText } from "../../../../data/input_text";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
 
 @customElement("ha-input_text-form")
 class HaInputTextForm extends LitElement {
@@ -70,20 +71,20 @@ class HaInputTextForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage="${this.hass!.localize(
+          .errorMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
-          )}"
+          )}
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-input
@@ -112,21 +113,30 @@ class HaInputTextForm extends LitElement {
                 ${this.hass.localize(
                   "ui.dialogs.helper_settings.input_text.mode"
                 )}
-                <paper-radio-group
-                  .selected=${this._mode}
-                  @selected-changed=${this._modeChanged}
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.dialogs.helper_settings.input_text.text"
+                  )}
                 >
-                  <paper-radio-button name="text">
-                    ${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_text.text"
-                    )}
-                  </paper-radio-button>
-                  <paper-radio-button name="password">
-                    ${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_text.password"
-                    )}
-                  </paper-radio-button>
-                </paper-radio-group>
+                  <ha-radio
+                    name="mode"
+                    value="text"
+                    .checked=${this._mode === "text"}
+                    @change=${this._modeChanged}
+                  ></ha-radio>
+                </ha-formfield>
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.dialogs.helper_settings.input_text.password"
+                  )}
+                >
+                  <ha-radio
+                    name="mode"
+                    value="password"
+                    .checked=${this._mode === "password"}
+                    @change=${this._modeChanged}
+                  ></ha-radio>
+                </ha-formfield>
               </div>
               <paper-input
                 .value=${this._pattern}
@@ -144,7 +154,7 @@ class HaInputTextForm extends LitElement {
 
   private _modeChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: { ...this._item, mode: ev.detail.value },
+      value: { ...this._item, mode: (ev.target as HaRadio).value },
     });
   }
 

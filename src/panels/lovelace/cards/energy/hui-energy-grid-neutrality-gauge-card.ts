@@ -3,7 +3,7 @@ import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-gauge";
@@ -18,12 +18,10 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
-import { severityMap } from "../hui-gauge-card";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: severityMap.red },
-  { level: -0.2, stroke: severityMap.yellow },
-  { level: 0, stroke: severityMap.green },
+  { level: -1, stroke: "var(--energy-grid-consumption-color)" },
+  { level: 0, stroke: "var(--energy-grid-return-color)" },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
@@ -61,7 +59,9 @@ class HuiEnergyGridGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -102,11 +102,13 @@ class HuiEnergyGridGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents your energy dependency.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
                   <br /><br />
-                  If it's green, it means you produced more energy than that you
-                  consumed from the grid. If it's in the red, it means that you
-                  relied on the grid for part of your home's energy consumption.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                  )}
                 </span>
               </paper-tooltip>
 
@@ -126,11 +128,17 @@ class HuiEnergyGridGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Net returned to the grid"
-                  : "Net consumed from the grid"}
+                  ? this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                    )}
               </div>
             `
-          : "Grid neutrality could not be calculated"}
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+            )}
       </ha-card>
     `;
   }

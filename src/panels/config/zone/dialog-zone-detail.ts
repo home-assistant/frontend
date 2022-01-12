@@ -8,6 +8,7 @@ import { addDistanceToCoord } from "../../../common/location/add_distance_to_coo
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
@@ -77,14 +78,18 @@ class DialogZoneDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const nameValid = this._name.trim() === "";
-    const iconValid = !this._icon.trim().includes(":");
-    const latValid = String(this._latitude) === "";
-    const lngValid = String(this._longitude) === "";
-    const radiusValid = String(this._radius) === "";
+    const nameInvalid = this._name.trim() === "";
+    const iconInvalid = Boolean(this._icon && !this._icon.trim().includes(":"));
+    const latInvalid = String(this._latitude) === "";
+    const lngInvalid = String(this._longitude) === "";
+    const radiusInvalid = String(this._radius) === "";
 
     const valid =
-      !nameValid && !iconValid && !latValid && !lngValid && !radiusValid;
+      !nameInvalid &&
+      !iconInvalid &&
+      !latInvalid &&
+      !lngInvalid &&
+      !radiusInvalid;
 
     return html`
       <ha-dialog
@@ -107,27 +112,23 @@ class DialogZoneDetail extends LitElement {
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.name"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              .label=${this.hass!.localize("ui.panel.config.zone.detail.name")}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
-              )}"
+              )}
               required
               auto-validate
             ></paper-input>
-            <paper-input
+            <ha-icon-picker
               .value=${this._icon}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.icon"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              .label=${this.hass!.localize("ui.panel.config.zone.detail.icon")}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.icon_error_msg"
-              )}"
-              .invalid=${iconValid}
-            ></paper-input>
+              )}
+              .invalid=${iconInvalid}
+            ></ha-icon-picker>
             <ha-locations-editor
               class="flex"
               .hass=${this.hass}
@@ -146,38 +147,38 @@ class DialogZoneDetail extends LitElement {
                 .value=${this._latitude}
                 .configValue=${"latitude"}
                 @value-changed=${this._valueChanged}
-                .label="${this.hass!.localize(
+                .label=${this.hass!.localize(
                   "ui.panel.config.zone.detail.latitude"
-                )}"
-                .errorMessage="${this.hass!.localize(
+                )}
+                .errorMessage=${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
-                )}"
-                .invalid=${latValid}
+                )}
+                .invalid=${latInvalid}
               ></paper-input>
               <paper-input
                 .value=${this._longitude}
                 .configValue=${"longitude"}
                 @value-changed=${this._valueChanged}
-                .label="${this.hass!.localize(
+                .label=${this.hass!.localize(
                   "ui.panel.config.zone.detail.longitude"
-                )}"
-                .errorMessage="${this.hass!.localize(
+                )}
+                .errorMessage=${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
-                )}"
-                .invalid=${lngValid}
+                )}
+                .invalid=${lngInvalid}
               ></paper-input>
             </div>
             <paper-input
               .value=${this._radius}
               .configValue=${"radius"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.radius"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              )}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
-              )}"
-              .invalid=${radiusValid}
+              )}
+              .invalid=${radiusInvalid}
             ></paper-input>
             <p>
               ${this.hass!.localize("ui.panel.config.zone.detail.passive_note")}
@@ -200,7 +201,7 @@ class DialogZoneDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
@@ -209,7 +210,7 @@ class DialogZoneDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${!valid || this._submitting}
         >
           ${this._params.entry
@@ -272,19 +273,21 @@ class DialogZoneDetail extends LitElement {
     try {
       const values: ZoneMutableParams = {
         name: this._name.trim(),
-        icon: this._icon.trim(),
         latitude: this._latitude,
         longitude: this._longitude,
         passive: this._passive,
         radius: this._radius,
       };
+      if (this._icon) {
+        values.icon = this._icon.trim();
+      }
       if (this._params!.entry) {
         await this._params!.updateEntry!(values);
       } else {
         await this._params!.createEntry(values);
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
       this._submitting = false;

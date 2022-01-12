@@ -78,13 +78,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <ha-markdown
           breaks
           class=${classMap({
             "no-header": !this._config.title,
           })}
-          .content="${this._templateResult?.result}"
+          .content=${this._templateResult?.result}
         ></ha-markdown>
       </ha-card>
     `;
@@ -155,11 +155,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       const unsub = await this._unsubRenderTemplate;
       unsub();
       this._unsubRenderTemplate = undefined;
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         // If we get here, the connection was probably already closed. Ignore.
       } else {
-        throw e;
+        throw err;
       }
     }
   }
@@ -171,6 +171,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       }
       ha-markdown {
         padding: 0 16px 16px;
+        word-wrap: break-word;
       }
       ha-markdown.no-header {
         padding-top: 16px;

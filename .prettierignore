@@ -1,5 +1,4 @@
 build
-build-translations/*
 translations/*
 node_modules/*
 hass_frontend/*

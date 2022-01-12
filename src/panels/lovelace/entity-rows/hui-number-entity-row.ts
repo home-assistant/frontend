@@ -81,18 +81,22 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.attributes.mode === "slider"
+        ${stateObj.attributes.mode === "slider" ||
+        (stateObj.attributes.mode === "auto" &&
+          (Number(stateObj.attributes.max) - Number(stateObj.attributes.min)) /
+            Number(stateObj.attributes.step) <=
+            256)
           ? html`
               <div class="flex">
                 <ha-slider
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   pin
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   ignore-bar-touch
                   id="input"
                 ></ha-slider>
@@ -113,12 +117,12 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                   auto-validate
                   .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   type="number"
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   id="input"
                 ></paper-input>
                 ${stateObj.attributes.unit_of_measurement}

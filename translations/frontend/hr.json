@@ -243,7 +243,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Učitavanje povijesti stanja ...",
+                "loading_history": "Učitavanje povijesti stanja …",
                 "no_history_found": "Nije pronađena povijest stanja."
             },
             "relative_time": {
@@ -360,7 +360,7 @@
             "title": "Obavijesti"
         },
         "notification_toast": {
-            "connection_lost": "Veza izgubljena. Spajanje...",
+            "connection_lost": "Veza izgubljena. Spajanje…",
             "service_call_failed": "Pokretanje usluge {service} nijeje uspjelo.",
             "triggered": "{name} aktiviran"
         },
@@ -707,11 +707,11 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "Kada se nešto pokrene..."
+                            "caption": "Kada se nešto pokrene…"
                         },
                         "automations": "Automatizacije",
                         "conditions": {
-                            "caption": "Učini nešto samo ako..."
+                            "caption": "Učini nešto samo ako…"
                         },
                         "create": "Stvorite automatizaciju s uređajem",
                         "no_automations": "Nema automatizacije",
@@ -932,7 +932,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "Traženje ZHA ZigBee uređaja..."
+                        "spinner": "Traženje ZHA ZigBee uređaja…"
                     },
                     "clusters": {
                         "header": "klasteri"
@@ -992,7 +992,7 @@
                         "network_started": "Z-Wave mreža je pokrenuta",
                         "network_started_note_all_queried": "Svi čvorovi su kontaktirani.",
                         "network_started_note_some_queried": "Aktivni čvorovi su kontaktirani. Čvorovi koji spavaju će biti kontaktirani kada se probude.",
-                        "network_starting": "Pokretanje Z-Wave mreže...",
+                        "network_starting": "Pokretanje Z-Wave mreže…",
                         "network_starting_note": "To može potrajati, ovisno o veličini vaše mreže.",
                         "network_stopped": "Z-val mreža zaustavljena"
                     },

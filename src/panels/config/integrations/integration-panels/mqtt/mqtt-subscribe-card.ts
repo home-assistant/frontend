@@ -35,9 +35,7 @@ class MqttSubscribeCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
-        header="${this.hass.localize(
-          "ui.panel.config.mqtt.description_listen"
-        )}"
+        header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
           <paper-input
@@ -107,7 +105,7 @@ class MqttSubscribeCard extends LitElement {
     let payload: string;
     try {
       payload = JSON.stringify(JSON.parse(message.payload), null, 4);
-    } catch (e) {
+    } catch (err: any) {
       payload = message.payload;
     }
     this._messages = [

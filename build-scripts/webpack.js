@@ -6,6 +6,7 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle.js");
 const log = require("fancy-log");
+const WebpackBar = require("webpackbar");
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -74,6 +75,7 @@ const createWebpackConfig = ({
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
+      new WebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
@@ -125,6 +127,13 @@ const createWebpackConfig = ({
       alias: {
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
+        "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/class-map$": "lit/directives/class-map.js",
+        "lit/directives/style-map$": "lit/directives/style-map.js",
+        "lit/directives/if-defined$": "lit/directives/if-defined.js",
+        "lit/directives/guard$": "lit/directives/guard.js",
+        "lit/directives/cache$": "lit/directives/cache.js",
+        "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/polyfill-support$": "lit/polyfill-support.js",
       },
     },
@@ -141,6 +150,9 @@ const createWebpackConfig = ({
       publicPath,
       // To silence warning in worker plugin
       globalObject: "self",
+    },
+    experiments: {
+      topLevelAwait: true,
     },
   };
 };

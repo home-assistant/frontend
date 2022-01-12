@@ -82,7 +82,7 @@ export class HaTracePathDetails extends LitElement {
       ] as ChooseActionTraceStep[];
 
       if (parentTraceInfo && parentTraceInfo[0]?.result?.choice === "default") {
-        return "The default node was executed because no choices matched.";
+        return "The default action was executed because no options matched.";
       }
     }
 

@@ -10,7 +10,13 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
+import {
+  addHours,
+  differenceInDays,
+  endOfToday,
+  isToday,
+  startOfToday,
+} from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
@@ -20,10 +26,11 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { labDarken } from "../../../../common/color/lab";
+import { labBrighten, labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
   getEnergyDataCollection,
+  getEnergyGasUnit,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -31,13 +38,10 @@ import "../../../../components/chart/ha-chart-base";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../../../common/string/format_number";
+} from "../../../../common/number/format_number";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { FrontendLocaleData } from "../../../../data/translation";
-import {
-  reduceSumStatisticsByMonth,
-  reduceSumStatisticsByDay,
-} from "../../../../data/history";
+import { formatTime } from "../../../../common/datetime/format_time";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -55,6 +59,8 @@ export class HuiEnergyGasGraphCard
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
+
+  @state() private _unit?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -92,15 +98,18 @@ export class HuiEnergyGasGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale
+              this.hass.locale,
+              this._unit
             )}
             chart-type="bar"
           ></ha-chart-base>
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
                 ${isToday(this._start)
-                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is no data for this period."}
+                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.no_data_period"
+                    )}
               </div>`
             : ""}
         </div>
@@ -109,7 +118,12 @@ export class HuiEnergyGasGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      unit?: string
+    ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
       return {
         parsing: false,
@@ -157,10 +171,11 @@ export class HuiEnergyGasGraphCard
             offset: true,
           },
           y: {
+            stacked: true,
             type: "linear",
             title: {
               display: true,
-              text: "m³",
+              text: unit,
             },
             ticks: {
               beginAtZero: true,
@@ -171,11 +186,21 @@ export class HuiEnergyGasGraphCard
           tooltip: {
             mode: "nearest",
             callbacks: {
+              title: (datasets) => {
+                if (dayDifference > 0) {
+                  return datasets[0].label;
+                }
+                const date = new Date(datasets[0].parsed.x);
+                return `${formatTime(date, locale)} - ${formatTime(
+                  addHours(date, 1),
+                  locale
+                )}`;
+              },
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   locale
-                )} m³`,
+                )} ${unit}`,
             },
           },
           filler: {
@@ -209,40 +234,28 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    const statisticsData = Object.values(energyData.stats);
+    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
+
     const datasets: ChartDataset<"bar">[] = [];
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const computedStyles = getComputedStyle(this);
     const gasColor = computedStyles
       .getPropertyValue("--energy-gas-color")
       .trim();
 
-    const dayDifference = differenceInDays(
-      energyData.end || new Date(),
-      energyData.start
-    );
-
     gasSources.forEach((source, idx) => {
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
-      const borderColor =
+      const modifiedColor =
         idx > 0
-          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(gasColor)), idx)))
-          : gasColor;
+          ? this.hass.themes.darkMode
+            ? labBrighten(rgb2lab(hex2rgb(gasColor)), idx)
+            : labDarken(rgb2lab(hex2rgb(gasColor)), idx)
+          : undefined;
+      const borderColor = modifiedColor
+        ? rgb2hex(lab2rgb(modifiedColor))
+        : gasColor;
 
       let prevValue: number | null = null;
       let prevStart: string | null = null;
@@ -251,16 +264,7 @@ export class HuiEnergyGasGraphCard
 
       // Process gas consumption data.
       if (source.stat_energy_from in energyData.stats) {
-        const stats =
-          dayDifference > 35
-            ? reduceSumStatisticsByMonth(
-                energyData.stats[source.stat_energy_from]
-              )
-            : dayDifference > 2
-            ? reduceSumStatisticsByDay(
-                energyData.stats[source.stat_energy_from]
-              )
-            : energyData.stats[source.stat_energy_from];
+        const stats = energyData.stats[source.stat_energy_from];
 
         for (const point of stats) {
           if (point.sum === null) {
@@ -290,6 +294,7 @@ export class HuiEnergyGasGraphCard
           borderColor,
           backgroundColor: borderColor + "7F",
           data: gasConsumptionData,
+          stack: "gas",
         });
       }
 

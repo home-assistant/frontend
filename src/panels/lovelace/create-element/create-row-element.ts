@@ -24,9 +24,12 @@ const ALWAYS_LOADED_TYPES = new Set([
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
+  "button-entity": () => import("../entity-rows/hui-button-entity-row"),
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
   "group-entity": () => import("../entity-rows/hui-group-entity-row"),
+  "input-button-entity": () =>
+    import("../entity-rows/hui-input-button-entity-row"),
   "humidifier-entity": () => import("../entity-rows/hui-humidifier-entity-row"),
   "input-datetime-entity": () =>
     import("../entity-rows/hui-input-datetime-entity-row"),
@@ -53,12 +56,14 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
   alert: "toggle",
   automation: "toggle",
+  button: "button",
   climate: "climate",
   cover: "cover",
   fan: "toggle",
   group: "group",
   humidifier: "humidifier",
   input_boolean: "toggle",
+  input_button: "input-button",
   input_number: "input-number",
   input_select: "input-select",
   input_text: "input-text",

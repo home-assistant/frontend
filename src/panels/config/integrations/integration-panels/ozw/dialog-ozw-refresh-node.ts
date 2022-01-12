@@ -79,7 +79,7 @@ class DialogOZWRefreshNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this._close}"
+        @closed=${this._close}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.ozw.refresh_node.title")

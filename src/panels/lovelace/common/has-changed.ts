@@ -52,7 +52,7 @@ export function hasConfigOrEntitiesChanged(
 
   const oldHass = changedProps.get("hass") as HomeAssistant;
 
-  const entities = processConfigEntities(element._config!.entities);
+  const entities = processConfigEntities(element._config!.entities, false);
 
   return entities.some(
     (entity) =>

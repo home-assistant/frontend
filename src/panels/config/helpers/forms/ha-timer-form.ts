@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -25,7 +25,7 @@ class HaTimerForm extends LitElement {
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._duration = item.duration || "";
+      this._duration = item.duration || "00:00:00";
     } else {
       this._name = "";
       this._icon = "";
@@ -56,20 +56,20 @@ class HaTimerForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage="${this.hass!.localize(
+          .errorMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
-          )}"
+          )}
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <paper-input
           .configValue=${"duration"}
           .value=${this._duration}

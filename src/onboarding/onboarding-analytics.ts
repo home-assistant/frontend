@@ -72,7 +72,7 @@ class OnboardingAnalytics extends LitElement {
       fireEvent(this, "onboarding-step", {
         type: "analytics",
       });
-    } catch (err) {
+    } catch (err: any) {
       alert(`Failed to save: ${err.message}`);
     }
   }

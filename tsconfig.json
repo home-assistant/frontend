@@ -25,7 +25,8 @@
           "no-unclosed-tag": "error",
           "no-incompatible-type-binding": "warning",
           "no-invalid-css": "warning",
-          "no-missing-element-type-definition": "warning"
+          "no-missing-element-type-definition": "warning",
+          "no-property-visibility-mismatch": "error"
         }
       }
     ]

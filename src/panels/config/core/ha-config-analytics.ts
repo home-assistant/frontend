@@ -75,7 +75,7 @@ class ConfigAnalytics extends LitElement {
     this._error = undefined;
     try {
       this._analyticsDetails = await getAnalyticsDetails(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }
@@ -87,7 +87,7 @@ class ConfigAnalytics extends LitElement {
         this.hass,
         this._analyticsDetails?.preferences || {}
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }

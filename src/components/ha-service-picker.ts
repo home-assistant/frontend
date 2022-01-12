@@ -11,6 +11,7 @@ import "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item
+  // eslint-disable-next-line lit/prefer-static-styles
 ) => html`<style>
     paper-item {
       padding: 0;

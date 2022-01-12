@@ -1,21 +1,32 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-alert";
+import "../../../components/ha-picture-upload";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
+import { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
+const cropOptions: CropOptions = {
+  round: false,
+  type: "image/jpeg",
+  quality: 0.75,
+  aspectRatio: 1.78,
+};
+
 class DialogAreaDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
+
+  @state() private _picture!: string | null;
 
   @state() private _error?: string;
 
@@ -29,6 +40,7 @@ class DialogAreaDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry ? this._params.entry.name : "";
+    this._picture = this._params.entry?.picture || null;
     await this.updateComplete;
   }
 
@@ -48,12 +60,17 @@ class DialogAreaDetail extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${entry
-          ? entry.name
-          : this.hass.localize("ui.panel.config.areas.editor.default_name")}
+        .heading=${createCloseHeading(
+          this.hass,
+          entry
+            ? entry.name
+            : this.hass.localize("ui.panel.config.areas.editor.default_name")
+        )}
       >
         <div>
-          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+          ${this._error
+            ? html` <ha-alert alert-type="error">${this._error}</ha-alert> `
+            : ""}
           <div class="form">
             ${entry
               ? html`
@@ -76,6 +93,13 @@ class DialogAreaDetail extends LitElement {
               )}
               .invalid=${nameInvalid}
             ></paper-input>
+            <ha-picture-upload
+              .hass=${this.hass}
+              .value=${this._picture}
+              crop
+              .cropOptions=${cropOptions}
+              @change=${this._pictureChanged}
+            ></ha-picture-upload>
           </div>
         </div>
         ${entry
@@ -83,7 +107,7 @@ class DialogAreaDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.panel.config.areas.editor.delete")}
@@ -92,7 +116,7 @@ class DialogAreaDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${entry
@@ -118,19 +142,25 @@ class DialogAreaDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
+  private _pictureChanged(ev: PolymerChangedEvent<string | null>) {
+    this._error = undefined;
+    this._picture = (ev.target as HaPictureUpload).value;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
       const values: AreaRegistryEntryMutableParams = {
         name: this._name.trim(),
+        picture: this._picture,
       };
       if (this._params!.entry) {
         await this._params!.updateEntry!(values);
       } else {
         await this._params!.createEntry!(values);
       }
-      this._params = undefined;
-    } catch (err) {
+      this.closeDialog();
+    } catch (err: any) {
       this._error =
         err.message ||
         this.hass.localize("ui.panel.config.areas.editor.unknown_error");
@@ -143,13 +173,11 @@ class DialogAreaDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry!()) {
-        this._params = undefined;
+        this.closeDialog();
       }
     } finally {
       this._submitting = false;
     }
-
-    navigate("/config/areas/dashboard");
   }
 
   static get styles(): CSSResultGroup {
@@ -158,9 +186,6 @@ class DialogAreaDetail extends LitElement {
       css`
         .form {
           padding-bottom: 24px;
-        }
-        .error {
-          color: var(--error-color);
         }
       `,
     ];

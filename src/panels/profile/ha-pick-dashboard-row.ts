@@ -43,7 +43,11 @@ class HaPickDashboardRow extends LitElement {
             @iron-select=${this._dashboardChanged}
             attr-for-selected="url-path"
           >
-            <paper-item url-path="lovelace">default</paper-item>
+            <paper-item url-path="lovelace"
+              >${this.hass.localize(
+                "ui.panel.profile.dashboard.default_dashboard_label"
+              )}</paper-item
+            >
             ${this._dashboards.map((dashboard) => {
               if (!this.hass.user!.is_admin && dashboard.require_admin) {
                 return "";

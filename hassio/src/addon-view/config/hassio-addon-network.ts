@@ -89,9 +89,9 @@ class HassioAddonNetwork extends LitElement {
                     <td>
                       <paper-input
                         @value-changed=${this._configChanged}
-                        placeholder="${this.supervisor.localize(
+                        placeholder=${this.supervisor.localize(
                           "addon.configuration.network.disabled"
-                        )}"
+                        )}
                         .value=${item.host ? String(item.host) : ""}
                         .container=${item.container}
                         no-label-float
@@ -171,7 +171,7 @@ class HassioAddonNetwork extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_reset",
         "error",
@@ -207,7 +207,7 @@ class HassioAddonNetwork extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",

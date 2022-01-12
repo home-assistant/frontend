@@ -34,6 +34,9 @@ const REDIRECTS: Redirects = {
   supervisor_store: {
     redirect: "/hassio/store",
   },
+  supervisor_addons: {
+    redirect: "/hassio/dashboard",
+  },
   supervisor_addon: {
     redirect: "/hassio/addon",
     params: {
@@ -87,7 +90,7 @@ class HassioMyRedirect extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize("my.error");
       return;
     }

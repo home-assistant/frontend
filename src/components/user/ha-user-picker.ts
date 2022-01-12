@@ -10,7 +10,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
-import "../ha-icon-button";
 import "./ha-user-badge";
 
 class HaUserPicker extends LitElement {

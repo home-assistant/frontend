@@ -110,7 +110,7 @@ export class CloudAlexaPref extends LitElement {
     this._syncing = true;
     try {
       await syncCloudAlexaEntities(this.hass!);
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.sync_entities_error"
@@ -126,7 +126,7 @@ export class CloudAlexaPref extends LitElement {
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -138,7 +138,7 @@ export class CloudAlexaPref extends LitElement {
         alexa_report_state: toggle.checked!,
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.state_reporting_error",

@@ -1,4 +1,13 @@
-import { mdiDotsVertical } from "@mdi/js";
+import {
+  mdiAutorenew,
+  mdiCalendarSync,
+  mdiDotsVertical,
+  mdiFan,
+  mdiFire,
+  mdiPower,
+  mdiSnowflake,
+  mdiWaterPercent,
+} from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -10,13 +19,13 @@ import {
   svg,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -35,13 +44,13 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
 const modeIcons: { [mode in HvacMode]: string } = {
-  auto: "hass:calendar-sync",
-  heat_cool: "hass:autorenew",
-  heat: "hass:fire",
-  cool: "hass:snowflake",
-  off: "hass:power",
-  fan_only: "hass:fan",
-  dry: "hass:water-percent",
+  auto: mdiCalendarSync,
+  heat_cool: mdiAutorenew,
+  heat: mdiFire,
+  cool: mdiSnowflake,
+  off: mdiPower,
+  fan_only: mdiFan,
+  dry: mdiWaterPercent,
 };
 
 @customElement("hui-thermostat-card")
@@ -233,14 +242,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
-        <mwc-icon-button
+        <ha-icon-button
           class="more-info"
-          label="Open more info"
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.cards.show_more_info"
+          )}
+          .path=${mdiDotsVertical}
           @click=${this._handleMoreInfo}
           tabindex="0"
-        >
-          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-        </mwc-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -251,7 +261,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info">
+          <div id="info" .title=${name}>
             <div id="modes">
               ${(stateObj.attributes.hvac_modes || [])
                 .concat()
@@ -412,12 +422,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     return html`
       <ha-icon-button
-        class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
+        class=${classMap({ "selected-icon": currentMode === mode })}
+        .mode=${mode}
         @click=${this._handleAction}
         tabindex="0"
-      ></ha-icon-button>
+        .path=${modeIcons[mode]}
+        .label=${this.hass!.localize(`component.climate.state._.${mode}`)}
+      >
+      </ha-icon-button>
     `;
   }
 

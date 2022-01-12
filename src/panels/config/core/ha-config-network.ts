@@ -87,7 +87,7 @@ class ConfigNetwork extends LitElement {
         }
       }
       this._networkConfig = coreNetwork;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }
@@ -99,7 +99,7 @@ class ConfigNetwork extends LitElement {
         this.hass,
         this._networkConfig?.configured_adapters || []
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }

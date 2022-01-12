@@ -24,13 +24,15 @@ class StateInfo extends LitElement {
       return html``;
     }
 
+    const name = computeStateName(this.stateObj);
+
     return html`<state-badge
         .stateObj=${this.stateObj}
         .stateColor=${true}
       ></state-badge>
       <div class="info">
-        <div class="name" .inDialog=${this.inDialog}>
-          ${computeStateName(this.stateObj)}
+        <div class="name" .title=${name} .inDialog=${this.inDialog}>
+          ${name}
         </div>
         ${this.inDialog
           ? html`<div class="time-ago">
@@ -38,6 +40,7 @@ class StateInfo extends LitElement {
                 id="last_changed"
                 .hass=${this.hass}
                 .datetime=${this.stateObj.last_changed}
+                capitalize
               ></ha-relative-time>
               <paper-tooltip animation-delay="0" for="last_changed">
                 <div>
@@ -50,6 +53,7 @@ class StateInfo extends LitElement {
                     <ha-relative-time
                       .hass=${this.hass}
                       .datetime=${this.stateObj.last_changed}
+                      capitalize
                     ></ha-relative-time>
                   </div>
                   <div class="row">
@@ -61,6 +65,7 @@ class StateInfo extends LitElement {
                     <ha-relative-time
                       .hass=${this.hass}
                       .datetime=${this.stateObj.last_updated}
+                      capitalize
                     ></ha-relative-time>
                   </div>
                 </div>
@@ -92,7 +97,6 @@ class StateInfo extends LitElement {
       state-badge {
         float: left;
       }
-
       :host([rtl]) state-badge {
         float: right;
       }

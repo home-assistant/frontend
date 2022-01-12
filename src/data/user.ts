@@ -13,6 +13,7 @@ export interface User {
   name: string;
   is_owner: boolean;
   is_active: boolean;
+  local_only: boolean;
   system_generated: boolean;
   group_ids: string[];
   credentials: Credential[];
@@ -22,6 +23,7 @@ export interface UpdateUserParams {
   name?: User["name"];
   is_active?: User["is_active"];
   group_ids?: User["group_ids"];
+  local_only?: boolean;
 }
 
 export const fetchUsers = async (hass: HomeAssistant) =>
@@ -33,12 +35,14 @@ export const createUser = async (
   hass: HomeAssistant,
   name: string,
   // eslint-disable-next-line: variable-name
-  group_ids?: User["group_ids"]
+  group_ids?: User["group_ids"],
+  local_only?: boolean
 ) =>
   hass.callWS<{ user: User }>({
     type: "config/auth/create",
     name,
     group_ids,
+    local_only,
   });
 
 export const updateUser = async (
@@ -57,3 +61,19 @@ export const deleteUser = async (hass: HomeAssistant, userId: string) =>
     type: "config/auth/delete",
     user_id: userId,
   });
+
+export const computeUserInitials = (name: string) => {
+  if (!name) {
+    return "?";
+  }
+  return (
+    name
+      .trim()
+      // Split by space and take first 3 words
+      .split(" ")
+      .slice(0, 3)
+      // Of each word, take first letter
+      .map((s) => s.substr(0, 1))
+      .join("")
+  );
+};

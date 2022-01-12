@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
@@ -25,6 +24,7 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
@@ -290,13 +290,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}
       @action=${this._handleMenuAction}
     >
-      <mwc-icon-button
-        .title=${this.hass.localize("ui.common.menu")}
-        .label=${this.hass.localize("ui.common.overflow_menu")}
+      <ha-icon-button
         slot="trigger"
+        .label=${this.hass.localize("ui.common.menu")}
+        .path=${mdiFilterVariant}
       >
-        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-      </mwc-icon-button>
+      </ha-icon-button>
       <mwc-list-item graphic="control" .selected=${this._showIgnored}>
         <ha-checkbox slot="graphic" .checked=${this._showIgnored}></ha-checkbox>
         ${this.hass.localize(
@@ -320,12 +319,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
       >
         ${this.narrow
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   .filter=${this._filter}
                   class="header"
                   no-label-float
@@ -341,6 +341,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           : html`
               <div class="search">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   .filter=${this._filter}
@@ -424,6 +425,34 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .deviceRegistryEntries=${this._deviceRegistryEntries}
                   ></ha-integration-card>`
               )
+            : this._filter &&
+              !configEntriesInProgress.length &&
+              !groupedConfigEntries.size &&
+              this._configEntries.length
+            ? html`
+                <div class="empty-message">
+                  <h1>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found"
+                    )}
+                  </h1>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found_detail"
+                    )}
+                  </p>
+                  <mwc-button
+                    @click=${this._createFlow}
+                    unelevated
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.add_integration"
+                    )}
+                  ></mwc-button>
+                </div>
+              `
+            : // If we have a filter, never show a card
+            this._filter
+            ? ""
             : // If we're showing 0 cards, show empty state text
             (!this._showIgnored || ignoredConfigEntries.length === 0) &&
               (!this._showDisabled || disabledConfigEntries.size === 0) &&
@@ -445,25 +474,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       "ui.panel.config.integrations.add_integration"
                     )}
                   ></mwc-button>
-                </div>
-              `
-            : ""}
-          ${this._filter &&
-          !configEntriesInProgress.length &&
-          !groupedConfigEntries.size &&
-          this._configEntries.length
-            ? html`
-                <div class="empty-message">
-                  <h1>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found"
-                    )}
-                  </h1>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.none_found_detail"
-                    )}
-                  </p>
                 </div>
               `
             : ""}
@@ -561,6 +571,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _createFlow() {
     showConfigFlowDialog(this, {
+      searchQuery: this._filter,
       dialogClosedCallback: () => {
         this._handleFlowUpdated();
       },
@@ -689,9 +700,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 2px 2px 2px 8px;
           margin-left: 4px;
           font-size: 14px;
-        }
-        .active-filters ha-icon {
-          color: var(--primary-color);
         }
         .active-filters mwc-button {
           margin-left: 8px;

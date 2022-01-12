@@ -24,7 +24,7 @@ class HaMarkdownElement extends ReactiveElement {
 
   private async _render() {
     this.innerHTML = await renderMarkdown(
-      this.content,
+      String(this.content),
       {
         breaks: this.breaks,
         gfm: true,
@@ -38,9 +38,8 @@ class HaMarkdownElement extends ReactiveElement {
 
     const walker = document.createTreeWalker(
       this,
-      1 /* SHOW_ELEMENT */,
-      null,
-      false
+      NodeFilter.SHOW_ELEMENT,
+      null
     );
 
     while (walker.nextNode()) {

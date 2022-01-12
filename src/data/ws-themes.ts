@@ -23,6 +23,8 @@ export interface Themes {
   // in theme picker, this property will still contain either true or false based on
   // what has been determined via system preferences and support from the selected theme.
   darkMode: boolean;
+  // Currently globally active theme name
+  theme: string;
 }
 
 const fetchThemes = (conn) =>

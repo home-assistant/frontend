@@ -76,7 +76,7 @@ export class HuiViewVisibilityEditor extends LitElement {
             ></ha-user-badge>
             <paper-item-body>${user.name}</paper-item-body>
             <ha-switch
-              .userId="${user.id}"
+              .userId=${user.id}
               @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>

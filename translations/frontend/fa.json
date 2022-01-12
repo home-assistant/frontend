@@ -16,6 +16,7 @@
         "calendar": "تقویم",
         "config": "پیکربندی",
         "developer_tools": "ابزارهای توسعه",
+        "energy": "انرژی",
         "history": "تاریخچه",
         "logbook": "گزارش روزانه",
         "mailbox": "صندوق پستی",
@@ -41,12 +42,12 @@
                 "on": "روشن"
             },
             "hvac_action": {
-                "cooling": "Racire",
-                "drying": "Uscare",
-                "fan": "Ventilator",
-                "heating": "Incalzire",
+                "cooling": "خنک کننده",
+                "drying": "خشك كردن",
+                "fan": "فن",
+                "heating": "گرمایش",
                 "idle": "بیکار",
-                "off": "Oprit"
+                "off": "خاموش"
             },
             "preset_mode": {
                 "activity": "فعالیت",
@@ -124,6 +125,12 @@
         },
         "common": {
             "close": "بستن"
+        },
+        "system": {
+            "supervisor": {
+                "join_beta_action": "پیوستن به کانال بتا",
+                "leave_beta_action": "خروج از کانال بتا"
+            }
         }
     },
     "ui": {
@@ -340,7 +347,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "در حال بارگیری تاریخ وضعیت...",
+                "loading_history": "در حال بارگیری تاریخ وضعیت…",
                 "no_history_found": "هیچ تاریخ وضعیتی پیدا نشد."
             },
             "media-browser": {
@@ -541,7 +548,7 @@
             "title": "اعلانها"
         },
         "notification_toast": {
-            "connection_lost": "ارتباط از دست رفته است. اتصال مجدد...",
+            "connection_lost": "ارتباط از دست رفته است. اتصال مجدد…",
             "service_call_failed": "تماس با سرویس {service} ناموفق بود"
         },
         "panel": {
@@ -567,6 +574,7 @@
                         "create_area": "ایجاد منطقه",
                         "header": "مناطق",
                         "integrations_page": "صفحه ادغام",
+                        "introduction": "مناطق برای سازماندهی مکان دستگاه ها استفاده می شود. این اطلاعات در سراسر Home Assistant برای کمک به شما در سازماندهی رابط ، مجوزها و ادغام با سایر سیستم ها مورد استفاده قرار می گیرد.",
                         "no_areas": "به نظر می رسد شما هنوز هیچ منطقه ای ندارید!"
                     }
                 },
@@ -718,7 +726,8 @@
                                         "above": "بالا",
                                         "below": "زیر",
                                         "for": "مدت زمان"
-                                    }
+                                    },
+                                    "trigger": "ماشه"
                                 },
                                 "event": {
                                     "event_data": "داده های رویداد",
@@ -824,6 +833,7 @@
                     "add": {
                         "community_forums": "انجمن ها",
                         "file_name": "مسیر Blueprint",
+                        "import_header": "طرح '' {name} ''",
                         "import_introduction_link": "شما می توانید طرح های دیگر کاربران را از Github و {community_link}وارد کنید. آدرس طرح blueprint را در پایین وارد کنید.",
                         "raw_blueprint": "محتوای Blueprint",
                         "unsupported_blueprint": "این طرح پشتیبانی نمی شود"
@@ -845,6 +855,9 @@
                             "title": "الکسا"
                         },
                         "connected": "متصل",
+                        "google": {
+                            "not_configured_title": "Google Assistant فعال نیست"
+                        },
                         "integrations": "ادغام ها",
                         "integrations_introduction2": "بررسی وب سایت برای ",
                         "integrations_link_all_features": "تمام ویژگی های موجود",
@@ -861,7 +874,7 @@
                             "try": "تلاش كردن"
                         },
                         "webhooks": {
-                            "loading": "بارگذاری ...",
+                            "loading": "بارگذاری…",
                             "manage": "مدیریت"
                         }
                     },
@@ -970,7 +983,8 @@
                     "description": "نهادهای خود را سفارشی کنید",
                     "pick_attribute": "Alege un atribut pentru a trece peste acesta",
                     "picker": {
-                        "header": "سفارشی سازی ها"
+                        "header": "سفارشی سازی ها",
+                        "introduction": "نویسه ویژگی های هر سازمانی. سفارشی سازی اضافه شده / ویرایش شده فورا اثر می کند. سفارشی های حذف شده هنگامی که موجودیت به روز می شود اثر می کند."
                     },
                     "warning": {
                         "include_link": "Include customize.yaml"
@@ -979,11 +993,11 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "وقتی چیزی تحریک می شود ..."
+                            "caption": "وقتی چیزی تحریک می شود…"
                         },
                         "automations": "Automatizari",
                         "conditions": {
-                            "caption": "فقط کاری کن اگر ..."
+                            "caption": "فقط کاری کن اگر…"
                         },
                         "create": "Creaza automatizare cu acest dispozitiv",
                         "create_disable": "نمی توان اتوماسیون را با دستگاه غیر فعال ایجاد کرد",
@@ -1054,8 +1068,35 @@
                     "update": "Actualizeaza"
                 },
                 "energy": {
+                    "battery": {
+                        "learn_more": "اطلاعات بیشتر در مورد چگونگی شروع."
+                    },
                     "device_consumption": {
                         "selected_stat": "ردیابی انرژی برای"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_entity_input": "نهاد با قیمت فعلی به ازای هر {واحد}",
+                            "cost_number_input": "قیمت هر {واحد}",
+                            "header": "پیکربندی مصرف گاز"
+                        },
+                        "learn_more": "اطلاعات بیشتر در مورد چگونگی شروع.",
+                        "title": "مصرف گاز"
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "to": {
+                                "cost_entity_input": "واحد با نرخ فعلی"
+                            }
+                        }
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "واحدهای زیر واحد اندازه گیری مورد انتظار \"\" {currency} /kWh \"\" ، \"\" {currency} /Wh \"\" ، \" {currency} /m³\" یا \" {currency} /ft³\" \"را ندارند :",
+                                "title": "واحد اندازه گیری غیر منتظره"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -1144,11 +1185,11 @@
                         },
                         "finish": "Termina",
                         "not_all_required_fields": "Nu toate campurile necesare sunt completate",
-                        "submit": "Trimite"
+                        "submit": "ارسال"
                     },
                     "configure": "پیکربندی",
                     "configured": "پیکربندی شده",
-                    "description": "مدیریت یکپارچه سازی با خدمات، دستگاه ها، ...",
+                    "description": "مدیریت یکپارچه سازی با خدمات، دستگاه ها، …",
                     "discovered": "کشف شده",
                     "ignore": {
                         "ignore": "Ignora",
@@ -1280,7 +1321,7 @@
                         "update": "Actualizeaza"
                     },
                     "introduction": "Aici poti defini fiecare persoana de interes in Home Assistant",
-                    "no_persons_created_yet": "Se pare ca nu ai creat nicio persoana deocamdata"
+                    "no_persons_created_yet": "به نظر می رسد شما هنوز هیچ فردی را ایجاد نکرده اید."
                 },
                 "scene": {
                     "caption": "Scene",
@@ -1406,7 +1447,7 @@
                     "add_device": "افزودن دستگاه",
                     "add_device_page": {
                         "search_again": "جستجوی مجدد",
-                        "spinner": "جستجو برای دستگاه های ZHY Zigbee ..."
+                        "spinner": "جستجو برای دستگاه های ZHY Zigbee…"
                     },
                     "common": {
                         "value": "مقدار"
@@ -1469,7 +1510,7 @@
                     },
                     "network_status": {
                         "network_started": "شبکه Z-Wave شروع شد",
-                        "network_starting": "شروع شبکه Z-Wave ...",
+                        "network_starting": "شروع شبکه Z-Wave …",
                         "network_starting_note": "این کار بسته به اندازه شبکه شما ممکن است مدتی طول بکشد.",
                         "network_stopped": "شبکه Z-Wave متوقف شد"
                     },
@@ -1484,7 +1525,8 @@
                         "true": "صحیح"
                     },
                     "node_management": {
-                        "group": "گروه"
+                        "group": "گروه",
+                        "nodes": "گره ها"
                     },
                     "services": {
                         "add_node": "Adauga Nod",
@@ -1499,6 +1541,16 @@
                     }
                 },
                 "zwave_js": {
+                    "add_node": {
+                        "security_classes": {
+                            "S2_AccessControl": {
+                                "description": "مثال: قفل درها و درهای گاراژ"
+                            },
+                            "S2_Unauthenticated": {
+                                "title": "S2 غیر مجاز"
+                            }
+                        }
+                    },
                     "heal_node": {
                         "start_heal": "تعمیر دستگاه",
                         "title": " یک دستگاه  Z-Wave را تعمیر کنید"
@@ -1524,7 +1576,7 @@
                     "states": {
                         "attributes": "Atribute",
                         "current_entities": "Entitati curente",
-                        "description2": "Acesta nu va comunica cu dispozitivul",
+                        "description2": "اگر نهاد متعلق به یک دستگاه باشد، هیچ ارتباط واقعی با آن دستگاه وجود نخواهد داشت.",
                         "entity": "Entitate",
                         "filter_attributes": "Filtreaza atributele",
                         "filter_entities": "Filtreaza entitatile",
@@ -1536,6 +1588,18 @@
                         "state": "Stare",
                         "state_attributes": "Stare atribute *(YAML, optional)",
                         "title": "وضعیت"
+                    },
+                    "statistics": {
+                        "fix_issue": {
+                            "fix": "رفع مشکل"
+                        },
+                        "issues": {
+                            "entity_not_recorded": "این نهاد از ثبت نام مستثنی است.",
+                            "unsupported_state_class": "کلاس حالت '' {state_class} '' این نهاد پشتیبانی نمی شود.",
+                            "unsupported_unit_metadata": "واحد ( '' {metadata_unit} '') از آمار ثبت کند واحد پشتیبانی '' مطابقت ندارد {supported_unit} '' از کلاس دستگاه '' {device_class} ''.",
+                            "unsupported_unit_state": "واحد ('{state_unit}') این نهاد با واحدی از کلاس دستگاه ''{device_class}' مطابقت ندارد."
+                        },
+                        "no_issue": "مسئله ای نیست"
                     },
                     "templates": {
                         "title": "قالب"
@@ -1826,6 +1890,7 @@
                 "abort_intro": "ورود به سیستم لغو شد",
                 "authorizing_client": "شما در حال دادن دسترسی به {clientId} به Home Assistant هستید.",
                 "form": {
+                    "next": "ورود",
                     "providers": {
                         "command_line": {
                             "abort": {

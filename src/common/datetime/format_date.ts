@@ -1,13 +1,15 @@
-import { format } from "fecha";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { toLocaleDateStringSupportsOptions } from "./check_options_support";
+import { polyfillsLoaded } from "../translations/localize";
+
+if (__BUILD__ === "latest" && polyfillsLoaded) {
+  await polyfillsLoaded;
+}
 
 // Tuesday, August 10
-export const formatDateWeekday = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateWeekdayMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "dddd, MMMM D");
+export const formatDateWeekday = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateWeekdayMem(locale).format(dateObj);
+
 const formatDateWeekdayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -18,10 +20,9 @@ const formatDateWeekdayMem = memoizeOne(
 );
 
 // August 10, 2021
-export const formatDate = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY");
+export const formatDate = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateMem(locale).format(dateObj);
+
 const formatDateMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -32,10 +33,9 @@ const formatDateMem = memoizeOne(
 );
 
 // 10/08/2021
-export const formatDateNumeric = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateNumericMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "M/D/YYYY");
+export const formatDateNumeric = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateNumericMem(locale).format(dateObj);
+
 const formatDateNumericMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -46,10 +46,9 @@ const formatDateNumericMem = memoizeOne(
 );
 
 // Aug 10
-export const formatDateShort = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateShortMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "MMM D");
+export const formatDateShort = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateShortMem(locale).format(dateObj);
+
 const formatDateShortMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -59,10 +58,11 @@ const formatDateShortMem = memoizeOne(
 );
 
 // August 2021
-export const formatDateMonthYear = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateMonthYearMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "MMMM YYYY");
+export const formatDateMonthYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateMonthYearMem(locale).format(dateObj);
+
 const formatDateMonthYearMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -72,10 +72,9 @@ const formatDateMonthYearMem = memoizeOne(
 );
 
 // August
-export const formatDateMonth = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateMonthMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "MMMM");
+export const formatDateMonth = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateMonthMem(locale).format(dateObj);
+
 const formatDateMonthMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -84,10 +83,9 @@ const formatDateMonthMem = memoizeOne(
 );
 
 // 2021
-export const formatDateYear = toLocaleDateStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateYearMem(locale).format(dateObj)
-  : (dateObj: Date) => format(dateObj, "YYYY");
+export const formatDateYear = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateYearMem(locale).format(dateObj);
+
 const formatDateYearMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {

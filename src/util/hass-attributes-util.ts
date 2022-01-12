@@ -3,6 +3,7 @@ import { until } from "lit/directives/until";
 import checkValidDate from "../common/datetime/check_valid_date";
 import { formatDate } from "../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
 import { HomeAssistant } from "../types";
@@ -13,6 +14,7 @@ const hassAttributeUtil = {
   DOMAIN_DEVICE_CLASS: {
     binary_sensor: [
       "battery",
+      "carbon_monoxide",
       "cold",
       "connectivity",
       "door",
@@ -30,12 +32,15 @@ const hassAttributeUtil = {
       "power",
       "presence",
       "problem",
+      "running",
       "safety",
       "smoke",
       "sound",
+      "tamper",
       "vibration",
       "window",
     ],
+    button: ["restart", "update"],
     cover: [
       "awning",
       "blind",
@@ -50,6 +55,7 @@ const hassAttributeUtil = {
     ],
     humidifier: ["dehumidifier", "humidifier"],
     sensor: [
+      "apparent_power",
       "aqi",
       "battery",
       "carbon_dioxide",
@@ -57,19 +63,21 @@ const hassAttributeUtil = {
       "current",
       "date",
       "energy",
+      "gas",
       "humidity",
       "illuminance",
+      "monetary",
       "nitrogen_dioxide",
       "nitrogen_monoxide",
       "nitrous_oxide",
       "ozone",
-      "pm25",
       "pm1",
       "pm10",
+      "pm25",
       "power",
       "power_factor",
       "pressure",
-      "monetary",
+      "reactive_power",
       "signal_strength",
       "sulphur_dioxide",
       "temperature",
@@ -124,7 +132,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = {
   },
   state_class: {
     type: "array",
-    options: { sensor: ["measurement"] },
+    options: { sensor: ["measurement", "total", "total_increasing"] },
     description: "State class",
     domains: ["sensor"],
   },
@@ -159,7 +167,7 @@ export function formatAttributeName(value: string): string {
     .replace(/\bip\b/g, "IP")
     .replace(/\bmac\b/g, "MAC")
     .replace(/\bgps\b/g, "GPS");
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return capitalizeFirstLetter(value);
 }
 
 export function formatAttributeValue(
@@ -189,7 +197,7 @@ export function formatAttributeValue(
         // If invalid URL, exception will be raised
         const url = new URL(value);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
+          return html`<a target="_blank" rel="noreferrer" href=${value}
             >${value}</a
           >`;
       } catch (_) {

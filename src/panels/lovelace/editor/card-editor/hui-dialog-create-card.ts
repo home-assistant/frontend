@@ -55,6 +55,7 @@ export class HuiCreateDialogCard
   public closeDialog(): boolean {
     this._params = undefined;
     this._currTabIndex = 0;
+    this._selectedEntities = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
   }
@@ -89,8 +90,7 @@ export class HuiCreateDialogCard
           </ha-header-bar>
           <mwc-tab-bar
             .activeIndex=${this._currTabIndex}
-            @MDCTabBar:activated=${(ev: CustomEvent) =>
-              this._handleTabChanged(ev)}
+            @MDCTabBar:activated=${this._handleTabChanged}
           >
             <mwc-tab
               .label=${this.hass!.localize(

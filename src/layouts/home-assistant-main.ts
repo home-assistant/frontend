@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
@@ -87,6 +88,7 @@ class HomeAssistantMain extends LitElement {
           <ha-sidebar
             .hass=${hass}
             .narrow=${sidebarNarrow}
+            .route=${this.route}
             .editMode=${this._sidebarEditMode}
             .alwaysExpand=${sidebarNarrow ||
             this.hass.dockedSidebar === "docked"}

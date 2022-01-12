@@ -13,8 +13,10 @@ import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
   hass: HomeAssistant,
-  entities: string[]
+  entities: string[],
+  cardTitle?: string
 ) => {
+  hass.loadFragmentTranslation("lovelace");
   const dashboards = await fetchDashboards(hass);
 
   const storageDashs = dashboards.filter(
@@ -30,6 +32,7 @@ export const addEntitiesToLovelaceView = async (
     showSuggestCardDialog(element, {
       entities,
       yaml: true,
+      cardTitle,
     });
     return;
   }
@@ -39,7 +42,7 @@ export const addEntitiesToLovelaceView = async (
   if (mainLovelaceMode === "storage") {
     try {
       lovelaceConfig = await fetchConfig(hass.connection, null, false);
-    } catch (e) {
+    } catch (err: any) {
       // default dashboard is in generated mode
     }
   }
@@ -56,7 +59,7 @@ export const addEntitiesToLovelaceView = async (
         );
         urlPath = storageDash.url_path;
         break;
-      } catch (e) {
+      } catch (err: any) {
         // dashboard is in generated mode
       }
     }
@@ -68,6 +71,7 @@ export const addEntitiesToLovelaceView = async (
       showSuggestCardDialog(element, {
         entities,
         yaml: true,
+        cardTitle,
       });
     } else {
       // all storage dashboards are generated
@@ -87,11 +91,12 @@ export const addEntitiesToLovelaceView = async (
 
   if (!storageDashs.length && lovelaceConfig.views.length === 1) {
     showSuggestCardDialog(element, {
+      cardTitle,
       lovelaceConfig: lovelaceConfig!,
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
           await saveConfig(hass!, null, newConfig);
-        } catch (e) {
+        } catch (err: any) {
           alert(
             hass.localize("ui.panel.config.devices.add_entities.saving_failed")
           );
@@ -107,9 +112,11 @@ export const addEntitiesToLovelaceView = async (
     lovelaceConfig,
     urlPath,
     allowDashboardChange: true,
+    actionLabel: hass.localize("ui.common.next"),
     dashboards,
     viewSelectedCallback: (newUrlPath, selectedDashConfig, viewIndex) => {
       showSuggestCardDialog(element, {
+        cardTitle,
         lovelaceConfig: selectedDashConfig,
         saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
           try {

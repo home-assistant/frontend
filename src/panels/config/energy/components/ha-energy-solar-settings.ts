@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import {
   EnergyInfo,
   EnergyPreferences,
@@ -65,10 +66,7 @@ export class EnergySolarSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
-                this.hass,
-                "/docs/energy/solar-panels/"
-              )}"
+              href=${documentationUrl(this.hass, "/docs/energy/solar-panels/")}
               >${this.hass.localize(
                 "ui.panel.config.energy.solar.learn_more"
               )}</a
@@ -84,7 +82,11 @@ export class EnergySolarSettings extends LitElement {
               `
           )}
 
-          <h3>Solar production</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.solar.solar_production"
+            )}
+          </h3>
           ${solarSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
             return html`
@@ -101,14 +103,16 @@ export class EnergySolarSettings extends LitElement {
                 >
                 ${this.info
                   ? html`
-                      <mwc-icon-button @click=${this._editSource}>
-                        <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                      </mwc-icon-button>
+                      <ha-icon-button
+                        @click=${this._editSource}
+                        .path=${mdiPencil}
+                      ></ha-icon-button>
                     `
                   : ""}
-                <mwc-icon-button @click=${this._deleteSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
@@ -117,7 +121,9 @@ export class EnergySolarSettings extends LitElement {
                 <div class="row border-bottom">
                   <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                   <mwc-button @click=${this._addSource}>
-                    Add solar production
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.solar.add_solar_production"
+                    )}
                   </mwc-button>
                 </div>
               `
@@ -162,7 +168,7 @@ export class EnergySolarSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
@@ -175,7 +181,7 @@ export class EnergySolarSettings extends LitElement {
           (source) => source !== sourceToDelete
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }

@@ -2,14 +2,11 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
-import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
-import {
-  DiscoveryInformation,
-  fetchDiscoveryInformation,
-} from "../data/discovery";
+import { fetchInstallationType } from "../data/onboarding";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -28,9 +25,6 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   @property() public language!: string;
 
   @property({ type: Boolean }) public restoring = false;
-
-  @property({ attribute: false })
-  public discoveryInformation?: DiscoveryInformation;
 
   protected render(): TemplateResult {
     return this.restoring
@@ -64,17 +58,11 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   private async _checkRestoreStatus(): Promise<void> {
     if (this.restoring) {
       try {
-        const response = await fetchDiscoveryInformation();
-
-        if (
-          !this.discoveryInformation ||
-          this.discoveryInformation.uuid !== response.uuid
-        ) {
-          // When the UUID changes, the restore is complete
+        await fetchInstallationType();
+      } catch (err: any) {
+        if ((err as Error).message === "unauthorized") {
           window.location.replace("/");
         }
-      } catch (err) {
-        // We fully expected issues with fetching info untill restore is complete.
       }
     }
   }

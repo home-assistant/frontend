@@ -37,8 +37,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
     try {
       assert(this.action, actionStruct);
-    } catch (error) {
-      fireEvent(this, "ui-mode-not-available", error);
+    } catch (err: any) {
+      fireEvent(this, "ui-mode-not-available", err);
       return;
     }
     if (this.action && hasTemplate(this.action)) {

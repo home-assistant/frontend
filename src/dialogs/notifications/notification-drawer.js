@@ -64,7 +64,6 @@ export class HuiNotificationDrawer extends EventsMixin(
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
         <ha-icon-button-prev hass="[[hass]]" on-click="_closeDrawer"
-          title="[[localize('ui.notification_drawer.close')]]"
           label="[[localize('ui.notification_drawer.close')]]">
         </ha-icon-button-prev>
       </app-toolbar>

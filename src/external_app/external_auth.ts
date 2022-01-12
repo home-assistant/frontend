@@ -2,7 +2,7 @@
  * Auth class that connects to a native app for authentication.
  */
 import { Auth } from "home-assistant-js-websocket";
-import { ExternalMessaging, InternalMessage } from "./external_messaging";
+import { ExternalMessaging, EMMessage } from "./external_messaging";
 
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
@@ -36,7 +36,7 @@ declare global {
           postMessage(payload: BasePayload);
         };
         externalBus: {
-          postMessage(payload: InternalMessage);
+          postMessage(payload: EMMessage);
         };
       };
     };
@@ -71,7 +71,7 @@ export class ExternalAuth extends Auth {
       try {
         await this._tokenCallbackPromise;
         return;
-      } catch (e) {
+      } catch (err: any) {
         // _tokenCallbackPromise is in a rejected state
         // Clear the _tokenCallbackPromise and go on refreshing access token
         this._tokenCallbackPromise = undefined;

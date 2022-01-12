@@ -17,7 +17,7 @@ import {
   getLocalLanguage,
   getTranslation,
   getUserLocale,
-} from "../util/hass-translation";
+} from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
@@ -376,3 +376,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
   };
+
+// Load selected translation into memory immediately so it is ready when Polymer
+// initializes.
+getTranslation(null, getLocalLanguage());

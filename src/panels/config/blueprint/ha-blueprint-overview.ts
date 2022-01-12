@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiDelete,
   mdiDownload,
@@ -22,6 +21,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
@@ -29,6 +29,7 @@ import {
   Blueprints,
   deleteBlueprint,
 } from "../../../data/blueprint";
+import { showScriptEditor } from "../../../data/script";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -52,6 +53,12 @@ const createNewFunctions = {
       use_blueprint: { path: blueprintMeta.path },
     });
   },
+  script: (blueprintMeta: BlueprintMetaDataPath) => {
+    showScriptEditor({
+      alias: blueprintMeta.name,
+      use_blueprint: { path: blueprintMeta.path },
+    });
+  },
 };
 
 @customElement("ha-blueprint-overview")
@@ -62,27 +69,38 @@ class HaBlueprintOverview extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public blueprints!: Blueprints;
+  @property({ attribute: false }) public blueprints!: Record<
+    string,
+    Blueprints
+  >;
 
-  private _processedBlueprints = memoizeOne((blueprints: Blueprints) => {
-    const result = Object.entries(blueprints).map(([path, blueprint]) => {
-      if ("error" in blueprint) {
-        return {
-          name: blueprint.error,
-          error: true,
-          path,
-        };
-      }
-      return {
-        ...blueprint.metadata,
-        error: false,
-        path,
-      };
-    });
-    return result;
-  });
+  private _processedBlueprints = memoizeOne(
+    (blueprints: Record<string, Blueprints>) => {
+      const result: any[] = [];
+      Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
+        Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
+          if ("error" in blueprint) {
+            result.push({
+              name: blueprint.error,
+              type,
+              error: true,
+              path,
+            });
+          } else {
+            result.push({
+              ...blueprint.metadata,
+              type,
+              error: false,
+              path,
+            });
+          }
+        })
+      );
+      return result;
+    }
+  );
 
   private _columns = memoizeOne(
     (narrow, _language): DataTableColumnContainer => ({
@@ -102,6 +120,20 @@ class HaBlueprintOverview extends LitElement {
               `
           : undefined,
       },
+      type: {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.headers.type"
+        ),
+        template: (type: string) =>
+          html`${this.hass.localize(
+            `ui.panel.config.blueprint.overview.types.${type}`
+          )}`,
+        sortable: true,
+        filterable: true,
+        hidden: narrow,
+        direction: "asc",
+        width: "10%",
+      },
       path: {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.file_name"
@@ -114,29 +146,27 @@ class HaBlueprintOverview extends LitElement {
       },
       create: {
         title: "",
+        width: narrow ? undefined : "20%",
         type: narrow ? "icon-button" : undefined,
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
             : narrow
-            ? html`<mwc-icon-button
+            ? html`<ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
+                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
                 )}
-                title=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
-                )}
-                @click=${(ev) => this._createNew(ev)}
+                @click=${this._createNew}
+                .path=${mdiRobot}
               >
-                <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
-              </mwc-icon-button>`
+              </ha-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
-                @click=${(ev) => this._createNew(ev)}
+                @click=${this._createNew}
               >
                 ${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
+                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
                 )}
               </mwc-button>`,
       },
@@ -146,7 +176,7 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html`<mwc-icon-button
+            : html`<ha-icon-button
                 .blueprint=${blueprint}
                 .disabled=${!blueprint.source_url}
                 .label=${this.hass.localize(
@@ -154,9 +184,9 @@ class HaBlueprintOverview extends LitElement {
                     ? "ui.panel.config.blueprint.overview.share_blueprint"
                     : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
                 )}
-                @click=${(ev) => this._share(ev)}
-                ><ha-svg-icon .path=${mdiShareVariant}></ha-svg-icon
-              ></mwc-icon-button>`,
+                .path=${mdiShareVariant}
+                @click=${this._share}
+              ></ha-icon-button>`,
       },
       delete: {
         title: "",
@@ -164,14 +194,14 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html` <mwc-icon-button
+            : html` <ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
                   "ui.panel.config.blueprint.overview.delete_blueprint"
                 )}
-                @click=${(ev) => this._delete(ev)}
-                ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-              ></mwc-icon-button>`,
+                .path=${mdiDelete}
+                @click=${this._delete}
+              ></ha-icon-button>`,
       },
     })
   );
@@ -194,7 +224,7 @@ class HaBlueprintOverview extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.blueprints}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._processedBlueprints(this.blueprints)}
         id="entity_id"
@@ -220,9 +250,12 @@ class HaBlueprintOverview extends LitElement {
           </a>
         </div>`}
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -244,10 +277,10 @@ class HaBlueprintOverview extends LitElement {
         ${this.hass.localize("ui.panel.config.blueprint.overview.introduction")}
         <p>
           <a
-            href="${documentationUrl(
+            href=${documentationUrl(
               this.hass,
               "/docs/automation/using_blueprints/"
-            )}"
+            )}
             target="_blank"
             rel="noreferrer"
           >
@@ -275,12 +308,12 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
-  private _createNew(ev) {
+  private _createNew = (ev) => {
     const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
     createNewFunctions[blueprint.domain](blueprint);
-  }
+  };
 
-  private _share(ev) {
+  private _share = (ev) => {
     const blueprint = ev.currentTarget.blueprint;
     const params = new URLSearchParams();
     params.append("redirect", "blueprint_import");
@@ -288,9 +321,9 @@ class HaBlueprintOverview extends LitElement {
     window.open(
       `https://my.home-assistant.io/create-link/?${params.toString()}`
     );
-  }
+  };
 
-  private async _delete(ev) {
+  private _delete = async (ev) => {
     const blueprint = ev.currentTarget.blueprint;
     if (
       !(await showConfirmationDialog(this, {
@@ -306,7 +339,7 @@ class HaBlueprintOverview extends LitElement {
     }
     await deleteBlueprint(this.hass, blueprint.domain, blueprint.path);
     fireEvent(this, "reload-blueprints");
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return haStyle;

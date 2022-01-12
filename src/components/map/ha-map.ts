@@ -412,7 +412,9 @@ export class HaMap extends ReactiveElement {
               <ha-entity-marker
                 entity-id="${getEntityId(entity)}"
                 entity-name="${entityName}"
-                entity-picture="${entityPicture || ""}"
+                entity-picture="${
+                  entityPicture ? this.hass.hassUrl(entityPicture) : ""
+                }"
                 ${
                   typeof entity !== "string"
                     ? `entity-color="${entity.color}"`
@@ -484,6 +486,7 @@ export class HaMap extends ReactiveElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        color: var(--primary-text-color);
       }
     `;
   }

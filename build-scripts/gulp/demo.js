@@ -20,7 +20,12 @@ gulp.task(
     },
     "clean-demo",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "gen-index-demo-dev", "build-translations"),
+    gulp.parallel(
+      "gen-icons-json",
+      "gen-index-demo-dev",
+      "build-translations",
+      "build-locale-data"
+    ),
     "copy-static-demo",
     env.useRollup() ? "rollup-dev-server-demo" : "webpack-dev-server-demo"
   )
@@ -35,7 +40,7 @@ gulp.task(
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
     env.useRollup() ? "rollup-prod-demo" : "webpack-prod-demo",
     "gen-index-demo-prod"

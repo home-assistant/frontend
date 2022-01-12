@@ -50,7 +50,7 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <mwc-button
-          @click="${this._callService}"
+          @click=${this._callService}
           .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
           class="text-content"
         >

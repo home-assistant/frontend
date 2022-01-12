@@ -1,20 +1,18 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-circular-progress";
 import type { AutomationConfig } from "../../../../data/automation";
 import { convertThingTalk } from "../../../../data/cloud";
-import type { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-thingtalk-placeholders";
 import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 import type { ThingtalkDialogParams } from "./show-dialog-thingtalk";
+import "../../../../components/ha-dialog";
 
 export interface Placeholder {
   name: string;
@@ -38,8 +36,6 @@ class DialogThingtalk extends LitElement {
 
   @state() private _submitting = false;
 
-  @state() private _opened = false;
-
   @state() private _placeholders?: PlaceholderContainer;
 
   @query("#input") private _input?: PaperInputElement;
@@ -51,7 +47,6 @@ class DialogThingtalk extends LitElement {
   public async showDialog(params: ThingtalkDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._opened = true;
     if (params.input) {
       this._value = params.input;
       await this.updateComplete;
@@ -61,11 +56,18 @@ class DialogThingtalk extends LitElement {
 
   public closeDialog() {
     this._placeholders = undefined;
+    this._params = undefined;
     if (this._input) {
       this._input.value = null;
     }
-    this._opened = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  public closeInitDialog() {
+    if (this._placeholders) {
+      return;
+    }
+    this.closeDialog();
   }
 
   protected render(): TemplateResult {
@@ -77,26 +79,22 @@ class DialogThingtalk extends LitElement {
         <ha-thingtalk-placeholders
           .hass=${this.hass}
           .placeholders=${this._placeholders}
-          .opened=${this._opened}
-          .skip=${() => this._skip()}
-          @opened-changed=${this._openedChanged}
+          .skip=${this._skip}
+          @closed=${this.closeDialog}
           @placeholders-filled=${this._handlePlaceholders}
         >
         </ha-thingtalk-placeholders>
       `;
     }
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        .opened=${this._opened}
-        @opened-changed=${this._openedChanged}
+      <ha-dialog
+        open
+        @closed=${this.closeInitDialog}
+        .heading=${this.hass.localize(
+          `ui.panel.config.automation.thingtalk.task_selection.header`
+        )}
       >
-        <h2>
-          ${this.hass.localize(
-            `ui.panel.config.automation.thingtalk.task_selection.header`
-          )}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this.hass.localize(
             `ui.panel.config.automation.thingtalk.task_selection.introduction`
@@ -143,23 +141,25 @@ class DialogThingtalk extends LitElement {
             class="attribution"
             >Powered by Almond</a
           >
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button class="left" @click="${this._skip}">
-            ${this.hass.localize(`ui.common.skip`)}
-          </mwc-button>
-          <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
-            ${this._submitting
-              ? html`<ha-circular-progress
-                  active
-                  size="small"
-                  title="Creating your automation..."
-                ></ha-circular-progress>`
-              : ""}
-            ${this.hass.localize(`ui.panel.config.automation.thingtalk.create`)}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        <mwc-button class="left" @click=${this._skip} slot="secondaryAction">
+          ${this.hass.localize(`ui.common.skip`)}
+        </mwc-button>
+        <mwc-button
+          @click=${this._generate}
+          .disabled=${this._submitting}
+          slot="primaryAction"
+        >
+          ${this._submitting
+            ? html`<ha-circular-progress
+                active
+                size="small"
+                title="Creating your automation..."
+              ></ha-circular-progress>`
+            : ""}
+          ${this.hass.localize(`ui.panel.config.automation.thingtalk.create`)}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -178,7 +178,7 @@ class DialogThingtalk extends LitElement {
       const result = await convertThingTalk(this.hass, this._value);
       config = result.config;
       placeholders = result.placeholders;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
       this._submitting = false;
       return;
@@ -229,16 +229,10 @@ class DialogThingtalk extends LitElement {
     this.closeDialog();
   }
 
-  private _skip() {
+  private _skip = () => {
     this._params!.callback(undefined);
     this.closeDialog();
-  }
-
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!ev.detail.value) {
-      this.closeDialog();
-    }
-  }
+  };
 
   private _handleKeyUp(ev: KeyboardEvent) {
     if (ev.keyCode === 13) {
@@ -255,7 +249,7 @@ class DialogThingtalk extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-paper-dialog {
+        ha-dialog {
           max-width: 500px;
         }
         mwc-button.left {

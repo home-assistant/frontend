@@ -54,7 +54,9 @@ class HuiEnergySolarGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -77,11 +79,11 @@ class HuiEnergySolarGaugeCard
     let value: number | undefined;
 
     if (productionReturnedToGrid !== null && totalSolarProduction) {
-      const cosumedSolar = Math.max(
+      const consumedSolar = Math.max(
         0,
         totalSolarProduction - productionReturnedToGrid
       );
-      value = (cosumedSolar / totalSolarProduction) * 100;
+      value = (consumedSolar / totalSolarProduction) * 100;
     }
 
     return html`
@@ -91,12 +93,13 @@ class HuiEnergySolarGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents how much of the solar energy was used by
-                  your home and was not returned to the grid.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                  )}
                   <br /><br />
-                  If you frequently produce more than you consume, try to
-                  conserve this energy by installing a battery or buying an
-                  electric car to charge.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                  )}
                 </span>
               </paper-tooltip>
               <ha-gauge
@@ -109,11 +112,19 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Self consumed solar energy</div>
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
+                )}
+              </div>
             `
           : totalSolarProduction === 0
-          ? "You have not produced any solar energy"
-          : "Self consumed solar energy couldn't be calculated"}
+          ? this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
+            )
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+            )}
       </ha-card>
     `;
   }

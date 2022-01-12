@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-icon";
 import { HomeAssistant } from "../../../../types";
 import { PlantStatusCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
@@ -64,10 +63,10 @@ export class HuiPlantStatusCardEditor
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
@@ -76,15 +75,15 @@ export class HuiPlantStatusCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._name}
+          .configValue=${"name"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

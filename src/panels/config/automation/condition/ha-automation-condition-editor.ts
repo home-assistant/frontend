@@ -1,11 +1,12 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import "@material/mwc-select";
+import type { Select } from "@material/mwc-select";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
 import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
@@ -45,6 +46,19 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property() public yamlMode = false;
 
+  private _processedTypes = memoizeOne(
+    (localize: LocalizeFunc): [string, string][] =>
+      OPTIONS.map(
+        (condition) =>
+          [
+            condition,
+            localize(
+              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+            ),
+          ] as [string, string]
+      ).sort((a, b) => stringCompare(a[1], b[1]))
+  );
+
   protected render() {
     const selected = OPTIONS.indexOf(this.condition.condition);
     const yamlMode = this.yamlMode || selected === -1;
@@ -71,28 +85,21 @@ export default class HaAutomationConditionEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <paper-dropdown-menu-light
+            <mwc-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
-              no-animations
+              .value=${this.condition.condition}
+              naturalMenuWidth
+              @selected=${this._typeChanged}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${selected}
-                @iron-select=${this._typeChanged}
-              >
-                ${OPTIONS.map(
-                  (opt) => html`
-                    <paper-item .condition=${opt}>
-                      ${this.hass.localize(
-                        `ui.panel.config.automation.editor.conditions.type.${opt}.label`
-                      )}
-                    </paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu-light>
+              ${this._processedTypes(this.hass.localize).map(
+                ([opt, label]) => html`
+                  <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+                `
+              )}
+            </mwc-select>
+
             <div>
               ${dynamicElement(
                 `ha-automation-condition-${this.condition.condition}`,
@@ -104,14 +111,17 @@ export default class HaAutomationConditionEditor extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.condition;
+    const type = (ev.target as Select).value;
 
     if (!type) {
       return;
     }
 
-    const elClass = customElements.get(`ha-automation-condition-${type}`);
+    const elClass = customElements.get(
+      `ha-automation-condition-${type}`
+    ) as CustomElementConstructor & {
+      defaultConfig: Omit<Condition, "condition">;
+    };
 
     if (type !== this.condition.condition) {
       fireEvent(this, "value-changed", {
@@ -128,7 +138,8 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value });
+    // @ts-ignore
+    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
   }
 
   static get styles(): CSSResultGroup {

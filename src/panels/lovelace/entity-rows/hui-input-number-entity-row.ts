@@ -87,12 +87,12 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                 <ha-slider
                   .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                   .dir=${computeRTLDirection(this.hass)}
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   pin
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   ignore-bar-touch
                   id="input"
                 ></ha-slider>
@@ -113,12 +113,12 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   auto-validate
                   .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                   pattern="[0-9]+([\\.][0-9]+)?"
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   type="number"
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   id="input"
                 ></paper-input>
                 ${stateObj.attributes.unit_of_measurement}
@@ -132,7 +132,6 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     return css`
       :host {
         display: block;
-        cursor: pointer;
       }
       .flex {
         display: flex;

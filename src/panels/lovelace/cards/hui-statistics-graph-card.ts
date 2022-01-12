@@ -78,7 +78,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
 
     const configEntities = config.entities
-      ? processConfigEntities(config.entities)
+      ? processConfigEntities(config.entities, false)
       : [];
 
     this._entities = [];
@@ -117,7 +117,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     if (
       oldConfig?.entities !== this._config.entities ||
-      oldConfig?.days_to_show !== this._config.days_to_show
+      oldConfig?.days_to_show !== this._config.days_to_show ||
+      oldConfig?.period !== this._config.period
     ) {
       this._getStatistics();
       // statistics are created every hour
@@ -135,7 +136,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -169,7 +170,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this.hass!,
         startDate,
         undefined,
-        this._entities
+        this._entities,
+        this._config!.period
       );
     } finally {
       this._fetching = false;

@@ -1,11 +1,10 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiAbTesting,
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
   mdiCheckboxBlankOutline,
-  mdiCheckBoxOutline,
+  mdiCheckboxMarkedOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiChevronUp,
@@ -39,11 +38,11 @@ import {
   ConditionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import "../ha-svg-icon";
+import "../ha-icon-button";
+import "./hat-graph-branch";
+import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 import "./hat-graph-node";
 import "./hat-graph-spacer";
-import "./hat-graph-branch";
-import { NODE_SIZE, SPACING, BRANCH_HEIGHT } from "./hat-graph-const";
 
 export interface NodeInfo {
   path: string;
@@ -167,27 +166,31 @@ export class HatScriptGraph extends LitElement {
                 <div class="graph-container" ?track=${track_this}>
                   <hat-graph-node
                     .iconPath=${!trace || track_this
-                      ? mdiCheckBoxOutline
+                      ? mdiCheckboxMarkedOutline
                       : mdiCheckboxBlankOutline}
                     @focus=${this.selectNode(config, branch_path)}
                     ?track=${track_this}
                     ?active=${this.selected === branch_path}
                   ></hat-graph-node>
-                  ${ensureArray(branch.sequence).map((action, j) =>
-                    this.render_action_node(
-                      action,
-                      `${branch_path}/sequence/${j}`
-                    )
-                  )}
+                  ${branch.sequence !== null
+                    ? ensureArray(branch.sequence).map((action, j) =>
+                        this.render_action_node(
+                          action,
+                          `${branch_path}/sequence/${j}`
+                        )
+                      )
+                    : ""}
                 </div>
               `;
             })
           : ""}
         <div ?track=${track_default}>
           <hat-graph-spacer ?track=${track_default}></hat-graph-spacer>
-          ${ensureArray(config.default)?.map((action, i) =>
-            this.render_action_node(action, `${path}/default/${i}`)
-          )}
+          ${config.default !== null
+            ? ensureArray(config.default)?.map((action, i) =>
+                this.render_action_node(action, `${path}/default/${i}`)
+              )
+            : ""}
         </div>
       </hat-graph-branch>
     `;
@@ -434,22 +437,20 @@ export class HatScriptGraph extends LitElement {
             : ""}
         </div>
         <div class="actions">
-          <mwc-icon-button
+          <ha-icon-button
             .disabled=${paths.length === 0 || paths[0] === this.selected}
             @click=${this._previousTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-icon-button
+            .path=${mdiChevronUp}
+          ></ha-icon-button>
+          <ha-icon-button
             .disabled=${paths.length === 0 ||
             paths[paths.length - 1] === this.selected}
             @click=${this._nextTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiChevronDown}
+          ></ha-icon-button>
         </div>
       `;
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) {
         // eslint-disable-next-line no-console
         console.log("Error creating script graph:", err);

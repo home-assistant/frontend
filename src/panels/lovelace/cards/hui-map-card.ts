@@ -17,7 +17,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
-import "../../../components/map/ha-entity-marker";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
@@ -137,13 +136,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(this._config, this._history)}
             .darkMode=${this._config.dark_mode}
           ></ha-map>
-          <mwc-icon-button
+          <ha-icon-button
+            .label=${this.hass!.localize(
+              "ui.panel.lovelace.cards.map.reset_focus"
+            )}
+            .path=${mdiImageFilterCenterFocus}
             @click=${this._fitMap}
             tabindex="0"
-            title="Reset focus"
-          >
-            <ha-svg-icon .path=${mdiImageFilterCenterFocus}></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
         </div>
       </ha-card>
     `;
@@ -365,7 +365,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         background: inherit;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         position: absolute;
         top: 75px;
         left: 3px;

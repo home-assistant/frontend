@@ -17,6 +17,8 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -34,6 +36,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -169,7 +172,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
-      const filterDomains: string[] = [];
+      let filterConfigEntry: ConfigEntry | undefined;
 
       filters.forEach((value, key) => {
         if (key === "config_entry") {
@@ -177,10 +180,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             device.config_entries.includes(value)
           );
           startLength = outputDevices.length;
-          const configEntry = entries.find((entry) => entry.entry_id === value);
-          if (configEntry) {
-            filterDomains.push(configEntry.domain);
-          }
+          filterConfigEntry = entries.find((entry) => entry.entry_id === value);
         }
       });
 
@@ -219,7 +219,10 @@ export class HaConfigDeviceDashboard extends LitElement {
       }));
 
       this._numHiddenDevices = startLength - outputDevices.length;
-      return { devicesOutput: outputDevices, filteredDomains: filterDomains };
+      return {
+        devicesOutput: outputDevices,
+        filteredConfigEntry: filterConfigEntry,
+      };
     }
   );
 
@@ -351,16 +354,16 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const { devicesOutput, filteredDomains } = this._devicesAndFilterDomains(
-      this.devices,
-      this.entries,
-      this.entities,
-      this.areas,
-      this._searchParms,
-      this._showDisabled,
-      this.hass.localize
-    );
-    const includeZHAFab = filteredDomains.includes("zha");
+    const { devicesOutput, filteredConfigEntry } =
+      this._devicesAndFilterDomains(
+        this.devices,
+        this.entries,
+        this.entities,
+        this.areas,
+        this._searchParms,
+        this._showDisabled,
+        this.hass.localize
+      );
     const activeFilters = this._activeFilters(
       this.entries,
       this._searchParms,
@@ -374,7 +377,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config"}
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenDevices}
@@ -393,9 +396,25 @@ export class HaConfigDeviceDashboard extends LitElement {
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
         clickable
-        .hasFab=${includeZHAFab}
+        .hasFab=${filteredConfigEntry &&
+        (filteredConfigEntry.domain === "zha" ||
+          filteredConfigEntry.domain === "zwave_js")}
       >
-        ${includeZHAFab
+        ${!filteredConfigEntry
+          ? ""
+          : filteredConfigEntry.domain === "zwave_js"
+          ? html`
+              <ha-fab
+                slot="fab"
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+                @click=${this._showZJSAddDeviceDialog}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : filteredConfigEntry.domain === "zha"
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
                 .label=${this.hass.localize("ui.panel.config.zha.add_device")}
@@ -407,19 +426,15 @@ export class HaConfigDeviceDashboard extends LitElement {
             </a>`
           : html``}
         <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
               "ui.panel.config.devices.picker.filter.filter"
             )}
-            .title=${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.filter"
-            )}
-          >
-            <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiFilterVariant}
+          ></ha-icon-button>
           <mwc-list-item
-            @request-selected="${this._showDisabledChanged}"
+            @request-selected=${this._showDisabledChanged}
             graphic="control"
             .selected=${this._showDisabled}
           >
@@ -482,6 +497,22 @@ export class HaConfigDeviceDashboard extends LitElement {
       navigate(window.location.pathname, { replace: true });
     }
     this._showDisabled = true;
+  }
+
+  private _showZJSAddDeviceDialog() {
+    const { filteredConfigEntry } = this._devicesAndFilterDomains(
+      this.devices,
+      this.entries,
+      this.entities,
+      this.areas,
+      this._searchParms,
+      this._showDisabled,
+      this.hass.localize
+    );
+
+    showZWaveJSAddNodeDialog(this, {
+      entry_id: filteredConfigEntry!.entry_id,
+    });
   }
 
   static get styles(): CSSResultGroup {

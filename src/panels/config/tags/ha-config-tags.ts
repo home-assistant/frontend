@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -12,6 +11,7 @@ import memoizeOne from "memoize-one";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-relative-time";
 import { showAutomationEditor, TagTrigger } from "../../../data/automation";
 import {
@@ -79,6 +79,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                   ? html`<ha-relative-time
                       .hass=${this.hass}
                       .datetime=${tag.last_scanned_datetime}
+                      capitalize
                     ></ha-relative-time>`
                   : this.hass.localize("ui.panel.config.tag.never_scanned")}
               </div>`
@@ -96,6 +97,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
               ? html`<ha-relative-time
                   .hass=${this.hass}
                   .datetime=${last_scanned_datetime}
+                  capitalize
                 ></ha-relative-time>`
               : this.hass.localize("ui.panel.config.tag.never_scanned")}
           `,
@@ -105,39 +107,33 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         columns.write = {
           title: "",
           type: "icon-button",
-          template: (_write, tag: any) => html` <mwc-icon-button
+          template: (_write, tag: any) => html` <ha-icon-button
             .tag=${tag}
-            @click=${(ev: Event) =>
-              this._openWrite((ev.currentTarget as any).tag)}
-            title=${this.hass.localize("ui.panel.config.tag.write")}
-          >
-            <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
-          </mwc-icon-button>`,
+            @click=${this._handleWriteClick}
+            .label=${this.hass.localize("ui.panel.config.tag.write")}
+            .path=${mdiContentDuplicate}
+          ></ha-icon-button>`,
         };
       }
       columns.automation = {
         title: "",
         type: "icon-button",
-        template: (_automation, tag: any) => html` <mwc-icon-button
+        template: (_automation, tag: any) => html` <ha-icon-button
           .tag=${tag}
-          @click=${(ev: Event) =>
-            this._createAutomation((ev.currentTarget as any).tag)}
-          title=${this.hass.localize("ui.panel.config.tag.create_automation")}
-        >
-          <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
-        </mwc-icon-button>`,
+          @click=${this._handleAutomationClick}
+          .label=${this.hass.localize("ui.panel.config.tag.create_automation")}
+          .path=${mdiRobot}
+        ></ha-icon-button>`,
       };
       columns.edit = {
         title: "",
         type: "icon-button",
-        template: (_settings, tag: any) => html` <mwc-icon-button
+        template: (_settings, tag: any) => html` <ha-icon-button
           .tag=${tag}
-          @click=${(ev: Event) =>
-            this._openDialog((ev.currentTarget as any).tag)}
-          title=${this.hass.localize("ui.panel.config.tag.edit")}
-        >
-          <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-        </mwc-icon-button>`,
+          @click=${this._handleEditClick}
+          .label=${this.hass.localize("ui.panel.config.tag.edit")}
+          .path=${mdiCog}
+        ></ha-icon-button>`,
       };
       return columns;
     }
@@ -184,7 +180,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.experiences}
+        .tabs=${configSections.tags}
         .columns=${this._columns(
           this.narrow,
           this._canWriteTags,
@@ -194,9 +190,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._showHelp}
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+        ></ha-icon-button>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.tag.add_tag")}
@@ -208,6 +207,25 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       </hass-tabs-subpage-data-table>
     `;
   }
+
+  private _handleWriteClick = (ev: Event) =>
+    this._openWrite((ev.currentTarget as any).tag);
+
+  private _handleAutomationClick = (ev: Event) => {
+    const tag = (ev.currentTarget as any).tag;
+    const data = {
+      alias: this.hass.localize(
+        "ui.panel.config.tag.automation_title",
+        "name",
+        tag.name || tag.id
+      ),
+      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
+    };
+    showAutomationEditor(data);
+  };
+
+  private _handleEditClick = (ev: Event) =>
+    this._openDialog((ev.currentTarget as any).tag);
 
   private _showHelp() {
     showAlertDialog(this, {
@@ -229,7 +247,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         </p>
         <p>
           <a
-            href="${documentationUrl(this.hass, "/integrations/tag/")}"
+            href=${documentationUrl(this.hass, "/integrations/tag/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -249,18 +267,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "tag/write",
       payload: { name: tag.name || null, tag: tag.id },
     });
-  }
-
-  private _createAutomation(tag: Tag) {
-    const data = {
-      alias: this.hass.localize(
-        "ui.panel.config.tag.automation_title",
-        "name",
-        tag.name || tag.id
-      ),
-      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
-    };
-    showAutomationEditor(data);
   }
 
   private _addTag() {
@@ -318,7 +324,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       await deleteTag(this.hass, selectedTag.id);
       this._tags = this._tags.filter((tag) => tag.id !== selectedTag.id);
       return true;
-    } catch (err) {
+    } catch (err: any) {
       return false;
     }
   }

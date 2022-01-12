@@ -113,8 +113,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
-        .tabs=${configSections.automation}
+        .backCallback=${this._backTapped}
+        .tabs=${configSections.automations}
       >
         <ha-button-menu
           corner="BOTTOM_START"
@@ -122,12 +122,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           @action=${this._handleMenuAction}
           activatable
         >
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
           <mwc-list-item
             aria-label=${this.hass.localize(
@@ -378,7 +377,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
       this._dirty = false;
       this._config = config;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -435,7 +434,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped(): void {
+  private _backTapped = (): void => {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -443,12 +442,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => history.back(),
+        confirm: () => {
+          setTimeout(() => history.back());
+        },
       });
     } else {
       history.back();
     }
-  }
+  };
 
   private async _duplicate() {
     if (this._dirty) {
@@ -463,7 +464,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ) {
         return;
       }
-      // Wait for dialog to complate closing
+      // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     showAutomationEditor({

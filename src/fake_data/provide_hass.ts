@@ -8,7 +8,7 @@ import { DEFAULT_PANEL } from "../data/panel";
 import { NumberFormat, TimeFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
@@ -201,6 +201,7 @@ export const provideHass = (
       default_dark_theme: null,
       themes: {},
       darkMode: false,
+      theme: "default",
     },
     panels: demoPanels,
     services: demoServices,
@@ -270,7 +271,10 @@ export const provideHass = (
     updateStates,
     updateTranslations,
     addTranslations,
-    loadFragmentTranslation: async (_fragment: string) => hass().localize,
+    loadFragmentTranslation: async (fragment: string) => {
+      await updateTranslations(fragment);
+      return hass().localize;
+    },
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

@@ -130,7 +130,7 @@ class HassioSupervisorLog extends LitElement {
         this.hass,
         this._selectedLogProvider
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "system.log.get_logs",
         "provider",

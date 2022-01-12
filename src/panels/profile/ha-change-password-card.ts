@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -153,7 +152,7 @@ class HaChangePasswordCard extends LitElement {
         current_password: this._currentPassword,
         new_password: this._password,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._errorMsg = err.message;
       return;
     } finally {

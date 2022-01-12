@@ -8,7 +8,6 @@ import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-icon-button";
 import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
@@ -113,8 +112,8 @@ export class HuiDialogEditView extends LitElement {
           <hui-view-editor
             .isNew=${this._params.viewIndex === undefined}
             .hass=${this.hass}
-            .config="${this._config}"
-            @view-config-changed="${this._viewConfigChanged}"
+            .config=${this._config}
+            @view-config-changed=${this._viewConfigChanged}
           ></hui-view-editor>
         `;
         break;
@@ -145,8 +144,8 @@ export class HuiDialogEditView extends LitElement {
             : ""}
           <hui-entity-editor
             .hass=${this.hass}
-            .entities="${this._badges}"
-            @entities-changed="${this._badgesChanged}"
+            .entities=${this._badges}
+            @entities-changed=${this._badgesChanged}
           ></hui-entity-editor>
         `;
         break;
@@ -154,8 +153,8 @@ export class HuiDialogEditView extends LitElement {
         content = html`
           <hui-view-visibility-editor
             .hass=${this.hass}
-            .config="${this._config}"
-            @view-visibility-changed="${this._viewVisibilityChanged}"
+            .config=${this._config}
+            @view-visibility-changed=${this._viewVisibilityChanged}
           ></hui-view-visibility-editor>
         `;
         break;
@@ -176,8 +175,8 @@ export class HuiDialogEditView extends LitElement {
           <paper-tabs
             scrollable
             hide-scroll-buttons
-            .selected="${this._curTabIndex}"
-            @selected-item-changed="${this._handleTabSelected}"
+            .selected=${this._curTabIndex}
+            @selected-item-changed=${this._handleTabSelected}
           >
             <paper-tab id="tab-settings"
               >${this.hass!.localize(
@@ -202,7 +201,7 @@ export class HuiDialogEditView extends LitElement {
               <mwc-button
                 class="warning"
                 slot="secondaryAction"
-                @click="${this._deleteConfirm}"
+                @click=${this._deleteConfirm}
               >
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_view.delete"
@@ -210,13 +209,13 @@ export class HuiDialogEditView extends LitElement {
               </mwc-button>
             `
           : ""}
-        <mwc-button @click="${this.closeDialog}" slot="primaryAction"
+        <mwc-button @click=${this.closeDialog} slot="primaryAction"
           >${this.hass!.localize("ui.common.cancel")}</mwc-button
         >
         <mwc-button
           slot="primaryAction"
-          ?disabled="${!this._config || this._saving}"
-          @click="${this._save}"
+          ?disabled=${!this._config || this._saving}
+          @click=${this._save}
         >
           ${this._saving
             ? html`<ha-circular-progress
@@ -241,7 +240,7 @@ export class HuiDialogEditView extends LitElement {
       );
       this.closeDialog();
       navigate(`/${window.location.pathname.split("/")[1]}`);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: `Deleting failed: ${err.message}`,
       });
@@ -307,7 +306,7 @@ export class HuiDialogEditView extends LitElement {
         );
       }
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: `Saving failed: ${err.message}`,
       });

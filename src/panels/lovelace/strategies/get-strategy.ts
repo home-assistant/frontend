@@ -59,7 +59,7 @@ const getLovelaceStrategy = async <
     );
   }
 
-  return customElements.get(tag);
+  return customElements.get(tag) as unknown as T;
 };
 
 interface GenerateMethods {
@@ -81,7 +81,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
     const strategy = (await getLovelaceStrategy(strategyType)) as any;
     // eslint-disable-next-line @typescript-eslint/return-await
     return await strategy[generateMethod](info);
-  } catch (err) {
+  } catch (err: any) {
     if (err.message !== "timeout") {
       // eslint-disable-next-line
       console.error(err);

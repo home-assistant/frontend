@@ -121,7 +121,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         </mwc-button>
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.dialogs.config_entry_system_options.update")}
@@ -171,7 +171,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
       }
       this._params!.entryUpdated(result.config_entry);
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;

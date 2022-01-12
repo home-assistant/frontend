@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
-  removeFailedNode,
+  removeFailedZwaveNode,
   ZWaveJSRemovedNode,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -63,7 +63,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(
@@ -164,7 +164,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
       return;
     }
     this._status = "started";
-    this._subscribed = removeFailedNode(
+    this._subscribed = removeFailedZwaveNode(
       this.hass,
       this.entry_id!,
       this.node_id!,

@@ -26,7 +26,7 @@ export const suggestAddonRestart = async (
   if (confirmed) {
     try {
       await restartHassioAddon(hass, addon.slug);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(element, {
         title: supervisor.localize(
           "common.failed_to_restart_name",

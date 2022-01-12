@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -33,9 +32,9 @@ import {
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
 import {
-  fetchNodeConfigParameters,
-  fetchNodeMetadata,
-  setNodeConfigParameter,
+  fetchZwaveNodeConfigParameters,
+  fetchZwaveNodeMetadata,
+  setZwaveNodeConfigParameter,
   ZWaveJSNodeConfigParams,
   ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
@@ -168,8 +167,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                   "device_database",
                   html`<a
                     rel="noreferrer noopener"
-                    href="${this._nodeMetadata?.device_database_url ||
-                    "https://devices.zwave-js.io"}"
+                    href=${this._nodeMetadata?.device_database_url ||
+                    "https://devices.zwave-js.io"}
                     target="_blank"
                     >${this.hass.localize(
                       "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
@@ -328,6 +327,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (!("states" in item.metadata)) {
       return false;
     }
+    if (Object.keys(item.metadata.states).length !== 2) {
+      return false;
+    }
     if (!(0 in item.metadata.states) || !(1 in item.metadata.states)) {
       return false;
     }
@@ -378,7 +380,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private async _updateConfigParameter(target, value) {
     const nodeId = getNodeId(this._device!);
     try {
-      const result = await setNodeConfigParameter(
+      const result = await setZwaveNodeConfigParameter(
         this.hass,
         this.configEntryId!,
         nodeId!,
@@ -389,8 +391,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       this._config![target.key].value = value;
 
       this.setResult(target.key, result.status);
-    } catch (error) {
-      this.setError(target.key, error.message);
+    } catch (err: any) {
+      this.setError(target.key, err.message);
     }
   }
 
@@ -430,8 +432,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
 
     [this._nodeMetadata, this._config] = await Promise.all([
-      fetchNodeMetadata(this.hass, this.configEntryId, nodeId!),
-      fetchNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeMetadata(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
     ]);
   }
 

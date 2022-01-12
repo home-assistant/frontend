@@ -5,6 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
   emptyGasEnergyPreference,
+  ENERGY_GAS_ENERGY_UNITS,
+  ENERGY_GAS_UNITS,
+  ENERGY_GAS_VOLUME_UNITS,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -17,8 +20,6 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../components/ha-radio";
-
-const energyUnits = ["m³"];
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
@@ -33,6 +34,8 @@ export class DialogEnergyGasSettings
 
   @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
 
+  @state() private _unit?: string;
+
   @state() private _error?: string;
 
   public async showDialog(
@@ -41,7 +44,7 @@ export class DialogEnergyGasSettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptyGasEnergyPreference());
+      : emptyGasEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price
@@ -54,6 +57,7 @@ export class DialogEnergyGasSettings
   public closeDialog(): void {
     this._params = undefined;
     this._source = undefined;
+    this._unit = undefined;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -63,6 +67,14 @@ export class DialogEnergyGasSettings
       return html``;
     }
 
+    const unit =
+      this._unit ||
+      (this._params.unit === undefined
+        ? "m³ or kWh"
+        : this._params.unit === "energy"
+        ? "kWh"
+        : "m³");
+
     return html`
       <ha-dialog
         open
@@ -70,17 +82,30 @@ export class DialogEnergyGasSettings
             .path=${mdiFire}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Configure Gas consumption`}
+          ${this.hass.localize("ui.panel.config.energy.gas.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeUnitOfMeasurement=${this._params.unit === undefined
+            ? ENERGY_GAS_UNITS
+            : this._params.unit === "energy"
+            ? ENERGY_GAS_ENERGY_UNITS
+            : ENERGY_GAS_VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
-          .label=${`Gas usage (m³)`}
-          entities-only
+          .label=${`${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.gas_usage"
+          )} (${
+            this._params.unit === undefined
+              ? this.hass.localize(
+                  "ui.panel.config.energy.gas.dialog.m3_or_kWh"
+                )
+              : this._params.unit === "energy"
+              ? "kWh"
+              : "m³"
+          })`}
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
@@ -143,7 +168,8 @@ export class DialogEnergyGasSettings
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
               .label=${this.hass.localize(
-                `ui.panel.config.energy.gas.dialog.cost_entity_input`
+                `ui.panel.config.energy.gas.dialog.cost_entity_input`,
+                { unit }
               )}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
@@ -163,7 +189,8 @@ export class DialogEnergyGasSettings
         ${this._costs === "number"
           ? html`<paper-input
               .label=${this.hass.localize(
-                `ui.panel.config.energy.gas.dialog.cost_number_input`
+                `ui.panel.config.energy.gas.dialog.cost_number_input`,
+                { unit }
               )}
               no-label-float
               class="price-options"
@@ -172,12 +199,7 @@ export class DialogEnergyGasSettings
               .value=${this._source.number_energy_price}
               @value-changed=${this._numberPriceChanged}
             >
-              <span slot="suffix"
-                >${this.hass.localize(
-                  `ui.panel.config.energy.gas.dialog.cost_number_suffix`,
-                  { currency: this.hass.config.currency }
-                )}</span
-              >
+              <span slot="suffix">${this.hass.config.currency}/${unit}</span>
             </paper-input>`
           : ""}
 
@@ -228,6 +250,18 @@ export class DialogEnergyGasSettings
   }
 
   private _statisticChanged(ev: CustomEvent<{ value: string }>) {
+    if (ev.detail.value) {
+      const entity = this.hass.states[ev.detail.value];
+      if (entity?.attributes.unit_of_measurement) {
+        // Wh is normalized to kWh by stats generation
+        this._unit =
+          entity.attributes.unit_of_measurement === "Wh"
+            ? "kWh"
+            : entity.attributes.unit_of_measurement;
+      }
+    } else {
+      this._unit = undefined;
+    }
     this._source = {
       ...this._source!,
       stat_energy_from: ev.detail.value,
@@ -244,8 +278,8 @@ export class DialogEnergyGasSettings
       }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

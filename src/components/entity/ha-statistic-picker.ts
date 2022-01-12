@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheck } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -52,6 +51,14 @@ export class HaStatisticPicker extends LitElement {
   public includeUnitOfMeasurement?: string[];
 
   /**
+   * Show only statistics with these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+
+  /**
    * Show only statistics on entities.
    * @type {Boolean}
    * @attr entities-only
@@ -69,6 +76,7 @@ export class HaStatisticPicker extends LitElement {
     id: string;
     name: string;
     state?: HassEntity;
+    // eslint-disable-next-line lit/prefer-static-styles
   }> = (item) => html`<style>
       paper-icon-item {
         padding: 0;
@@ -94,7 +102,12 @@ export class HaStatisticPicker extends LitElement {
     </style>
     <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
     <paper-icon-item>
-      <state-badge slot="item-icon" .stateObj=${item.state}></state-badge>
+      ${item.state
+        ? html`<state-badge
+            slot="item-icon"
+            .stateObj=${item.state}
+          ></state-badge>`
+        : ""}
       <paper-item-body two-line="">
         ${item.name}
         <span secondary
@@ -102,7 +115,7 @@ export class HaStatisticPicker extends LitElement {
             ? html`<a
                 target="_blank"
                 rel="noopener noreferrer"
-                href="${documentationUrl(this.hass, "/more-info/statistics/")}"
+                href=${documentationUrl(this.hass, "/more-info/statistics/")}
                 >${this.hass.localize(
                   "ui.components.statistic-picker.learn_more"
                 )}</a
@@ -116,6 +129,7 @@ export class HaStatisticPicker extends LitElement {
     (
       statisticIds: StatisticsMetaData[],
       includeUnitOfMeasurement?: string[],
+      includeDeviceClasses?: string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
@@ -144,15 +158,25 @@ export class HaStatisticPicker extends LitElement {
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
           if (!entitiesOnly) {
-            output.push({ id: meta.statistic_id, name: meta.statistic_id });
+            output.push({
+              id: meta.statistic_id,
+              name: meta.name || meta.statistic_id,
+            });
           }
           return;
         }
-        output.push({
-          id: meta.statistic_id,
-          name: computeStateName(entityState),
-          state: entityState,
-        });
+        if (
+          !includeDeviceClasses ||
+          includeDeviceClasses.includes(
+            entityState!.attributes.device_class || ""
+          )
+        ) {
+          output.push({
+            id: meta.statistic_id,
+            name: computeStateName(entityState),
+            state: entityState,
+          });
+        }
       });
 
       if (!output.length) {
@@ -203,6 +227,7 @@ export class HaStatisticPicker extends LitElement {
         (this.comboBox as any).items = this._getStatistics(
           this.statisticIds!,
           this.includeUnitOfMeasurement,
+          this.includeDeviceClasses,
           this.entitiesOnly
         );
       } else {
@@ -210,6 +235,7 @@ export class HaStatisticPicker extends LitElement {
           (this.comboBox as any).items = this._getStatistics(
             this.statisticIds!,
             this.includeUnitOfMeasurement,
+            this.includeDeviceClasses,
             this.entitiesOnly
           );
         });
@@ -270,7 +296,7 @@ export class HaStatisticPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

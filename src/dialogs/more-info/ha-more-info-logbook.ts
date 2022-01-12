@@ -1,16 +1,17 @@
+import { startOfYesterday } from "date-fns";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
-import { fetchUsers } from "../../data/user";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
+import { fetchUsers } from "../../data/user";
 import "../../panels/logbook/ha-logbook";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -29,6 +30,8 @@ export class MoreInfoLogbook extends LitElement {
   private _fetchUserPromise?: Promise<void>;
 
   private _error?: string;
+
+  private _showMoreHref = "";
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -61,6 +64,16 @@ export class MoreInfoLogbook extends LitElement {
             `
           : this._logbookEntries.length
           ? html`
+              <div class="header">
+                <div class="title">
+                  ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
+                </div>
+                <a href=${this._showMoreHref} @click=${this._close}
+                  >${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}</a
+                >
+              </div>
               <ha-logbook
                 narrow
                 no-icon
@@ -81,11 +94,6 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchUserPromise = this._fetchUserNames();
-    this.addEventListener("click", (ev) => {
-      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
-        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
-      }
-    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -98,6 +106,10 @@ export class MoreInfoLogbook extends LitElement {
       if (!this.entityId) {
         return;
       }
+
+      this._showMoreHref = `/logbook?entity_id=${
+        this.entityId
+      }&start_date=${startOfYesterday().toISOString()}`;
 
       this._throttleGetLogbookEntries();
       return;
@@ -141,7 +153,7 @@ export class MoreInfoLogbook extends LitElement {
         this.hass.user?.is_admin ? loadTraceContexts(this.hass) : {},
         this._fetchUserPromise,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
     }
 
@@ -182,6 +194,10 @@ export class MoreInfoLogbook extends LitElement {
     this._userIdToName = userIdToName;
   }
 
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
+  }
+
   static get styles() {
     return [
       haStyle,
@@ -202,6 +218,27 @@ export class MoreInfoLogbook extends LitElement {
         ha-circular-progress {
           display: flex;
           justify-content: center;
+        }
+        .header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .header > a,
+        a:visited {
+          color: var(--primary-color);
+        }
+        .title {
+          font-family: var(--paper-font-title_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-title_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-subhead_-_font-size);
+          font-weight: var(--paper-font-title_-_font-weight);
+          letter-spacing: var(--paper-font-title_-_letter-spacing);
+          line-height: var(--paper-font-title_-_line-height);
         }
       `,
     ];

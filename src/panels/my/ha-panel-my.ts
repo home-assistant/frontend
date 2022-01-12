@@ -31,6 +31,9 @@ const REDIRECTS: Redirects = {
   developer_events: {
     redirect: "/developer-tools/event",
   },
+  developer_statistics: {
+    redirect: "/developer-tools/statistics",
+  },
   config: {
     redirect: "/config",
   },
@@ -138,7 +141,8 @@ const REDIRECTS: Redirects = {
     redirect: "/config/info",
   },
   customize: {
-    redirect: "/config/customize",
+    // customize was removed in 2021.12, fallback to dashboard
+    redirect: "/config/dashboard",
   },
   profile: {
     redirect: "/profile/dashboard",
@@ -205,7 +209,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = "url_error";
       return;
     }
@@ -215,7 +219,7 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      let error = "Unknown error";
+      let error: string;
       switch (this._error) {
         case "not_supported":
           error =
@@ -248,7 +252,7 @@ class HaPanelMy extends LitElement {
             html`<a
               target="_blank"
               rel="noreferrer noopener"
-              href="${documentationUrl(this.hass, "/installation")}"
+              href=${documentationUrl(this.hass, "/installation")}
               >${this.hass.localize("ui.panel.my.documentation")}</a
             >`
           );

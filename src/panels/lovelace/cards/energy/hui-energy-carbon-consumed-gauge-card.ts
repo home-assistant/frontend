@@ -13,10 +13,7 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
 } from "../../../../data/energy";
-import {
-  calculateStatisticsSumGrowth,
-  calculateStatisticsSumGrowthWithPercentage,
-} from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
@@ -59,7 +56,9 @@ class HuiEnergyCarbonGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     if (!this._data.co2SignalEntity) {
@@ -88,19 +87,13 @@ class HuiEnergyCarbonGaugeCard
       value = 100;
     }
 
-    if (
-      this._data.co2SignalEntity in this._data.stats &&
-      totalGridConsumption
-    ) {
-      const highCarbonEnergy =
-        calculateStatisticsSumGrowthWithPercentage(
-          this._data.stats[this._data.co2SignalEntity],
-          types
-            .grid![0].flow_from.map(
-              (flow) => this._data!.stats![flow.stat_energy_from]
-            )
-            .filter(Boolean)
-        ) || 0;
+    if (this._data.fossilEnergyConsumption && totalGridConsumption) {
+      const highCarbonEnergy = this._data.fossilEnergyConsumption
+        ? Object.values(this._data.fossilEnergyConsumption).reduce(
+            (sum, a) => sum + a,
+            0
+          )
+        : 0;
 
       const totalSolarProduction = types.solar
         ? calculateStatisticsSumGrowth(
@@ -129,9 +122,9 @@ class HuiEnergyCarbonGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents how much of the energy consumed by your
-                  home was generated using non-fossil fuels like solar, wind and
-                  nuclear.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                  )}
                 </span>
               </paper-tooltip>
               <ha-gauge
@@ -144,9 +137,15 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Non-fossil energy consumed</div>
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_consumed"
+                )}
+              </div>
             `
-          : html`Consumed non-fossil energy couldn't be calculated`}
+          : html`${this.hass.localize(
+              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_not_calculated"
+            )}`}
       </ha-card>
     `;
   }

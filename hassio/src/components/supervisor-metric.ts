@@ -20,10 +20,10 @@ class SupervisorMetric extends LitElement {
       <div slot="description" .title=${this.tooltip ?? ""}>
         <span class="value"> ${roundedValue} % </span>
         <ha-bar
-          class="${classMap({
+          class=${classMap({
             "target-warning": roundedValue > 50,
             "target-critical": roundedValue > 85,
-          })}"
+          })}
           .value=${this.value}
         ></ha-bar>
       </div>

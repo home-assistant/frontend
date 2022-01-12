@@ -472,7 +472,7 @@
                     "failed_create_area": "Nepavyko sukurti srities.",
                     "text": "Įveskite naujos srities pavadinimą."
                 },
-                "add_new": "Pridėti naują sritį...",
+                "add_new": "Pridėti naują sritį…",
                 "area": "Sritis",
                 "no_areas": "Neturite jokių sričių",
                 "no_match": "Nerasta atitinkančių sričių"
@@ -515,7 +515,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Įkeliama būsenos retrospektyva...",
+                "loading_history": "Įkeliama būsenos retrospektyva…",
                 "no_history_found": "Būsenos istorija nerasta."
             },
             "logbook": {
@@ -811,7 +811,7 @@
             "title": "Pranešimai"
         },
         "notification_toast": {
-            "connection_lost": "Nutrūko ryšys. Jungiamasi iš naujo...",
+            "connection_lost": "Nutrūko ryšys. Jungiamasi iš naujo…",
             "dismiss": "Atmesti",
             "service_call_failed": "Nepavyko panaudoti skambučių paslaugos {service}.",
             "started": "Home Assistant startavo",
@@ -1134,7 +1134,7 @@
                         "importing": "Įkeliamas techninis planas...",
                         "raw_blueprint": "Techninio plano turinys",
                         "save_btn": "Importuoti techninį planą",
-                        "saving": "Importuojamas techninis planas...",
+                        "saving": "Importuojamas techninis planas…",
                         "unsupported_blueprint": "Šis techninis planas nepalaikomas",
                         "url": "Techninio plano universalusis adresas (URL)"
                     },
@@ -1166,7 +1166,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Prisijungęs",
-                        "connecting": "Jungiamasi...",
+                        "connecting": "Jungiamasi…",
                         "google": {
                             "config_documentation": "Konfigūracijos dokumentacija",
                             "devices_pin": "Įrenginio saugos Pin kodas",
@@ -1201,7 +1201,7 @@
                             "try": "Bandyti"
                         },
                         "webhooks": {
-                            "loading": "Įkeliama...",
+                            "loading": "Įkeliama…",
                             "manage": "Tvarkyti",
                             "title": "Webhooks"
                         }
@@ -1308,13 +1308,13 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "Kai kažkas suveikia...",
+                            "caption": "Kai kažkas suveikia…",
                             "no_actions": "Nėra veiksmų",
                             "unknown_action": "Nežinomas veiksmas"
                         },
                         "automations": "Automatizavimas",
                         "conditions": {
-                            "caption": "Daryti ką nors tik tuo atveju, jei...",
+                            "caption": "Daryti ką nors tik tuo atveju, jei…",
                             "no_conditions": "Nėra sąlygų",
                             "unknown_condition": "Nežinoma sąlyga"
                         },
@@ -1792,7 +1792,7 @@
                     "add_device": "Pridėti įrenginį",
                     "add_device_page": {
                         "search_again": "Ieškoti iš naujo",
-                        "spinner": "Ieškoma ZHA Zigbee įrenginių..."
+                        "spinner": "Ieškoma ZHA Zigbee įrenginių…"
                     },
                     "common": {
                         "clusters": "Klusteriai",

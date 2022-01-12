@@ -25,9 +25,9 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        .header="${this.hass.localize(
+        .header=${this.hass.localize(
           "ui.panel.lovelace.cards.empty_state.title"
-        )}"
+        )}
       >
         <div class="card-content">
           ${this.hass.localize(

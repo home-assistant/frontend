@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
@@ -29,7 +30,7 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
-const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
+const HIDDEN_DOMAINS = new Set(["met", "rpi_power", "hassio"]);
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
@@ -79,8 +80,8 @@ class OnboardingIntegrations extends LitElement {
             <integration-badge
               .domain=${entry.domain}
               .title=${title}
-              badgeIcon="hass:check"
-              .darkOptimizedIcon=${this.hass.selectedTheme?.dark}
+              .badgeIcon=${mdiCheck}
+              .darkOptimizedIcon=${this.hass.themes?.darkMode}
             ></integration-badge>
           `,
         ];
@@ -97,7 +98,7 @@ class OnboardingIntegrations extends LitElement {
                 clickable
                 .domain=${flow.handler}
                 .title=${title}
-                .darkOptimizedIcon=${this.hass.selectedTheme?.dark}
+                .darkOptimizedIcon=${this.hass.themes?.darkMode}
               ></integration-badge>
             </button>
           `,
@@ -120,7 +121,7 @@ class OnboardingIntegrations extends LitElement {
             title=${this.onboardingLocalize(
               "ui.panel.page-onboarding.integration.more_integrations"
             )}
-            icon="hass:dots-horizontal"
+            .icon=${mdiDotsHorizontal}
           ></action-badge>
         </button>
       </div>

@@ -11,7 +11,18 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import "../../../components/ha-icon-button";
+import "../../../components/trace/ha-trace-blueprint-config";
+import "../../../components/trace/ha-trace-config";
+import "../../../components/trace/ha-trace-logbook";
+import "../../../components/trace/ha-trace-path-details";
+import "../../../components/trace/ha-trace-timeline";
 import "../../../components/trace/hat-script-graph";
+import type {
+  HatScriptGraph,
+  NodeInfo,
+} from "../../../components/trace/hat-script-graph";
+import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
 import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
 import { ScriptEntity } from "../../../data/script";
 import {
@@ -23,17 +34,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
 import { configSections } from "../ha-panel-config";
-import "../../../components/trace/ha-trace-blueprint-config";
-import "../../../components/trace/ha-trace-config";
-import "../../../components/trace/ha-trace-logbook";
-import "../../../components/trace/ha-trace-path-details";
-import "../../../components/trace/ha-trace-timeline";
-import type {
-  HatScriptGraph,
-  NodeInfo,
-} from "../../../components/trace/hat-script-graph";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -88,16 +89,17 @@ export class HaScriptTrace extends LitElement {
     }
 
     const actionButtons = html`
-      <mwc-icon-button label="Refresh" @click=${() => this._loadTraces()}>
-        <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-      </mwc-icon-button>
-      <mwc-icon-button
+      <ha-icon-button
+        label="Refresh"
+        @click=${this._refreshTraces}
+        .path=${mdiRefresh}
+      ></ha-icon-button>
+      <ha-icon-button
         .disabled=${!this._trace}
         label="Download Trace"
         @click=${this._downloadTrace}
-      >
-        <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-      </mwc-icon-button>
+        .path=${mdiDownload}
+      ></ha-icon-button>
     `;
 
     return html`
@@ -106,7 +108,7 @@ export class HaScriptTrace extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
       >
         ${this.narrow
           ? html`<span slot="header"> ${title} </span>
@@ -120,23 +122,24 @@ export class HaScriptTrace extends LitElement {
                   class="linkButton"
                   href="/config/script/edit/${this.scriptEntityId}"
                 >
-                  <mwc-icon-button label="Edit Script" tabindex="-1">
-                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                  </mwc-icon-button>
+                  <ha-icon-button
+                    label="Edit Script"
+                    tabindex="-1"
+                    .path=${mdiPencil}
+                  ></ha-icon-button>
                 </a>
               </div>`
             : ""}
           ${this._traces && this._traces.length > 0
             ? html`
                 <div>
-                  <mwc-icon-button
+                  <ha-icon-button
                     .disabled=${this._traces[this._traces.length - 1].run_id ===
                     this._runId}
                     label="Older trace"
                     @click=${this._pickOlderTrace}
-                  >
-                    <ha-svg-icon .path=${mdiRayEndArrow}></ha-svg-icon>
-                  </mwc-icon-button>
+                    .path=${mdiRayEndArrow}
+                  ></ha-icon-button>
                   <select .value=${this._runId} @change=${this._pickTrace}>
                     ${repeat(
                       this._traces,
@@ -150,13 +153,12 @@ export class HaScriptTrace extends LitElement {
                         </option>`
                     )}
                   </select>
-                  <mwc-icon-button
+                  <ha-icon-button
                     .disabled=${this._traces[0].run_id === this._runId}
                     label="Newer trace"
                     @click=${this._pickNewerTrace}
-                  >
-                    <ha-svg-icon .path=${mdiRayStartArrow}></ha-svg-icon>
-                  </mwc-icon-button>
+                    .path=${mdiRayStartArrow}
+                  ></ha-icon-button>
                 </div>
               `
             : ""}
@@ -319,6 +321,10 @@ export class HaScriptTrace extends LitElement {
 
   private _pickNode(ev) {
     this._selected = ev.detail;
+  }
+
+  private _refreshTraces() {
+    this._loadTraces();
   }
 
   private async _loadTraces(runId?: string) {

@@ -5,4 +5,4 @@ export const mainWindow =
     ? window
     : parent.name === MAIN_WINDOW_NAME
     ? parent
-    : top;
+    : top!;

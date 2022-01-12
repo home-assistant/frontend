@@ -13,11 +13,13 @@ export interface DeviceRegistryEntry {
   model: string | null;
   name: string | null;
   sw_version: string | null;
+  hw_version: string | null;
   via_device_id: string | null;
   area_id: string | null;
   name_by_user: string | null;
   entry_type: "service" | null;
   disabled_by: string | null;
+  configuration_url: string | null;
 }
 
 export interface DeviceEntityLookup {

@@ -43,7 +43,7 @@ class DialogZHADeviceChildren extends LitElement {
             outputDevices.push({
               name: zhaDevice.user_given_name || zhaDevice.name,
               id: zhaDevice.device_reg_id,
-              lqi: child.lqi,
+              lqi: parseInt(child.lqi),
             });
           }
         });
@@ -64,7 +64,7 @@ class DialogZHADeviceChildren extends LitElement {
       title: "LQI",
       sortable: true,
       filterable: true,
-      direction: "asc",
+      type: "numeric",
       width: "75px",
     },
   };
@@ -101,6 +101,7 @@ class DialogZHADeviceChildren extends LitElement {
               active
             ></ha-circular-progress>`
           : html`<ha-data-table
+              .hass=${this.hass}
               .columns=${this._columns}
               .data=${this._deviceChildren(this._device, this._devices)}
               auto-height

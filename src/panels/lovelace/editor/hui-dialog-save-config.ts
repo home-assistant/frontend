@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,7 +7,7 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace";
@@ -67,9 +66,10 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             rel="noreferrer"
             dir=${computeRTLDirection(this.hass!)}
           >
-            <mwc-icon-button>
-              <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .path=${mdiHelpCircle}
+              .label=${this.hass!.localize("ui.common.help")}
+            ></ha-icon-button>
           </a>`}
       >
         <div>
@@ -187,7 +187,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       lovelace.setEditMode(true);
       this._saving = false;
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       alert(`Saving failed: ${err.message}`);
       this._saving = false;
     }
@@ -197,21 +197,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-        }
-        @media all and (min-width: 660px) {
-          ha-paper-dialog {
-            width: 650px;
-          }
-        }
-        ha-paper-dialog {
-          max-width: 650px;
-        }
         ha-switch {
           padding-bottom: 16px;
         }

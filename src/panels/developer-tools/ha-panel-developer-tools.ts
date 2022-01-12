@@ -4,7 +4,6 @@ import "@polymer/paper-tabs/paper-tab";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import "../../components/ha-tabs";
 import "../../layouts/ha-app-layout";
@@ -63,6 +62,11 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.developer-tools.tabs.events.title"
               )}
             </paper-tab>
+            <paper-tab page-name="statistics">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.statistics.title"
+              )}
+            </paper-tab>
           </ha-tabs>
         </app-header>
         <developer-tools-router
@@ -97,7 +101,7 @@ class PanelDeveloperTools extends LitElement {
         }
         developer-tools-router {
           display: block;
-          height: calc(100vh - 112px);
+          height: calc(100vh - 104px);
         }
         ha-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);

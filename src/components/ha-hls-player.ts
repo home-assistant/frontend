@@ -7,11 +7,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
+import { customElement, property, query, state } from "lit/decorators";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
+import "./ha-alert";
 
 type HlsLite = Omit<
   HlsType,
@@ -42,6 +42,8 @@ class HaHLSPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
+  @state() private _error?: string;
+
   private _hlsPolyfillInstance?: HlsLite;
 
   private _exoPlayer = false;
@@ -59,13 +61,15 @@ class HaHLSPlayer extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
     return html`
       <video
         ?autoplay=${this.autoPlay}
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -92,7 +96,8 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    const videoEl = this._videoEl;
+    this._error = undefined;
+
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
@@ -107,11 +112,11 @@ class HaHLSPlayer extends LitElement {
 
     if (!hlsSupported) {
       hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+        this._videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
     if (!hlsSupported) {
-      videoEl.innerHTML = this.hass.localize(
+      this._error = this.hass.localize(
         "ui.components.media-browser.video_not_supported"
       );
       return;
@@ -145,9 +150,9 @@ class HaHLSPlayer extends LitElement {
     if (useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, Hls, playlist_url);
+      this._renderHLSPolyfill(this._videoEl, Hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, playlist_url);
+      this._renderHLSNative(this._videoEl, playlist_url);
     }
   }
 
@@ -191,11 +196,50 @@ class HaHLSPlayer extends LitElement {
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
+      maxLiveSyncPlaybackRate: 2,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
       hls.loadSource(url);
+    });
+    hls.on(Hls.Events.ERROR, (_, data: any) => {
+      if (!data.fatal) {
+        return;
+      }
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        switch (data.details) {
+          case Hls.ErrorDetails.MANIFEST_LOAD_ERROR: {
+            let error = "Error starting stream, see logs for details";
+            if (
+              data.response !== undefined &&
+              data.response.code !== undefined
+            ) {
+              if (data.response.code >= 500) {
+                error += " (Server failure)";
+              } else if (data.response.code >= 400) {
+                error += " (Stream never started)";
+              } else {
+                error += " (" + data.response.code + ")";
+              }
+            }
+            this._error = error;
+            return;
+          }
+          case Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT:
+            this._error = "Timeout while starting stream";
+            return;
+          default:
+            this._error = "Unknown stream network error (" + data.details + ")";
+            return;
+        }
+        this._error = "Error with media stream contents (" + data.details + ")";
+      } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        this._error = "Error with media stream contents (" + data.details + ")";
+      } else {
+        this._error =
+          "Unknown error with stream (" + data.type + ", " + data.details + ")";
+      }
     });
   }
 
@@ -204,10 +248,6 @@ class HaHLSPlayer extends LitElement {
     videoEl.addEventListener("loadedmetadata", () => {
       videoEl.play();
     });
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   private _cleanUp() {
@@ -220,9 +260,10 @@ class HaHLSPlayer extends LitElement {
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
     }
-    const videoEl = this._videoEl;
-    videoEl.removeAttribute("src");
-    videoEl.load();
+    if (this._videoEl) {
+      this._videoEl.removeAttribute("src");
+      this._videoEl.load();
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -234,6 +275,12 @@ class HaHLSPlayer extends LitElement {
 
       video {
         width: 100%;
+        max-height: var(--video-max-height, calc(100vh - 97px));
+      }
+
+      ha-alert {
+        display: block;
+        padding: 100px 16px;
       }
     `;
   }

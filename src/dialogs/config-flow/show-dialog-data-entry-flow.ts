@@ -1,6 +1,6 @@
 import { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaFormSchema } from "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepAbort,
@@ -96,6 +96,7 @@ export type LoadingReason =
 
 export interface DataEntryFlowDialogParams {
   startFlowHandler?: string;
+  searchQuery?: string;
   continueFlowId?: string;
   dialogClosedCallback?: (params: {
     flowFinished: boolean;

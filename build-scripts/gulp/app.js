@@ -5,6 +5,7 @@ const env = require("../env");
 
 require("./clean.js");
 require("./translations.js");
+require("./locale-data.js");
 require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./compress.js");
@@ -26,7 +27,8 @@ gulp.task(
       "gen-icons-json",
       "gen-pages-dev",
       "gen-index-app-dev",
-      "build-translations"
+      "build-translations",
+      "build-locale-data"
     ),
     "copy-static-app",
     env.useWDS()
@@ -44,7 +46,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean",
-    gulp.parallel("gen-icons-json", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-app",
     env.useRollup() ? "rollup-prod-app" : "webpack-prod-app",
     // Don't compress running tests

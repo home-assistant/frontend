@@ -72,7 +72,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     return html`
       <div
-        .title="${computeTooltip(this.hass, this._config)}"
+        .title=${computeTooltip(this.hass, this._config)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

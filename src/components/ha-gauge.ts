@@ -2,11 +2,15 @@ import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { formatNumber } from "../common/string/format_number";
+import { formatNumber } from "../common/number/format_number";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 import { isSafari } from "../util/is_safari";
+
+// Safari version 15.2 and up behaves differently than other Safari versions.
+// https://github.com/home-assistant/frontend/issues/10766
+const isSafari152 = isSafari && /Version\/15\.[^0-1]/.test(navigator.userAgent);
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
@@ -113,7 +117,9 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari
+                    ? `rotate(${this._angle}${isSafari152 ? "" : " 50 50"})`
+                    : undefined
                 )}
               >
               `
@@ -126,7 +132,9 @@ export class Gauge extends LitElement {
                     : undefined
                 )}
                 transform=${ifDefined(
-                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                  isSafari
+                    ? `rotate(${this._angle}${isSafari152 ? "" : " 50 50"})`
+                    : undefined
                 )}
               >`
         }
