@@ -26,6 +26,8 @@ import {
   mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiCheckCircleOutline,
+  mdiCloseCircleOutline,
   mdiWeatherNight,
   mdiZWave,
 } from "@mdi/js";
@@ -81,6 +83,11 @@ export const domainIcon = (
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
+
+    case "input_boolean":
+      return compareState === "on"
+        ? mdiCheckCircleOutline
+        : mdiCloseCircleOutline;
 
     case "lock":
       switch (compareState) {
