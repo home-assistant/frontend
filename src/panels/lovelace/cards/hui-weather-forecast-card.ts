@@ -344,6 +344,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   item.templow!,
                                   this.hass!.locale
                                 )}°`
+                              : hourly
+                              ? ""
                               : "—"}
                           </div>
                         </div>
