@@ -92,7 +92,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _interactionObserver?: InteractionObserver; // @ts-ignore
+  // @ts-ignore
+  private _interactionObserver?: InteractionObserver;
 
   public connectedCallback(): void {
     super.connectedCallback();
