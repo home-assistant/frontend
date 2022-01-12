@@ -202,7 +202,7 @@ export const getSignedThumbnailPath = async (
   const thumbnailUrl = new URL(hass.hassUrl(relativeUrl));
   const signedPath = await getSignedPath(hass, thumbnailUrl.pathname);
   const updatedUrl = new URL(hass.hassUrl(signedPath.path));
-  // Append any query parameters from the original url onto the udpated url
+  // Append any query parameters from the original url onto the updated url
   for (const pair of thumbnailUrl.searchParams) {
     updatedUrl.searchParams.append(pair[0], pair[1]);
   }

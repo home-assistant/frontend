@@ -92,7 +92,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _interactionObserver?: InteractionObserver;
+  private _interactionObserver?: InteractionObserver; // @ts-ignore
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -600,10 +600,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                   thumbnailUrl
                 );
               }
-              thumbnailCard.style =
-                "background-image:url(" + thumbnailUrl + ")";
+              thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
               observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
-              this.requestUpdate();
             })
           );
         }
