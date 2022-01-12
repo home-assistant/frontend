@@ -117,42 +117,44 @@ export class HuiStatisticsGraphCardEditor
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
         ></paper-input>
-        <paper-dropdown-menu
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.statistics-graph.period"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .configValue=${"period"}
-          @iron-select=${this._periodSelected}
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="period"
-            .selected=${this._period}
+        <div class="side-by-side">
+          <paper-dropdown-menu
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.statistics-graph.period"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .configValue=${"period"}
+            @iron-select=${this._periodSelected}
           >
-            ${periods.map(
-              (period) =>
-                html`<paper-item .period=${period}>
-                  ${this.hass!.localize(
-                    `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                  )}
-                </paper-item>`
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-input
-          type="number"
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.days_to_show"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._days_to_show}
-          min="1"
-          .configValue=${"days_to_show"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="period"
+              .selected=${this._period}
+            >
+              ${periods.map(
+                (period) =>
+                  html`<paper-item .period=${period}>
+                    ${this.hass!.localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                    )}
+                  </paper-item>`
+              )}
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-input
+            type="number"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.days_to_show"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value=${this._days_to_show}
+            min="1"
+            .configValue=${"days_to_show"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+        </div>
         <p>Show stat types:</p>
         <div class="side-by-side">
           <ha-formfield label="Sum">
