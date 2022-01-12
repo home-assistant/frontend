@@ -21,7 +21,7 @@ class HaClimateControl extends LitElement {
 
   @property() public step = 1;
 
-  private lastChanged?: number;
+  private _lastChanged?: number;
 
   @query("#target_temperature") private _targetTemperature!: HTMLElement;
 
@@ -35,7 +35,7 @@ class HaClimateControl extends LitElement {
             .label=${this.hass.localize(
               "ui.components.climate-control.temperature_up"
             )}
-            @click=${this.incrementValue}
+            @click=${this._incrementValue}
           >
           </ha-icon-button>
         </div>
@@ -45,7 +45,7 @@ class HaClimateControl extends LitElement {
             .label=${this.hass.localize(
               "ui.components.climate-control.temperature_down"
             )}
-            @click=${this.decrementValue}
+            @click=${this._decrementValue}
           >
           </ha-icon-button>
         </div>
@@ -55,15 +55,15 @@ class HaClimateControl extends LitElement {
 
   protected updated(changedProperties) {
     if (changedProperties.has("value")) {
-      this.valueChanged();
+      this._valueChanged();
     }
   }
 
-  private temperatureStateInFlux(inFlux) {
+  private _temperatureStateInFlux(inFlux) {
     this._targetTemperature.classList.toggle("in-flux", inFlux);
   }
 
-  private round(value) {
+  private _round(value) {
     // Round value to precision derived from step.
     // Inspired by https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
     const s = this.step.toString().split(".");
@@ -71,36 +71,36 @@ class HaClimateControl extends LitElement {
   }
 
   private incrementValue() {
-    const newValue = this.round(this.value + this.step);
-    this.processNewValue(newValue);
+    const newValue = this._round(this.value + this.step);
+    this._processNewValue(newValue);
   }
 
-  private decrementValue() {
-    const newValue = this.round(this.value - this.step);
-    this.processNewValue(newValue);
+  private _decrementValue() {
+    const newValue = this._round(this.value - this.step);
+    this._processNewValue(newValue);
   }
 
-  private processNewValue(value) {
+  private _processNewValue(value) {
     const newValue = conditionalClamp(value, this.min, this.max);
 
     if (this.value !== newValue) {
       this.value = newValue;
-      this.lastChanged = Date.now();
-      this.temperatureStateInFlux(true);
+      this._lastChanged = Date.now();
+      this._temperatureStateInFlux(true);
     }
   }
 
-  private valueChanged() {
+  private _valueChanged() {
     // When the last_changed timestamp is changed,
     // trigger a potential event fire in the future,
     // as long as last_changed is far enough in the past.
-    if (this.lastChanged) {
+    if (this._lastChanged) {
       window.setTimeout(() => {
         const now = Date.now();
-        if (now - this.lastChanged! >= 2000) {
+        if (now - this._lastChanged! >= 2000) {
           fireEvent(this, "change");
-          this.temperatureStateInFlux(false);
-          this.lastChanged = undefined;
+          this._temperatureStateInFlux(false);
+          this._lastChanged = undefined;
         }
       }, 2010);
     }
