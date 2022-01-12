@@ -117,11 +117,11 @@ class HaClimateControl extends LitElement {
       }
       #target_temperature {
         align-self: center;
-        font-size: 200%;
+        font-size: 28px;
         direction: ltr;
       }
       .control-buttons {
-        font-size: 200%;
+        font-size: 24px;
         text-align: right;
       }
       ha-icon-button {
