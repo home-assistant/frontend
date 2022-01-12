@@ -58,7 +58,7 @@ export class HaConfigFlowCard extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${this.flow.context.configuration_url
-            ? html` <a
+            ? html`<a
                 href=${this.flow.context.configuration_url.replace(
                   /^homeassistant:\/\//,
                   ""
