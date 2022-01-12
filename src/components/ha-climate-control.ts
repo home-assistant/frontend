@@ -70,7 +70,7 @@ class HaClimateControl extends LitElement {
     return s[1] ? parseFloat(value.toFixed(s[1].length)) : Math.round(value);
   }
 
-  private incrementValue() {
+  private _incrementValue() {
     const newValue = this._round(this.value + this.step);
     this._processNewValue(newValue);
   }
@@ -112,7 +112,7 @@ class HaClimateControl extends LitElement {
         display: flex;
         justify-content: space-between;
       }
-      .in-flux#target_temperature {
+      .in-flux {
         color: var(--error-color);
       }
       #target_temperature {
