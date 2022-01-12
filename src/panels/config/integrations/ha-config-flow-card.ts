@@ -81,7 +81,7 @@ export class HaConfigFlowCard extends LitElement {
               </a>`
             : ""}
           ${this.manifest
-            ? html` <a
+            ? html`<a
                 href=${this.manifest.documentation}
                 rel="noreferrer"
                 target="_blank"
