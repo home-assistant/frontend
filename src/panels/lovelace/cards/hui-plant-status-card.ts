@@ -1,20 +1,25 @@
+import {
+  mdiSprout,
+  mdiThermometer,
+  mdiWaterPercent,
+  mdiWhiteBalanceSunny,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { batteryIcon } from "../../../common/entity/battery_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -23,12 +28,12 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
 
-const SENSORS = {
-  moisture: "hass:water",
-  temperature: "hass:thermometer",
-  brightness: "hass:white-balance-sunny",
-  conductivity: "hass:emoticon-poop",
-  battery: "hass:battery",
+const SENSOR_ICONS = {
+  moisture: mdiWaterPercent,
+  temperature: mdiThermometer,
+  brightness: mdiWhiteBalanceSunny,
+  conductivity: mdiSprout,
+  battery: undefined,
 };
 
 @customElement("hui-plant-status-card")
@@ -58,7 +63,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PlantStatusCardConfig;
+  @state() private _config?: PlantStatusCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -113,7 +118,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class="${stateObj.attributes.entity_picture ? "has-plant-image" : ""}"
+        class=${stateObj.attributes.entity_picture ? "has-plant-image" : ""}
       >
         <div
           class="banner"
@@ -131,20 +136,17 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                 @action=${this._handleMoreInfo}
                 .actionHandler=${actionHandler()}
                 tabindex="0"
-                .value="${item}"
+                .value=${item}
               >
                 <div>
-                  <ha-icon
-                    icon="${this.computeIcon(
-                      item,
-                      stateObj.attributes.battery
-                    )}"
-                  ></ha-icon>
+                  <ha-svg-icon
+                    .path=${this.computeIcon(item, stateObj.attributes.battery)}
+                  ></ha-svg-icon>
                 </div>
                 <div
-                  class="${stateObj.attributes.problem.indexOf(item) === -1
+                  class=${stateObj.attributes.problem.indexOf(item) === -1
                     ? ""
-                    : "problem"}"
+                    : "problem"}
                 >
                   ${stateObj.attributes[item]}
                 </div>
@@ -159,7 +161,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;
@@ -212,7 +214,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
         padding-bottom: 16px;
       }
 
-      ha-icon {
+      ha-svg-icon {
         color: var(--paper-item-icon-color);
         margin-bottom: 8px;
       }
@@ -243,20 +245,16 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   }
 
   private computeAttributes(stateObj: HassEntity): string[] {
-    return Object.keys(SENSORS).filter((key) => key in stateObj.attributes);
+    return Object.keys(SENSOR_ICONS).filter(
+      (key) => key in stateObj.attributes
+    );
   }
 
   private computeIcon(attr: string, batLvl: number): string {
-    const icon = SENSORS[attr];
     if (attr === "battery") {
-      if (batLvl <= 5) {
-        return `${icon}-alert`;
-      }
-      if (batLvl < 95) {
-        return `${icon}-${Math.round(batLvl / 10 - 0.01) * 10}`;
-      }
+      return batteryIcon(batLvl);
     }
-    return icon;
+    return SENSOR_ICONS[attr];
   }
 
   private _handleMoreInfo(ev: Event): void {

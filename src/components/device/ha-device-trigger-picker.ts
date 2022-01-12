@@ -1,10 +1,9 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import {
   DeviceTrigger,
   fetchDeviceTriggers,
   localizeDeviceAutomationTrigger,
 } from "../../data/device_automation";
-import "../ha-paper-dropdown-menu";
 import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 
 @customElement("ha-device-trigger-picker")

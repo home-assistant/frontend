@@ -1,23 +1,15 @@
-import "@material/mwc-icon-button";
 import {
   mdiHelpCircle,
   mdiHistory,
   mdiInformationOutline,
   mdiPencil,
   mdiPencilOff,
+  mdiPlayCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -26,9 +18,11 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-fab";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-button-related-filter-menu";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-overflow-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -56,9 +50,9 @@ class HaAutomationPicker extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredAutomations?: string[] | null;
+  @state() private _filteredAutomations?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _automations = memoizeOne(
     (
@@ -68,11 +62,12 @@ class HaAutomationPicker extends LitElement {
       if (filteredAutomations === null) {
         return [];
       }
-      return (filteredAutomations
-        ? automations.filter((automation) =>
-            filteredAutomations!.includes(automation.entity_id)
-          )
-        : automations
+      return (
+        filteredAutomations
+          ? automations.filter((automation) =>
+              filteredAutomations!.includes(automation.entity_id)
+            )
+          : automations
       ).map((automation) => ({
         ...automation,
         name: computeStateName(automation),
@@ -141,7 +136,7 @@ class HaAutomationPicker extends LitElement {
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${(ev) => this._runActions(ev)}
+              @click=${this._triggerRunActions}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -149,83 +144,73 @@ class HaAutomationPicker extends LitElement {
           `,
         };
       }
-      columns.info = {
+      columns.actions = {
         title: "",
-        type: "icon-button",
-        template: (_info, automation) => html`
-          <mwc-icon-button
-            .automation=${automation}
-            @click=${this._showInfo}
-            .label="${this.hass.localize(
-              "ui.panel.config.automation.picker.show_info_automation"
-            )}"
-          >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-          </mwc-icon-button>
-        `,
-      };
-      columns.trace = {
-        title: "",
-        type: "icon-button",
+        type: "overflow-menu",
         template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/trace/${automation.attributes.id}`
-                : undefined
-            )}
+          <ha-icon-overflow-menu
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .items=${[
+              // Info Button
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_info_automation"
+                ),
+                action: () => this._showInfo(automation),
+              },
+              // Trigger Button
+              {
+                path: mdiPlayCircleOutline,
+                label: this.hass.localize("ui.card.automation.trigger"),
+                narrowOnly: true,
+                action: () => this._runActions(automation),
+              },
+              // Trace Button
+              {
+                path: mdiHistory,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.dev_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (automation.attributes.id) {
+                    navigate(
+                      `/config/automation/trace/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+              // Edit Button
+              {
+                path: automation.attributes.id ? mdiPencil : mdiPencilOff,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.edit_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (automation.attributes.id) {
+                    navigate(
+                      `/config/automation/edit/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+            ]}
+            style="color: var(--secondary-text-color)"
           >
-            <mwc-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.dev_automation"
-              )}
-              .disabled=${!automation.attributes.id}
-            >
-              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-            </mwc-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.dev_only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
-        `,
-      };
-      columns.edit = {
-        title: "",
-        type: "icon-button",
-        template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/edit/${automation.attributes.id}`
-                : undefined
-            )}
-          >
-            <mwc-icon-button
-              .disabled=${!automation.attributes.id}
-              .label="${this.hass.localize(
-                "ui.panel.config.automation.picker.edit_automation"
-              )}"
-            >
-              <ha-svg-icon
-                .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
-              ></ha-svg-icon>
-            </mwc-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
+          </ha-icon-overflow-menu>
         `,
       };
       return columns;
@@ -240,7 +225,7 @@ class HaAutomationPicker extends LitElement {
         back-path="/config"
         id="entity_id"
         .route=${this.route}
-        .tabs=${configSections.automation}
+        .tabs=${configSections.automations}
         .activeFilters=${this._activeFilters}
         .columns=${this._columns(this.narrow, this.hass.locale)}
         .data=${this._automations(this.automations, this._filteredAutomations)}
@@ -250,9 +235,12 @@ class HaAutomationPicker extends LitElement {
         @clear-filter=${this._clearFilter}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
           corner="BOTTOM_START"
@@ -293,9 +281,8 @@ class HaAutomationPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _showInfo(ev) {
-    ev.stopPropagation();
-    const entityId = ev.currentTarget.automation.entity_id;
+  private _showInfo(automation: AutomationEntity) {
+    const entityId = automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
   }
 
@@ -306,7 +293,7 @@ class HaAutomationPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.automation.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/editor/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -319,23 +306,23 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _runActions(ev) {
-    const entityId = ev.currentTarget.automation.entity_id;
-    triggerAutomationActions(this.hass, entityId);
-  }
+  private _triggerRunActions = (ev) => {
+    this._runActions(ev.currentTarget.automation);
+  };
+
+  private _runActions = (automation: AutomationEntity) => {
+    triggerAutomationActions(this.hass, automation.entity_id);
+  };
 
   private _createNew() {
-    if (
-      isComponentLoaded(this.hass, "cloud") ||
-      isComponentLoaded(this.hass, "blueprint")
-    ) {
+    if (isComponentLoaded(this.hass, "blueprint")) {
       showNewAutomationDialog(this);
     } else {
-      navigate(this, "/config/automation/edit/new");
+      navigate("/config/automation/edit/new");
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

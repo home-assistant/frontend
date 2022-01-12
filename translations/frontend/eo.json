@@ -158,7 +158,6 @@
                         "confirm_delete_ignore_title": "Ĉu haltu ignori {name} ?",
                         "confirm_ignore": "Ĉu vi certas, ke vi ne volas agordi ĉi tiun integriĝon? Vi povas malfari tion alklakante \"Montri ignoratajn integriĝojn\" en la superfluta menuo en la supra dekstra.",
                         "confirm_ignore_title": "Ĉu ignori malkovron de {name} ?",
-                        "hide_ignored": "Kaŝu ignoratajn integriĝojn",
                         "ignore": "Ignori",
                         "ignored": "Ignorata",
                         "show_ignored": "Montru ignoratajn integriĝojn",
@@ -457,12 +456,6 @@
                         "error_invalid_config": "Via config ne estas valida: {error}",
                         "error_parse_yaml": "Ne eblas analizi YAML: {error}",
                         "error_save_yaml": "Ne eblas konservi YAML: {error}"
-                    },
-                    "view": {
-                        "panel_mode": {
-                            "description": "Ĉi tio redonas la unuan karton je plena larĝo; aliaj kartoj laŭ ĉi tiu vido ne estos redonitaj.",
-                            "title": "Panela Modo?"
-                        }
                     }
                 },
                 "menu": {

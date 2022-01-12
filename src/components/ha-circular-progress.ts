@@ -1,5 +1,6 @@
 import { CircularProgress } from "@material/mwc-circular-progress";
-import { customElement, property } from "lit-element";
+import { CSSResultGroup, css } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")
 // @ts-ignore
@@ -40,6 +41,17 @@ export class HaCircularProgress extends CircularProgress {
 
   public get indeterminate() {
     return this.active;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      super.styles,
+      css`
+        :host {
+          overflow: hidden;
+        }
+      `,
+    ];
   }
 }
 

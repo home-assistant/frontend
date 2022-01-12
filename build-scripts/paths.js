@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 
 module.exports = {
@@ -25,6 +26,7 @@ module.exports = {
   cast_output_es5: path.resolve(__dirname, "../cast/dist/frontend_es5"),
 
   gallery_dir: path.resolve(__dirname, "../gallery"),
+  gallery_build: path.resolve(__dirname, "../gallery/build"),
   gallery_output_root: path.resolve(__dirname, "../gallery/dist"),
   gallery_output_latest: path.resolve(
     __dirname,

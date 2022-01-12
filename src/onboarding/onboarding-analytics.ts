@@ -1,14 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
@@ -23,9 +15,9 @@ class OnboardingAnalytics extends LitElement {
 
   @property() public localize!: LocalizeFunc;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _analyticsDetails: Analytics = {
+  @state() private _analyticsDetails: Analytics = {
     preferences: {},
   };
 
@@ -80,12 +72,12 @@ class OnboardingAnalytics extends LitElement {
       fireEvent(this, "onboarding-step", {
         type: "analytics",
       });
-    } catch (err) {
+    } catch (err: any) {
       alert(`Failed to save: ${err.message}`);
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: var(--error-color);

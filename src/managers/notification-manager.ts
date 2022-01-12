@@ -1,14 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state, query } from "lit/decorators";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-toast";
 import type { HaToast } from "../components/ha-toast";
@@ -29,9 +21,9 @@ export interface ToastActionParams {
 class NotificationManager extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _action?: ToastActionParams;
+  @state() private _action?: ToastActionParams;
 
-  @internalProperty() private _noCancelOnOutsideClick = false;
+  @state() private _noCancelOnOutsideClick = false;
 
   @query("ha-toast") private _toast!: HaToast;
 
@@ -80,7 +72,7 @@ class NotificationManager extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-toast {
         display: flex;
@@ -100,6 +92,10 @@ class NotificationManager extends LitElement {
 customElements.define("notification-manager", NotificationManager);
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "notification-manager": NotificationManager;
+  }
+
   // for fire event
   interface HASSDomEvents {
     "hass-notification": ShowToastParams;

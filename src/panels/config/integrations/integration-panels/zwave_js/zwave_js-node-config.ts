@@ -1,51 +1,50 @@
+import "@material/mwc-button/mwc-button";
 import {
   mdiCheckCircle,
   mdiCircle,
-  mdiProgressClock,
   mdiCloseCircle,
+  mdiProgressClock,
 } from "@mdi/js";
-import "../../../../../components/ha-settings-row";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import {
-  fetchNodeConfigParameters,
-  setNodeConfigParameter,
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../../data/device_registry";
+import {
+  fetchZwaveNodeConfigParameters,
+  fetchZwaveNodeMetadata,
+  setZwaveNodeConfigParameter,
   ZWaveJSNodeConfigParams,
+  ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
-import { classMap } from "lit-html/directives/class-map";
 
 const icons = {
   accepted: mdiCheckCircle,
@@ -61,18 +60,18 @@ const getDevice = memoizeOne(
     entries?.find((device) => device.id === deviceId)
 );
 
-const getNodeId = memoizeOne((device: DeviceRegistryEntry):
-  | number
-  | undefined => {
-  const identifier = device.identifiers.find(
-    (ident) => ident[0] === "zwave_js"
-  );
-  if (!identifier) {
-    return undefined;
-  }
+const getNodeId = memoizeOne(
+  (device: DeviceRegistryEntry): number | undefined => {
+    const identifier = device.identifiers.find(
+      (ident) => ident[0] === "zwave_js"
+    );
+    if (!identifier) {
+      return undefined;
+    }
 
-  return parseInt(identifier[1].split("-")[1]);
-});
+    return parseInt(identifier[1].split("-")[1]);
+  }
+);
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
@@ -91,14 +90,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
-  @internalProperty() private _config?: ZWaveJSNodeConfigParams;
+  @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
-  @internalProperty() private _results: Record<
-    string,
-    ZWaveJSSetConfigParamResult
-  > = {};
+  @state() private _config?: ZWaveJSNodeConfigParams;
 
-  @internalProperty() private _error?: string;
+  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
+
+  @state() private _error?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -167,7 +165,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.attribution",
                   "device_database",
-                  html`<a href="https://devices.zwave-js.io/" target="_blank"
+                  html`<a
+                    rel="noreferrer noopener"
+                    href=${this._nodeMetadata?.device_database_url ||
+                    "https://devices.zwave-js.io"}
+                    target="_blank"
                     >${this.hass.localize(
                       "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
                     )}</a
@@ -181,7 +183,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               ? html`
                   ${Object.entries(this._config).map(
                     ([id, item]) => html` <ha-settings-row
-                      class="content config-item"
+                      class="config-item"
                       .configId=${id}
                       .narrow=${this.narrow}
                     >
@@ -199,6 +201,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private _generateConfigBox(id, item): TemplateResult {
     const result = this._results[id];
     const labelAndDescription = html`
+      <span slot="prefix" class="prefix">
+        ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
+        <br />
+        <span>${item.property}</span>
+      </span>
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
         ${item.metadata.description}
@@ -294,8 +301,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               @iron-select=${this._dropdownSelected}
             >
               ${Object.entries(item.metadata.states).map(
-                ([key, state]) => html`
-                  <paper-item .value=${key}>${state}</paper-item>
+                ([key, entityState]) => html`
+                  <paper-item .value=${key}>${entityState}</paper-item>
                 `
               )}
             </paper-listbox>
@@ -318,6 +325,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return false;
     }
     if (!("states" in item.metadata)) {
+      return false;
+    }
+    if (Object.keys(item.metadata.states).length !== 2) {
       return false;
     }
     if (!(0 in item.metadata.states) || !(1 in item.metadata.states)) {
@@ -370,7 +380,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private async _updateConfigParameter(target, value) {
     const nodeId = getNodeId(this._device!);
     try {
-      const result = await setNodeConfigParameter(
+      const result = await setZwaveNodeConfigParameter(
         this.hass,
         this.configEntryId!,
         nodeId!,
@@ -381,8 +391,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       this._config![target.key].value = value;
 
       this.setResult(target.key, result.status);
-    } catch (error) {
-      this.setError(target.key, error.message);
+    } catch (err: any) {
+      this.setError(target.key, err.message);
     }
   }
 
@@ -421,14 +431,13 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._config = await fetchNodeConfigParameters(
-      this.hass,
-      this.configEntryId,
-      nodeId!
-    );
+    [this._nodeMetadata, this._config] = await Promise.all([
+      fetchZwaveNodeMetadata(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+    ]);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -474,6 +483,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
+          padding: 4px 16px;
+        }
+
+        .prefix {
+          color: var(--secondary-text-color);
+          text-align: center;
+          text-transform: uppercase;
+          font-size: 0.8em;
+          padding-right: 24px;
+          line-height: 1.5em;
+        }
+
+        .prefix span {
+          font-size: 1.3em;
         }
 
         :host(:not([narrow])) ha-settings-row paper-input {

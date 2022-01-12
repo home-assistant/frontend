@@ -23,8 +23,12 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
+import "../resources/array.flat.polyfill";
 import "../resources/safari-14-attachshadow-patch";
 import { HomeAssistant } from "../types";
+import { MAIN_WINDOW_NAME } from "../data/main_window";
+
+window.name = MAIN_WINDOW_NAME;
 
 declare global {
   interface Window {
@@ -32,6 +36,25 @@ declare global {
     hassConnectionReady?: (hassConnection: Window["hassConnection"]) => void;
   }
 }
+
+const clearUrlParams = () => {
+  // Clear auth data from url if we have been able to establish a connection
+  if (location.search.includes("auth_callback=1")) {
+    const searchParams = new URLSearchParams(location.search);
+    // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
+    // Remove all data from QueryCallbackData type
+    searchParams.delete("auth_callback");
+    searchParams.delete("code");
+    searchParams.delete("state");
+    searchParams.delete("storeToken");
+    const search = searchParams.toString();
+    history.replaceState(
+      null,
+      "",
+      `${location.pathname}${search ? `?${search}` : ""}`
+    );
+  }
+};
 
 const authProm = isExternal
   ? () =>
@@ -48,23 +71,9 @@ const authProm = isExternal
 const connProm = async (auth) => {
   try {
     const conn = await createConnection({ auth });
-    // Clear auth data from url if we have been able to establish a connection
-    if (location.search.includes("auth_callback=1")) {
-      const searchParams = new URLSearchParams(location.search);
-      // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
-      // Remove all data from QueryCallbackData type
-      searchParams.delete("auth_callback");
-      searchParams.delete("code");
-      searchParams.delete("state");
-      history.replaceState(
-        null,
-        "",
-        `${location.pathname}?${searchParams.toString()}`
-      );
-    }
-
+    clearUrlParams();
     return { auth, conn };
-  } catch (err) {
+  } catch (err: any) {
     if (err !== ERR_INVALID_AUTH) {
       throw err;
     }
@@ -79,6 +88,7 @@ const connProm = async (auth) => {
     }
     auth = await authProm();
     const conn = await createConnection({ auth });
+    clearUrlParams();
     return { auth, conn };
   }
 };

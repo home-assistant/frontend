@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
-import "../../../components/ha-icon";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 
@@ -15,7 +7,7 @@ import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 class HuiSectionRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SectionConfig;
+  @state() private _config?: SectionConfig;
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
@@ -33,12 +25,16 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
     return html`
       <div class="divider"></div>
       ${this._config.label
-        ? html` <div class="label">${this._config.label}</div> `
+        ? html`
+            <div class="label" .title=${this._config.label}>
+              ${this._config.label}
+            </div>
+          `
         : html``}
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .label {
         color: var(--section-header-text-color, var(--primary-text-color));

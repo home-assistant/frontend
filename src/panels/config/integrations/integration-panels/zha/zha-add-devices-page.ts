@@ -1,19 +1,15 @@
 import "@material/mwc-button";
-import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import "@polymer/paper-input/paper-textarea";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
   DEVICE_MESSAGE_TYPES,
@@ -30,26 +26,23 @@ import "./zha-device-pairing-status-card";
 class ZHAAddDevicesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _discoveredDevices: Record<
-    string,
-    ZHADevice
-  > = {};
+  @state() private _discoveredDevices: Record<string, ZHADevice> = {};
 
-  @internalProperty() private _formattedEvents = "";
+  @state() private _formattedEvents = "";
 
-  @internalProperty() private _active = false;
+  @state() private _active = false;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _showLogs = false;
+  @state() private _showLogs = false;
 
   private _ieeeAddress?: string;
 
@@ -91,7 +84,7 @@ class ZHAAddDevicesPage extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
+        .route=${this.route!}
         .tabs=${zhaTabs}
       >
         <mwc-button slot="toolbar-icon" @click=${this._toggleLogs}
@@ -158,7 +151,7 @@ class ZHAAddDevicesPage extends LitElement {
               readonly
               max-rows="10"
               class="log"
-              value="${this._formattedEvents}"
+              value=${this._formattedEvents}
             >
             </paper-textarea>`
           : ""}
@@ -176,8 +169,7 @@ class ZHAAddDevicesPage extends LitElement {
       if (this.shadowRoot) {
         const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
         if (paperTextArea) {
-          const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
-            .textarea;
+          const textArea = (paperTextArea.inputElement as any).textarea;
           textArea.scrollTop = textArea.scrollHeight;
         }
       }
@@ -217,7 +209,7 @@ class ZHAAddDevicesPage extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

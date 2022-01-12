@@ -1,17 +1,9 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -42,16 +34,17 @@ interface SelectedChangedEvent {
 @customElement("hui-dialog-create-card")
 export class HuiCreateDialogCard
   extends LitElement
-  implements HassDialog<CreateCardDialogParams> {
+  implements HassDialog<CreateCardDialogParams>
+{
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: CreateCardDialogParams;
+  @state() private _params?: CreateCardDialogParams;
 
-  @internalProperty() private _viewConfig!: LovelaceViewConfig;
+  @state() private _viewConfig!: LovelaceViewConfig;
 
-  @internalProperty() private _selectedEntities: string[] = [];
+  @state() private _selectedEntities: string[] = [];
 
-  @internalProperty() private _currTabIndex = 0;
+  @state() private _currTabIndex = 0;
 
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
@@ -62,6 +55,7 @@ export class HuiCreateDialogCard
   public closeDialog(): boolean {
     this._params = undefined;
     this._currTabIndex = 0;
+    this._selectedEntities = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     return true;
   }
@@ -96,8 +90,7 @@ export class HuiCreateDialogCard
           </ha-header-bar>
           <mwc-tab-bar
             .activeIndex=${this._currTabIndex}
-            @MDCTabBar:activated=${(ev: CustomEvent) =>
-              this._handleTabChanged(ev)}
+            @MDCTabBar:activated=${this._handleTabChanged}
           >
             <mwc-tab
               .label=${this.hass!.localize(
@@ -151,7 +144,7 @@ export class HuiCreateDialogCard
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

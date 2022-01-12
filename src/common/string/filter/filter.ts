@@ -92,7 +92,7 @@ function isUpperCaseAtPos(pos: number, word: string, wordLow: string): boolean {
   return word[pos] !== wordLow[pos];
 }
 
-function isPatternInWord(
+export function isPatternInWord(
   patternLow: string,
   patternPos: number,
   patternLen: number,
@@ -121,7 +121,7 @@ enum Arrow {
 }
 
 /**
- * An array representating a fuzzy match.
+ * An array representing a fuzzy match.
  *
  * 0. the score
  * 1. the offset at which matching started
@@ -180,10 +180,10 @@ export function fuzzyScore(
     wordLow
   );
 
-  let row = 1;
+  let row: number;
   let column = 1;
-  let patternPos = patternStart;
-  let wordPos = wordStart;
+  let patternPos: number;
+  let wordPos: number;
 
   const hasStrongFirstMatch = [false];
 

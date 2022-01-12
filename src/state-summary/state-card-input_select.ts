@@ -4,14 +4,13 @@ import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
@@ -30,7 +29,7 @@ class StateCardInputSelect extends LitElement {
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <paper-dropdown-menu-light
         .label=${computeStateName(this.stateObj)}
-        .value="${this.stateObj.state}"
+        .value=${this.stateObj.state}
         @iron-select=${this._selectedOptionChanged}
         @click=${stopPropagation}
       >
@@ -46,9 +45,8 @@ class StateCardInputSelect extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     // Update selected after rendering the items or else it won't work in Firefox
-    this.shadowRoot!.querySelector(
-      "paper-listbox"
-    )!.selected = this.stateObj.attributes.options.indexOf(this.stateObj.state);
+    this.shadowRoot!.querySelector("paper-listbox")!.selected =
+      this.stateObj.attributes.options.indexOf(this.stateObj.state);
   }
 
   private async _selectedOptionChanged(
@@ -61,7 +59,7 @@ class StateCardInputSelect extends LitElement {
     await setInputSelectOption(this.hass, this.stateObj.entity_id, option);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

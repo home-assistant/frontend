@@ -6,6 +6,7 @@ import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
 import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
+  "usb",
   "unignore",
   "dhcp",
   "homekit",
@@ -13,6 +14,7 @@ export const DISCOVERY_SOURCES = [
   "zeroconf",
   "discovery",
   "mqtt",
+  "hassio",
 ];
 
 export const ATTENTION_SOURCES = ["reauth"];

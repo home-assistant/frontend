@@ -1,17 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
@@ -35,9 +28,15 @@ declare global {
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   /**
    * Object with the columns.
@@ -158,6 +157,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       : hiddenLabel;
 
     const headerToolbar = html`<search-input
+        .hass=${this.hass}
         .filter=${this.filter}
         no-label-float
         no-underline
@@ -170,7 +170,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         ? html`<div class="active-filters">
             ${this.narrow
               ? html`<div>
-                  <ha-svg-icon .path="${mdiFilterVariant}"></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
                     ${filterInfo}
                   </paper-tooltip>
@@ -185,12 +185,15 @@ export class HaTabsSubpageDataTable extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .supervisor=${this.supervisor}
       >
         <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow
@@ -203,6 +206,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             `
           : ""}
         <ha-data-table
+          .hass=${this.hass}
           .columns=${this.columns}
           .data=${this.data}
           .filter=${this.filter}
@@ -238,7 +242,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     fireEvent(this, "clear-filter");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         width: 100%;
@@ -277,7 +281,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         margin-left: 4px;
         font-size: 14px;
       }
-      .active-filters ha-icon {
+      .active-filters ha-svg-icon {
         color: var(--primary-color);
       }
       .active-filters mwc-button {

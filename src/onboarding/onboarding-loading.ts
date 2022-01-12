@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 
 @customElement("onboarding-loading")
 class OnboardingLoading extends LitElement {
@@ -13,7 +7,7 @@ class OnboardingLoading extends LitElement {
     return html` <div class="loader"></div> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       /* MIT License (MIT). Copyright (c) 2014 Luke Haas */
       .loader,

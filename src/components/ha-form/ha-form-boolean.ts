@@ -1,21 +1,14 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import "@material/mwc-formfield";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   HaFormBooleanData,
   HaFormBooleanSchema,
   HaFormElement,
-} from "./ha-form";
+} from "./types";
+import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-checkbox";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
@@ -25,9 +18,9 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
+  @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-checkbox", true) private _input?: HTMLElement;
+  @query("ha-checkbox", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -37,25 +30,20 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-checkbox .checked=${this.data} @change=${this._valueChanged}>
-        ${this.label}
-      </paper-checkbox>
+      <mwc-formfield .label=${this.label}>
+        <ha-checkbox
+          .checked=${this.data}
+          .disabled=${this.disabled}
+          @change=${this._valueChanged}
+        ></ha-checkbox>
+      </mwc-formfield>
     `;
   }
 
   private _valueChanged(ev: Event) {
     fireEvent(this, "value-changed", {
-      value: (ev.target as PaperCheckboxElement).checked,
+      value: (ev.target as HaCheckbox).checked,
     });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      paper-checkbox {
-        display: block;
-        padding: 22px 0;
-      }
-    `;
   }
 }
 

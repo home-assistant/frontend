@@ -9,11 +9,15 @@ import { getSignedPath } from "./auth";
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
 
+export const STREAM_TYPE_HLS = "hls";
+export const STREAM_TYPE_WEB_RTC = "web_rtc";
+
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;
   access_token: string;
   brand: string;
   motion_detection: boolean;
+  frontend_stream_type: string;
 }
 
 export interface CameraEntity extends HassEntityBase {
@@ -33,20 +37,28 @@ export interface Stream {
   url: string;
 }
 
+export interface WebRtcAnswer {
+  answer: string;
+}
+
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
   `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
 
-export const fetchThumbnailUrlWithCache = (
+export const fetchThumbnailUrlWithCache = async (
   hass: HomeAssistant,
-  entityId: string
-) =>
-  timeCachePromiseFunc(
+  entityId: string,
+  width: number,
+  height: number
+) => {
+  const base_url = await timeCachePromiseFunc(
     "_cameraTmbUrl",
     9000,
     fetchThumbnailUrl,
     hass,
     entityId
   );
+  return `${base_url}&width=${width}&height=${height}`;
+};
 
 export const fetchThumbnailUrl = async (
   hass: HomeAssistant,
@@ -73,6 +85,17 @@ export const fetchStreamUrl = async (
   stream.url = hass.hassUrl(stream.url);
   return stream;
 };
+
+export const handleWebRtcOffer = (
+  hass: HomeAssistant,
+  entityId: string,
+  offer: string
+) =>
+  hass.callWS<WebRtcAnswer>({
+    type: "camera/web_rtc_offer",
+    entity_id: entityId,
+    offer: offer,
+  });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<CameraPreferences>({

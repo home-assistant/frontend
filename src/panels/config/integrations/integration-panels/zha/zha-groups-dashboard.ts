@@ -2,14 +2,13 @@ import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -141,10 +140,10 @@ export class ZHAGroupsDashboard extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const groupId = ev.detail.id;
-    navigate(this, `/config/zha/group/${groupId}`);
+    navigate(`/config/zha/group/${groupId}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

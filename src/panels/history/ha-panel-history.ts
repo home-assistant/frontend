@@ -1,20 +1,26 @@
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
-  css,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html } from "lit-html";
+  addDays,
+  endOfToday,
+  endOfWeek,
+  endOfYesterday,
+  startOfToday,
+  startOfWeek,
+  startOfYesterday,
+} from "date-fns";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
+import { extractSearchParam } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/chart/state-history-charts";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import "../../components/state-history-charts";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -37,21 +43,17 @@ class HaPanelHistory extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
   public constructor() {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2);
-    start.setMinutes(0);
-    start.setSeconds(0);
+    start.setHours(start.getHours() - 2, 0, 0, 0);
     this._startDate = start;
 
     const end = new Date();
-    end.setHours(end.getHours() + 1);
-    end.setMinutes(0);
-    end.setSeconds(0);
+    end.setHours(end.getHours() + 1, 0, 0, 0);
     this._endDate = end;
   }
 
@@ -65,6 +67,12 @@ class HaPanelHistory extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
+            <ha-icon-button
+              @click=${this._refreshHistory}
+              .disabled=${this._isLoading}
+              .path=${mdiRefresh}
+              .label=${this.hass.localize("ui.common.refresh")}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -114,43 +122,28 @@ class HaPanelHistory extends LitElement {
     super.firstUpdated(changedProps);
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(today);
-    todayEnd.setDate(todayEnd.getDate() + 1);
-    todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
-
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayEnd = new Date(today);
-    yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
-
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
-    const thisWeekEnd = new Date(thisWeekStart);
-    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
-    thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
-
-    const lastWeekStart = new Date(today);
-    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
-    lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
+    const weekStart = startOfWeek(today);
+    const weekEnd = endOfWeek(today);
 
     this._ranges = {
-      [this.hass.localize("ui.panel.history.ranges.today")]: [today, todayEnd],
-      [this.hass.localize("ui.panel.history.ranges.yesterday")]: [
-        yesterday,
-        yesterdayEnd,
+      [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
+        startOfToday(),
+        endOfToday(),
       ],
-      [this.hass.localize("ui.panel.history.ranges.this_week")]: [
-        thisWeekStart,
-        thisWeekEnd,
-      ],
-      [this.hass.localize("ui.panel.history.ranges.last_week")]: [
-        lastWeekStart,
-        lastWeekEnd,
-      ],
+      [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
+        [startOfYesterday(), endOfYesterday()],
+      [this.hass.localize("ui.components.date-range-picker.ranges.this_week")]:
+        [weekStart, weekEnd],
+      [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
+        [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
+
+    this._entityId = extractSearchParam("entity_id") ?? "";
+
+    const startDate = extractSearchParam("start_date");
+    if (startDate) {
+      this._startDate = new Date(startDate);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -168,6 +161,10 @@ class HaPanelHistory extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+  }
+
+  private _refreshHistory() {
+    this._getHistory();
   }
 
   private async _getHistory() {

@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -34,23 +26,26 @@ import { UserDetailDialogParams } from "./show-dialog-user-detail";
 class DialogUserDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _isActive?: boolean;
+  @state() private _localOnly?: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _isActive?: boolean;
 
-  @internalProperty() private _params?: UserDetailDialogParams;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _params?: UserDetailDialogParams;
+
+  @state() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
     this._name = params.entry.name || "";
     this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+    this._localOnly = params.entry.local_only;
     this._isActive = params.entry.is_active;
     await this.updateComplete;
   }
@@ -63,7 +58,7 @@ class DialogUserDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(this.hass, user.name)}
@@ -101,10 +96,23 @@ class DialogUserDetail extends LitElement {
               .value=${this._name}
               .disabled=${user.system_generated}
               @value-changed=${this._nameChanged}
-              label="${this.hass!.localize(
-                "ui.panel.config.users.editor.name"
-              )}"
+              label=${this.hass!.localize("ui.panel.config.users.editor.name")}
             ></paper-input>
+            <div class="row">
+              <ha-formfield
+                .label=${this.hass.localize(
+                  "ui.panel.config.users.editor.local_only"
+                )}
+                .dir=${computeRTLDirection(this.hass)}
+              >
+                <ha-switch
+                  .disabled=${user.system_generated}
+                  .checked=${this._localOnly}
+                  @change=${this._localOnlyChanged}
+                >
+                </ha-switch>
+              </ha-formfield>
+            </div>
             <div class="row">
               <ha-formfield
                 .label=${this.hass.localize(
@@ -208,11 +216,15 @@ class DialogUserDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
-  private async _adminChanged(ev): Promise<void> {
+  private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
   }
 
-  private async _activeChanged(ev): Promise<void> {
+  private _localOnlyChanged(ev): void {
+    this._localOnly = ev.target.checked;
+  }
+
+  private _activeChanged(ev): void {
     this._isActive = ev.target.checked;
   }
 
@@ -225,9 +237,10 @@ class DialogUserDetail extends LitElement {
         group_ids: [
           this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
         ],
+        local_only: this._localOnly,
       });
       this._close();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
@@ -295,7 +308,7 @@ class DialogUserDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

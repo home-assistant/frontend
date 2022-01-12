@@ -1,18 +1,11 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../components/ha-icon";
 import { LovelaceRow, TextConfig } from "../entity-rows/types";
 
 @customElement("hui-text-row")
 class HuiTextRow extends LitElement implements LovelaceRow {
-  @internalProperty() private _config?: TextConfig;
+  @state() private _config?: TextConfig;
 
   public setConfig(config: TextConfig): void {
     if (!config || !config.name || !config.text) {
@@ -28,13 +21,13 @@ class HuiTextRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <ha-icon .icon="${this._config.icon}"></ha-icon>
-      <div class="name">${this._config.name}</div>
-      <div class="text">${this._config.text}</div>
+      <ha-icon .icon=${this._config.icon}></ha-icon>
+      <div class="name" .title=${this._config.name}>${this._config.name}</div>
+      <div class="text" .title=${this._config.text}>${this._config.text}</div>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

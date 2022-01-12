@@ -34,6 +34,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "statistics-graph",
+    showElement: false,
+  },
+  {
     type: "humidifier",
     showElement: true,
   },
@@ -83,6 +87,10 @@ export const coreCards: Card[] = [
   },
   {
     type: "weather-forecast",
+    showElement: true,
+  },
+  {
+    type: "area",
     showElement: true,
   },
   {

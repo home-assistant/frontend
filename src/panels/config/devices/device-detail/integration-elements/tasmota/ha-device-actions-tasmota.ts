@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { removeTasmotaDeviceEntry } from "../../../../../../data/tasmota";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -21,7 +14,7 @@ export class HaDeviceActionsTasmota extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-button class="warning" @click="${this._confirmDeleteEntry}">
+      <mwc-button class="warning" @click=${this._confirmDeleteEntry}>
         ${this.hass.localize("ui.panel.config.devices.delete")}
       </mwc-button>
     `;
@@ -39,7 +32,7 @@ export class HaDeviceActionsTasmota extends LitElement {
     await removeTasmotaDeviceEntry(this.hass!, this.device.id);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

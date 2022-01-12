@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-textarea";
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -7,7 +8,7 @@ import { createCardElement } from "../../create-element/create-card-element";
 import { createErrorCardConfig } from "../../create-element/create-element-base";
 import { LovelaceCard } from "../../types";
 
-export class HuiCardPreview extends UpdatingElement {
+export class HuiCardPreview extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public config?: LovelaceCardConfig;
@@ -26,6 +27,10 @@ export class HuiCardPreview extends UpdatingElement {
         this._createCard(this.config);
       }
     });
+  }
+
+  protected createRenderRoot() {
+    return this;
   }
 
   protected update(changedProperties: PropertyValues) {
@@ -57,7 +62,7 @@ export class HuiCardPreview extends UpdatingElement {
       if (!this._error && oldConfig && this.config.type === oldConfig.type) {
         try {
           this._element.setConfig(this.config);
-        } catch (err) {
+        } catch (err: any) {
           this._createCard(createErrorCardConfig(err.message, this.config));
         }
       } else {

@@ -1,31 +1,36 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import {
   customElement,
   eventOptions,
-  html,
-  internalProperty,
-  LitElement,
   property,
-  PropertyValues,
   query,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
-import { scroll } from "lit-virtualizer";
+  state,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
+import { haStyleScrollbar } from "../../resources/styles";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-icon";
+import "../ha-svg-icon";
 import { filterData, sortData } from "./sort-filter";
+import { HomeAssistant } from "../../types";
 
 declare global {
   // for fire event
@@ -59,12 +64,13 @@ export interface DataTableSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
   filterKey?: string;
+  valueColumn?: string;
   direction?: SortingDirection;
 }
 
 export interface DataTableColumnData extends DataTableSortColumnData {
   title: TemplateResult | string;
-  type?: "numeric" | "icon" | "icon-button";
+  type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
   template?: <T>(data: any, row: T) => TemplateResult | string;
   width?: string;
   maxWidth?: string;
@@ -73,7 +79,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   hidden?: boolean;
 }
 
-type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+export type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
   title?: TemplateResult | string;
 };
 
@@ -88,6 +94,8 @@ export interface SortableColumnContainer {
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
@@ -118,21 +126,21 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public filter = "";
 
-  @internalProperty() private _filterable = false;
+  @state() private _filterable = false;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _sortColumn?: string;
+  @state() private _sortColumn?: string;
 
-  @internalProperty() private _sortDirection: SortingDirection = null;
+  @state() private _sortDirection: SortingDirection = null;
 
-  @internalProperty() private _filteredData: DataTableRowData[] = [];
+  @state() private _filteredData: DataTableRowData[] = [];
 
-  @internalProperty() private _headerHeight = 0;
+  @state() private _headerHeight = 0;
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
-  @internalProperty() private _items: DataTableRowData[] = [];
+  @state() private _items: DataTableRowData[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -166,8 +174,12 @@ export class HaDataTable extends LitElement {
     }
   }
 
-  protected updated(properties: PropertyValues) {
-    super.updated(properties);
+  protected firstUpdated() {
+    this.updateComplete.then(() => this._calcTableHeight());
+  }
+
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
@@ -223,6 +235,7 @@ export class HaDataTable extends LitElement {
             ? html`
                 <div class="table-header">
                   <search-input
+                    .hass=${this.hass}
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
                     .noLabelFloat=${this.noLabelFloat}
@@ -239,7 +252,7 @@ export class HaDataTable extends LitElement {
           aria-rowcount=${this._filteredData.length + 1}
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 57}px`
+              ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
@@ -268,15 +281,13 @@ export class HaDataTable extends LitElement {
               }
               const sorted = key === this._sortColumn;
               const classes = {
-                "mdc-data-table__header-cell--numeric": Boolean(
-                  column.type === "numeric"
-                ),
-                "mdc-data-table__header-cell--icon": Boolean(
-                  column.type === "icon"
-                ),
-                "mdc-data-table__header-cell--icon-button": Boolean(
-                  column.type === "icon-button"
-                ),
+                "mdc-data-table__header-cell--numeric":
+                  column.type === "numeric",
+                "mdc-data-table__header-cell--icon": column.type === "icon",
+                "mdc-data-table__header-cell--icon-button":
+                  column.type === "icon-button",
+                "mdc-data-table__header-cell--overflow-menu":
+                  column.type === "overflow-menu",
                 sortable: Boolean(column.sortable),
                 "not-sorted": Boolean(column.sortable && !sorted),
                 grows: Boolean(column.grows),
@@ -303,11 +314,11 @@ export class HaDataTable extends LitElement {
                 >
                   ${column.sortable
                     ? html`
-                        <ha-icon
-                          .icon=${sorted && this._sortDirection === "desc"
-                            ? "hass:arrow-down"
-                            : "hass:arrow-up"}
-                        ></ha-icon>
+                        <ha-svg-icon
+                          .path=${sorted && this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
                       `
                     : ""}
                   <span>${column.title}</span>
@@ -327,12 +338,17 @@ export class HaDataTable extends LitElement {
               `
             : html`
                 <div
-                  class="mdc-data-table__content scroller"
+                  class="mdc-data-table__content scroller ha-scrollbar"
                   @scroll=${this._saveScrollPos}
                 >
                   ${scroll({
                     items: this._items,
+                    layout: Layout1d,
                     renderItem: (row: DataTableRowData, index) => {
+                      // not sure how this happens...
+                      if (!row) {
+                        return html``;
+                      }
                       if (row.append) {
                         return html`
                           <div class="mdc-data-table__row">${row.content}</div>
@@ -348,9 +364,8 @@ export class HaDataTable extends LitElement {
                           .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
-                            "mdc-data-table__row--selected": this._checkedRows.includes(
-                              String(row[this.id])
-                            ),
+                            "mdc-data-table__row--selected":
+                              this._checkedRows.includes(String(row[this.id])),
                             clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
@@ -388,23 +403,21 @@ export class HaDataTable extends LitElement {
                                 <div
                                   role="cell"
                                   class="mdc-data-table__cell ${classMap({
-                                    "mdc-data-table__cell--numeric": Boolean(
-                                      column.type === "numeric"
-                                    ),
-                                    "mdc-data-table__cell--icon": Boolean(
-                                      column.type === "icon"
-                                    ),
-                                    "mdc-data-table__cell--icon-button": Boolean(
-                                      column.type === "icon-button"
-                                    ),
+                                    "mdc-data-table__cell--numeric":
+                                      column.type === "numeric",
+                                    "mdc-data-table__cell--icon":
+                                      column.type === "icon",
+                                    "mdc-data-table__cell--icon-button":
+                                      column.type === "icon-button",
+                                    "mdc-data-table__cell--overflow-menu":
+                                      column.type === "overflow-menu",
                                     grows: Boolean(column.grows),
                                     forceLTR: Boolean(column.forceLTR),
                                   })}"
                                   style=${column.width
                                     ? styleMap({
-                                        [column.grows
-                                          ? "minWidth"
-                                          : "width"]: column.width,
+                                        [column.grows ? "minWidth" : "width"]:
+                                          column.width,
                                         maxWidth: column.maxWidth
                                           ? column.maxWidth
                                           : "",
@@ -446,7 +459,7 @@ export class HaDataTable extends LitElement {
     const prom = this._sortColumn
       ? sortData(
           filteredData,
-          this._sortColumns,
+          this._sortColumns[this._sortColumn],
           this._sortDirection,
           this._sortColumn
         )
@@ -465,15 +478,16 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab) {
-      this._items = [...data];
+      const items = [...data];
 
       if (this.appendRow) {
-        this._items.push({ append: true, content: this.appendRow });
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items.push({ empty: true });
+        items.push({ empty: true });
       }
+      this._items = items;
     } else {
       this._items = data;
     }
@@ -539,7 +553,7 @@ export class HaDataTable extends LitElement {
 
   private _handleRowClick(ev: Event) {
     const target = ev.target as HTMLElement;
-    if (target.tagName === "HA-CHECKBOX") {
+    if (["HA-CHECKBOX", "MWC-BUTTON"].includes(target.tagName)) {
       return;
     }
     const rowId = (ev.currentTarget as any).rowId;
@@ -573,355 +587,388 @@ export class HaDataTable extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      /* default mdc styles, colors changed, without checkbox styles */
-      :host {
-        height: 100%;
-      }
-      .mdc-data-table__content {
-        font-family: Roboto, sans-serif;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        font-weight: 400;
-        letter-spacing: 0.0178571429em;
-        text-decoration: inherit;
-        text-transform: inherit;
-      }
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        /* default mdc styles, colors changed, without checkbox styles */
+        :host {
+          height: 100%;
+        }
+        .mdc-data-table__content {
+          font-family: Roboto, sans-serif;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          font-size: 0.875rem;
+          line-height: 1.25rem;
+          font-weight: 400;
+          letter-spacing: 0.0178571429em;
+          text-decoration: inherit;
+          text-transform: inherit;
+        }
 
-      .mdc-data-table {
-        background-color: var(--data-table-background-color);
-        border-radius: 4px;
-        border-width: 1px;
-        border-style: solid;
-        border-color: var(--divider-color);
-        display: inline-flex;
-        flex-direction: column;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
+        .mdc-data-table {
+          background-color: var(--data-table-background-color);
+          border-radius: 4px;
+          border-width: 1px;
+          border-style: solid;
+          border-color: var(--divider-color);
+          display: inline-flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          overflow: hidden;
+        }
 
-      .mdc-data-table__row--selected {
-        background-color: rgba(var(--rgb-primary-color), 0.04);
-      }
+        .mdc-data-table__row--selected {
+          background-color: rgba(var(--rgb-primary-color), 0.04);
+        }
 
-      .mdc-data-table__row {
-        display: flex;
-        width: 100%;
-        height: 52px;
-      }
+        .mdc-data-table__row {
+          display: flex;
+          width: 100%;
+          height: 52px;
+        }
 
-      .mdc-data-table__row ~ .mdc-data-table__row {
-        border-top: 1px solid var(--divider-color);
-      }
+        .mdc-data-table__row ~ .mdc-data-table__row {
+          border-top: 1px solid var(--divider-color);
+        }
 
-      .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
-        background-color: rgba(var(--rgb-primary-text-color), 0.04);
-      }
+        .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
 
-      .mdc-data-table__header-cell {
-        color: var(--primary-text-color);
-      }
+        .mdc-data-table__header-cell {
+          color: var(--primary-text-color);
+        }
 
-      .mdc-data-table__cell {
-        color: var(--primary-text-color);
-      }
+        .mdc-data-table__cell {
+          color: var(--primary-text-color);
+        }
 
-      .mdc-data-table__header-row {
-        height: 56px;
-        display: flex;
-        width: 100%;
-        border-bottom: 1px solid var(--divider-color);
-        overflow-x: auto;
-      }
+        .mdc-data-table__header-row {
+          height: 56px;
+          display: flex;
+          width: 100%;
+          border-bottom: 1px solid var(--divider-color);
+          overflow-x: auto;
+        }
 
-      .mdc-data-table__header-row::-webkit-scrollbar {
-        display: none;
-      }
+        .mdc-data-table__header-row::-webkit-scrollbar {
+          display: none;
+        }
 
-      .mdc-data-table__cell,
-      .mdc-data-table__header-cell {
-        padding-right: 16px;
-        padding-left: 16px;
-        align-self: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 0;
-        box-sizing: border-box;
-      }
+        .mdc-data-table__cell,
+        .mdc-data-table__header-cell {
+          padding-right: 16px;
+          padding-left: 16px;
+          align-self: center;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex-shrink: 0;
+          box-sizing: border-box;
+        }
 
-      .mdc-data-table__cell.mdc-data-table__cell--icon {
-        overflow: initial;
-      }
+        .mdc-data-table__cell.mdc-data-table__cell--icon {
+          overflow: initial;
+        }
 
-      .mdc-data-table__header-cell--checkbox,
-      .mdc-data-table__cell--checkbox {
-        /* @noflip */
-        padding-left: 16px;
-        /* @noflip */
-        padding-right: 0;
-        width: 56px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
-      :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
-        /* @noflip */
-        padding-left: 0;
-        /* @noflip */
-        padding-right: 16px;
-      }
+        .mdc-data-table__header-cell--checkbox,
+        .mdc-data-table__cell--checkbox {
+          /* @noflip */
+          padding-left: 16px;
+          /* @noflip */
+          padding-right: 0;
+          width: 60px;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell--checkbox,
+        :host([dir="rtl"]) .mdc-data-table__cell--checkbox {
+          /* @noflip */
+          padding-left: 0;
+          /* @noflip */
+          padding-right: 16px;
+        }
 
-      .mdc-data-table__table {
-        height: 100%;
-        width: 100%;
-        border: 0;
-        white-space: nowrap;
-      }
+        .mdc-data-table__table {
+          height: 100%;
+          width: 100%;
+          border: 0;
+          white-space: nowrap;
+        }
 
-      .mdc-data-table__cell {
-        font-family: Roboto, sans-serif;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        font-weight: 400;
-        letter-spacing: 0.0178571429em;
-        text-decoration: inherit;
-        text-transform: inherit;
-      }
+        .mdc-data-table__cell {
+          font-family: Roboto, sans-serif;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          font-size: 0.875rem;
+          line-height: 1.25rem;
+          font-weight: 400;
+          letter-spacing: 0.0178571429em;
+          text-decoration: inherit;
+          text-transform: inherit;
+        }
 
-      .mdc-data-table__cell a {
-        color: inherit;
-        text-decoration: none;
-      }
+        .mdc-data-table__cell a {
+          color: inherit;
+          text-decoration: none;
+        }
 
-      .mdc-data-table__cell--numeric {
-        text-align: right;
-      }
-      :host([dir="rtl"]) .mdc-data-table__cell--numeric {
-        /* @noflip */
-        text-align: left;
-      }
+        .mdc-data-table__cell--numeric {
+          text-align: right;
+        }
+        :host([dir="rtl"]) .mdc-data-table__cell--numeric {
+          /* @noflip */
+          text-align: left;
+        }
 
-      .mdc-data-table__cell--icon {
-        color: var(--secondary-text-color);
-        text-align: center;
-      }
+        .mdc-data-table__cell--icon {
+          color: var(--secondary-text-color);
+          text-align: center;
+        }
 
-      .mdc-data-table__header-cell--icon,
-      .mdc-data-table__cell--icon {
-        width: 54px;
-      }
+        .mdc-data-table__header-cell--icon,
+        .mdc-data-table__cell--icon {
+          width: 54px;
+        }
 
-      .mdc-data-table__header-cell.mdc-data-table__header-cell--icon {
-        text-align: center;
-      }
+        .mdc-data-table__header-cell.mdc-data-table__header-cell--icon {
+          text-align: center;
+        }
 
-      .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
-      .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
-        text-align: left;
-      }
-      :host([dir="rtl"])
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
-      :host([dir="rtl"])
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
-        text-align: right;
-      }
+          text-align: left;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(.not-sorted) {
+          text-align: right;
+        }
 
-      .mdc-data-table__cell--icon:first-child ha-icon {
-        margin-left: 8px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon {
-        margin-left: auto;
-        margin-right: 8px;
-      }
+        .mdc-data-table__cell--icon:first-child ha-icon,
+        .mdc-data-table__cell--icon:first-child ha-state-icon,
+        .mdc-data-table__cell--icon:first-child ha-svg-icon {
+          margin-left: 8px;
+        }
+        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon,
+        :host([dir="rtl"])
+          .mdc-data-table__cell--icon:first-child
+          ha-state-icon,
+        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-svg-icon {
+          margin-left: auto;
+          margin-right: 8px;
+        }
 
-      .mdc-data-table__cell--icon:first-child state-badge {
-        margin-right: -8px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child state-badge {
-        margin-right: auto;
-        margin-left: -8px;
-      }
+        .mdc-data-table__cell--icon:first-child state-badge {
+          margin-right: -8px;
+        }
+        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child state-badge {
+          margin-right: auto;
+          margin-left: -8px;
+        }
 
-      .mdc-data-table__header-cell--icon-button,
-      .mdc-data-table__cell--icon-button {
-        width: 56px;
-        padding: 8px;
-      }
+        .mdc-data-table__cell--overflow-menu,
+        .mdc-data-table__header-cell--overflow-menu,
+        .mdc-data-table__header-cell--icon-button,
+        .mdc-data-table__cell--icon-button {
+          padding: 8px;
+        }
 
-      .mdc-data-table__cell--icon-button {
-        color: var(--secondary-text-color);
-        text-overflow: clip;
-      }
+        .mdc-data-table__header-cell--icon-button,
+        .mdc-data-table__cell--icon-button {
+          width: 56px;
+        }
 
-      .mdc-data-table__header-cell--icon-button:first-child,
-      .mdc-data-table__cell--icon-button:first-child {
-        width: 64px;
-        padding-left: 16px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:first-child,
-      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:first-child {
-        padding-left: auto;
-        padding-right: 16px;
-      }
+        .mdc-data-table__cell--overflow-menu,
+        .mdc-data-table__cell--icon-button {
+          color: var(--secondary-text-color);
+          text-overflow: clip;
+        }
 
-      .mdc-data-table__header-cell--icon-button:last-child,
-      .mdc-data-table__cell--icon-button:last-child {
-        width: 64px;
-        padding-right: 16px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
-      :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
-        padding-right: auto;
-        padding-left: 16px;
-      }
+        .mdc-data-table__header-cell--icon-button:first-child,
+        .mdc-data-table__cell--icon-button:first-child,
+        .mdc-data-table__header-cell--icon-button:last-child,
+        .mdc-data-table__cell--icon-button:last-child {
+          width: 64px;
+        }
 
-      .mdc-data-table__cell--icon-button a {
-        color: var(--secondary-text-color);
-      }
+        .mdc-data-table__cell--overflow-menu:first-child,
+        .mdc-data-table__header-cell--overflow-menu:first-child,
+        .mdc-data-table__header-cell--icon-button:first-child,
+        .mdc-data-table__cell--icon-button:first-child {
+          padding-left: 16px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:first-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:first-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:first-child {
+          padding-left: 8px;
+          padding-right: 16px;
+        }
 
-      .mdc-data-table__header-cell {
-        font-family: Roboto, sans-serif;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        font-size: 0.875rem;
-        line-height: 1.375rem;
-        font-weight: 500;
-        letter-spacing: 0.0071428571em;
-        text-decoration: inherit;
-        text-transform: inherit;
-        text-align: left;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell {
-        /* @noflip */
-        text-align: right;
-      }
+        .mdc-data-table__cell--overflow-menu:last-child,
+        .mdc-data-table__header-cell--overflow-menu:last-child,
+        .mdc-data-table__header-cell--icon-button:last-child,
+        .mdc-data-table__cell--icon-button:last-child {
+          padding-right: 16px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--overflow-menu:last-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--overflow-menu:last-child,
+        :host([dir="rtl"]) .mdc-data-table__header-cell--icon-button:last-child,
+        :host([dir="rtl"]) .mdc-data-table__cell--icon-button:last-child {
+          padding-right: 8px;
+          padding-left: 16px;
+        }
+        .mdc-data-table__cell--overflow-menu,
+        .mdc-data-table__header-cell--overflow-menu {
+          overflow: initial;
+        }
+        .mdc-data-table__cell--icon-button a {
+          color: var(--secondary-text-color);
+        }
 
-      .mdc-data-table__header-cell--numeric {
-        text-align: right;
-      }
-      .mdc-data-table__header-cell--numeric.sortable:hover,
-      .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
-        text-align: left;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric {
-        /* @noflip */
-        text-align: left;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell--numeric.sortable:hover,
-      :host([dir="rtl"])
+        .mdc-data-table__header-cell {
+          font-family: Roboto, sans-serif;
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          font-size: 0.875rem;
+          line-height: 1.375rem;
+          font-weight: 500;
+          letter-spacing: 0.0071428571em;
+          text-decoration: inherit;
+          text-transform: inherit;
+          text-align: left;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell {
+          /* @noflip */
+          text-align: right;
+        }
+
+        .mdc-data-table__header-cell--numeric {
+          text-align: right;
+        }
+        .mdc-data-table__header-cell--numeric.sortable:hover,
         .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
-        text-align: right;
-      }
+          text-align: left;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell--numeric {
+          /* @noflip */
+          text-align: left;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell--numeric.sortable:hover,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
+          text-align: right;
+        }
 
-      /* custom from here */
+        /* custom from here */
 
-      :host {
-        display: block;
-      }
+        :host {
+          display: block;
+        }
 
-      .mdc-data-table {
-        display: block;
-        border-width: var(--data-table-border-width, 1px);
-        height: 100%;
-      }
-      .mdc-data-table__header-cell {
-        overflow: hidden;
-        position: relative;
-      }
-      .mdc-data-table__header-cell span {
-        position: relative;
-        left: 0px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell span {
-        left: auto;
-        right: 0px;
-      }
+        .mdc-data-table {
+          display: block;
+          border-width: var(--data-table-border-width, 1px);
+          height: 100%;
+        }
+        .mdc-data-table__header-cell {
+          overflow: hidden;
+          position: relative;
+        }
+        .mdc-data-table__header-cell span {
+          position: relative;
+          left: 0px;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell span {
+          left: auto;
+          right: 0px;
+        }
 
-      .mdc-data-table__header-cell.sortable {
-        cursor: pointer;
-      }
-      .mdc-data-table__header-cell > * {
-        transition: left 0.2s ease;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell > * {
-        transition: right 0.2s ease;
-      }
-      .mdc-data-table__header-cell ha-icon {
-        top: -3px;
-        position: absolute;
-      }
-      .mdc-data-table__header-cell.not-sorted ha-icon {
-        left: -20px;
-      }
-      :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-icon {
-        right: -20px;
-      }
-      .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
-      .mdc-data-table__header-cell.sortable.not-sorted:hover span {
-        left: 24px;
-      }
-      :host([dir="rtl"])
-        .mdc-data-table__header-cell.sortable:not(.not-sorted)
-        span,
-      :host([dir="rtl"])
-        .mdc-data-table__header-cell.sortable.not-sorted:hover
-        span {
-        left: auto;
-        right: 24px;
-      }
-      .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-icon,
-      .mdc-data-table__header-cell.sortable:hover.not-sorted ha-icon {
-        left: 12px;
-      }
-      :host([dir="rtl"])
-        .mdc-data-table__header-cell.sortable:not(.not-sorted)
-        ha-icon,
-      :host([dir="rtl"])
-        .mdc-data-table__header-cell.sortable:hover.not-sorted
-        ha-icon {
-        left: auto;
-        right: 12px;
-      }
-      .table-header {
-        border-bottom: 1px solid var(--divider-color);
-        padding: 0 16px;
-      }
-      search-input {
-        position: relative;
-        top: 2px;
-      }
-      slot[name="header"] {
-        display: block;
-      }
-      .center {
-        text-align: center;
-      }
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-      .scroller {
-        display: flex;
-        position: relative;
-        contain: strict;
-        height: calc(100% - 57px);
-      }
-      .mdc-data-table__table:not(.auto-height) .scroller {
-        overflow: auto;
-      }
-      .grows {
-        flex-grow: 1;
-        flex-shrink: 1;
-      }
-      .forceLTR {
-        direction: ltr;
-      }
-      .clickable {
-        cursor: pointer;
-      }
-    `;
+        .mdc-data-table__header-cell.sortable {
+          cursor: pointer;
+        }
+        .mdc-data-table__header-cell > * {
+          transition: left 0.2s ease;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell > * {
+          transition: right 0.2s ease;
+        }
+        .mdc-data-table__header-cell ha-svg-icon {
+          top: -3px;
+          position: absolute;
+        }
+        .mdc-data-table__header-cell.not-sorted ha-svg-icon {
+          left: -20px;
+        }
+        :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-svg-icon {
+          right: -20px;
+        }
+        .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
+        .mdc-data-table__header-cell.sortable.not-sorted:hover span {
+          left: 24px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable:not(.not-sorted)
+          span,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable.not-sorted:hover
+          span {
+          left: auto;
+          right: 24px;
+        }
+        .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-svg-icon,
+        .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon {
+          left: 12px;
+        }
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable:not(.not-sorted)
+          ha-svg-icon,
+        :host([dir="rtl"])
+          .mdc-data-table__header-cell.sortable:hover.not-sorted
+          ha-svg-icon {
+          left: auto;
+          right: 12px;
+        }
+        .table-header {
+          border-bottom: 1px solid var(--divider-color);
+          padding: 0 16px;
+        }
+        search-input {
+          position: relative;
+          top: 2px;
+        }
+        slot[name="header"] {
+          display: block;
+        }
+        .center {
+          text-align: center;
+        }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+        .scroller {
+          height: calc(100% - 57px);
+        }
+
+        .mdc-data-table__table.auto-height .scroller {
+          overflow-y: hidden !important;
+        }
+        .grows {
+          flex-grow: 1;
+          flex-shrink: 1;
+        }
+        .forceLTR {
+          direction: ltr;
+        }
+        .clickable {
+          cursor: pointer;
+        }
+      `,
+    ];
   }
 }
 

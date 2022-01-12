@@ -1,19 +1,11 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { assert, boolean, object, optional, string } from "superstruct";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert, boolean, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -22,22 +14,28 @@ import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { actionConfigStruct, EditorTarget } from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  show_name: optional(boolean()),
-  icon: optional(string()),
-  show_icon: optional(boolean()),
-  icon_height: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  theme: optional(string()),
-  show_state: optional(boolean()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    show_name: optional(boolean()),
+    icon: optional(string()),
+    show_icon: optional(boolean()),
+    icon_height: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    theme: optional(string()),
+    show_state: optional(boolean()),
+  })
+);
 
 const actions = [
   "more-info",
@@ -51,10 +49,11 @@ const actions = [
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ButtonCardConfig;
+  @state() private _config?: ButtonCardConfig;
 
   public setConfig(config: ButtonCardConfig): void {
     assert(config, cardConfigStruct);
@@ -109,6 +108,7 @@ export class HuiButtonCardEditor
     }
 
     const dir = computeRTLDirection(this.hass!);
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">
@@ -135,18 +135,22 @@ export class HuiButtonCardEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
         <div class="side-by-side">
           <div>
@@ -295,7 +299,7 @@ export class HuiButtonCardEditor
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

@@ -1,15 +1,7 @@
-import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { dump } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
 import { MQTTMessage } from "../../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../../types";
@@ -28,11 +20,11 @@ class MQTTMessages extends LitElement {
 
   @property() public summary!: string;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
-  @internalProperty() private _payloadsJson = new WeakMap();
+  @state() private _payloadsJson = new WeakMap();
 
-  @internalProperty() private _showTopic = false;
+  @state() private _showTopic = false;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -100,7 +92,7 @@ class MQTTMessages extends LitElement {
     return json
       ? html`
           ${this.showAsYaml
-            ? html` <pre>${safeDump(json)}</pre> `
+            ? html` <pre>${dump(json)}</pre> `
             : html` <pre>${JSON.stringify(json, null, 2)}</pre> `}
         `
       : html` <code>${message.payload}</code> `;
@@ -115,7 +107,7 @@ class MQTTMessages extends LitElement {
     if (typeof payload === "string") {
       try {
         o = JSON.parse(payload);
-      } catch (e) {
+      } catch (err: any) {
         o = null;
       }
     }
@@ -133,7 +125,7 @@ class MQTTMessages extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .expander {
         cursor: pointer;

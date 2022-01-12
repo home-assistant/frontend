@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/ha-entity-toggle";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -20,7 +13,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiToggleEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -48,11 +41,18 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const showToggle =
+      stateObj.state === "on" ||
+      stateObj.state === "off" ||
+      UNAVAILABLE_STATES.includes(stateObj.state);
+
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.state === "on" ||
-        stateObj.state === "off" ||
-        UNAVAILABLE_STATES.includes(stateObj.state)
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        .catchInteraction=${!showToggle}
+      >
+        ${showToggle
           ? html`
               <ha-entity-toggle
                 .hass=${this.hass}

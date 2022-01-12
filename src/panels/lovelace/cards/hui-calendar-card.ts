@@ -1,21 +1,17 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { HA_COLOR_PALETTE } from "../../../common/const";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
 import type {
   CalendarEvent,
@@ -62,13 +58,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public _events: CalendarEvent[] = [];
 
-  @internalProperty() private _config?: CalendarCardConfig;
+  @state() private _config?: CalendarCardConfig;
 
-  @internalProperty() private _calendars: Calendar[] = [];
+  @state() private _calendars: Calendar[] = [];
 
-  @internalProperty() private _narrow = false;
+  @state() private _narrow = false;
 
-  @internalProperty() private _veryNarrow = false;
+  @state() private _veryNarrow = false;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
@@ -89,7 +85,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     this._calendars = config!.entities.map((entity, idx) => ({
       entity_id: entity,
-      backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
+      backgroundColor: getColorByIndex(idx),
     }));
 
     if (this._config?.entities !== config.entities) {
@@ -204,7 +200,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._resizeObserver.observe(card);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         position: relative;

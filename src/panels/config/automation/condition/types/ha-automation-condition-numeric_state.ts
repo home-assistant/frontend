@@ -1,6 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/entity/ha-entity-picker";
 import { NumericStateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
@@ -19,13 +20,8 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   public render() {
-    const {
-      value_template,
-      entity_id,
-      attribute,
-      below,
-      above,
-    } = this.condition;
+    const { value_template, entity_id, attribute, below, above } =
+      this.condition;
 
     return html`
       <ha-entity-picker

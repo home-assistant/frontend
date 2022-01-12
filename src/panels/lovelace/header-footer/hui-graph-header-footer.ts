@@ -1,17 +1,16 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinates } from "../common/graph/coordinates";
@@ -22,11 +21,13 @@ import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = MINUTE * 60;
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter
   extends LitElement
-  implements LovelaceHeaderFooter {
+  implements LovelaceHeaderFooter
+{
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
     await import("../editor/config-elements/hui-graph-footer-editor");
     return document.createElement("hui-graph-footer-editor");
@@ -37,7 +38,6 @@ export class HuiGraphHeaderFooter
     entities: string[],
     entitiesFallback: string[]
   ): GraphHeaderFooterConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state)) &&
@@ -60,9 +60,11 @@ export class HuiGraphHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property() public type!: "header" | "footer";
+
   @property() protected _config?: GraphHeaderFooterConfig;
 
-  @internalProperty() private _coordinates?: number[][];
+  @state() private _coordinates?: number[][];
 
   private _date?: Date;
 
@@ -75,7 +77,10 @@ export class HuiGraphHeaderFooter
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {
-    if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config?.entity ||
+      !includeDomains.includes(computeDomain(config.entity))
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 
@@ -195,14 +200,15 @@ export class HuiGraphHeaderFooter
         this._stateHistory,
         this._config!.hours_to_show!,
         500,
-        this._config!.detail!
+        this._config!.detail!,
+        this._config!.limits
       ) || [];
 
     this._date = endTime;
     this._fetching = false;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-circular-progress {
         position: absolute;

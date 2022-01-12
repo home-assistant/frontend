@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Tasks to run webpack.
+const fs = require("fs");
 const gulp = require("gulp");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
@@ -18,6 +20,13 @@ const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: false }),
 ];
 
+const isWsl =
+  fs.existsSync("/proc/version") &&
+  fs
+    .readFileSync("/proc/version", "utf-8")
+    .toLocaleLowerCase()
+    .includes("microsoft");
+
 /**
  * @param {{
  *   compiler: import("webpack").Compiler,
@@ -26,26 +35,29 @@ const bothBuilds = (createConfigFunc, params) => [
  *   listenHost?: string
  * }}
  */
-const runDevServer = ({
+const runDevServer = async ({
   compiler,
   contentBase,
   port,
   listenHost = "localhost",
-}) =>
-  new WebpackDevServer(compiler, {
-    open: true,
-    watchContentBase: true,
-    contentBase,
-  }).listen(port, listenHost, function (err) {
-    if (err) {
-      throw err;
-    }
-    // Server listening
-    log(
-      "[webpack-dev-server]",
-      `Project is running at http://localhost:${port}`
-    );
-  });
+}) => {
+  const server = new WebpackDevServer(
+    {
+      open: true,
+      host: listenHost,
+      port,
+      static: {
+        directory: contentBase,
+        watch: true,
+      },
+    },
+    compiler
+  );
+
+  await server.start();
+  // Server listening
+  log("[webpack-dev-server]", `Project is running at http://localhost:${port}`);
+};
 
 const doneHandler = (done) => (err, stats) => {
   if (err) {
@@ -57,6 +69,7 @@ const doneHandler = (done) => (err, stats) => {
   }
 
   if (stats.hasErrors() || stats.hasWarnings()) {
+    // eslint-disable-next-line no-console
     console.log(stats.toString("minimal"));
   }
 
@@ -78,13 +91,14 @@ const prodBuild = (conf) =>
 
 gulp.task("webpack-watch-app", () => {
   // This command will run forever because we don't close compiler
-  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
-    { ignored: /build-translations/ },
-    doneHandler()
-  );
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createAppConfig, { isProdBuild: false })
+      : createAppConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series("create-translations", "copy-translations-app")
   );
 });
 
@@ -96,13 +110,13 @@ gulp.task("webpack-prod-app", () =>
   )
 );
 
-gulp.task("webpack-dev-server-demo", () => {
+gulp.task("webpack-dev-server-demo", () =>
   runDevServer({
     compiler: webpack(bothBuilds(createDemoConfig, { isProdBuild: false })),
     contentBase: paths.demo_output_root,
     port: 8090,
-  });
-});
+  })
+);
 
 gulp.task("webpack-prod-demo", () =>
   prodBuild(
@@ -112,15 +126,15 @@ gulp.task("webpack-prod-demo", () =>
   )
 );
 
-gulp.task("webpack-dev-server-cast", () => {
+gulp.task("webpack-dev-server-cast", () =>
   runDevServer({
     compiler: webpack(bothBuilds(createCastConfig, { isProdBuild: false })),
     contentBase: paths.cast_output_root,
     port: 8080,
     // Accessible from the network, because that's how Cast hits it.
     listenHost: "0.0.0.0",
-  });
-});
+  })
+);
 
 gulp.task("webpack-prod-cast", () =>
   prodBuild(
@@ -137,7 +151,7 @@ gulp.task("webpack-watch-hassio", () => {
       isProdBuild: false,
       latestBuild: true,
     })
-  ).watch({ ignored: /build-translations/ }, doneHandler());
+  ).watch({ ignored: /build/, poll: isWsl }, doneHandler());
 
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
@@ -153,14 +167,15 @@ gulp.task("webpack-prod-hassio", () =>
   )
 );
 
-gulp.task("webpack-dev-server-gallery", () => {
+gulp.task("webpack-dev-server-gallery", () =>
   runDevServer({
     // We don't use the es5 build, but the dev server will fuck up the publicPath if we don't
     compiler: webpack(bothBuilds(createGalleryConfig, { isProdBuild: false })),
     contentBase: paths.gallery_output_root,
     port: 8100,
-  });
-});
+    listenHost: "0.0.0.0",
+  })
+);
 
 gulp.task("webpack-prod-gallery", () =>
   prodBuild(

@@ -3,7 +3,8 @@ import { HomeAssistant } from "../../types";
 
 export interface HassioResponse<T> {
   data: T;
-  result: "ok";
+  message?: string;
+  result: "ok" | "error";
 }
 
 export interface HassioStats {

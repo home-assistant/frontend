@@ -1,22 +1,18 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -59,7 +55,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureEntityCardConfig;
+  @state() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -122,7 +118,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || computeStateName(stateObj);
-    const state = computeStateDisplay(
+    const entityState = computeStateDisplay(
       this.hass!.localize,
       stateObj,
       this.hass.locale
@@ -133,13 +129,13 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`
         <div class="footer both">
           <div>${name}</div>
-          <div>${state}</div>
+          <div>${entityState}</div>
         </div>
       `;
     } else if (this._config.show_name) {
-      footer = html`<div class="footer">${name}</div>`;
+      footer = html`<div class="footer single">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html`<div class="footer state">${state}</div>`;
+      footer = html`<div class="footer single">${entityState}</div>`;
     }
 
     return html`
@@ -165,16 +161,13 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
               ? "0"
               : undefined
           )}
-          class=${classMap({
-            clickable: !UNAVAILABLE_STATES.includes(stateObj.state),
-          })}
         ></hui-image>
         ${footer}
       </ha-card>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         min-height: 75px;
@@ -184,7 +177,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      hui-image.clickable {
+      hui-image {
         cursor: pointer;
       }
 
@@ -214,8 +207,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         justify-content: space-between;
       }
 
-      .state {
-        text-align: right;
+      .single {
+        text-align: center;
       }
     `;
   }

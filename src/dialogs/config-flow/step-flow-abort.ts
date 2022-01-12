@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
@@ -15,13 +9,11 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private step!: DataEntryFlowStepAbort;
+  @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
   protected render(): TemplateResult {
     return html`
@@ -34,7 +26,7 @@ class StepFlowAbort extends LitElement {
         ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}"
+        <mwc-button @click=${this._flowDone}
           >${this.hass.localize(
             "ui.panel.config.integrations.config_flow.close"
           )}</mwc-button
@@ -47,7 +39,7 @@ class StepFlowAbort extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configFlowContentStyles;
   }
 }

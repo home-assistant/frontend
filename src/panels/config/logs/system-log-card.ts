@@ -1,15 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
@@ -32,7 +24,7 @@ export class SystemLogCard extends LitElement {
 
   public loaded = false;
 
-  @internalProperty() private _items?: LoggedError[];
+  @state() private _items?: LoggedError[];
 
   public async fetchData(): Promise<void> {
     this._items = undefined;
@@ -70,7 +62,7 @@ export class SystemLogCard extends LitElement {
                                 this.hass!.locale
                               )}
                               –
-                              ${html`(<span class="${item.level.toLowerCase()}"
+                              ${html`(<span class=${item.level.toLowerCase()}
                                   >${this.hass.localize(
                                     "ui.panel.config.logs.level." +
                                       item.level.toLowerCase()
@@ -154,7 +146,7 @@ export class SystemLogCard extends LitElement {
     showSystemLogDetailDialog(this, { item });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding-top: 16px;

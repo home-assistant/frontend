@@ -1,17 +1,7 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import "../../../../components/dialog/ha-paper-dialog";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
@@ -28,11 +18,11 @@ import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 export class HuiDialogSuggestCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SuggestCardDialogParams;
+  @state() private _params?: SuggestCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig[];
+  @state() private _cardConfig?: LovelaceCardConfig[];
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -45,8 +35,9 @@ export class HuiDialogSuggestCard extends LitElement {
           entityId,
           this.hass.states[entityId],
         ]),
-        {},
-        true
+        {
+          title: params.cardTitle,
+        }
       );
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
@@ -56,16 +47,26 @@ export class HuiDialogSuggestCard extends LitElement {
     }
   }
 
+  public closeDialog(): void {
+    this._params = undefined;
+    this._cardConfig = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     return html`
-      <ha-paper-dialog with-backdrop opened>
-        <h2>
-          ${this.hass!.localize("ui.panel.lovelace.editor.suggest_card.header")}
-        </h2>
-        <paper-dialog-scrollable>
+      <ha-dialog
+        open
+        scrimClickAction
+        @closed=${this.closeDialog}
+        .heading=${this.hass!.localize(
+          "ui.panel.lovelace.editor.suggest_card.header"
+        )}
+      >
+        <div>
           ${this._cardConfig
             ? html`
                 <div class="element-preview">
@@ -73,7 +74,7 @@ export class HuiDialogSuggestCard extends LitElement {
                     (cardConfig) => html`
                       <hui-card-preview
                         .hass=${this.hass}
-                        .config="${cardConfig}"
+                        .config=${cardConfig}
                       ></hui-card-preview>
                     `
                   )}
@@ -89,57 +90,59 @@ export class HuiDialogSuggestCard extends LitElement {
                 </div>
               `
             : ""}
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._close}">
-            ${this._params.yaml
-              ? this.hass!.localize("ui.common.close")
-              : this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
-          ${!this._params.yaml
-            ? html`
-                <mwc-button @click="${this._pickCard}"
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.suggest_card.create_own"
-                  )}</mwc-button
-                >
-                <mwc-button ?disabled="${this._saving}" @click="${this._save}">
-                  ${this._saving
-                    ? html`
-                        <ha-circular-progress
-                          active
-                          title="Saving"
-                          size="small"
-                        ></ha-circular-progress>
-                      `
-                    : this.hass!.localize(
-                        "ui.panel.lovelace.editor.suggest_card.add"
-                      )}
-                </mwc-button>
-              `
-            : ""}
         </div>
-      </ha-paper-dialog>
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this._params.yaml
+            ? this.hass!.localize("ui.common.close")
+            : this.hass!.localize("ui.common.cancel")}
+        </mwc-button>
+        ${!this._params.yaml
+          ? html`
+              <mwc-button slot="primaryAction" @click=${this._pickCard}
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_card.create_own"
+                )}</mwc-button
+              >
+              <mwc-button
+                slot="primaryAction"
+                .disabled=${this._saving}
+                @click=${this._save}
+              >
+                ${this._saving
+                  ? html`
+                      <ha-circular-progress
+                        active
+                        title="Saving"
+                        size="small"
+                      ></ha-circular-progress>
+                    `
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.editor.suggest_card.add"
+                    )}
+              </mwc-button>
+            `
+          : ""}
+      </ha-dialog>
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
-          ha-paper-dialog {
+          ha-dialog {
             max-height: 100%;
             height: 100%;
           }
         }
         @media all and (min-width: 850px) {
-          ha-paper-dialog {
+          ha-dialog {
             width: 845px;
           }
         }
-        ha-paper-dialog {
+        ha-dialog {
           max-width: 845px;
           --dialog-z-index: 5;
         }
@@ -163,11 +166,6 @@ export class HuiDialogSuggestCard extends LitElement {
     ];
   }
 
-  private _close(): void {
-    this._params = undefined;
-    this._cardConfig = undefined;
-  }
-
   private _pickCard(): void {
     if (
       !this._params?.lovelaceConfig ||
@@ -183,7 +181,7 @@ export class HuiDialogSuggestCard extends LitElement {
       path: this._params!.path,
       entities: this._params!.entities,
     });
-    this._close();
+    this.closeDialog();
   }
 
   private async _save(): Promise<void> {
@@ -205,7 +203,7 @@ export class HuiDialogSuggestCard extends LitElement {
     );
     this._saving = false;
     showSaveSuccessToast(this, this.hass);
-    this._close();
+    this.closeDialog();
   }
 }
 

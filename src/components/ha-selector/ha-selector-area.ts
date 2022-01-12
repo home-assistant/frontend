@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { EntityRegistryEntry } from "../../data/entity_registry";
@@ -22,7 +17,7 @@ export class HaAreaSelector extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() public _configEntries?: ConfigEntry[];
+  @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -44,8 +39,8 @@ export class HaAreaSelector extends LitElement {
       .value=${this.value}
       .label=${this.label}
       no-add
-      .deviceFilter=${(device) => this._filterDevices(device)}
-      .entityFilter=${(entity) => this._filterEntities(entity)}
+      .deviceFilter=${this._filterDevices}
+      .entityFilter=${this._filterEntities}
       .includeDeviceClasses=${this.selector.area.entity?.device_class
         ? [this.selector.area.entity.device_class]
         : undefined}
@@ -56,16 +51,16 @@ export class HaAreaSelector extends LitElement {
     ></ha-area-picker>`;
   }
 
-  private _filterEntities(entity: EntityRegistryEntry): boolean {
+  private _filterEntities = (entity: EntityRegistryEntry): boolean => {
     if (this.selector.area.entity?.integration) {
       if (entity.platform !== this.selector.area.entity.integration) {
         return false;
       }
     }
     return true;
-  }
+  };
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (
       this.selector.area.device?.manufacturer &&
       device.manufacturer !== this.selector.area.device.manufacturer
@@ -89,7 +84,7 @@ export class HaAreaSelector extends LitElement {
       }
     }
     return true;
-  }
+  };
 
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(

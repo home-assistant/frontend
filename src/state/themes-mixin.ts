@@ -28,24 +28,23 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({
-          selectedTheme: { ...this.hass!.selectedTheme!, ...ev.detail },
+          selectedTheme: {
+            ...this.hass!.selectedTheme!,
+            ...ev.detail,
+          },
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
-        applyThemesOnElement(
-          document.documentElement,
-          {
-            default_theme: "default",
-            default_dark_theme: null,
-            themes: {},
-            darkMode: false,
-          },
-          "default",
-          { dark: true }
-        );
+        applyThemesOnElement(document.documentElement, {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: true,
+          theme: "default",
+        });
       }
     }
 
@@ -60,41 +59,46 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _applyTheme(dark: boolean) {
+    private _applyTheme(darkPreferred: boolean) {
       if (!this.hass) {
         return;
       }
+
+      let themeSettings: Partial<HomeAssistant["selectedTheme"]> =
+        this.hass!.selectedTheme;
+
       const themeName =
-        this.hass.selectedTheme?.theme ||
-        (dark && this.hass.themes.default_dark_theme
-          ? this.hass.themes.default_dark_theme!
+        themeSettings?.theme ||
+        (darkPreferred && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme
           : this.hass.themes.default_theme);
 
-      let options: Partial<HomeAssistant["selectedTheme"]> = this.hass!
-        .selectedTheme;
+      let darkMode =
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
 
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme!,
-          dark,
-        };
+      const selectedTheme = themeName
+        ? this.hass.themes.themes[themeName]
+        : undefined;
+
+      if (selectedTheme && darkMode && !selectedTheme.modes) {
+        darkMode = false;
       }
+
+      themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
+      this._updateHass({
+        themes: { ...this.hass.themes!, theme: themeName },
+      });
 
       applyThemesOnElement(
         document.documentElement,
         this.hass.themes,
         themeName,
-        options
+        themeSettings
       );
-
-      const darkMode =
-        themeName === "default"
-          ? !!options?.dark
-          : !!(dark && this.hass.themes.default_dark_theme);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
-          themes: { ...this.hass.themes, darkMode },
+          themes: { ...this.hass.themes!, darkMode },
         });
 
         const schemeMeta = document.querySelector("meta[name=color-scheme]");
@@ -112,9 +116,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         "--app-header-background-color"
       );
 
-      document.documentElement.style.backgroundColor = computedStyles.getPropertyValue(
-        "--primary-background-color"
-      );
+      document.documentElement.style.backgroundColor =
+        computedStyles.getPropertyValue("--primary-background-color");
 
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {
@@ -128,5 +131,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           (themeMeta.getAttribute("default-content") as string);
         themeMeta.setAttribute("content", themeColor);
       }
+
+      this.hass!.auth.external?.fireMessage({ type: "theme-update" });
     }
   };

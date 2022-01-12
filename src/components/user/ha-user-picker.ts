@@ -3,20 +3,13 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
-import "../ha-icon-button";
 import "./ha-user-badge";
 
 class HaUserPicker extends LitElement {
@@ -39,7 +32,7 @@ class HaUserPicker extends LitElement {
 
     return users
       .filter((user) => !user.system_generated)
-      .sort((a, b) => compare(a.name, b.name));
+      .sort((a, b) => stringCompare(a.name, b.name));
   });
 
   protected render(): TemplateResult {
@@ -96,7 +89,7 @@ class HaUserPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

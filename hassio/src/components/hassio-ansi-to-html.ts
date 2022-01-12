@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 interface State {
   bold: boolean;
@@ -25,7 +18,7 @@ class HassioAnsiToHtml extends LitElement {
     return html`${this._parseTextToColoredPre(this.content)}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       pre {
         overflow-x: auto;
@@ -48,16 +41,16 @@ class HassioAnsiToHtml extends LitElement {
         text-decoration: underline line-through;
       }
       .fg-red {
-        color: rgb(222, 56, 43);
+        color: var(--error-color);
       }
       .fg-green {
-        color: rgb(57, 181, 74);
+        color: var(--success-color);
       }
       .fg-yellow {
-        color: rgb(255, 199, 6);
+        color: var(--warning-color);
       }
       .fg-blue {
-        color: rgb(0, 111, 184);
+        color: var(--info-color);
       }
       .fg-magenta {
         color: rgb(118, 38, 113);
@@ -72,16 +65,16 @@ class HassioAnsiToHtml extends LitElement {
         background-color: rgb(0, 0, 0);
       }
       .bg-red {
-        background-color: rgb(222, 56, 43);
+        background-color: var(--error-color);
       }
       .bg-green {
-        background-color: rgb(57, 181, 74);
+        background-color: var(--success-color);
       }
       .bg-yellow {
-        background-color: rgb(255, 199, 6);
+        background-color: var(--warning-color);
       }
       .bg-blue {
-        background-color: rgb(0, 111, 184);
+        background-color: var(--info-color);
       }
       .bg-magenta {
         background-color: rgb(118, 38, 113);

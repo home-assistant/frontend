@@ -1,15 +1,12 @@
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-radio-list-item";
 import "@polymer/paper-item/paper-item";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
-import "../../../../components/dialog/ha-paper-dialog";
+import "@polymer/paper-listbox/paper-listbox";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-paper-dropdown-menu";
 import {
   fetchConfig,
@@ -17,23 +14,31 @@ import {
   LovelaceConfig,
   LovelaceDashboard,
 } from "../../../../data/lovelace";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../../components/hui-views-list";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
+
+declare global {
+  interface HASSDomEvents {
+    "view-selected": {
+      view: number;
+    };
+  }
+}
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SelectViewDialogParams;
+  @state() private _params?: SelectViewDialogParams;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
-  @internalProperty() private _urlPath?: string | null;
+  @state() private _urlPath?: string | null;
 
-  @internalProperty() private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceConfig;
+
+  @state() private _selectedViewIdx = 0;
 
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
@@ -57,7 +62,6 @@ export class HuiDialogSelectView extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        hideActions
         .heading=${createCloseHeading(
           this.hass,
           this._params.header ||
@@ -101,12 +105,34 @@ export class HuiDialogSelectView extends LitElement {
             </ha-paper-dropdown-menu>`
           : ""}
         ${this._config
-          ? html` <hui-views-list
-              .lovelaceConfig=${this._config}
-              @view-selected=${this._selectView}
-            >
-            </hui-views-list>`
+          ? this._config.views.length > 1
+            ? html`
+                <mwc-list>
+                  ${this._config.views.map(
+                    (view, idx) => html`
+                      <mwc-radio-list-item
+                        graphic=${this._config?.views.some(({ icon }) => icon)
+                          ? "icon"
+                          : null}
+                        @click=${this._viewChanged}
+                        .value=${idx.toString()}
+                        .selected=${this._selectedViewIdx === idx}
+                      >
+                        <span>${view.title}</span>
+                        <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
+                      </mwc-radio-list-item>
+                    `
+                  )}
+                </mwc-list>
+              `
+            : ""
           : html`<div>No config found.</div>`}
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.hass!.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button slot="primaryAction" @click=${this._selectView}>
+          ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
+        </mwc-button>
       </ha-dialog>
     `;
   }
@@ -125,20 +151,33 @@ export class HuiDialogSelectView extends LitElement {
       urlPath = null;
     }
     this._urlPath = urlPath;
+    this._selectedViewIdx = 0;
     try {
       this._config = await fetchConfig(this.hass.connection, urlPath, false);
-    } catch (e) {
+    } catch (err: any) {
       this._config = undefined;
     }
   }
 
-  private _selectView(e: CustomEvent): void {
-    const view: number = e.detail.view;
-    this._params!.viewSelectedCallback(this._urlPath!, this._config!, view);
+  private _viewChanged(e) {
+    const view = Number(e.target.value);
+
+    if (!isNaN(view)) {
+      this._selectedViewIdx = view;
+    }
+  }
+
+  private _selectView(): void {
+    fireEvent(this, "view-selected", { view: this._selectedViewIdx });
+    this._params!.viewSelectedCallback(
+      this._urlPath!,
+      this._config!,
+      this._selectedViewIdx
+    );
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

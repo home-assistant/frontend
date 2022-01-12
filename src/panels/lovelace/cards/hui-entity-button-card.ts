@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { HuiButtonCard } from "./hui-button-card";
 
 @customElement("hui-entity-button-card")

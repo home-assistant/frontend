@@ -1,12 +1,7 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
+import "../../../components/ha-alert";
 import { HomeAssistant } from "../../../types";
 
 export const createEntityNotFoundWarning = (
@@ -24,19 +19,7 @@ export const createEntityNotFoundWarning = (
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
   protected render(): TemplateResult {
-    return html` <slot></slot> `;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-        color: black;
-        background-color: #fce588;
-        padding: 8px;
-        word-break: break-word;
-      }
-    `;
+    return html`<ha-alert alert-type="warning"><slot></slot></ha-alert> `;
   }
 }
 

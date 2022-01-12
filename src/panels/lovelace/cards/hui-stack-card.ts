@@ -1,13 +1,12 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";
@@ -16,7 +15,8 @@ import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
-  implements LovelaceCard {
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-stack-card-editor");
     return document.createElement("hui-stack-card-editor");
@@ -32,7 +32,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property() protected _cards?: LovelaceCard[];
 
-  @internalProperty() protected _config?: T;
+  @state() protected _config?: T;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -81,7 +81,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     `;
   }
 
-  static get sharedStyles(): CSSResult {
+  static get sharedStyles(): CSSResultGroup {
     return css`
       .card-header {
         color: var(--ha-card-header-color, --primary-text-color);

@@ -1,14 +1,7 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import {
   fetchHassioAddonLogs,
@@ -29,9 +22,9 @@ class HassioAddonLogs extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -42,7 +35,9 @@ class HassioAddonLogs extends LitElement {
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
-        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         <div class="card-content">
           ${this._content
             ? html`<hassio-ansi-to-html
@@ -59,7 +54,7 @@ class HassioAddonLogs extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -67,10 +62,6 @@ class HassioAddonLogs extends LitElement {
         :host,
         ha-card {
           display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
       `,
     ];
@@ -80,7 +71,7 @@ class HassioAddonLogs extends LitElement {
     this._error = undefined;
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.logs.get_logs",
         "error",

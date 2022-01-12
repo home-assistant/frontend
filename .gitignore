@@ -1,10 +1,22 @@
-build
-build-translations/*
-node_modules/*
-npm-debug.log
 .DS_Store
-hass_frontend/*
 .reify-cache
+
+# build
+build
+hass_frontend/*
+dist
+
+# yarn
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+node_modules/*
+yarn-error.log
+npm-debug.log
 
 # Python stuff
 *.py[cod]
@@ -14,11 +26,8 @@ hass_frontend/*
 # venv stuff
 pyvenv.cfg
 pip-selfcheck.json
-venv
+venv/*
 .venv
-lib
-bin
-dist
 
 # vscode
 .vscode/*
@@ -31,9 +40,8 @@ src/cast/dev_const.ts
 
 # Secrets
 .lokalise_token
-yarn-error.log
 
-#asdf
+# asdf
 .tool-versions
 
 # Home Assistant config

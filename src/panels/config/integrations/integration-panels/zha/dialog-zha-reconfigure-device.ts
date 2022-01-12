@@ -1,19 +1,11 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
-import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import {
   AttributeConfigurationStatus,
@@ -26,30 +18,29 @@ import {
   ZHA_CHANNEL_MSG_BIND,
   ZHA_CHANNEL_MSG_CFG_RPT,
 } from "../../../../../data/zha";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
+import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _status?: string;
+  @state() private _status?: string;
 
-  @internalProperty() private _stages?: string[];
+  @state() private _stages?: string[];
 
-  @internalProperty() private _clusterConfigurationStatuses?: Map<
+  @state() private _clusterConfigurationStatuses?: Map<
     number,
     ClusterConfigurationStatus
   > = new Map();
 
-  @internalProperty() private _params:
-    | ZHAReconfigureDeviceDialogParams
-    | undefined = undefined;
+  @state() private _params: ZHAReconfigureDeviceDialogParams | undefined =
+    undefined;
 
-  @internalProperty() private _allSuccessful = true;
+  @state() private _allSuccessful = true;
 
-  @internalProperty() private _showDetails = false;
+  @state() private _showDetails = false;
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
@@ -75,7 +66,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +
@@ -349,9 +340,10 @@ class DialogZHAReconfigureDevice extends LitElement {
       this._unsubscribe();
       this._status = this._allSuccessful ? "finished" : "failed";
     } else {
-      const clusterConfigurationStatus = this._clusterConfigurationStatuses!.get(
-        message.zha_channel_msg_data.cluster_id
-      );
+      const clusterConfigurationStatus =
+        this._clusterConfigurationStatuses!.get(
+          message.zha_channel_msg_data.cluster_id
+        );
       if (message.type === ZHA_CHANNEL_MSG_BIND) {
         if (!this._stages) {
           this._stages = ["binding"];
@@ -397,7 +389,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._showDetails = !this._showDetails;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

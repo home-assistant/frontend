@@ -4,13 +4,14 @@ import {
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { getDefaultPanel } from "../data/panel";
 import { CustomPanelInfo } from "../data/panel_custom";
 import { HomeAssistant, Panels } from "../types";
-import { removeInitSkeleton } from "../util/init-skeleton";
+import { removeLaunchScreen } from "../util/launch-screen";
 import {
   HassRouterPage,
   RouteOptions,
@@ -19,6 +20,7 @@ import {
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
+  energy: () => import("../panels/energy/ha-panel-energy"),
   calendar: () => import("../panels/calendar/ha-panel-calendar"),
   config: () => import("../panels/config/ha-panel-config"),
   custom: () => import("../panels/custom/ha-panel-custom"),
@@ -42,7 +44,7 @@ const COMPONENTS = {
 class PartialPanelResolver extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   private _waitForStart = false;
 
@@ -64,8 +66,8 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
       return;
@@ -205,7 +207,7 @@ class PartialPanelResolver extends HassRouterPage {
       this._currentPage &&
       !this.hass.panels[this._currentPage]
     ) {
-      if (this.hass.config.state !== STATE_NOT_RUNNING) {
+      if (this.hass.config.state === STATE_NOT_RUNNING) {
         this._waitForStart = true;
         if (this.lastChild) {
           this.removeChild(this.lastChild);
@@ -224,7 +226,7 @@ class PartialPanelResolver extends HassRouterPage {
     ) {
       await this.rebuild();
       await this.pageRendered;
-      removeInitSkeleton();
+      removeLaunchScreen();
     }
   }
 }

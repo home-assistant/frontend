@@ -1,6 +1,5 @@
 import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
-import { OriginalStatesStrategy } from "./original-states-strategy";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
@@ -24,9 +23,12 @@ export interface LovelaceViewStrategy {
 
 const strategies: Record<
   string,
-  LovelaceDashboardStrategy & LovelaceViewStrategy
+  () => Promise<LovelaceDashboardStrategy | LovelaceViewStrategy>
 > = {
-  "original-states": OriginalStatesStrategy,
+  "original-states": async () =>
+    (await import("./original-states-strategy")).OriginalStatesStrategy,
+  energy: async () =>
+    (await import("../../energy/strategies/energy-strategy")).EnergyStrategy,
 };
 
 const getLovelaceStrategy = async <
@@ -35,7 +37,7 @@ const getLovelaceStrategy = async <
   strategyType: string
 ): Promise<T> => {
   if (strategyType in strategies) {
-    return strategies[strategyType] as T;
+    return (await strategies[strategyType]()) as T;
   }
 
   if (!strategyType.startsWith(CUSTOM_PREFIX)) {
@@ -57,7 +59,7 @@ const getLovelaceStrategy = async <
     );
   }
 
-  return customElements.get(tag);
+  return customElements.get(tag) as unknown as T;
 };
 
 interface GenerateMethods {
@@ -79,7 +81,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
     const strategy = (await getLovelaceStrategy(strategyType)) as any;
     // eslint-disable-next-line @typescript-eslint/return-await
     return await strategy[generateMethod](info);
-  } catch (err) {
+  } catch (err: any) {
     if (err.message !== "timeout") {
       // eslint-disable-next-line
       console.error(err);

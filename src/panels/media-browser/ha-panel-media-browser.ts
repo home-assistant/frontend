@@ -1,19 +1,19 @@
-import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
+  PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import {
@@ -23,7 +23,7 @@ import {
 } from "../../data/media-player";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
@@ -33,6 +33,8 @@ class PanelMediaBrowser extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
+
+  @property() public route!: Route;
 
   // @ts-ignore
   @LocalStorage("mediaBrowseEntityId", true)
@@ -82,11 +84,29 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
+  public updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (!changedProps.has("route")) {
+      return;
+    }
+
+    if (this.route.path === "") {
+      navigate(`/media-browser/${this._entityId}`, { replace: true });
+      return;
+    }
+
+    const routePlayer = this.route.path.substring(1).split("/")[0];
+    if (routePlayer !== this._entityId) {
+      this._entityId = routePlayer;
+    }
+  }
+
   private _showSelectMediaPlayerDialog(): void {
     showSelectMediaPlayerDialog(this, {
       mediaSources: this._mediaPlayerEntities,
       sourceSelectedCallback: (entityId) => {
-        this._entityId = entityId;
+        navigate(`/media-browser/${entityId}`, { replace: true });
       },
     });
   }
@@ -129,7 +149,7 @@ class PanelMediaBrowser extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

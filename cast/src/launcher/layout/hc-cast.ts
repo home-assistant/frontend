@@ -1,16 +1,10 @@
+import "@material/mwc-button/mwc-button";
+import { mdiCast, mdiCastConnected } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { CastManager } from "../../../../src/cast/cast_manager";
 import {
   castSendShowLovelaceView,
@@ -24,6 +18,7 @@ import {
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-svg-icon";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
@@ -32,7 +27,6 @@ import {
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
-import "@material/mwc-button/mwc-button";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -42,9 +36,9 @@ class HcCast extends LitElement {
 
   @property() public castManager!: CastManager;
 
-  @internalProperty() private askWrite = false;
+  @state() private askWrite = false;
 
-  @internalProperty() private lovelaceConfig?: LovelaceConfig | null;
+  @state() private lovelaceConfig?: LovelaceConfig | null;
 
   protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
@@ -81,7 +75,7 @@ class HcCast extends LitElement {
           ? html`
               <p class="center-item">
                 <mwc-button raised @click=${this._handleLaunch}>
-                  <ha-icon icon="hass:cast"></ha-icon>
+                  <ha-svg-icon .path=${mdiCast}></ha-svg-icon>
                   Start Casting
                 </mwc-button>
               </p>
@@ -119,7 +113,7 @@ class HcCast extends LitElement {
           ${this.castManager.status
             ? html`
                 <mwc-button @click=${this._handleLaunch}>
-                  <ha-icon icon="hass:cast-connected"></ha-icon>
+                  <ha-svg-icon .path=${mdiCastConnected}></ha-svg-icon>
                   Manage
                 </mwc-button>
               `
@@ -199,12 +193,12 @@ class HcCast extends LitElement {
       }
       this.connection.close();
       location.reload();
-    } catch (err) {
+    } catch (err: any) {
       alert("Unable to log out!");
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .center-item {
         display: flex;
@@ -241,7 +235,7 @@ class HcCast extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      mwc-button ha-icon {
+      mwc-button ha-svg-icon {
         margin-right: 8px;
         height: 18px;
       }

@@ -1,12 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -41,9 +35,9 @@ export class HuiLovelaceEditor extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.edit_lovelace.title"
           )}
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
       </div>
     `;
@@ -72,7 +66,7 @@ export class HuiLovelaceEditor extends LitElement {
     fireEvent(this, "lovelace-config-changed", { config: newConfig });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

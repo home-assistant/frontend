@@ -1,11 +1,6 @@
 import "@material/mwc-button";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { domainToName } from "../../data/integration";
@@ -38,7 +33,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
           )}
         </div>
 
-        <mwc-button slot="actions" @click="${this._handleClick}"
+        <mwc-button slot="actions" @click=${this._handleClick}
           >${computeStateDisplay(
             this.hass.localize,
             this.notification,

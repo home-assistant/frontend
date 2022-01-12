@@ -1,18 +1,12 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import { ExternalConfig } from "../../../external_app/external_config";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant } from "../../../types";
 
@@ -20,26 +14,36 @@ import { HomeAssistant } from "../../../types";
 class HaConfigNavigation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property() public showAdvanced!: boolean;
 
   @property() public pages!: PageNavigation[];
 
+  @property() public externalConfig?: ExternalConfig;
+
   protected render(): TemplateResult {
     return html`
       ${this.pages.map((page) =>
-        canShowPage(this.hass, page)
+        (
+          page.path === "#external-app-configuration"
+            ? this.externalConfig?.hasSettingsScreen
+            : canShowPage(this.hass, page)
+        )
           ? html`
-              <a href=${page.path} aria-role="option" tabindex="-1">
-                <paper-icon-item>
-                  <ha-svg-icon
-                    .path=${page.iconPath}
+              <a href=${page.path} role="option" tabindex="-1">
+                <paper-icon-item @click=${this._entryClicked}>
+                  <div
+                    class=${page.iconColor ? "icon-background" : ""}
                     slot="item-icon"
-                  ></ha-svg-icon>
+                    .style="background-color: ${page.iconColor || "undefined"}"
+                  >
+                    <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
+                  </div>
                   <paper-item-body two-line>
                     ${page.name ||
                     this.hass.localize(
-                      page.translationKey ||
-                        `ui.panel.config.${page.component}.caption`
+                      `ui.panel.config.dashboard.${page.translationKey}.title`
                     )}
                     ${page.component === "cloud" && (page.info as CloudStatus)
                       ? page.info.logged_in
@@ -61,13 +65,14 @@ class HaConfigNavigation extends LitElement {
                           `
                       : html`
                           <div secondary>
-                            ${this.hass.localize(
-                              `ui.panel.config.${page.component}.description`
+                            ${page.description ||
+                            this.hass.localize(
+                              `ui.panel.config.dashboard.${page.translationKey}.description`
                             )}
                           </div>
                         `}
                   </paper-item-body>
-                  <ha-icon-next></ha-icon-next>
+                  ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
                 </paper-icon-item>
               </a>
             `
@@ -76,7 +81,21 @@ class HaConfigNavigation extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  private _entryClicked(ev) {
+    ev.currentTarget.blur();
+    if (
+      ev.currentTarget.parentElement.href.endsWith(
+        "#external-app-configuration"
+      )
+    ) {
+      ev.preventDefault();
+      this.hass.auth.external!.fireMessage({
+        type: "config_screen/show",
+      });
+    }
+  }
+
+  static get styles(): CSSResultGroup {
     return css`
       a {
         text-decoration: none;
@@ -88,6 +107,11 @@ class HaConfigNavigation extends LitElement {
       ha-svg-icon,
       ha-icon-next {
         color: var(--secondary-text-color);
+        height: 24px;
+        width: 24px;
+      }
+      ha-svg-icon {
+        padding: 8px;
       }
       .iron-selected paper-item::before,
       a:not(.iron-selected):focus::before {
@@ -108,6 +132,12 @@ class HaConfigNavigation extends LitElement {
       .iron-selected paper-item:focus::before,
       .iron-selected:focus paper-item::before {
         opacity: 0.2;
+      }
+      .icon-background {
+        border-radius: 50%;
+      }
+      .icon-background ha-svg-icon {
+        color: #fff;
       }
     `;
   }

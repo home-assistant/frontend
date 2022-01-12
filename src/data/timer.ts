@@ -1,7 +1,11 @@
 import {
+  HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import durationToSeconds from "../common/datetime/duration_to_seconds";
+import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { HomeAssistant } from "../types";
 
 export type TimerEntity = HassEntityBase & {
@@ -55,3 +59,46 @@ export const deleteTimer = (hass: HomeAssistant, id: string) =>
     type: "timer/delete",
     timer_id: id,
   });
+
+export const timerTimeRemaining = (
+  stateObj: HassEntity
+): undefined | number => {
+  if (!stateObj.attributes.remaining) {
+    return undefined;
+  }
+  let timeRemaining = durationToSeconds(stateObj.attributes.remaining);
+
+  if (stateObj.state === "active") {
+    const now = new Date().getTime();
+    const madeActive = new Date(stateObj.last_changed).getTime();
+    timeRemaining = Math.max(timeRemaining - (now - madeActive) / 1000, 0);
+  }
+
+  return timeRemaining;
+};
+
+export const computeDisplayTimer = (
+  hass: HomeAssistant,
+  stateObj: HassEntity,
+  timeRemaining?: number
+): string | null => {
+  if (!stateObj) {
+    return null;
+  }
+
+  if (stateObj.state === "idle" || timeRemaining === 0) {
+    return computeStateDisplay(hass.localize, stateObj, hass.locale);
+  }
+
+  let display = secondsToDuration(timeRemaining || 0);
+
+  if (stateObj.state === "paused") {
+    display = `${display} (${computeStateDisplay(
+      hass.localize,
+      stateObj,
+      hass.locale
+    )})`;
+  }
+
+  return display;
+};

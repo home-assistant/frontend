@@ -1,34 +1,17 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
+  PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { User } from "../../data/user";
+import { computeUserInitials, User } from "../../data/user";
 import { CurrentUser, HomeAssistant } from "../../types";
-
-export const computeInitials = (name: string) => {
-  if (!name) {
-    return "?";
-  }
-  return (
-    name
-      .trim()
-      // Split by space and take first 3 words
-      .split(" ")
-      .slice(0, 3)
-      // Of each word, take first letter
-      .map((s) => s.substr(0, 1))
-      .join("")
-  );
-};
 
 @customElement("ha-user-badge")
 class UserBadge extends LitElement {
@@ -36,26 +19,26 @@ class UserBadge extends LitElement {
 
   @property({ attribute: false }) public user?: User | CurrentUser;
 
-  @internalProperty() private _personPicture?: string;
+  @state() private _personPicture?: string;
 
   private _personEntityId?: string;
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
     if (changedProps.has("user")) {
       this._getPersonPicture();
       return;
     }
-    const oldHass = changedProps.get("hass");
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._personEntityId &&
       oldHass &&
       this.hass.states[this._personEntityId] !==
         oldHass.states[this._personEntityId]
     ) {
-      const state = this.hass.states[this._personEntityId];
-      if (state) {
-        this._personPicture = state.attributes.entity_picture;
+      const entityState = this.hass.states[this._personEntityId];
+      if (entityState) {
+        this._personPicture = entityState.attributes.entity_picture;
       } else {
         this._getPersonPicture();
       }
@@ -76,7 +59,7 @@ class UserBadge extends LitElement {
         class="picture"
       ></div>`;
     }
-    const initials = computeInitials(this.user.name);
+    const initials = computeUserInitials(this.user.name);
     return html`<div
       class="initials ${classMap({ long: initials!.length > 2 })}"
     >
@@ -102,7 +85,7 @@ class UserBadge extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: contents;

@@ -1,21 +1,15 @@
 import type { Ripple } from "@material/mwc-ripple";
 import "@material/mwc-ripple/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import {
-  css,
-  CSSResult,
   customElement,
   eventOptions,
-  html,
-  internalProperty,
-  LitElement,
   property,
   queryAsync,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import "./ha-icon";
-import "./ha-svg-icon";
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {
@@ -27,7 +21,7 @@ export class HaTab extends LitElement {
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
-  @internalProperty() private _shouldRenderRipple = false;
+  @state() private _shouldRenderRipple = false;
 
   protected render(): TemplateResult {
     return html`
@@ -92,7 +86,7 @@ export class HaTab extends LitElement {
     this._rippleHandlers.endFocus();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         padding: 0 32px;
@@ -102,6 +96,7 @@ export class HaTab extends LitElement {
         box-sizing: border-box;
         align-items: center;
         justify-content: center;
+        width: 100%;
         height: var(--header-height);
         cursor: pointer;
         position: relative;
@@ -110,6 +105,9 @@ export class HaTab extends LitElement {
 
       .name {
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
       }
 
       :host([active]) {
@@ -121,9 +119,14 @@ export class HaTab extends LitElement {
       }
 
       :host([narrow]) {
-        padding: 0 16px;
-        width: 20%;
         min-width: 0;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      :host([narrow]) div {
+        padding: 0 4px;
       }
     `;
   }

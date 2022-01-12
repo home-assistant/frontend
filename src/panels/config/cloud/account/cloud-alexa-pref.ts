@@ -1,13 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
@@ -21,7 +14,7 @@ export class CloudAlexaPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @internalProperty() private _syncing = false;
+  @state() private _syncing = false;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
@@ -117,7 +110,7 @@ export class CloudAlexaPref extends LitElement {
     this._syncing = true;
     try {
       await syncCloudAlexaEntities(this.hass!);
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.sync_entities_error"
@@ -133,7 +126,7 @@ export class CloudAlexaPref extends LitElement {
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -145,7 +138,7 @@ export class CloudAlexaPref extends LitElement {
         alexa_report_state: toggle.checked!,
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.state_reporting_error",
@@ -161,7 +154,7 @@ export class CloudAlexaPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

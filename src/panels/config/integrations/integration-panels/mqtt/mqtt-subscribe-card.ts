@@ -1,15 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
@@ -19,11 +11,11 @@ import { HomeAssistant } from "../../../../../types";
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _topic = "";
+  @state() private _topic = "";
 
-  @internalProperty() private _subscribed?: () => void;
+  @state() private _subscribed?: () => void;
 
-  @internalProperty() private _messages: Array<{
+  @state() private _messages: Array<{
     id: number;
     message: MQTTMessage;
     payload: string;
@@ -43,9 +35,7 @@ class MqttSubscribeCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
-        header="${this.hass.localize(
-          "ui.panel.config.mqtt.description_listen"
-        )}"
+        header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
       >
         <form>
           <paper-input
@@ -115,7 +105,7 @@ class MqttSubscribeCard extends LitElement {
     let payload: string;
     try {
       payload = JSON.stringify(JSON.parse(message.payload), null, 4);
-    } catch (e) {
+    } catch (err: any) {
       payload = message.payload;
     }
     this._messages = [
@@ -129,7 +119,7 @@ class MqttSubscribeCard extends LitElement {
     ];
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       form {
         display: block;

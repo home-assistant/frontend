@@ -1,38 +1,29 @@
-import "@material/mwc-icon-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose, mdiTune } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-related-items";
-import "../../../components/ha-svg-icon";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { replaceDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
-import { replaceDialog } from "../../../dialogs/make-dialog-manager";
 
 interface Tabs {
   [key: string]: Tab;
@@ -47,30 +38,24 @@ interface Tab {
 export class DialogEntityEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: EntityRegistryDetailDialogParams;
+  @state() private _params?: EntityRegistryDetailDialogParams;
 
-  @internalProperty() private _entry?:
-    | EntityRegistryEntry
-    | ExtEntityRegistryEntry
-    | null;
+  @state() private _entry?: EntityRegistryEntry | ExtEntityRegistryEntry | null;
 
-  @internalProperty() private _curTab = "tab-settings";
+  @state() private _curTab = "tab-settings";
 
-  @internalProperty() private _extraTabs: Tabs = {};
+  @state() private _extraTabs: Tabs = {};
 
-  @internalProperty() private _settingsElementTag?: string;
+  @state() private _settingsElementTag?: string;
 
   private _curTabIndex = 0;
 
-  public async showDialog(
-    params: EntityRegistryDetailDialogParams
-  ): Promise<void> {
+  public showDialog(params: EntityRegistryDetailDialogParams): void {
     this._params = params;
     this._entry = undefined;
     this._settingsElementTag = undefined;
     this._extraTabs = {};
     this._getEntityReg();
-    await this.updateComplete;
   }
 
   public closeDialog(): void {
@@ -96,27 +81,25 @@ export class DialogEntityEditor extends LitElement {
       >
         <div slot="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               .label=${this.hass.localize("ui.dialogs.entity_registry.dismiss")}
+              .path=${mdiClose}
               dialogAction="cancel"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
             <span slot="title">
               ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
             </span>
             ${stateObj
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.entity_registry.control"
                     )}
+                    .path=${mdiTune}
                     @click=${this._openMoreInfo}
-                  >
-                    <ha-svg-icon .path=${mdiTune}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>
@@ -176,27 +159,12 @@ export class DialogEntityEditor extends LitElement {
               this._params!.entity_id,
               "faq_link",
               html`<a
-                href="${documentationUrl(this.hass, "/faq/unique_id")}"
+                href=${documentationUrl(this.hass, "/faq/unique_id")}
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
               >`
             )}
-            ${this.hass.userData?.showAdvanced
-              ? html`<br /><br />
-                  ${this.hass.localize(
-                    "ui.dialogs.entity_registry.info_customize",
-                    "customize_link",
-                    html`<a
-                      href="${"/config/customize/edit/" +
-                      this._params!.entity_id}"
-                      rel="noreferrer"
-                      >${this.hass.localize(
-                        "ui.dialogs.entity_registry.customize_link"
-                      )}</a
-                    >`
-                  )}`
-              : ""}
           </div>
         `;
       case "tab-related":
@@ -256,7 +224,7 @@ export class DialogEntityEditor extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

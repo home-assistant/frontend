@@ -1,16 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -26,10 +24,10 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const severityMap = {
-  red: "var(--label-badge-red)",
-  green: "var(--label-badge-green)",
-  yellow: "var(--label-badge-yellow)",
-  normal: "var(--label-badge-blue)",
+  red: "var(--error-color)",
+  green: "var(--success-color)",
+  yellow: "var(--warning-color)",
+  normal: "var(--info-color)",
 };
 
 @customElement("hui-gauge-card")
@@ -44,7 +42,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     entities: string[],
     entitiesFallback: string[]
   ): GaugeCardConfig {
-    const includeDomains = ["sensor"];
+    const includeDomains = ["counter", "input_number", "number", "sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state));
@@ -63,7 +61,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -95,7 +93,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const state = Number(stateObj.state);
+    const entityState = Number(stateObj.state);
 
     if (stateObj.state === UNAVAILABLE) {
       return html`
@@ -109,7 +107,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (isNaN(state)) {
+    if (isNaN(entityState)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -120,6 +118,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         >
       `;
     }
+
+    const name = this._config.name ?? computeStateName(stateObj);
 
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
@@ -135,12 +135,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(state),
+            "--gauge-color": this._computeSeverity(entityState),
           })}
+          .needle=${this._config!.needle}
+          .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name">
-          ${this._config.name || computeStateName(stateObj)}
-        </div>
+        <div class="name" .title=${name}>${name}</div>
       </ha-card>
     `;
   }
@@ -170,7 +170,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeSeverity(numberValue: number): string {
+  private _computeSeverity(numberValue: number): string | undefined {
+    if (this._config!.needle) {
+      return undefined;
+    }
     const sections = this._config!.severity;
 
     if (!sections) {
@@ -202,11 +205,25 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return severityMap.normal;
   }
 
+  private _severityLevels() {
+    const sections = this._config!.severity;
+
+    if (!sections) {
+      return [{ level: 0, stroke: severityMap.normal }];
+    }
+
+    const sectionsArray = Object.keys(sections);
+    return sectionsArray.map((severity) => ({
+      level: sections[severity],
+      stroke: severityMap[severity],
+    }));
+  }
+
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         cursor: pointer;
@@ -226,7 +243,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }

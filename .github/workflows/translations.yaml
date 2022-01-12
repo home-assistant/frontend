@@ -1,8 +1,6 @@
 name: Translations
 
 on:
-  schedule:
-    - cron: "30 0 * * *"
   push:
     branches:
       - dev
@@ -10,7 +8,7 @@ on:
       - src/translations/en.json
 
 env:
-  NODE_VERSION: 12
+  NODE_VERSION: 14
 
 jobs:
   upload:
@@ -20,46 +18,8 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Upload Translations
         run: |
           export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
 
           ./script/translations_upload_base
-
-  download:
-    name: Download
-    needs: upload
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Download Translations
-        run: |
-          export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
-
-          npm install
-          ./script/translations_download
-
-      - name: Initialize git
-        uses: home-assistant/actions/helpers/git-init@master
-        with:
-          name: GitHub Action
-          email: github-action@users.noreply.github.com
-
-      - name: Update translation
-        run: |
-          git add translations
-          git commit -am "Translation update"
-          git push

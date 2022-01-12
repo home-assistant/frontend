@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -15,53 +8,45 @@ import {
   object,
   optional,
   string,
-  union,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
-import { EntityId } from "../../../../common/structs/is-entity-id";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const entitiesConfigStruct = union([
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
   object({
-    entity: EntityId,
-    name: optional(string()),
-  }),
-  EntityId,
-]);
-
-const cardConfigStruct = object({
-  type: string(),
-  entities: array(entitiesConfigStruct),
-  title: optional(string()),
-  hours_to_show: optional(number()),
-  refresh_interval: optional(number()),
-});
+    entities: array(entitiesConfigStruct),
+    title: optional(string()),
+    hours_to_show: optional(number()),
+    refresh_interval: optional(number()),
+  })
+);
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: HistoryGraphCardConfig;
+  @state() private _config?: HistoryGraphCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: HistoryGraphCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  get _entity(): string {
-    return this._config!.entity || "";
   }
 
   get _title(): string {
@@ -89,9 +74,9 @@ export class HuiHistoryGraphCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
@@ -101,9 +86,10 @@ export class HuiHistoryGraphCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._hours_to_show}"
+            .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
-            @value-changed="${this._valueChanged}"
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             type="number"
@@ -112,15 +98,15 @@ export class HuiHistoryGraphCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._refresh_interval}"
+            .value=${this._refresh_interval}
             .configValue=${"refresh_interval"}
-            @value-changed="${this._valueChanged}"
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <hui-entity-editor
           .hass=${this.hass}
-          .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          .entities=${this._configEntities}
+          @entities-changed=${this._valueChanged}
         ></hui-entity-editor>
       </div>
     `;
@@ -158,7 +144,7 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

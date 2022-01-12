@@ -1,22 +1,21 @@
+import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateIcon } from "../../common/entity/state_icon";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import type { HomeAssistant } from "../../types";
-import "../ha-icon";
+import "../ha-state-icon";
 
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
@@ -32,7 +31,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @internalProperty() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
@@ -40,7 +39,7 @@ export class StateBadge extends LitElement {
     // We either need a `stateObj` or one override
     if (!stateObj && !this.overrideIcon && !this.overrideImage) {
       return html`<div class="missing">
-        <ha-icon icon="hass:alert"></ha-icon>
+        <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
       </div>`;
     }
 
@@ -50,21 +49,21 @@ export class StateBadge extends LitElement {
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
-    return html`
-      <ha-icon
-        style=${styleMap(this._iconStyle)}
-        data-domain=${ifDefined(
-          this.stateColor || (domain === "light" && this.stateColor !== false)
-            ? domain
-            : undefined
-        )}
-        data-state=${stateObj ? computeActiveState(stateObj) : ""}
-        .icon=${this.overrideIcon || (stateObj ? stateIcon(stateObj) : "")}
-      ></ha-icon>
-    `;
+    return html`<ha-state-icon
+      style=${styleMap(this._iconStyle)}
+      data-domain=${ifDefined(
+        this.stateColor || (domain === "light" && this.stateColor !== false)
+          ? domain
+          : undefined
+      )}
+      data-state=${stateObj ? computeActiveState(stateObj) : ""}
+      .icon=${this.overrideIcon}
+      .state=${stateObj}
+    ></ha-state-icon>`;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
@@ -81,16 +80,14 @@ export class StateBadge extends LitElement {
 
     this._showIcon = true;
 
-    if (stateObj) {
+    if (stateObj && this.overrideImage === undefined) {
       // hide icon if we have entity picture
       if (
-        ((stateObj.attributes.entity_picture_local ||
+        (stateObj.attributes.entity_picture_local ||
           stateObj.attributes.entity_picture) &&
-          !this.overrideIcon) ||
-        this.overrideImage
+        !this.overrideIcon
       ) {
         let imageUrl =
-          this.overrideImage ||
           stateObj.attributes.entity_picture_local ||
           stateObj.attributes.entity_picture;
         if (this.hass) {
@@ -128,39 +125,40 @@ export class StateBadge extends LitElement {
     Object.assign(this.style, hostStyle);
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        color: var(--paper-item-icon-color, #44739e);
-        border-radius: 50%;
-        height: 40px;
-        text-align: center;
-        background-size: cover;
-        line-height: 40px;
-        vertical-align: middle;
-        box-sizing: border-box;
-      }
-      :host(:focus) {
-        outline: none;
-      }
-      :host(:not([icon]):focus) {
-        border: 2px solid var(--divider-color);
-      }
-      :host([icon]:focus) {
-        background: var(--divider-color);
-      }
-      ha-icon {
-        transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
-      }
-      .missing {
-        color: #fce588;
-      }
-
-      ${iconColorCSS}
-    `;
+  static get styles(): CSSResultGroup {
+    return [
+      iconColorCSS,
+      css`
+        :host {
+          position: relative;
+          display: inline-block;
+          width: 40px;
+          color: var(--paper-item-icon-color, #44739e);
+          border-radius: 50%;
+          height: 40px;
+          text-align: center;
+          background-size: cover;
+          line-height: 40px;
+          vertical-align: middle;
+          box-sizing: border-box;
+        }
+        :host(:focus) {
+          outline: none;
+        }
+        :host(:not([icon]):focus) {
+          border: 2px solid var(--divider-color);
+        }
+        :host([icon]:focus) {
+          background: var(--divider-color);
+        }
+        ha-state-icon {
+          transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+        .missing {
+          color: #fce588;
+        }
+      `,
+    ];
   }
 }
 

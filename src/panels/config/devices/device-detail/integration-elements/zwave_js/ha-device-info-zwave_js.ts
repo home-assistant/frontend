@@ -1,23 +1,25 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  getIdentifiersFromDevice,
-  fetchNodeStatus,
-  ZWaveJSNode,
-  ZWaveJSNodeIdentifiers,
+  ConfigEntry,
+  getConfigEntries,
+} from "../../../../../../data/config_entries";
+import {
+  fetchZwaveNodeStatus,
+  getZwaveJsIdentifiersFromDevice,
   nodeStatus,
+  ZWaveJSNodeStatus,
+  ZWaveJSNodeIdentifiers,
+  SecurityClass,
 } from "../../../../../../data/zwave_js";
-
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 
@@ -27,23 +29,23 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @internalProperty() private _entryId?: string;
+  @state() private _entryId?: string;
 
-  @internalProperty() private _nodeId?: number;
+  @state() private _configEntry?: ConfigEntry;
 
-  @internalProperty() private _homeId?: string;
+  @state() private _multipleConfigEntries = false;
 
-  @internalProperty() private _node?: ZWaveJSNode;
+  @state() private _nodeId?: number;
+
+  @state() private _node?: ZWaveJSNodeStatus;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: ZWaveJSNodeIdentifiers | undefined =
+        getZwaveJsIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
-      this._homeId = identifiers.home_id;
       this._nodeId = identifiers.node_id;
       this._entryId = this.device.config_entries[0];
 
@@ -55,7 +57,30 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     if (!this._nodeId || !this._entryId) {
       return;
     }
-    this._node = await fetchNodeStatus(this.hass, this._entryId, this._nodeId);
+
+    const configEntries = await getConfigEntries(this.hass);
+    let zwaveJsConfEntries = 0;
+    for (const entry of configEntries) {
+      if (entry.domain !== "zwave_js") {
+        continue;
+      }
+      if (zwaveJsConfEntries) {
+        this._multipleConfigEntries = true;
+      }
+      if (entry.entry_id === this._entryId) {
+        this._configEntry = entry;
+      }
+      if (this._configEntry && this._multipleConfigEntries) {
+        break;
+      }
+      zwaveJsConfEntries++;
+    }
+
+    this._node = await fetchZwaveNodeStatus(
+      this.hass,
+      this._entryId,
+      this._nodeId
+    );
   }
 
   protected render(): TemplateResult {
@@ -66,10 +91,14 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       <h4>
         ${this.hass.localize("ui.panel.config.zwave_js.device_info.zwave_info")}
       </h4>
-      <div>
-        ${this.hass.localize("ui.panel.config.zwave_js.common.home_id")}:
-        ${this._homeId}
-      </div>
+      ${this._multipleConfigEntries
+        ? html`
+            <div>
+              ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
+              ${this._configEntry!.title}
+            </div>
+          `
+        : ""}
       <div>
         ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
         ${this._node.node_id}
@@ -92,10 +121,38 @@ export class HaDeviceInfoZWaveJS extends LitElement {
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
       </div>
+      <div>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.highest_security"
+        )}:
+        ${this._node.highest_security_class !== null
+          ? this.hass.localize(
+              `ui.panel.config.zwave_js.security_classes.${
+                SecurityClass[this._node.highest_security_class]
+              }.title`
+            )
+          : this._node.is_secure === false
+          ? this.hass.localize(
+              "ui.panel.config.zwave_js.security_classes.none.title"
+            )
+          : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
+      </div>
+      <div>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.zwave_plus"
+        )}:
+        ${this._node.zwave_plus_version
+          ? this.hass.localize(
+              "ui.panel.config.zwave_js.device_info.zwave_plus_version",
+              "version",
+              this._node.zwave_plus_version
+            )
+          : this.hass.localize("ui.common.no")}
+      </div>
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

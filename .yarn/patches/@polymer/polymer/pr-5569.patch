@@ -1,0 +1,34 @@
+diff --git a/lib/legacy/class.js b/lib/legacy/class.js
+index aee2511be1cd9bf900ee552bc98190c1631c57c0..f2f499d68bf52034cac9c28307c99e8ce6b8417d 100644
+--- a/lib/legacy/class.js
++++ b/lib/legacy/class.js
+@@ -304,17 +304,23 @@ function GenerateClassFromInfo(info, Base, behaviors) {
+       // only proceed if the generated class' prototype has not been registered.
+       const generatedProto = PolymerGenerated.prototype;
+       if (!generatedProto.hasOwnProperty(JSCompiler_renameProperty('__hasRegisterFinished', generatedProto))) {
+-        generatedProto.__hasRegisterFinished = true;
++        // make sure legacy lifecycle is called on the *element*'s prototype
++        // and not the generated class prototype; if the element has been
++        // extended, these are *not* the same.
++        const proto = Object.getPrototypeOf(this);
++        // Only set flag when generated prototype itself is registered,
++        // as this element may be extended from, and needs to run `registered`
++        // on all behaviors on the subclass as well.
++        if (proto === generatedProto) {
++          generatedProto.__hasRegisterFinished = true;
++        }
+         // ensure superclass is registered first.
+         super._registered();
+         // copy properties onto the generated class lazily if we're optimizing,
+-        if (legacyOptimizations) {
++        if (legacyOptimizations && !Object.hasOwnProperty(generatedProto, '__hasCopiedProperties')) {
++          generatedProto.__hasCopiedProperties = true;
+           copyPropertiesToProto(generatedProto);
+         }
+-        // make sure legacy lifecycle is called on the *element*'s prototype
+-        // and not the generated class prototype; if the element has been
+-        // extended, these are *not* the same.
+-        const proto = Object.getPrototypeOf(this);
+         let list = lifecycle.beforeRegister;
+         if (list) {
+           for (let i=0; i < list.length; i++) {

@@ -1,29 +1,26 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import {
   css,
-  CSSResultArray,
-  customElement,
-  eventOptions,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { scroll } from "lit-virtualizer";
+} from "lit";
+import { customElement, eventOptions, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
-import { TraceContexts } from "../../data/trace";
 import { LogbookEntry } from "../../data/logbook";
+import { TraceContexts } from "../../data/trace";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
@@ -101,7 +98,8 @@ class HaLogbook extends LitElement {
         ${this.virtualize
           ? scroll({
               items: this.entries,
-              renderItem: (item: LogbookEntry, index?: number) =>
+              layout: Layout1d,
+              renderItem: (item: LogbookEntry, index) =>
                 this._renderLogbookItem(item, index),
             })
           : this.entries.map((item, index) =>
@@ -152,12 +150,13 @@ class HaLogbook extends LitElement {
                 html`
                   <state-badge
                     .hass=${this.hass}
-                    .overrideIcon=${item.icon ??
-                    domainIcon(domain, stateObj, item.state)}
+                    .overrideIcon=${item.icon}
                     .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
                       ? ""
                       : stateObj?.attributes.entity_picture_local ||
                         stateObj?.attributes.entity_picture}
+                    .stateObj=${stateObj}
+                    .stateColor=${false}
                   ></state-badge>
                 `
               : ""}
@@ -211,6 +210,7 @@ class HaLogbook extends LitElement {
                 <ha-relative-time
                   .hass=${this.hass}
                   .datetime=${item.when}
+                  capitalize
                 ></ha-relative-time>
                 ${item.domain === "automation" &&
                 item.context_id! in this.traceContexts
@@ -222,6 +222,7 @@ class HaLogbook extends LitElement {
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
+                        @click=${this._close}
                         >${this.hass.localize(
                           "ui.components.logbook.show_trace"
                         )}</a
@@ -254,7 +255,11 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
+  }
+
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleScrollbar,
@@ -349,16 +354,12 @@ class HaLogbook extends LitElement {
           color: var(--primary-color);
         }
 
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          height: 100%;
-          overflow: auto;
+        .container {
+          max-height: var(--logbook-max-height);
         }
 
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
+        :host([virtualize]) .container {
+          height: 100%;
         }
 
         .narrow .entry {

@@ -1,9 +1,12 @@
-import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
+import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
+import { getLocalLanguage } from "../../util/common-translation";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
-
 interface FormatType {
   [format: string]: any;
 }
@@ -13,12 +16,33 @@ export interface FormatsType {
   time: FormatType;
 }
 
-let polyfillLoaded = !shouldPolyfill();
-const polyfillProm = polyfillLoaded
-  ? undefined
-  : import("@formatjs/intl-pluralrules/polyfill-locales").then(() => {
-      polyfillLoaded = true;
-    });
+const loadedPolyfillLocale = new Set();
+
+const polyfills: Promise<any>[] = [];
+if (__BUILD__ === "latest") {
+  if (shouldPolyfillLocale()) {
+    polyfills.push(import("@formatjs/intl-locale/polyfill"));
+  }
+  if (shouldPolyfillPluralRules()) {
+    polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
+    polyfills.push(import("@formatjs/intl-pluralrules/locale-data/en"));
+  }
+  if (shouldPolyfillRelativeTime()) {
+    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
+  }
+  if (shouldPolyfillDateTime()) {
+    polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
+    polyfills.push(import("@formatjs/intl-datetimeformat/add-all-tz"));
+  }
+}
+
+export const polyfillsLoaded =
+  polyfills.length === 0
+    ? undefined
+    : Promise.all(polyfills).then(() =>
+        // Load the default language
+        loadPolyfillLocales(getLocalLanguage())
+      );
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -47,9 +71,11 @@ export const computeLocalize = async (
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc> => {
-  if (!polyfillLoaded) {
-    await polyfillProm;
+  if (polyfillsLoaded) {
+    await polyfillsLoaded;
   }
+
+  await loadPolyfillLocales(language);
 
   // Everytime any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -68,48 +94,81 @@ export const computeLocalize = async (
     }
 
     const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey];
+    let translatedMessage = cache._localizationCache[messageKey] as
+      | IntlMessageFormat
+      | undefined;
 
     if (!translatedMessage) {
-      translatedMessage = new IntlMessageFormat(
-        translatedValue,
-        language,
-        formats
-      );
+      try {
+        translatedMessage = new IntlMessageFormat(
+          translatedValue,
+          language,
+          formats
+        );
+      } catch (err: any) {
+        return "Translation error: " + err.message;
+      }
       cache._localizationCache[messageKey] = translatedMessage;
     }
 
-    const argObject = {};
-    for (let i = 0; i < args.length; i += 2) {
-      argObject[args[i]] = args[i + 1];
+    let argObject = {};
+    if (args.length === 1 && typeof args[0] === "object") {
+      argObject = args[0];
+    } else {
+      for (let i = 0; i < args.length; i += 2) {
+        argObject[args[i]] = args[i + 1];
+      }
     }
 
     try {
-      return translatedMessage.format(argObject);
-    } catch (err) {
+      return translatedMessage.format<string>(argObject) as string;
+    } catch (err: any) {
       return "Translation " + err;
     }
   };
 };
 
-/**
- * Silly helper function that converts an object of placeholders to array so we
- * can convert it back to an object again inside the localize func.
- * @param localize
- * @param key
- * @param placeholders
- */
-export const localizeKey = (
-  localize: LocalizeFunc,
-  key: string,
-  placeholders?: Record<string, string>
-) => {
-  const args: [string, ...string[]] = [key];
-  if (placeholders) {
-    Object.keys(placeholders).forEach((placeholderKey) => {
-      args.push(placeholderKey);
-      args.push(placeholders[placeholderKey]);
-    });
+export const loadPolyfillLocales = async (language: string) => {
+  if (loadedPolyfillLocale.has(language)) {
+    return;
   }
-  return localize(...args);
+  loadedPolyfillLocale.add(language);
+  try {
+    if (
+      Intl.NumberFormat &&
+      // @ts-ignore
+      typeof Intl.NumberFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-numberformat/${language}.json`
+      );
+      // @ts-ignore
+      Intl.NumberFormat.__addLocaleData(await result.json());
+    }
+    if (
+      // @ts-expect-error
+      Intl.RelativeTimeFormat &&
+      // @ts-ignore
+      typeof Intl.RelativeTimeFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-relativetimeformat/${language}.json`
+      );
+      // @ts-ignore
+      Intl.RelativeTimeFormat.__addLocaleData(await result.json());
+    }
+    if (
+      Intl.DateTimeFormat &&
+      // @ts-ignore
+      typeof Intl.DateTimeFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-datetimeformat/${language}.json`
+      );
+      // @ts-ignore
+      Intl.DateTimeFormat.__addLocaleData(await result.json());
+    }
+  } catch (_e) {
+    // Ignore
+  }
 };

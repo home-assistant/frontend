@@ -39,6 +39,7 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
         >
       </template>
       <ha-attributes
+        hass="[[hass]]"
         state-obj="[[stateObj]]"
         extra-filters="code_format"
       ></ha-attributes>

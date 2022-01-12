@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { safeLoad } from "js-yaml";
+import { load } from "js-yaml";
 import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -105,7 +105,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         <div>
           <div class="header">
-            [[localize( 'ui.panel.developer-tools.tabs.events.available_events'
+            [[localize( 'ui.panel.developer-tools.tabs.events.active_listeners'
             )]]
           </div>
           <events-list
@@ -151,7 +151,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeParsedEventData(eventData) {
     try {
-      return eventData.trim() ? safeLoad(eventData) : {};
+      return eventData.trim() ? load(eventData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -178,8 +178,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
       });
       return;
     }
-    this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(
-      function () {
+    this.hass
+      .callApi("POST", "events/" + this.eventType, this.parsedJSON)
+      .then(() => {
         this.fire("hass-notification", {
           message: this.hass.localize(
             "ui.panel.developer-tools.tabs.events.notification_event_fired",
@@ -187,8 +188,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             this.eventType
           ),
         });
-      }.bind(this)
-    );
+      });
   }
 
   computeFormClasses(narrow) {

@@ -3,16 +3,13 @@ import {
   Connection,
   HassConfig,
   HassEntities,
-  HassServiceTarget,
   HassServices,
+  HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import {
-  FrontendTranslationData,
-  getHassTranslations,
-} from "./data/translation";
+import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -24,6 +21,7 @@ declare global {
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
+  var __SUPERVISOR__: boolean;
   /* eslint-enable no-var, no-redeclare */
 
   interface Window {
@@ -85,8 +83,15 @@ export interface CurrentUser {
   mfa_modules: MFAModule[];
 }
 
+// Currently selected theme and its settings. These are the values stored in local storage.
+// Note: These values are not meant to be used at runtime to check whether dark mode is active
+// or which theme name to use, as this interface represents the config data for the theme picker.
+// The actually active dark mode and theme name can be read from hass.themes.
 export interface ThemeSettings {
   theme: string;
+  // Radio box selection for theme picker. Do not use in Lovelace rendering as
+  // it can be undefined == auto.
+  // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;
   primaryColor?: string;
   accentColor?: string;
@@ -129,7 +134,7 @@ export type FullCalendarView =
 
 export interface ToggleButton {
   label: string;
-  iconPath: string;
+  iconPath?: string;
   value: string;
 }
 
@@ -193,19 +198,19 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme?: ThemeSettings | null;
+  selectedTheme: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
   // i18n
   // current effective language in that order:
-  //   - backend saved user selected lanugage
-  //   - language in local appstorage
+  //   - backend saved user selected language
+  //   - language in local app storage
   //   - browser language
   //   - english (en)
   language: string;
-  // local stored language, keep that name for backward compability
+  // local stored language, keep that name for backward compatibility
   selectedLanguage: string | null;
-  locale: FrontendTranslationData;
+  locale: FrontendLocaleData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
@@ -238,6 +243,7 @@ export interface HomeAssistant {
     integration?: Parameters<typeof getHassTranslations>[3],
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
+  loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
 }
 
 export interface Route {

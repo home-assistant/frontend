@@ -1,61 +1,80 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { until } from "lit-html/directives/until";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import hassAttributeUtil, {
   formatAttributeName,
+  formatAttributeValue,
 } from "../util/hass-attributes-util";
-import { haStyle } from "../resources/styles";
-
-let jsYamlPromise: Promise<typeof import("js-yaml")>;
+import "./ha-expansion-panel";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   @property({ attribute: "extra-filters" }) public extraFilters?: string;
+
+  @state() private _expanded = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
     }
 
+    const attributes = this.computeDisplayAttributes(
+      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+        this.extraFilters ? this.extraFilters.split(",") : []
+      )
+    );
+    if (attributes.length === 0) {
+      return html``;
+    }
+
     return html`
-      <div>
-        ${this.computeDisplayAttributes(
-          Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
-            this.extraFilters ? this.extraFilters.split(",") : []
-          )
-        ).map(
-          (attribute) => html`
-            <div class="data-entry">
-              <div class="key">${formatAttributeName(attribute)}</div>
-              <div class="value">${this.formatAttribute(attribute)}</div>
+      <ha-expansion-panel
+        .header=${this.hass.localize(
+          "ui.components.attributes.expansion_header"
+        )}
+        outlined
+        @expanded-will-change=${this.expandedChanged}
+      >
+        <div class="attribute-container">
+          ${this._expanded
+            ? html`
+                ${attributes.map(
+                  (attribute) => html`
+                    <div class="data-entry">
+                      <div class="key">${formatAttributeName(attribute)}</div>
+                      <div class="value">
+                        ${this.formatAttribute(attribute)}
+                      </div>
+                    </div>
+                  `
+                )}
+              `
+            : ""}
+        </div>
+      </ha-expansion-panel>
+      ${this.stateObj.attributes.attribution
+        ? html`
+            <div class="attribution">
+              ${this.stateObj.attributes.attribution}
             </div>
           `
-        )}
-        ${this.stateObj.attributes.attribution
-          ? html`
-              <div class="attribution">
-                ${this.stateObj.attributes.attribution}
-              </div>
-            `
-          : ""}
-      </div>
+        : ""}
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        .attribute-container {
+          margin-bottom: 8px;
+        }
         .data-entry {
           display: flex;
           flex-direction: row;
@@ -72,6 +91,7 @@ class HaAttributes extends LitElement {
         .attribution {
           color: var(--secondary-text-color);
           text-align: center;
+          margin-top: 16px;
         }
         pre {
           font-family: inherit;
@@ -79,6 +99,11 @@ class HaAttributes extends LitElement {
           margin: 0px;
           overflow-wrap: break-word;
           white-space: pre-line;
+        }
+        hr {
+          border-color: var(--divider-color);
+          border-bottom: none;
+          margin: 16px 0;
         }
       `,
     ];
@@ -98,38 +123,11 @@ class HaAttributes extends LitElement {
       return "-";
     }
     const value = this.stateObj.attributes[attribute];
-    return this.formatAttributeValue(value);
+    return formatAttributeValue(this.hass, value);
   }
 
-  private formatAttributeValue(value: any): string | TemplateResult {
-    if (value === null) {
-      return "-";
-    }
-    // YAML handling
-    if (
-      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
-      (!Array.isArray(value) && value instanceof Object)
-    ) {
-      if (!jsYamlPromise) {
-        jsYamlPromise = import("js-yaml");
-      }
-      const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
-      return html` <pre>${until(yaml, "")}</pre> `;
-    }
-    // URL handling
-    if (typeof value === "string" && value.startsWith("http")) {
-      try {
-        // If invalid URL, exception will be raised
-        const url = new URL(value);
-        if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
-            >${value}</a
-          >`;
-      } catch (_) {
-        // Nothing to do here
-      }
-    }
-    return Array.isArray(value) ? value.join(", ") : value;
+  private expandedChanged(ev) {
+    this._expanded = ev.detail.expanded;
   }
 }
 

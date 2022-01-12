@@ -2,16 +2,9 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { array, assert, object, optional, string } from "superstruct";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { array, assert, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
@@ -23,38 +16,40 @@ import "../../components/hui-theme-select-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  entitiesConfigStruct,
-} from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  entity: optional(string()),
-  image: optional(string()),
-  camera_image: optional(string()),
-  camera_view: optional(string()),
-  aspect_ratio: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  entities: array(entitiesConfigStruct),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    entity: optional(string()),
+    image: optional(string()),
+    camera_image: optional(string()),
+    camera_view: optional(string()),
+    aspect_ratio: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    entities: array(entitiesConfigStruct),
+    theme: optional(string()),
+  })
+);
 
 const includeDomains = ["camera"];
 
 @customElement("hui-picture-glance-card-editor")
 export class HuiPictureGlanceCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureGlanceCardConfig;
+  @state() private _config?: PictureGlanceCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -123,9 +118,9 @@ export class HuiPictureGlanceCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
           .label="${this.hass.localize(
@@ -133,9 +128,9 @@ export class HuiPictureGlanceCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._image}"
-          .configValue="${"image"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._image}
+          .configValue=${"image"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -144,9 +139,9 @@ export class HuiPictureGlanceCardEditor
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value="${this._camera_image}"
+          .value=${this._camera_image}
           .configValue=${"camera_image"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           allow-custom-entity
           .includeDomains=${includeDomains}
         ></ha-entity-picker>
@@ -157,12 +152,12 @@ export class HuiPictureGlanceCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .configValue="${"camera_view"}"
-            @value-changed="${this._valueChanged}"
+            .configValue=${"camera_view"}
+            @value-changed=${this._valueChanged}
           >
             <paper-listbox
               slot="dropdown-content"
-              .selected="${views.indexOf(this._camera_view)}"
+              .selected=${views.indexOf(this._camera_view)}
             >
               ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
             </paper-listbox>
@@ -173,9 +168,9 @@ export class HuiPictureGlanceCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <ha-entity-picker
@@ -185,9 +180,9 @@ export class HuiPictureGlanceCardEditor
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -198,10 +193,10 @@ export class HuiPictureGlanceCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._tap_action}"
-            .actions="${actions}"
-            .configValue="${"tap_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._tap_action}
+            .actions=${actions}
+            .configValue=${"tap_action"}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -210,22 +205,22 @@ export class HuiPictureGlanceCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._hold_action}"
-            .actions="${actions}"
-            .configValue="${"hold_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._hold_action}
+            .actions=${actions}
+            .configValue=${"hold_action"}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
         </div>
         <hui-entity-editor
           .hass=${this.hass}
-          .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          .entities=${this._configEntities}
+          @entities-changed=${this._valueChanged}
         ></hui-entity-editor>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;
@@ -260,7 +255,7 @@ export class HuiPictureGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

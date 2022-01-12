@@ -1,15 +1,15 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   LovelaceViewConfig,
@@ -19,7 +19,6 @@ import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { HuiCardOptions } from "../components/hui-card-options";
 import { HuiWarning } from "../components/hui-warning";
-import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
@@ -37,15 +36,12 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     LovelaceCard | HuiErrorCard
   > = [];
 
-  @internalProperty() private _card?:
-    | LovelaceCard
-    | HuiWarning
-    | HuiCardOptions;
+  @state() private _card?: LovelaceCard | HuiWarning | HuiCardOptions;
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
@@ -65,7 +61,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       | undefined;
 
     if (
-      oldLovelace?.config !== this.lovelace?.config ||
+      (!changedProperties.has("cards") &&
+        oldLovelace?.config !== this.lovelace?.config) ||
       (oldLovelace && oldLovelace?.editMode !== this.lovelace?.editMode)
     ) {
       this._createCard();
@@ -74,6 +71,13 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this.cards!.length > 1
+        ? html`<hui-warning>
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
+            )}
+          </hui-warning>`
+        : ""}
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
         ? html`
@@ -95,11 +99,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    showCreateCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: [this.index!],
-    });
+    fireEvent(this, "ll-create-card");
   }
 
   private _createCard(): void {
@@ -124,21 +124,9 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     card.editMode = true;
     wrapper.appendChild(card);
     this._card = wrapper;
-
-    if (this.cards!.length > 1) {
-      const warning = document.createElement("hui-warning");
-      warning.setAttribute(
-        "style",
-        "position: absolute; top: 0; width: 100%; box-sizing: border-box;"
-      );
-      warning.innerText = this.hass!.localize(
-        "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-      );
-      this._card = warning;
-    }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

@@ -1,0 +1,29 @@
+diff --git a/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js b/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
+index d92179f7fd5315203f870a6963e871dc8ddf6c0c..362e284121b97e0fba0925225777aebc32e26b8d 100644
+--- a/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
++++ b/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
+@@ -1,14 +1,15 @@
+-let _ET, ET;
++let _ET;
++let ET;
+ export default async function EventTarget() {
+-    return ET || init();
++  return ET || init();
+ }
+ async function init() {
+-    _ET = window.EventTarget;
+-    try {
+-        new _ET();
+-    }
+-    catch (_a) {
+-        _ET = (await import('event-target-shim')).EventTarget;
+-    }
+-    return (ET = _ET);
++  _ET = window.EventTarget;
++  try {
++    new _ET();
++  } catch (_a) {
++    _ET = (await import("event-target-shim")).default.EventTarget;
++  }
++  return (ET = _ET);
+ }

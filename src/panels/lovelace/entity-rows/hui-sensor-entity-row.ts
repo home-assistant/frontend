@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -22,18 +20,18 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { TimestampRenderingFormats } from "../components/types";
+import { TimestampRenderingFormat } from "../components/types";
 import { LovelaceRow } from "./types";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
-  format?: TimestampRenderingFormats;
+  format?: TimestampRenderingFormat;
 }
 
 @customElement("hui-sensor-entity-row")
 class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorEntityConfig;
+  @state() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
     if (!config) {
@@ -79,6 +77,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
                   .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${this._config.format}
+                  capitalize
                 ></hui-timestamp-display>
               `
             : computeStateDisplay(
@@ -95,7 +94,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

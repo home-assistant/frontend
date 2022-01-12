@@ -1,20 +1,21 @@
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { customElement, html, LitElement, property } from "lit-element";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HaRadio } from "../../../../../components/ha-radio";
 import type { HassTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-radio";
 
 @customElement("ha-automation-trigger-homeassistant")
-export default class HaHassTrigger extends LitElement {
+export class HaHassTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: HassTrigger;
+  @property({ attribute: false }) public trigger!: HassTrigger;
 
   public static get defaultConfig() {
     return {
-      event: "start",
+      event: "start" as HassTrigger["event"],
     };
   }
 
@@ -25,23 +26,31 @@ export default class HaHassTrigger extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.homeassistant.event"
         )}
-      </label>
-      <paper-radio-group
-        .selected=${event}
-        aria-labelledby="eventlabel"
-        @paper-radio-group-changed="${this._radioGroupPicked}"
-      >
-        <paper-radio-button name="start">
-          ${this.hass.localize(
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
           )}
-        </paper-radio-button>
-        <paper-radio-button name="shutdown">
-          ${this.hass.localize(
+        >
+          <ha-radio
+            name="event"
+            value="start"
+            .checked=${event === "start"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
           )}
-        </paper-radio-button>
-      </paper-radio-group>
+        >
+          <ha-radio
+            name="event"
+            value="shutdown"
+            .checked=${event === "shutdown"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+      </label>
     `;
   }
 
@@ -50,10 +59,17 @@ export default class HaHassTrigger extends LitElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        event: (ev.target as PaperRadioGroupElement).selected,
+        event: (ev.target as HaRadio).value,
       },
     });
   }
+
+  static styles = css`
+    label {
+      display: flex;
+      align-items: center;
+    }
+  `;
 }
 
 declare global {

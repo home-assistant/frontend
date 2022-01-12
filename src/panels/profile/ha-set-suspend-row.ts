@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-settings-row";
 import "../../components/ha-switch";

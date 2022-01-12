@@ -1,15 +1,15 @@
 import "@polymer/paper-input/paper-input";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { assert, number, object, optional, string } from "superstruct";
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
@@ -19,29 +19,34 @@ import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  name: optional(string()),
-  entity: optional(string()),
-  unit: optional(string()),
-  min: optional(number()),
-  max: optional(number()),
-  severity: optional(object()),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    name: optional(string()),
+    entity: optional(string()),
+    unit: optional(string()),
+    min: optional(number()),
+    max: optional(number()),
+    severity: optional(object()),
+    theme: optional(string()),
+    needle: optional(boolean()),
+  })
+);
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
     assert(config, cardConfigStruct);
@@ -90,10 +95,10 @@ export class HuiGaugeCardEditor
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
@@ -102,9 +107,9 @@ export class HuiGaugeCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._name}"
+          .value=${this._name}
           .configValue=${"name"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
           .label="${this.hass.localize(
@@ -118,9 +123,9 @@ export class HuiGaugeCardEditor
         ></paper-input>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <paper-input
           type="number"
@@ -129,9 +134,9 @@ export class HuiGaugeCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._min}"
+          .value=${this._min}
           .configValue=${"min"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
           type="number"
@@ -140,10 +145,21 @@ export class HuiGaugeCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._max}"
+          .value=${this._max}
           .configValue=${"max"}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
         ></paper-input>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.gauge.needle_gauge"
+          )}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked=${this._config!.needle !== undefined}
+            @change=${this._toggleNeedle}
+          ></ha-switch
+        ></ha-formfield>
         <ha-formfield
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
@@ -151,8 +167,8 @@ export class HuiGaugeCardEditor
           .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
-            .checked="${this._config!.severity !== undefined}"
-            @change="${this._toggleSeverity}"
+            .checked=${this._config!.severity !== undefined}
+            @change=${this._toggleSeverity}
           ></ha-switch
         ></ha-formfield>
         ${this._config!.severity !== undefined
@@ -164,9 +180,9 @@ export class HuiGaugeCardEditor
                 )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.required"
             )})"
-                .value="${this._severity ? this._severity.green : 0}"
+                .value=${this._severity ? this._severity.green : 0}
                 .configValue=${"green"}
-                @value-changed="${this._severityChanged}"
+                @value-changed=${this._severityChanged}
               ></paper-input>
               <paper-input
                 type="number"
@@ -175,9 +191,9 @@ export class HuiGaugeCardEditor
                 )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.required"
             )})"
-                .value="${this._severity ? this._severity.yellow : 0}"
+                .value=${this._severity ? this._severity.yellow : 0}
                 .configValue=${"yellow"}
-                @value-changed="${this._severityChanged}"
+                @value-changed=${this._severityChanged}
               ></paper-input>
               <paper-input
                 type="number"
@@ -186,9 +202,9 @@ export class HuiGaugeCardEditor
                 )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.required"
             )})"
-                .value="${this._severity ? this._severity.red : 0}"
+                .value=${this._severity ? this._severity.red : 0}
                 .configValue=${"red"}
-                @value-changed="${this._severityChanged}"
+                @value-changed=${this._severityChanged}
               ></paper-input>
           </div>
           `
@@ -197,7 +213,7 @@ export class HuiGaugeCardEditor
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`
@@ -217,6 +233,22 @@ export class HuiGaugeCardEditor
         }
       `,
     ];
+  }
+
+  private _toggleNeedle(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    if ((ev.target as EditorTarget).checked) {
+      this._config = {
+        ...this._config,
+        needle: true,
+      };
+    } else {
+      this._config = { ...this._config };
+      delete this._config.needle;
+    }
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _toggleSeverity(ev: EntitiesEditorEvent): void {

@@ -1,17 +1,12 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -28,11 +23,8 @@ export class CloudGooglePref extends LitElement {
       return html``;
     }
 
-    const {
-      google_enabled,
-      google_report_state,
-      google_secure_devices_pin,
-    } = this.cloudStatus.prefs;
+    const { google_enabled, google_report_state, google_secure_devices_pin } =
+      this.cloudStatus.prefs;
 
     return html`
       <ha-card
@@ -43,8 +35,8 @@ export class CloudGooglePref extends LitElement {
         <div class="switch">
           <ha-switch
             id="google_enabled"
-            .checked="${google_enabled}"
-            @change="${this._enableToggleChanged}"
+            .checked=${google_enabled}
+            @change=${this._enableToggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
@@ -53,41 +45,40 @@ export class CloudGooglePref extends LitElement {
           </p>
           ${google_enabled && !this.cloudStatus.google_registered
             ? html`
-                <h3 class="warning">
-                  ${this.hass.localize(
+                <ha-alert
+                  .title=${this.hass.localize(
                     "ui.panel.config.cloud.account.google.not_configured_title"
                   )}
-                </h3>
-                <p>
+                >
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.not_configured_text"
                   )}
-                </p>
 
-                <ul>
-                  <li>
-                    <a
-                      href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.google.enable_ha_skill"
-                      )}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.nabucasa.com/config/google_assistant/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.google.config_documentation"
-                      )}
-                    </a>
-                  </li>
-                </ul>
+                  <ul>
+                    <li>
+                      <a
+                        href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.enable_ha_skill"
+                        )}
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.nabucasa.com/config/google_assistant/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.config_documentation"
+                        )}
+                      </a>
+                    </li>
+                  </ul>
+                </ha-alert>
               `
             : ""}
           ${google_enabled
@@ -120,15 +111,15 @@ export class CloudGooglePref extends LitElement {
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
                   <paper-input
-                    label="${this.hass.localize(
+                    label=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
-                    )}"
+                    )}
                     id="google_secure_devices_pin"
-                    placeholder="${this.hass.localize(
+                    placeholder=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enter_pin_hint"
-                    )}"
+                    )}
                     .value=${google_secure_devices_pin || ""}
-                    @change="${this._pinChanged}"
+                    @change=${this._pinChanged}
                   ></paper-input>
                 </div>
               `
@@ -180,7 +171,7 @@ export class CloudGooglePref extends LitElement {
     try {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -192,7 +183,7 @@ export class CloudGooglePref extends LitElement {
         google_report_state: toggle.checked!,
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
           err.message
@@ -210,7 +201,7 @@ export class CloudGooglePref extends LitElement {
       });
       showSaveSuccessToast(this, this.hass);
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass.localize(
           "ui.panel.config.cloud.account.google.enter_pin_error"
@@ -220,7 +211,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

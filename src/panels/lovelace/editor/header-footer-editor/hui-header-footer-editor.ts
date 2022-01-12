@@ -1,19 +1,10 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-paper-dropdown-menu";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-icon-button";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
@@ -46,35 +37,32 @@ export class HuiHeaderFooterEditor extends LitElement {
       <div>
         ${!this.config?.type
           ? html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.add"
                 )}
+                .path=${mdiPlus}
                 class="add-icon"
                 @click=${this._add}
-              >
-                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `
           : html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.clear"
                 )}
+                .path=${mdiClose}
                 class="remove-icon"
                 @click=${this._delete}
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              ></ha-icon-button>
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.edit"
                 )}
+                .path=${mdiPencil}
                 class="edit-icon"
                 @click=${this._edit}
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `}
       </div>
     `;
@@ -110,7 +98,7 @@ export class HuiHeaderFooterEditor extends LitElement {
     fireEvent(this, "value-changed", { value: "" });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         font-size: 16px;
@@ -126,7 +114,7 @@ export class HuiHeaderFooterEditor extends LitElement {
         align-items: center;
       }
 
-      mwc-icon-button,
+      ha-icon-button,
       .header-footer-icon {
         --mdc-icon-button-size: 36px;
         color: var(--secondary-text-color);

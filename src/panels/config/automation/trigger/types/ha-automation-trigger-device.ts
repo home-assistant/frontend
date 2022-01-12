@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-picker";
@@ -24,9 +19,9 @@ export class HaDeviceTrigger extends LitElement {
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
 
-  @internalProperty() private _deviceId?: string;
+  @state() private _deviceId?: string;
 
-  @internalProperty() private _capabilities?: DeviceCapabilities;
+  @state() private _capabilities?: DeviceCapabilities;
 
   private _origTrigger?: DeviceTrigger;
 
@@ -96,6 +91,9 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected updated(changedPros) {
+    if (!changedPros.has("trigger")) {
+      return;
+    }
     const prevTrigger = changedPros.get("trigger");
     if (prevTrigger && !deviceAutomationsEqual(prevTrigger, this.trigger)) {
       this._getCapabilities();
@@ -123,6 +121,9 @@ export class HaDeviceTrigger extends LitElement {
       deviceAutomationsEqual(this._origTrigger, trigger)
     ) {
       trigger = this._origTrigger;
+    }
+    if (this.trigger.id) {
+      trigger.id = this.trigger.id;
     }
     fireEvent(this, "value-changed", { value: trigger });
   }

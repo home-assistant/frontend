@@ -3,14 +3,14 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -53,14 +53,12 @@ class MoreInfoHumidifier extends LitElement {
           <div class="single-row">
             <div class="target-humidity">${stateObj.attributes.humidity} %</div>
             <ha-slider
-              class="humidity"
               step="1"
               pin
               ignore-bar-touch
               dir=${rtlDirection}
               .min=${stateObj.attributes.min_humidity}
               .max=${stateObj.attributes.max_humidity}
-              .secondaryProgress=${stateObj.attributes.max_humidity}
               .value=${stateObj.attributes.humidity}
               @change=${this._targetHumiditySliderChanged}
             >
@@ -171,7 +169,7 @@ class MoreInfoHumidifier extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         color: var(--primary-text-color);
@@ -199,11 +197,6 @@ class MoreInfoHumidifier extends LitElement {
         font-size: 200%;
         margin: auto;
         direction: ltr;
-      }
-
-      .humidity {
-        --paper-slider-active-color: var(--paper-blue-400);
-        --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
       .single-row {

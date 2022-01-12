@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { HaLogicalCondition } from "./ha-automation-condition-logical";
 
 @customElement("ha-automation-condition-or")

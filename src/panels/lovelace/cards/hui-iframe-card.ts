@@ -1,17 +1,12 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { IframeCardConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -31,7 +26,9 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @property() protected _config?: IframeCardConfig;
+  @property() public hass?: HomeAssistant;
+
+  @state() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {
     if (!this._config) {
@@ -52,7 +49,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
@@ -66,16 +63,32 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       padding = "50%";
     }
 
+    const target_protocol = new URL(this._config.url, location.toString())
+      .protocol;
+    if (location.protocol === "https:" && target_protocol !== "https:") {
+      return html`
+        <ha-alert alert-type="error">
+          ${this.hass!.localize(
+            "ui.panel.lovelace.cards.iframe.error_secure_context",
+            {
+              target_protocol,
+              context_protocol: location.protocol,
+            }
+          )}
+        </ha-alert>
+      `;
+    }
+
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div
           id="root"
-          style="${styleMap({
+          style=${styleMap({
             "padding-top": padding,
-          })}"
+          })}
         >
           <iframe
-            src="${this._config.url}"
+            src=${this._config.url}
             sandbox="allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
             allowfullscreen="true"
           ></iframe>
@@ -84,7 +97,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host([ispanel]) ha-card {
         width: 100%;

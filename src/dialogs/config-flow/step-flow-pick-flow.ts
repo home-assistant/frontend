@@ -1,15 +1,8 @@
-import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-icon-next";
 import { localizeConfigFlowTitle } from "../../data/config_flow";
@@ -48,7 +41,12 @@ class StepFlowPickFlow extends LitElement {
             <img
               slot="item-icon"
               loading="lazy"
-              src=${brandsUrl(flow.handler, "icon", true)}
+              src=${brandsUrl({
+                domain: flow.handler,
+                type: "icon",
+                useFallback: true,
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
               referrerpolicy="no-referrer"
             />
 
@@ -89,7 +87,7 @@ class StepFlowPickFlow extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

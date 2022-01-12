@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { hs2rgb, rgb2hs } from "../common/color/convert-color";
 import { EventsMixin } from "../mixins/events-mixin";
-import { rgb2hs } from "../common/color/convert-color";
 /**
  * Color-picker custom element
  *
@@ -291,7 +291,13 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   processUserSelect(ev) {
     const canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
     const hs = this.getColor(canvasXY.x, canvasXY.y);
-    const rgb = this.getRgbColor(canvasXY.x, canvasXY.y);
+    let rgb;
+    if (!this.isInWheel(canvasXY.x, canvasXY.y)) {
+      const [r, g, b] = hs2rgb([hs.h, hs.s]);
+      rgb = { r, g, b };
+    } else {
+      rgb = this.getRgbColor(canvasXY.x, canvasXY.y);
+    }
     this.onColorSelect(hs, rgb);
   }
 

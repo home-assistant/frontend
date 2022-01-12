@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-attributes";
@@ -30,15 +23,12 @@ class MoreInfoPerson extends LitElement {
     }
 
     return html`
-      <ha-attributes
-        .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable"
-      ></ha-attributes>
       ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
         ? html`
             <ha-map
               .hass=${this.hass}
               .entities=${this._entityArray(this.stateObj.entity_id)}
+              autoFit
             ></ha-map>
           `
         : ""}
@@ -57,18 +47,23 @@ class MoreInfoPerson extends LitElement {
             </div>
           `
         : ""}
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        extra-filters="id,user_id,editable"
+      ></ha-attributes>
     `;
   }
 
   private _handleAction() {
-    showZoneEditor(this, {
+    showZoneEditor({
       latitude: this.stateObj!.attributes.latitude,
       longitude: this.stateObj!.attributes.longitude,
     });
     fireEvent(this, "hass-more-info", { entityId: null });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;
@@ -80,6 +75,7 @@ class MoreInfoPerson extends LitElement {
       }
       ha-map {
         margin-top: 16px;
+        margin-bottom: 16px;
       }
     `;
   }

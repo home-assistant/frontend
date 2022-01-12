@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
-import { formatNumber } from "../common/string/format_number";
+import { formatNumber } from "../common/number/format_number";
 import LocalizeMixin from "../mixins/localize-mixin";
 
 /*

@@ -3,16 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
@@ -27,17 +19,17 @@ import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-
 class DialogDeviceRegistryDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _nameByUser!: string;
+  @state() private _nameByUser!: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: DeviceRegistryDetailDialogParams;
+  @state() private _params?: DeviceRegistryDetailDialogParams;
 
-  @internalProperty() private _areaId?: string | null;
+  @property() public _areaId?: string | null;
 
-  @internalProperty() private _disabledBy!: string | null;
+  @state() private _disabledBy!: string | null;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
   public async showDialog(
     params: DeviceRegistryDetailDialogParams
@@ -119,7 +111,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         </mwc-button>
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.panel.config.devices.update")}
@@ -150,7 +142,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         disabled_by: this._disabledBy || null,
       });
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error =
         err.message ||
         this.hass.localize("ui.panel.config.devices.unknown_error");
@@ -159,7 +151,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

@@ -2,16 +2,8 @@ import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
@@ -35,9 +27,9 @@ export class HaConfigServerControl extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
-  @internalProperty() private _validating = false;
+  @state() private _validating = false;
 
-  @internalProperty() private _reloadableDomains: string[] = [];
+  @state() private _reloadableDomains: string[] = [];
 
   private _validateLog = "";
 
@@ -165,18 +157,6 @@ export class HaConfigServerControl extends LitElement {
                   "ui.panel.config.server_control.section.server_management.restart"
                 )}
               </ha-call-service-button>
-              <ha-call-service-button
-                class="warning"
-                .hass=${this.hass}
-                domain="homeassistant"
-                service="stop"
-                confirmation=${this.hass.localize(
-                  "ui.panel.config.server_control.section.server_management.confirm_stop"
-                )}
-                >${this.hass.localize(
-                  "ui.panel.config.server_control.section.server_management.stop"
-                )}
-              </ha-call-service-button>
             </div>
           </ha-card>
 
@@ -242,7 +222,7 @@ export class HaConfigServerControl extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

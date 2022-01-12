@@ -64,7 +64,6 @@ export class HuiNotificationDrawer extends EventsMixin(
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
         <ha-icon-button-prev hass="[[hass]]" on-click="_closeDrawer"
-          title="[[localize('ui.notification_drawer.close')]]"
           label="[[localize('ui.notification_drawer.close')]]">
         </ha-icon-button-prev>
       </app-toolbar>
@@ -181,7 +180,7 @@ export class HuiNotificationDrawer extends EventsMixin(
 
     const notifications = notificationsBackend.concat(configuratorEntities);
 
-    notifications.sort(function (n1, n2) {
+    notifications.sort((n1, n2) => {
       const d1 = new Date(n1.created_at);
       const d2 = new Date(n2.created_at);
 

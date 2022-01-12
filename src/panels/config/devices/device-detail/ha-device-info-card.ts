@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import {
   computeDeviceName,
@@ -73,6 +66,17 @@ export class HaDeviceCard extends LitElement {
                 </div>
               `
             : ""}
+          ${this.device.hw_version
+            ? html`
+                <div class="extra-info">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.hardware",
+                    "version",
+                    this.device.hw_version
+                  )}
+                </div>
+              `
+            : ""}
           <slot></slot>
         </div>
         <slot name="actions"></slot>
@@ -89,12 +93,12 @@ export class HaDeviceCard extends LitElement {
     const device = devices.find((dev) => dev.id === deviceId);
     return device
       ? computeDeviceName(device, this.hass)
-      : `(${this.hass.localize(
-          "ui.panel.config.integrations.config_entry.device_unavailable"
-        )})`;
+      : `<${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.unknown_via_device"
+        )}>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -114,9 +118,9 @@ export class HaDeviceCard extends LitElement {
         word-wrap: break-word;
       }
       .manuf,
-      .entity-id,
       .model {
         color: var(--secondary-text-color);
+        word-wrap: break-word;
       }
     `;
   }

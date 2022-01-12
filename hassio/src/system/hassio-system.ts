@@ -1,12 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
@@ -35,8 +29,9 @@ class HassioSystem extends LitElement {
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${supervisorTabs}
-        main-page
+        .tabs=${supervisorTabs(this.hass)}
+        .mainPage=${!atLeastVersion(this.hass.config.version, 2021, 12)}
+        back-path="/config"
         supervisor
       >
         <span slot="header"> ${this.supervisor.localize("panel.system")} </span>
@@ -64,7 +59,7 @@ class HassioSystem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

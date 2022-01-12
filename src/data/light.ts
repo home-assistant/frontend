@@ -3,11 +3,12 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export enum LightColorModes {
+export const enum LightColorModes {
   UNKNOWN = "unknown",
   ONOFF = "onoff",
   BRIGHTNESS = "brightness",
   COLOR_TEMP = "color_temp",
+  WHITE = "white",
   HS = "hs",
   XY = "xy",
   RGB = "rgb",
@@ -51,9 +52,7 @@ export const lightSupportsDimming = (entity: LightEntity) =>
     modesSupportingDimming.includes(mode)
   );
 
-export const getLightCurrentModeRgbColor = (
-  entity: LightEntity
-): number[] | undefined =>
+export const getLightCurrentModeRgbColor = (entity: LightEntity): number[] =>
   entity.attributes.color_mode === LightColorModes.RGBWW
     ? entity.attributes.rgbww_color
     : entity.attributes.color_mode === LightColorModes.RGBW

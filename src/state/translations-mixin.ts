@@ -7,16 +7,17 @@ import {
   getHassTranslationsPre109,
   NumberFormat,
   saveTranslationPreferences,
+  TimeFormat,
   TranslationCategory,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
-  getTranslation,
   getLocalLanguage,
+  getTranslation,
   getUserLocale,
-} from "../util/hass-translation";
+} from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
@@ -27,6 +28,9 @@ declare global {
     };
     "hass-number-format-select": {
       number_format: NumberFormat;
+    };
+    "hass-time-format-select": {
+      time_format: TimeFormat;
     };
   }
 }
@@ -64,6 +68,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-number-format-select", (e) => {
         this._selectNumberFormat((e as CustomEvent).detail, true);
       });
+      this.addEventListener("hass-time-format-select", (e) => {
+        this._selectTimeFormat((e as CustomEvent).detail, true);
+      });
       this._loadCoreTranslations(getLocalLanguage());
     }
 
@@ -95,6 +102,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           // We just got number_format from backend, no need to save back
           this._selectNumberFormat(locale.number_format, false);
         }
+        if (
+          locale?.time_format &&
+          this.hass!.locale.time_format !== locale.time_format
+        ) {
+          // We just got time_format from backend, no need to save back
+          this._selectTimeFormat(locale.time_format, false);
+        }
       });
 
       this.hass!.connection.subscribeEvents(
@@ -112,7 +126,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._applyTranslations(this.hass!);
     }
 
-    protected panelUrlChanged(newPanelUrl) {
+    protected panelUrlChanged(newPanelUrl: string) {
       super.panelUrlChanged(newPanelUrl);
       // this may be triggered before hassConnected
       this._loadFragmentTranslations(
@@ -127,6 +141,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     ) {
       this._updateHass({
         locale: { ...this.hass!.locale, number_format: number_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectTimeFormat(time_format: TimeFormat, saveToBackend: boolean) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, time_format: time_format },
       });
       if (saveToBackend) {
         saveTranslationPreferences(this.hass!, this.hass!.locale);
@@ -253,8 +276,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       panelUrl: string
     ) {
       if (!panelUrl) {
-        return;
+        return undefined;
       }
+
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
@@ -265,15 +289,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : undefined;
 
       if (!fragment) {
-        return;
+        return undefined;
       }
 
       if (this.__loadedFragmetTranslations.has(fragment)) {
-        return;
+        return this.hass!.localize;
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
       await this._updateResources(result.language, result.data);
+      return this.hass!.localize;
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -316,13 +341,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ...data,
         },
       };
-      const changes: Partial<HomeAssistant> = {
-        resources,
-        localize: await computeLocalize(this, language, resources),
-      };
+
+      // Update resources immediately, so when a new update comes in we don't miss values
+      this._updateHass({ resources });
+
+      const localize = await computeLocalize(this, language, resources);
 
       if (language === (this.hass ?? this._pendingHass).language) {
-        this._updateHass(changes);
+        this._updateHass({
+          localize,
+        });
       }
     }
 
@@ -348,3 +376,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
   };
+
+// Load selected translation into memory immediately so it is ready when Polymer
+// initializes.
+getTranslation(null, getLocalLanguage());

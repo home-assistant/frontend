@@ -1,18 +1,16 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
+import { CoverEntity, isTiltOnly } from "../../../data/cover";
 import { HomeAssistant } from "../../../types";
-import { isTiltOnly } from "../../../util/cover-model";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -22,7 +20,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiCoverEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -40,7 +38,7 @@ class HuiCoverEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as CoverEntity;
 
     if (!stateObj) {
       return html`
@@ -69,7 +67,7 @@ class HuiCoverEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-cover-controls,
       ha-cover-tilt-controls {

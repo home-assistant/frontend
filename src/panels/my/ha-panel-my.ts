@@ -1,20 +1,15 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { navigate } from "../../common/navigate";
-import { HomeAssistant, Route } from "../../types";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
-import "../../layouts/hass-error-screen";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
+import "../../layouts/hass-error-screen";
+import { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 const REDIRECTS: Redirects = {
@@ -35,6 +30,9 @@ const REDIRECTS: Redirects = {
   },
   developer_events: {
     redirect: "/developer-tools/event",
+  },
+  developer_statistics: {
+    redirect: "/developer-tools/statistics",
   },
   config: {
     redirect: "/config",
@@ -64,11 +62,19 @@ const REDIRECTS: Redirects = {
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  config_energy: {
+    component: "energy",
+    redirect: "/config/energy/dashboard",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },
   entities: {
     redirect: "/config/entities",
+  },
+  energy: {
+    component: "energy",
+    redirect: "/energy",
   },
   areas: {
     redirect: "/config/areas/dashboard",
@@ -135,7 +141,8 @@ const REDIRECTS: Redirects = {
     redirect: "/config/info",
   },
   customize: {
-    redirect: "/config/customize",
+    // customize was removed in 2021.12, fallback to dashboard
+    redirect: "/config/dashboard",
   },
   profile: {
     redirect: "/profile/dashboard",
@@ -167,7 +174,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error?: string;
+  @state() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -178,11 +185,9 @@ class HaPanelMy extends LitElement {
         this._error = "no_supervisor";
         return;
       }
-      navigate(
-        this,
-        `/hassio/_my_redirect/${path}${window.location.search}`,
-        true
-      );
+      navigate(`/hassio/_my_redirect/${path}${window.location.search}`, {
+        replace: true,
+      });
       return;
     }
 
@@ -204,17 +209,17 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = "url_error";
       return;
     }
 
-    navigate(this, url, true);
+    navigate(url, { replace: true });
   }
 
   protected render() {
     if (this._error) {
-      let error = "Unknown error";
+      let error: string;
       switch (this._error) {
         case "not_supported":
           error =
@@ -247,7 +252,7 @@ class HaPanelMy extends LitElement {
             html`<a
               target="_blank"
               rel="noreferrer noopener"
-              href="${documentationUrl(this.hass, "/installation")}"
+              href=${documentationUrl(this.hass, "/installation")}
               >${this.hass.localize("ui.panel.my.documentation")}</a
             >`
           );

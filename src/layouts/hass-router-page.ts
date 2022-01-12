@@ -1,4 +1,5 @@
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import { Route } from "../types";
@@ -46,7 +47,7 @@ export interface RouterOptions {
 // Time to wait for code to load before we show loading screen.
 const LOADING_SCREEN_THRESHOLD = 400; // ms
 
-export class HassRouterPage extends UpdatingElement {
+export class HassRouterPage extends ReactiveElement {
   @property() public route?: Route;
 
   protected routerOptions!: RouterOptions;
@@ -72,6 +73,10 @@ export class HassRouterPage extends UpdatingElement {
         };
   });
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
 
@@ -94,7 +99,7 @@ export class HassRouterPage extends UpdatingElement {
     const defaultPage = routerOptions.defaultPage;
 
     if (route && route.path === "" && defaultPage !== undefined) {
-      navigate(this, `${route.prefix}/${defaultPage}`, true);
+      navigate(`${route.prefix}/${defaultPage}`, { replace: true });
     }
 
     let newPage = route
@@ -122,7 +127,9 @@ export class HassRouterPage extends UpdatingElement {
 
         // Update the url if we know where we're mounted.
         if (route) {
-          navigate(this, `${route.prefix}/${result}`, true);
+          navigate(`${route.prefix}/${result}${location.search}`, {
+            replace: true,
+          });
         }
       }
     }

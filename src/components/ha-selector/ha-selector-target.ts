@@ -8,15 +8,8 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import {
@@ -38,9 +31,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
-  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
+  @state() private _entityPlaformLookup?: Record<string, string>;
 
-  @internalProperty() private _configEntries?: ConfigEntry[];
+  @state() private _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -76,10 +69,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     return html`<ha-target-picker
       .hass=${this.hass}
       .value=${this.value}
-      .deviceFilter=${(device) => this._filterDevices(device)}
-      .entityRegFilter=${(entity: EntityRegistryEntry) =>
-        this._filterRegEntities(entity)}
-      .entityFilter=${(entity: HassEntity) => this._filterEntities(entity)}
+      .deviceFilter=${this._filterDevices}
+      .entityRegFilter=${this._filterRegEntities}
+      .entityFilter=${this._filterEntities}
       .includeDeviceClasses=${this.selector.target.entity?.device_class
         ? [this.selector.target.entity.device_class]
         : undefined}
@@ -90,7 +82,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     ></ha-target-picker>`;
   }
 
-  private _filterEntities(entity: HassEntity): boolean {
+  private _filterEntities = (entity: HassEntity): boolean => {
     if (
       this.selector.target.entity?.integration ||
       this.selector.target.device?.integration
@@ -105,18 +97,18 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       }
     }
     return true;
-  }
+  };
 
-  private _filterRegEntities(entity: EntityRegistryEntry): boolean {
+  private _filterRegEntities = (entity: EntityRegistryEntry): boolean => {
     if (this.selector.target.entity?.integration) {
       if (entity.platform !== this.selector.target.entity.integration) {
         return false;
       }
     }
     return true;
-  }
+  };
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (
       this.selector.target.device?.manufacturer &&
       device.manufacturer !== this.selector.target.device.manufacturer
@@ -142,7 +134,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       }
     }
     return true;
-  }
+  };
 
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
@@ -153,7 +145,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-target-picker {
         display: block;

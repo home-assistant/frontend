@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import {
@@ -21,7 +16,7 @@ import "./hc-lovelace";
 class HcDemo extends HassElement {
   @property({ attribute: false }) public lovelacePath!: string;
 
-  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
+  @state() private _lovelaceConfig?: LovelaceConfig;
 
   protected render(): TemplateResult {
     if (!this._lovelaceConfig) {
@@ -38,10 +33,10 @@ class HcDemo extends HassElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._initialize();
+    this._initializeHass();
   }
 
-  private async _initialize() {
+  private async _initializeHass() {
     const initial: Partial<MockHomeAssistant> = {
       // Override updateHass so that the correct hass lifecycle methods are called
       updateHass: (hassUpdate: Partial<HomeAssistant>) =>

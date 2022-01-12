@@ -3,19 +3,18 @@ import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+  PropertyValues,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import { domainToName } from "../../data/integration";
@@ -42,11 +41,11 @@ declare global {
 class StepFlowPickHandler extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public handlers!: string[];
+  @property({ attribute: false }) public handlers!: string[];
 
-  @property() public showAdvanced?: boolean;
+  @property() public initialFilter?: string;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   private _width?: number;
 
@@ -70,7 +69,7 @@ class StepFlowPickHandler extends LitElement {
         return fuse.search(filter).map((result) => result.item);
       }
       return handlers.sort((a, b) =>
-        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+        caseInsensitiveStringCompare(a.name, b.name)
       );
     }
   );
@@ -85,6 +84,7 @@ class StepFlowPickHandler extends LitElement {
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
+        .hass=${this.hass}
         autofocus
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
@@ -95,48 +95,63 @@ class StepFlowPickHandler extends LitElement {
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
-        class=${classMap({ advanced: Boolean(this.showAdvanced) })}
       >
-        ${handlers.map(
-          (handler: HandlerObj) =>
-            html`
-              <paper-icon-item
-                @click=${this._handlerPicked}
-                .handler=${handler}
-              >
-                <img
-                  slot="item-icon"
-                  loading="lazy"
-                  src=${brandsUrl(handler.slug, "icon", true)}
-                  referrerpolicy="no-referrer"
-                />
+        ${handlers.length
+          ? handlers.map(
+              (handler: HandlerObj) =>
+                html`
+                  <paper-icon-item
+                    @click=${this._handlerPicked}
+                    .handler=${handler}
+                  >
+                    <img
+                      slot="item-icon"
+                      loading="lazy"
+                      src=${brandsUrl({
+                        domain: handler.slug,
+                        type: "icon",
+                        useFallback: true,
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                      referrerpolicy="no-referrer"
+                    />
 
-                <paper-item-body> ${handler.name} </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-icon-item>
-            `
-        )}
+                    <paper-item-body> ${handler.name} </paper-item-body>
+                    <ha-icon-next></ha-icon-next>
+                  </paper-icon-item>
+                `
+            )
+          : html`
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.note_about_integrations"
+                )}<br />
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.note_about_website_reference"
+                )}<a
+                  href=${documentationUrl(
+                    this.hass,
+                    `/integrations/${
+                      this._filter ? `#search/${this._filter}` : ""
+                    }`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.home_assistant_website"
+                  )}</a
+                >.
+              </p>
+            `}
       </div>
-      ${this.showAdvanced
-        ? html`
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.note_about_integrations"
-              )}<br />
-              ${this.hass.localize(
-                "ui.panel.config.integrations.note_about_website_reference"
-              )}<a
-                href="${documentationUrl(this.hass, "/integrations/")}"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.integrations.home_assistant_website"
-                )}</a
-              >.
-            </p>
-          `
-        : ""}
     `;
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    if (this._filter === undefined && this.initialFilter !== undefined) {
+      this._filter = this.initialFilter;
+    }
+    super.willUpdate(changedProps);
   }
 
   protected firstUpdated(changedProps) {
@@ -175,7 +190,7 @@ class StepFlowPickHandler extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`
@@ -200,9 +215,6 @@ class StepFlowPickHandler extends LitElement {
         @media all and (max-height: 900px) {
           div {
             max-height: calc(100vh - 134px);
-          }
-          div.advanced {
-            max-height: calc(100vh - 250px);
           }
         }
         paper-icon-item {

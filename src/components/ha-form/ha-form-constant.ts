@@ -1,15 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { fireEvent } from "../../common/dom/fire_event";
-import { HaFormConstantSchema, HaFormElement } from "./ha-form";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { HaFormConstantSchema, HaFormElement } from "./types";
 
 @customElement("ha-form-constant")
 export class HaFormConstant extends LitElement implements HaFormElement {
@@ -17,18 +8,11 @@ export class HaFormConstant extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    fireEvent(this, "value-changed", {
-      value: this.schema.value,
-    });
-  }
-
   protected render(): TemplateResult {
     return html`<span class="label">${this.label}</span>: ${this.schema.value}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

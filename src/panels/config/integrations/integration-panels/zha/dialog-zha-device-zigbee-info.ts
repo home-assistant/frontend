@@ -1,12 +1,5 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -17,7 +10,7 @@ import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee
 class DialogZHADeviceZigbeeInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _signature: any;
+  @state() private _signature: any;
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams
@@ -43,7 +36,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       <ha-dialog
         open
         hideActions
-        @closing="${this._close}"
+        @closed=${this._close}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_device_info.device_signature`)
@@ -59,7 +52,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
     this._signature = undefined;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

@@ -33,7 +33,7 @@
   <body>
     <div class="content">
       <div class="header">
-        <img src="/static/icons/favicon-192x192.png" height="52" />
+        <img src="/static/icons/favicon-192x192.png" height="52" alt="" />
         Home Assistant
       </div>
       <ha-authorize><p>Initializing</p></ha-authorize>
@@ -43,11 +43,17 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script crossorigin="use-credentials">
-      import("<%= latestPageJS %>");
-      window.latestJS = true;
-      window.providersPromise = fetch("/auth/providers", {
-        credentials: "same-origin",
-      });
+      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
+      if (!isS11_12) {
+        import("<%= latestPageJS %>");
+        window.latestJS = true;
+        window.providersPromise = fetch("/auth/providers", {
+          credentials: "same-origin",
+        });
+        if (!window.globalThis) {
+          window.globalThis = window;
+        }
+      }
     </script>
 
     <script>

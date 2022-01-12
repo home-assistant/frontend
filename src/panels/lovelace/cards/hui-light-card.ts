@@ -2,24 +2,22 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { LightEntity, lightSupportsDimming } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -60,7 +58,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: LightCardConfig;
+  @state() private _config?: LightCardConfig;
 
   private _brightnessTimout?: number;
 
@@ -98,16 +96,19 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const brightness =
       Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
+    const name = this._config.name ?? computeStateName(stateObj);
+
     return html`
       <ha-card>
-        <mwc-icon-button
+        <ha-icon-button
           class="more-info"
-          label="Open more info"
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.cards.show_more_info"
+          )}
+          .path=${mdiDotsVertical}
           @click=${this._handleMoreInfo}
           tabindex="0"
-        >
-          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-        </mwc-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -131,7 +132,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
-                .icon=${this._config.icon || stateIcon(stateObj)}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
@@ -143,11 +143,16 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   hasDoubleClick: hasAction(this._config!.double_tap_action),
                 })}
                 tabindex="0"
-              ></ha-icon-button>
+              >
+                <ha-state-icon
+                  .icon=${this._config.icon}
+                  .state=${stateObj}
+                ></ha-state-icon>
+              </ha-icon-button>
             </div>
           </div>
 
-          <div id="info">
+          <div id="info" .title=${name}>
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
@@ -159,7 +164,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   </div>
                 `
               : html` <div class="brightness">%</div> `}
-            ${this._config.name || computeStateName(stateObj)}
+            ${name}
           </div>
         </div>
       </ha-card>
@@ -254,7 +259,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;
@@ -299,7 +304,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-path-color: var(--slider-track-color);
         --round-slider-bar-color: var(--primary-color);
         padding-bottom: 10%;
       }

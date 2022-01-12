@@ -1,19 +1,23 @@
+import {
+  mdiFan,
+  mdiHomeMapMarker,
+  mdiMapMarker,
+  mdiPause,
+  mdiPlay,
+  mdiPlayPause,
+  mdiStop,
+  mdiTargetVariant,
+} from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   VacuumEntity,
   VACUUM_SUPPORT_BATTERY,
@@ -38,13 +42,13 @@ interface VacuumCommand {
 const VACUUM_COMMANDS: VacuumCommand[] = [
   {
     translationKey: "start",
-    icon: "hass:play",
+    icon: mdiPlay,
     serviceName: "start",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_START),
   },
   {
     translationKey: "pause",
-    icon: "hass:pause",
+    icon: mdiPause,
     serviceName: "pause",
     isVisible: (stateObj) =>
       // We need also to check if Start is supported because if not we show play-pause
@@ -53,7 +57,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "start_pause",
-    icon: "hass:play-pause",
+    icon: mdiPlayPause,
     serviceName: "start_pause",
     isVisible: (stateObj) =>
       // If start is supported, we don't show this button
@@ -62,26 +66,26 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "stop",
-    icon: "hass:stop",
+    icon: mdiStop,
     serviceName: "stop",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_STOP),
   },
   {
     translationKey: "clean_spot",
-    icon: "hass:target-variant",
+    icon: mdiTargetVariant,
     serviceName: "clean_spot",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT),
   },
   {
     translationKey: "locate",
-    icon: "hass:map-marker",
+    icon: mdiMapMarker,
     serviceName: "locate",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE),
   },
   {
     translationKey: "return_home",
-    icon: "hass:home-map-marker",
+    icon: mdiHomeMapMarker,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME),
@@ -105,31 +109,35 @@ class MoreInfoVacuum extends LitElement {
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     return html`
-      <div class="flex-horizontal">
-        ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
-          ? html`
-              <div>
-                <span class="status-subtitle"
-                  >${this.hass!.localize(
-                    "ui.dialogs.more_info_control.vacuum.status"
-                  )}:
-                </span>
-                <span><strong>${stateObj.attributes.status}</strong></span>
-              </div>
-            `
-          : ""}
-        ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY)
-          ? html`
-              <div>
-                <span>
-                  <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
-                  ${stateObj.attributes.battery_level} %
-                </span>
-              </div>
-            `
-          : ""}
-      </div>
-
+      ${stateObj.state !== UNAVAILABLE
+        ? html` <div class="flex-horizontal">
+            ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
+              ? html`
+                  <div>
+                    <span class="status-subtitle"
+                      >${this.hass!.localize(
+                        "ui.dialogs.more_info_control.vacuum.status"
+                      )}:
+                    </span>
+                    <span><strong>${stateObj.attributes.status}</strong></span>
+                  </div>
+                `
+              : ""}
+            ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY) &&
+            stateObj.attributes.battery_level
+              ? html`
+                  <div>
+                    <span>
+                      ${stateObj.attributes.battery_level} %
+                      <ha-icon
+                        .icon=${stateObj.attributes.battery_icon}
+                      ></ha-icon>
+                    </span>
+                  </div>
+                `
+              : ""}
+          </div>`
+        : ""}
       ${VACUUM_COMMANDS.some((item) => item.isVisible(stateObj))
         ? html`
             <div>
@@ -146,12 +154,13 @@ class MoreInfoVacuum extends LitElement {
                   (item) => html`
                     <div>
                       <ha-icon-button
-                        .icon=${item.icon}
+                        .path=${item.icon}
                         .entry=${item}
                         @click=${this.callService}
-                        .title=${this.hass!.localize(
+                        .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
+                        .disabled=${stateObj.state === UNAVAILABLE}
                       ></ha-icon-button>
                     </div>
                   `
@@ -168,6 +177,7 @@ class MoreInfoVacuum extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.dialogs.more_info_control.vacuum.fan_speed"
                   )}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                 >
                   <paper-listbox
                     slot="dropdown-content"
@@ -186,7 +196,7 @@ class MoreInfoVacuum extends LitElement {
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
                 >
                   <span>
-                    <ha-icon icon="hass:fan"></ha-icon>
+                    <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
                     ${stateObj.attributes.fan_speed}
                   </span>
                 </div>
@@ -197,6 +207,7 @@ class MoreInfoVacuum extends LitElement {
         : ""}
 
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
@@ -224,7 +235,7 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         line-height: 1.5;

@@ -1,19 +1,12 @@
+import { mdiCheckboxMarkedCircle, mdiClose, mdiHelpCircle } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-icon";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
@@ -35,11 +28,11 @@ export class ZwaveNetwork extends LitElement {
 
   @property() public isWide!: boolean;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
+  @state() private _networkStatus?: ZWaveNetworkStatus;
 
-  @internalProperty() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
+  @state() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();
@@ -53,7 +46,7 @@ export class ZwaveNetwork extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="sectionHeader" slot="header">
           <span>
             ${this.hass!.localize(
@@ -62,8 +55,9 @@ export class ZwaveNetwork extends LitElement {
           </span>
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           ></ha-icon-button>
         </div>
         <div slot="introduction">
@@ -72,10 +66,7 @@ export class ZwaveNetwork extends LitElement {
           )}
           <p>
             <a
-              href="${documentationUrl(
-                this.hass,
-                "/docs/z-wave/control-panel/"
-              )}"
+              href=${documentationUrl(this.hass, "/docs/z-wave/control-panel/")}
               target="_blank"
               rel="noreferrer"
             >
@@ -90,7 +81,7 @@ export class ZwaveNetwork extends LitElement {
                 <div class="details">
                   ${this._networkStatus.state === ZWAVE_NETWORK_STATE_STOPPED
                     ? html`
-                        <ha-icon icon="hass:close"></ha-icon>
+                        <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
                         ${this.hass!.localize(
                           "ui.panel.config.zwave.network_status.network_stopped"
                         )}
@@ -109,7 +100,9 @@ export class ZwaveNetwork extends LitElement {
                       `
                     : this._networkStatus.state === ZWAVE_NETWORK_STATE_AWAKED
                     ? html`
-                        <ha-icon icon="hass:checkbox-marked-circle"> </ha-icon>
+                        <ha-svg-icon
+                          .path=${mdiCheckboxMarkedCircle}
+                        ></ha-svg-icon>
                         ${this.hass!.localize(
                           "ui.panel.config.zwave.network_status.network_started"
                         )}<br />
@@ -225,21 +218,21 @@ export class ZwaveNetwork extends LitElement {
       <ha-call-service-button
         .hass=${this.hass}
         domain="zwave"
-        service="${service}"
+        service=${service}
       >
         ${this.hass!.localize("ui.panel.config.zwave.services." + service)}
       </ha-call-service-button>
       <ha-service-description
         .hass=${this.hass}
         domain="zwave"
-        service="${service}"
+        service=${service}
         ?hidden=${!this._showHelp}
       >
       </ha-service-description>
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -261,7 +254,7 @@ export class ZwaveNetwork extends LitElement {
           padding: 24px;
         }
 
-        .network-status ha-icon {
+        .network-status ha-svg-icon {
           display: block;
           margin: 0px auto 16px;
           width: 48px;

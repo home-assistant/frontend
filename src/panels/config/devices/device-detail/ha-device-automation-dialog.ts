@@ -1,12 +1,6 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import "@material/mwc-button/mwc-button";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
@@ -23,19 +17,18 @@ import "./ha-device-actions-card";
 import "./ha-device-conditions-card";
 import "./ha-device-triggers-card";
 import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
-import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _triggers: DeviceTrigger[] = [];
+  @state() private _triggers: DeviceTrigger[] = [];
 
-  @internalProperty() private _conditions: DeviceCondition[] = [];
+  @state() private _conditions: DeviceCondition[] = [];
 
-  @internalProperty() private _actions: DeviceAction[] = [];
+  @state() private _actions: DeviceAction[] = [];
 
-  @internalProperty() private _params?: DeviceAutomationDialogParams;
+  @state() private _params?: DeviceAutomationDialogParams;
 
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
@@ -98,7 +91,7 @@ export class DialogDeviceAutomation extends LitElement {
           }.create`
         )}
       >
-        <div @chip-clicked=${this.closeDialog}>
+        <div @entry-selected=${this.closeDialog}>
           ${this._triggers.length ||
           this._conditions.length ||
           this._actions.length
@@ -140,7 +133,7 @@ export class DialogDeviceAutomation extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

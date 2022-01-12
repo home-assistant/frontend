@@ -1,4 +1,4 @@
-import { css, CSSResult } from "lit-element";
+import { css, CSSResultGroup } from "lit";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
@@ -19,7 +19,7 @@ class HuiVerticalStackCard extends HuiStackCard {
     return results.reduce((partial_sum, a) => partial_sum + a, 0);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       super.sharedStyles,
       css`

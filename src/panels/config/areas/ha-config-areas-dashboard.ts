@@ -1,22 +1,8 @@
-import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
-import {
-  DataTableColumnContainer,
-  RowClickedEvent,
-} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -28,7 +14,7 @@ import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage-data-table";
+import "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -60,103 +46,103 @@ export class HaConfigAreasDashboard extends LitElement {
       entities: EntityRegistryEntry[]
     ) =>
       areas.map((area) => {
-        const devicesInArea = new Set();
+        let noDevicesInArea = 0;
+        let noServicesInArea = 0;
+        let noEntitiesInArea = 0;
 
         for (const device of devices) {
           if (device.area_id === area.area_id) {
-            devicesInArea.add(device.id);
+            if (device.entry_type === "service") {
+              noServicesInArea++;
+            } else {
+              noDevicesInArea++;
+            }
           }
         }
 
-        let entitiesInArea = 0;
-
         for (const entity of entities) {
-          if (
-            entity.area_id
-              ? entity.area_id === area.area_id
-              : devicesInArea.has(entity.device_id)
-          ) {
-            entitiesInArea++;
+          if (entity.area_id === area.area_id) {
+            noEntitiesInArea++;
           }
         }
 
         return {
           ...area,
-          devices: devicesInArea.size,
-          entities: entitiesInArea,
+          devices: noDevicesInArea,
+          services: noServicesInArea,
+          entities: noEntitiesInArea,
         };
       })
   );
 
-  private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
-      narrow
-        ? {
-            name: {
-              title: this.hass.localize(
-                "ui.panel.config.areas.data_table.area"
-              ),
-              sortable: true,
-              filterable: true,
-              grows: true,
-              direction: "asc",
-            },
-          }
-        : {
-            name: {
-              title: this.hass.localize(
-                "ui.panel.config.areas.data_table.area"
-              ),
-              sortable: true,
-              filterable: true,
-              grows: true,
-              direction: "asc",
-            },
-            devices: {
-              title: this.hass.localize(
-                "ui.panel.config.areas.data_table.devices"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "20%",
-              direction: "asc",
-            },
-            entities: {
-              title: this.hass.localize(
-                "ui.panel.config.areas.data_table.entities"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "20%",
-              direction: "asc",
-            },
-          }
-  );
-
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage-data-table
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         back-path="/config"
-        .tabs=${configSections.integrations}
+        .tabs=${configSections.devices}
         .route=${this.route}
-        .columns=${this._columns(this.narrow)}
-        .data=${this._areas(this.areas, this.devices, this.entities)}
-        @row-click=${this._handleRowClicked}
-        .noDataText=${this.hass.localize(
-          "ui.panel.config.areas.picker.no_areas"
-        )}
-        id="area_id"
-        hasFab
-        clickable
       >
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:help-circle"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
+        <div class="container">
+          ${this._areas(this.areas, this.devices, this.entities).map(
+            (area) =>
+              html`<a href=${`/config/areas/area/${area.area_id}`}
+                ><ha-card outlined>
+                  <div
+                    style=${styleMap({
+                      backgroundImage: area.picture
+                        ? `url(${area.picture})`
+                        : undefined,
+                    })}
+                    class="picture ${!area.picture ? "placeholder" : ""}"
+                  ></div>
+                  <h1 class="card-header">${area.name}</h1>
+                  <div class="card-content">
+                    <div>
+                      ${area.devices
+                        ? html`
+                            ${this.hass.localize(
+                              "ui.panel.config.integrations.config_entry.devices",
+                              "count",
+                              area.devices
+                            )}${area.services ? "," : ""}
+                          `
+                        : ""}
+                      ${area.services
+                        ? html`
+                            ${this.hass.localize(
+                              "ui.panel.config.integrations.config_entry.services",
+                              "count",
+                              area.services
+                            )}
+                          `
+                        : ""}
+                      ${(area.devices || area.services) && area.entities
+                        ? this.hass.localize("ui.common.and")
+                        : ""}
+                      ${area.entities
+                        ? html`
+                            ${this.hass.localize(
+                              "ui.panel.config.integrations.config_entry.entities",
+                              "count",
+                              area.entities
+                            )}
+                          `
+                        : ""}
+                    </div>
+                  </div>
+                </ha-card></a
+              >`
+          )}
+        </div>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -167,7 +153,7 @@ export class HaConfigAreasDashboard extends LitElement {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
-      </hass-tabs-subpage-data-table>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -197,11 +183,6 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const areaId = ev.detail.id;
-    navigate(this, `/config/areas/area/${areaId}`);
-  }
-
   private _openDialog(entry?: AreaRegistryEntry) {
     showAreaRegistryDetailDialog(this, {
       entry,
@@ -210,12 +191,57 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 16px 16px;
+        padding: 8px 16px 16px;
+        margin: 0 auto 64px auto;
+        max-width: 2000px;
+      }
+      .container > * {
+        max-width: 500px;
+      }
+      ha-card {
+        overflow: hidden;
+      }
+      a {
+        text-decoration: none;
+      }
+      h1 {
+        padding-bottom: 0;
+      }
+      .picture {
+        height: 150px;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+      .picture.placeholder::before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+      }
+      .card-content {
+        min-height: 16px;
+        color: var(--secondary-text-color);
+      }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-areas-dashboard": HaConfigAreasDashboard;
   }
 }

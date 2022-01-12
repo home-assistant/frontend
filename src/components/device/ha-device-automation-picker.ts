@@ -2,15 +2,8 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceAutomation,
@@ -33,11 +26,11 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public value?: T;
 
-  @internalProperty() private _automations: T[] = [];
+  @state() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
-  @internalProperty() private _renderEmpty = false;
+  @state() private _renderEmpty = false;
 
   protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(
@@ -188,7 +181,7 @@ export abstract class HaDeviceAutomationPicker<
     fireEvent(this, "value-changed", { value: automation });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-paper-dropdown-menu {
         width: 100%;

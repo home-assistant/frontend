@@ -1,4 +1,5 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Condition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";

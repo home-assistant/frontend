@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchOZWNodeStatus,
@@ -31,13 +29,12 @@ export class HaDeviceInfoOzw extends LitElement {
   @property()
   private ozw_instance = 1;
 
-  @internalProperty() private _ozwDevice?: OZWDevice;
+  @state() private _ozwDevice?: OZWDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers:
-        | OZWNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: OZWNodeIdentifiers | undefined =
+        getIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
@@ -85,7 +82,7 @@ export class HaDeviceInfoOzw extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

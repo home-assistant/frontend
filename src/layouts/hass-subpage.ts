@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  eventOptions,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -20,6 +12,8 @@ class HassSubpage extends LitElement {
   @property() public header?: string;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
+
+  @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -38,6 +32,14 @@ class HassSubpage extends LitElement {
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>
+            `
+          : this.backPath
+          ? html`
+              <a href=${this.backPath}>
+                <ha-icon-button-arrow-prev
+                  .hass=${this.hass}
+                ></ha-icon-button-arrow-prev>
+              </a>
             `
           : html`
               <ha-icon-button-arrow-prev
@@ -62,7 +64,7 @@ class HassSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -87,6 +89,10 @@ class HassSubpage extends LitElement {
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
+      }
+      .toolbar a {
+        color: var(--sidebar-text-color);
+        text-decoration: none;
       }
 
       ha-menu-button,

@@ -1,45 +1,53 @@
-import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { formatAttributeName } from "../../util/hass-attributes-util";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
-const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-      <style>
-        paper-item {
-          margin: -10px;
-          padding: 0;
-        }
-      </style>
-      <paper-item></paper-item>
-    `;
-  }
-  root.querySelector("paper-item")!.textContent = formatAttributeName(
-    model.item
-  );
-};
+// eslint-disable-next-line lit/prefer-static-styles
+const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
+    paper-item {
+      padding: 0;
+      margin: -10px;
+      margin-left: 0;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
+    }
+  </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+  <paper-item>${formatAttributeName(item)}</paper-item>`;
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -84,8 +92,8 @@ class HaEntityAttributePicker extends LitElement {
       <vaadin-combo-box-light
         .value=${this._value}
         .allowCustomValue=${this.allowCustomValue}
-        .renderer=${rowRenderer}
         attr-for-value="bind-value"
+        ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >
@@ -106,31 +114,27 @@ class HaEntityAttributePicker extends LitElement {
           <div class="suffix" slot="suffix">
             ${this.value
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.components.entity.entity-picker.clear"
                     )}
+                    .path=${mdiClose}
                     class="clear-button"
                     tabindex="-1"
                     @click=${this._clearValue}
                     no-ripple
-                  >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
 
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize(
                 "ui.components.entity.entity-attribute-picker.show_attributes"
               )}
+              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
               class="toggle-button"
               tabindex="-1"
-            >
-              <ha-svg-icon
-                .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </div>
         </paper-input>
       </vaadin-combo-box-light>
@@ -165,12 +169,12 @@ class HaEntityAttributePicker extends LitElement {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .suffix {
         display: flex;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

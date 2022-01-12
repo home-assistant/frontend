@@ -1,4 +1,5 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 declare global {
@@ -50,54 +51,66 @@ export const showDialog = async (
 ) => {
   if (!(dialogTag in LOADED)) {
     if (!dialogImport) {
+      if (__DEV__) {
+        // eslint-disable-next-line
+        console.warn(
+          "Asked to show dialog that's not loaded and can't be imported"
+        );
+      }
       return;
     }
     LOADED[dialogTag] = dialogImport().then(() => {
       const dialogEl = document.createElement(dialogTag) as HassDialog;
       element.provideHass(dialogEl);
-      root.appendChild(dialogEl);
       return dialogEl;
     });
   }
 
   if (addHistory) {
-    top.history.replaceState(
+    mainWindow.history.replaceState(
       {
         dialog: dialogTag,
         open: false,
         oldState:
-          top.history.state?.open && top.history.state?.dialog !== dialogTag
-            ? top.history.state
+          mainWindow.history.state?.open &&
+          mainWindow.history.state?.dialog !== dialogTag
+            ? mainWindow.history.state
             : null,
       },
       ""
     );
     try {
-      top.history.pushState(
+      mainWindow.history.pushState(
         { dialog: dialogTag, dialogParams: dialogParams, open: true },
         ""
       );
-    } catch (err) {
+    } catch (err: any) {
       // dialogParams could not be cloned, probably contains callback
-      top.history.pushState(
+      mainWindow.history.pushState(
         { dialog: dialogTag, dialogParams: null, open: true },
         ""
       );
     }
   }
   const dialogElement = await LOADED[dialogTag];
+  // Append it again so it's the last element in the root,
+  // so it's guaranteed to be on top of the other elements
+  root.appendChild(dialogElement);
   dialogElement.showDialog(dialogParams);
 };
 
 export const replaceDialog = () => {
-  top.history.replaceState({ ...top.history.state, replaced: true }, "");
+  mainWindow.history.replaceState(
+    { ...mainWindow.history.state, replaced: true },
+    ""
+  );
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
   }
-  const dialogElement = await LOADED[dialogTag];
+  const dialogElement: HassDialog = await LOADED[dialogTag];
   if (dialogElement.closeDialog) {
     return dialogElement.closeDialog() !== false;
   }

@@ -1,26 +1,17 @@
-import "@material/mwc-icon-button";
 import type { Corner } from "@material/mwc-menu";
-import { mdiFilterVariant } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
 import "@material/mwc-menu/mwc-menu-surface";
+import { mdiFilterVariant } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { findRelated, RelatedResult } from "../data/search";
-import type { HomeAssistant } from "../types";
-import "./ha-svg-icon";
-import "./ha-area-picker";
-import "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { computeDeviceName } from "../data/device_registry";
+import { findRelated, RelatedResult } from "../data/search";
+import type { HomeAssistant } from "../types";
+import "./device/ha-device-picker";
+import "./entity/ha-entity-picker";
+import "./ha-area-picker";
+import "./ha-icon-button";
 
 declare global {
   // for fire event
@@ -59,13 +50,15 @@ export class HaRelatedFilterButtonMenu extends LitElement {
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button @click=${this._handleClick}>
-        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-      </mwc-icon-button>
+      <ha-icon-button
+        @click=${this._handleClick}
+        .label=${this.hass.localize("ui.components.related-filter-menu.filter")}
+        .path=${mdiFilterVariant}
+      ></ha-icon-button>
       <mwc-menu-surface
         .open=${this._open}
         .anchor=${this}
@@ -175,7 +168,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

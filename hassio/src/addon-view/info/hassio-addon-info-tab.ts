@@ -1,23 +1,18 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
+import { HomeAssistant, Route } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 import "./hassio-addon-info";
 
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -34,6 +29,7 @@ class HassioAddonInfoDashboard extends LitElement {
       <div class="content">
         <hassio-addon-info
           .narrow=${this.narrow}
+          .route=${this.route}
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
@@ -42,7 +38,7 @@ class HassioAddonInfoDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

@@ -139,7 +139,7 @@
           Your authentication credentials or Home Assistant url are never sent
           to the Cloud. You can validate this behavior in
           <a
-            href="https://github.com/home-assistant/home-assistant-polymer/tree/dev/cast"
+            href="https://github.com/home-assistant/frontend/tree/dev/cast"
             target="_blank"
             >the source code</a
           >.

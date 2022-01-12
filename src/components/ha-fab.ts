@@ -1,12 +1,8 @@
-import "@material/mwc-fab";
-import type { Fab } from "@material/mwc-fab";
-import { customElement } from "lit-element";
-import { Constructor } from "../types";
-
-const MwcFab = customElements.get("mwc-fab") as Constructor<Fab>;
+import { Fab } from "@material/mwc-fab";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-fab")
-export class HaFab extends MwcFab {
+export class HaFab extends Fab {
   protected firstUpdated(changedProperties) {
     super.firstUpdated(changedProperties);
     this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");

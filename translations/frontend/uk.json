@@ -26,6 +26,14 @@
         "shopping_list": "Список покупок",
         "states": "Огляд"
     },
+    "state": {
+        "default": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "unavailable": "Недоступний",
+            "unknown": "Невідомо"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -68,12 +76,12 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Охорона",
-            "armed_away": "Охорона",
-            "armed_custom_bypass": "Охорона",
-            "armed_home": "Охорона",
-            "armed_night": "Охорона",
-            "arming": "Поставлено",
+            "armed": "Охороняється",
+            "armed_away": "Охороняється",
+            "armed_custom_bypass": "Охороняється",
+            "armed_home": "Охороняється",
+            "armed_night": "Охороняється",
+            "arming": "Ставиться",
             "disarmed": "Знято",
             "disarming": "Знято",
             "pending": "Очікування",
@@ -94,12 +102,22 @@
             "not_home": "Відсутній"
         }
     },
-    "state": {
-        "default": {
-            "off": "Вимкнено",
-            "on": "Увімкнено",
-            "unavailable": "Недоступний",
-            "unknown": "Невідомо"
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "stages": {
+                        "deprecated": "Застарілий",
+                        "experimental": "Експериментальний"
+                    }
+                }
+            }
+        },
+        "backup": {
+            "delete_backup_confirm": "видалити",
+            "delete_selected": "Видалити обрані знімки",
+            "failed_to_delete": "Помилка при видаленні",
+            "passwords_not_matching": "Паролі не збігаються"
         }
     },
     "ui": {
@@ -110,13 +128,13 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Охорона (не вдома)",
-                "arm_custom_bypass": "Користувацький обхід",
-                "arm_home": "Поставити на охорону",
-                "arm_night": "Нічна охорона",
-                "clear_code": "Очистити",
+                "arm_away": "ARM AWAY",
+                "arm_custom_bypass": "Охорона з винятками",
+                "arm_home": "ARM HOME",
+                "arm_night": "ARM NIGHT",
+                "clear_code": "CLEAR",
                 "code": "Код",
-                "disarm": "Зняти з охорони"
+                "disarm": "DISARM"
             },
             "automation": {
                 "last_triggered": "Останній запуск",
@@ -302,7 +320,7 @@
                     "text": "Введіть назву нового приміщення.",
                     "title": "Додати приміщення"
                 },
-                "add_new": "Додати приміщення ...",
+                "add_new": "Додати приміщення …",
                 "area": "Приміщення",
                 "clear": "Очистити",
                 "no_areas": "Не знайдено жодного приміщення",
@@ -345,7 +363,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Завантаження історії стану ...",
+                "loading_history": "Завантаження історії стану …",
                 "no_history_found": "Немає історії станів."
             },
             "logbook": {
@@ -406,10 +424,10 @@
                 "documentation": "документації",
                 "learn_adding_local_media": "Детальніше про додавання мультимедіа читайте в {documentation}.",
                 "local_media_files": "Розмістіть відео, аудіо та графіку в медіа-каталозі, щоб мати змогу переглядати та відтворювати їх у браузері або на підтримуваних медіапрогравачах.",
+                "media-player-browser": "Переглядач мультимедіа",
                 "media_browsing_error": "Помилка перегляду мультимедіа",
                 "media_not_supported": "Цей тип мультимедіа не підтримується.",
                 "media_player": "Медіапрогравач",
-                "media-player-browser": "Переглядач мультимедіа",
                 "no_items": "Немає елементів",
                 "no_local_media_found": "У локальному сховищі не знайдено медіафайлів.",
                 "no_media_folder": "Схоже, що Ви ще не створили каталог мультимедіа.",
@@ -484,6 +502,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "{integration} буде автоматично додавати в Home Assistant виявлені об'єкти",
                 "enable_new_entities_label": "Додавати нові об'єкти.",
+                "restart_home_assistant": " Для застосування змін слід перезапустити Home Assistant",
                 "title": "Параметри системи для {integration}",
                 "update": "Оновити"
             },
@@ -588,6 +607,7 @@
                 "history": "Історія",
                 "last_changed": "Востаннє змінено",
                 "last_updated": "Останнє оновлення",
+                "logbook": "Журнал",
                 "person": {
                     "create_zone": "Створити зону з поточного місцезнаходження"
                 },
@@ -603,6 +623,7 @@
                     "last_triggered": "Спрацьовано востаннє"
                 },
                 "settings": "Налаштування об'єкта",
+                "show_more": "Показати більше",
                 "sun": {
                     "elevation": "Висота над горизонтом",
                     "rising": "Схід сонця",
@@ -658,7 +679,6 @@
                         "integrations": "Інтеграція",
                         "logs": "Журнал сервера",
                         "lovelace": "Інформаційні панелі Lovelace",
-                        "navigate_to": "Відкрити \"{panel}\"",
                         "person": "Особи",
                         "scene": "Сцени",
                         "script": "Скрипти",
@@ -764,7 +784,7 @@
             "title": "Сповіщення"
         },
         "notification_toast": {
-            "connection_lost": "З'єднання втрачено. Повторне підключення ...",
+            "connection_lost": "З'єднання втрачено. Повторне підключення …",
             "dismiss": "Відхилити",
             "service_call_failed": "Не вдалося викликати службу {service}.",
             "started": "Home Assistant запущений!",
@@ -834,7 +854,6 @@
                             "introduction": "Дії - це те, що зробить Home Assistant, коли спрацює правило автоматизації.\n\n[Докладніше про дії.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Докладніше про дії",
                             "name": "Дія",
-                            "type_select": "Тип дії",
                             "type": {
                                 "choose": {
                                     "add_option": "Додати опцію",
@@ -867,7 +886,6 @@
                                 "repeat": {
                                     "label": "Повторити",
                                     "sequence": "Дії",
-                                    "type_select": "Режим повторення",
                                     "type": {
                                         "count": {
                                             "label": "Лічильник"
@@ -880,7 +898,8 @@
                                             "conditions": "Дії будуть виконуватися в циклі до тих пір, поки виконуються наступні умови",
                                             "label": "Поки"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Режим повторення"
                                 },
                                 "scene": {
                                     "label": "Активувати сцену"
@@ -900,6 +919,7 @@
                                     "wait_template": "Шаблон очікування"
                                 }
                             },
+                            "type_select": "Тип дії",
                             "unsupported_action": "Непідтримувана дія: {action}"
                         },
                         "alias": "Назва",
@@ -918,7 +938,6 @@
                             "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \n\n [Докладніше про умови.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Докладніше про умови",
                             "name": "Умова",
-                            "type_select": "Тип умови",
                             "type": {
                                 "and": {
                                     "label": "Та"
@@ -977,12 +996,17 @@
                                         "wed": "Середа"
                                     }
                                 },
+                                "trigger": {
+                                    "label": "Тригер",
+                                    "no_triggers": "Тригери відсутні"
+                                },
                                 "zone": {
                                     "entity": "Місцезнаходження сутності",
                                     "label": "Зона",
                                     "zone": "Зона"
                                 }
                             },
+                            "type_select": "Тип умови",
                             "unsupported_condition": "Непідтримувана умова: {condition}"
                         },
                         "copy_to_clipboard": "Копіювати до буфера обміну",
@@ -1022,7 +1046,6 @@
                             "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, і, якщо такі є, виконає дії. \n\n [Докладніше про тригери.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Докладніше про тригери",
                             "name": "Тригер",
-                            "type_select": "Тип тригера",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1087,17 +1110,17 @@
                                     "label": "Шаблон",
                                     "value_template": "Значення шаблону"
                                 },
-                                "time_pattern": {
-                                    "hours": "Годин",
-                                    "label": "Шаблон часу",
-                                    "minutes": "Хвилин",
-                                    "seconds": "Секунд"
-                                },
                                 "time": {
                                     "at": "О",
                                     "label": "Час",
                                     "type_input": "Значення помічника дати й часу",
                                     "type_value": "Фіксований час"
+                                },
+                                "time_pattern": {
+                                    "hours": "Годин",
+                                    "label": "Шаблон часу",
+                                    "minutes": "Хвилин",
+                                    "seconds": "Секунд"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1112,6 +1135,7 @@
                                     "zone": "Зона"
                                 }
                             },
+                            "type_select": "Тип тригера",
                             "unsupported_platform": "Непідтримувана платформа: {platform}"
                         },
                         "unsaved_confirm": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?"
@@ -1163,7 +1187,7 @@
                         "importing": "Завантаження проекту...",
                         "raw_blueprint": "Вміст проекту",
                         "save_btn": "Імпортувати проект",
-                        "saving": "Імпорт проекту...",
+                        "saving": "Імпорт проекту…",
                         "unsupported_blueprint": "Цей проект не підтримується",
                         "url": "URL-адреса проекту"
                     },
@@ -1173,16 +1197,23 @@
                         "add_blueprint": "Імпортувати проект",
                         "confirm_delete_header": "Видалити цей проект?",
                         "confirm_delete_text": "Ви впевнені, що хочете видалити цей проект?",
+                        "create_automation": "Створити автоматизацію",
+                        "create_script": "Створити скрипт",
                         "delete_blueprint": "Видалити проект",
                         "discover_more": "Знайти більше проектів",
                         "header": "Редактор проектів",
                         "headers": {
                             "domain": "Домен",
                             "file_name": "Ім'я файлу",
-                            "name": "Ім'я"
+                            "name": "Ім'я",
+                            "type": "Тип"
                         },
                         "introduction": "У цьому розділі параметрів можна імпортувати нові та керувати наявними проектами.",
                         "learn_more": "Докладніше про використання проектів",
+                        "types": {
+                            "automation": "Автоматизація",
+                            "script": "Скрипт"
+                        },
                         "use_blueprint": "Створити автоматизацію"
                     }
                 },
@@ -1204,7 +1235,7 @@
                         },
                         "connected": "Під'єднаний",
                         "connection_status": "Статус підключення до хмари",
-                        "fetching_subscription": "Отримання підписки ...",
+                        "fetching_subscription": "Отримання підписки …",
                         "google": {
                             "config_documentation": "Документація з налаштування",
                             "devices_pin": "PIN-код пристроїв безпеки",
@@ -1243,12 +1274,12 @@
                             "disable_hook_error_msg": "Не вдалося вимкнути Webhook:",
                             "info": "Всьому, що налаштовано на ініціювання через Webhook можуть бути призначені публічні URL, щоб дозволити Вам відправляти дані в Home Assistant з будь-якого місця, не відкриваючи ваш сервер в інтернет.",
                             "link_learn_more": "Дізнайтеся більше про створення автоматизації на базі Webhook.",
-                            "loading": "Завантаження ...",
+                            "loading": "Завантаження …",
                             "manage": "Керування",
                             "no_hooks_yet": "Схоже, у вас ще немає Webhooks. Почніть із налаштування ",
+                            "no_hooks_yet2": " або створивши ",
                             "no_hooks_yet_link_automation": "автоматизацію Webhook",
                             "no_hooks_yet_link_integration": "інтеграції на основі Webhook",
-                            "no_hooks_yet2": " або створивши ",
                             "title": "Webhook"
                         }
                     },
@@ -1356,7 +1387,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?"
-                    }
+                    },
+                    "learn_more": "Дізнатися більше"
                 },
                 "core": {
                     "caption": "Основні",
@@ -1410,13 +1442,13 @@
                     "add_prompt": "{name} немає для цього пристрою. Ви можете додати, натиснувши кнопку + вище.",
                     "automation": {
                         "actions": {
-                            "caption": "Коли щось спрацьовує ...",
+                            "caption": "Коли щось спрацьовує …",
                             "no_actions": "Немає дій",
                             "unknown_action": "Невідома дія"
                         },
                         "automations": "Автоматизації",
                         "conditions": {
-                            "caption": "Робити щось, тільки якщо ...",
+                            "caption": "Робити щось, тільки якщо …",
                             "no_conditions": "Немає умов",
                             "unknown_condition": "Невідома умова"
                         },
@@ -1460,10 +1492,12 @@
                     "enabled_label": "Відображати пристрій",
                     "entities": {
                         "add_entities_lovelace": "Додати сутності до Lovelace UI",
+                        "control": "Елементи керування",
                         "disabled_entities": "Показати {count} {count, plural,\n  one {прихований об'єкт}\n  other {прихованих об'єктів}\n}",
                         "entities": "Сутності",
                         "hide_disabled": "Не показувати приховані",
-                        "none": "Цей пристрій не має сутностей"
+                        "none": "Цей пристрій не має сутностей",
+                        "sensor": "Сенсори"
                     },
                     "name": "Назва",
                     "no_devices": "Немає пристроїв",
@@ -1492,7 +1526,59 @@
                     "scripts": "Скрипти",
                     "unknown_error": "Невідома помилка",
                     "unnamed_device": "Пристрій без імені",
-                    "update": "Оновити"
+                    "update": "Оновити",
+                    "update_device_error": "Помилка оновлення пристрою"
+                },
+                "energy": {
+                    "gas": {
+                        "dialog": {
+                            "cost_entity": "Використати сутність з поточною ціною",
+                            "cost_entity_input": "Сутність з поточною ціною",
+                            "cost_number": "Використати статичну ціну",
+                            "cost_number_input": "Ціна за м³",
+                            "cost_number_suffix": "{currency}/м³",
+                            "cost_stat_input": "Загальна сума витрат сутності",
+                            "gas_usage": "Використання газу",
+                            "m3_or_kWh": "м³ або кВт-год"
+                        },
+                        "gas_consumption": "Споживання газу"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "Такі сутності мають негативне значення, тоді як очікується позитивне:",
+                                "title": "Сутність має негативний стан"
+                            },
+                            "entity_not_defined": {
+                                "description": "Перевірте інтеграцію або конфігурацію, яка надає:",
+                                "title": "Сутність не визначена"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Такі сутності мають стан, який неможливо проаналізувати як число:",
+                                "title": "Сутність має нечислове значення"
+                            },
+                            "entity_unavailable": {
+                                "description": "Стан цих налаштованих сутностей наразі недоступний:",
+                                "title": "Сутність недоступна"
+                            },
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "Такі сутності не мають очікуваного класу стану \"total_increasing\"",
+                                "title": "Неочікуваний клас стану"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "Такі сутності не мають очікуваних одиниць вимірювання \"кВт·год\" або \"Вт-год\":",
+                                "title": "Неочікувана одиниця вимірювання"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "Так сутності не мають очікуваних одиниць вимірювання \"{currency}/кВт-год\" або \"{currency}/Вт-год\":",
+                                "title": "Неочікувана одиниця вимірювання"
+                            },
+                            "recorder_untracked": {
+                                "description": "Диктофон настроєно на виключення цих налаштованих сутностей:",
+                                "title": "Сутність не відстежується"
+                            }
+                        }
+                    }
                 },
                 "entities": {
                     "caption": "Сутності",
@@ -1519,6 +1605,7 @@
                         "header": "Сутності",
                         "headers": {
                             "area": "Приміщення",
+                            "disabled_by": "Вимкнено користувачем",
                             "entity_id": "Ідентифікатор сутності",
                             "integration": "Інтеграція",
                             "name": "Назва",
@@ -1543,10 +1630,6 @@
                             "unavailable": "Недоступно"
                         }
                     }
-                },
-                "filtering": {
-                    "clear": "Очистити",
-                    "filtering_by": "Фільтрування за"
                 },
                 "header": "Налаштуваня Home Assistant",
                 "helpers": {
@@ -1596,16 +1679,11 @@
                     "path_configuration": "Шлях до configuration.yaml: {path}",
                     "server": "сервер",
                     "source": "Вихідний код:",
-                    "system_health_error": "Компонент System Health не завантажено. Додайте 'system_health:' в файл 'configuration.yaml'.",
                     "system_health": {
                         "manage": "Керування",
                         "more_info": "додаткова інформація"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "сторінка інтеграцій",
-                    "missing_zha": "Відсутня панель конфігурації ZHA? Налаштування ZHA тепер знаходяться на {integrations_page} в картці ZHA.",
-                    "missing_zwave": "Відсутня панель конфігурації Z-Wave? Налаштування Z-Wave тепер знаходяться на {integrations_page} в картці Z-Wave."
+                    },
+                    "system_health_error": "Компонент System Health не завантажено. Додайте 'system_health:' в файл 'configuration.yaml'."
                 },
                 "integrations": {
                     "add_integration": "Додати інтеграцію",
@@ -1624,7 +1702,6 @@
                         "hub": "Підключено через",
                         "manuf": "виробник: {manufacturer}",
                         "no_area": "Приміщення не вказано",
-                        "options": "Параметри",
                         "reload": "Перезавантажити",
                         "reload_confirm": "Інтеграція була перезавантажена",
                         "reload_restart_confirm": "Перезапустіть Home Assistant, щоб закінчити перезавантаження цієї інтеграції",
@@ -1645,7 +1722,7 @@
                             "open_site": "Відкрити веб-сайт"
                         },
                         "finish": "Закінчити",
-                        "loading_first_time": "Зачекайте, поки інсталюється інтеграція",
+                        "next": "Далі",
                         "not_all_required_fields": "Не всі обов'язкові поля заповнені.",
                         "submit": "Надіслати"
                     },
@@ -1660,7 +1737,6 @@
                         "confirm_delete_ignore_title": "Припинити ігнорування {name}?",
                         "confirm_ignore": "Ви дійсно не бажаєте встановити цю інтеграцію? Ви можете скасувати це, натиснувши кнопку \"Показати проігноровані інтеграції\" в меню в правому верхньому кутку.",
                         "confirm_ignore_title": "Ігнорувати виявлення інтеграції {name}?",
-                        "hide_ignored": "Приховати ігноровані інтеграції",
                         "ignore": "Ігнорувати",
                         "ignored": "Ігнорується",
                         "show_ignored": "Показати ігноровані інтеграції",
@@ -1771,7 +1847,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Налаштувати",
                     "description_listen": "Слухати тему",
                     "description_publish": "Опублікувати дані",
                     "listening_to": "Слухати",
@@ -1785,7 +1860,6 @@
                     "topic": "Тема"
                 },
                 "ozw": {
-                    "button": "Параметри",
                     "common": {
                         "controller": "Контролер",
                         "instance": "Екземпляр",
@@ -1810,6 +1884,11 @@
                         "nodes": "Вузли",
                         "select_instance": "Вибір екземпляра"
                     },
+                    "network": {
+                        "header": "Керування мережею",
+                        "introduction": "Керування мережевими функціями.",
+                        "node_count": "{count} вузлів"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Всі вузли були опитані",
@@ -1830,10 +1909,9 @@
                         "starting": "Запускається",
                         "unknown": "Невідомо"
                     },
-                    "network": {
-                        "header": "Керування мережею",
-                        "introduction": "Керування мережевими функціями.",
-                        "node_count": "{count} вузлів"
+                    "node": {
+                        "button": "Детальніше про вузол",
+                        "not_found": "Вузол не знайдено"
                     },
                     "node_config": {
                         "header": "Налаштування вузла",
@@ -1863,10 +1941,6 @@
                         "versions": "Отримання відомостей про версії мікропрограми та класи команд",
                         "wakeup": "Налаштування підтримки черг пробудження і повідомлень"
                     },
-                    "node": {
-                        "button": "Детальніше про вузол",
-                        "not_found": "Вузол не знайдено"
-                    },
                     "nodes_table": {
                         "failed": "Збій",
                         "id": "Ідентифікатор",
@@ -1881,7 +1955,7 @@
                         "complete": "Оновлення вузла завершено",
                         "description": "Повторне опитування вузла і оновлення класів команд, можливостей і значень вузла.",
                         "node_status": "Статус вузла",
-                        "refreshing_description": "Оновлення інформації про вузол ...",
+                        "refreshing_description": "Оновлення інформації про вузол …",
                         "start_refresh_button": "Почати оновлення",
                         "step": "Крок",
                         "title": "Оновити інформацію про вузол",
@@ -1963,6 +2037,7 @@
                         "add_scene": "Додати сцену",
                         "delete_confirm": "Ви впевнені, що хочете видалити цю сцену?",
                         "delete_scene": "Видалити сцену",
+                        "duplicate_scene": "Дублювати сцену",
                         "edit_scene": "Редагувати сцену",
                         "header": "Редактор сцен",
                         "headers": {
@@ -2011,6 +2086,7 @@
                     },
                     "picker": {
                         "add_script": "Додати скрипт",
+                        "dev_script": "Налагодити скрипт",
                         "duplicate": "Дублювати",
                         "duplicate_script": "Дублювати",
                         "edit_script": "Редагувати скрипт",
@@ -2165,9 +2241,8 @@
                         "no_devices_found": "Не знайдено жодного пристрою, переконайтесь, що вони перебувають у режимі сполучення, і не дайте їм спати, поки йде процес виявлення.",
                         "pairing_mode": "Переконайтеся, що пристрої, які підключаються знаходяться в режимі сполучення. Щоб дізнатися, як активувати режим сполучення, ознайомтеся з інструкцією для Вашого пристрою.",
                         "search_again": "Повторити пошук",
-                        "spinner": "Пошук пристроїв ZHA Zigbee ..."
+                        "spinner": "Пошук пристроїв ZHA Zigbee …"
                     },
-                    "button": "Налаштувати",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибути вибраного кластера",
                         "get_zigbee_attribute": "Отримати атрибут Zigbee",
@@ -2274,7 +2349,6 @@
                     "no_zones_created_yet": "Схоже, ви ще не створили жодної зони."
                 },
                 "zwave": {
-                    "button": "Налаштувати",
                     "common": {
                         "index": "Індекс",
                         "instance": "Екземпляр",
@@ -2292,7 +2366,7 @@
                         "network_started": "Мережа Z-Wave працює",
                         "network_started_note_all_queried": "Всі вузли були опитані.",
                         "network_started_note_some_queried": "Активні вузли були опитані. Сплячі вузли будуть опитані, коли вийдуть з режиму сну.",
-                        "network_starting": "Запуск мережі Z-Wave ...",
+                        "network_starting": "Запуск мережі Z-Wave …",
                         "network_starting_note": "Це може зайняти деякий час в залежності від розміру Вашої мережі.",
                         "network_stopped": "Мережа Z-Wave вимкнена"
                     },
@@ -2356,6 +2430,26 @@
                     },
                     "values": {
                         "header": "Значення вузлів"
+                    }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "interview_started": "Пристрій опитується. Це може зайняти деякий час."
+                    },
+                    "common": {
+                        "reconfigure_server": "Налаштувати сервер повторно"
+                    },
+                    "device_info": {
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Версія {version}"
+                    },
+                    "node_config": {
+                        "parameter": "Параметр"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Немає"
+                        }
                     }
                 }
             },
@@ -2432,22 +2526,6 @@
                     }
                 }
             },
-            "history": {
-                "ranges": {
-                    "last_week": "Минулого тижня",
-                    "this_week": "Цього тижня",
-                    "today": "Сьогодні",
-                    "yesterday": "Вчора"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Минулого тижня",
-                    "this_week": "Цього тижня",
-                    "today": "Сьогодні",
-                    "yesterday": "Вчора"
-                }
-            },
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Цю функцію можна використовувати тільки після отримання контролю над інтерфейсом користувача Lovelace.",
@@ -2460,6 +2538,44 @@
                         "go_to_integrations_page": "Перейти на сторінку інтеграцій.",
                         "no_devices": "Ця сторінка дозволяє керувати пристроями, однак, схоже, у вас ще немає налаштованих пристроїв. Щоб почати, перейдіть на сторінку інтеграції.",
                         "title": "Ласкаво просимо додому"
+                    },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "non_fossil_energy_consumed": "Витрачена невикопна енергія",
+                            "non_fossil_energy_not_calculated": "Не вдалося розрахувати спожиту невикопну енергію"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Використання енергії"
+                        },
+                        "energy_distribution": {
+                            "battery": "Акумулятор",
+                            "gas": "Газ",
+                            "go_to_energy_dashboard": "Перейти до панелі енергії",
+                            "grid": "Мережа",
+                            "home": "Дім",
+                            "non_fossil": "Невикопна",
+                            "solar": "Сонячна"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Прогноз {name}",
+                            "production": "Виробництво {name}"
+                        },
+                        "energy_sources_table": {
+                            "cost": "Вартість",
+                            "energy": "Енергія",
+                            "source": "Джерело",
+                            "total_costs": "Загальна вартість"
+                        },
+                        "energy_usage_graph": {
+                            "total_consumed": "Усього спожито {num} кВт-год",
+                            "total_returned": "Усього повернуто {num} кВт·год"
+                        },
+                        "grid_neutrality_gauge": {
+                            "grid_neutrality_not_calculated": "Не вдалося розрахувати нейтральність мережі",
+                            "net_consumed_grid": "Спожито з мережі",
+                            "net_returned_grid": "Повернено до мережі"
+                        },
+                        "loading": "Завантаження..."
                     },
                     "entities": {
                         "never_triggered": "Ніколи не спрацьовувало"
@@ -2485,13 +2601,22 @@
                         "reorder_items": "Змінити порядок елементів"
                     },
                     "starting": {
-                        "description": "Home Assistant запускається, будь ласка, зачекайте ..."
+                        "description": "Home Assistant запускається, будь ласка, зачекайте …"
                     }
                 },
                 "changed_toast": {
                     "message": "Конфігурацію Lovelace було оновлено, хочете оновити?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "День",
+                        "month": "Місяць",
+                        "next": "Далі",
+                        "previous": "Назад",
+                        "today": "Сьогодні",
+                        "week": "Тиждень",
+                        "year": "Рік"
+                    },
                     "timestamp-display": {
                         "invalid": "Невірна часова мітка",
                         "invalid_format": "Невірний формат відображення"
@@ -2551,7 +2676,6 @@
                         "entities": {
                             "description": "Картка \"Entities\" - найпоширеніший тип карт. Вона об'єднує елементи у списки.",
                             "edit_special_row": "Щоб переглянути відомості про цей рядок, натисніть кнопку редагування",
-                            "entity_row_editor": "Редактор рядків сутності",
                             "entity_row": {
                                 "attribute": "Атрибут",
                                 "button": "Кнопка",
@@ -2563,6 +2687,7 @@
                                 "section": "Розділ",
                                 "weblink": "Посилання на веб-сторінку"
                             },
+                            "entity_row_editor": "Редактор рядків сутності",
                             "name": "Об'єкти",
                             "secondary_info_values": {
                                 "brightness": "Яскравість",
@@ -2723,7 +2848,10 @@
                         "weather-forecast": {
                             "description": "Карта прогнозу погоди відображає погоду. Може бути корисна на пристроях, що розміщуються на стіні.",
                             "name": "Прогноз погоди",
-                            "show_forecast": "Показати прогноз"
+                            "show_both": "Показати поточну погоду та прогноз",
+                            "show_forecast": "Показати прогноз",
+                            "show_only_current": "Показати лише поточну погоду",
+                            "show_only_forecast": "Показати лише прогноз"
                         }
                     },
                     "cardpicker": {
@@ -2741,7 +2869,8 @@
                         "none": "Не вибрано"
                     },
                     "edit_badges": {
-                        "panel_mode": "Ці значки не відображатимуться, оскільки ця вкладка знаходиться в \"Режимі панелі\"."
+                        "panel_mode": "Ці значки не відображатимуться, оскільки ця вкладка знаходиться в \"Режимі панелі\".",
+                        "view_no_badges": "Поточний тип перегляду не підтримує значки."
                     },
                     "edit_card": {
                         "add": "Додати картку",
@@ -2831,7 +2960,6 @@
                         "unsaved_changes": "Незбережені зміни"
                     },
                     "save_config": {
-                        "cancel": "Залишити як є",
                         "close": "Закрити",
                         "empty_config": "Почати з порожньої панелі",
                         "header": "Візьміть під свій контроль Lovelace UI",
@@ -2860,8 +2988,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Перша картка буде розтягнута на всю ширину. Інші картки і піктограми не будуть відображатися на цій вкладці",
-                            "title": "Панельний режим",
                             "warning_multiple_cards": "На цій вкладці кілька карток. У режимі панелі може відображатися тільки одна картка."
                         }
                     }
@@ -3007,7 +3133,8 @@
                 },
                 "initializing": "Ініціалізація",
                 "logging_in_with": "Провайдер аутентифікації: ** {authProviderName} **.",
-                "pick_auth_provider": "Або увійти за допомогою"
+                "pick_auth_provider": "Або увійти за допомогою",
+                "store_token": "Залишатись в системі"
             },
             "page-demo": {
                 "cards": {
@@ -3070,7 +3197,7 @@
                 },
                 "intro": "Чи готові Ви розбудити свій будинок, повернути свою конфіденційність і приєднатися до всесвітньої спільноти?",
                 "restore": {
-                    "description": "Відновлення попереднього стану з образу файлової системи (snapshot)",
+                    "description": "Відновлення попереднього стану з образу файлової системи (backup)",
                     "hide_log": "Приховати повний журнал",
                     "in_progress": "Триває відновлення",
                     "show_log": "Показати повний журнал"
@@ -3150,18 +3277,18 @@
                     "prompt_copy_token": "Скопіюйте Ваш токен доступу. Він більше не буде показаний.",
                     "prompt_name": "Назва токена"
                 },
+                "mfa": {
+                    "confirm_disable": "Ви впевнені, що хочете вимкнути {name} ?",
+                    "disable": "Вимкнути",
+                    "enable": "Увімкнути",
+                    "header": "Модулі багатофакторної аутентифікації"
+                },
                 "mfa_setup": {
                     "close": "Закрити",
                     "step_done": "Налаштування виконано для {step}",
                     "submit": "Відправити",
                     "title_aborted": "Скасовано",
                     "title_success": "Успішно!"
-                },
-                "mfa": {
-                    "confirm_disable": "Ви впевнені, що хочете вимкнути {name} ?",
-                    "disable": "Вимкнути",
-                    "enable": "Увімкнути",
-                    "header": "Модулі багатофакторної аутентифікації"
                 },
                 "push_notifications": {
                     "add_device_prompt": {
@@ -3203,6 +3330,9 @@
                     "link_promo": "Дізнайтеся про теми",
                     "primary_color": "Основний колір",
                     "reset": "Скинути"
+                },
+                "time_format": {
+                    "dropdown_label": "Формат часу"
                 },
                 "vibrate": {
                     "description": "Отримувати тактильний відгук при управлінні пристроями",

@@ -5,8 +5,8 @@ import {
 import { castContext } from "../cast_context";
 
 export const castDemoLovelace: () => LovelaceConfig = () => {
-  const touchSupported = castContext.getDeviceCapabilities()
-    .touch_input_supported;
+  const touchSupported =
+    castContext.getDeviceCapabilities().touch_input_supported;
   return {
     views: [
       {

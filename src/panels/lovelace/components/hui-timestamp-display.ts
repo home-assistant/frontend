@@ -1,22 +1,16 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
-import relativeTime from "../../../common/datetime/relative_time";
-import { FrontendTranslationData } from "../../../data/translation";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
+import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
-import { TimestampRenderingFormats } from "./types";
+import { TimestampRenderingFormat } from "./types";
 
 const FORMATS: {
-  [key: string]: (ts: Date, lang: FrontendTranslationData) => string;
+  [key: string]: (ts: Date, lang: FrontendLocaleData) => string;
 } = {
   date: formatDate,
   datetime: formatDateTime,
@@ -30,9 +24,11 @@ class HuiTimestampDisplay extends LitElement {
 
   @property() public ts?: Date;
 
-  @property() public format?: TimestampRenderingFormats;
+  @property() public format?: TimestampRenderingFormat;
 
-  @internalProperty() private _relative?: string;
+  @property({ type: Boolean }) public capitalize = false;
+
+  @state() private _relative?: string;
 
   private _connected?: boolean;
 
@@ -110,11 +106,12 @@ class HuiTimestampDisplay extends LitElement {
     if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.hass!.localize)
-          : (this._relative = relativeTime(new Date(), this.hass!.localize, {
-              compareTime: this.ts,
-              includeTense: false,
-            }));
+          ? relativeTime(this.ts, this.hass!.locale)
+          : relativeTime(new Date(), this.hass!.locale, this.ts, false);
+
+      this._relative = this.capitalize
+        ? capitalizeFirstLetter(this._relative)
+        : this._relative;
     }
   }
 }

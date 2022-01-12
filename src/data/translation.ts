@@ -10,14 +10,22 @@ export enum NumberFormat {
   none = "none",
 }
 
-export interface FrontendTranslationData {
+export enum TimeFormat {
+  language = "language",
+  system = "system",
+  am_pm = "12",
+  twenty_four = "24",
+}
+
+export interface FrontendLocaleData {
   language: string;
   number_format: NumberFormat;
+  time_format: TimeFormat;
 }
 
 declare global {
   interface FrontendUserData {
-    language: FrontendTranslationData;
+    language: FrontendLocaleData;
   }
 }
 
@@ -29,14 +37,15 @@ export type TranslationCategory =
   | "options"
   | "device_automation"
   | "mfa_setup"
-  | "system_health";
+  | "system_health"
+  | "device_class";
 
 export const fetchTranslationPreferences = (hass: HomeAssistant) =>
   fetchFrontendUserData(hass.connection, "language");
 
 export const saveTranslationPreferences = (
   hass: HomeAssistant,
-  data: FrontendTranslationData
+  data: FrontendLocaleData
 ) => saveFrontendUserData(hass.connection, "language", data);
 
 export const getHassTranslations = async (

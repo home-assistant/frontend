@@ -1,20 +1,19 @@
-import "../components/ha-card";
 import "@material/mwc-button";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { HomeAssistant } from "../types";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { atLeastVersion } from "../common/config/version";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
+import "../components/ha-card";
 import "../resources/ha-style";
 import { haStyle } from "../resources/styles";
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
-import { atLeastVersion } from "../common/config/version";
+import { HomeAssistant } from "../types";
 import "./hass-subpage";
 
 @customElement("supervisor-error-screen")
@@ -82,7 +81,7 @@ class SupervisorErrorScreen extends LitElement {
 
   private _applyTheme() {
     let themeName: string;
-    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+    let themeSettings: Partial<HomeAssistant["selectedTheme"]> | undefined;
 
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
@@ -91,16 +90,10 @@ class SupervisorErrorScreen extends LitElement {
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      options = this.hass.selectedTheme;
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme,
-          dark: this.hass.themes.darkMode,
-        };
-      }
+      themeSettings = this.hass.selectedTheme;
     } else {
       themeName =
-        ((this.hass.selectedTheme as unknown) as string) ||
+        (this.hass.selectedTheme as unknown as string) ||
         this.hass.themes.default_theme;
     }
 
@@ -108,11 +101,11 @@ class SupervisorErrorScreen extends LitElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      options
+      themeSettings
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

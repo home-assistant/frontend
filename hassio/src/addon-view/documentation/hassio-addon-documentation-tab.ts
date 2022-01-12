@@ -1,16 +1,9 @@
 import "../../../../src/components/ha-card";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
+import { customElement, property, state } from "lit/decorators";
 import {
   fetchHassioAddonDocumentation,
   HassioAddonDetails,
@@ -30,9 +23,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -46,7 +39,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
     return html`
       <div class="content">
         <ha-card>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <div class="card-content">
             ${this._content
               ? html`<ha-markdown .content=${this._content}></ha-markdown>`
@@ -57,7 +52,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -84,7 +79,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
         this.hass,
         this.addon!.slug
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.documentation.get_logs",
         "error",

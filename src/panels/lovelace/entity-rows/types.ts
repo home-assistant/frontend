@@ -1,7 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
-import { TimestampRenderingFormats } from "../components/types";
+import { TimestampRenderingFormat } from "../components/types";
 
 export interface EntityConfig {
   entity: string;
@@ -18,7 +18,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 }
 export interface DividerConfig {
   type: "divider";
-  style: Record<string, string>;
+  style?: Record<string, string>;
 }
 export interface SectionConfig {
   type: "section";
@@ -92,5 +92,5 @@ export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
-  format?: TimestampRenderingFormats;
+  format?: TimestampRenderingFormat;
 }

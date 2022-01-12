@@ -4,14 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -85,7 +84,7 @@ class ZHAConfigDashboard extends LitElement {
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
-                  href="${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(
@@ -94,7 +93,7 @@ class ZHAConfigDashboard extends LitElement {
                   >
                 </a>
                 <a
-                  href="${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(
@@ -169,7 +168,7 @@ class ZHAConfigDashboard extends LitElement {
       schema.name;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

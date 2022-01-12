@@ -1,6 +1,7 @@
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HaFormSchema } from "../components/ha-form/ha-form";
+import type { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
+import { BaseTrigger } from "./automation";
 
 export interface DeviceAutomation {
   alias?: string;
@@ -17,12 +18,13 @@ export interface DeviceAction extends DeviceAutomation {
 }
 
 export interface DeviceCondition extends DeviceAutomation {
-  condition: string;
+  condition: "device";
 }
 
-export interface DeviceTrigger extends DeviceAutomation {
-  platform: "device";
-}
+export type DeviceTrigger = DeviceAutomation &
+  BaseTrigger & {
+    platform: "device";
+  };
 
 export interface DeviceCapabilities {
   extra_fields: HaFormSchema[];

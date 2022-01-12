@@ -1,10 +1,5 @@
-import {
-  customElement,
-  internalProperty,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -25,9 +20,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { confDeleteCard } from "../editor/delete-card";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-
-const DEFAULT_VIEW_LAYOUT = "masonry";
-const PANEL_VIEW_LAYOUT = "panel";
+import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
 
 declare global {
   // for fire event
@@ -39,7 +32,7 @@ declare global {
 }
 
 @customElement("hui-view")
-export class HUIView extends UpdatingElement {
+export class HUIView extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -48,9 +41,9 @@ export class HUIView extends UpdatingElement {
 
   @property({ type: Number }) public index!: number;
 
-  @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
-  @internalProperty() private _badges: LovelaceBadge[] = [];
+  @state() private _badges: LovelaceBadge[] = [];
 
   private _layoutElementType?: string;
 
@@ -89,8 +82,12 @@ export class HUIView extends UpdatingElement {
     return element;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected createRenderRoot() {
+    return this;
+  }
+
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     /*
       We need to handle the following use cases:
@@ -113,8 +110,11 @@ export class HUIView extends UpdatingElement {
             oldLovelace.config.views[this.index]))
     ) {
       this._initializeConfig();
-      return;
     }
+  }
+
+  protected update(changedProperties) {
+    super.update(changedProperties);
 
     // If no layout element, we're still creating one
     if (this._layoutElement) {
@@ -129,6 +129,18 @@ export class HUIView extends UpdatingElement {
         });
 
         this._layoutElement.hass = this.hass;
+
+        const oldHass = changedProperties.get("hass") as
+          | this["hass"]
+          | undefined;
+
+        if (
+          !oldHass ||
+          this.hass.themes !== oldHass.themes ||
+          this.hass.selectedTheme !== oldHass.selectedTheme
+        ) {
+          applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+        }
       }
       if (changedProperties.has("narrow")) {
         this._layoutElement.narrow = this.narrow;
@@ -142,17 +154,6 @@ export class HUIView extends UpdatingElement {
       if (changedProperties.has("_badges")) {
         this._layoutElement.badges = this._badges;
       }
-    }
-
-    const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
-
-    if (
-      changedProperties.has("hass") &&
-      (!oldHass ||
-        this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
-    ) {
-      applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }
   }
 

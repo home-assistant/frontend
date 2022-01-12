@@ -1,21 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-  css,
-} from "lit-element";
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSRemovedNode {
   node_id: number;
@@ -27,11 +19,11 @@ export interface ZWaveJSRemovedNode {
 class DialogZWaveJSRemoveNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private entry_id?: string;
+  @state() private entry_id?: string;
 
-  @internalProperty() private _status = "";
+  @state() private _status = "";
 
-  @internalProperty() private _node?: ZWaveJSRemovedNode;
+  @state() private _node?: ZWaveJSRemovedNode;
 
   private _removeNodeTimeoutHandle?: number;
 
@@ -56,7 +48,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.zwave_js.remove_node.title")
@@ -213,29 +205,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
         .success {
-          color: green;
+          color: var(--success-color);
         }
 
         .failed {
-          color: red;
-        }
-
-        blockquote {
-          display: block;
-          background-color: #ddd;
-          padding: 8px;
-          margin: 8px 0;
-          font-size: 0.9em;
-        }
-
-        blockquote em {
-          font-size: 0.9em;
-          margin-top: 6px;
+          color: var(--error-color);
         }
 
         .flex-container {

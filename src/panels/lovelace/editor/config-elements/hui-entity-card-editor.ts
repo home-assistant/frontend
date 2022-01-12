@@ -1,46 +1,45 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { assert, object, optional, string } from "superstruct";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
-import { headerFooterConfigStructs } from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/structs";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  icon: optional(string()),
-  attribute: optional(string()),
-  unit: optional(string()),
-  theme: optional(string()),
-  footer: optional(headerFooterConfigStructs),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    icon: optional(string()),
+    attribute: optional(string()),
+    unit: optional(string()),
+    theme: optional(string()),
+    state_color: optional(boolean()),
+    footer: optional(headerFooterConfigStructs),
+  })
+);
 
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityCardConfig;
+  @state() private _config?: EntityCardConfig;
 
   public setConfig(config: EntityCardConfig): void {
     assert(config, cardConfigStruct);
@@ -67,6 +66,10 @@ export class HuiEntityCardEditor
     return this._config!.unit || "";
   }
 
+  get _state_color(): boolean {
+    return this._config!.state_color ?? false;
+  }
+
   get _theme(): string {
     return this._config!.theme || "";
   }
@@ -75,6 +78,7 @@ export class HuiEntityCardEditor
     if (!this.hass || !this._config) {
       return html``;
     }
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">
@@ -101,18 +105,22 @@ export class HuiEntityCardEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
         <div class="side-by-side">
           <ha-entity-attribute-picker
@@ -138,12 +146,27 @@ export class HuiEntityCardEditor
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value=${this._theme}
-          .configValue=${"theme"}
-          @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          >
+          </hui-theme-select-editor>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.state_color"
+            )}
+          >
+            <ha-switch
+              .checked=${this._config!.state_color}
+              .configValue=${"state_color"}
+              @change=${this._valueChanged}
+            >
+            </ha-switch>
+          </ha-formfield>
+        </div>
       </div>
     `;
   }
@@ -188,7 +211,7 @@ export class HuiEntityCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

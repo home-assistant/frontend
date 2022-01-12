@@ -1,10 +1,10 @@
-import type { Constructor, PropertyValues } from "lit-element";
+import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
 import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { HomeAssistant } from "../types";
+import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { HassElement } from "./hass-element";
 
@@ -55,6 +55,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const el = e.composedPath()[0] as any;
 
       if (el.tagName === "TEXTAREA") {
+        return false;
+      }
+
+      if (el.parentElement.tagName === "MWC-SELECT") {
         return false;
       }
 

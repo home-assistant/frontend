@@ -1,15 +1,8 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
-import { localizeKey } from "../../common/translations/localize";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-circular-progress";
+import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import {
@@ -18,7 +11,6 @@ import {
 } from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-dialog";
 
 let instance = 0;
 
@@ -26,21 +18,21 @@ let instance = 0;
 class HaMfaModuleSetupFlow extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @internalProperty() private _dialogClosedCallback?: (params: {
+  @state() private _dialogClosedCallback?: (params: {
     flowFinished: boolean;
   }) => void;
 
-  @internalProperty() private _instance?: number;
+  @state() private _instance?: number;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _stepData: any = {};
+  @state() private _stepData: any = {};
 
-  @internalProperty() private _step?: DataEntryFlowStep;
+  @state() private _step?: DataEntryFlowStep;
 
-  @internalProperty() private _errorMessage?: string;
+  @state() private _errorMessage?: string;
 
   public showDialog({ continueFlowId, mfaModuleId, dialogClosedCallback }) {
     this._instance = instance++;
@@ -82,7 +74,7 @@ class HaMfaModuleSetupFlow extends LitElement {
       <ha-dialog
         open
         .heading=${this._computeStepTitle()}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
       >
         <div>
           ${this._errorMessage
@@ -112,8 +104,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                 ? html` <ha-markdown
                       allowsvg
                       breaks
-                      .content=${localizeKey(
-                        this.hass.localize,
+                      .content=${this.hass.localize(
                         `component.auth.mfa_setup.${this._step!.handler}.step.${
                           (this._step! as DataEntryFlowStepForm).step_id
                         }.description`,
@@ -151,7 +142,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

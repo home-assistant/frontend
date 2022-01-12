@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-action-picker";
@@ -24,9 +19,9 @@ export class HaDeviceAction extends LitElement {
 
   @property({ type: Object }) public action!: DeviceAction;
 
-  @internalProperty() private _deviceId?: string;
+  @state() private _deviceId?: string;
 
-  @internalProperty() private _capabilities?: DeviceCapabilities;
+  @state() private _capabilities?: DeviceCapabilities;
 
   private _origAction?: DeviceAction;
 

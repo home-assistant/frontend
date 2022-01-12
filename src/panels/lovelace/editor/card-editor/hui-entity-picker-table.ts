@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -35,6 +28,7 @@ export class HuiEntityPickerTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         selectable
         .id=${"entity_id"}
         .columns=${this._columns(this.narrow!)}
@@ -75,9 +69,7 @@ export class HuiEntityPickerTable extends LitElement {
           <div @click=${this._handleEntityClicked} style="cursor: pointer;">
             ${name}
             ${narrow
-              ? html`
-                  <div class="secondary">${entity.stateObj.entity_id}</div>
-                `
+              ? html` <div class="secondary">${entity.entity_id}</div> `
               : ""}
           </div>
         `,
@@ -112,6 +104,7 @@ export class HuiEntityPickerTable extends LitElement {
         <ha-relative-time
           .hass=${this.hass!}
           .datetime=${lastChanged}
+          capitalize
         ></ha-relative-time>
       `,
     };
@@ -128,15 +121,15 @@ export class HuiEntityPickerTable extends LitElement {
   }
 
   private _handleEntityClicked(ev: Event) {
-    const entityId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__row"
-    ) as any).rowId;
+    const entityId = (
+      (ev.target as HTMLElement).closest(".mdc-data-table__row") as any
+    ).rowId;
     fireEvent(this, "hass-more-info", {
       entityId,
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         --data-table-border-width: 0;

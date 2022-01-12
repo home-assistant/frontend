@@ -1,14 +1,7 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { until } from "lit-html/directives/until";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
+import { until } from "lit/directives/until";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-circular-progress";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
@@ -26,7 +19,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: MockHomeAssistant;
 
-  @internalProperty() private _switching?: boolean;
+  @state() private _switching = false;
 
   private _hidden = localStorage.hide_demo_card;
 
@@ -34,12 +27,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return this._hidden ? 0 : 2;
   }
 
-  public setConfig(
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config: LovelaceCardConfig
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-  ) {}
+  public setConfig(_config: LovelaceCardConfig) {}
 
   protected render(): TemplateResult {
     if (this._hidden) {
@@ -56,7 +44,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                     (conf) => html`
                       ${conf.name}
                       <small>
-                        <a target="_blank" href="${conf.authorUrl}">
+                        <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
                             "name",
@@ -106,14 +94,14 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     this._switching = true;
     try {
       await setDemoConfig(this.hass, this.lovelace!, index);
-    } catch (err) {
+    } catch (err: any) {
       alert("Failed to switch config :-(");
     } finally {
       this._switching = false;
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         a {

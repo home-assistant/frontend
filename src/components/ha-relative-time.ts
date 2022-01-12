@@ -1,17 +1,16 @@
-import {
-  customElement,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
-import relativeTime from "../common/datetime/relative_time";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { relativeTime } from "../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
-class HaRelativeTime extends UpdatingElement {
+class HaRelativeTime extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public datetime?: string | Date;
+
+  @property({ type: Boolean }) public capitalize = false;
 
   private _interval?: number;
 
@@ -25,6 +24,10 @@ class HaRelativeTime extends UpdatingElement {
     if (this.datetime) {
       this._startInterval();
     }
+  }
+
+  protected createRenderRoot() {
+    return this;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -55,10 +58,10 @@ class HaRelativeTime extends UpdatingElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      this.innerHTML = relativeTime(
-        new Date(this.datetime),
-        this.hass.localize
-      );
+      const relTime = relativeTime(new Date(this.datetime), this.hass.locale);
+      this.innerHTML = this.capitalize
+        ? capitalizeFirstLetter(relTime)
+        : relTime;
     }
   }
 }

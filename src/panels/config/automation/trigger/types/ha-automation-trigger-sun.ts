@@ -1,9 +1,10 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { customElement, html, LitElement, property } from "lit-element";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-radio";
+import "../../../../../components/ha-formfield";
+import type { HaRadio } from "../../../../../components/ha-radio";
 import type { SunTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import {
@@ -15,38 +16,47 @@ import {
 export class HaSunTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: SunTrigger;
+  @property({ attribute: false }) public trigger!: SunTrigger;
 
   public static get defaultConfig() {
     return {
-      event: "sunrise",
+      event: "sunrise" as SunTrigger["event"],
+      offset: 0,
     };
   }
 
   protected render() {
     const { offset, event } = this.trigger;
     return html`
-      <label id="eventlabel">
+      <label>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.sun.event"
         )}
-      </label>
-      <paper-radio-group
-        .selected=${event}
-        aria-labelledby="eventlabel"
-        @paper-radio-group-changed=${this._radioGroupPicked}
-      >
-        <paper-radio-button name="sunrise">
-          ${this.hass.localize(
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
           )}
-        </paper-radio-button>
-        <paper-radio-button name="sunset">
-          ${this.hass.localize(
+        >
+          <ha-radio
+            name="event"
+            value="sunrise"
+            .checked=${event === "sunrise"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.sun.sunset"
           )}
-        </paper-radio-button>
-      </paper-radio-group>
+        >
+          <ha-radio
+            name="event"
+            value="sunset"
+            .checked=${event === "sunset"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+      </label>
 
       <paper-input
         .label=${this.hass.localize(
@@ -68,8 +78,21 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        event: (ev.target as PaperRadioGroupElement).selected,
+        event: (ev.target as HaRadio).value,
       },
     });
+  }
+
+  static styles = css`
+    label {
+      display: flex;
+      align-items: center;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-sun": HaSunTrigger;
   }
 }

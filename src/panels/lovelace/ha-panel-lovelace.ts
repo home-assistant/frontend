@@ -1,12 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-import {
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -53,11 +48,12 @@ class LovelacePanel extends LitElement {
   @property() public route?: Route;
 
   @property()
-  private _state?: "loading" | "loaded" | "error" | "yaml-editor" = "loading";
+  private _panelState?: "loading" | "loaded" | "error" | "yaml-editor" =
+    "loading";
 
-  @internalProperty() private _errorMsg?: string;
+  @state() private _errorMsg?: string;
 
-  @internalProperty() private lovelace?: Lovelace;
+  @state() private lovelace?: Lovelace;
 
   private _ignoreNextUpdateEvent = false;
 
@@ -86,7 +82,7 @@ class LovelacePanel extends LitElement {
     } else if (this.lovelace && this.lovelace.mode === "generated") {
       // When lovelace is generated, we re-generate each time a user goes
       // to the states panel to make sure new entities are shown.
-      this._state = "loading";
+      this._panelState = "loading";
       this._regenerateConfig();
     } else if (this._fetchConfigOnConnect) {
       // Config was changed when we were not at the lovelace panel
@@ -103,9 +99,9 @@ class LovelacePanel extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    const state = this._state!;
+    const panelState = this._panelState!;
 
-    if (state === "loaded") {
+    if (panelState === "loaded") {
       return html`
         <hui-root
           .hass=${this.hass}
@@ -117,12 +113,12 @@ class LovelacePanel extends LitElement {
       `;
     }
 
-    if (state === "error") {
+    if (panelState === "error") {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          title="${domainToName(this.hass!.localize, "lovelace")}"
-          .error="${this._errorMsg}"
+          title=${domainToName(this.hass!.localize, "lovelace")}
+          .error=${this._errorMsg}
         >
           <mwc-button raised @click=${this._forceFetchConfig}>
             ${this.hass!.localize("ui.panel.lovelace.reload_lovelace")}
@@ -131,12 +127,12 @@ class LovelacePanel extends LitElement {
       `;
     }
 
-    if (state === "yaml-editor") {
+    if (panelState === "yaml-editor") {
       return html`
         <hui-editor
           .hass=${this.hass}
-          .lovelace="${this.lovelace}"
-          .closeEditor="${this._closeEditor}"
+          .lovelace=${this.lovelace}
+          .closeEditor=${this._closeEditor}
         ></hui-editor>
       `;
     }
@@ -174,7 +170,7 @@ class LovelacePanel extends LitElement {
       DEFAULT_STRATEGY
     );
     this._setLovelaceConfig(conf, undefined, "generated");
-    this._state = "loaded";
+    this._panelState = "loaded";
   }
 
   private async _subscribeUpdates() {
@@ -186,7 +182,7 @@ class LovelacePanel extends LitElement {
   }
 
   private _closeEditor() {
-    this._state = "loaded";
+    this._panelState = "loaded";
   }
 
   private _lovelaceChanged() {
@@ -233,10 +229,9 @@ class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (
-        llWindow.llConfProm || fetchResources(this.hass!.connection)
-      ).then((resources) =>
-        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      (llWindow.llConfProm || fetchResources(this.hass!.connection)).then(
+        (resources) =>
+          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
       );
     }
 
@@ -268,11 +263,11 @@ class LovelacePanel extends LitElement {
       } else {
         conf = rawConf;
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err.code !== "config_not_found") {
         // eslint-disable-next-line
         console.log(err);
-        this._state = "error";
+        this._panelState = "error";
         this._errorMsg = err.message;
         return;
       }
@@ -293,7 +288,8 @@ class LovelacePanel extends LitElement {
       }
     }
 
-    this._state = this._state === "yaml-editor" ? this._state : "loaded";
+    this._panelState =
+      this._panelState === "yaml-editor" ? this._panelState : "loaded";
     this._setLovelaceConfig(conf, rawConf, confMode);
   }
 
@@ -332,7 +328,7 @@ class LovelacePanel extends LitElement {
           editorLoaded = true;
           import("./hui-editor");
         }
-        this._state = "yaml-editor";
+        this._panelState = "yaml-editor";
       },
       setEditMode: (editMode: boolean) => {
         // If we use a strategy for dashboard, we cannot show the edit UI
@@ -383,7 +379,7 @@ class LovelacePanel extends LitElement {
           });
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, urlPath, newConfig);
-        } catch (err) {
+        } catch (err: any) {
           // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update
@@ -418,7 +414,7 @@ class LovelacePanel extends LitElement {
           });
           this._ignoreNextUpdateEvent = true;
           await deleteConfig(this.hass!, urlPath);
-        } catch (err) {
+        } catch (err: any) {
           // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update

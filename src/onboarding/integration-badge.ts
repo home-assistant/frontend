@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import "../components/ha-icon";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../components/ha-svg-icon";
 import { brandsUrl } from "../util/brands-url";
 
 @customElement("integration-badge")
@@ -18,24 +11,33 @@ class IntegrationBadge extends LitElement {
 
   @property() public badgeIcon?: string;
 
+  @property({ type: Boolean }) public darkOptimizedIcon?: boolean;
+
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
     return html`
       <div class="icon">
         <img
-          src=${brandsUrl(this.domain, "icon")}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.darkOptimizedIcon,
+          })}
           referrerpolicy="no-referrer"
         />
         ${this.badgeIcon
-          ? html` <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon> `
+          ? html`<ha-svg-icon
+              class="badge"
+              .path=${this.badgeIcon}
+            ></ha-svg-icon>`
           : ""}
       </div>
       <div class="title">${this.title}</div>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-flex;

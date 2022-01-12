@@ -2,8 +2,8 @@ import {
   Auth,
   callService,
   Connection,
-  ERR_INVALID_AUTH,
   ERR_CONNECTION_LOST,
+  ERR_INVALID_AUTH,
   HassConfig,
   subscribeConfig,
   subscribeEntities,
@@ -15,15 +15,16 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
-import { NumberFormat } from "../data/translation";
+import { NumberFormat, TimeFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, ServiceCallResponse } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
-import { getLocalLanguage } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { polyfillsLoaded } from "../common/translations/localize";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -39,6 +40,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         states: null as any,
         config: null as any,
         themes: null as any,
+        selectedTheme: null,
         panels: null as any,
         services: null as any,
         user: null as any,
@@ -49,6 +51,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         locale: {
           language,
           number_format: NumberFormat.language,
+          time_format: TimeFormat.language,
         },
         resources: null as any,
         localize: () => "",
@@ -79,12 +82,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               serviceData,
               target
             )) as ServiceCallResponse;
-          } catch (err) {
+          } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service)
             ) {
-              throw err;
+              return { context: { id: "" } };
             }
             if (__DEV__) {
               // eslint-disable-next-line no-console
@@ -149,6 +152,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
+        loadFragmentTranslation: (fragment) =>
+          // @ts-ignore
+          this._loadFragmentTranslations(this.hass?.language, fragment),
         ...getState(),
         ...this._pendingHass,
       };
@@ -174,7 +180,22 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
-      subscribeConfig(conn, (config) => this._updateHass({ config }));
+      subscribeConfig(conn, (config) => {
+        if (this.hass?.config?.time_zone !== config.time_zone) {
+          if (__BUILD__ === "latest" && polyfillsLoaded) {
+            polyfillsLoaded.then(() => {
+              if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
+                // @ts-ignore
+                Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+              }
+            });
+          } else if ("__setDefaultTimeZone" in Intl.DateTimeFormat) {
+            // @ts-ignore
+            Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+          }
+        }
+        this._updateHass({ config });
+      });
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
       subscribeFrontendUserData(conn, "core", (userData) =>

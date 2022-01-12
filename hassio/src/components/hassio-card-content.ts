@@ -1,14 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import "../../../src/components/ha-relative-time";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
 
@@ -26,8 +18,6 @@ class HassioCardContent extends LitElement {
 
   @property() public topbarClass?: string;
 
-  @property() public datetime?: string;
-
   @property() public iconTitle?: string;
 
   @property() public iconClass?: string;
@@ -44,7 +34,7 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img src="${this.iconImage}" .title=${this.iconTitle} />
+              <img src=${this.iconImage} .title=${this.iconTitle} />
               <div></div>
             </div>
           `
@@ -63,21 +53,12 @@ class HassioCardContent extends LitElement {
             /* treat as available when undefined */
             this.available === false ? " (Not available)" : ""
           }
-          ${this.datetime
-            ? html`
-                <ha-relative-time
-                  .hass=${this.hass}
-                  class="addition"
-                  .datetime=${this.datetime}
-                ></ha-relative-time>
-              `
-            : undefined}
         </div>
       </div>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 24px;
@@ -87,14 +68,14 @@ class HassioCardContent extends LitElement {
         color: var(--secondary-text-color);
       }
       ha-svg-icon.update {
-        color: var(--paper-orange-400);
+        color: var(--warning-color);
       }
       ha-svg-icon.running,
       ha-svg-icon.installed {
-        color: var(--paper-green-400);
+        color: var(--success-color);
       }
       ha-svg-icon.hassupdate,
-      ha-svg-icon.snapshot {
+      ha-svg-icon.backup {
         color: var(--paper-item-icon-color);
       }
       ha-svg-icon.not_available {
@@ -113,9 +94,6 @@ class HassioCardContent extends LitElement {
         height: 2.4em;
         line-height: 1.2em;
       }
-      ha-relative-time {
-        display: block;
-      }
       .icon_image img {
         max-height: 40px;
         max-width: 40px;
@@ -129,7 +107,7 @@ class HassioCardContent extends LitElement {
       }
       .dot {
         position: absolute;
-        background-color: var(--paper-orange-400);
+        background-color: var(--warning-color);
         width: 12px;
         height: 12px;
         top: 8px;

@@ -1,16 +1,9 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { compare } from "../../../common/string/compare";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
@@ -47,9 +40,9 @@ class HaConfigPerson extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Person[];
+  @state() private _storageItems?: Person[];
 
-  @internalProperty() private _configItems?: Person[];
+  @state() private _configItems?: Person[];
 
   private _usersLoad?: Promise<User[]>;
 
@@ -163,10 +156,10 @@ class HaConfigPerson extends LitElement {
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
-      compare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name)
     );
     this._configItems = personData.config.sort((ent1, ent2) =>
-      compare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name)
     );
     this._openDialogIfPersonSpecifiedInRoute();
   }
@@ -227,9 +220,9 @@ class HaConfigPerson extends LitElement {
       users: this._allowedUsers(users, entry),
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
-        this._storageItems = this._storageItems!.concat(
-          created
-        ).sort((ent1, ent2) => compare(ent1.name, ent2.name));
+        this._storageItems = this._storageItems!.concat(created).sort(
+          (ent1, ent2) => stringCompare(ent1.name, ent2.name)
+        );
       },
       updateEntry: async (values) => {
         const updated = await updatePerson(this.hass!, entry!.id, values);
@@ -255,7 +248,7 @@ class HaConfigPerson extends LitElement {
             (ent) => ent !== entry
           );
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },
@@ -265,7 +258,7 @@ class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

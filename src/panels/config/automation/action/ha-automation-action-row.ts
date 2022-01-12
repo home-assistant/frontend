@@ -1,33 +1,25 @@
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import "@material/mwc-select";
+import type { Select } from "@material/mwc-select";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
+import { handleStructError } from "../../../../common/structs/handle-errors";
+import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../../../common/structs/handle-errors";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -52,7 +44,8 @@ const OPTIONS = [
   "device_id",
 ];
 
-const getType = (action: Action) => OPTIONS.find((option) => option in action);
+const getType = (action: Action | undefined) =>
+  action ? OPTIONS.find((option) => option in action) : undefined;
 
 declare global {
   // for fire event
@@ -99,13 +92,26 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _warnings?: string[];
+  @state() private _warnings?: string[];
 
-  @internalProperty() private _uiModeAvailable = true;
+  @state() private _uiModeAvailable = true;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  private _processedTypes = memoizeOne(
+    (localize: LocalizeFunc): [string, string][] =>
+      OPTIONS.map(
+        (action) =>
+          [
+            action,
+            localize(
+              `ui.panel.config.automation.editor.actions.type.${action}.label`
+            ),
+          ] as [string, string]
+      ).sort((a, b) => stringCompare(a[1], b[1]))
+  );
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
@@ -133,41 +139,32 @@ export default class HaAutomationActionRow extends LitElement {
           <div class="card-menu">
             ${this.index !== 0
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_up"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_up"
                     )}
+                    .path=${mdiArrowUp}
                     @click=${this._moveUp}
-                  >
-                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.index !== this.totalActions - 1
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_down"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_down"
                     )}
+                    .path=${mdiArrowDown}
                     @click=${this._moveDown}
-                  >
-                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
-                .title=${this.hass.localize("ui.common.menu")}
-                .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
                   ? this.hass.localize(
@@ -190,9 +187,12 @@ export default class HaAutomationActionRow extends LitElement {
             </ha-button-menu>
           </div>
           ${this._warnings
-            ? html`<div class="warning">
-                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
-                <br />
+            ? html`<ha-alert
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}
+              >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html` <ul>
                       ${this._warnings!.map(
@@ -201,7 +201,7 @@ export default class HaAutomationActionRow extends LitElement {
                     </ul>`
                   : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </div>`
+              </ha-alert>`
             : ""}
           ${yamlMode
             ? html`
@@ -225,28 +225,21 @@ export default class HaAutomationActionRow extends LitElement {
                 ></ha-yaml-editor>
               `
             : html`
-                <paper-dropdown-menu-light
+                <mwc-select
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type_select"
                   )}
-                  no-animations
+                  .value=${getType(this.action)}
+                  naturalMenuWidth
+                  @selected=${this._typeChanged}
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    .selected=${selected}
-                    @iron-select=${this._typeChanged}
-                  >
-                    ${OPTIONS.map(
-                      (opt) => html`
-                        <paper-item .action=${opt}>
-                          ${this.hass.localize(
-                            `ui.panel.config.automation.editor.actions.type.${opt}.label`
-                          )}
-                        </paper-item>
-                      `
-                    )}
-                  </paper-listbox>
-                </paper-dropdown-menu-light>
+                  ${this._processedTypes(this.hass.localize).map(
+                    ([opt, label]) => html`
+                      <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+                    `
+                  )}
+                </mwc-select>
+
                 <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
@@ -261,6 +254,9 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
+    // Prevent possible parent action-row from switching to yamlMode
+    ev.stopPropagation();
+
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
@@ -303,8 +299,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.action;
+    const type = (ev.target as Select).value;
 
     if (!type) {
       return;
@@ -316,7 +311,9 @@ export default class HaAutomationActionRow extends LitElement {
     }
 
     if (type !== getType(this.action)) {
-      const elClass = customElements.get(`ha-automation-action-${type}`);
+      const elClass = customElements.get(
+        `ha-automation-action-${type}`
+      ) as CustomElementConstructor & { defaultConfig: Action };
 
       fireEvent(this, "value-changed", {
         value: {
@@ -339,7 +336,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,18 +1,17 @@
 import "@material/mwc-button/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
@@ -31,13 +30,13 @@ export class ZHADeviceBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _bindTargetIndex = -1;
+  @state() private _bindTargetIndex = -1;
 
-  @internalProperty() private bindableDevices: ZHADevice[] = [];
+  @state() private bindableDevices: ZHADevice[] = [];
 
-  @internalProperty() private _deviceToBind?: ZHADevice;
+  @state() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -48,13 +47,14 @@ export class ZHADeviceBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <span>Device Binding</span>
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>
@@ -65,8 +65,8 @@ export class ZHADeviceBindingControl extends LitElement {
             <paper-dropdown-menu label="Bindable Devices" class="menu">
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._bindTargetIndex}"
-                @iron-select="${this._bindTargetIndexChanged}"
+                .selected=${this._bindTargetIndex}
+                @iron-select=${this._bindTargetIndexChanged}
               >
                 ${this.bindableDevices.map(
                   (device) => html`
@@ -89,16 +89,16 @@ export class ZHADeviceBindingControl extends LitElement {
             : ""}
           <div class="card-actions">
             <mwc-button
-              @click="${this._onBindDevicesClick}"
-              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              @click=${this._onBindDevicesClick}
+              .disabled=${!(this._deviceToBind && this.selectedDevice)}
               >Bind</mwc-button
             >
             ${this._showHelp
               ? html` <div class="helpText">Bind devices.</div> `
               : ""}
             <mwc-button
-              @click="${this._onUnbindDevicesClick}"
-              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              @click=${this._onUnbindDevicesClick}
+              .disabled=${!(this._deviceToBind && this.selectedDevice)}
               >Unbind</mwc-button
             >
             ${this._showHelp
@@ -142,7 +142,7 @@ export class ZHADeviceBindingControl extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

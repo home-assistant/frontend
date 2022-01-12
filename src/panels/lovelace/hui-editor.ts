@@ -1,27 +1,25 @@
 import { undoDepth } from "@codemirror/history";
 import "@material/mwc-button";
+import { mdiClose } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { safeDump, safeLoad } from "js-yaml";
+import { dump, load } from "js-yaml";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
-import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import type { LovelaceConfig } from "../../data/lovelace";
 import {
@@ -47,9 +45,9 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @property() public closeEditor?: () => void;
 
-  @internalProperty() private _saving?: boolean;
+  @state() private _saving?: boolean;
 
-  @internalProperty() private _changed?: boolean;
+  @state() private _changed?: boolean;
 
   protected render(): TemplateResult | void {
     return html`
@@ -57,8 +55,9 @@ class LovelaceFullConfigEditor extends LitElement {
         <app-header slot="header">
           <app-toolbar>
             <ha-icon-button
-              icon="hass:close"
-              @click="${this._closeEditor}"
+              .path=${mdiClose}
+              @click=${this._closeEditor}
+              .label=${this.hass!.localize("ui.common.close")}
             ></ha-icon-button>
             <div main-title>
               ${this.hass!.localize(
@@ -106,7 +105,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
+    this.yamlEditor.value = dump(this.lovelace!.rawConfig);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -124,7 +123,7 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
         action: {
           action: () => {
-            this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
+            this.yamlEditor.value = dump(this.lovelace!.rawConfig);
           },
           text: this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.reload"
@@ -136,7 +135,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -211,7 +210,7 @@ class LovelaceFullConfigEditor extends LitElement {
   private async _removeConfig() {
     try {
       await this.lovelace!.deleteConfig();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_remove",
@@ -260,8 +259,8 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let config: LovelaceConfig;
     try {
-      config = safeLoad(value);
-    } catch (err) {
+      config = load(value) as LovelaceConfig;
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
@@ -274,7 +273,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
     try {
       assert(config, lovelaceStruct);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
@@ -294,7 +293,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
     try {
       await this.lovelace!.saveConfig(config);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",

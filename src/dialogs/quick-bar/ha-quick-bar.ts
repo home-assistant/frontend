@@ -1,3 +1,4 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -11,18 +12,10 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
-import { scroll } from "lit-virtualizer";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -32,15 +25,17 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
-import { compare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
+import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -52,7 +47,6 @@ import {
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
-import "../../components/ha-chip";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -87,23 +81,25 @@ type BaseNavigationCommand = Pick<
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems?: CommandItem[];
+  @state() private _commandItems?: CommandItem[];
 
-  @internalProperty() private _entityItems?: EntityItem[];
+  @state() private _entityItems?: EntityItem[];
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _search = "";
+  @state() private _search = "";
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _commandMode = false;
+  @state() private _commandMode = false;
 
-  @internalProperty() private _done = false;
+  @state() private _done = false;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
+
+  private _focusListElement?: ListItem | null;
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
@@ -130,7 +126,7 @@ export class QuickBar extends LitElement {
       : this._entityItems;
 
     if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items || [], this._filter);
+      items = this._filterItems(items, this._filter);
     }
 
     return html`
@@ -167,13 +163,12 @@ export class QuickBar extends LitElement {
               ></ha-svg-icon>`}
           ${this._search &&
           html`
-            <mwc-icon-button
+            <ha-icon-button
               slot="suffix"
               @click=${this._clearSearch}
-              title="Clear"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .label=${this.hass!.localize("ui.common.clear")}
+              .path=${mdiClose}
+            ></ha-icon-button>
           `}
         </paper-input>
         ${!items
@@ -194,7 +189,8 @@ export class QuickBar extends LitElement {
             >
               ${scroll({
                 items,
-                renderItem: (item: QuickBarItem, index?: number) =>
+                layout: Layout1d,
+                renderItem: (item: QuickBarItem, index) =>
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
@@ -228,6 +224,9 @@ export class QuickBar extends LitElement {
   }
 
   private _renderItem(item: QuickBarItem, index?: number) {
+    if (!item) {
+      return html``;
+    }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
       : this._renderEntityItem(item as EntityItem, index);
@@ -274,7 +273,7 @@ export class QuickBar extends LitElement {
       >
         <span>
           <ha-chip
-            .label="${item.categoryText}"
+            .label=${item.categoryText}
             hasIcon
             class="command-category ${item.categoryKey}"
           >
@@ -302,6 +301,10 @@ export class QuickBar extends LitElement {
 
   private _handleSelected(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
+    if (index < 0) {
+      return;
+    }
+
     const item = ((ev.target as List).items[index] as any).item;
     this.processItemAndCloseDialog(item, index);
   }
@@ -316,7 +319,8 @@ export class QuickBar extends LitElement {
     } else if (ev.code === "ArrowDown") {
       ev.preventDefault();
       this._getItemAtIndex(0)?.focus();
-      this._getItemAtIndex(1)?.focus();
+      this._focusSet = true;
+      this._focusListElement = this._getItemAtIndex(0);
     }
   }
 
@@ -349,6 +353,11 @@ export class QuickBar extends LitElement {
       this._initializeItemsIfNeeded();
       this._filter = this._search;
     } else {
+      if (this._focusSet && this._focusListElement) {
+        this._focusSet = false;
+        // @ts-ignore
+        this._focusListElement.rippleHandlers.endFocus();
+      }
       this._debouncedSetFilter(this._search);
     }
   }
@@ -365,12 +374,14 @@ export class QuickBar extends LitElement {
   private _setFocusFirstListItem() {
     // @ts-ignore
     this._getItemAtIndex(0)?.rippleHandlers.startFocus();
+    this._focusListElement = this._getItemAtIndex(0);
   }
 
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
     const isFirstListItem =
       (ev.target as HTMLElement).getAttribute("index") === "0";
+    this._focusListElement = ev.target as ListItem;
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
@@ -385,10 +396,14 @@ export class QuickBar extends LitElement {
   private _generateEntityItems(): EntityItem[] {
     return Object.keys(this.hass.states)
       .map((entityId) => {
+        const entityState = this.hass.states[entityId];
         const entityItem = {
-          primaryText: computeStateName(this.hass.states[entityId]),
+          primaryText: computeStateName(entityState),
           altText: entityId,
-          icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+          icon: entityState.attributes.icon,
+          iconPath: entityState.attributes.icon
+            ? undefined
+            : domainIcon(computeDomain(entityId), entityState),
           action: () => fireEvent(this, "hass-more-info", { entityId }),
         };
 
@@ -398,7 +413,7 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        compare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+        caseInsensitiveStringCompare(a.primaryText, b.primaryText)
       );
   }
 
@@ -408,40 +423,59 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      compare(
-        a.strings.join(" ").toLowerCase(),
-        b.strings.join(" ").toLowerCase()
-      )
+      caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
     );
   }
 
   private _generateReloadCommands(): CommandItem[] {
-    const reloadableDomains = componentsWithService(this.hass, "reload").sort();
+    // Get all domains that have a direct "reload" service
+    const reloadableDomains = componentsWithService(this.hass, "reload");
 
-    return reloadableDomains.map((domain) => {
-      const commandItem = {
-        primaryText:
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.reload.${domain}`
-          ) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(this.hass.localize, domain)
-          ),
-        action: () => this.hass.callService(domain, "reload"),
-        iconPath: mdiReload,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.reload`
+    const commands = reloadableDomains.map((domain) => ({
+      primaryText:
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(this.hass.localize, domain)
         ),
-      };
+      action: () => this.hass.callService(domain, "reload"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      ),
+    }));
 
-      return {
-        ...commandItem,
-        categoryKey: "reload",
-        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
-      };
+    // Add "frontend.reload_themes"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.themes"
+      ),
+      action: () => this.hass.callService("frontend", "reload_themes"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
     });
+
+    // Add "homeassistant.reload_core_config"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.core"
+      ),
+      action: () =>
+        this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    return commands.map((command) => ({
+      ...command,
+      categoryKey: "reload",
+      strings: [`${command.categoryText} ${command.primaryText}`],
+    }));
   }
 
   private _generateServerControlCommands(): CommandItem[] {
@@ -509,7 +543,13 @@ export class QuickBar extends LitElement {
           if (page.component) {
             const info = this._getNavigationInfoFromConfig(page);
 
-            if (info) {
+            // Add to list, but only if we do not already have an entry for the same path and component
+            if (
+              info &&
+              !items.some(
+                (e) => e.path === info.path && e.component === info.component
+              )
+            ) {
               items.push(info);
             }
           }
@@ -562,7 +602,7 @@ export class QuickBar extends LitElement {
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
-        action: () => navigate(this, item.path),
+        action: () => navigate(item.path),
       };
 
       return {
@@ -615,7 +655,7 @@ export class QuickBar extends LitElement {
           color: var(--primary-text-color);
         }
 
-        paper-input mwc-icon-button {
+        paper-input ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
         }
@@ -639,18 +679,6 @@ export class QuickBar extends LitElement {
 
         span.command-text {
           margin-left: 8px;
-        }
-
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          overflow: auto;
-          height: 100%;
-        }
-
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
         }
 
         mwc-list-item {

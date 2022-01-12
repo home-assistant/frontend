@@ -1,19 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { slugify } from "../../../../common/string/slugify";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import {
@@ -31,22 +23,22 @@ import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-das
 export class DialogLovelaceDashboardDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: LovelaceDashboardDetailsDialogParams;
+  @state() private _params?: LovelaceDashboardDetailsDialogParams;
 
-  @internalProperty() private _urlPath!: LovelaceDashboard["url_path"];
+  @state() private _urlPath!: LovelaceDashboard["url_path"];
 
-  @internalProperty() private _showInSidebar!: boolean;
+  @state() private _showInSidebar!: boolean;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _title!: string;
+  @state() private _title!: string;
 
-  @internalProperty()
+  @state()
   private _requireAdmin!: LovelaceDashboard["require_admin"];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: LovelaceDashboardDetailsDialogParams
@@ -82,7 +74,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -126,13 +118,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                     )}
                     dialogInitialFocus
                   ></paper-input>
-                  <ha-icon-input
+                  <ha-icon-picker
                     .value=${this._icon}
                     @value-changed=${this._iconChanged}
                     .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.icon"
                     )}
-                  ></ha-icon-input>
+                  ></ha-icon-picker>
                   ${!this._params.dashboard && this.hass.userData?.showAdvanced
                     ? html`
                         <paper-input
@@ -213,7 +205,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : ""}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateDashboard}"
+          @click=${this._updateDashboard}
           .disabled=${urlInvalid || titleInvalid || this._submitting}
         >
           ${this._params.urlPath
@@ -293,14 +285,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       if (this._params!.dashboard) {
         await this._params!.updateDashboard(values);
       } else {
-        (values as LovelaceDashboardCreateParams).url_path = this._urlPath.trim();
+        (values as LovelaceDashboardCreateParams).url_path =
+          this._urlPath.trim();
         (values as LovelaceDashboardCreateParams).mode = "storage";
         await this._params!.createDashboard(
           values as LovelaceDashboardCreateParams
         );
       }
       this._close();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
@@ -322,7 +315,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -1,9 +1,5 @@
-import {
-  internalProperty,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -12,10 +8,10 @@ import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceBadge } from "../types";
 import { EntityFilterBadgeConfig } from "./types";
 
-class EntityFilterBadge extends UpdatingElement implements LovelaceBadge {
+class EntityFilterBadge extends ReactiveElement implements LovelaceBadge {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: EntityFilterBadgeConfig;
+  @state() private _config?: EntityFilterBadgeConfig;
 
   private _elements?: LovelaceBadge[];
 
@@ -48,6 +44,10 @@ class EntityFilterBadge extends UpdatingElement implements LovelaceBadge {
     this._configEntities = processConfigEntities(config.entities);
     this._oldEntities = undefined;
     this._config = config;
+  }
+
+  protected createRenderRoot() {
+    return this;
   }
 
   protected shouldUpdate(changedProperties: PropertyValues): boolean {

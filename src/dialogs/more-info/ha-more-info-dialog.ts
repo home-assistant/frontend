@@ -1,17 +1,10 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   DOMAINS_MORE_INFO_NO_HISTORY,
@@ -23,7 +16,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
-import "../../components/ha-svg-icon";
+import "../../components/ha-icon-button";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
@@ -31,11 +24,11 @@ import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { replaceDialog } from "../make-dialog-manager";
 import "./controls/more-info-default";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
-import { replaceDialog } from "../make-dialog-manager";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -58,9 +51,9 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _entityId?: string | null;
+  @state() private _entityId?: string | null;
 
-  @internalProperty() private _currTabIndex = 0;
+  @state() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -100,11 +93,13 @@ export class MoreInfoDialog extends LitElement {
     }
     const entityId = this._entityId;
     const stateObj = this.hass.states[entityId];
-    const domain = computeDomain(entityId);
 
     if (!stateObj) {
       return html``;
     }
+
+    const domain = computeDomain(entityId);
+    const name = computeStateName(stateObj);
 
     return html`
       <ha-dialog
@@ -116,42 +111,44 @@ export class MoreInfoDialog extends LitElement {
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
               .label=${this.hass.localize(
                 "ui.dialogs.more_info_control.dismiss"
               )}
+              .path=${mdiClose}
+            ></ha-icon-button>
+            <div
+              slot="title"
+              class="main-title"
+              .title=${name}
+              @click=${this._enlarge}
             >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
-            <div slot="title" class="main-title" @click=${this._enlarge}>
-              ${computeStateName(stateObj)}
+              ${name}
             </div>
             ${this.hass.user!.is_admin
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.settings"
                     )}
+                    .path=${mdiCog}
                     @click=${this._gotoSettings}
-                  >
-                    <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.edit"
                     )}
+                    .path=${mdiPencil}
                     @click=${this._gotoEdit}
-                  >
-                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>
@@ -312,7 +309,7 @@ export class MoreInfoDialog extends LitElement {
       idToPassThroughUrl = stateObj.attributes.id;
     }
 
-    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
+    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 

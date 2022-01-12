@@ -1,19 +1,11 @@
-import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
+import { mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
@@ -43,91 +35,89 @@ export class HaConfigHelpers extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _stateItems: HassEntity[] = [];
+  @state() private _stateItems: HassEntity[] = [];
 
-  private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon, helper: any) => html`
-            <ha-icon .icon=${icon || domainIcon(helper.type)}></ha-icon>
-          `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          grows: true,
-          direction: "asc",
-          template: (name, item: any) =>
-            html`
-              ${name}
-              ${narrow
-                ? html` <div class="secondary">${item.entity_id}</div> `
-                : ""}
-            `,
-        },
-      };
-      if (!narrow) {
-        columns.entity_id = {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.entity_id"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "25%",
-        };
-      }
-      columns.type = {
-        title: this.hass.localize(
-          "ui.panel.config.helpers.picker.headers.type"
-        ),
-        sortable: true,
-        width: "25%",
-        filterable: true,
-        template: (type) =>
-          html`
-            ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
-            type}
-          `,
-      };
-      columns.editable = {
+  private _columns = memoize((narrow, _language): DataTableColumnContainer => {
+    const columns: DataTableColumnContainer = {
+      icon: {
         title: "",
         type: "icon",
-        template: (editable) => html`
-          ${!editable
-            ? html`
-                <div
-                  tabindex="0"
-                  style="display:inline-block; position: relative;"
-                >
-                  <ha-icon icon="hass:pencil-off"></ha-icon>
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.picker.status.readonly"
-                    )}
-                  </paper-tooltip>
-                </div>
-              `
-            : ""}
-        `,
+        template: (icon, helper: any) =>
+          icon
+            ? html` <ha-icon .icon=${icon}></ha-icon> `
+            : html`<ha-svg-icon
+                .path=${domainIcon(helper.type)}
+              ></ha-svg-icon>`,
+      },
+      name: {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.name"
+        ),
+        sortable: true,
+        filterable: true,
+        grows: true,
+        direction: "asc",
+        template: (name, item: any) =>
+          html`
+            ${name}
+            ${narrow
+              ? html` <div class="secondary">${item.entity_id}</div> `
+              : ""}
+          `,
+      },
+    };
+    if (!narrow) {
+      columns.entity_id = {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.entity_id"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "25%",
       };
-      return columns;
     }
-  );
+    columns.type = {
+      title: this.hass.localize("ui.panel.config.helpers.picker.headers.type"),
+      sortable: true,
+      width: "25%",
+      filterable: true,
+      template: (type) =>
+        html`
+          ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) || type}
+        `,
+    };
+    columns.editable = {
+      title: "",
+      type: "icon",
+      template: (editable) => html`
+        ${!editable
+          ? html`
+              <div
+                tabindex="0"
+                style="display:inline-block; position: relative;"
+              >
+                <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.status.readonly"
+                  )}
+                </paper-tooltip>
+              </div>
+            `
+          : ""}
+      `,
+    };
+    return columns;
+  });
 
   private _getItems = memoize((stateItems: HassEntity[]) =>
-    stateItems.map((state) => ({
-      id: state.entity_id,
-      icon: state.attributes.icon,
-      name: state.attributes.friendly_name || "",
-      entity_id: state.entity_id,
-      editable: state.attributes.editable,
-      type: computeStateDomain(state),
+    stateItems.map((entityState) => ({
+      id: entityState.entity_id,
+      icon: entityState.attributes.icon,
+      name: entityState.attributes.friendly_name || "",
+      entity_id: entityState.entity_id,
+      editable: entityState.attributes.editable,
+      type: computeStateDomain(entityState),
     }))
   );
 
@@ -142,7 +132,7 @@ export class HaConfigHelpers extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.helpers}
+        .tabs=${configSections.automations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}

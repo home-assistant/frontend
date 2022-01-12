@@ -9,6 +9,12 @@
         "shopping_list": "Spisak za kupovinu",
         "states": "Pregled"
     },
+    "state": {
+        "default": {
+            "unavailable": "Nedostupan",
+            "unknown": "Nepoznat"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -40,12 +46,6 @@
         },
         "person": {
             "home": "Kod kuće"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "Nedostupan",
-            "unknown": "Nepoznat"
         }
     },
     "ui": {

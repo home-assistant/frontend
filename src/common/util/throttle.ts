@@ -5,32 +5,20 @@
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `false for leading`. To disable execution on the trailing edge, ditto.
-export const throttle = <T extends (...args) => unknown>(
-  func: T,
+export const throttle = <T extends any[]>(
+  func: (...args: T) => void,
   wait: number,
   leading = true,
   trailing = true
-): T => {
+) => {
   let timeout: number | undefined;
   let previous = 0;
-  let context: any;
-  let args: any;
-  const later = () => {
-    previous = leading === false ? 0 : Date.now();
-    timeout = undefined;
-    func.apply(context, args);
-    if (!timeout) {
-      context = null;
-      args = null;
-    }
-  };
-  // @ts-ignore
-  return function (...argmnts) {
-    // @ts-ignore
-    // @typescript-eslint/no-this-alias
-    context = this;
-    args = argmnts;
-
+  return (...args: T): void => {
+    const later = () => {
+      previous = leading === false ? 0 : Date.now();
+      timeout = undefined;
+      func(...args);
+    };
     const now = Date.now();
     if (!previous && leading === false) {
       previous = now;
@@ -42,7 +30,7 @@ export const throttle = <T extends (...args) => unknown>(
         timeout = undefined;
       }
       previous = now;
-      func.apply(context, args);
+      func(...args);
     } else if (!timeout && trailing !== false) {
       timeout = window.setTimeout(later, remaining);
     }

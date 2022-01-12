@@ -1,13 +1,11 @@
 import {
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -33,13 +31,13 @@ import "./zha-group-binding";
 class DialogZHACluster extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _device?: ZHADevice;
+  @state() private _device?: ZHADevice;
 
-  @internalProperty() private _selectedCluster?: Cluster;
+  @state() private _selectedCluster?: Cluster;
 
-  @internalProperty() private _bindableDevices: ZHADevice[] = [];
+  @state() private _bindableDevices: ZHADevice[] = [];
 
-  @internalProperty() private _groups: ZHAGroup[] = [];
+  @state() private _groups: ZHAGroup[] = [];
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams
@@ -63,7 +61,7 @@ class DialogZHACluster extends LitElement {
       <ha-dialog
         open
         hideActions
-        @closing="${this._close}"
+        @closed=${this._close}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.zha.clusters.header")
@@ -71,20 +69,20 @@ class DialogZHACluster extends LitElement {
       >
         <zha-clusters
           .hass=${this.hass}
-          .selectedDevice="${this._device}"
-          @zha-cluster-selected="${this._onClusterSelected}"
+          .selectedDevice=${this._device}
+          @zha-cluster-selected=${this._onClusterSelected}
         ></zha-clusters>
         ${this._selectedCluster
           ? html`
               <zha-cluster-attributes
                 .hass=${this.hass}
-                .selectedNode="${this._device}"
-                .selectedCluster="${this._selectedCluster}"
+                .selectedNode=${this._device}
+                .selectedCluster=${this._selectedCluster}
               ></zha-cluster-attributes>
               <zha-cluster-commands
                 .hass=${this.hass}
-                .selectedNode="${this._device}"
-                .selectedCluster="${this._selectedCluster}"
+                .selectedNode=${this._device}
+                .selectedCluster=${this._selectedCluster}
               ></zha-cluster-commands>
             `
           : ""}
@@ -92,8 +90,8 @@ class DialogZHACluster extends LitElement {
           ? html`
               <zha-device-binding-control
                 .hass=${this.hass}
-                .selectedDevice="${this._device}"
-                .bindableDevices="${this._bindableDevices}"
+                .selectedDevice=${this._device}
+                .bindableDevices=${this._bindableDevices}
               ></zha-device-binding-control>
             `
           : ""}
@@ -101,8 +99,8 @@ class DialogZHACluster extends LitElement {
           ? html`
               <zha-group-binding-control
                 .hass=${this.hass}
-                .selectedDevice="${this._device}"
-                .groups="${this._groups}"
+                .selectedDevice=${this._device}
+                .groups=${this._groups}
               ></zha-group-binding-control>
             `
           : ""}
@@ -132,7 +130,7 @@ class DialogZHACluster extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

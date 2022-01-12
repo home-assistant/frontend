@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
@@ -41,6 +42,10 @@ class HaConfigScript extends HassRouterPage {
       edit: {
         tag: "ha-script-editor",
       },
+      trace: {
+        tag: "ha-script-trace",
+        load: () => import("./ha-script-trace"),
+      },
     },
   };
 
@@ -80,7 +85,7 @@ class HaConfigScript extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
+      this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
       const scriptEntityId = this.routeTail.path.substr(1);

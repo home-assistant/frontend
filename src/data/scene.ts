@@ -6,26 +6,30 @@ import { navigate } from "../common/navigate";
 import { HomeAssistant, ServiceCallResponse } from "../types";
 
 export const SCENE_IGNORED_DOMAINS = [
-  "sensor",
   "binary_sensor",
-  "device_tracker",
-  "person",
-  "persistent_notification",
+  "button",
   "configuration",
+  "device_tracker",
   "image_processing",
+  "input_button",
+  "persistent_notification",
+  "person",
+  "sensor",
   "sun",
   "weather",
   "zone",
 ];
 
-let inititialSceneEditorData: Partial<SceneConfig> | undefined;
+let inititialSceneEditorData:
+  | { config?: Partial<SceneConfig>; areaId?: string }
+  | undefined;
 
 export const showSceneEditor = (
-  el: HTMLElement,
-  data?: Partial<SceneConfig>
+  config?: Partial<SceneConfig>,
+  areaId?: string
 ) => {
-  inititialSceneEditorData = data;
-  navigate(el, "/config/scene/edit/new");
+  inititialSceneEditorData = { config, areaId };
+  navigate("/config/scene/edit/new");
 };
 
 export const getSceneEditorInitData = () => {
@@ -39,6 +43,7 @@ export interface SceneEntity extends HassEntityBase {
 }
 
 export interface SceneConfig {
+  id?: string;
   name: string;
   icon?: string;
   entities: SceneEntities;

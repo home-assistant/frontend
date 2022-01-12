@@ -1,22 +1,17 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -41,7 +36,7 @@ import type { LovelaceRow } from "./types";
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardEntityConfig;
+  @state() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
@@ -70,10 +65,9 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+    const pointer = !(
+      this._config.tap_action && this._config.tap_action.action !== "none"
+    );
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
@@ -91,7 +85,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       >
         ${weatherStateIcon ||
         html`
-          <ha-icon class="weather-icon" .icon=${stateIcon(stateObj)}></ha-icon>
+          <ha-state-icon
+            class="weather-icon"
+            .state=${stateObj}
+          ></ha-state-icon>
         `}
       </div>
       <div
@@ -106,7 +103,16 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       >
         ${this._config.name || computeStateName(stateObj)}
       </div>
-      <div class="attributes">
+      <div
+        class="attributes ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
         <div>
           ${UNAVAILABLE_STATES.includes(stateObj.state)
             ? computeStateDisplay(
@@ -133,7 +139,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       weatherSVGStyles,
       css`
@@ -173,8 +179,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         }
 
         .weather-icon {
-          --iron-icon-width: 40px;
-          --iron-icon-height: 40px;
+          --mdc-icon-size: 40px;
         }
 
         :host([rtl]) .flex {

@@ -1,14 +1,6 @@
 import { Radio } from "@material/mwc-radio";
-import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-formfield";
@@ -20,6 +12,7 @@ import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
+import "../../../../../components/ha-time-input";
 
 const includeDomains = ["input_datetime"];
 
@@ -43,9 +36,9 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: TimeCondition;
 
-  @internalProperty() private _inputModeBefore?: boolean;
+  @state() private _inputModeBefore?: boolean;
 
-  @internalProperty() private _inputModeAfter?: boolean;
+  @state() private _inputModeAfter?: boolean;
 
   public static get defaultConfig() {
     return {};
@@ -96,14 +89,15 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .hass=${this.hass}
             allow-custom-entity
           ></ha-entity-picker>`
-        : html`<paper-input
+        : html`<ha-time-input
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.type.time.after"
             )}
-            name="after"
+            .locale=${this.hass.locale}
+            .name=${"after"}
             .value=${after?.startsWith("input_datetime.") ? "" : after}
             @value-changed=${this._valueChanged}
-          ></paper-input>`}
+          ></ha-time-input>`}
 
       <ha-formfield
         .label=${this.hass!.localize(
@@ -139,15 +133,17 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .value=${before?.startsWith("input_datetime.") ? before : ""}
             @value-changed=${this._valueChanged}
             .hass=${this.hass}
+            allow-custom-entity
           ></ha-entity-picker>`
-        : html`<paper-input
+        : html`<ha-time-input
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.type.time.before"
             )}
-            name="before"
+            .name=${"before"}
+            .locale=${this.hass.locale}
             .value=${before?.startsWith("input_datetime.") ? "" : before}
             @value-changed=${this._valueChanged}
-          ></paper-input>`}
+          ></ha-time-input>`}
       ${Object.keys(DAYS).map(
         (day) => html`
           <ha-formfield
@@ -210,7 +206,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .weekday-toggle {
         display: flex;

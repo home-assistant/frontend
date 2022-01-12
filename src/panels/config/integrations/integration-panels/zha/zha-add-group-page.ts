@@ -1,17 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
@@ -38,9 +29,9 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _processingAdd = false;
+  @state() private _processingAdd = false;
 
-  @internalProperty() private _groupName = "";
+  @state() private _groupName = "";
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
@@ -79,11 +70,11 @@ export class ZHAAddGroupPage extends LitElement {
           </p>
           <paper-input
             type="string"
-            .value="${this._groupName}"
+            .value=${this._groupName}
             @value-changed=${this._handleNameChange}
-            placeholder="${this.hass!.localize(
+            placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
-            )}"
+            )}
           ></paper-input>
 
           <div class="header">
@@ -99,12 +90,12 @@ export class ZHAAddGroupPage extends LitElement {
           >
           </zha-device-endpoint-data-table>
 
-          <div class="paper-dialog-buttons">
+          <div class="buttons">
             <mwc-button
-              .disabled="${!this._groupName ||
+              .disabled=${!this._groupName ||
               this._groupName === "" ||
-              this._processingAdd}"
-              @click="${this._createGroup}"
+              this._processingAdd}
+              @click=${this._createGroup}
               class="button"
             >
               ${this._processingAdd
@@ -147,7 +138,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._processingAdd = false;
     this._groupName = "";
     this._zhaDevicesDataTable.clearSelection();
-    navigate(this, `/config/zha/group/${group.group_id}`, true);
+    navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
   private _handleNameChange(ev: PolymerChangedEvent<string>) {
@@ -155,7 +146,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._groupName = target.value || "";
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {
@@ -177,11 +168,11 @@ export class ZHAAddGroupPage extends LitElement {
         ha-config-section *:last-child {
           padding-bottom: 24px;
         }
-        .paper-dialog-buttons {
+        .buttons {
           align-items: flex-end;
           padding: 8px;
         }
-        .paper-dialog-buttons .warning {
+        .buttons .warning {
           --mdc-theme-primary: var(--error-color);
         }
       `,

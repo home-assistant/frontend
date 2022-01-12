@@ -154,6 +154,15 @@ gulp.task("gen-index-cast-dev", (done) => {
     contentReceiver
   );
 
+  const contentMedia = renderCastTemplate("media", {
+    latestMediaJS: "/frontend_latest/media.js",
+    es5MediaJS: "/frontend_es5/media.js",
+  });
+  fs.outputFileSync(
+    path.resolve(paths.cast_output_root, "media.html"),
+    contentMedia
+  );
+
   const contentFAQ = renderCastTemplate("launcher-faq", {
     latestLauncherJS: "/frontend_latest/launcher.js",
     es5LauncherJS: "/frontend_es5/launcher.js",
@@ -190,6 +199,15 @@ gulp.task("gen-index-cast-prod", (done) => {
   fs.outputFileSync(
     path.resolve(paths.cast_output_root, "receiver.html"),
     contentReceiver
+  );
+
+  const contentMedia = renderCastTemplate("media", {
+    latestMediaJS: latestManifest["media.js"],
+    es5MediaJS: es5Manifest["media.js"],
+  });
+  fs.outputFileSync(
+    path.resolve(paths.cast_output_root, "media.html"),
+    contentMedia
   );
 
   const contentFAQ = renderCastTemplate("launcher-faq", {
@@ -302,15 +320,23 @@ gulp.task("gen-index-hassio-prod", async () => {
 
 function writeHassioEntrypoint(latestEntrypoint, es5Entrypoint) {
   fs.mkdirSync(paths.hassio_output_root, { recursive: true });
+  // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
   fs.writeFileSync(
     path.resolve(paths.hassio_output_root, "entrypoint.js"),
     `
-try {
-  new Function("import('${latestEntrypoint}')")();
-} catch (err) {
+function loadES5() {
   var el = document.createElement('script');
   el.src = '${es5Entrypoint}';
   document.body.appendChild(el);
+}
+if (/.*Version\\/(?:11|12)(?:\\.\\d+)*.*Safari\\//.test(navigator.userAgent)) {
+    loadES5();
+} else {
+  try {
+    new Function("import('${latestEntrypoint}')")();
+  } catch (err) {
+    loadES5();
+  }
 }
   `,
     { encoding: "utf-8" }

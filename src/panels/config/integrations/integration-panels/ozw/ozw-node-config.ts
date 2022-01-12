@@ -1,18 +1,9 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import {
   fetchOZWNodeConfig,
   fetchOZWNodeMetadata,
@@ -45,19 +36,21 @@ class OZWNodeConfig extends LitElement {
 
   @property() public nodeId?;
 
-  @internalProperty() private _node?: OZWDevice;
+  @state() private _node?: OZWDevice;
 
-  @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
+  @state() private _metadata?: OZWDeviceMetaDataResponse;
 
-  @internalProperty() private _config?: OZWDeviceConfig[];
+  @state() private _config?: OZWDeviceConfig[];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (!this.nodeId) {
-      navigate(this, `/config/ozw/network/${this.ozwInstance}/nodes`, true);
+      navigate(`/config/ozw/network/${this.ozwInstance}/nodes`, {
+        replace: true,
+      });
     } else {
       this._fetchData();
     }
@@ -119,7 +112,7 @@ class OZWNodeConfig extends LitElement {
                     ${this._node.node_query_stage}
                     ${this._metadata?.metadata.ProductManualURL
                       ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
+                          href=${this._metadata.metadata.ProductManualURL}
                         >
                           <p>
                             ${this.hass.localize(
@@ -142,9 +135,9 @@ class OZWNodeConfig extends LitElement {
                   ? html`
                       <ha-card
                         class="content"
-                        header="${this.hass.localize(
+                        header=${this.hass.localize(
                           "ui.panel.config.ozw.common.wakeup_instructions"
-                        )}"
+                        )}
                       >
                         <div class="card-content">
                           <span class="secondary">
@@ -205,7 +198,7 @@ class OZWNodeConfig extends LitElement {
         metadataProm,
         configProm,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === ERR_NOT_FOUND) {
         this._error = ERR_NOT_FOUND;
         return;
@@ -221,7 +214,7 @@ class OZWNodeConfig extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

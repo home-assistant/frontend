@@ -1,19 +1,13 @@
 import { mdiClose } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { guard } from "lit-html/directives/guard";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fetchUsers, User } from "../../data/user";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import type { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "./ha-user-picker";
 
 @customElement("ha-users-picker")
@@ -53,7 +47,7 @@ class HaUsersPickerLight extends LitElement {
             <div>
               <ha-user-picker
                 .label=${this.pickedUserLabel}
-                .noUserLabel=${this.hass?.localize(
+                .noUserLabel=${this.hass!.localize(
                   "ui.components.user-picker.remove_user"
                 )}
                 .index=${idx}
@@ -66,16 +60,23 @@ class HaUsersPickerLight extends LitElement {
                 )}
                 @value-changed=${this._userChanged}
               ></ha-user-picker>
-              <mwc-icon-button .userId=${user_id} @click=${this._removeUser}>
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .userId=${user_id}
+                .label=${this.hass!.localize(
+                  "ui.components.user-picker.remove_user"
+                )}
+                .path=${mdiClose}
+                @click=${this._removeUser}
+              >
+                ></ha-icon-button
+              >
             </div>
           `
         )
       )}
       <ha-user-picker
         .noUserLabel=${this.pickUserLabel ||
-        this.hass?.localize("ui.components.user-picker.add_user")}
+        this.hass!.localize("ui.components.user-picker.add_user")}
         .hass=${this.hass}
         .users=${notSelectedUsers}
         .disabled=${!notSelectedUsers?.length}
@@ -149,7 +150,7 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(this._currentUsers.filter((user) => user !== userId));
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

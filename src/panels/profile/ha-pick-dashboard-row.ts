@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-settings-row";
 import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
@@ -21,7 +14,7 @@ class HaPickDashboardRow extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -50,7 +43,11 @@ class HaPickDashboardRow extends LitElement {
             @iron-select=${this._dashboardChanged}
             attr-for-selected="url-path"
           >
-            <paper-item url-path="lovelace">default</paper-item>
+            <paper-item url-path="lovelace"
+              >${this.hass.localize(
+                "ui.panel.profile.dashboard.default_dashboard_label"
+              )}</paper-item
+            >
             ${this._dashboards.map((dashboard) => {
               if (!this.hass.user!.is_admin && dashboard.require_admin) {
                 return "";

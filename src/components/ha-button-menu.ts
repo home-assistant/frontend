@@ -1,15 +1,8 @@
 import "@material/mwc-menu";
 import type { Corner, Menu } from "@material/mwc-menu";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
   @property() public corner: Corner = "TOP_START";
@@ -19,6 +12,8 @@ export class HaButtonMenu extends LitElement {
   @property({ type: Boolean }) public activatable = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public fixed = false;
 
   @query("mwc-menu", true) private _menu?: Menu;
 
@@ -37,6 +32,7 @@ export class HaButtonMenu extends LitElement {
       </div>
       <mwc-menu
         .corner=${this.corner}
+        .fixed=${this.fixed}
         .multi=${this.multi}
         .activatable=${this.activatable}
       >
@@ -53,7 +49,7 @@ export class HaButtonMenu extends LitElement {
     this._menu!.show();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

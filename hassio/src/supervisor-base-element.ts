@@ -1,10 +1,6 @@
 import { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
@@ -29,7 +25,7 @@ import {
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
-import { HomeAssistant } from "../../src/types";
+import { HomeAssistant, Route } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
 
 declare global {
@@ -42,18 +38,17 @@ declare global {
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
+  @property({ attribute: false }) public route?: Route;
+
   @property({ attribute: false }) public supervisor: Partial<Supervisor> = {
     localize: () => "",
   };
 
-  @internalProperty() private _unsubs: Record<string, UnsubscribeFunc> = {};
+  @state() private _unsubs: Record<string, UnsubscribeFunc> = {};
 
-  @internalProperty() private _collections: Record<
-    string,
-    Collection<unknown>
-  > = {};
+  @state() private _collections: Record<string, Collection<unknown>> = {};
 
-  @internalProperty() private _language = "en";
+  @state() private _language = "en";
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -93,10 +88,8 @@ export class SupervisorBaseElement extends urlSyncMixin(
         const unsubs = Object.keys(this._unsubs);
         for (const collection of Object.keys(this._collections)) {
           if (!unsubs.includes(collection)) {
-            this._unsubs[collection] = this._collections[
-              collection
-            ].subscribe((data) =>
-              this._updateSupervisor({ [collection]: data })
+            this._unsubs[collection] = this._collections[collection].subscribe(
+              (data) => this._updateSupervisor({ [collection]: data })
             );
           }
         }
@@ -117,7 +110,9 @@ export class SupervisorBaseElement extends urlSyncMixin(
       this._language = this.hass.language;
     }
     this._initializeLocalize();
-    this._initSupervisor();
+    if (this.route?.prefix === "/hassio") {
+      this._initSupervisor();
+    }
   }
 
   private async _initializeLocalize() {

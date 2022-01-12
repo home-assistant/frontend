@@ -1,18 +1,16 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
-import "../../../components/state-history-charts";
+import "../../../components/chart/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
 import { HistoryResult } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
@@ -36,9 +34,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _stateHistory?: HistoryResult;
+  @state() private _stateHistory?: HistoryResult;
 
-  @internalProperty() private _config?: HistoryGraphCardConfig;
+  @state() private _config?: HistoryGraphCardConfig;
 
   private _configEntities?: EntityConfig[];
 
@@ -65,7 +63,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
-    this._config = config;
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
@@ -87,9 +84,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       cacheKey: _entities.join(),
       hoursToShow: config.hours_to_show || 24,
     };
+
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_stateHistory")) {
+      return true;
+    }
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
@@ -130,7 +132,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -141,8 +143,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
             .isLoadingData=${!this._stateHistory}
             .historyData=${this._stateHistory}
             .names=${this._names}
-            .upToNow=${true}
-            .noSingle=${true}
+            up-to-now
+            no-single
           ></state-history-charts>
         </div>
       </ha-card>
@@ -169,7 +171,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

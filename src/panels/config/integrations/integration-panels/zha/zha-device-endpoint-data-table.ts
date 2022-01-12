@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
@@ -76,7 +68,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name, device: any) => html`
-                <a href="${`/config/devices/device/${device.dev_id}`}">
+                <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${name}
                 </a>
               `,
@@ -95,7 +87,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name, device: any) => html`
-                <a href="${`/config/devices/device/${device.dev_id}`}">
+                <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${name}
                 </a>
               `,
@@ -145,6 +137,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         .columns=${this._columns(this.narrow)}
         .data=${this._deviceEndpoints(this.deviceEndpoints)}
         .selectable=${this.selectable}
@@ -156,7 +149,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .table-cell-text {

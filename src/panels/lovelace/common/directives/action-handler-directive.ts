@@ -1,6 +1,13 @@
+/* eslint-disable max-classes-per-file */
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
-import { directive, PropertyPart } from "lit-html";
+import { noChange } from "lit";
+import {
+  AttributePart,
+  directive,
+  Directive,
+  DirectiveParameters,
+} from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import {
@@ -11,11 +18,12 @@ import {
 const isTouch =
   "ontouchstart" in window ||
   navigator.maxTouchPoints > 0 ||
+  // @ts-ignore
   navigator.msMaxTouchPoints > 0;
 
 interface ActionHandler extends HTMLElement {
   holdTime: number;
-  bind(element: Element, options): void;
+  bind(element: Element, options?: ActionHandlerOptions): void;
 }
 interface ActionHandlerElement extends HTMLElement {
   actionHandler?: {
@@ -90,7 +98,10 @@ class ActionHandler extends HTMLElement implements ActionHandler {
     });
   }
 
-  public bind(element: ActionHandlerElement, options: ActionHandlerOptions) {
+  public bind(
+    element: ActionHandlerElement,
+    options: ActionHandlerOptions = {}
+  ) {
     if (
       element.actionHandler &&
       deepEqual(options, element.actionHandler.options)
@@ -240,7 +251,7 @@ const getActionHandler = (): ActionHandler => {
 
 export const actionHandlerBind = (
   element: ActionHandlerElement,
-  options: ActionHandlerOptions
+  options?: ActionHandlerOptions
 ) => {
   const actionhandler: ActionHandler = getActionHandler();
   if (!actionhandler) {
@@ -250,7 +261,12 @@ export const actionHandlerBind = (
 };
 
 export const actionHandler = directive(
-  (options: ActionHandlerOptions = {}) => (part: PropertyPart) => {
-    actionHandlerBind(part.committer.element as ActionHandlerElement, options);
+  class extends Directive {
+    update(part: AttributePart, [options]: DirectiveParameters<this>) {
+      actionHandlerBind(part.element as ActionHandlerElement, options);
+      return noChange;
+    }
+
+    render(_options?: ActionHandlerOptions) {}
   }
 );

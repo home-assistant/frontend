@@ -1,19 +1,17 @@
 import "@material/mwc-button/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
@@ -45,15 +43,15 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _bindTargetIndex = -1;
+  @state() private _bindTargetIndex = -1;
 
-  @internalProperty() private groups: ZHAGroup[] = [];
+  @state() private groups: ZHAGroup[] = [];
 
-  @internalProperty() private _selectedClusters: string[] = [];
+  @state() private _selectedClusters: string[] = [];
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   private _groupToBind?: ZHAGroup;
 
@@ -74,7 +72,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="sectionHeader" slot="header">
           <span
             >${this.hass!.localize(
@@ -83,8 +81,9 @@ export class ZHAGroupBindingControl extends LitElement {
           >
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>
@@ -104,8 +103,8 @@ export class ZHAGroupBindingControl extends LitElement {
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._bindTargetIndex}"
-                @iron-select="${this._bindTargetIndexChanged}"
+                .selected=${this._bindTargetIndex}
+                @iron-select=${this._bindTargetIndexChanged}
               >
                 ${this.groups.map(
                   (group) => html` <paper-item>${group.name}</paper-item> `
@@ -142,8 +141,8 @@ export class ZHAGroupBindingControl extends LitElement {
             : ""}
           <div class="card-actions">
             <mwc-button
-              @click="${this._onBindGroupClick}"
-              .disabled="${!this._canBind}"
+              @click=${this._onBindGroupClick}
+              .disabled=${!this._canBind}
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.bind_button_label"
               )}</mwc-button
@@ -158,8 +157,8 @@ export class ZHAGroupBindingControl extends LitElement {
                 `
               : ""}
             <mwc-button
-              @click="${this._onUnbindGroupClick}"
-              .disabled="${!this._canBind}"
+              @click=${this._onUnbindGroupClick}
+              .disabled=${!this._canBind}
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.unbind_button_label"
               )}</mwc-button
@@ -250,7 +249,7 @@ export class ZHAGroupBindingControl extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

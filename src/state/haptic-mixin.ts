@@ -1,4 +1,4 @@
-import { PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { HapticType } from "../data/haptics";
 import { Constructor, HomeAssistant } from "../types";

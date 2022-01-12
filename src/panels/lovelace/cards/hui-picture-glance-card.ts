@@ -1,24 +1,22 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -66,7 +64,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureGlanceCardConfig;
+  @state() private _config?: PictureGlanceCardConfig;
 
   private _entitiesDialog?: PictureGlanceEntityConfig[];
 
@@ -254,13 +252,18 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
-          .icon=${entityConf.icon || stateIcon(stateObj)}
           title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
             this.hass!.locale
           )}`}
-        ></ha-icon-button>
+        >
+          <ha-state-icon
+            .icon=${entityConf.icon}
+            .state=${stateObj}
+          ></ha-state-icon>
+        </ha-icon-button>
+
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html`<div class="state"></div>`
           : html`
@@ -287,7 +290,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         position: relative;
@@ -338,6 +341,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
       ha-icon-button.state-on {
         color: var(--ha-picture-icon-button-on-color, white);
+      }
+      hui-warning-element {
+        padding: 0 8px;
       }
       .state {
         display: block;

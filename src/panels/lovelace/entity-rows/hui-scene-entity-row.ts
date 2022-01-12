@@ -1,17 +1,15 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { activateScene } from "../../../data/scene";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -23,7 +21,7 @@ import { ActionRowConfig, LovelaceRow } from "./types";
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: ActionRowConfig;
+  @state() private _config?: ActionRowConfig;
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {
@@ -54,8 +52,8 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <mwc-button
-          @click="${this._callService}"
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          @click=${this._callService}
+          .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
           ${this._config.action_name ||
@@ -65,7 +63,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       mwc-button {
         margin-right: -0.57em;

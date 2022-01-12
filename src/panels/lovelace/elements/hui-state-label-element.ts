@@ -1,15 +1,13 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -26,7 +24,7 @@ import { LovelaceElement, StateLabelElementConfig } from "./types";
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: StateLabelElementConfig;
+  @state() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
@@ -74,7 +72,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     return html`
       <div
-        .title="${computeTooltip(this.hass, this._config)}"
+        .title=${computeTooltip(this.hass, this._config)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -95,7 +93,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

@@ -2,17 +2,10 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
@@ -61,11 +54,11 @@ class HassioSupervisorLog extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _selectedLogProvider = "supervisor";
+  @state() private _selectedLogProvider = "supervisor";
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -75,7 +68,9 @@ class HassioSupervisorLog extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-card>
-        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
@@ -135,7 +130,7 @@ class HassioSupervisorLog extends LitElement {
         this.hass,
         this._selectedLogProvider
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "system.log.get_logs",
         "provider",
@@ -146,7 +141,7 @@ class HassioSupervisorLog extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -161,10 +156,6 @@ class HassioSupervisorLog extends LitElement {
         paper-dropdown-menu {
           padding: 0 2%;
           width: 96%;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
       `,
     ];

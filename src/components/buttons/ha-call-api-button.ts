@@ -1,4 +1,5 @@
-import { css, CSSResult, html, LitElement, property, query } from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "./ha-progress-button";
@@ -49,7 +50,7 @@ class HaCallApiButton extends LitElement {
       this._progressButton.actionSuccess();
       eventData.success = true;
       eventData.response = resp;
-    } catch (err) {
+    } catch (err: any) {
       this.progress = false;
       this._progressButton.actionError();
       eventData.success = false;
@@ -59,7 +60,7 @@ class HaCallApiButton extends LitElement {
     fireEvent(this, "hass-api-called", eventData as any);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host([disabled]) {
         pointer-events: none;

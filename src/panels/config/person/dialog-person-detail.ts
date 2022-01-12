@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entities-picker";
@@ -50,25 +43,27 @@ const cropOptions: CropOptions = {
 class DialogPersonDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _userId?: string;
+  @state() private _userId?: string;
 
-  @internalProperty() private _user?: User;
+  @state() private _user?: User;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _deviceTrackers!: string[];
+  @state() private _localOnly?: boolean;
 
-  @internalProperty() private _picture!: string | null;
+  @state() private _deviceTrackers!: string[];
 
-  @internalProperty() private _error?: string;
+  @state() private _picture!: string | null;
 
-  @internalProperty() private _params?: PersonDetailDialogParams;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _params?: PersonDetailDialogParams;
 
-  @internalProperty() private _personExists = false;
+  @state() private _submitting = false;
+
+  @state() private _personExists = false;
 
   private _deviceTrackersAvailable = memoizeOne((hass) =>
     Object.keys(hass.states).some(
@@ -90,12 +85,14 @@ class DialogPersonDetail extends LitElement {
         ? this._params.users.find((user) => user.id === this._userId)
         : undefined;
       this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+      this._localOnly = this._user?.local_only;
     } else {
       this._personExists = false;
       this._name = "";
       this._userId = undefined;
       this._user = undefined;
       this._isAdmin = undefined;
+      this._localOnly = undefined;
       this._deviceTrackers = [];
       this._picture = null;
     }
@@ -127,12 +124,10 @@ class DialogPersonDetail extends LitElement {
               dialogInitialFocus
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="${this.hass!.localize(
-                "ui.panel.config.person.detail.name"
-              )}"
-              error-message="${this.hass!.localize(
+              label=${this.hass!.localize("ui.panel.config.person.detail.name")}
+              error-message=${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
-              )}"
+              )}
               required
               auto-validate
             ></paper-input>
@@ -161,19 +156,31 @@ class DialogPersonDetail extends LitElement {
 
             ${this._user
               ? html`<ha-formfield
-                  .label=${this.hass.localize(
-                    "ui.panel.config.person.detail.admin"
-                  )}
-                  .dir=${computeRTLDirection(this.hass)}
-                >
-                  <ha-switch
-                    .disabled=${this._user.system_generated ||
-                    this._user.is_owner}
-                    .checked=${this._isAdmin}
-                    @change=${this._adminChanged}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.person.detail.local_only"
+                    )}
+                    .dir=${computeRTLDirection(this.hass)}
                   >
-                  </ha-switch>
-                </ha-formfield>`
+                    <ha-switch
+                      .checked=${this._localOnly}
+                      @change=${this._localOnlyChanged}
+                    >
+                    </ha-switch>
+                  </ha-formfield>
+                  <ha-formfield
+                    .label=${this.hass.localize(
+                      "ui.panel.config.person.detail.admin"
+                    )}
+                    .dir=${computeRTLDirection(this.hass)}
+                  >
+                    <ha-switch
+                      .disabled=${this._user.system_generated ||
+                      this._user.is_owner}
+                      .checked=${this._isAdmin}
+                      @change=${this._adminChanged}
+                    >
+                    </ha-switch>
+                  </ha-formfield>`
               : ""}
             ${this._deviceTrackersAvailable(this.hass)
               ? html`
@@ -205,10 +212,10 @@ class DialogPersonDetail extends LitElement {
                   <ul>
                     <li>
                       <a
-                        href="${documentationUrl(
+                        href=${documentationUrl(
                           this.hass,
                           "/integrations/#presence-detection"
-                        )}"
+                        )}
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(
@@ -218,7 +225,7 @@ class DialogPersonDetail extends LitElement {
                     </li>
                     <li>
                       <a
-                        @click="${this._closeDialog}"
+                        @click=${this._closeDialog}
                         href="/config/integrations"
                       >
                         ${this.hass!.localize(
@@ -235,7 +242,7 @@ class DialogPersonDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${(this._user && this._user.is_owner) ||
                 this._submitting}
               >
@@ -255,7 +262,7 @@ class DialogPersonDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${this._params.entry
@@ -275,8 +282,12 @@ class DialogPersonDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
-  private async _adminChanged(ev): Promise<void> {
+  private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+  }
+
+  private _localOnlyChanged(ev): void {
+    this._localOnly = ev.target.checked;
   }
 
   private async _allowLoginChanged(ev): Promise<void> {
@@ -290,6 +301,7 @@ class DialogPersonDetail extends LitElement {
             this._user = user;
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+            this._localOnly = user.local_only;
             this._params?.refreshUsers();
           }
         },
@@ -382,13 +394,16 @@ class DialogPersonDetail extends LitElement {
     try {
       if (
         (this._userId && this._name !== this._params!.entry?.name) ||
-        this._isAdmin !== this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN)
+        this._isAdmin !==
+          this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN) ||
+        this._localOnly !== this._user?.local_only
       ) {
         await updateUser(this.hass!, this._userId!, {
           name: this._name.trim(),
           group_ids: [
             this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
           ],
+          local_only: this._localOnly,
         });
         this._params?.refreshUsers();
       }
@@ -405,7 +420,7 @@ class DialogPersonDetail extends LitElement {
         this._personExists = true;
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
       this._submitting = false;
@@ -438,7 +453,7 @@ class DialogPersonDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

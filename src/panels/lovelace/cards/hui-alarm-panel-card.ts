@@ -2,40 +2,29 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
-import "../../../components/ha-label-badge";
+import "../../../components/ha-chip";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { AlarmPanelCardConfig } from "./types";
-
-const ICONS = {
-  armed_away: "hass:shield-lock",
-  armed_custom_bypass: "hass:security",
-  armed_home: "hass:shield-home",
-  armed_night: "hass:shield-home",
-  disarmed: "hass:shield-check",
-  pending: "hass:shield-outline",
-  triggered: "hass:bell-ring",
-};
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 
@@ -70,7 +59,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
@@ -156,30 +145,36 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const stateLabel = this._stateDisplay(stateObj.state);
+
     return html`
-      <ha-card
-        .header="${this._config.name ||
-        stateObj.attributes.friendly_name ||
-        this._stateDisplay(stateObj.state)}"
-      >
-        <ha-label-badge
-          class="${classMap({ [stateObj.state]: true })}"
-          .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
-          .label="${this._stateIconLabel(stateObj.state)}"
-          @click=${this._handleMoreInfo}
-        ></ha-label-badge>
+      <ha-card>
+        <h1 class="card-header">
+          ${this._config.name ||
+          stateObj.attributes.friendly_name ||
+          stateLabel}
+          <ha-chip
+            hasIcon
+            class=${classMap({ [stateObj.state]: true })}
+            @click=${this._handleMoreInfo}
+          >
+            <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
+            </ha-svg-icon>
+            ${stateLabel}
+          </ha-chip>
+        </h1>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
             ? this._config.states!
             : ["disarm"]
           ).map(
-            (state) => html`
+            (stateAction) => html`
               <mwc-button
-                .action="${state}"
-                @click="${this._handleActionClick}"
+                .action=${stateAction}
+                @click=${this._handleActionClick}
                 outlined
               >
-                ${this._actionDisplay(state)}
+                ${this._actionDisplay(stateAction)}
               </mwc-button>
             `
           )}
@@ -205,8 +200,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
-                          .value="${value}"
-                          @click="${this._handlePadClick}"
+                          .value=${value}
+                          @click=${this._handlePadClick}
                           outlined
                           class=${classMap({
                             numberkey: value !== "clear",
@@ -226,23 +221,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _stateIconLabel(state: string): string {
-    const stateLabel = state.split("_").pop();
-    return stateLabel === "disarmed" ||
-      stateLabel === "triggered" ||
-      !stateLabel
-      ? ""
-      : this._stateDisplay(state);
+  private _actionDisplay(entityState: string): string {
+    return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
   }
 
-  private _actionDisplay(state: string): string {
-    return this.hass!.localize(`ui.card.alarm_control_panel.${state}`);
-  }
-
-  private _stateDisplay(state: string): string {
-    return this.hass!.localize(
-      `component.alarm_control_panel.state._.${state}`
-    );
+  private _stateDisplay(entityState: string): string {
+    return entityState === UNAVAILABLE
+      ? this.hass!.localize("state.default.unavailable")
+      : this.hass!.localize(
+          `component.alarm_control_panel.state._.${entityState}`
+        ) || entityState;
   }
 
   private _handlePadClick(e: MouseEvent): void {
@@ -269,7 +257,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding-bottom: 16px;
@@ -284,15 +272,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-state-color: var(--alarm-color-armed);
       }
 
-      ha-label-badge {
-        --ha-label-badge-color: var(--alarm-state-color);
-        --label-badge-text-color: var(--alarm-state-color);
-        --label-badge-background-color: var(--card-background-color);
-        color: var(--alarm-state-color);
-        position: absolute;
-        right: 12px;
-        top: 8px;
-        cursor: pointer;
+      ha-chip {
+        --ha-chip-background-color: var(--alarm-state-color);
+        --primary-text-color: var(--text-primary-color);
+        line-height: initial;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .unavailable {
+        --alarm-state-color: var(--state-unavailable-color);
       }
 
       .disarmed {

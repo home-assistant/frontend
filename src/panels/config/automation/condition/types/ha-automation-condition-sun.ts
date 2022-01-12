@@ -1,8 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { customElement, html, LitElement, property } from "lit-element";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SunCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
@@ -10,12 +8,15 @@ import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
+import "../../../../../components/ha-radio";
+import "../../../../../components/ha-formfield";
+import type { HaRadio } from "../../../../../components/ha-radio";
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: SunCondition;
+  @property({ attribute: false }) public condition!: SunCondition;
 
   public static get defaultConfig() {
     return {};
@@ -24,28 +25,35 @@ export class HaSunCondition extends LitElement implements ConditionElement {
   protected render() {
     const { after, after_offset, before, before_offset } = this.condition;
     return html`
-      <label id="beforelabel">
+      <label>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.sun.before"
         )}
-      </label>
-      <paper-radio-group
-        .selected=${before}
-        .name=${"before"}
-        aria-labelledby="beforelabel"
-        @paper-radio-group-changed=${this._radioGroupPicked}
-      >
-        <paper-radio-button name="sunrise">
-          ${this.hass.localize(
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
           )}
-        </paper-radio-button>
-        <paper-radio-button name="sunset">
-          ${this.hass.localize(
+        >
+          <ha-radio
+            name="before"
+            value="sunrise"
+            .checked=${before === "sunrise"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.sun.sunset"
           )}
-        </paper-radio-button>
-      </paper-radio-group>
+        >
+          <ha-radio
+            name="before"
+            value="sunset"
+            .checked=${before === "sunset"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+      </label>
 
       <paper-input
         .label=${this.hass.localize(
@@ -56,28 +64,36 @@ export class HaSunCondition extends LitElement implements ConditionElement {
         @value-changed=${this._valueChanged}
       ></paper-input>
 
-      <label id="afterlabel">
+      <label>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.sun.after"
         )}
-      </label>
-      <paper-radio-group
-        .selected=${after}
-        .name=${"after"}
-        aria-labelledby="afterlabel"
-        @paper-radio-group-changed=${this._radioGroupPicked}
-      >
-        <paper-radio-button name="sunrise">
-          ${this.hass.localize(
+
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
           )}
-        </paper-radio-button>
-        <paper-radio-button name="sunset">
-          ${this.hass.localize(
+        >
+          <ha-radio
+            name="after"
+            value="sunrise"
+            .checked=${after === "sunrise"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.type.sun.sunset"
           )}
-        </paper-radio-button>
-      </paper-radio-group>
+        >
+          <ha-radio
+            name="after"
+            value="sunset"
+            .checked=${after === "sunset"}
+            @change=${this._radioGroupPicked}
+          ></ha-radio>
+        </ha-formfield>
+      </label>
 
       <paper-input
         .label=${this.hass.localize(
@@ -94,14 +110,27 @@ export class HaSunCondition extends LitElement implements ConditionElement {
     handleChangeEvent(this, ev);
   }
 
-  private _radioGroupPicked(ev) {
-    const key = ev.target.name;
+  private _radioGroupPicked(ev: CustomEvent) {
+    const key = (ev.target as HaRadio).name;
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
         ...this.condition,
-        [key]: (ev.target as PaperRadioGroupElement).selected,
+        [key]: (ev.target as HaRadio).value,
       },
     });
+  }
+
+  static styles = css`
+    label {
+      display: flex;
+      align-items: center;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-condition-sun": HaSunCondition;
   }
 }

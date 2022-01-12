@@ -1,15 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
@@ -32,7 +25,7 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
 {% if is_state("sun.sun", "above_horizon") -%}
   The sun rose {{ relative_time(states.sun.sun.last_changed) }} ago.
 {%- else -%}
-  The sun will rise at {{ as_timestamp(strptime(state_attr("sun.sun", "next_rising"), "")) | timestamp_local }}.
+  The sun will rise at {{ as_timestamp(state_attr("sun.sun", "next_rising")) | timestamp_local }}.
 {%- endif %}
 
 For loop example getting entity values in the weather domain:
@@ -48,13 +41,13 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _rendering = false;
+  @state() private _rendering = false;
 
-  @internalProperty() private _templateResult?: RenderTemplateResult;
+  @state() private _templateResult?: RenderTemplateResult;
 
-  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   private _template = "";
 
@@ -105,7 +98,7 @@ class HaPanelDevTemplate extends LitElement {
           <ul>
             <li>
               <a
-                href="http://jinja.pocoo.org/docs/dev/templates/"
+                href="https://jinja.palletsprojects.com/en/latest/templates/"
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
@@ -115,10 +108,10 @@ class HaPanelDevTemplate extends LitElement {
             </li>
             <li>
               <a
-                href="${documentationUrl(
+                href=${documentationUrl(
                   this.hass,
                   "/docs/configuration/templating/"
-                )}"
+                )}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -240,7 +233,7 @@ class HaPanelDevTemplate extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -330,7 +323,7 @@ class HaPanelDevTemplate extends LitElement {
         }
       );
       await this._unsubRenderTemplate;
-    } catch (err) {
+    } catch (err: any) {
       this._error = "Unknown error";
       if (err.message) {
         this._error = err.message;
@@ -351,11 +344,11 @@ class HaPanelDevTemplate extends LitElement {
       const unsub = await this._unsubRenderTemplate;
       unsub();
       this._unsubRenderTemplate = undefined;
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         // If we get here, the connection was probably already closed. Ignore.
       } else {
-        throw e;
+        throw err;
       }
     }
   }

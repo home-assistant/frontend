@@ -1,16 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import { saveCoreConfig } from "../../../data/core";
 import type { PolymerChangedEvent } from "../../../polymer-types";
@@ -20,13 +12,13 @@ import type { HomeAssistant } from "../../../types";
 class ConfigUrlForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _external_url?: string;
+  @state() private _external_url?: string;
 
-  @internalProperty() private _internal_url?: string;
+  @state() private _internal_url?: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -128,14 +120,14 @@ class ConfigUrlForm extends LitElement {
         external_url: this._external_url || null,
         internal_url: this._internal_url || null,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     } finally {
       this._working = false;
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .row {
         display: flex;

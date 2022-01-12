@@ -7,6 +7,7 @@ import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
+import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"];
@@ -20,12 +21,18 @@ export interface ScriptEntity extends HassEntityBase {
   };
 }
 
-export interface ScriptConfig {
+export type ScriptConfig = ManualScriptConfig | BlueprintScriptConfig;
+
+export interface ManualScriptConfig {
   alias: string;
   sequence: Action | Action[];
   icon?: string;
   mode?: typeof MODES[number];
   max?: number;
+}
+
+export interface BlueprintScriptConfig extends ManualScriptConfig {
+  use_blueprint: { path: string; input?: BlueprintInput };
 }
 
 export interface EventAction {
@@ -182,12 +189,9 @@ export const deleteScript = (hass: HomeAssistant, objectId: string) =>
 
 let inititialScriptEditorData: Partial<ScriptConfig> | undefined;
 
-export const showScriptEditor = (
-  el: HTMLElement,
-  data?: Partial<ScriptConfig>
-) => {
+export const showScriptEditor = (data?: Partial<ScriptConfig>) => {
   inititialScriptEditorData = data;
-  navigate(el, "/config/script/edit/new");
+  navigate("/config/script/edit/new");
 };
 
 export const getScriptEditorInitData = () => {

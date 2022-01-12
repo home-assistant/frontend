@@ -1,14 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlert, mdiCheck } from "@mdi/js";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -18,7 +11,6 @@ import {
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import { fetchOZWNodes, OZWDevice } from "../../../../../data/ozw";
 import "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
@@ -46,7 +38,7 @@ class OZWNetworkNodes extends LitElement {
 
   @property() public ozwInstance = 0;
 
-  @internalProperty() private _nodes: OZWDevice[] = [];
+  @state() private _nodes: OZWDevice[] = [];
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
@@ -95,7 +87,7 @@ class OZWNetworkNodes extends LitElement {
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (this.hass) {
       this._fetchData();
     }
@@ -124,10 +116,10 @@ class OZWNetworkNodes extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const nodeId = ev.detail.id;
-    navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
+    navigate(`/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

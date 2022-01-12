@@ -1,12 +1,14 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import { subscribeAreaRegistry } from "../../../data/area_registry";
 import { subscribeDeviceRegistry } from "../../../data/device_registry";
+import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 import {
-  LovelaceViewStrategy,
   LovelaceDashboardStrategy,
+  LovelaceViewStrategy,
 } from "./get-strategy";
 
 let subscribedRegistries = false;
@@ -37,17 +39,29 @@ export class OriginalStatesStrategy {
       subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
-    const [
-      areaEntries,
-      deviceEntries,
-      entityEntries,
-      localize,
-    ] = await Promise.all([
-      subscribeOne(hass.connection, subscribeAreaRegistry),
-      subscribeOne(hass.connection, subscribeDeviceRegistry),
-      subscribeOne(hass.connection, subscribeEntityRegistry),
-      hass.loadBackendTranslation("title"),
-    ]);
+    let energyPromise: Promise<EnergyPreferences> | undefined;
+
+    if (isComponentLoaded(hass, "energy")) {
+      energyPromise = getEnergyPreferences(hass);
+    }
+
+    const [areaEntries, deviceEntries, entityEntries, localize] =
+      await Promise.all([
+        subscribeOne(hass.connection, subscribeAreaRegistry),
+        subscribeOne(hass.connection, subscribeDeviceRegistry),
+        subscribeOne(hass.connection, subscribeEntityRegistry),
+        hass.loadBackendTranslation("title"),
+      ]);
+
+    let energyPrefs: EnergyPreferences | undefined;
+
+    if (energyPromise) {
+      try {
+        energyPrefs = await energyPromise;
+      } catch (_) {
+        // Nothing to do here
+      }
+    }
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
@@ -56,7 +70,8 @@ export class OriginalStatesStrategy {
       deviceEntries,
       entityEntries,
       hass.states,
-      localize
+      localize,
+      energyPrefs
     );
 
     // Add map of geo locations to default view if loaded
@@ -83,10 +98,10 @@ export class OriginalStatesStrategy {
     info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
   ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
     return {
+      title: info.hass.config.location_name,
       views: [
         {
           strategy: { type: "original-states" },
-          title: info.hass.config.location_name,
         },
       ],
     };

@@ -1,18 +1,11 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { Blueprint, Blueprints, fetchBlueprints } from "../data/blueprint";
 import { HomeAssistant } from "../types";
 
@@ -30,6 +23,10 @@ class HaBluePrintPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  public open() {
+    this.shadowRoot!.querySelector("paper-dropdown-menu-light")!.open();
+  }
+
   private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
     if (!blueprints) {
       return [];
@@ -40,7 +37,7 @@ class HaBluePrintPicker extends LitElement {
         ...(blueprint as Blueprint).metadata,
         path,
       }));
-    return result.sort((a, b) => compare(a.name, b.name));
+    return result.sort((a, b) => stringCompare(a.name, b.name));
   });
 
   protected render(): TemplateResult {
@@ -98,7 +95,7 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;
@@ -108,11 +105,9 @@ class HaBluePrintPicker extends LitElement {
         min-width: 200px;
         display: block;
       }
-      paper-listbox {
-        min-width: 200px;
-      }
       paper-item {
         cursor: pointer;
+        min-width: 200px;
       }
     `;
   }

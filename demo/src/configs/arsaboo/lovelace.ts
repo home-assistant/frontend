@@ -30,6 +30,11 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
           ],
         },
         {
+          title: "Energy distribution today",
+          type: "energy-distribution",
+          link_dashboard: true,
+        },
+        {
           type: "thermostat",
           entity: "climate.upstairs",
         },
@@ -113,8 +118,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
                 on: "/assets/arsaboo/icons/light_bulb_on.png",
               },
               state_filter: {
-                on:
-                  "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+                on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
@@ -196,8 +200,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
                 on: "/assets/arsaboo/icons/light_bulb_on.png",
               },
               state_filter: {
-                on:
-                  "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+                on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
@@ -277,8 +280,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
                 on: "/assets/arsaboo/icons/light_bulb_on.png",
               },
               state_filter: {
-                on:
-                  "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+                on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
@@ -315,8 +317,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
                 on: "/assets/arsaboo/icons/light_bulb_on.png",
               },
               state_filter: {
-                on:
-                  "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+                on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {

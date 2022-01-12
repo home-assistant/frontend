@@ -1,25 +1,17 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-button";
 import { domainToName } from "../../../data/integration";
 import {
   subscribeSystemHealthInfo,
@@ -48,7 +40,7 @@ const sortKeys = (a: string, b: string) => {
 class SystemHealthCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _info?: SystemHealthInfo;
+  @state() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -157,9 +149,11 @@ class SystemHealthCard extends LitElement {
             slot="toolbar-icon"
             @action=${this._copyInfo}
           >
-            <mwc-icon-button slot="trigger" alt="menu">
-              <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+              .path=${mdiContentCopy}
+            ></ha-icon-button>
             <mwc-list-item>
               ${this.hass.localize("ui.panel.config.info.copy_raw")}
             </mwc-list-item>
@@ -260,7 +254,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;

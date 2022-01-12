@@ -1,16 +1,9 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { HomeAssistant } from "../types";
-import "../components/ha-menu-button";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
+import { HomeAssistant } from "../types";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
@@ -20,7 +13,7 @@ class HassErrorScreen extends LitElement {
 
   @property({ type: Boolean }) public rootnav = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public error?: string;
 
@@ -58,7 +51,7 @@ class HassErrorScreen extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       css`
         :host {

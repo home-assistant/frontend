@@ -1,30 +1,22 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
-import "../../../components/ha-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
+import "../../../components/ha-state-icon";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ButtonRowConfig;
+  @state() private _config?: ButtonRowConfig;
 
   public setConfig(config: ButtonRowConfig): void {
     if (!config) {
@@ -57,16 +49,14 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         ? this.hass.states[this._config.entity]
         : undefined;
 
+    const name =
+      this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
+
     return html`
-      <ha-icon
-        .icon=${this._config.icon ||
-        (stateObj ? stateIcon(stateObj) : "hass:remote")}
-      >
-      </ha-icon>
+      <ha-state-icon .icon=${this._config.icon} .state=${stateObj}>
+      </ha-state-icon>
       <div class="flex">
-        <div>
-          ${this._config.name || (stateObj ? computeStateName(stateObj) : "")}
-        </div>
+        <div .title=${name}>${name}</div>
         <mwc-button
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
@@ -81,13 +71,13 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;
         align-items: center;
       }
-      ha-icon {
+      ha-state-icon {
         padding: 8px;
         color: var(--paper-item-icon-color);
       }

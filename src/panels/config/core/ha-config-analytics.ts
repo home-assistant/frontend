@@ -1,15 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
 import { analyticsLearnMore } from "../../../components/ha-analytics-learn-more";
@@ -28,9 +26,9 @@ import type { HomeAssistant } from "../../../types";
 class ConfigAnalytics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _analyticsDetails?: Analytics;
+  @state() private _analyticsDetails?: Analytics;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   protected render(): TemplateResult {
     const error = this._error
@@ -77,7 +75,7 @@ class ConfigAnalytics extends LitElement {
     this._error = undefined;
     try {
       this._analyticsDetails = await getAnalyticsDetails(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }
@@ -89,7 +87,7 @@ class ConfigAnalytics extends LitElement {
         this.hass,
         this._analyticsDetails?.preferences || {}
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || err;
     }
   }
@@ -101,7 +99,7 @@ class ConfigAnalytics extends LitElement {
     };
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -2,50 +2,57 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { assert, number, object, optional, string } from "superstruct";
+  assert,
+  assign,
+  literal,
+  number,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  icon: optional(string()),
-  graph: optional(string()),
-  unit: optional(string()),
-  detail: optional(number()),
-  theme: optional(string()),
-  hours_to_show: optional(number()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    icon: optional(string()),
+    graph: optional(union([literal("line"), literal("none")])),
+    unit: optional(string()),
+    detail: optional(number()),
+    theme: optional(string()),
+    hours_to_show: optional(number()),
+  })
+);
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorCardConfig;
+  @state() private _config?: SensorCardConfig;
 
   public setConfig(config: SensorCardConfig): void {
     assert(config, cardConfigStruct);
@@ -91,6 +98,8 @@ export class HuiSensorCardEditor
 
     const graphs = ["line", "none"];
 
+    const entityState = this.hass.states[this._entity];
+
     return html`
       <div class="card-config">
         <ha-entity-picker
@@ -117,18 +126,22 @@ export class HuiSensorCardEditor
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
           <paper-dropdown-menu
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"
@@ -184,6 +197,7 @@ export class HuiSensorCardEditor
             )})"
             type="number"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
@@ -238,7 +252,7 @@ export class HuiSensorCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

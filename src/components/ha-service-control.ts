@@ -1,31 +1,34 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { HassService, HassServiceTarget } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+  HassService,
+  HassServices,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import { ENTITY_COMPONENT_DOMAINS } from "../data/entity";
+import {
+  fetchIntegrationManifest,
+  IntegrationManifest,
+} from "../data/integration";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
-import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
+import "./ha-icon-button";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
+
+const showOptionalToggle = (field) =>
+  field.selector &&
+  !field.required &&
+  !("boolean" in field.selector && field.default);
 
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: {
@@ -51,13 +54,15 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @internalProperty() private _value!: this["value"];
+  @state() private _value!: this["value"];
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
 
-  @internalProperty() private _checkedKeys = new Set();
+  @state() private _checkedKeys = new Set();
+
+  @state() private _manifest?: IntegrationManifest;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -73,7 +78,23 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys = new Set();
     }
 
-    const serviceData = this._getServiceInfo(this.value?.service);
+    const serviceData = this._getServiceInfo(
+      this.value?.service,
+      this.hass.services
+    );
+
+    // Fetch the manifest if we have a service selected and the service domain changed.
+    // If no service is selected, clear the manifest.
+    if (this.value?.service) {
+      if (
+        !oldValue?.service ||
+        computeDomain(this.value.service) !== computeDomain(oldValue.service)
+      ) {
+        this._fetchManifest(computeDomain(this.value?.service));
+      }
+    } else {
+      this._manifest = undefined;
+    }
 
     if (
       serviceData &&
@@ -117,45 +138,45 @@ export class HaServiceControl extends LitElement {
     }
   }
 
-  private _domainFilter = memoizeOne((service: string) => {
-    const domain = computeDomain(service);
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
-  });
+  private _getServiceInfo = memoizeOne(
+    (
+      service?: string,
+      serviceDomains?: HassServices
+    ): ExtHassService | undefined => {
+      if (!service || !serviceDomains) {
+        return undefined;
+      }
+      const domain = computeDomain(service);
+      const serviceName = computeObjectId(service);
+      if (!(domain in serviceDomains)) {
+        return undefined;
+      }
+      if (!(serviceName in serviceDomains[domain])) {
+        return undefined;
+      }
 
-  private _getServiceInfo = memoizeOne((service?: string):
-    | ExtHassService
-    | undefined => {
-    if (!service) {
-      return undefined;
+      const fields = Object.entries(
+        serviceDomains[domain][serviceName].fields
+      ).map(([key, value]) => ({
+        key,
+        ...value,
+        selector: value.selector as Selector | undefined,
+      }));
+      return {
+        ...serviceDomains[domain][serviceName],
+        fields,
+        hasSelector: fields.length
+          ? fields.filter((field) => field.selector).map((field) => field.key)
+          : [],
+      };
     }
-    const domain = computeDomain(service);
-    const serviceName = computeObjectId(service);
-    const serviceDomains = this.hass.services;
-    if (!(domain in serviceDomains)) {
-      return undefined;
-    }
-    if (!(serviceName in serviceDomains[domain])) {
-      return undefined;
-    }
-
-    const fields = Object.entries(
-      serviceDomains[domain][serviceName].fields
-    ).map(([key, value]) => ({
-      key,
-      ...value,
-      selector: value.selector as Selector | undefined,
-    }));
-    return {
-      ...serviceDomains[domain][serviceName],
-      fields,
-      hasSelector: fields.length
-        ? fields.filter((field) => field.selector).map((field) => field.key)
-        : [],
-    };
-  });
+  );
 
   protected render() {
-    const serviceData = this._getServiceInfo(this._value?.service);
+    const serviceData = this._getServiceInfo(
+      this._value?.service,
+      this.hass.services
+    );
 
     const shouldRenderServiceDataYaml =
       (serviceData?.fields.length && !serviceData.hasSelector.length) ||
@@ -170,7 +191,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.fields.some((field) => field.selector && !field.required)
+        serviceData?.fields.some((field) => showOptionalToggle(field))
     );
 
     return html`<ha-service-picker
@@ -180,24 +201,19 @@ export class HaServiceControl extends LitElement {
       ></ha-service-picker>
       <div class="description">
         <p>${serviceData?.description}</p>
-        ${this.value?.service
+        ${this._manifest
           ? html` <a
-              href="${documentationUrl(
-                this.hass,
-                "/integrations/" + computeDomain(this.value?.service)
-              )}"
-              title="${this.hass.localize(
+              href=${this._manifest.documentation}
+              title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
             >
-              <mwc-icon-button>
-                <ha-svg-icon
-                  path=${mdiHelpCircle}
-                  class="help-icon"
-                ></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                class="help-icon"
+              ></ha-icon-button>
             </a>`
           : ""}
       </div>
@@ -219,11 +235,7 @@ export class HaServiceControl extends LitElement {
               .hass=${this.hass}
               .selector=${serviceData.target
                 ? { target: serviceData.target }
-                : {
-                    target: {
-                      entity: { domain: computeDomain(this._value!.service) },
-                    },
-                  }}
+                : { target: {} }}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
@@ -233,7 +245,6 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
-            .includeDomains=${this._domainFilter(this._value!.service)}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
@@ -247,14 +258,15 @@ export class HaServiceControl extends LitElement {
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
-        : serviceData?.fields.map((dataField) =>
-            dataField.selector &&
-            (!dataField.advanced ||
-              this.showAdvanced ||
-              (this._value?.data &&
-                this._value.data[dataField.key] !== undefined))
+        : serviceData?.fields.map((dataField) => {
+            const showOptional = showOptionalToggle(dataField);
+            return dataField.selector &&
+              (!dataField.advanced ||
+                this.showAdvanced ||
+                (this._value?.data &&
+                  this._value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
-                  ${dataField.required
+                  ${!showOptional
                     ? hasOptional
                       ? html`<div slot="prefix" class="checkbox-spacer"></div>`
                       : ""
@@ -267,9 +279,9 @@ export class HaServiceControl extends LitElement {
                         slot="prefix"
                       ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
-                  <span slot="description">${dataField?.description}</span
-                  ><ha-selector
-                    .disabled=${!dataField.required &&
+                  <span slot="description">${dataField?.description}</span>
+                  <ha-selector
+                    .disabled=${showOptional &&
                     !this._checkedKeys.has(dataField.key) &&
                     (!this._value?.data ||
                       this._value.data[dataField.key] === undefined)}
@@ -281,23 +293,35 @@ export class HaServiceControl extends LitElement {
                     this._value.data[dataField.key] !== undefined
                       ? this._value.data[dataField.key]
                       : dataField.default}
-                  ></ha-selector
-                ></ha-settings-row>`
-              : ""
-          )} `;
+                  ></ha-selector>
+                </ha-settings-row>`
+              : "";
+          })}`;
   }
 
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
+    let data;
+
     if (checked) {
       this._checkedKeys.add(key);
+      const defaultValue = this._getServiceInfo(
+        this._value?.service,
+        this.hass.services
+      )?.fields.find((field) => field.key === key)?.default;
+      if (defaultValue) {
+        data = {
+          ...this._value?.data,
+          [key]: defaultValue,
+        };
+      }
     } else {
       this._checkedKeys.delete(key);
-      const data = { ...this._value?.data };
-
+      data = { ...this._value?.data };
       delete data[key];
-
+    }
+    if (data) {
       fireEvent(this, "value-changed", {
         value: {
           ...this._value,
@@ -395,7 +419,16 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  private async _fetchManifest(integration: string) {
+    this._manifest = undefined;
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (err: any) {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
+  }
+
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: var(--service-control-padding, 0 16px);

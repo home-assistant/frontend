@@ -1,28 +1,22 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonsInfo,
+  HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -37,15 +31,15 @@ class HassioRepositoriesDialog extends LitElement {
 
   @query("#repository_input", true) private _optionInput?: PaperInputElement;
 
-  @internalProperty() private _repositories?: HassioAddonRepository[];
+  @state() private _repositories?: HassioAddonRepository[];
 
-  @internalProperty() private _dialogParams?: HassioRepositoryDialogParams;
+  @state() private _dialogParams?: HassioRepositoryDialogParams;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _prosessing = false;
+  @state() private _processing = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   public async showDialog(
     dialogParams: HassioRepositoryDialogParams
@@ -65,7 +59,16 @@ class HassioRepositoriesDialog extends LitElement {
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
       .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
-      .sort((a, b) => (a.name < b.name ? -1 : 1))
+      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
+  );
+
+  private _filteredUsedRepositories = memoizeOne(
+    (repos: HassioAddonRepository[], addons: HassioAddonInfo[]) =>
+      repos
+        .filter((repo) =>
+          addons.some((addon) => addon.repository === repo.slug)
+        )
+        .map((repo) => repo.slug)
   );
 
   protected render(): TemplateResult {
@@ -73,10 +76,14 @@ class HassioRepositoriesDialog extends LitElement {
       return html``;
     }
     const repositories = this._filteredRepositories(this._repositories);
+    const usedRepositories = this._filteredUsedRepositories(
+      repositories,
+      this._dialogParams.supervisor.supervisor.addons
+    );
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -84,7 +91,9 @@ class HassioRepositoriesDialog extends LitElement {
           this._dialogParams!.supervisor.localize("dialog.repositories.title")
         )}
       >
-        ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         <div class="form">
           ${repositories.length
             ? repositories.map(
@@ -95,19 +104,32 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <mwc-icon-button
-                      .slug=${repo.slug}
-                      .title=${this._dialogParams!.supervisor.localize(
-                        "dialog.repositories.remove"
-                      )}
-                      @click=${this._removeRepository}
-                    >
-                      <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                    </mwc-icon-button>
+                    <div class="delete">
+                      <ha-icon-button
+                        .disabled=${usedRepositories.includes(repo.slug)}
+                        .slug=${repo.slug}
+                        .path=${usedRepositories.includes(repo.slug)
+                          ? mdiDeleteOff
+                          : mdiDelete}
+                        @click=${this._removeRepository}
+                      >
+                      </ha-icon-button>
+                      <paper-tooltip
+                        animation-delay="0"
+                        position="bottom"
+                        offset="1"
+                      >
+                        ${this._dialogParams!.supervisor.localize(
+                          usedRepositories.includes(repo.slug)
+                            ? "dialog.repositories.used"
+                            : "dialog.repositories.remove"
+                        )}
+                      </paper-tooltip>
+                    </div>
                   </paper-item>
                 `
               )
-            : html` <paper-item> No repositories </paper-item> `}
+            : html`<paper-item> No repositories </paper-item>`}
           <div class="layout horizontal bottom">
             <paper-input
               class="flex-auto"
@@ -119,8 +141,11 @@ class HassioRepositoriesDialog extends LitElement {
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
-              ${this._prosessing
-                ? html`<ha-circular-progress active></ha-circular-progress>`
+              ${this._processing
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                  ></ha-circular-progress>`
                 : this._dialogParams!.supervisor.localize(
                     "dialog.repositories.add"
                   )}
@@ -134,7 +159,7 @@ class HassioRepositoriesDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,
@@ -156,13 +181,13 @@ class HassioRepositoriesDialog extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
         ha-circular-progress {
           display: block;
           margin: 32px;
           text-align: center;
+        }
+        div.delete ha-icon-button {
+          color: var(--error-color);
         }
       `,
     ];
@@ -170,9 +195,9 @@ class HassioRepositoriesDialog extends LitElement {
 
   public focus() {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -191,7 +216,7 @@ class HassioRepositoriesDialog extends LitElement {
       this._repositories = addonsinfo.repositories;
 
       fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
   }
@@ -201,7 +226,7 @@ class HassioRepositoriesDialog extends LitElement {
     if (!input || !input.value) {
       return;
     }
-    this._prosessing = true;
+    this._processing = true;
     const repositories = this._filteredRepositories(this._repositories!);
     const newRepositories = repositories.map((repo) => repo.source);
     newRepositories.push(input.value);
@@ -213,10 +238,10 @@ class HassioRepositoriesDialog extends LitElement {
       await this._loadData();
 
       input.value = "";
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
-    this._prosessing = false;
+    this._processing = false;
   }
 
   private async _removeRepository(ev: Event) {
@@ -235,7 +260,7 @@ class HassioRepositoriesDialog extends LitElement {
         addons_repositories: newRepositories,
       });
       await this._loadData();
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
   }

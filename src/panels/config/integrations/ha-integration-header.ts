@@ -1,14 +1,9 @@
-import "../../../components/ha-svg-icon";
-import { mdiPackageVariant, mdiCloud } from "@mdi/js";
+import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  html,
-  customElement,
-  property,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../../../components/ha-svg-icon";
+import { ConfigEntry } from "../../../data/config_entries";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -27,6 +22,8 @@ export class HaIntegrationHeader extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
+  @property({ attribute: false }) public configEntry?: ConfigEntry;
+
   protected render(): TemplateResult {
     let primary: string;
     let secondary: string | undefined;
@@ -37,7 +34,10 @@ export class HaIntegrationHeader extends LitElement {
 
     if (this.label) {
       primary = this.label;
-      secondary = primary === domainName ? undefined : domainName;
+      secondary =
+        primary.toLowerCase() === domainName.toLowerCase()
+          ? undefined
+          : domainName;
     } else {
       primary = domainName;
     }
@@ -65,6 +65,15 @@ export class HaIntegrationHeader extends LitElement {
           ),
         ]);
       }
+
+      if (this.configEntry?.pref_disable_polling) {
+        icons.push([
+          mdiSyncOff,
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.disabled_polling"
+          ),
+        ]);
+      }
     }
 
     return html`
@@ -72,13 +81,17 @@ export class HaIntegrationHeader extends LitElement {
       <slot name="above-header"></slot>
       <div class="header">
         <img
-          src=${brandsUrl(this.domain, "icon")}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
           referrerpolicy="no-referrer"
           @error=${this._onImageError}
           @load=${this._onImageLoad}
         />
         <div class="info">
-          <div class="primary">${primary}</div>
+          <div class="primary" role="heading">${primary}</div>
           ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
         </div>
 
@@ -131,6 +144,7 @@ export class HaIntegrationHeader extends LitElement {
       height: 40px;
     }
     .header .info {
+      flex: 1;
       align-self: center;
     }
     .header .info div {
@@ -146,7 +160,7 @@ export class HaIntegrationHeader extends LitElement {
       margin-top: 16px;
       margin-right: 2px;
       font-weight: 400;
-      line-break: anywhere;
+      word-break: break-word;
       color: var(--primary-text-color);
     }
     .secondary {

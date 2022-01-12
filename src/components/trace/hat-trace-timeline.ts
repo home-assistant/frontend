@@ -1,25 +1,4 @@
 import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import {
-  AutomationTraceExtended,
-  ChooseActionTraceStep,
-  getDataFromPath,
-  TriggerTraceStep,
-  isTriggerPath,
-} from "../../data/trace";
-import { HomeAssistant } from "../../types";
-import "./ha-timeline";
-import type { HaTimeline } from "./ha-timeline";
-import {
   mdiAlertCircle,
   mdiCircle,
   mdiCircleOutline,
@@ -27,16 +6,37 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { relativeTime } from "../../common/datetime/relative_time";
+import { fireEvent } from "../../common/dom/fire_event";
+import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
   ChooseActionChoice,
   getActionType,
 } from "../../data/script";
-import relativeTime from "../../common/datetime/relative_time";
-import { fireEvent } from "../../common/dom/fire_event";
 import { describeAction } from "../../data/script_i18n";
-import { ifDefined } from "lit-html/directives/if-defined";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  getDataFromPath,
+  isTriggerPath,
+  TriggerTraceStep,
+} from "../../data/trace";
+import { HomeAssistant } from "../../types";
+import "./ha-timeline";
+import type { HaTimeline } from "./ha-timeline";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -66,11 +66,7 @@ class RenderedTimeTracker {
   renderTime(from: Date, to: Date): void {
     this.entries.push(html`
       <ha-timeline label>
-        ${relativeTime(from, this.hass.localize, {
-          compareTime: to,
-          includeTense: false,
-        })}
-        later
+        ${relativeTime(from, this.hass.locale, to, false)} later
       </ha-timeline>
     `);
     this.lastReportedTime = to;
@@ -122,9 +118,8 @@ class LogbookRenderer {
       return;
     }
 
-    const previousEntryDate = this.pendingItems[
-      this.pendingItems.length - 1
-    ][0];
+    const previousEntryDate =
+      this.pendingItems[this.pendingItems.length - 1][0];
 
     // If logbook entry is too long after the last one,
     // add a time passed label
@@ -244,14 +239,16 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err) {
-      this.entries.push(
-        html`Unable to extract path ${path}. Download trace and report as bug`
+    } catch (err: any) {
+      this._renderEntry(
+        path,
+        `Unable to extract path ${path}. Download trace and report as bug`
       );
       return index + 1;
     }
 
-    const isTopLevel = path.split("/").length === 2;
+    const parts = path.split("/");
+    const isTopLevel = parts.length === 2;
 
     if (!isTopLevel && !actionType) {
       this._renderEntry(path, path.replace(/\//g, " "));
@@ -267,7 +264,16 @@ class ActionRenderer {
     }
 
     this._renderEntry(path, describeAction(this.hass, data, actionType));
-    return index + 1;
+
+    let i = index + 1;
+
+    for (; i < this.keys.length; i++) {
+      if (this.keys[i].split("/").length === parts.length) {
+        break;
+      }
+    }
+
+    return i;
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
@@ -303,7 +309,7 @@ class ActionRenderer {
     // +4: executed sequence
 
     const choosePath = this.keys[index];
-    const startLevel = choosePath.split("/").length - 1;
+    const startLevel = choosePath.split("/").length;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
     const defaultExecuted = chooseTrace.result?.choice === "default";
@@ -315,13 +321,15 @@ class ActionRenderer {
     if (defaultExecuted) {
       this._renderEntry(choosePath, `${name}: Default action executed`);
     } else if (chooseTrace.result) {
+      const choiceNumeric =
+        chooseTrace.result.choice !== "default"
+          ? chooseTrace.result.choice + 1
+          : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
-        ? `${
-            choiceConfig.alias || `Choice ${chooseTrace.result.choice}`
-          } executed`
+        ? `${choiceConfig.alias || `Option ${choiceNumeric}`} executed`
         : `Error: ${chooseTrace.error}`;
       this._renderEntry(choosePath, `${name}: ${choiceName}`);
     } else {
@@ -503,18 +511,16 @@ export class HaAutomationTracer extends LitElement {
         className: isError ? "error" : undefined,
       };
     }
-    // null means it was stopped by a condition
-    if (entry) {
-      entries.push(html`
-        <ha-timeline
-          lastItem
-          .icon=${entry.icon}
-          class=${ifDefined(entry.className)}
-        >
-          ${entry.description}
-        </ha-timeline>
-      `);
-    }
+
+    entries.push(html`
+      <ha-timeline
+        lastItem
+        .icon=${entry.icon}
+        class=${ifDefined(entry.className)}
+      >
+        ${entry.description}
+      </ha-timeline>
+    `);
 
     return html`${entries}`;
   }
@@ -543,7 +549,7 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
+        toggleAttribute(el, "selected", this.selectedPath === el.dataset.path);
         if (!this.allowPick || el.tabIndex === 0) {
           return;
         }
@@ -568,7 +574,7 @@ export class HaAutomationTracer extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         ha-timeline[lastItem].condition {

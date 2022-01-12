@@ -2,7 +2,9 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { cacheNames, RouteHandler } from "workbox-core";
+import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
@@ -10,8 +12,6 @@ import {
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
-import { CacheableResponsePlugin } from "workbox-cacheable-response";
-import { ExpirationPlugin } from "workbox-expiration";
 
 const noFallBackRegEx = new RegExp(
   "/(api|static|auth|frontend_latest|frontend_es5|local)/.*"
@@ -107,7 +107,7 @@ function initPushNotifications() {
     );
   }
 
-  self.addEventListener("push", function (event) {
+  self.addEventListener("push", (event) => {
     let data;
     if (event.data) {
       data = event.data.json();
@@ -122,7 +122,7 @@ function initPushNotifications() {
       event.waitUntil(
         self.registration
           .showNotification(data.title, data)
-          .then(function (/* notification */) {
+          .then((/* notification */) => {
             firePushCallback(
               {
                 type: "received",
@@ -136,7 +136,7 @@ function initPushNotifications() {
     }
   });
 
-  self.addEventListener("notificationclick", function (event) {
+  self.addEventListener("notificationclick", (event) => {
     notificationEventCallback("clicked", event);
 
     event.notification.close();
@@ -158,7 +158,7 @@ function initPushNotifications() {
         .matchAll({
           type: "window",
         })
-        .then(function (windowClients) {
+        .then((windowClients) => {
           let i;
           let client;
           for (i = 0; i < windowClients.length; i++) {
@@ -175,7 +175,7 @@ function initPushNotifications() {
     );
   });
 
-  self.addEventListener("notificationclose", function (event) {
+  self.addEventListener("notificationclose", (event) => {
     notificationEventCallback("closed", event);
   });
 }

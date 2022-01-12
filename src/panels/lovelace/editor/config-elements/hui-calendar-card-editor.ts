@@ -1,15 +1,9 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
+  assign,
   boolean,
   object,
   optional,
@@ -25,26 +19,30 @@ import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(union([string(), boolean()])),
-  initial_view: optional(string()),
-  theme: optional(string()),
-  entities: array(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(union([string(), boolean()])),
+    initial_view: optional(string()),
+    theme: optional(string()),
+    entities: array(string()),
+  })
+);
 
 const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;
 
-  @internalProperty() private _configEntities?: string[];
+  @state() private _configEntities?: string[];
 
   public setConfig(config: CalendarCardConfig): void {
     assert(config, cardConfigStruct);
@@ -176,7 +174,7 @@ export class HuiCalendarCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

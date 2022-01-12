@@ -1,12 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { PersistentNotification } from "../../data/persistent_notification";
 import { HomeAssistant } from "../../types";
 import "./configurator-notification-item";
@@ -35,13 +29,13 @@ export class HuiNotificationItem extends LitElement {
       ? html`
           <configurator-notification-item
             .hass=${this.hass}
-            .notification="${this.notification}"
+            .notification=${this.notification}
           ></configurator-notification-item>
         `
       : html`
           <persistent-notification-item
             .hass=${this.hass}
-            .notification="${this.notification}"
+            .notification=${this.notification}
           ></persistent-notification-item>
         `;
   }

@@ -1,20 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle } from "@mdi/js";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import {
   fetchOZWNetworkStatistics,
   fetchOZWNetworkStatus,
@@ -44,17 +35,17 @@ class OZWNetworkDashboard extends LitElement {
 
   @property() public ozwInstance?: number;
 
-  @internalProperty() private _network?: OZWInstance;
+  @state() private _network?: OZWInstance;
 
-  @internalProperty() private _statistics?: OZWNetworkStatistics;
+  @state() private _statistics?: OZWNetworkStatistics;
 
-  @internalProperty() private _status = "unknown";
+  @state() private _status = "unknown";
 
-  @internalProperty() private _icon = mdiCircle;
+  @state() private _icon = mdiCircle;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (this.hass) {
       this._fetchData();
     }
@@ -172,7 +163,7 @@ class OZWNetworkDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

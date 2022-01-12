@@ -2,16 +2,8 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-paper-dropdown-menu";
 import {
@@ -41,15 +33,15 @@ const detectResourceType = (url: string) => {
 export class DialogLovelaceResourceDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: LovelaceResourceDetailsDialogParams;
+  @state() private _params?: LovelaceResourceDetailsDialogParams;
 
-  @internalProperty() private _url!: LovelaceResource["url"];
+  @state() private _url!: LovelaceResource["url"];
 
-  @internalProperty() private _type?: LovelaceResource["type"];
+  @state() private _type?: LovelaceResource["type"];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: LovelaceResourceDetailsDialogParams
@@ -74,7 +66,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -159,7 +151,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteResource}"
+                @click=${this._deleteResource}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize(
@@ -170,7 +162,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateResource}"
+          @click=${this._updateResource}
           .disabled=${urlInvalid || !this._type || this._submitting}
         >
           ${this._params.resource
@@ -214,7 +206,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         await this._params!.createResource(values);
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
@@ -236,7 +228,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

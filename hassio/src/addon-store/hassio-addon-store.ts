@@ -1,16 +1,15 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  internalProperty,
+  CSSResultGroup,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -18,7 +17,7 @@ import { navigate } from "../../../src/common/navigate";
 import "../../../src/common/search/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-svg-icon";
+import "../../../src/components/ha-icon-button";
 import {
   HassioAddonInfo,
   HassioAddonRepository,
@@ -26,11 +25,10 @@ import {
 } from "../../../src/data/hassio/addon";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
-import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -58,7 +56,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   public async refreshData() {
     await reloadHassioAddons(this.hass);
@@ -77,24 +75,22 @@ class HassioAddonStore extends LitElement {
     }
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
-        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${supervisorTabs}
-        main-page
-        supervisor
+        .header=${this.supervisor.localize("panel.store")}
       >
-        <span slot="header"> ${this.supervisor.localize("panel.store")} </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
           @action=${this._handleAction}
         >
-          <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.supervisor.localize("common.menu")}
+            .path=${mdiDotsVertical}
+            slot="trigger"
+          ></ha-icon-button>
           <mwc-list-item>
             ${this.supervisor.localize("store.repositories")}
           </mwc-list-item>
@@ -113,6 +109,7 @@ class HassioAddonStore extends LitElement {
           : html`
               <div class="search">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   .filter=${this._filter}
@@ -131,14 +128,14 @@ class HassioAddonStore extends LitElement {
               </div>
             `
           : ""}
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     const repositoryUrl = extractSearchParam("repository_url");
-    navigate(this, "/hassio/store", true);
+    navigate("/hassio/store", { replace: true });
     if (repositoryUrl) {
       this._manageRepositories(repositoryUrl);
     }
@@ -218,7 +215,7 @@ class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hassio-addon-repository {
         margin-top: 24px;

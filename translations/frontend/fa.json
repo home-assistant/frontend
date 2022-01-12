@@ -16,6 +16,7 @@
         "calendar": "تقویم",
         "config": "پیکربندی",
         "developer_tools": "ابزارهای توسعه",
+        "energy": "انرژی",
         "history": "تاریخچه",
         "logbook": "گزارش روزانه",
         "mailbox": "صندوق پستی",
@@ -25,6 +26,14 @@
         "shopping_list": "لیست خرید",
         "states": "نمای کلی"
     },
+    "state": {
+        "default": {
+            "off": "خاموش",
+            "on": "روشن",
+            "unavailable": "غیرقابل دسترس",
+            "unknown": "نامشخص"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -33,18 +42,19 @@
                 "on": "روشن"
             },
             "hvac_action": {
-                "cooling": "Racire",
-                "drying": "Uscare",
-                "fan": "Ventilator",
-                "heating": "Incalzire",
+                "cooling": "خنک کننده",
+                "drying": "خشك كردن",
+                "fan": "فن",
+                "heating": "گرمایش",
                 "idle": "بیکار",
-                "off": "Oprit"
+                "off": "خاموش"
             },
             "preset_mode": {
                 "activity": "فعالیت",
                 "away": "بیرون",
                 "boost": "افزایش",
                 "comfort": "آسایش",
+                "eco": "اکو",
                 "home": "خانه",
                 "none": "هیچ کدام",
                 "sleep": "خواب"
@@ -91,17 +101,36 @@
             "not_home": "بیرون"
         }
     },
-    "state": {
-        "default": {
-            "off": "خاموش",
-            "on": "روشن",
-            "unavailable": "غیرقابل دسترس",
-            "unknown": "نامشخص"
-        }
-    },
     "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "پیش فرض",
+                    "header": "صوتی",
+                    "input": "ورودی",
+                    "output": "خروجی"
+                },
+                "network": {
+                    "disabled": "غیر فعال",
+                    "header": "شبکه",
+                    "host": "میزبان"
+                },
+                "options": {
+                    "edit_in_ui": "ویرایش در رابط کاربری",
+                    "edit_in_yaml": "ویرایش در YAML",
+                    "header": "تنظیمات",
+                    "show_unused_optional": "گزینه های پیکربندی اختیاری استفاده نشده را نشان دهید"
+                }
+            }
+        },
         "common": {
             "close": "بستن"
+        },
+        "system": {
+            "supervisor": {
+                "join_beta_action": "پیوستن به کانال بتا",
+                "leave_beta_action": "خروج از کانال بتا"
+            }
         }
     },
     "ui": {
@@ -299,6 +328,14 @@
             "data-table": {
                 "search": "جستجو"
             },
+            "date-range-picker": {
+                "ranges": {
+                    "last_week": "هفته گذشته",
+                    "this_week": "این هفته",
+                    "today": "امروز",
+                    "yesterday": "دیروز"
+                }
+            },
             "device-picker": {
                 "no_devices": "شما هیچ دستگاهی ندارید",
                 "no_match": "هیچ دستگاه منطبقی یافت نشد"
@@ -310,7 +347,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "در حال بارگیری تاریخ وضعیت...",
+                "loading_history": "در حال بارگیری تاریخ وضعیت…",
                 "no_history_found": "هیچ تاریخ وضعیتی پیدا نشد."
             },
             "media-browser": {
@@ -339,6 +376,9 @@
             },
             "service-picker": {
                 "service": "سرویس"
+            },
+            "statistic-picker": {
+                "learn_more": "درباره داده ها بیشتر بدانید"
             },
             "target-picker": {
                 "add_area_id": "ناحیه را انتخاب کنید",
@@ -508,7 +548,7 @@
             "title": "اعلانها"
         },
         "notification_toast": {
-            "connection_lost": "ارتباط از دست رفته است. اتصال مجدد...",
+            "connection_lost": "ارتباط از دست رفته است. اتصال مجدد…",
             "service_call_failed": "تماس با سرویس {service} ناموفق بود"
         },
         "panel": {
@@ -534,6 +574,7 @@
                         "create_area": "ایجاد منطقه",
                         "header": "مناطق",
                         "integrations_page": "صفحه ادغام",
+                        "introduction": "مناطق برای سازماندهی مکان دستگاه ها استفاده می شود. این اطلاعات در سراسر Home Assistant برای کمک به شما در سازماندهی رابط ، مجوزها و ادغام با سایر سیستم ها مورد استفاده قرار می گیرد.",
                         "no_areas": "به نظر می رسد شما هنوز هیچ منطقه ای ندارید!"
                     }
                 },
@@ -558,7 +599,6 @@
                             "header": "اقدامات",
                             "introduction": "این اقدامات همان چیزی است که Home Assistantانجام می دهد وقتی که اتوماسیون راه اندازی می شود.",
                             "learn_more": "درباره عملگردها بیشتر بدانید",
-                            "type_select": "نوع عمل",
                             "type": {
                                 "choose": {
                                     "label": "انتخاب کنید"
@@ -593,6 +633,7 @@
                                     "wait_template": "منتظر قالب"
                                 }
                             },
+                            "type_select": "نوع عمل",
                             "unsupported_action": "بدون پشتیبانی رابط کاربری برای عمل: {action}"
                         },
                         "alias": "نام",
@@ -604,7 +645,6 @@
                             "header": "شرایط",
                             "introduction": "شرایط اختیاری است و از اجرای بیشتر جلوگیری می کند مگر اینکه همه شرایط برآورده شود.",
                             "learn_more": "درباره شرایط بیشتر بدانید",
-                            "type_select": "نوع وضعیت",
                             "type": {
                                 "and": {
                                     "label": "و"
@@ -660,6 +700,7 @@
                                     "zone": "منطقه"
                                 }
                             },
+                            "type_select": "نوع وضعیت",
                             "unsupported_condition": "بدون پشتیبانی رابط کاربری برای این شزایط: {condition}"
                         },
                         "default_name": "اضافه کردن اتوماسیون",
@@ -679,14 +720,14 @@
                             "header": "راه اندازها",
                             "introduction": "راه حلی است که پردازش یک قانون اتوماسیون را آغاز می کند. ممکن است چند عامل برای یک قاعده مشخص شود. هنگامی که یک ماشه شروع می شود، Home Assistant شرایط را تایید می کند، اگر وجود داشته باشد، و اقدام را فراخوانی می کند.",
                             "learn_more": "درباره راه اندازها بیشتر بیاموزید",
-                            "type_select": "نوع راه انداز",
                             "type": {
                                 "device": {
                                     "extra_fields": {
                                         "above": "بالا",
                                         "below": "زیر",
                                         "for": "مدت زمان"
-                                    }
+                                    },
+                                    "trigger": "ماشه"
                                 },
                                 "event": {
                                     "event_data": "داده های رویداد",
@@ -738,15 +779,15 @@
                                     "label": "قالب",
                                     "value_template": "مقدار قالب"
                                 },
+                                "time": {
+                                    "at": "در زمان",
+                                    "label": "زمان"
+                                },
                                 "time_pattern": {
                                     "hours": "ساعت ها",
                                     "label": "الگو زمان",
                                     "minutes": "دقیقه ها",
                                     "seconds": "ثانیه ها"
-                                },
-                                "time": {
-                                    "at": "در زمان",
-                                    "label": "زمان"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -761,6 +802,7 @@
                                     "zone": "منطقه"
                                 }
                             },
+                            "type_select": "نوع راه انداز",
                             "unsupported_platform": "بدون پشتیبانی رابط کاربری برای پلت فرم:  {platform}"
                         },
                         "unsaved_confirm": "شما تغییرات ذخیره نشده ای دارید. آیا مطمئنی که می خواهی خارج بشی؟"
@@ -791,6 +833,7 @@
                     "add": {
                         "community_forums": "انجمن ها",
                         "file_name": "مسیر Blueprint",
+                        "import_header": "طرح '' {name} ''",
                         "import_introduction_link": "شما می توانید طرح های دیگر کاربران را از Github و {community_link}وارد کنید. آدرس طرح blueprint را در پایین وارد کنید.",
                         "raw_blueprint": "محتوای Blueprint",
                         "unsupported_blueprint": "این طرح پشتیبانی نمی شود"
@@ -812,6 +855,9 @@
                             "title": "الکسا"
                         },
                         "connected": "متصل",
+                        "google": {
+                            "not_configured_title": "Google Assistant فعال نیست"
+                        },
                         "integrations": "ادغام ها",
                         "integrations_introduction2": "بررسی وب سایت برای ",
                         "integrations_link_all_features": "تمام ویژگی های موجود",
@@ -828,7 +874,7 @@
                             "try": "تلاش كردن"
                         },
                         "webhooks": {
-                            "loading": "بارگذاری ...",
+                            "loading": "بارگذاری…",
                             "manage": "مدیریت"
                         }
                     },
@@ -907,14 +953,13 @@
                     "description": "سیستم واحد ، مکان ، منطقه زمانی و سایر پارامترهای کلی",
                     "section": {
                         "core": {
-                            "analytics": {
-                                "learn_more": "درباره نحوه پردازش داده های خود بیشتر بیاموزید."
-                            },
                             "core_config": {
+                                "currency": "واحد پول",
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "elevation": "ارتفاع",
                                 "elevation_meters": "متر",
                                 "external_url": "URL خارجی",
+                                "find_currency_value": "ارزش خود را بیابید",
                                 "imperial_example": "فارنهایت، پوند",
                                 "internal_url": "URL داخلی",
                                 "latitude": "طول و عرض جغرافیایی",
@@ -938,7 +983,8 @@
                     "description": "نهادهای خود را سفارشی کنید",
                     "pick_attribute": "Alege un atribut pentru a trece peste acesta",
                     "picker": {
-                        "header": "سفارشی سازی ها"
+                        "header": "سفارشی سازی ها",
+                        "introduction": "نویسه ویژگی های هر سازمانی. سفارشی سازی اضافه شده / ویرایش شده فورا اثر می کند. سفارشی های حذف شده هنگامی که موجودیت به روز می شود اثر می کند."
                     },
                     "warning": {
                         "include_link": "Include customize.yaml"
@@ -947,11 +993,11 @@
                 "devices": {
                     "automation": {
                         "actions": {
-                            "caption": "وقتی چیزی تحریک می شود ..."
+                            "caption": "وقتی چیزی تحریک می شود…"
                         },
                         "automations": "Automatizari",
                         "conditions": {
-                            "caption": "فقط کاری کن اگر ..."
+                            "caption": "فقط کاری کن اگر…"
                         },
                         "create": "Creaza automatizare cu acest dispozitiv",
                         "create_disable": "نمی توان اتوماسیون را با دستگاه غیر فعال ایجاد کرد",
@@ -1021,6 +1067,38 @@
                     "unnamed_device": "Dispozitiv nedenumit",
                     "update": "Actualizeaza"
                 },
+                "energy": {
+                    "battery": {
+                        "learn_more": "اطلاعات بیشتر در مورد چگونگی شروع."
+                    },
+                    "device_consumption": {
+                        "selected_stat": "ردیابی انرژی برای"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_entity_input": "نهاد با قیمت فعلی به ازای هر {واحد}",
+                            "cost_number_input": "قیمت هر {واحد}",
+                            "header": "پیکربندی مصرف گاز"
+                        },
+                        "learn_more": "اطلاعات بیشتر در مورد چگونگی شروع.",
+                        "title": "مصرف گاز"
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "to": {
+                                "cost_entity_input": "واحد با نرخ فعلی"
+                            }
+                        }
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "واحدهای زیر واحد اندازه گیری مورد انتظار \"\" {currency} /kWh \"\" ، \"\" {currency} /Wh \"\" ، \" {currency} /m³\" یا \" {currency} /ft³\" \"را ندارند :",
+                                "title": "واحد اندازه گیری غیر منتظره"
+                            }
+                        }
+                    }
+                },
                 "entities": {
                     "caption": "نهاد ها",
                     "description": "مدیریت نهادهای شناخته شده",
@@ -1045,13 +1123,6 @@
                             "unavailable": "Indisponibil"
                         }
                     }
-                },
-                "filtering": {
-                    "clear": "پاک کردن",
-                    "filtering_by": "فیلتر کردن با"
-                },
-                "hassio": {
-                    "button": "پیکربندی"
                 },
                 "header": "پیکربندی HOME ASSistant",
                 "helpers": {
@@ -1100,7 +1171,6 @@
                         "hub": "اتصال از طریق",
                         "manuf": "توسط {manufacturer}",
                         "no_area": "بدون منطقه",
-                        "options": "گزینه ها",
                         "rename": "تغییر نام",
                         "restart_confirm": "برای حذف کامل این یکپارچگی home assistant را دوباره راهاندازی کنید.",
                         "system_options": "گزینه های سیستم"
@@ -1114,16 +1184,14 @@
                             "open_site": "باز کردن سایت"
                         },
                         "finish": "Termina",
-                        "loading_first_time": "لطفاً منتظر بمانید تا ادغام نصب شود",
                         "not_all_required_fields": "Nu toate campurile necesare sunt completate",
-                        "submit": "Trimite"
+                        "submit": "ارسال"
                     },
                     "configure": "پیکربندی",
                     "configured": "پیکربندی شده",
-                    "description": "مدیریت یکپارچه سازی با خدمات، دستگاه ها، ...",
+                    "description": "مدیریت یکپارچه سازی با خدمات، دستگاه ها، …",
                     "discovered": "کشف شده",
                     "ignore": {
-                        "hide_ignored": "Ascunde integrarile ignorate",
                         "ignore": "Ignora",
                         "ignored": "Ignorat",
                         "show_ignored": "Afiseaza integrarile ignorate"
@@ -1221,7 +1289,6 @@
                     "title": "MQTT"
                 },
                 "ozw": {
-                    "button": "پیکربندی",
                     "common": {
                         "controller": "کنترل کننده",
                         "network": "شبکه"
@@ -1254,7 +1321,7 @@
                         "update": "Actualizeaza"
                     },
                     "introduction": "Aici poti defini fiecare persoana de interes in Home Assistant",
-                    "no_persons_created_yet": "Se pare ca nu ai creat nicio persoana deocamdata"
+                    "no_persons_created_yet": "به نظر می رسد شما هنوز هیچ فردی را ایجاد نکرده اید."
                 },
                 "scene": {
                     "caption": "Scene",
@@ -1380,7 +1447,7 @@
                     "add_device": "افزودن دستگاه",
                     "add_device_page": {
                         "search_again": "جستجوی مجدد",
-                        "spinner": "جستجو برای دستگاه های ZHY Zigbee ..."
+                        "spinner": "جستجو برای دستگاه های ZHY Zigbee…"
                     },
                     "common": {
                         "value": "مقدار"
@@ -1430,7 +1497,6 @@
                     "no_zones_created_yet": "Se pare ca inca nu ai creat nicio zona"
                 },
                 "zwave": {
-                    "button": "پیکربندی",
                     "common": {
                         "index": "Index",
                         "instance": "نمونه، مثال",
@@ -1444,7 +1510,7 @@
                     },
                     "network_status": {
                         "network_started": "شبکه Z-Wave شروع شد",
-                        "network_starting": "شروع شبکه Z-Wave ...",
+                        "network_starting": "شروع شبکه Z-Wave …",
                         "network_starting_note": "این کار بسته به اندازه شبکه شما ممکن است مدتی طول بکشد.",
                         "network_stopped": "شبکه Z-Wave متوقف شد"
                     },
@@ -1459,7 +1525,8 @@
                         "true": "صحیح"
                     },
                     "node_management": {
-                        "group": "گروه"
+                        "group": "گروه",
+                        "nodes": "گره ها"
                     },
                     "services": {
                         "add_node": "Adauga Nod",
@@ -1471,6 +1538,26 @@
                         "start_network": "شروع شبکه",
                         "stop_network": "توقف شبکه",
                         "test_network": "Testare Retea"
+                    }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "security_classes": {
+                            "S2_AccessControl": {
+                                "description": "مثال: قفل درها و درهای گاراژ"
+                            },
+                            "S2_Unauthenticated": {
+                                "title": "S2 غیر مجاز"
+                            }
+                        }
+                    },
+                    "heal_node": {
+                        "start_heal": "تعمیر دستگاه",
+                        "title": " یک دستگاه  Z-Wave را تعمیر کنید"
+                    },
+                    "remove_failed_node": {
+                        "remove_device": "حذف دستگاه",
+                        "title": "یک دستگاه Z-Wave خراب را حذف کنید"
                     }
                 }
             },
@@ -1489,7 +1576,7 @@
                     "states": {
                         "attributes": "Atribute",
                         "current_entities": "Entitati curente",
-                        "description2": "Acesta nu va comunica cu dispozitivul",
+                        "description2": "اگر نهاد متعلق به یک دستگاه باشد، هیچ ارتباط واقعی با آن دستگاه وجود نخواهد داشت.",
                         "entity": "Entitate",
                         "filter_attributes": "Filtreaza atributele",
                         "filter_entities": "Filtreaza entitatile",
@@ -1502,24 +1589,27 @@
                         "state_attributes": "Stare atribute *(YAML, optional)",
                         "title": "وضعیت"
                     },
+                    "statistics": {
+                        "fix_issue": {
+                            "fix": "رفع مشکل"
+                        },
+                        "issues": {
+                            "entity_not_recorded": "این نهاد از ثبت نام مستثنی است.",
+                            "unsupported_state_class": "کلاس حالت '' {state_class} '' این نهاد پشتیبانی نمی شود.",
+                            "unsupported_unit_metadata": "واحد ( '' {metadata_unit} '') از آمار ثبت کند واحد پشتیبانی '' مطابقت ندارد {supported_unit} '' از کلاس دستگاه '' {device_class} ''.",
+                            "unsupported_unit_state": "واحد ('{state_unit}') این نهاد با واحدی از کلاس دستگاه ''{device_class}' مطابقت ندارد."
+                        },
+                        "no_issue": "مسئله ای نیست"
+                    },
                     "templates": {
                         "title": "قالب"
                     }
                 }
             },
-            "history": {
-                "ranges": {
-                    "this_week": "این هفته",
-                    "today": "امروز",
-                    "yesterday": "دیروز"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "هفته گذشته",
-                    "this_week": "این هفته",
-                    "today": "امروز",
-                    "yesterday": "دیروز"
+            "energy": {
+                "setup": {
+                    "back": "بازگشت",
+                    "next": "بعدی"
                 }
             },
             "lovelace": {
@@ -1704,6 +1794,10 @@
                         "edit": "ویرایش نما",
                         "header": "مشاهده پیکربندی",
                         "tab_visibility": "رویت پذیری",
+                        "type": "نوع مشاهده",
+                        "types": {
+                            "sidebar": "نوار کناری"
+                        },
                         "visibility": {
                             "select_users": "انتخاب کنید کدام کاربران باید این نمای را در پیمایش ببینند"
                         }
@@ -1735,7 +1829,6 @@
                         "unsaved_changes": "تغییرات ذخیره نشده"
                     },
                     "save_config": {
-                        "cancel": "بیخیال",
                         "close": "ببند",
                         "empty_config": "شروع با یک داشبورد خالی",
                         "header": "کنترل رابط کاربری Lovelace خود را در دست بگیرید",
@@ -1797,6 +1890,7 @@
                 "abort_intro": "ورود به سیستم لغو شد",
                 "authorizing_client": "شما در حال دادن دسترسی به {clientId} به Home Assistant هستید.",
                 "form": {
+                    "next": "ورود",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2013,18 +2107,18 @@
                     "prompt_copy_token": "رمز دسترسی خود را کپی کنید. دوباره نمایش داده نمی شود.",
                     "prompt_name": "به توکن یک اسم بگذارید"
                 },
+                "mfa": {
+                    "confirm_disable": "آیا مطمئن هستید که میخواهید {name} را غیرفعال کنید؟",
+                    "disable": "غیر فعال کردن",
+                    "enable": "فعال کردن",
+                    "header": "ماژول های احراز هویت چند عاملی"
+                },
                 "mfa_setup": {
                     "close": "بستن",
                     "step_done": "راه اندازی موفق برای {step}",
                     "submit": "ارسال",
                     "title_aborted": "لغو شد",
                     "title_success": "موفقیت!"
-                },
-                "mfa": {
-                    "confirm_disable": "آیا مطمئن هستید که میخواهید {name} را غیرفعال کنید؟",
-                    "disable": "غیر فعال کردن",
-                    "enable": "فعال کردن",
-                    "header": "ماژول های احراز هویت چند عاملی"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

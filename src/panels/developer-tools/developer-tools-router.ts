@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { HomeAssistant } from "../../types";
 
@@ -36,6 +36,10 @@ class DeveloperToolsRouter extends HassRouterPage {
       template: {
         tag: "developer-tools-template",
         load: () => import("./template/developer-tools-template"),
+      },
+      statistics: {
+        tag: "developer-tools-statistics",
+        load: () => import("./statistics/developer-tools-statistics"),
       },
     },
   };

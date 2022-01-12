@@ -1,11 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { PolymerChangedEvent } from "../../polymer-types";
@@ -17,7 +12,7 @@ import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 class HaEntitiesPickerLight extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public value?: string[];
+  @property({ type: Array }) public value?: string[];
 
   /**
    * Show entities from specific domains.
@@ -34,6 +29,22 @@ class HaEntitiesPickerLight extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
+  /**
+   * Show only entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+
+  /**
+   * Show only entities with these unit of measuments.
+   * @type {Array}
+   * @attr include-unit-of-measurement
+   */
+  @property({ type: Array, attribute: "include-unit-of-measurement" })
+  public includeUnitOfMeasurement?: string[];
 
   @property({ attribute: "picked-entity-label" })
   public pickedEntityLabel?: string;
@@ -56,6 +67,8 @@ class HaEntitiesPickerLight extends LitElement {
               .hass=${this.hass}
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+              .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
               .entityFilter=${this._entityFilter}
               .value=${entityId}
               .label=${this.pickedEntityLabel}
@@ -69,6 +82,8 @@ class HaEntitiesPickerLight extends LitElement {
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
+          .includeDeviceClasses=${this.includeDeviceClasses}
+          .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
           .entityFilter=${this._entityFilter}
           .label=${this.pickEntityLabel}
           @value-changed=${this._addEntity}
@@ -86,11 +101,11 @@ class HaEntitiesPickerLight extends LitElement {
   }
 
   private async _updateEntities(entities) {
+    this.value = entities;
+
     fireEvent(this, "value-changed", {
       value: entities,
     });
-
-    this.value = entities;
   }
 
   private _entityChanged(event: PolymerChangedEvent<string>) {
@@ -103,20 +118,22 @@ class HaEntitiesPickerLight extends LitElement {
     ) {
       return;
     }
-    if (newValue === "") {
-      this._updateEntities(
-        this._currentEntities.filter((ent) => ent !== curValue)
-      );
-    } else {
-      this._updateEntities(
-        this._currentEntities.map((ent) => (ent === curValue ? newValue : ent))
-      );
+    const currentEntities = this._currentEntities;
+    if (!newValue || currentEntities.includes(newValue)) {
+      this._updateEntities(currentEntities.filter((ent) => ent !== curValue));
+      return;
     }
+    this._updateEntities(
+      currentEntities.map((ent) => (ent === curValue ? newValue : ent))
+    );
   }
 
   private async _addEntity(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
+    if (!toAdd) {
+      return;
+    }
     (event.currentTarget as any).value = "";
     if (!toAdd) {
       return;

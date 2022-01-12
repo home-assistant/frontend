@@ -1,16 +1,10 @@
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -24,7 +18,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
@@ -33,21 +27,20 @@ export class CloudRemotePref extends LitElement {
       return html``;
     }
 
-    const {
-      remote_connected,
-      remote_domain,
-      remote_certificate,
-    } = this.cloudStatus;
+    const { remote_enabled } = this.cloudStatus.prefs;
+
+    const { remote_connected, remote_domain, remote_certificate } =
+      this.cloudStatus;
 
     if (!remote_certificate) {
       return html`
         <ha-card
-          header=${this.hass!.localize(
+          header=${this.hass.localize(
             "ui.panel.config.cloud.account.remote.title"
           )}
         >
           <div class="preparing">
-            ${this.hass!.localize(
+            ${this.hass.localize(
               "ui.panel.config.cloud.account.remote.access_is_being_prepared"
             )}
           </div>
@@ -57,25 +50,34 @@ export class CloudRemotePref extends LitElement {
 
     return html`
       <ha-card
-        header=${this.hass!.localize(
+        header=${this.hass.localize(
           "ui.panel.config.cloud.account.remote.title"
         )}
       >
         <div class="switch">
           <ha-switch
-            .checked="${remote_connected}"
-            @change="${this._toggleChanged}"
+            .checked=${remote_enabled}
+            @change=${this._toggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass!.localize("ui.panel.config.cloud.account.remote.info")}
-          ${remote_connected
-            ? this.hass!.localize(
-                "ui.panel.config.cloud.account.remote.instance_is_available"
-              )
-            : this.hass!.localize(
-                "ui.panel.config.cloud.account.remote.instance_will_be_available"
-              )}
+          ${!remote_connected && remote_enabled
+            ? html`
+                <ha-alert
+                  .title=${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.reconnecting`
+                  )}
+                ></ha-alert>
+              `
+            : ""}
+          ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
+          ${this.hass.localize(
+            `ui.panel.config.cloud.account.remote.${
+              remote_connected
+                ? "instance_is_available"
+                : "instance_will_be_available"
+            }`
+          )}
           <a
             href="https://${remote_domain}"
             target="_blank"
@@ -92,21 +94,17 @@ export class CloudRemotePref extends LitElement {
             rel="noreferrer"
           >
             <mwc-button
-              >${this.hass!.localize(
+              >${this.hass.localize(
                 "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
               )}</mwc-button
             >
           </a>
-          ${remote_certificate
-            ? html`
-                <div class="spacer"></div>
-                <mwc-button @click=${this._openCertInfo}>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.remote.certificate_info"
-                  )}
-                </mwc-button>
-              `
-            : ""}
+          <div class="spacer"></div>
+          <mwc-button @click=${this._openCertInfo}>
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.certificate_info"
+            )}
+          </mwc-button>
         </div>
       </ha-card>
     `;
@@ -123,18 +121,18 @@ export class CloudRemotePref extends LitElement {
 
     try {
       if (toggle.checked) {
-        await connectCloudRemote(this.hass!);
+        await connectCloudRemote(this.hass);
       } else {
-        await disconnectCloudRemote(this.hass!);
+        await disconnectCloudRemote(this.hass);
       }
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message);
       toggle.checked = !toggle.checked;
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .preparing {
         padding: 0 16px 16px;
@@ -142,10 +140,26 @@ export class CloudRemotePref extends LitElement {
       a {
         color: var(--primary-color);
       }
+      .switch {
+        position: absolute;
+        right: 24px;
+        top: 24px;
+      }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
+      }
+      .warning {
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+      .warning ha-svg-icon {
+        color: var(--warning-color);
+      }
       .break-word {
         overflow-wrap: break-word;
       }
-      .switch {
+      .connection-status {
         position: absolute;
         right: 24px;
         top: 24px;

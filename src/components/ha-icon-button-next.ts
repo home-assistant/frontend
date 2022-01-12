@@ -1,15 +1,8 @@
-import "@material/mwc-icon-button";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 @customElement("ha-icon-button-next")
 export class HaIconButtonNext extends LitElement {
@@ -19,7 +12,7 @@ export class HaIconButtonNext extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _icon = mdiChevronRight;
+  @state() private _icon = mdiChevronRight;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -35,12 +28,11 @@ export class HaIconButtonNext extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button
+      <ha-icon-button
         .disabled=${this.disabled}
         .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
-      >
-        <ha-svg-icon .path=${this._icon}></ha-svg-icon>
-      </mwc-icon-button>
+        .path=${this._icon}
+      ></ha-icon-button>
     `;
   }
 }

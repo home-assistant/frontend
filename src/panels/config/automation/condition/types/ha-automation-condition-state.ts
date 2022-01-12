@@ -1,13 +1,27 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
+import { assert, literal, object, optional, string, union } from "superstruct";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
-import { ForDict, StateCondition } from "../../../../../data/automation";
+import "../../../../../components/ha-duration-input";
+import { StateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { forDictStruct } from "../../structs";
 import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
+
+const stateConditionStruct = object({
+  condition: literal("state"),
+  entity_id: optional(string()),
+  attribute: optional(string()),
+  state: optional(string()),
+  for: optional(union([string(), forDictStruct])),
+});
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -19,25 +33,21 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { entity_id: "", state: "" };
   }
 
+  public shouldUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("condition")) {
+      try {
+        assert(this.condition, stateConditionStruct);
+      } catch (e: any) {
+        fireEvent(this, "ui-mode-not-available", e);
+        return false;
+      }
+    }
+    return true;
+  }
+
   protected render() {
     const { entity_id, attribute, state } = this.condition;
-    let forTime = this.condition.for;
-
-    if (
-      forTime &&
-      ((forTime as ForDict).hours ||
-        (forTime as ForDict).minutes ||
-        (forTime as ForDict).seconds)
-    ) {
-      // If the trigger was defined using the yaml dict syntax, convert it to
-      // the equivalent string format
-      let { hours = 0, minutes = 0, seconds = 0 } = forTime as ForDict;
-      hours = hours.toString().padStart(2, "0");
-      minutes = minutes.toString().padStart(2, "0");
-      seconds = seconds.toString().padStart(2, "0");
-
-      forTime = `${hours}:${minutes}:${seconds}`;
-    }
+    const forTime = createDurationData(this.condition.for);
 
     return html`
       <ha-entity-picker
@@ -66,14 +76,14 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         .value=${state}
         @value-changed=${this._valueChanged}
       ></paper-input>
-      <paper-input
+      <ha-duration-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.state.for"
         )}
         .name=${"for"}
-        .value=${forTime}
+        .data=${forTime}
         @value-changed=${this._valueChanged}
-      ></paper-input>
+      ></ha-duration-input>
     `;
   }
 

@@ -1,13 +1,8 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { mdiAlert } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
+import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
 import { ErrorBadgeConfig } from "./types";
@@ -27,7 +22,7 @@ export const createErrorBadgeConfig = (error) => ({
 export class HuiErrorBadge extends LitElement implements LovelaceBadge {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ErrorBadgeConfig;
+  @state() private _config?: ErrorBadgeConfig;
 
   public setConfig(config: ErrorBadgeConfig): void {
     this._config = config;
@@ -39,15 +34,13 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     }
 
     return html`
-      <ha-label-badge
-        label="Error"
-        icon="hass:alert"
-        description=${this._config.error}
-      ></ha-label-badge>
+      <ha-label-badge label="Error" description=${this._config.error}>
+        <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
+      </ha-label-badge>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         --ha-label-badge-color: var(--label-badge-red, #fce588);

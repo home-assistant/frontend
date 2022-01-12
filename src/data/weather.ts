@@ -1,4 +1,5 @@
 import {
+  mdiAlertCircleOutline,
   mdiGauge,
   mdiWaterPercent,
   mdiWeatherFog,
@@ -9,10 +10,9 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
-import { formatNumber } from "../common/string/format_number";
-import "../components/ha-icon";
+import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
+import { styleMap } from "lit/directives/style-map";
+import { formatNumber } from "../common/number/format_number";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
@@ -57,7 +57,7 @@ export const weatherSVGs = new Set<string>([
 ]);
 
 export const weatherIcons = {
-  exceptional: "hass:alert-circle-outline",
+  exceptional: mdiAlertCircleOutline,
 };
 
 export const weatherAttrIcons = {
@@ -152,17 +152,11 @@ export const getWeatherUnit = (
   hass: HomeAssistant,
   measure: string
 ): string => {
-  const lengthUnit = hass.config.unit_system.length || "";
   switch (measure) {
-    case "pressure":
-      return lengthUnit === "km" ? "hPa" : "inHg";
-    case "wind_speed":
-      return `${lengthUnit}/h`;
     case "visibility":
-    case "length":
-      return lengthUnit;
+      return hass.config.unit_system.length || "";
     case "precipitation":
-      return lengthUnit === "km" ? "mm" : "in";
+      return hass.config.unit_system.accumulated_precipitation || "";
     case "humidity":
     case "precipitation_probability":
       return "%";
@@ -245,17 +239,9 @@ const getWeatherExtrema = (
   const unit = getWeatherUnit(hass!, "temperature");
 
   return html`
-    ${tempHigh
-      ? `
-            ${tempHigh} ${unit}
-          `
-      : ""}
+    ${tempHigh ? `${formatNumber(tempHigh, hass.locale)} ${unit}` : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${tempLow
-      ? `
-          ${tempLow} ${unit}
-        `
-      : ""}
+    ${tempLow ? `${formatNumber(tempLow, hass.locale)} ${unit}` : ""}
   `;
 };
 
@@ -441,7 +427,10 @@ export const getWeatherStateIcon = (
 
   if (state in weatherIcons) {
     return html`
-      <ha-icon class="weather-icon" .icon=${weatherIcons[state]}></ha-icon>
+      <ha-svg-icon
+        class="weather-icon"
+        .path=${weatherIcons[state]}
+      ></ha-svg-icon>
     `;
   }
 

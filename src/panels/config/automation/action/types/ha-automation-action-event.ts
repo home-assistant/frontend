@@ -1,12 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
-import { html } from "lit-html";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-service-picker";

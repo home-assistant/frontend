@@ -1,15 +1,14 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -94,20 +93,20 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
-        class="${classMap({
+        class=${classMap({
           clickable: Boolean(
             this._config.tap_action ||
               this._config.hold_action ||
               this._config.double_tap_action
           ),
-        })}"
+        })}
       >
-        <img src="${this.hass.hassUrl(this._config.image)}" />
+        <img src=${this.hass.hassUrl(this._config.image)} />
       </ha-card>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;

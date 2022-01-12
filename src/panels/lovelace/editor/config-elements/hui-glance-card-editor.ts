@@ -1,15 +1,8 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -19,6 +12,7 @@ import {
   optional,
   string,
   union,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -33,34 +27,35 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import {
-  EditorTarget,
-  entitiesConfigStruct,
-  EntitiesEditorEvent,
-} from "../types";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(union([string(), number()])),
-  theme: optional(string()),
-  columns: optional(number()),
-  show_name: optional(boolean()),
-  show_state: optional(boolean()),
-  show_icon: optional(boolean()),
-  state_color: optional(boolean()),
-  entities: array(entitiesConfigStruct),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(union([string(), number()])),
+    theme: optional(string()),
+    columns: optional(number()),
+    show_name: optional(boolean()),
+    show_state: optional(boolean()),
+    show_icon: optional(boolean()),
+    state_color: optional(boolean()),
+    entities: array(entitiesConfigStruct),
+  })
+);
 
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GlanceCardConfig;
+  @state() private _config?: GlanceCardConfig;
 
-  @internalProperty() private _configEntities?: ConfigEntity[];
+  @state() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -236,7 +231,7 @@ export class HuiGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

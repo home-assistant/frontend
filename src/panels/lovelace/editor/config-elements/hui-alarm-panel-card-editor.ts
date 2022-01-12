@@ -1,44 +1,41 @@
+import { mdiClose } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { array, assert, object, optional, string } from "superstruct";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-icon";
+import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
 import { AlarmPanelCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  states: optional(array()),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    states: optional(array()),
+    theme: optional(string()),
+  })
+);
 
 const includeDomains = ["alarm_control_panel"];
 
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
     assert(config, cardConfigStruct);
@@ -66,67 +63,75 @@ export class HuiAlarmPanelCardEditor
       return html``;
     }
 
-    const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
+    const states = [
+      "arm_home",
+      "arm_away",
+      "arm_night",
+      "arm_vacation",
+      "arm_custom_bypass",
+    ];
 
     return html`
       <div class="card-config">
         <ha-entity-picker
-          .label="${this.hass.localize(
+          .label=${`${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
-          )})"
+          )})`}
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          .label="${this.hass.localize(
+          .label=${`${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.name"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
+          )})`}
+          .value=${this._name}
+          .configValue=${"name"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <span>Used States</span> ${this._states.map(
-          (state, index) => html`
+          (entityState, index) => html`
             <div class="states">
-              <paper-item>${state}</paper-item>
-              <ha-icon
+              <paper-item>${entityState}</paper-item>
+              <ha-svg-icon
                 class="deleteState"
-                .value="${index}"
-                icon="hass:close"
+                .value=${index}
+                .path=${mdiClose}
                 @click=${this._stateRemoved}
-              ></ha-icon>
+              ></ha-svg-icon>
             </div>
           `
         )}
         <paper-dropdown-menu
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.alarm-panel.available_states"
-          )}"
-          @value-changed="${this._stateAdded}"
+          )}
+          @value-changed=${this._stateAdded}
         >
           <paper-listbox slot="dropdown-content">
-            ${states.map((state) => html` <paper-item>${state}</paper-item> `)}
+            ${states.map(
+              (entityState) => html` <paper-item>${entityState}</paper-item> `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`
@@ -140,7 +145,7 @@ export class HuiAlarmPanelCardEditor
         .states:hover > .deleteState {
           visibility: visible;
         }
-        ha-icon {
+        ha-svg-icon {
           padding-top: 12px;
         }
       `,

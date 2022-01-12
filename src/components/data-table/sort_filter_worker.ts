@@ -2,8 +2,8 @@
 import { expose } from "comlink";
 import "proxy-polyfill";
 import type {
+  ClonedDataTableColumnData,
   DataTableRowData,
-  DataTableSortColumnData,
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
@@ -19,7 +19,11 @@ const filterData = (
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          String(column.filterKey ? row[key][column.filterKey] : row[key])
+          String(
+            column.filterKey
+              ? row[column.valueColumn || key][column.filterKey]
+              : row[column.valueColumn || key]
+          )
             .toUpperCase()
             .includes(filter)
         ) {
@@ -33,7 +37,7 @@ const filterData = (
 
 const sortData = (
   data: DataTableRowData[],
-  column: DataTableSortColumnData,
+  column: ClonedDataTableColumnData,
   direction: SortingDirection,
   sortColumn: string
 ) =>
@@ -44,12 +48,12 @@ const sortData = (
     }
 
     let valA = column.filterKey
-      ? a[sortColumn][column.filterKey]
-      : a[sortColumn];
+      ? a[column.valueColumn || sortColumn][column.filterKey]
+      : a[column.valueColumn || sortColumn];
 
     let valB = column.filterKey
-      ? b[sortColumn][column.filterKey]
-      : b[sortColumn];
+      ? b[column.valueColumn || sortColumn][column.filterKey]
+      : b[column.valueColumn || sortColumn];
 
     if (typeof valA === "string") {
       valA = valA.toUpperCase();

@@ -14,12 +14,17 @@ interface HassioHardwareAudioList {
   };
 }
 
+interface HardwareDevice {
+  attributes: Record<string, string>;
+  by_id: null | string;
+  dev_path: string;
+  name: string;
+  subsystem: string;
+  sysfs: string;
+}
+
 export interface HassioHardwareInfo {
-  serial: string[];
-  input: string[];
-  disk: string[];
-  gpio: string[];
-  audio: Record<string, unknown>;
+  devices: HardwareDevice[];
 }
 
 export const fetchHassioHardwareAudio = async (

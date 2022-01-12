@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
@@ -31,16 +24,14 @@ export class HuiPersistentNotificationItem extends LitElement {
       <notification-item-template>
         <span slot="header"> ${this.notification.title} </span>
 
-        <ha-markdown
-          breaks
-          content="${this.notification.message}"
-        ></ha-markdown>
+        <ha-markdown breaks content=${this.notification.message}></ha-markdown>
 
         <div class="time">
           <span>
             <ha-relative-time
               .hass=${this.hass}
-              .datetime="${this.notification.created_at}"
+              .datetime=${this.notification.created_at}
+              capitalize
             ></ha-relative-time>
             <paper-tooltip animation-delay="0">
               ${this._computeTooltip(this.hass, this.notification)}
@@ -48,7 +39,7 @@ export class HuiPersistentNotificationItem extends LitElement {
           </span>
         </div>
 
-        <mwc-button slot="actions" @click="${this._handleDismiss}"
+        <mwc-button slot="actions" @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
           )}</mwc-button
@@ -57,7 +48,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .time {
         display: flex;

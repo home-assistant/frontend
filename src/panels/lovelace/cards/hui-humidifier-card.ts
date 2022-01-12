@@ -1,17 +1,16 @@
+import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   svg,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -54,9 +53,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: HumidifierCardConfig;
+  @state() private _config?: HumidifierCardConfig;
 
-  @internalProperty() private _setHum?: number;
+  @state() private _setHum?: number;
 
   public getCardSize(): number {
     return 6;
@@ -160,7 +159,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <ha-icon-button
-          icon="hass:dots-vertical"
+          .path=${mdiDotsVertical}
           class="more-info"
           @click=${this._handleMoreInfo}
           tabindex="0"
@@ -175,7 +174,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info">${name}</div>
+          <div id="info" .title=${name}>${name}</div>
         </div>
       </ha-card>
     `;
@@ -216,8 +215,24 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
 
     if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._setHum = this._getSetHum(stateObj);
       this._rescale_svg();
+    }
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (!this.hass || !this._config || !changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setHum = this._getSetHum(stateObj);
     }
   }
 
@@ -228,9 +243,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     // This is not done to the SVG containing the current humidity, because
     // it should not be centered on the text, but only on the value
     if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (this.shadowRoot.querySelector(
-        "ha-card"
-      ) as LitElement).updateComplete.then(() => {
+      (
+        this.shadowRoot.querySelector("ha-card") as LitElement
+      ).updateComplete.then(() => {
         const svgRoot = this.shadowRoot!.querySelector("#set-values");
         const box = svgRoot!.querySelector("g")!.getBBox();
         svgRoot!.setAttribute(
@@ -268,7 +283,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -316,8 +331,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-color: var(--disabled-text-color);
-        --round-slider-bar-color: var(--mode-color);
+        --round-slider-path-color: var(--slider-track-color);
+        --round-slider-bar-color: var(--primary-color);
         padding-bottom: 10%;
       }
 
@@ -361,16 +376,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         padding: 16px;
         margin-top: -60px;
         font-size: var(--name-font-size);
-      }
-
-      #modes > * {
-        color: var(--disabled-text-color);
-        cursor: pointer;
-        display: inline-block;
-      }
-
-      #modes .selected-icon {
-        color: var(--mode-color);
       }
 
       text {

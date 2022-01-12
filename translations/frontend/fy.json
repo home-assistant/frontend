@@ -1,4 +1,12 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "user": "Brûker"
+        }
+    },
+    "groups": {
+        "system-users": "Brûkers"
+    },
     "panel": {
         "config": "Konfiguraasje",
         "history": "Skiednis",
@@ -6,6 +14,14 @@
         "mailbox": "Postfak",
         "map": "Kaart",
         "shopping_list": "Boadskiplist"
+    },
+    "state": {
+        "default": {
+            "off": "Út",
+            "on": "Oan",
+            "unavailable": "Net beskikber",
+            "unknown": "Ûnbekend"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -29,19 +45,44 @@
             "home": "Thús"
         }
     },
-    "state": {
-        "default": {
-            "off": "Út",
-            "on": "Oan",
-            "unavailable": "Net beskikber",
-            "unknown": "Ûnbekend"
-        }
-    },
     "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "label": {
+                        "docker": "docker"
+                    }
+                },
+                "install": "ynstallearje",
+                "start": "start",
+                "stop": "stop"
+            },
+            "panel": {
+                "info": "Ynfo"
+            }
+        },
+        "backup": {
+            "create": "Meitsje",
+            "created": "Makke",
+            "delete_backup_confirm": "ferwiderje",
+            "failed_to_delete": "Ferwiderje is mislearre",
+            "selected": "{number} selekteare"
+        },
         "common": {
-            "close": "Slute"
+            "close": "Slute",
+            "no": "Nee",
+            "refresh": "Ferfarskje",
+            "restart": "Opnij starte",
+            "restart_name": "{Name} opnij starte",
+            "yes": "Ja"
         },
         "dialog": {
+            "network": {
+                "open": "Iepenje"
+            },
+            "registries": {
+                "username": "Brûkersnamme"
+            },
             "repositories": {
                 "add": "Tafoegje"
             },
@@ -50,14 +91,20 @@
                 "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
             },
             "update": {
-                "create_snapshot": "Meitsje in momintopname fan {name} foardat jo bywurkje",
-                "snapshot": "Momintopname",
-                "snapshotting": "Momintopname oanmeitsjen fan {name}",
                 "updating": "{name} bywurkje nei ferzje {version}"
             }
         },
         "my": {
             "error_addon_not_found": "Add-on net fûn"
+        },
+        "system": {
+            "host": {
+                "change": "Feroarje"
+            },
+            "supervisor": {
+                "search": "Sykje",
+                "warning": "Warskoging"
+            }
         }
     },
     "ui": {
@@ -110,14 +157,46 @@
                     "name": "Namme"
                 }
             },
+            "blueprint-picker": {
+                "add_user": "Brûker tafoegje"
+            },
+            "calendar": {
+                "today": "Hjoed"
+            },
+            "data-table": {
+                "clear": "Opklearje"
+            },
+            "date-range-picker": {
+                "ranges": {
+                    "last_week": "Foarige wike",
+                    "this_week": "Dizze wike",
+                    "today": "Hjoed",
+                    "yesterday": "Juster"
+                }
+            },
             "device-picker": {
                 "device": "Apparaat",
                 "toggle": "Skeakelje"
+            },
+            "user-picker": {
+                "add_user": "Brûker tafoegje",
+                "no_user": "Gjin brûker"
             }
         },
         "dialogs": {
             "generic": {
                 "cancel": "Annulearje"
+            },
+            "quick-bar": {
+                "commands": {
+                    "navigation": {
+                        "users": "Brûkers"
+                    },
+                    "types": {
+                        "navigation": "Navigearje",
+                        "server_control": "Server"
+                    }
+                }
             },
             "zha_device_info": {
                 "zha_device_card": {
@@ -142,6 +221,12 @@
                             "type": {
                                 "choose": {
                                     "add_option": "Opsje tafoegje"
+                                },
+                                "device_id": {
+                                    "extra_fields": {
+                                        "mode": "Wize",
+                                        "value": "Wearde"
+                                    }
                                 }
                             }
                         },
@@ -195,10 +280,19 @@
                 },
                 "blueprint": {
                     "overview": {
+                        "headers": {
+                            "name": "Namme"
+                        },
                         "share_blueprint": "Diel blaudruk"
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "connecting": "Ferbine …",
+                        "tts": {
+                            "try": "bisykje"
+                        }
+                    },
                     "alexa": {
                         "title": "Alexa"
                     },
@@ -210,7 +304,10 @@
                     "data_table": {
                         "device": "Apparaat"
                     },
-                    "device_not_found": "Apparaat net fûn."
+                    "device_not_found": "Apparaat net fûn.",
+                    "disabled_by": {
+                        "user": "Gebrûker"
+                    }
                 },
                 "helpers": {
                     "types": {
@@ -220,6 +317,26 @@
                 },
                 "info": {
                     "description": "Ynformaasje oer dyn Home Assistant ynstallaasje"
+                },
+                "integrations": {
+                    "config_entry": {
+                        "configure": "Ynstelle",
+                        "disable": {
+                            "disabled_by": {
+                                "user": "Gebrûker"
+                            }
+                        }
+                    },
+                    "disable": {
+                        "show": "Toan"
+                    }
+                },
+                "logs": {
+                    "level": {
+                        "critical": "KRITYSK",
+                        "info": "YNFO",
+                        "warning": "WARSKÔGING"
+                    }
                 },
                 "lovelace": {
                     "description": "Konfigurearje dyn Lovelace-dashboards",
@@ -241,6 +358,8 @@
                         "name": "Namme"
                     },
                     "picker": {
+                        "duplicate": "Duplisearje",
+                        "duplicate_scene": "Duplisearje sêne",
                         "headers": {
                             "name": "Namme"
                         }
@@ -255,12 +374,18 @@
                     }
                 },
                 "users": {
+                    "add_user": {
+                        "caption": "Brûker tafoegje"
+                    },
                     "editor": {
-                        "password_changed": "It wachtwurd is feroare!"
+                        "password_changed": "It wachtwurd is feroare!",
+                        "username": "Brûkersnamme"
                     },
                     "picker": {
                         "headers": {
-                            "name": "Namme"
+                            "is_owner": "Eigner",
+                            "name": "Namme",
+                            "username": "Brûkersnamme"
                         }
                     }
                 },
@@ -282,17 +407,10 @@
                     }
                 }
             },
-            "error": {
-                "supervisor": {
-                    "ask": "Om help freegje",
-                    "system_health": "Kontrolearje systeem sûnens",
-                    "title": "Koe it paniel Supervisor net lade!"
-                }
-            },
             "lovelace": {
                 "cards": {
                     "starting": {
-                        "description": "Home Assistant komt op gong, eefkes geduld..."
+                        "description": "Home Assistant komt op gong, eefkes geduld…"
                     }
                 },
                 "editor": {
@@ -338,6 +456,13 @@
                     }
                 }
             },
+            "page-onboarding": {
+                "analytics": {
+                    "finish": "Folgjende"
+                },
+                "finish": "Ein",
+                "next": "Folgjende"
+            },
             "profile": {
                 "advanced_mode": {
                     "link_promo": "Lear mear"
@@ -348,6 +473,11 @@
                 },
                 "mfa_setup": {
                     "close": "Slute"
+                },
+                "number_format": {
+                    "formats": {
+                        "none": "Gjin"
+                    }
                 },
                 "themes": {
                     "dark_mode": {

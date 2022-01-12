@@ -1,4 +1,5 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { Selector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
@@ -9,11 +10,11 @@ import "./ha-selector-boolean";
 import "./ha-selector-device";
 import "./ha-selector-entity";
 import "./ha-selector-number";
-import "./ha-selector-target";
-import "./ha-selector-time";
 import "./ha-selector-object";
-import "./ha-selector-text";
 import "./ha-selector-select";
+import "./ha-selector-target";
+import "./ha-selector-text";
+import "./ha-selector-time";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

@@ -50,7 +50,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .single-row {
           padding: 8px 0;
         }
-        }
       </style>
 
       <div class$="[[computeClassNames(stateObj)]]">

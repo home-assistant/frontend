@@ -1,35 +1,46 @@
+import { historyPromise } from "../state/url-sync-mixin";
 import { fireEvent } from "./dom/fire_event";
+import { mainWindow } from "./dom/get_main_window";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "location-changed": {
-      replace: boolean;
-    };
+    "location-changed": NavigateOptions;
   }
 }
 
-export const navigate = (_node: any, path: string, replace = false) => {
+export interface NavigateOptions {
+  replace?: boolean;
+}
+
+export const navigate = (path: string, options?: NavigateOptions) => {
+  const replace = options?.replace || false;
+
+  if (historyPromise) {
+    historyPromise.then(() => navigate(path, options));
+    return;
+  }
+
   if (__DEMO__) {
     if (replace) {
-      top.history.replaceState(
-        top.history.state?.root ? { root: true } : null,
+      mainWindow.history.replaceState(
+        mainWindow.history.state?.root ? { root: true } : null,
         "",
-        `${top.location.pathname}#${path}`
+        `${mainWindow.location.pathname}#${path}`
       );
     } else {
-      top.location.hash = path;
+      mainWindow.location.hash = path;
     }
   } else if (replace) {
-    top.history.replaceState(
-      top.history.state?.root ? { root: true } : null,
+    mainWindow.history.replaceState(
+      mainWindow.history.state?.root ? { root: true } : null,
       "",
       path
     );
   } else {
-    top.history.pushState(null, "", path);
+    mainWindow.history.pushState(null, "", path);
   }
-  fireEvent(top, "location-changed", {
+  fireEvent(mainWindow, "location-changed", {
     replace,
   });
 };

@@ -4,7 +4,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
-import { FrontendTranslationData } from "./translation";
+import { FrontendLocaleData } from "./translation";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -53,11 +53,89 @@ export interface HistoryResult {
   timeline: TimelineEntity[];
 }
 
+export type StatisticType = "sum" | "min" | "max" | "mean";
+
+export interface Statistics {
+  [statisticId: string]: StatisticValue[];
+}
+
+export interface StatisticValue {
+  statistic_id: string;
+  start: string;
+  end: string;
+  last_reset: string | null;
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  sum: number | null;
+  state: number | null;
+}
+
+export interface StatisticsMetaData {
+  unit_of_measurement: string;
+  statistic_id: string;
+  source: string;
+  name?: string | null;
+}
+
+export type StatisticsValidationResult =
+  | StatisticsValidationResultNoState
+  | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultEntityNoLongerRecorded
+  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultUnsupportedUnitMetadata
+  | StatisticsValidationResultUnsupportedUnitState;
+
+export interface StatisticsValidationResultNoState {
+  type: "no_state";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultEntityNoLongerRecorded {
+  type: "entity_no_longer_recorded";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultEntityNotRecorded {
+  type: "entity_not_recorded";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultUnsupportedStateClass {
+  type: "unsupported_state_class";
+  data: { statistic_id: string; state_class: string };
+}
+
+export interface StatisticsValidationResultUnitsChanged {
+  type: "units_changed";
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitMetadata {
+  type: "unsupported_unit_metadata";
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitState {
+  type: "unsupported_unit_state";
+  data: { statistic_id: string; device_class: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResults {
+  [statisticId: string]: StatisticsValidationResult[];
+}
+
 export const fetchRecent = (
-  hass,
-  entityId,
-  startTime,
-  endTime,
+  hass: HomeAssistant,
+  entityId: string,
+  startTime: Date,
+  endTime: Date,
   skipInitialState = false,
   significantChangesOnly?: boolean,
   minimalResponse = true
@@ -87,7 +165,7 @@ export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityId
+  entityId?: string
 ): Promise<HassEntity[][]> =>
   hass.callApi(
     "GET",
@@ -109,7 +187,7 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 
 const processTimelineEntity = (
   localize: LocalizeFunc,
-  language: FrontendTranslationData,
+  language: FrontendLocaleData,
   states: HassEntity[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
@@ -216,20 +294,26 @@ export const computeHistory = (
       return;
     }
 
-    const stateWithUnit = stateInfo.find(
-      (state) => state.attributes && "unit_of_measurement" in state.attributes
+    const stateWithUnitorStateClass = stateInfo.find(
+      (state) =>
+        state.attributes &&
+        ("unit_of_measurement" in state.attributes ||
+          "state_class" in state.attributes)
     );
 
     let unit: string | undefined;
 
-    if (stateWithUnit) {
-      unit = stateWithUnit.attributes.unit_of_measurement;
-    } else if (computeStateDomain(stateInfo[0]) === "climate") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
-      unit = "%";
+    if (stateWithUnitorStateClass) {
+      unit = stateWithUnitorStateClass.attributes.unit_of_measurement || " ";
+    } else {
+      unit = {
+        climate: hass.config.unit_system.temperature,
+        counter: "#",
+        humidifier: "%",
+        input_number: "#",
+        number: "#",
+        water_heater: hass.config.unit_system.temperature,
+      }[computeStateDomain(stateInfo[0])];
     }
 
     if (!unit) {
@@ -249,3 +333,98 @@ export const computeHistory = (
 
   return { line: unitStates, timeline: timelineDevices };
 };
+
+// Statistics
+
+export const getStatisticIds = (
+  hass: HomeAssistant,
+  statistic_type?: "mean" | "sum"
+) =>
+  hass.callWS<StatisticsMetaData[]>({
+    type: "history/list_statistic_ids",
+    statistic_type,
+  });
+
+export const fetchStatistics = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime?: Date,
+  statistic_ids?: string[],
+  period: "5minute" | "hour" | "day" | "month" = "hour"
+) =>
+  hass.callWS<Statistics>({
+    type: "history/statistics_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime?.toISOString(),
+    statistic_ids,
+    period,
+  });
+
+export const validateStatistics = (hass: HomeAssistant) =>
+  hass.callWS<StatisticsValidationResults>({
+    type: "recorder/validate_statistics",
+  });
+
+export const updateStatisticsMetadata = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  unit_of_measurement: string | null
+) =>
+  hass.callWS<void>({
+    type: "recorder/update_statistics_metadata",
+    statistic_id,
+    unit_of_measurement,
+  });
+
+export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
+  hass.callWS<void>({
+    type: "recorder/clear_statistics",
+    statistic_ids,
+  });
+
+export const calculateStatisticSumGrowth = (
+  values: StatisticValue[]
+): number | null => {
+  if (!values || values.length < 2) {
+    return null;
+  }
+  const endSum = values[values.length - 1].sum;
+  if (endSum === null) {
+    return null;
+  }
+  const startSum = values[0].sum;
+  if (startSum === null) {
+    return endSum;
+  }
+  return endSum - startSum;
+};
+
+export const calculateStatisticsSumGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | null => {
+  let totalGrowth: number | null = null;
+
+  for (const stat of stats) {
+    if (!(stat in data)) {
+      continue;
+    }
+    const statGrowth = calculateStatisticSumGrowth(data[stat]);
+
+    if (statGrowth === null) {
+      continue;
+    }
+    if (totalGrowth === null) {
+      totalGrowth = statGrowth;
+    } else {
+      totalGrowth += statGrowth;
+    }
+  }
+
+  return totalGrowth;
+};
+
+export const statisticsHaveType = (
+  stats: StatisticValue[],
+  type: StatisticType
+) => stats.some((stat) => stat[type] !== null);

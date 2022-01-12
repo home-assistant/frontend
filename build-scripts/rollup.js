@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 
 const commonjs = require("@rollup/plugin-commonjs");
@@ -32,88 +33,77 @@ const createRollupConfig = ({
   publicPath,
   dontHash,
   isWDS,
-}) => {
-  return {
-    /**
-     * @type { import("rollup").InputOptions }
-     */
-    inputOptions: {
-      input: entry,
-      // Some entry points contain no JavaScript. This setting silences a warning about that.
-      // https://rollupjs.org/guide/en/#preserveentrysignatures
-      preserveEntrySignatures: false,
-      plugins: [
-        ignore({
-          files: bundle.emptyPackages({ latestBuild }),
+}) => ({
+  /**
+   * @type { import("rollup").InputOptions }
+   */
+  inputOptions: {
+    input: entry,
+    // Some entry points contain no JavaScript. This setting silences a warning about that.
+    // https://rollupjs.org/guide/en/#preserveentrysignatures
+    preserveEntrySignatures: false,
+    plugins: [
+      ignore({
+        files: bundle.emptyPackages({ latestBuild }),
+      }),
+      resolve({
+        extensions,
+        preferBuiltins: false,
+        browser: true,
+        rootDir: paths.polymer_dir,
+      }),
+      commonjs(),
+      json(),
+      babel({
+        ...bundle.babelOptions({ latestBuild }),
+        extensions,
+        babelHelpers: isWDS ? "inline" : "bundled",
+      }),
+      string({
+        // Import certain extensions as strings
+        include: [path.join(paths.polymer_dir, "node_modules/**/*.css")],
+      }),
+      replace(bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })),
+      !isWDS &&
+        manifest({
+          publicPath,
         }),
-        resolve({
-          extensions,
-          preferBuiltins: false,
-          browser: true,
-          rootDir: paths.polymer_dir,
+      !isWDS && worker(),
+      !isWDS && dontHashPlugin({ dontHash }),
+      !isWDS && isProdBuild && terser(bundle.terserOptions(latestBuild)),
+      !isWDS &&
+        isStatsBuild &&
+        visualizer({
+          // https://github.com/btd/rollup-plugin-visualizer#options
+          open: true,
+          sourcemap: true,
         }),
-        commonjs({
-          namedExports: {
-            "js-yaml": ["safeDump", "safeLoad"],
-          },
-        }),
-        json(),
-        babel({
-          ...bundle.babelOptions({ latestBuild }),
-          extensions,
-          exclude: bundle.babelExclude(),
-          babelHelpers: isWDS ? "inline" : "bundled",
-        }),
-        string({
-          // Import certain extensions as strings
-          include: [path.join(paths.polymer_dir, "node_modules/**/*.css")],
-        }),
-        replace(
-          bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
-        ),
-        !isWDS &&
-          manifest({
-            publicPath,
-          }),
-        !isWDS && worker(),
-        !isWDS && dontHashPlugin({ dontHash }),
-        !isWDS && isProdBuild && terser(bundle.terserOptions(latestBuild)),
-        !isWDS &&
-          isStatsBuild &&
-          visualizer({
-            // https://github.com/btd/rollup-plugin-visualizer#options
-            open: true,
-            sourcemap: true,
-          }),
-      ].filter(Boolean),
-    },
-    /**
-     * @type { import("rollup").OutputOptions }
-     */
-    outputOptions: {
-      // https://rollupjs.org/guide/en/#outputdir
-      dir: outputPath,
-      // https://rollupjs.org/guide/en/#outputformat
-      format: latestBuild ? "es" : "systemjs",
-      // https://rollupjs.org/guide/en/#outputexternallivebindings
-      externalLiveBindings: false,
-      // https://rollupjs.org/guide/en/#outputentryfilenames
-      // https://rollupjs.org/guide/en/#outputchunkfilenames
-      // https://rollupjs.org/guide/en/#outputassetfilenames
-      entryFileNames:
-        isProdBuild && !isStatsBuild ? "[name]-[hash].js" : "[name].js",
-      chunkFileNames:
-        isProdBuild && !isStatsBuild ? "c.[hash].js" : "[name].js",
-      assetFileNames:
-        isProdBuild && !isStatsBuild ? "a.[hash].js" : "[name].js",
-      // https://rollupjs.org/guide/en/#outputsourcemap
-      sourcemap: isProdBuild ? true : "inline",
-    },
-  };
-};
+    ].filter(Boolean),
+  },
+  /**
+   * @type { import("rollup").OutputOptions }
+   */
+  outputOptions: {
+    // https://rollupjs.org/guide/en/#outputdir
+    dir: outputPath,
+    // https://rollupjs.org/guide/en/#outputformat
+    format: latestBuild ? "es" : "systemjs",
+    // https://rollupjs.org/guide/en/#outputexternallivebindings
+    externalLiveBindings: false,
+    // https://rollupjs.org/guide/en/#outputentryfilenames
+    // https://rollupjs.org/guide/en/#outputchunkfilenames
+    // https://rollupjs.org/guide/en/#outputassetfilenames
+    entryFileNames:
+      isProdBuild && !isStatsBuild ? "[name]-[hash].js" : "[name].js",
+    chunkFileNames: isProdBuild && !isStatsBuild ? "c.[hash].js" : "[name].js",
+    assetFileNames: isProdBuild && !isStatsBuild ? "a.[hash].js" : "[name].js",
+    // https://rollupjs.org/guide/en/#outputsourcemap
+    sourcemap: isProdBuild ? true : "inline",
+  },
+});
 
-const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild, isWDS }) => {
-  return createRollupConfig(
+const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild, isWDS }) =>
+  createRollupConfig(
     bundle.config.app({
       isProdBuild,
       latestBuild,
@@ -121,31 +111,24 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild, isWDS }) => {
       isWDS,
     })
   );
-};
 
-const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  return createRollupConfig(
+const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+  createRollupConfig(
     bundle.config.demo({
       isProdBuild,
       latestBuild,
       isStatsBuild,
     })
   );
-};
 
-const createCastConfig = ({ isProdBuild, latestBuild }) => {
-  return createRollupConfig(bundle.config.cast({ isProdBuild, latestBuild }));
-};
+const createCastConfig = ({ isProdBuild, latestBuild }) =>
+  createRollupConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({ isProdBuild, latestBuild }) => {
-  return createRollupConfig(bundle.config.hassio({ isProdBuild, latestBuild }));
-};
+const createHassioConfig = ({ isProdBuild, latestBuild }) =>
+  createRollupConfig(bundle.config.hassio({ isProdBuild, latestBuild }));
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) => {
-  return createRollupConfig(
-    bundle.config.gallery({ isProdBuild, latestBuild })
-  );
-};
+const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
+  createRollupConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
 module.exports = {
   createAppConfig,

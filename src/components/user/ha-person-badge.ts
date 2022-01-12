@@ -1,16 +1,9 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { Person } from "../../data/person";
-import { computeInitials } from "./ha-user-badge";
+import { computeUserInitials } from "../../data/user";
 
 @customElement("ha-person-badge")
 class PersonBadge extends LitElement {
@@ -29,7 +22,7 @@ class PersonBadge extends LitElement {
         class="picture"
       ></div>`;
     }
-    const initials = computeInitials(this.person.name);
+    const initials = computeUserInitials(this.person.name);
     return html`<div
       class="initials ${classMap({ long: initials!.length > 2 })}"
     >
@@ -37,7 +30,7 @@ class PersonBadge extends LitElement {
     </div>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: contents;

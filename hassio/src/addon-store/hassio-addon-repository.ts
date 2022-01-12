@@ -1,15 +1,10 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
-import {
-  css,
-  CSSResultArray,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
+import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
 import {
   HassioAddonInfo,
@@ -38,7 +33,7 @@ class HassioAddonRepositoryEl extends LitElement {
         return filterAndSort(addons, filter);
       }
       return addons.sort((a, b) =>
-        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+        caseInsensitiveStringCompare(a.name, b.name)
       );
     }
   );
@@ -126,10 +121,10 @@ class HassioAddonRepositoryEl extends LitElement {
   }
 
   private _addonTapped(ev) {
-    navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
+    navigate(`/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       hassioStyle,
       css`

@@ -1,30 +1,46 @@
-import { directive, NodePart, Part } from "lit-html";
+import { noChange } from "lit";
+import {
+  ChildPart,
+  Directive,
+  directive,
+  DirectiveParameters,
+  PartInfo,
+  PartType,
+} from "lit/directive";
 
 export const dynamicElement = directive(
-  (tag: string, properties?: Record<string, any>) => (part: Part): void => {
-    if (!(part instanceof NodePart)) {
-      throw new Error(
-        "dynamicElementDirective can only be used in content bindings"
-      );
+  class extends Directive {
+    private _element?: HTMLElement;
+
+    constructor(partInfo: PartInfo) {
+      super(partInfo);
+      if (partInfo.type !== PartType.CHILD) {
+        throw new Error(
+          "dynamicElementDirective can only be used in content bindings"
+        );
+      }
     }
 
-    let element = part.value as HTMLElement | undefined;
+    update(_part: ChildPart, [tag, properties]: DirectiveParameters<this>) {
+      if (this._element && this._element.localName === tag) {
+        if (properties) {
+          Object.entries(properties).forEach(([key, value]) => {
+            this._element![key] = value;
+          });
+        }
+        return noChange;
+      }
+      return this.render(tag, properties);
+    }
 
-    if (tag === element?.localName) {
+    render(tag: string, properties?: Record<string, any>): HTMLElement {
+      this._element = document.createElement(tag);
       if (properties) {
         Object.entries(properties).forEach(([key, value]) => {
-          element![key] = value;
+          this._element![key] = value;
         });
       }
-      return;
+      return this._element;
     }
-
-    element = document.createElement(tag);
-    if (properties) {
-      Object.entries(properties).forEach(([key, value]) => {
-        element![key] = value;
-      });
-    }
-    part.setValue(element);
   }
 );

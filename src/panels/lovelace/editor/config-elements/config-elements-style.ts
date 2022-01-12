@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const configElementStyle = css`
   ha-switch {
@@ -6,6 +6,7 @@ export const configElementStyle = css`
   }
   .side-by-side {
     display: flex;
+    align-items: flex-end;
   }
   .side-by-side > * {
     flex: 1;

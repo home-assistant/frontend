@@ -1,35 +1,37 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
-import { EntityConfig, LovelaceRow } from "./types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-number-entity-row")
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
   private _updated?: boolean;
+
+  private _resizeObserver?: ResizeObserver;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -43,6 +45,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     if (this._updated && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
+  }
+
+  public disconnectedCallback(): void {
+    this._resizeObserver?.disconnect();
   }
 
   protected firstUpdated(): void {
@@ -50,6 +57,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     if (this.isConnected && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -73,18 +81,22 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.attributes.mode === "slider"
+        ${stateObj.attributes.mode === "slider" ||
+        (stateObj.attributes.mode === "auto" &&
+          (Number(stateObj.attributes.max) - Number(stateObj.attributes.min)) /
+            Number(stateObj.attributes.step) <=
+            256)
           ? html`
               <div class="flex">
                 <ha-slider
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   pin
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   ignore-bar-touch
                   id="input"
                 ></ha-slider>
@@ -103,14 +115,14 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 <paper-input
                   no-label-float
                   auto-validate
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
-                  .step="${Number(stateObj.attributes.step)}"
-                  .min="${Number(stateObj.attributes.min)}"
-                  .max="${Number(stateObj.attributes.max)}"
-                  .value="${Number(stateObj.state)}"
+                  .step=${Number(stateObj.attributes.step)}
+                  .min=${Number(stateObj.attributes.min)}
+                  .max=${Number(stateObj.attributes.max)}
+                  .value=${Number(stateObj.state)}
                   type="number"
-                  @change="${this._selectedValueChanged}"
+                  @change=${this._selectedValueChanged}
                   id="input"
                 ></paper-input>
                 ${stateObj.attributes.unit_of_measurement}
@@ -120,8 +132,12 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
+      :host {
+        cursor: pointer;
+        display: block;
+      }
       .flex {
         display: flex;
         align-items: center;
@@ -139,27 +155,41 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
         width: 100%;
         max-width: 200px;
       }
-      :host {
-        cursor: pointer;
-      }
     `;
   }
 
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
     await this.updateComplete;
-    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+    this._measureCard();
+  }
 
-    if (!element || !this.parentElement) {
+  private _measureCard() {
+    if (!this.isConnected) {
       return;
     }
+    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+    if (!element) {
+      return;
+    }
+    element.hidden = this.clientWidth <= 300;
+  }
 
-    element.hidden = this.parentElement.clientWidth <= 350;
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    if (this.isConnected) {
+      this._resizeObserver.observe(this);
+    }
   }
 
   private get _inputElement(): { value: string } {
     // linter recommended the following syntax
-    return (this.shadowRoot!.getElementById("input") as unknown) as {
+    return this.shadowRoot!.getElementById("input") as unknown as {
       value: string;
     };
   }

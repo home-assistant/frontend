@@ -1,26 +1,18 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { any, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
+import { entityIdOrAll } from "../../../../../common/structs/is-entity-id";
+import "../../../../../components/ha-service-control";
 import { ServiceAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
-import { EntityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement } from "../ha-automation-action-row";
-import "../../../../../components/ha-service-control";
-import { hasTemplate } from "../../../../../common/string/has-template";
 
 const actionStruct = object({
   service: optional(string()),
-  entity_id: optional(EntityIdOrAll),
+  entity_id: optional(entityIdOrAll()),
   target: optional(any()),
   data: optional(any()),
 });
@@ -33,7 +25,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _action!: ServiceAction;
+  @state() private _action!: ServiceAction;
 
   public static get defaultConfig() {
     return { service: "", data: {} };
@@ -45,8 +37,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
     try {
       assert(this.action, actionStruct);
-    } catch (error) {
-      fireEvent(this, "ui-mode-not-available", error);
+    } catch (err: any) {
+      fireEvent(this, "ui-mode-not-available", err);
       return;
     }
     if (this.action && hasTemplate(this.action)) {
@@ -86,7 +78,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-service-control {
         display: block;

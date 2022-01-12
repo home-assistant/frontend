@@ -1,17 +1,17 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { mdiCheck, mdiDotsHorizontal } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { LocalizeFunc } from "../common/translations/localize";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import {
@@ -21,6 +21,7 @@ import {
 } from "../data/config_flow";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
 import { domainToName } from "../data/integration";
+import { scanUSBDevices } from "../data/usb";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
@@ -29,7 +30,7 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
-const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
+const HIDDEN_DOMAINS = new Set(["met", "rpi_power", "hassio"]);
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
@@ -37,9 +38,9 @@ class OnboardingIntegrations extends LitElement {
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @internalProperty() private _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
-  @internalProperty() private _discovered?: DataEntryFlowProgress[];
+  @state() private _discovered?: DataEntryFlowProgress[];
 
   private _unsubEvents?: () => void;
 
@@ -79,7 +80,8 @@ class OnboardingIntegrations extends LitElement {
             <integration-badge
               .domain=${entry.domain}
               .title=${title}
-              badgeIcon="hass:check"
+              .badgeIcon=${mdiCheck}
+              .darkOptimizedIcon=${this.hass.themes?.darkMode}
             ></integration-badge>
           `,
         ];
@@ -96,6 +98,7 @@ class OnboardingIntegrations extends LitElement {
                 clickable
                 .domain=${flow.handler}
                 .title=${title}
+                .darkOptimizedIcon=${this.hass.themes?.darkMode}
               ></integration-badge>
             </button>
           `,
@@ -103,7 +106,7 @@ class OnboardingIntegrations extends LitElement {
       }
     );
     const content = [...entries, ...discovered]
-      .sort((a, b) => compare(a[0], b[0]))
+      .sort((a, b) => stringCompare(a[0], b[0]))
       .map((item) => item[1]);
 
     return html`
@@ -118,7 +121,7 @@ class OnboardingIntegrations extends LitElement {
             title=${this.onboardingLocalize(
               "ui.panel.page-onboarding.integration.more_integrations"
             )}
-            icon="hass:dots-horizontal"
+            .icon=${mdiDotsHorizontal}
           ></action-badge>
         </button>
       </div>
@@ -134,6 +137,7 @@ class OnboardingIntegrations extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this._scanUSBDevices();
     loadConfigFlowDialog();
     this._loadConfigEntries();
     /* polyfill for paper-dropdown */
@@ -159,6 +163,13 @@ class OnboardingIntegrations extends LitElement {
     });
   }
 
+  private async _scanUSBDevices() {
+    if (!isComponentLoaded(this.hass, "usb")) {
+      return;
+    }
+    await scanUSBDevices(this.hass);
+  }
+
   private async _loadConfigEntries() {
     const entries = await getConfigEntries(this.hass!);
     // We filter out the config entry for the local weather and rpi_power.
@@ -175,7 +186,7 @@ class OnboardingIntegrations extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .badges {
         margin-top: 24px;

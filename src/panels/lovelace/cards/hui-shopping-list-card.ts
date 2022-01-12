@@ -1,25 +1,22 @@
 import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { guard } from "lit-html/directives/guard";
-import { repeat } from "lit-html/directives/repeat";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { guard } from "lit/directives/guard";
+import { repeat } from "lit/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-checkbox";
 import {
   addItem,
   clearItems,
@@ -38,7 +35,8 @@ let Sortable;
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
   extends SubscribeMixin(LitElement)
-  implements LovelaceCard {
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-shopping-list-editor");
     return document.createElement("hui-shopping-list-card-editor");
@@ -50,15 +48,15 @@ class HuiShoppingListCard
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ShoppingListCardConfig;
+  @state() private _config?: ShoppingListCardConfig;
 
-  @internalProperty() private _uncheckedItems?: ShoppingListItem[];
+  @state() private _uncheckedItems?: ShoppingListItem[];
 
-  @internalProperty() private _checkedItems?: ShoppingListItem[];
+  @state() private _checkedItems?: ShoppingListItem[];
 
-  @internalProperty() private _reordering = false;
+  @state() private _reordering = false;
 
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _sortable?;
 
@@ -180,12 +178,12 @@ class HuiShoppingListCard
                 (item) =>
                   html`
                     <div class="editRow">
-                      <paper-checkbox
+                      <ha-checkbox
                         tabindex="0"
-                        ?checked=${item.complete}
+                        .checked=${item.complete}
                         .itemId=${item.id}
-                        @click=${this._completeItem}
-                      ></paper-checkbox>
+                        @change=${this._completeItem}
+                      ></ha-checkbox>
                       <paper-input
                         no-label-float
                         .value=${item.name}
@@ -209,12 +207,12 @@ class HuiShoppingListCard
         (item) =>
           html`
             <div class="editRow" item-id=${item.id}>
-              <paper-checkbox
+              <ha-checkbox
                 tabindex="0"
-                ?checked=${item.complete}
+                .checked=${item.complete}
                 .itemId=${item.id}
-                @click=${this._completeItem}
-              ></paper-checkbox>
+                @change=${this._completeItem}
+              ></ha-checkbox>
               <paper-input
                 no-label-float
                 .value=${item.name}
@@ -348,7 +346,7 @@ class HuiShoppingListCard
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding: 16px;
@@ -368,11 +366,6 @@ class HuiShoppingListCard
         align-items: center;
       }
 
-      .addRow ha-icon {
-        color: var(--secondary-text-color);
-        --mdc-icon-size: 26px;
-      }
-
       .addButton {
         padding-right: 16px;
         cursor: pointer;
@@ -383,10 +376,8 @@ class HuiShoppingListCard
         cursor: pointer;
       }
 
-      paper-checkbox {
-        padding-left: 4px;
-        padding-right: 20px;
-        --paper-checkbox-label-spacing: 0px;
+      ha-checkbox {
+        margin-left: -12px;
       }
 
       paper-input {

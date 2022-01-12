@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor } from "../../types";

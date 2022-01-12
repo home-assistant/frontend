@@ -4,17 +4,12 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -24,8 +19,6 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-service-control";
-import memoizeOne from "memoize-one";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -40,18 +33,18 @@ export class HuiActionEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
 
   get _navigation_path(): string {
-    const config = this.config as NavigateActionConfig;
-    return config.navigation_path || "";
+    const config = this.config as NavigateActionConfig | undefined;
+    return config?.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config as UrlActionConfig;
-    return config.url_path || "";
+    const config = this.config as UrlActionConfig | undefined;
+    return config?.url_path || "";
   }
 
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
-    return config.service || "";
+    return config?.service || "";
   }
 
   private _serviceAction = memoizeOne(
@@ -152,9 +145,9 @@ export class HuiActionEditor extends LitElement {
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
       if (this.config?.action) {
-        (this.shadowRoot!.querySelector(
-          "paper-listbox"
-        ) as PaperListboxElement).select(this.config.action);
+        (
+          this.shadowRoot!.querySelector("paper-listbox") as PaperListboxElement
+        ).select(this.config.action);
       }
       return;
     }
@@ -209,7 +202,7 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .dropdown {
         display: flex;

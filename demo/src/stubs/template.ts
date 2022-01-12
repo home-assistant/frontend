@@ -6,7 +6,7 @@ export const mockTemplate = (hass: MockHomeAssistant) => {
       body: { message: "Template dev tool does not work in the demo." },
     })
   );
-  hass.mockWS("render_template", (msg, onChange) => {
+  hass.mockWS("render_template", (msg, _hass, onChange) => {
     onChange!({
       result: msg.template,
       listeners: { all: false, domains: [], entities: [], time: false },

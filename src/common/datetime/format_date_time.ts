@@ -1,26 +1,61 @@
-import { format } from "fecha";
-import { FrontendTranslationData } from "../../data/translation";
-import { toLocaleStringSupportsOptions } from "./check_options_support";
+import memoizeOne from "memoize-one";
+import { FrontendLocaleData } from "../../data/translation";
+import { useAmPm } from "./use_am_pm";
+import { polyfillsLoaded } from "../translations/localize";
 
-export const formatDateTime = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm");
+if (__BUILD__ === "latest" && polyfillsLoaded) {
+  await polyfillsLoaded;
+}
 
-export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm:ss");
+// August 9, 2021, 8:23 AM
+export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateTimeMem(locale).format(dateObj);
+
+const formatDateTimeMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
+
+// August 9, 2021, 8:23:15 AM
+export const formatDateTimeWithSeconds = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateTimeWithSecondsMem(locale).format(dateObj);
+
+const formatDateTimeWithSecondsMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
+
+// 9/8/2021, 8:23 AM
+export const formatDateTimeNumeric = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateTimeNumericMem(locale).format(dateObj);
+
+const formatDateTimeNumericMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);

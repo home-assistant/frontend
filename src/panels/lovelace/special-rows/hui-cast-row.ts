@@ -1,16 +1,14 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { CastManager } from "../../../cast/cast_manager";
 import {
   castSendShowLovelaceView,
@@ -24,11 +22,11 @@ import { CastConfig, LovelaceRow } from "../entity-rows/types";
 class HuiCastRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: CastConfig;
+  @state() private _config?: CastConfig;
 
-  @internalProperty() private _castManager?: CastManager | null;
+  @state() private _castManager?: CastManager | null;
 
-  @internalProperty() private _noHTTPS = false;
+  @state() private _noHTTPS = false;
 
   public setConfig(config: CastConfig): void {
     if (!config || config.view === undefined || config.view === null) {
@@ -58,7 +56,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       this._config.dashboard === this._castManager.status.urlPath;
 
     return html`
-      <ha-icon .icon="${this._config.icon}"></ha-icon>
+      <ha-icon .icon=${this._config.icon}></ha-icon>
       <div class="flex">
         <div class="name">${this._config.name}</div>
         ${this._noHTTPS
@@ -129,7 +127,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

@@ -1,18 +1,17 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { any, array, assert, object, optional, string } from "superstruct";
+  any,
+  array,
+  assert,
+  assign,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -24,6 +23,7 @@ import type { HuiCardElementEditor } from "../card-editor/hui-card-element-edito
 import "../card-editor/hui-card-picker";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -32,27 +32,30 @@ const conditionStruct = object({
   state: optional(string()),
   state_not: optional(string()),
 });
-const cardConfigStruct = object({
-  type: string(),
-  card: any(),
-  conditions: optional(array(conditionStruct)),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    card: any(),
+    conditions: optional(array(conditionStruct)),
+  })
+);
 
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() private _config?: ConditionalCardConfig;
+  @state() private _config?: ConditionalCardConfig;
 
-  @internalProperty() private _GUImode = true;
+  @state() private _GUImode = true;
 
-  @internalProperty() private _guiModeAvailable? = true;
+  @state() private _guiModeAvailable? = true;
 
-  @internalProperty() private _cardTab = false;
+  @state() private _cardTab = false;
 
   @query("hui-card-element-editor")
   private _cardEditorEl?: HuiCardElementEditor;
@@ -171,7 +174,7 @@ export class HuiConditionalCardEditor
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: '${this.hass?.states[cond.entity].state}')"
+                        )}: ${this.hass?.states[cond.entity].state})"
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
                           : cond.state}
@@ -299,7 +302,7 @@ export class HuiConditionalCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

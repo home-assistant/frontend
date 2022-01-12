@@ -4,15 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import {
@@ -34,13 +32,13 @@ export class ZwaveNodeConfig extends LitElement {
 
   @property() public selectedNode = -1;
 
-  @internalProperty() private _configItem?: ZWaveConfigItem;
+  @state() private _configItem?: ZWaveConfigItem;
 
-  @internalProperty() private _wakeupInput = -1;
+  @state() private _wakeupInput = -1;
 
-  @internalProperty() private _selectedConfigParameter = -1;
+  @state() private _selectedConfigParameter = -1;
 
-  @internalProperty() private _selectedConfigValue: number | string = -1;
+  @state() private _selectedConfigValue: number | string = -1;
 
   protected render(): TemplateResult {
     return html`
@@ -54,9 +52,9 @@ export class ZwaveNodeConfig extends LitElement {
             ? html`
                 <div class="card-actions">
                   <paper-input
-                    .floatLabel="${this.hass!.localize(
+                    .floatLabel=${this.hass!.localize(
                       "ui.panel.config.zwave.common.wakeup_interval"
-                    )}"
+                    )}
                     type="number"
                     .value=${this._wakeupInput !== -1
                       ? this._wakeupInput
@@ -107,9 +105,9 @@ export class ZwaveNodeConfig extends LitElement {
                 @iron-select=${this._selectedConfigParameterChanged}
               >
                 ${this.config.map(
-                  (state) => html`
+                  (entityState) => html`
                     <paper-item>
-                      ${state.key}: ${state.value.label}
+                      ${entityState.key}: ${entityState.value.label}
                     </paper-item>
                   `
                 )}
@@ -135,8 +133,8 @@ export class ZwaveNodeConfig extends LitElement {
                             @iron-select=${this._configValueSelectChanged}
                           >
                             ${this._configItem.value.data_items.map(
-                              (state) => html`
-                                <paper-item>${state}</paper-item>
+                              (entityState) => html`
+                                <paper-item>${entityState}</paper-item>
                               `
                             )}
                           </paper-listbox>
@@ -218,7 +216,7 @@ export class ZwaveNodeConfig extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

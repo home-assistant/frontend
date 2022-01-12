@@ -22,16 +22,16 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateWeekday } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import { getWeatherUnit, getWind } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
@@ -108,7 +108,7 @@ class MoreInfoWeather extends LitElement {
                   this.stateObj.attributes.pressure,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, "air_pressure")}
+                ${getWeatherUnit(this.hass, "pressure")}
               </div>
             </div>
           `
@@ -175,7 +175,7 @@ class MoreInfoWeather extends LitElement {
                   ${item.condition
                     ? html`
                         <ha-svg-icon
-                          .path="${weatherIcons[item.condition]}"
+                          .path=${weatherIcons[item.condition]}
                         ></ha-svg-icon>
                       `
                     : ""}
@@ -225,7 +225,7 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         color: var(--paper-item-icon-color);

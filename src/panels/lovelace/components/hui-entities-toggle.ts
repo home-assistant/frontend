@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -22,10 +20,10 @@ class HuiEntitiesToggle extends LitElement {
 
   @property({ attribute: false }) protected hass?: HomeAssistant;
 
-  @internalProperty() private _toggleEntities?: string[];
+  @state() private _toggleEntities?: string[];
 
-  public updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
         (entityId) =>
@@ -54,7 +52,7 @@ class HuiEntitiesToggle extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         width: 38px;
@@ -62,7 +60,7 @@ class HuiEntitiesToggle extends LitElement {
       }
       ha-switch {
         padding: 13px 5px;
-        margin: -4px -5px;
+        margin: -4px -8px;
       }
     `;
   }

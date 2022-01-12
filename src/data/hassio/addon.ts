@@ -1,8 +1,12 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HaFormSchema } from "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import { HomeAssistant } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import {
+  extractApiErrorMessage,
+  hassioApiResultExtractor,
+  HassioResponse,
+} from "./common";
 
 export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
@@ -186,16 +190,20 @@ export const setHassioAddonOption = async (
   data: HassioAddonSetOptionParams
 ) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
+    const response = await hass.callWS<HassioResponse<any>>({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options`,
       method: "post",
       data,
     });
-    return;
+
+    if (response.result === "error") {
+      throw Error(extractApiErrorMessage(response));
+    }
+    return response;
   }
 
-  await hass.callApi<HassioResponse<void>>(
+  return hass.callApi<HassioResponse<any>>(
     "POST",
     `hassio/addons/${slug}/options`,
     data
@@ -204,13 +212,15 @@ export const setHassioAddonOption = async (
 
 export const validateHassioAddonOption = async (
   hass: HomeAssistant,
-  slug: string
+  slug: string,
+  data?: any
 ): Promise<{ message: string; valid: boolean }> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options/validate`,
       method: "post",
+      data,
     });
   }
 

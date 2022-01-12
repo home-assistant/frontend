@@ -1,14 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -17,6 +9,7 @@ import {
   object,
   optional,
   string,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -30,31 +23,31 @@ import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import {
-  EditorTarget,
-  entitiesConfigStruct,
-  EntitiesEditorEvent,
-} from "../types";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  aspect_ratio: optional(string()),
-  default_zoom: optional(number()),
-  dark_mode: optional(boolean()),
-  entities: array(entitiesConfigStruct),
-  hours_to_show: optional(number()),
-  geo_location_sources: optional(array()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    aspect_ratio: optional(string()),
+    default_zoom: optional(number()),
+    dark_mode: optional(boolean()),
+    entities: array(entitiesConfigStruct),
+    hours_to_show: optional(number()),
+    geo_location_sources: optional(array(string())),
+  })
+);
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MapCardConfig;
+  @state() private _config?: MapCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
@@ -223,7 +216,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HassEvent } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -20,11 +12,11 @@ import { HomeAssistant } from "../../../types";
 class EventSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _eventType = "";
+  @state() private _eventType = "";
 
-  @internalProperty() private _subscribed?: () => void;
+  @state() private _subscribed?: () => void;
 
-  @internalProperty() private _events: Array<{
+  @state() private _events: Array<{
     id: number;
     event: HassEvent;
   }> = [];
@@ -118,7 +110,7 @@ class EventSubscribeCard extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       form {
         display: block;

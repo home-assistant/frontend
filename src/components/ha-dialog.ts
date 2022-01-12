@@ -1,48 +1,55 @@
-import "@material/mwc-dialog";
-import type { Dialog } from "@material/mwc-dialog";
-import { style } from "@material/mwc-dialog/mwc-dialog-css";
+import { Dialog } from "@material/mwc-dialog";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResult, customElement, html } from "lit-element";
+import { css, CSSResultGroup, html, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import { computeRTLDirection } from "../common/util/compute_rtl";
-import type { Constructor, HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
-const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
-
-export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
+export const createCloseHeading = (
+  hass: HomeAssistant,
+  title: string | TemplateResult
+) => html`
   <span class="header_title">${title}</span>
-  <mwc-icon-button
-    aria-label=${hass.localize("ui.dialogs.generic.close")}
+  <ha-icon-button
+    .label=${hass.localize("ui.dialogs.generic.close")}
+    .path=${mdiClose}
     dialogAction="close"
     class="header_button"
     dir=${computeRTLDirection(hass)}
-  >
-    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-  </mwc-icon-button>
+  ></ha-icon-button>
 `;
 
 @customElement("ha-dialog")
-export class HaDialog extends MwcDialog {
+// @ts-expect-error
+export class HaDialog extends Dialog {
   public scrollToPos(x: number, y: number) {
-    this.contentElement.scrollTo(x, y);
+    this.contentElement?.scrollTo(x, y);
   }
 
   protected renderHeading() {
     return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
   }
 
-  protected static get styles(): CSSResult[] {
+  protected static get styles(): CSSResultGroup {
     return [
-      style,
+      Dialog.styles,
       css`
         .mdc-dialog {
           --mdc-dialog-scroll-divider-color: var(--divider-color);
           z-index: var(--dialog-z-index, 7);
+          -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
           backdrop-filter: var(--dialog-backdrop-filter, none);
         }
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        }
+        .mdc-dialog__actions span:nth-child(1) {
+          flex: var(--secondary-action-button-flex, unset);
+        }
+        .mdc-dialog__actions span:nth-child(2) {
+          flex: var(--primary-action-button-flex, unset);
         }
         .mdc-dialog__container {
           align-items: var(--vertial-align-dialog, center);
@@ -65,6 +72,10 @@ export class HaDialog extends MwcDialog {
           position: var(--dialog-surface-position, relative);
           top: var(--dialog-surface-top);
           min-height: var(--mdc-dialog-min-height, auto);
+          border-radius: var(
+            --ha-dialog-border-radius,
+            var(--ha-card-border-radius, 4px)
+          );
         }
         :host([flexContent]) .mdc-dialog .mdc-dialog__content {
           display: flex;

@@ -1,16 +1,7 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { UNAVAILABLE } from "../../../data/entity";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -22,7 +13,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -55,13 +46,13 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
         <paper-input
           no-label-float
           .disabled=${stateObj.state === UNAVAILABLE}
-          .value="${stateObj.state}"
-          .minlength="${stateObj.attributes.min}"
-          .maxlength="${stateObj.attributes.max}"
-          .autoValidate="${stateObj.attributes.pattern}"
-          .pattern="${stateObj.attributes.pattern}"
-          .type="${stateObj.attributes.mode}"
-          @change="${this._selectedValueChanged}"
+          .value=${stateObj.state}
+          .minlength=${stateObj.attributes.min}
+          .maxlength=${stateObj.attributes.max}
+          .autoValidate=${stateObj.attributes.pattern}
+          .pattern=${stateObj.attributes.pattern}
+          .type=${stateObj.attributes.mode}
+          @change=${this._selectedValueChanged}
           placeholder="(empty value)"
         ></paper-input>
       </hui-generic-entity-row>
@@ -76,19 +67,17 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     const element = this._inputEl;
     const stateObj = this.hass!.states[this._config!.entity];
 
+    // Filter out invalid text states
+    if (element.value && UNAVAILABLE_STATES.includes(element.value)) {
+      element.value = stateObj.state;
+      return;
+    }
+
     if (element.value !== stateObj.state) {
       setValue(this.hass!, stateObj.entity_id, element.value!);
     }
 
     ev.target.blur();
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-    `;
   }
 }
 

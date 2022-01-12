@@ -1,16 +1,8 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import { ZWaveValue } from "../../../../../data/zwave";
@@ -23,7 +15,7 @@ export class ZwaveValues extends LitElement {
 
   @property() public values: ZWaveValue[] = [];
 
-  @internalProperty() private _selectedValue = -1;
+  @state() private _selectedValue = -1;
 
   protected render(): TemplateResult {
     return html`
@@ -54,7 +46,7 @@ export class ZwaveValues extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

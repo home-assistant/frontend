@@ -1,27 +1,35 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
-import "@polymer/paper-ripple/paper-ripple";
+import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import "@material/mwc-textfield";
+import "@material/mwc-formfield";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
-  query,
   TemplateResult,
-} from "lit-element";
+  PropertyValues,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon";
+import "../ha-button-menu";
+import "../ha-svg-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
-} from "./ha-form";
+} from "./types";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
+
+function optionValue(item: string | string[]): string {
+  return Array.isArray(item) ? item[0] : item;
+}
+
+function optionLabel(item: string | string[]): string {
+  return Array.isArray(item) ? item[1] || item[0] : item;
+}
+
+const SHOW_ALL_ENTRIES_LIMIT = 6;
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -31,11 +39,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
+  @property({ type: Boolean }) public disabled = false;
 
-  @internalProperty() private _init = false;
+  @state() private _opened = false;
 
-  @query("paper-menu-button", true) private _input?: HTMLElement;
+  @query("ha-button-menu") private _input?: HTMLElement;
 
   public focus(): void {
     if (this._input) {
@@ -46,115 +54,144 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     const options = Array.isArray(this.schema.options)
       ? this.schema.options
-      : Object.entries(this.schema.options!);
-
+      : Object.entries(this.schema.options);
     const data = this.data || [];
+
+    const renderedOptions = options.map((item: string | [string, string]) => {
+      const value = optionValue(item);
+      return html`
+        <mwc-formfield .label=${optionLabel(item)}>
+          <ha-checkbox
+            .checked=${data.includes(value)}
+            .value=${value}
+            .disabled=${this.disabled}
+            @change=${this._valueChanged}
+          ></ha-checkbox>
+        </mwc-formfield>
+      `;
+    });
+
+    // We will just render all checkboxes.
+    if (options.length < SHOW_ALL_ENTRIES_LIMIT) {
+      return html`<div>${this.label}${renderedOptions}</div> `;
+    }
+
     return html`
-      <paper-menu-button horizontal-align="right" vertical-offset="8">
-        <div class="dropdown-trigger" slot="dropdown-trigger">
-          <paper-ripple></paper-ripple>
-          <paper-input
-            id="input"
-            type="text"
-            readonly
-            value=${data
-              .map((value) => this.schema.options![value] || value)
-              .join(", ")}
-            label=${this.label}
-            input-role="button"
-            input-aria-haspopup="listbox"
-            autocomplete="off"
-          >
-            <ha-icon
-              icon="paper-dropdown-menu:arrow-drop-down"
-              suffix
-              slot="suffix"
-            ></ha-icon>
-          </paper-input>
-        </div>
-        <paper-listbox
-          multi
-          slot="dropdown-content"
-          attr-for-selected="item-value"
-          .selectedValues=${data}
-          @selected-items-changed=${this._valueChanged}
-          @iron-select=${this._onSelect}
-        >
-          ${
-            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-            // @ts-ignore
-            options.map((item: string | [string, string]) => {
-              const value = this._optionValue(item);
-              return html`
-                <paper-icon-item .itemValue=${value}>
-                  <paper-checkbox
-                    .checked=${data.includes(value)}
-                    slot="item-icon"
-                  ></paper-checkbox>
-                  ${this._optionLabel(item)}
-                </paper-icon-item>
-              `;
-            })
-          }
-        </paper-listbox>
-      </paper-menu-button>
+      <ha-button-menu
+        .disabled=${this.disabled}
+        fixed
+        corner="BOTTOM_START"
+        @opened=${this._handleOpen}
+        @closed=${this._handleClose}
+      >
+        <mwc-textfield
+          slot="trigger"
+          .label=${this.label}
+          .value=${data
+            .map((value) => this.schema.options![value] || value)
+            .join(", ")}
+          .disabled=${this.disabled}
+          tabindex="-1"
+        ></mwc-textfield>
+        <ha-svg-icon
+          slot="trigger"
+          .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+        ></ha-svg-icon>
+        ${renderedOptions}
+      </ha-button-menu>
     `;
   }
 
   protected firstUpdated() {
     this.updateComplete.then(() => {
-      const input = (this.shadowRoot?.querySelector("paper-input")
-        ?.inputElement as any)?.inputElement;
-      if (input) {
-        input.style.textOverflow = "ellipsis";
+      const { formElement, mdcRoot } =
+        this.shadowRoot?.querySelector("mwc-textfield") || ({} as any);
+      if (formElement) {
+        formElement.style.textOverflow = "ellipsis";
+      }
+      if (mdcRoot) {
+        mdcRoot.style.cursor = "pointer";
       }
     });
   }
 
-  private _optionValue(item: string | string[]): string {
-    return Array.isArray(item) ? item[0] : item;
-  }
-
-  private _optionLabel(item: string | string[]): string {
-    return Array.isArray(item) ? item[1] || item[0] : item;
-  }
-
-  private _onSelect(ev: Event) {
-    ev.stopPropagation();
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute(
+        "own-margin",
+        Object.keys(this.schema.options).length >= SHOW_ALL_ENTRIES_LIMIT &&
+          !!this.schema.required
+      );
+    }
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    if (!ev.detail.value || !this._init) {
-      // ignore first call because that is the init of the component
-      this._init = true;
-      return;
+    const { value, checked } = ev.target as HaCheckbox;
+
+    let newValue: string[];
+
+    if (checked) {
+      if (!this.data) {
+        newValue = [value];
+      } else if (this.data.includes(value)) {
+        return;
+      } else {
+        newValue = [...this.data, value];
+      }
+    } else {
+      if (!this.data.includes(value)) {
+        return;
+      }
+      newValue = this.data.filter((v) => v !== value);
     }
 
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: ev.detail.value.map((element) => element.itemValue),
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
   }
 
-  static get styles(): CSSResult {
+  private _handleOpen(ev: Event): void {
+    ev.stopPropagation();
+    this._opened = true;
+    this.toggleAttribute("opened", true);
+  }
+
+  private _handleClose(ev: Event): void {
+    ev.stopPropagation();
+    this._opened = false;
+    this.toggleAttribute("opened", false);
+  }
+
+  static get styles(): CSSResultGroup {
     return css`
-      paper-menu-button {
+      :host([own-margin]) {
+        margin-bottom: 5px;
+      }
+      ha-button-menu {
         display: block;
-        padding: 0;
-        --paper-item-icon-width: 34px;
+        cursor: pointer;
       }
-      paper-ripple {
-        top: 12px;
-        left: 0px;
-        bottom: 8px;
-        right: 0px;
+      mwc-formfield {
+        display: block;
+        padding-right: 16px;
       }
-      paper-input {
-        text-overflow: ellipsis;
+      mwc-textfield {
+        display: block;
+        pointer-events: none;
+      }
+      ha-svg-icon {
+        color: var(--input-dropdown-icon-color);
+        position: absolute;
+        right: 1em;
+        top: 1em;
+        cursor: pointer;
+      }
+      :host([opened]) ha-svg-icon {
+        color: var(--primary-color);
+      }
+      :host([opened]) ha-button-menu {
+        --mdc-text-field-idle-line-color: var(--input-hover-line-color);
+        --mdc-text-field-label-ink-color: var(--primary-color);
       }
     `;
   }

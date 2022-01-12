@@ -1,13 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  internalProperty,
+  CSSResultGroup,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { property, state } from "lit/decorators";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { GroupEntity } from "../../../data/group";
@@ -23,9 +23,9 @@ class MoreInfoGroup extends LitElement {
 
   @property() public stateObj?: GroupEntity;
 
-  @internalProperty() private _groupDomainStateObj?: HassEntity;
+  @state() private _groupDomainStateObj?: HassEntity;
 
-  @internalProperty() private _moreInfoType?: string;
+  @state() private _moreInfoType?: string;
 
   protected updated(changedProperties: PropertyValues) {
     if (
@@ -38,7 +38,7 @@ class MoreInfoGroup extends LitElement {
 
     const states = this.stateObj.attributes.entity_id
       .map((entity_id) => this.hass.states[entity_id])
-      .filter((state) => state);
+      .filter((entityState) => entityState);
 
     if (!states.length) {
       this._groupDomainStateObj = undefined;
@@ -53,7 +53,9 @@ class MoreInfoGroup extends LitElement {
     // first child above the children of the current group
     if (
       groupDomain !== "group" &&
-      states.every((state) => groupDomain === computeStateDomain(state))
+      states.every(
+        (entityState) => groupDomain === computeStateDomain(entityState)
+      )
     ) {
       this._groupDomainStateObj = {
         ...baseStateObj,
@@ -80,20 +82,20 @@ class MoreInfoGroup extends LitElement {
         })
       : ""}
     ${this.stateObj.attributes.entity_id.map((entity_id) => {
-      const state = this.hass!.states[entity_id];
-      if (!state) {
+      const entityState = this.hass!.states[entity_id];
+      if (!entityState) {
         return "";
       }
       return html`
         <state-card-content
-          .stateObj=${state}
+          .stateObj=${entityState}
           .hass=${this.hass}
         ></state-card-content>
       `;
     })}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       state-card-content {
         display: block;

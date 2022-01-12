@@ -1,13 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../components/ha-circular-progress";
 import { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
@@ -16,13 +9,14 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-progress")
 class StepFlowProgress extends LitElement {
+  @property({ attribute: false })
   public flowConfig!: FlowConfig;
 
   @property({ attribute: false })
   public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private step!: DataEntryFlowStepProgress;
+  public step!: DataEntryFlowStepProgress;
 
   protected render(): TemplateResult {
     return html`
@@ -39,7 +33,7 @@ class StepFlowProgress extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

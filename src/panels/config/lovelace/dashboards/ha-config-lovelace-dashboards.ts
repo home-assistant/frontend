@@ -1,17 +1,15 @@
-import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+  mdiCheck,
+  mdiCheckCircleOutline,
+  mdiOpenInNew,
+  mdiPlus,
+} from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { navigate } from "../../../../common/navigate";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -46,7 +44,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
@@ -72,10 +70,10 @@ export class HaConfigLovelaceDashboards extends LitElement {
               ${title}
               ${dashboard.default
                 ? html`
-                    <ha-icon
+                    <ha-svg-icon
                       style="padding-left: 10px;"
-                      icon="hass:check-circle-outline"
-                    ></ha-icon>
+                      .path=${mdiCheckCircleOutline}
+                    ></ha-svg-icon>
                     <paper-tooltip animation-delay="0">
                       ${this.hass.localize(
                         `ui.panel.config.lovelace.dashboards.default_dashboard`
@@ -134,7 +132,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
-              ? html` <ha-icon icon="hass:check"></ha-icon> `
+              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
               : html` - `,
         };
         columns.show_in_sidebar = {
@@ -144,7 +142,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
           type: "icon",
           width: "121px",
           template: (sidebar) =>
-            sidebar ? html` <ha-icon icon="hass:check"></ha-icon> ` : html` - `,
+            sidebar
+              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
+              : html` - `,
         };
       }
 
@@ -156,9 +156,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
           narrow
             ? html`
                 <ha-icon-button
-                  icon="hass:open-in-new"
+                  .path=${mdiOpenInNew}
                   .urlPath=${urlPath}
                   @click=${this._navigate}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}
                 ></ha-icon-button>
               `
             : html`
@@ -175,8 +178,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
-    const defaultMode = (this.hass.panels?.lovelace
-      ?.config as LovelacePanelConfig).mode;
+    const defaultMode = (
+      this.hass.panels?.lovelace?.config as LovelacePanelConfig
+    ).mode;
     const defaultUrlPath = this.hass.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
     return [
@@ -246,8 +250,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _navigate(ev: Event) {
     ev.stopPropagation();
-    const url = `/${(ev.target as any).urlPath}`;
-    navigate(this, url);
+    navigate(`/${(ev.target as any).urlPath}`);
   }
 
   private _editDashboard(ev: CustomEvent) {
@@ -269,9 +272,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
       urlPath,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
-        this._dashboards = this._dashboards!.concat(
-          created
-        ).sort((res1, res2) => compare(res1.url_path, res2.url_path));
+        this._dashboards = this._dashboards!.concat(created).sort(
+          (res1, res2) => stringCompare(res1.url_path, res2.url_path)
+        );
       },
       updateDashboard: async (values) => {
         const updated = await updateDashboard(
@@ -286,9 +289,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
       removeDashboard: async () => {
         if (
           !(await showConfirmationDialog(this, {
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete"
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+              { dashboard_title: dashboard!.title }
             ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+            ),
+            confirmText: this.hass!.localize("ui.common.delete"),
           }))
         ) {
           return false;
@@ -300,7 +308,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             (res) => res !== dashboard
           );
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },

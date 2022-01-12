@@ -1,14 +1,11 @@
-import "@material/mwc-switch";
-import type { Switch } from "@material/mwc-switch";
-import { style } from "@material/mwc-switch/mwc-switch-css";
-import { css, CSSResult, customElement, property } from "lit-element";
+import { Switch } from "@material/mwc-switch/deprecated";
+import { css, CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
-import { Constructor } from "../types";
-
-const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 
 @customElement("ha-switch")
-export class HaSwitch extends MwcSwitch {
+// @ts-expect-error
+export class HaSwitch extends Switch {
   // Generate a haptic vibration.
   // Only set to true if the new value of the switch is applied right away when toggling.
   // Do not add haptic when a user is required to press save.
@@ -27,9 +24,9 @@ export class HaSwitch extends MwcSwitch {
     });
   }
 
-  protected static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
-      style,
+      Switch.styles,
       css`
         .mdc-switch.mdc-switch--checked .mdc-switch__thumb {
           background-color: var(--switch-checked-button-color);

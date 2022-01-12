@@ -2,16 +2,8 @@ import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle, mdiZWave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
@@ -44,7 +36,7 @@ class OZWConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @internalProperty() private _instances?: OZWInstance[];
+  @state() private _instances?: OZWInstance[];
 
   protected firstUpdated() {
     this._fetchData();
@@ -103,7 +95,7 @@ class OZWConfigDashboard extends LitElement {
                     <ha-card>
                       <a
                         href="/config/ozw/network/${instance.ozw_instance}"
-                        aria-role="option"
+                        role="option"
                         tabindex="-1"
                       >
                         <paper-icon-item>
@@ -151,15 +143,13 @@ class OZWConfigDashboard extends LitElement {
   private async _fetchData() {
     this._instances = await fetchOZWInstances(this.hass!);
     if (this._instances.length === 1) {
-      navigate(
-        this,
-        `/config/ozw/network/${this._instances[0].ozw_instance}`,
-        true
-      );
+      navigate(`/config/ozw/network/${this._instances[0].ozw_instance}`, {
+        replace: true,
+      });
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,4 +1,4 @@
-import { HA_COLOR_PALETTE } from "../common/const";
+import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { CalendarEvent, HomeAssistant } from "../types";
@@ -81,5 +81,5 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     .map((eid, idx) => ({
       entity_id: eid,
       name: computeStateName(hass.states[eid]),
-      backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
+      backgroundColor: getColorByIndex(idx),
     }));

@@ -1,15 +1,13 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   svg,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 
@@ -17,7 +15,7 @@ import { getPath } from "../common/graph/get-path";
 export class HuiGraphBase extends LitElement {
   @property() public coordinates?: any;
 
-  @internalProperty() private _path?: string;
+  @state() private _path?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -49,7 +47,7 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this.coordinates) {
       return;
     }
@@ -59,7 +57,7 @@ export class HuiGraphBase extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

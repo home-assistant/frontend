@@ -16,8 +16,10 @@
         suppressTemplateNotifications: true,
         suppressBindingNotifications: true,
       };
+      window.polymerSkipLoadingFontRoboto = true;
       if (!("customElements" in window &&
             "content" in document.createElement("template"))) {
         document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
       }
+      var isS11_12 = /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(navigator.userAgent);
     </script>

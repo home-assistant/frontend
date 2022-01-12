@@ -1,16 +1,16 @@
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
@@ -45,9 +45,9 @@ export class ZHAClusters extends LitElement {
 
   @property() public showHelp = false;
 
-  @internalProperty() private _selectedClusterIndex = -1;
+  @state() private _selectedClusterIndex = -1;
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -63,12 +63,13 @@ export class ZHAClusters extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>
@@ -86,8 +87,8 @@ export class ZHAClusters extends LitElement {
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._selectedClusterIndex}"
-                @iron-select="${this._selectedClusterChanged}"
+                .selected=${this._selectedClusterIndex}
+                @iron-select=${this._selectedClusterChanged}
               >
                 ${this._clusters.map(
                   (entry) => html`
@@ -132,7 +133,7 @@ export class ZHAClusters extends LitElement {
     this.showHelp = !this.showHelp;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

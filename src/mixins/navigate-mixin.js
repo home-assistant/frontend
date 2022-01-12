@@ -9,7 +9,7 @@ export default dedupingMixin(
   (superClass) =>
     class extends superClass {
       navigate(...args) {
-        navigate(this, ...args);
+        navigate(...args);
       }
     }
 );

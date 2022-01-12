@@ -1,13 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -15,13 +8,11 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-external")
 class StepFlowExternal extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private step!: DataEntryFlowStepExternal;
+  @property({ attribute: false }) public step!: DataEntryFlowStepExternal;
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
@@ -48,7 +39,7 @@ class StepFlowExternal extends LitElement {
     window.open(this.step.url);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

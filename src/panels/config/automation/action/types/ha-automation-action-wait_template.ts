@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import { customElement, LitElement, property } from "lit-element";
-import { html } from "lit-html";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { WaitAction } from "../../../../../data/script";
 import { HomeAssistant } from "../../../../../types";

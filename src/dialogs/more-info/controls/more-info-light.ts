@@ -1,18 +1,19 @@
+import { mdiPalette } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
@@ -28,12 +29,6 @@ import {
   SUPPORT_EFFECT,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-button-toggle-group";
-
-const toggleButtons = [
-  { label: "Color", value: "color" },
-  { label: "Temperature", value: LightColorModes.COLOR_TEMP },
-];
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -41,27 +36,27 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
-  @internalProperty() private _brightnessSliderValue = 0;
+  @state() private _brightnessSliderValue = 0;
 
-  @internalProperty() private _ctSliderValue?: number;
+  @state() private _ctSliderValue?: number;
 
-  @internalProperty() private _cwSliderValue?: number;
+  @state() private _cwSliderValue?: number;
 
-  @internalProperty() private _wwSliderValue?: number;
+  @state() private _wwSliderValue?: number;
 
-  @internalProperty() private _wvSliderValue?: number;
+  @state() private _wvSliderValue?: number;
 
-  @internalProperty() private _colorBrightnessSliderValue?: number;
+  @state() private _colorBrightnessSliderValue?: number;
 
-  @internalProperty() private _brightnessAdjusted?: number;
+  @state() private _brightnessAdjusted?: number;
 
-  @internalProperty() private _hueSegments = 24;
+  @state() private _hueSegments = 24;
 
-  @internalProperty() private _saturationSegments = 8;
+  @state() private _saturationSegments = 8;
 
-  @internalProperty() private _colorPickerColor?: [number, number, number];
+  @state() private _colorPickerColor?: [number, number, number];
 
-  @internalProperty() private _mode?: "color" | LightColorModes.COLOR_TEMP;
+  @state() private _mode?: "color" | LightColorModes;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -71,6 +66,11 @@ class MoreInfoLight extends LitElement {
     const supportsTemp = lightSupportsColorMode(
       this.stateObj,
       LightColorModes.COLOR_TEMP
+    );
+
+    const supportsWhite = lightSupportsColorMode(
+      this.stateObj,
+      LightColorModes.WHITE
     );
 
     const supportsRgbww = lightSupportsColorMode(
@@ -102,17 +102,18 @@ class MoreInfoLight extends LitElement {
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsTemp || supportsColor ? html`<hr></hr>` : ""}
-              ${supportsTemp && supportsColor
+              ${supportsTemp || supportsColor ? html`<hr />` : ""}
+              ${supportsColor && (supportsTemp || supportsWhite)
                 ? html`<ha-button-toggle-group
                     fullWidth
-                    .buttons=${toggleButtons}
+                    .buttons=${this._toggleButtons(supportsTemp, supportsWhite)}
                     .active=${this._mode}
                     @value-changed=${this._modeChanged}
                   ></ha-button-toggle-group>`
                 : ""}
               ${supportsTemp &&
-              (!supportsColor || this._mode === LightColorModes.COLOR_TEMP)
+              ((!supportsColor && !supportsWhite) ||
+                this._mode === LightColorModes.COLOR_TEMP)
                 ? html`
                     <ha-labeled-slider
                       class="color_temp"
@@ -126,10 +127,10 @@ class MoreInfoLight extends LitElement {
                       @change=${this._ctSliderChanged}
                       pin
                     ></ha-labeled-slider>
-                    <hr></hr>
                   `
                 : ""}
-              ${supportsColor && (!supportsTemp || this._mode === "color")
+              ${supportsColor &&
+              ((!supportsTemp && !supportsWhite) || this._mode === "color")
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker
@@ -142,78 +143,73 @@ class MoreInfoLight extends LitElement {
                       >
                       </ha-color-picker>
                       <ha-icon-button
-                        icon="hass:palette"
+                        .path=${mdiPalette}
                         @click=${this._segmentClick}
                         class="segmentationButton"
                       ></ha-icon-button>
                     </div>
-                    
-                    ${
-                      supportsRgbw || supportsRgbww
-                        ? html`<ha-labeled-slider
+
+                    ${supportsRgbw || supportsRgbww
+                      ? html`<ha-labeled-slider
+                          .caption=${this.hass.localize(
+                            "ui.card.light.color_brightness"
+                          )}
+                          icon="hass:brightness-7"
+                          max="100"
+                          .value=${this._colorBrightnessSliderValue}
+                          @change=${this._colorBrightnessSliderChanged}
+                          pin
+                        ></ha-labeled-slider>`
+                      : ""}
+                    ${supportsRgbw
+                      ? html`
+                          <ha-labeled-slider
                             .caption=${this.hass.localize(
-                              "ui.card.light.color_brightness"
+                              "ui.card.light.white_value"
                             )}
-                            icon="hass:brightness-7"
+                            icon="hass:file-word-box"
                             max="100"
-                            .value=${this._colorBrightnessSliderValue ?? 100}
-                            @change=${this._colorBrightnessSliderChanged}
+                            .name=${"wv"}
+                            .value=${this._wvSliderValue}
+                            @change=${this._wvSliderChanged}
                             pin
-                          ></ha-labeled-slider>`
-                        : ""
-                    }
-                    ${
-                      supportsRgbw
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"wv"}
-                              .value=${this._wvSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    ${
-                      supportsRgbww
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.cold_white_value"
-                              )}
-                              icon="hass:file-word-box-outline"
-                              max="100"
-                              .name=${"cw"}
-                              .value=${this._cwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.warm_white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"ww"}
-                              .value=${this._wwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    <hr></hr>
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
+                    ${supportsRgbww
+                      ? html`
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.cold_white_value"
+                            )}
+                            icon="hass:file-word-box-outline"
+                            max="100"
+                            .name=${"cw"}
+                            .value=${this._cwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.warm_white_value"
+                            )}
+                            icon="hass:file-word-box"
+                            max="100"
+                            .name=${"ww"}
+                            .value=${this._wwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
+                    <hr />
                     <ha-paper-dropdown-menu
+                      dynamic-align
                       .label=${this.hass.localize("ui.card.light.effect")}
                     >
                       <paper-listbox
@@ -235,6 +231,7 @@ class MoreInfoLight extends LitElement {
             `
           : ""}
         <ha-attributes
+          .hass=${this.hass}
           .stateObj=${this.stateObj}
           extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
@@ -242,7 +239,9 @@ class MoreInfoLight extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
     if (!changedProps.has("stateObj")) {
       return;
     }
@@ -257,10 +256,11 @@ class MoreInfoLight extends LitElement {
       ) {
         this._mode = lightIsInColorMode(this.stateObj!)
           ? "color"
-          : LightColorModes.COLOR_TEMP;
+          : this.stateObj!.attributes.color_mode;
       }
 
       let brightnessAdjust = 100;
+      this._brightnessAdjusted = undefined;
       if (
         stateObj.attributes.color_mode === LightColorModes.RGB &&
         !lightSupportsColorMode(stateObj, LightColorModes.RGBWW) &&
@@ -271,8 +271,6 @@ class MoreInfoLight extends LitElement {
           this._brightnessAdjusted = maxVal;
           brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
         }
-      } else {
-        this._brightnessAdjusted = undefined;
       }
       this._brightnessSliderValue = Math.round(
         (stateObj.attributes.brightness * brightnessAdjust) / 255
@@ -290,27 +288,35 @@ class MoreInfoLight extends LitElement {
         stateObj.attributes.color_mode === LightColorModes.RGBWW
           ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
-      this._colorBrightnessSliderValue =
-        stateObj.attributes.color_mode === LightColorModes.RGBWW
-          ? Math.round(
-              (Math.max(...stateObj.attributes.rgbww_color.slice(0, 3)) * 100) /
-                255
-            )
-          : stateObj.attributes.color_mode === LightColorModes.RGBW
-          ? Math.round(
-              (Math.max(...stateObj.attributes.rgbw_color.slice(0, 3)) * 100) /
-                255
-            )
-          : undefined;
 
-      this._colorPickerColor = getLightCurrentModeRgbColor(stateObj)?.slice(
-        0,
-        3
-      ) as [number, number, number] | undefined;
+      const currentRgbColor = getLightCurrentModeRgbColor(stateObj);
+
+      this._colorBrightnessSliderValue = currentRgbColor
+        ? Math.round((Math.max(...currentRgbColor.slice(0, 3)) * 100) / 255)
+        : undefined;
+
+      this._colorPickerColor = currentRgbColor?.slice(0, 3) as [
+        number,
+        number,
+        number
+      ];
     } else {
       this._brightnessSliderValue = 0;
     }
   }
+
+  private _toggleButtons = memoizeOne(
+    (supportsTemp: boolean, supportsWhite: boolean) => {
+      const modes = [{ label: "Color", value: "color" }];
+      if (supportsTemp) {
+        modes.push({ label: "Temperature", value: LightColorModes.COLOR_TEMP });
+      }
+      if (supportsWhite) {
+        modes.push({ label: "White", value: LightColorModes.WHITE });
+      }
+      return modes;
+    }
+  );
 
   private _modeChanged(ev: CustomEvent) {
     this._mode = ev.detail.value;
@@ -333,6 +339,16 @@ class MoreInfoLight extends LitElement {
     const bri = Number((ev.target as any).value);
 
     if (isNaN(bri)) {
+      return;
+    }
+
+    this._brightnessSliderValue = bri;
+
+    if (this._mode === LightColorModes.WHITE) {
+      this.hass.callService("light", "turn_on", {
+        entity_id: this.stateObj!.entity_id,
+        white: Math.min(255, Math.round((bri * 255) / 100)),
+      });
       return;
     }
 
@@ -366,6 +382,8 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
+    this._ctSliderValue = ct;
+
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       color_temp: ct,
@@ -379,6 +397,14 @@ class MoreInfoLight extends LitElement {
 
     if (isNaN(wv)) {
       return;
+    }
+
+    if (name === "wv") {
+      this._wvSliderValue = wv;
+    } else if (name === "cw") {
+      this._cwSliderValue = wv;
+    } else if (name === "ww") {
+      this._wwSliderValue = wv;
     }
 
     wv = Math.min(255, Math.round((wv * 255) / 100));
@@ -414,23 +440,20 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
+    const oldValue = this._colorBrightnessSliderValue;
+    this._colorBrightnessSliderValue = value;
+
     value = (value * 255) / 100;
 
     const rgb = (getLightCurrentModeRgbColor(this.stateObj!)?.slice(0, 3) || [
-      255,
-      255,
-      255,
+      255, 255, 255,
     ]) as [number, number, number];
 
-    this._setRgbColor(
+    this._setRgbWColor(
       this._adjustColorBrightness(
         // first normalize the value
-        this._colorBrightnessSliderValue
-          ? this._adjustColorBrightness(
-              rgb,
-              (this._colorBrightnessSliderValue * 255) / 100,
-              true
-            )
+        oldValue
+          ? this._adjustColorBrightness(rgb, (oldValue * 255) / 100, true)
           : rgb,
         value
       )
@@ -464,7 +487,7 @@ class MoreInfoLight extends LitElement {
     return rgbColor;
   }
 
-  private _setRgbColor(rgbColor: [number, number, number]) {
+  private _setRgbWColor(rgbColor: [number, number, number]) {
     if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW)) {
       const rgbww_color: [number, number, number, number, number] = this
         .stateObj!.attributes.rgbww_color
@@ -490,12 +513,23 @@ class MoreInfoLight extends LitElement {
    * Called when a new color has been picked.
    * should be throttled with the 'throttle=' attribute of the color picker
    */
-  private _colorPicked(ev: CustomEvent) {
+  private _colorPicked(
+    ev: CustomEvent<{
+      hs: { h: number; s: number };
+      rgb: { r: number; g: number; b: number };
+    }>
+  ) {
+    this._colorPickerColor = [
+      ev.detail.rgb.r,
+      ev.detail.rgb.g,
+      ev.detail.rgb.b,
+    ];
+
     if (
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW) ||
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBW)
     ) {
-      this._setRgbColor(
+      this._setRgbWColor(
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
               [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
@@ -504,10 +538,10 @@ class MoreInfoLight extends LitElement {
           : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
       );
     } else if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGB)) {
-      const rgb_color = [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b] as [
-        number,
-        number,
-        number
+      const rgb_color: [number, number, number] = [
+        ev.detail.rgb.r,
+        ev.detail.rgb.g,
+        ev.detail.rgb.b,
       ];
       if (this._brightnessAdjusted) {
         this.hass.callService("light", "turn_on", {
@@ -533,7 +567,7 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .content {
         display: flex;
@@ -543,8 +577,6 @@ class MoreInfoLight extends LitElement {
 
       .content > * {
         width: 100%;
-        max-height: 84px;
-        overflow: hidden;
       }
 
       .color_temp {
@@ -567,7 +599,7 @@ class MoreInfoLight extends LitElement {
       }
 
       ha-button-toggle-group {
-        margin: 8px 0px;
+        margin-bottom: 8px;
       }
 
       ha-color-picker {
@@ -592,7 +624,7 @@ class MoreInfoLight extends LitElement {
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
-        margin: 8px 0;
+        margin: 16px 0;
       }
     `;
   }

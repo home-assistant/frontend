@@ -1,5 +1,3 @@
-import "../../../components/ha-fab";
-import "@material/mwc-icon-button";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -8,22 +6,21 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/map/ha-locations-editor";
 import type {
@@ -34,11 +31,8 @@ import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   createZone,
-  defaultRadiusColor,
   deleteZone,
   fetchZones,
-  homeRadiusColor,
-  passiveRadiusColor,
   updateZone,
   Zone,
   ZoneMutableParams,
@@ -62,13 +56,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Zone[];
+  @state() private _storageItems?: Zone[];
 
-  @internalProperty() private _stateItems?: HassEntity[];
+  @state() private _stateItems?: HassEntity[];
 
-  @internalProperty() private _activeEntry = "";
+  @state() private _activeEntry = "";
 
-  @internalProperty() private _canEditCore = false;
+  @state() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
 
@@ -76,25 +70,36 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
-      const stateLocations: MarkerLocation[] = stateItems.map((state) => ({
-        id: state.entity_id,
-        icon: state.attributes.icon,
-        name: state.attributes.friendly_name || state.entity_id,
-        latitude: state.attributes.latitude,
-        longitude: state.attributes.longitude,
-        radius: state.attributes.radius,
-        radius_color:
-          state.entity_id === "zone.home"
-            ? homeRadiusColor
-            : state.attributes.passive
-            ? passiveRadiusColor
-            : defaultRadiusColor,
-        location_editable: state.entity_id === "zone.home" && this._canEditCore,
-        radius_editable: false,
-      }));
+      const computedStyles = getComputedStyle(this);
+      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
+      const passiveRadiusColor = computedStyles.getPropertyValue(
+        "--secondary-text-color"
+      );
+      const homeRadiusColor =
+        computedStyles.getPropertyValue("--primary-color");
+
+      const stateLocations: MarkerLocation[] = stateItems.map(
+        (entityState) => ({
+          id: entityState.entity_id,
+          icon: entityState.attributes.icon,
+          name: entityState.attributes.friendly_name || entityState.entity_id,
+          latitude: entityState.attributes.latitude,
+          longitude: entityState.attributes.longitude,
+          radius: entityState.attributes.radius,
+          radius_color:
+            entityState.entity_id === "zone.home"
+              ? homeRadiusColor
+              : entityState.attributes.passive
+              ? passiveRadiusColor
+              : zoneRadiusColor,
+          location_editable:
+            entityState.entity_id === "zone.home" && this._canEditCore,
+          radius_editable: false,
+        })
+      );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
-        radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
+        radius_color: zone.passive ? passiveRadiusColor : zoneRadiusColor,
         location_editable: true,
         radius_editable: true,
       }));
@@ -119,7 +124,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._storageItems === undefined ||
       this._stateItems === undefined
     ) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
     const hass = this.hass;
     const listBox =
@@ -146,61 +151,67 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .entry=${entry}
                   >
                     <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
-                    <paper-item-body> ${entry.name} </paper-item-body>
+                    <paper-item-body>${entry.name}</paper-item-body>
                     ${!this.narrow
                       ? html`
-                          <mwc-icon-button
+                          <ha-icon-button
                             .entry=${entry}
                             @click=${this._openEditEntry}
-                          >
-                            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                          </mwc-icon-button>
+                            .path=${mdiPencil}
+                            .label=${hass.localize(
+                              "ui.panel.config.zone.edit_zone"
+                            )}
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-icon-item>
                 `
               )}
               ${this._stateItems.map(
-                (state) => html`
+                (stateObject) => html`
                   <paper-icon-item
-                    data-id=${state.entity_id}
+                    data-id=${stateObject.entity_id}
                     @click=${this._stateItemClicked}
                   >
-                    <ha-icon .icon=${state.attributes.icon} slot="item-icon">
+                    <ha-icon
+                      .icon=${stateObject.attributes.icon}
+                      slot="item-icon"
+                    >
                     </ha-icon>
                     <paper-item-body>
-                      ${state.attributes.friendly_name || state.entity_id}
+                      ${stateObject.attributes.friendly_name ||
+                      stateObject.entity_id}
                     </paper-item-body>
                     <div style="display:inline-block">
-                      <mwc-icon-button
-                        .entityId=${state.entity_id}
+                      <ha-icon-button
+                        .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
                         disabled=${ifDefined(
-                          state.entity_id === "zone.home" &&
+                          stateObject.entity_id === "zone.home" &&
                             this.narrow &&
                             this._canEditCore
                             ? undefined
                             : true
                         )}
-                      >
-                        <ha-svg-icon
-                          .path=${state.entity_id === "zone.home" &&
-                          this.narrow &&
-                          this._canEditCore
-                            ? mdiPencil
-                            : mdiPencilOff}
-                        ></ha-svg-icon>
-                      </mwc-icon-button>
+                        .path=${stateObject.entity_id === "zone.home" &&
+                        this.narrow &&
+                        this._canEditCore
+                          ? mdiPencil
+                          : mdiPencilOff}
+                        .label=${hass.localize(
+                          "ui.panel.config.zone.edit_zone"
+                        )}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" position="left">
-                        ${state.entity_id === "zone.home"
-                          ? this.hass.localize(
+                        ${stateObject.entity_id === "zone.home"
+                          ? hass.localize(
                               `ui.panel.config.zone.${
                                 this.narrow
                                   ? "edit_home_zone_narrow"
                                   : "edit_home_zone"
                               }`
                             )
-                          : this.hass.localize(
+                          : hass.localize(
                               "ui.panel.config.zone.configured_in_yaml"
                             )}
                       </paper-tooltip>
@@ -265,12 +276,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
     if (this.route.path === "/new") {
-      navigate(this, "/config/zone", true);
+      navigate("/config/zone", { replace: true });
       this._createZone();
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
@@ -280,7 +291,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _fetchData() {
     this._storageItems = (await fetchZones(this.hass!)).sort((ent1, ent2) =>
-      compare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name)
     );
     this._getStates();
   }
@@ -395,19 +406,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ) {
       return;
     }
-    navigate(this, "/config/core");
+    navigate("/config/core");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
     const created = await createZone(this.hass!, values);
-    this._storageItems = this._storageItems!.concat(
-      created
-    ).sort((ent1, ent2) => compare(ent1.name, ent2.name));
+    this._storageItems = this._storageItems!.concat(created).sort(
+      (ent1, ent2) => stringCompare(ent1.name, ent2.name)
+    );
     if (this.narrow) {
       return;
     }
-    await this.updateComplete;
     this._activeEntry = created.id;
+    await this.updateComplete;
+    await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
   }
 
@@ -423,8 +435,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow || !fitMap) {
       return;
     }
-    await this.updateComplete;
     this._activeEntry = entry.id;
+    await this.updateComplete;
+    await this._map?.updateComplete;
     this._map?.fitMarker(entry.id);
   }
 
@@ -446,7 +459,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err) {
+    } catch (err: any) {
       return false;
     }
   }
@@ -462,7 +475,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);
@@ -477,10 +490,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         overflow: hidden;
       }
       ha-icon,
-      mwc-icon-button:not([disabled]) {
+      ha-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
       }
       .empty {
@@ -509,6 +522,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
+        cursor: pointer;
       }
       .overflow paper-icon-item:last-child {
         margin-bottom: 80px;

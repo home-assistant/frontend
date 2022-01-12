@@ -1,4 +1,4 @@
-import { html } from "lit-element";
+import { html } from "lit";
 import { HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 

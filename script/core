@@ -9,12 +9,6 @@ if [ -z "${DEVCONTAINER}" ]; then
   exit 1
 fi
 
-if [ ! -z "${CODESPACES}" ]; then
-  WORKSPACE="/root/workspace/frontend"
-else
-  WORKSPACE="/workspaces/frontend"
-fi
-
 if [ -z $(which hass) ]; then
   echo "Installing Home Asstant core from dev."
   python3 -m pip install --upgrade \
@@ -22,9 +16,9 @@ if [ -z $(which hass) ]; then
     git+git://github.com/home-assistant/home-assistant.git@dev
 fi
 
-if [ ! -d "${WORKSPACE}/config" ]; then
+if [ ! -d "/workspaces/frontend/config" ]; then
   echo "Creating default configuration."
-  mkdir -p "${WORKSPACE}/config";
+  mkdir -p "/workspaces/frontend/config";
   hass --script ensure_config -c config
   echo "demo:
 
@@ -32,24 +26,24 @@ logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
-" >> "${WORKSPACE}/config/configuration.yaml"
+" >> /workspaces/frontend/config/configuration.yaml
 
   if [ ! -z "${HASSIO}" ]; then
   echo "
 # frontend:
-#   development_repo: ${WORKSPACE}
+#   development_repo: /workspaces/frontend
 
 hassio:
-  development_repo: ${WORKSPACE}" >> "${WORKSPACE}/config/configuration.yaml"
+  development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
   else
   echo "
 frontend:
-  development_repo: ${WORKSPACE}
+  development_repo: /workspaces/frontend
 
 # hassio:
-#   development_repo: ${WORKSPACE}" >> "${WORKSPACE}/config/configuration.yaml"
+#   development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
   fi
 
 fi
 
-hass -c "${WORKSPACE}/config"
+hass -c /workspaces/frontend/config

@@ -7,13 +7,13 @@ import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
 import {
   ActionType,
-  getActionType,
-  DelayAction,
-  SceneAction,
-  WaitForTriggerAction,
   ActionTypes,
-  VariablesAction,
+  DelayAction,
   EventAction,
+  getActionType,
+  SceneAction,
+  VariablesAction,
+  WaitForTriggerAction,
 } from "./script";
 
 export const describeAction = <T extends ActionType>(

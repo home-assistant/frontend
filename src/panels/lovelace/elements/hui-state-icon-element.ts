@@ -1,15 +1,13 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/entity/state-badge";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -26,7 +24,7 @@ import { LovelaceElement, StateIconElementConfig } from "./types";
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: StateIconElementConfig;
+  @state() private _config?: StateIconElementConfig;
 
   public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
@@ -62,7 +60,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     return html`
       <state-badge
         .stateObj=${stateObj}
-        .title="${computeTooltip(this.hass, this._config)}"
+        .title=${computeTooltip(this.hass, this._config)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -77,7 +75,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

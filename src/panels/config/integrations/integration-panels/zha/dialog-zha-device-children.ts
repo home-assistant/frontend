@@ -1,13 +1,6 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import memoizeOne from "memoize-one";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -33,9 +26,9 @@ export interface DeviceRowData extends DataTableRowData {
 class DialogZHADeviceChildren extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _device: ZHADevice | undefined;
+  @state() private _device: ZHADevice | undefined;
 
-  @internalProperty() private _devices: Map<string, ZHADevice> | undefined;
+  @state() private _devices: Map<string, ZHADevice> | undefined;
 
   private _deviceChildren = memoizeOne(
     (
@@ -50,7 +43,7 @@ class DialogZHADeviceChildren extends LitElement {
             outputDevices.push({
               name: zhaDevice.user_given_name || zhaDevice.name,
               id: zhaDevice.device_reg_id,
-              lqi: child.lqi,
+              lqi: parseInt(child.lqi),
             });
           }
         });
@@ -71,7 +64,7 @@ class DialogZHADeviceChildren extends LitElement {
       title: "LQI",
       sortable: true,
       filterable: true,
-      direction: "asc",
+      type: "numeric",
       width: "75px",
     },
   };
@@ -108,6 +101,7 @@ class DialogZHADeviceChildren extends LitElement {
               active
             ></ha-circular-progress>`
           : html`<ha-data-table
+              .hass=${this.hass}
               .columns=${this._columns}
               .data=${this._deviceChildren(this._device, this._devices)}
               auto-height
@@ -132,7 +126,7 @@ class DialogZHADeviceChildren extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

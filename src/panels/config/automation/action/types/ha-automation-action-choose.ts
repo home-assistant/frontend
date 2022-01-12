@@ -1,16 +1,11 @@
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../../common/ensure-array";
+import "../../../../../components/ha-icon-button";
 import { Condition } from "../../../../../data/automation";
 import { Action, ChooseAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
@@ -34,15 +29,14 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
         (option, idx) => html`<ha-card>
-          <mwc-icon-button
+          <ha-icon-button
             .idx=${idx}
             @click=${this._removeOption}
-            title=${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.automation.editor.actions.type.choose.remove_option"
             )}
-          >
-            <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiDelete}
+          ></ha-icon-button>
           <div class="card-content">
             <h2>
               ${this.hass.localize(
@@ -156,7 +150,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -167,7 +161,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           display: block;
           text-align: center;
         }
-        mwc-icon-button {
+        ha-icon-button {
           position: absolute;
           right: 0;
           padding: 4px;

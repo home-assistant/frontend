@@ -2,22 +2,20 @@ import { mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-header-bar";
+import "../../../../components/ha-icon-button";
 import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
@@ -50,31 +48,34 @@ declare global {
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
   extends LitElement
-  implements HassDialog<EditCardDialogParams> {
+  implements HassDialog<EditCardDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _params?: EditCardDialogParams;
+  @state() private _params?: EditCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig;
+  @state() private _cardConfig?: LovelaceCardConfig;
 
-  @internalProperty() private _viewConfig!: LovelaceViewConfig;
+  @state() private _viewConfig!: LovelaceViewConfig;
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _guiModeAvailable? = true;
+  @state() private _guiModeAvailable? = true;
 
   @query("hui-card-element-editor")
   private _cardEditorEl?: HuiCardElementEditor;
 
-  @internalProperty() private _GUImode = true;
+  @state() private _GUImode = true;
 
-  @internalProperty() private _documentationURL?: string;
+  @state() private _documentationURL?: string;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
+
+  @state() private _isEscapeEnabled = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -94,6 +95,9 @@ export class HuiDialogEditCard
   }
 
   public closeDialog(): boolean {
+    this._isEscapeEnabled = true;
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     if (this._dirty) {
       this._confirmCancel();
       return false;
@@ -125,6 +129,16 @@ export class HuiDialogEditCard
       );
     }
   }
+
+  private _enableEscapeKeyClose = (ev: any) => {
+    if (ev.detail.dialog === "ha-more-info-dialog") {
+      this._isEscapeEnabled = true;
+    }
+  };
+
+  private _disableEscapeKeyClose = () => {
+    this._isEscapeEnabled = false;
+  };
 
   protected render(): TemplateResult {
     if (!this._params) {
@@ -158,6 +172,7 @@ export class HuiDialogEditCard
       <ha-dialog
         open
         scrimClickAction
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
@@ -177,9 +192,7 @@ export class HuiDialogEditCard
                     rel="noreferrer"
                     dir=${computeRTLDirection(this.hass)}
                   >
-                    <mwc-icon-button>
-                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-                    </mwc-icon-button>
+                    <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
                   </a>
                 `
               : ""}
@@ -283,6 +296,8 @@ export class HuiDialogEditCard
   }
 
   private _opened() {
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._cardEditorEl?.focusYamlEditor();
   }
 
@@ -353,7 +368,7 @@ export class HuiDialogEditCard
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -4,16 +4,8 @@ import {
   mdiInformationVariant,
   mdiMathLog,
 } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
@@ -52,7 +44,7 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() _error?: string;
+  @state() _error?: string;
 
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
@@ -116,7 +108,6 @@ class HassioAddonDashboard extends LitElement {
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
         .tabs=${addonTabs}
         supervisor
@@ -133,7 +124,7 @@ class HassioAddonDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -183,7 +174,7 @@ class HassioAddonDashboard extends LitElement {
         if (!validAddon) {
           this._error = this.supervisor.localize("my.error_addon_not_found");
         } else {
-          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+          navigate(`/hassio/addon/${requestedAddon}`, { replace: true });
         }
       }
     }
@@ -191,6 +182,10 @@ class HassioAddonDashboard extends LitElement {
   }
 
   private async _apiCalled(ev): Promise<void> {
+    if (!ev.detail.success) {
+      return;
+    }
+
     const pathSplit: string[] = ev.detail.path?.split("/");
 
     if (!pathSplit || pathSplit.length === 0) {
@@ -226,7 +221,7 @@ class HassioAddonDashboard extends LitElement {
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
-    } catch (err) {
+    } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
     }

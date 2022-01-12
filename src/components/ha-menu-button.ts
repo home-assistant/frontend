@@ -1,21 +1,12 @@
-import "@material/mwc-icon-button";
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
@@ -25,7 +16,7 @@ class HaMenuButton extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _hasNotifications = false;
+  @state() private _hasNotifications = false;
 
   private _alwaysVisible = false;
 
@@ -58,12 +49,11 @@ class HaMenuButton extends LitElement {
           (entityId) => computeDomain(entityId) === "configurator"
         ));
     return html`
-      <mwc-icon-button
-        aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+      <ha-icon-button
+        .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+        .path=${mdiMenu}
         @click=${this._toggleMenu}
-      >
-        <ha-svg-icon .path=${mdiMenu}></ha-svg-icon>
-      </mwc-icon-button>
+      ></ha-icon-button>
       ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
   }
@@ -101,7 +91,6 @@ class HaMenuButton extends LitElement {
     this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
-      this._hasNotifications = false;
       if (this._unsubNotifications) {
         this._unsubNotifications();
         this._unsubNotifications = undefined;
@@ -125,7 +114,7 @@ class HaMenuButton extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;

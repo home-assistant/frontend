@@ -1,16 +1,18 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 
 export interface AreaRegistryEntry {
   area_id: string;
   name: string;
+  picture: string | null;
 }
 
 export interface AreaRegistryEntryMutableParams {
   name: string;
+  picture?: string | null;
 }
 
 export const createAreaRegistryEntry = (
@@ -46,7 +48,7 @@ const fetchAreaRegistry = (conn: Connection) =>
     })
     .then((areas) =>
       (areas as AreaRegistryEntry[]).sort((ent1, ent2) =>
-        compare(ent1.name, ent2.name)
+        stringCompare(ent1.name, ent2.name)
       )
     );
 

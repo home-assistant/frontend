@@ -1,20 +1,22 @@
 import type HlsType from "hls.js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { fireEvent } from "../common/dom/fire_event";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
+import "./ha-alert";
+
+type HlsLite = Omit<
+  HlsType,
+  "subtitleTrackController" | "audioTrackController" | "emeController"
+>;
 
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
@@ -40,34 +42,34 @@ class HaHLSPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
-  @internalProperty() private _attached = false;
+  @state() private _error?: string;
 
-  private _hlsPolyfillInstance?: HlsType;
+  private _hlsPolyfillInstance?: HlsLite;
 
-  private _useExoPlayer = false;
+  private _exoPlayer = false;
 
   public connectedCallback() {
     super.connectedCallback();
-    this._attached = true;
+    if (this.hasUpdated) {
+      this._startHls();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._attached = false;
+    this._cleanUp();
   }
 
   protected render(): TemplateResult {
-    if (!this._attached) {
-      return html``;
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
-
     return html`
       <video
         ?autoplay=${this.autoPlay}
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -75,21 +77,13 @@ class HaHLSPlayer extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    const attachedChanged = changedProps.has("_attached");
     const urlChanged = changedProps.has("url");
 
-    if (!urlChanged && !attachedChanged) {
+    if (!urlChanged) {
       return;
     }
 
-    // If we are no longer attached, destroy polyfill
-    if (attachedChanged && !this._attached) {
-      // Tear down existing polyfill, if available
-      this._destroyPolyfill();
-      return;
-    }
-
-    this._destroyPolyfill();
+    this._cleanUp();
     this._startHls();
   }
 
@@ -102,31 +96,43 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    const videoEl = this._videoEl;
+    this._error = undefined;
+
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls = (await import("hls.js")).default;
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
+      .default;
+
+    if (!this.isConnected) {
+      return;
+    }
+
     let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
       hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+        this._videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
     if (!hlsSupported) {
-      this._videoEl.innerHTML = this.hass.localize(
+      this._error = this.hass.localize(
         "ui.components.media-browser.video_not_supported"
       );
       return;
     }
 
-    this._useExoPlayer = await useExoPlayerPromise;
+    const useExoPlayer = await useExoPlayerPromise;
     const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    if (!this.isConnected) {
+      return;
+    }
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
-    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const playlistRegexp =
+      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
 
@@ -141,16 +147,17 @@ class HaHLSPlayer extends LitElement {
     }
 
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
-    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
+    if (useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, Hls, playlist_url);
+      this._renderHLSPolyfill(this._videoEl, Hls, playlist_url);
     } else {
-      this._renderHLSNative(videoEl, playlist_url);
+      this._renderHLSNative(this._videoEl, playlist_url);
     }
   }
 
   private async _renderHLSExoPlayer(url: string) {
+    this._exoPlayer = true;
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
@@ -185,42 +192,81 @@ class HaHLSPlayer extends LitElement {
     url: string
   ) {
     const hls = new Hls({
-      liveBackBufferLength: 60,
+      backBufferLength: 60,
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
+      maxLiveSyncPlaybackRate: 2,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
       hls.loadSource(url);
     });
+    hls.on(Hls.Events.ERROR, (_, data: any) => {
+      if (!data.fatal) {
+        return;
+      }
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        switch (data.details) {
+          case Hls.ErrorDetails.MANIFEST_LOAD_ERROR: {
+            let error = "Error starting stream, see logs for details";
+            if (
+              data.response !== undefined &&
+              data.response.code !== undefined
+            ) {
+              if (data.response.code >= 500) {
+                error += " (Server failure)";
+              } else if (data.response.code >= 400) {
+                error += " (Stream never started)";
+              } else {
+                error += " (" + data.response.code + ")";
+              }
+            }
+            this._error = error;
+            return;
+          }
+          case Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT:
+            this._error = "Timeout while starting stream";
+            return;
+          default:
+            this._error = "Unknown stream network error (" + data.details + ")";
+            return;
+        }
+        this._error = "Error with media stream contents (" + data.details + ")";
+      } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        this._error = "Error with media stream contents (" + data.details + ")";
+      } else {
+        this._error =
+          "Unknown error with stream (" + data.type + ", " + data.details + ")";
+      }
+    });
   }
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    await new Promise((resolve) =>
-      videoEl.addEventListener("loadedmetadata", resolve)
-    );
-    videoEl.play();
+    videoEl.addEventListener("loadedmetadata", () => {
+      videoEl.play();
+    });
   }
 
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
-  }
-
-  private _destroyPolyfill() {
+  private _cleanUp() {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
-    if (this._useExoPlayer) {
+    if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
+      this._exoPlayer = false;
+    }
+    if (this._videoEl) {
+      this._videoEl.removeAttribute("src");
+      this._videoEl.load();
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host,
       video {
@@ -229,6 +275,12 @@ class HaHLSPlayer extends LitElement {
 
       video {
         width: 100%;
+        max-height: var(--video-max-height, calc(100vh - 97px));
+      }
+
+      ha-alert {
+        display: block;
+        padding: 100px 16px;
       }
     `;
   }

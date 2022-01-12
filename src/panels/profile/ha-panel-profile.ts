@@ -4,15 +4,8 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultArray,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
@@ -36,6 +29,7 @@ import "./ha-pick-dashboard-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
+import "./ha-pick-time-format-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
 import "./ha-set-suspend-row";
@@ -46,9 +40,9 @@ class HaPanelProfile extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _refreshTokens?: RefreshToken[];
+  @state() private _refreshTokens?: RefreshToken[];
 
-  @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
+  @state() private _coreUserData?: CoreFrontendUserData | null;
 
   private _unsubCoreData?: UnsubscribeFunc;
 
@@ -87,11 +81,9 @@ class HaPanelProfile extends LitElement {
         <div class="content">
           <ha-card .header=${this.hass.user!.name}>
             <div class="card-content">
-              ${this.hass.localize(
-                "ui.panel.profile.current_user",
-                "fullName",
-                this.hass.user!.name
-              )}
+              ${this.hass.localize("ui.panel.profile.current_user", {
+                fullName: this.hass.user!.name,
+              })}
               ${this.hass.user!.is_owner
                 ? this.hass.localize("ui.panel.profile.is_owner")
                 : ""}
@@ -105,6 +97,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-number-format-row>
+            <ha-pick-time-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-format-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -228,7 +224,7 @@ class HaPanelProfile extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { TimePatternTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {

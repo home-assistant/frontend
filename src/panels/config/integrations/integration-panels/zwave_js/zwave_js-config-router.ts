@@ -1,4 +1,5 @@
-import { customElement, property } from "lit-element";
+import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
+import { customElement, property } from "lit/decorators";
 import {
   HassRouterPage,
   RouterOptions,
@@ -6,8 +7,6 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-
-import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
 
 export const configTabs: PageNavigation[] = [
   {
@@ -50,6 +49,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         tag: "zwave_js-logs",
         load: () => import("./zwave_js-logs"),
       },
+      provisioned: {
+        tag: "zwave_js-provisioned",
+        load: () => import("./zwave_js-provisioned"),
+      },
     },
   };
 
@@ -64,11 +67,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
       navigate(
-        this,
         `${this.routeTail.prefix}${
           this.routeTail.path
         }?${searchParams.toString()}`,
-        true
+        { replace: true }
       );
     }
   }

@@ -1,4 +1,5 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { AddonSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-addon-picker";

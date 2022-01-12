@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, LitElement, property } from "lit-element";
-import { html } from "lit-html";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-yaml-editor";
 import "../../../../../components/user/ha-users-picker";
@@ -29,8 +29,8 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
           "ui.panel.config.automation.editor.triggers.type.event.event_type"
         )}
         name="event_type"
-        .value="${event_type}"
-        @value-changed="${this._valueChanged}"
+        .value=${event_type}
+        @value-changed=${this._valueChanged}
       ></paper-input>
       <ha-yaml-editor
         .label=${this.hass.localize(

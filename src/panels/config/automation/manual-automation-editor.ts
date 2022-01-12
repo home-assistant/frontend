@@ -3,14 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -78,10 +72,7 @@ export class HaManualAutomationEditor extends LitElement {
                 "ui.panel.config.automation.editor.modes.description",
                 "documentation_link",
                 html`<a
-                  href="${documentationUrl(
-                    this.hass,
-                    "/docs/automation/modes/"
-                  )}"
+                  href=${documentationUrl(this.hass, "/docs/automation/modes/")}
                   target="_blank"
                   rel="noreferrer"
                   >${this.hass.localize(
@@ -173,7 +164,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/trigger/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -202,7 +193,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>
           <a
-            href="${documentationUrl(this.hass, "/docs/scripts/conditions/")}"
+            href=${documentationUrl(this.hass, "/docs/scripts/conditions/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -231,7 +222,7 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/action/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/action/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -276,7 +267,10 @@ export class HaManualAutomationEditor extends LitElement {
     const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
       ?.mode;
 
-    if (mode === this.config!.mode) {
+    if (
+      mode === this.config!.mode ||
+      (!this.config!.mode && mode === MODES[0])
+    ) {
       return;
     }
     const value = {
@@ -317,7 +311,7 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

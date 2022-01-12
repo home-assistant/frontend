@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
@@ -28,21 +21,21 @@ class MoreInfoCounter extends LitElement {
     return html`
       <div class="actions">
         <mwc-button
-          .action="${"increment"}"
+          .action=${"increment"}
           @click=${this._handleActionClick}
           .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.increment")}
         </mwc-button>
         <mwc-button
-          .action="${"decrement"}"
+          .action=${"decrement"}
           @click=${this._handleActionClick}
           .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.decrement")}
         </mwc-button>
         <mwc-button
-          .action="${"reset"}"
+          .action=${"reset"}
           @click=${this._handleActionClick}
           .disabled=${disabled}
         >
@@ -59,7 +52,7 @@ class MoreInfoCounter extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .actions {
         margin: 8px 0;

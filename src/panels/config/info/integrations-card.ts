@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import {
@@ -27,11 +19,11 @@ class IntegrationsCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _manifests?: {
+  @state() private _manifests?: {
     [domain: string]: IntegrationManifest;
   };
 
-  @internalProperty() private _setups?: {
+  @state() private _setups?: {
     [domain: string]: IntegrationSetup;
   };
 
@@ -65,7 +57,7 @@ class IntegrationsCard extends LitElement {
                     <th></th>
                     <th></th>`
                 : ""}
-              <th>Setup time</th>
+              <th>${this.hass.localize("ui.panel.config.info.setup_time")}</th>
             </tr>
           </thead>
           <tbody>
@@ -95,25 +87,33 @@ class IntegrationsCard extends LitElement {
                         >
                       `
                     : "";
-                const setupSeconds = this._setups?.[domain]?.seconds?.toFixed(
-                  2
-                );
+                const setupSeconds =
+                  this._setups?.[domain]?.seconds?.toFixed(2);
                 return html`
                   <tr>
                     <td>
                       <img
                         loading="lazy"
-                        src=${brandsUrl(domain, "icon", true)}
+                        src=${brandsUrl({
+                          domain: domain,
+                          type: "icon",
+                          useFallback: true,
+                          darkOptimized: this.hass.themes?.darkMode,
+                        })}
                         referrerpolicy="no-referrer"
                       />
                     </td>
                     <td class="name">
-                      ${domainToName(this.hass.localize, domain, manifest)}<br />
+                      ${domainToName(
+                        this.hass.localize,
+                        domain,
+                        manifest
+                      )}<br />
                       <span class="domain">${domain}</span>
                       ${this.narrow
                         ? html`<div class="mobile-row">
                             <div>${docLink} ${issueLink}</div>
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </div>`
                         : ""}
                     </td>
@@ -123,7 +123,7 @@ class IntegrationsCard extends LitElement {
                           <td>${docLink}</td>
                           <td>${issueLink}</td>
                           <td class="setup">
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </td>
                         `}
                   </tr>
@@ -152,7 +152,7 @@ class IntegrationsCard extends LitElement {
     this._setups = setups;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;
@@ -169,6 +169,7 @@ class IntegrationsCard extends LitElement {
       }
       td.setup {
         text-align: right;
+        white-space: nowrap;
       }
       th {
         text-align: right;

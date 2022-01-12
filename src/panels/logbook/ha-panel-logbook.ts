@@ -1,15 +1,19 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+  addDays,
+  endOfToday,
+  endOfWeek,
+  endOfYesterday,
+  startOfToday,
+  startOfWeek,
+  startOfYesterday,
+} from "date-fns";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -17,19 +21,19 @@ import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { TraceContexts, loadTraceContexts } from "../../data/trace";
 import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
-import { fetchPersons } from "../../data/person";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { extractSearchParam } from "../../common/url/search-params";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -49,29 +53,23 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
-  private _fetchUserDone?: Promise<unknown>;
+  private _fetchUserPromise?: Promise<void>;
 
-  @internalProperty() private _userIdToName = {};
+  @state() private _userIdToName = {};
 
-  @internalProperty() private _traceContexts: TraceContexts = {};
+  @state() private _traceContexts: TraceContexts = {};
 
   public constructor() {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2);
-    start.setMinutes(0);
-    start.setSeconds(0);
-    start.setMilliseconds(0);
+    start.setHours(start.getHours() - 2, 0, 0, 0);
     this._startDate = start;
 
     const end = new Date();
-    end.setHours(end.getHours() + 1);
-    end.setMinutes(0);
-    end.setSeconds(0);
-    end.setMilliseconds(0);
+    end.setHours(end.getHours() + 1, 0, 0, 0);
     this._endDate = end;
   }
 
@@ -85,12 +83,12 @@ export class HaPanelLogbook extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.logbook")}</div>
-            <mwc-icon-button
+            <ha-icon-button
               @click=${this._refreshLogbook}
+              .path=${mdiRefresh}
+              .label=${this.hass!.localize("ui.common.refresh")}
               .disabled=${this._isLoading}
-            >
-              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -143,46 +141,31 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUserNames();
+    this._fetchUserPromise = this._fetchUserNames();
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(today);
-    todayEnd.setDate(todayEnd.getDate() + 1);
-    todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
-
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayEnd = new Date(today);
-    yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
-
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
-    const thisWeekEnd = new Date(thisWeekStart);
-    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
-    thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
-
-    const lastWeekStart = new Date(today);
-    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
-    lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
+    const weekStart = startOfWeek(today);
+    const weekEnd = endOfWeek(today);
 
     this._ranges = {
-      [this.hass.localize("ui.panel.logbook.ranges.today")]: [today, todayEnd],
-      [this.hass.localize("ui.panel.logbook.ranges.yesterday")]: [
-        yesterday,
-        yesterdayEnd,
+      [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
+        startOfToday(),
+        endOfToday(),
       ],
-      [this.hass.localize("ui.panel.logbook.ranges.this_week")]: [
-        thisWeekStart,
-        thisWeekEnd,
-      ],
-      [this.hass.localize("ui.panel.logbook.ranges.last_week")]: [
-        lastWeekStart,
-        lastWeekEnd,
-      ],
+      [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
+        [startOfYesterday(), endOfYesterday()],
+      [this.hass.localize("ui.components.date-range-picker.ranges.this_week")]:
+        [weekStart, weekEnd],
+      [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
+        [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
+
+    this._entityId = extractSearchParam("entity_id") ?? "";
+
+    const startDate = extractSearchParam("start_date");
+    if (startDate) {
+      this._startDate = new Date(startDate);
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -205,23 +188,19 @@ export class HaPanelLogbook extends LitElement {
   private async _fetchUserNames() {
     const userIdToName = {};
 
-    // Start loading all the data
-    const personProm = fetchPersons(this.hass);
-    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
+    // Start loading users
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
 
     // Process persons
-    const persons = await personProm;
-
-    for (const person of persons.storage) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
+    Object.values(this.hass.states).forEach((entity) => {
+      if (
+        entity.attributes.user_id &&
+        computeStateDomain(entity) === "person"
+      ) {
+        this._userIdToName[entity.attributes.user_id] =
+          entity.attributes.friendly_name;
       }
-    }
-    for (const person of persons.config) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
+    });
 
     // Process users
     if (userProm) {
@@ -261,16 +240,28 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
-    const [entries, traceContexts] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        this._startDate.toISOString(),
-        this._endDate.toISOString(),
-        this._entityId
-      ),
-      isComponentLoaded(this.hass, "trace") ? loadTraceContexts(this.hass) : {},
-      this._fetchUserDone,
-    ]);
+    let entries;
+    let traceContexts;
+
+    try {
+      [entries, traceContexts] = await Promise.all([
+        getLogbookData(
+          this.hass,
+          this._startDate.toISOString(),
+          this._endDate.toISOString(),
+          this._entityId
+        ),
+        isComponentLoaded(this.hass, "trace") && this.hass.user?.is_admin
+          ? loadTraceContexts(this.hass)
+          : {},
+        this._fetchUserPromise,
+      ]);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.components.logbook.retrieval_error"),
+        text: err.message,
+      });
+    }
 
     this._entries = entries;
     this._traceContexts = traceContexts;

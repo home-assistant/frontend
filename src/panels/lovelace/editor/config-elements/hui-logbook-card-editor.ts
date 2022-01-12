@@ -1,14 +1,15 @@
 import "@polymer/paper-input/paper-input";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { array, assert, number, object, optional, string } from "superstruct";
+  array,
+  assert,
+  assign,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/entity/ha-entity-picker";
@@ -17,26 +18,30 @@ import { LogbookCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entities: optional(array(string())),
-  title: optional(string()),
-  hours_to_show: optional(number()),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entities: optional(array(string())),
+    title: optional(string()),
+    hours_to_show: optional(number()),
+    theme: optional(string()),
+  })
+);
 
 @customElement("hui-logbook-card-editor")
 export class HuiLogbookCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: LogbookCardConfig;
+  @state() private _config?: LogbookCardConfig;
 
-  @internalProperty() private _configEntities?: string[];
+  @state() private _configEntities?: string[];
 
   public setConfig(config: LogbookCardConfig): void {
     assert(config, cardConfigStruct);
@@ -92,6 +97,7 @@ export class HuiLogbookCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
@@ -144,7 +150,7 @@ export class HuiLogbookCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

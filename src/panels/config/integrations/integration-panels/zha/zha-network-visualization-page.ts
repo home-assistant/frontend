@@ -1,34 +1,29 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
-
 import "@material/mwc-button";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import {
+  Edge,
+  EdgeOptions,
+  Network,
+  Node,
+} from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
+import "../../../../../common/search/search-input";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-formfield";
+import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   fetchDevices,
   refreshTopology,
   ZHADevice,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../../../types";
-import { Network, Edge, Node, EdgeOptions } from "vis-network";
-import "../../../../../common/search/search-input";
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-svg-icon";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import "../../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import { zhaTabs } from "./zha-config-dashboard";
 
 @customElement("zha-network-visualization-page")
@@ -37,7 +32,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ type: Boolean }) public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property({ type: Boolean }) public isWide!: boolean;
 
@@ -47,22 +42,24 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
-  @internalProperty()
+  @state()
   private _devices: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _nodes: Node[] = [];
 
-  @internalProperty()
+  @state()
   private _network?: Network;
 
-  @internalProperty()
+  @state()
   private _filter?: string;
 
   private _autoZoom = true;
+
+  private _enablePhysics = true;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -76,8 +73,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
       {},
       {
         autoResize: true,
-        height: window.innerHeight + "px",
-        width: window.innerWidth + "px",
         layout: {
           improvedLayout: true,
         },
@@ -109,11 +104,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       if (ieee) {
         const device = this._devices.get(ieee);
         if (device) {
-          navigate(
-            this,
-            `/config/devices/device/${device.device_reg_id}`,
-            false
-          );
+          navigate(`/config/devices/device/${device.device_reg_id}`);
         }
       }
     });
@@ -148,36 +139,74 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
-        <div class="table-header">
-          <search-input
-            no-label-float
-            no-underline
-            @value-changed=${this._handleSearchChange}
-            .filter=${this._filter}
-            .label=${this.hass.localize(
-              "ui.panel.config.zha.visualization.highlight_label"
-            )}
-          >
-          </search-input>
+        ${this.narrow
+          ? html`
+              <div slot="header">
+                <search-input
+                  .hass=${this.hass}
+                  no-label-float
+                  no-underline
+                  class="header"
+                  @value-changed=${this._handleSearchChange}
+                  .filter=${this._filter}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.zha.visualization.highlight_label"
+                  )}
+                >
+                </search-input>
+              </div>
+            `
+          : ""}
+        <div class="header">
+          ${!this.narrow
+            ? html`<search-input
+                .hass=${this.hass}
+                no-label-float
+                no-underline
+                @value-changed=${this._handleSearchChange}
+                .filter=${this._filter}
+                .label=${this.hass.localize(
+                  "ui.panel.config.zha.visualization.highlight_label"
+                )}
+              ></search-input>`
+            : ""}
           <ha-device-picker
             .hass=${this.hass}
             .value=${this.zoomedDeviceId}
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .deviceFilter=${(device) => this._filterDevices(device)}
+            .deviceFilter=${this._filterDevices}
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
-          <ha-checkbox
-            @change=${this._handleCheckboxChange}
-            .checked=${this._autoZoom}
-          ></ha-checkbox
-          >${this.hass!.localize("ui.panel.config.zha.visualization.auto_zoom")}
-          <mwc-button @click=${this._refreshTopology}
-            >${this.hass!.localize(
-              "ui.panel.config.zha.visualization.refresh_topology"
-            )}</mwc-button
-          >
+          <div class="controls">
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.zha.visualization.auto_zoom"
+              )}
+            >
+              <ha-checkbox
+                @change=${this._handleAutoZoomCheckboxChange}
+                .checked=${this._autoZoom}
+              >
+              </ha-checkbox>
+            </ha-formfield>
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.zha.visualization.enable_physics"
+              )}
+              ><ha-checkbox
+                @change=${this._handlePhysicsCheckboxChange}
+                .checked=${this._enablePhysics}
+              >
+              </ha-checkbox
+            ></ha-formfield>
+            <mwc-button @click=${this._refreshTopology}>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.visualization.refresh_topology"
+              )}
+            </mwc-button>
+          </div>
         </div>
         <div id="visualization"></div>
       </hass-tabs-subpage>
@@ -208,19 +237,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
       });
       if (device.neighbors && device.neighbors.length > 0) {
         device.neighbors.forEach((neighbor) => {
-          const idx = edges.findIndex(function (e) {
-            return device.ieee === e.to && neighbor.ieee === e.from;
-          });
+          const idx = edges.findIndex(
+            (e) => device.ieee === e.to && neighbor.ieee === e.from
+          );
           if (idx === -1) {
             edges.push({
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(neighbor.lqi),
+              color: this._getLQI(parseInt(neighbor.lqi)),
             });
           } else {
             edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + neighbor.lqi) / 2
+              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
             );
             edges[idx].label += "/" + neighbor.lqi;
           }
@@ -343,7 +372,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     await refreshTopology(this.hass);
   }
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (!this.hass) {
       return false;
     }
@@ -355,40 +384,51 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     }
     return false;
-  }
+  };
 
-  private _handleCheckboxChange(ev: Event) {
+  private _handleAutoZoomCheckboxChange(ev: Event) {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  static get styles(): CSSResult[] {
+  private _handlePhysicsCheckboxChange(ev: Event) {
+    this._enablePhysics = (ev.target as HaCheckbox).checked;
+
+    this._network!.setOptions(
+      this._enablePhysics
+        ? {
+            physics: {
+              barnesHut: {
+                springConstant: 0,
+                avoidOverlap: 10,
+                damping: 0.09,
+              },
+            },
+          }
+        : { physics: false }
+    );
+  }
+
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {
-          font-family: var(--paper-font-display1_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-display1_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-display1_-_font-size);
-          font-weight: var(--paper-font-display1_-_font-weight);
-          letter-spacing: var(--paper-font-display1_-_letter-spacing);
-          line-height: var(--paper-font-display1_-_line-height);
-          opacity: var(--dark-primary-opacity);
-        }
-
-        .table-header {
-          border-bottom: 1px solid --divider-color;
-          padding: 0 16px;
+          border-bottom: 1px solid var(--divider-color);
+          padding: 0 8px;
           display: flex;
           align-items: center;
-          flex-direction: row;
+          justify-content: space-between;
           height: var(--header-height);
+          box-sizing: border-box;
         }
 
-        :host([narrow]) .table-header {
+        .header > * {
+          padding: 0 8px;
+        }
+
+        :host([narrow]) .header {
           flex-direction: column;
           align-items: stretch;
-          height: var(--header-height) * 3;
+          height: var(--header-height) * 2;
         }
 
         .search-toolbar {
@@ -399,34 +439,34 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
 
         search-input {
-          position: relative;
-          top: 2px;
           flex: 1;
         }
 
-        :host(:not([narrow])) search-input {
-          margin: 5px;
-        }
-
         search-input.header {
-          left: -8px;
+          display: block;
+          position: relative;
+          top: -2px;
+          color: var(--secondary-text-color);
         }
 
         ha-device-picker {
           flex: 1;
+          position: relative;
+          top: -4px;
         }
 
-        :host(:not([narrow])) ha-device-picker {
-          margin: 5px;
+        .controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
-        mwc-button {
-          font-weight: 500;
-          color: var(--primary-color);
+        #visualization {
+          height: calc(100% - var(--header-height));
+          width: 100%;
         }
-
-        :host(:not([narrow])) mwc-button {
-          margin: 5px;
+        :host([narrow]) #visualization {
+          height: calc(100% - (var(--header-height) * 2));
         }
       `,
     ];

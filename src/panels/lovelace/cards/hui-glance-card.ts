@@ -1,17 +1,14 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import relativeTime from "../../../common/datetime/relative_time";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -19,12 +16,14 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../../../components/ha-relative-time";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   ActionHandlerEvent,
   CallServiceActionConfig,
   MoreInfoActionConfig,
 } from "../../../data/lovelace";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -64,7 +63,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GlanceCardConfig;
+  @state() private _config?: GlanceCardConfig;
 
   private _configEntities?: GlanceConfigEntity[];
 
@@ -153,8 +152,8 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     const { title } = this._config;
 
     return html`
-      <ha-card .header="${title}">
-        <div class="${classMap({ entities: true, "no-header": !title })}">
+      <ha-card .header=${title}>
+        <div class=${classMap({ entities: true, "no-header": !title })}>
           ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
@@ -184,7 +183,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;
@@ -194,6 +193,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         padding: 0 16px 4px;
         flex-wrap: wrap;
         box-sizing: border-box;
+        align-items: center;
         align-content: center;
       }
       .entities.no-header {
@@ -226,8 +226,30 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       .name {
         min-height: var(--paper-font-body1_-_line-height, 20px);
       }
+      .warning {
+        cursor: default;
+        position: relative;
+        padding: 8px;
+        width: calc(var(--glance-column-width, 20%) - 4px);
+        margin: 0 2px;
+      }
+      .warning::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.12;
+        pointer-events: none;
+        content: "";
+        border-radius: 4px;
+        background-color: var(--warning-color);
+      }
       state-badge {
         margin: 8px 0;
+      }
+      hui-warning-element {
+        padding: 8px;
       }
     `;
   }
@@ -236,17 +258,32 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html`
-        <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
-        ></hui-warning-element>
-      `;
+      return html`<div class="entity warning">
+        ${this._config!.show_name
+          ? html`
+              <div class="name">
+                ${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
+              </div>
+            `
+          : ""}
+        ${this._config!.show_icon
+          ? html` <hui-warning-element
+              .label=${createEntityNotFoundWarning(
+                this.hass!,
+                entityConf.entity
+              )}
+            ></hui-warning-element>`
+          : ""}
+        <div>${this._config!.show_state ? entityConf.entity : ""}</div>
+      </div>`;
     }
+
+    const name = entityConf.name ?? computeStateName(stateObj);
 
     return html`
       <div
         class="entity"
-        .config="${entityConf}"
+        .config=${entityConf}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(entityConf.hold_action),
@@ -257,13 +294,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         )}
       >
         ${this._config!.show_name
-          ? html`
-              <div class="name">
-                ${"name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)}
-              </div>
-            `
+          ? html` <div class="name" .title=${name}>${name}</div> `
           : ""}
         ${this._config!.show_icon
           ? html`
@@ -282,20 +313,25 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           ? html`
               <div>
                 ${computeDomain(entityConf.entity) === "sensor" &&
-                stateObj.attributes.device_class === "timestamp" &&
+                stateObj.attributes.device_class ===
+                  SENSOR_DEVICE_CLASS_TIMESTAMP &&
                 !UNAVAILABLE_STATES.includes(stateObj.state)
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}
                         .ts=${new Date(stateObj.state)}
                         .format=${entityConf.format}
+                        capitalize
                       ></hui-timestamp-display>
                     `
                   : entityConf.show_last_changed
-                  ? relativeTime(
-                      new Date(stateObj.last_changed),
-                      this.hass!.localize
-                    )
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                        capitalize
+                      ></ha-relative-time>
+                    `
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
