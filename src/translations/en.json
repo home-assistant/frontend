@@ -4235,7 +4235,7 @@
           "stop": "Failed to stop add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
-          "go_to_config": "Failed to start add-on - configuration validation failed!",
+          "go_to_config": "Edit Config",
           "start_invalid_config": "Go to configuration",
           "validate_config": "Failed to validate add-on configuration",
           "get_changelog": "Failed to get add-on changelog"
