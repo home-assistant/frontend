@@ -3178,7 +3178,7 @@
           "help": "Help",
           "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
-          "exit_edit_mode": "Exit UI edit mode",
+          "exit_edit_mode": "Done",
           "close": "Close"
         },
         "reload_resources": {
