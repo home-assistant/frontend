@@ -84,10 +84,14 @@ Actions must have a tab index of 0 so that they can be reached by keyboard-only 
 
 The `title ` option should not be used without a description.
 
-<ha-alert alert-type="success" title="Success">This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success" title="Success">
+  This is an success alert — check it out!
+</ha-alert>
 
 ```html
-<ha-alert alert-type="success" title="Success">This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success" title="Success">
+  This is an success alert — check it out!
+</ha-alert>
 ```
 
 **Dismissable**
