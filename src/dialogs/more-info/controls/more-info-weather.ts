@@ -177,7 +177,7 @@ class MoreInfoWeather extends LitElement {
             </div>
             ${this.stateObj.attributes.forecast.map((item) =>
               this._showValue(item.templow) || this._showValue(item.temperature)
-                ? html` <div class="flex">
+                ? html`<div class="flex">
                     ${item.condition
                       ? html`
                           <ha-svg-icon
