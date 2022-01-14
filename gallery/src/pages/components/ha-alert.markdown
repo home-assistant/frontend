@@ -13,7 +13,7 @@ The alert offers four severity levels that set a distinctive icon and color.
 
 <ha-alert alert-type="success">This is an success alert — check it out!</ha-alert>
 
-**Note:** This component is by <a href="https://mui.com/components/alert/" rel="noopener noreferrer target="_blank">MUI</a> and is not documented in the <a href="https://material.io" rel="noopener noreferrer target="_blank">Material Design guidelines</a>.
+**Note:** This component is by <a href="https://mui.com/components/alert/" rel="noopener noreferrer" target="_blank">MUI</a> and is not documented in the <a href="https://material.io" rel="noopener noreferrer" target="_blank">Material Design guidelines</a>.
 
 1. [Guidelines](#guidelines)
 2. [Implementation](#implementation)
@@ -21,8 +21,8 @@ The alert offers four severity levels that set a distinctive icon and color.
 ### Resources
 | Type           | Link                             | Status    |
 |----------------|----------------------------------|-----------|
-| Design         | <a href="https://www.figma.com/community/file/967153512097289521/Home-Assistant-DesignKit" rel="noopener noreferrer target="_blank">Home Assistant DesignKit</a> (Figma) | Available |
-| Implementation | <a href="https://github.com/home-assistant/frontend/blob/dev/src/components/ha-alert.ts" rel="noopener noreferrer target="_blank">Web Component</a> (GitHub)            | Available |
+| Design         | <a href="https://www.figma.com/community/file/967153512097289521/Home-Assistant-DesignKit" rel="noopener noreferrer" target="_blank">Home Assistant DesignKit</a> (Figma) | Available |
+| Implementation | <a href="https://github.com/home-assistant/frontend/blob/dev/src/components/ha-alert.ts" rel="noopener noreferrer" target="_blank">Web Component</a> (GitHub)            | Available |
 
 ## Guidelines
 ### Usage
