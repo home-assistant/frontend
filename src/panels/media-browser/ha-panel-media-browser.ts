@@ -145,10 +145,11 @@ class PanelMediaBrowser extends LitElement {
     }
     let path = "";
     for (const item of ev.detail.ids.slice(1)) {
-      path = "/";
-      path += encodeURIComponent(
-        `${item.media_content_type},${item.media_content_id}`
-      );
+      path +=
+        "/" +
+        encodeURIComponent(
+          `${item.media_content_type},${item.media_content_id}`
+        );
     }
     navigate(`/media-browser/${this._entityId}${path}`);
   }
