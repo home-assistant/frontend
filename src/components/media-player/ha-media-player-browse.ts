@@ -27,11 +27,11 @@ import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   browseMediaPlayer,
-  getSignedThumbnailPath,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
   MediaPickedEvent,
@@ -594,10 +594,8 @@ export class HaMediaPlayerBrowse extends LitElement {
               }
               if (thumbnailUrl.startsWith("/")) {
                 // Thumbnails served by local API require authentication
-                thumbnailUrl = await getSignedThumbnailPath(
-                  this.hass,
-                  thumbnailUrl
-                );
+                const signedPath = await getSignedPath(this.hass, thumbnailUrl);
+                thumbnailUrl = signedPath.path;
               }
               thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
               observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
