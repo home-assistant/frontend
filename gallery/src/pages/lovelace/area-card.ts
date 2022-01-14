@@ -46,7 +46,6 @@ const CONFIGS = [
     config: `
 - type: area
   area: bedroom
-  image: "/images/bed.png"
     `,
   },
   {
@@ -54,7 +53,6 @@ const CONFIGS = [
     config: `
 - type: area
   area: living_room
-  image: "/images/living_room.png"
     `,
   },
   {
@@ -62,7 +60,6 @@ const CONFIGS = [
     config: `
 - type: area
   area: office
-  image: "/images/office.jpg"
     `,
   },
   {
@@ -70,7 +67,6 @@ const CONFIGS = [
     config: `
 - type: area
   area: kitchen
-  image: "/images/kitchen.png"
     `,
   },
 ];
@@ -93,18 +89,22 @@ class DemoArea extends LitElement {
       {
         name: "Bedroom",
         area_id: "bedroom",
+        picture: "/images/bed.png",
       },
       {
         name: "Living Room",
         area_id: "living_room",
+        picture: "/images/living_room.png",
       },
       {
         name: "Office",
         area_id: "office",
+        picture: "/images/office.jpg",
       },
       {
         name: "Second Office",
         area_id: "kitchen",
+        picture: "/images/kitchen.png",
       },
     ]);
     hass.mockWS("config/device_registry/list", () => []);
