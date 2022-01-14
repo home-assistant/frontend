@@ -582,10 +582,10 @@ export class HaMediaPlayerBrowse extends LitElement {
    * Load thumbnails for images on demand as they become visible.
    */
   private async _attachIntersectionObserver(): Promise<void> {
-    if (!this._thumbnails) {
+    if (!("IntersectionObserver" in window) || !this._thumbnails) {
       return;
     }
-    if (!this._intersectionObserver && "IntersectionObserver" in window) {
+    if (!this._intersectionObserver) {
       this._intersectionObserver = new IntersectionObserver(
         async (entries, observer) => {
           await Promise.all(
