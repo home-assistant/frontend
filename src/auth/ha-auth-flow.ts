@@ -162,6 +162,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
               this._errorMessage
             )}
           </ha-alert>
+          <div class="action">
+            <mwc-button raised @click=${this._startOver}>
+              ${this.localize("ui.panel.page-authorize.form.start_over")}
+            </mwc-button>
+          </div>
         `;
       case "loading":
         return html`
@@ -339,6 +344,10 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     return this.localize("ui.panel.page-authorize.form.unknown_error");
   }
 
+  private _startOver() {
+    this._providerChanged(this.authProvider);
+  }
+
   private async _handleSubmit(ev: Event) {
     ev.preventDefault();
     if (this._step == null) {
@@ -360,6 +369,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       });
 
       const newStep = await response.json();
+
+      if (response.status === 403) {
+        this._state = "error";
+        this._errorMessage = newStep.message;
+        return;
+      }
 
       if (newStep.type === "create_entry") {
         this._redirect(newStep.result);
