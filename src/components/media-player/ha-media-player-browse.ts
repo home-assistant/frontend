@@ -93,7 +93,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _resizeObserver?: ResizeObserver;
 
   // @ts-ignore
-  private _interactionObserver?: InteractionObserver;
+  private _intersectionObserver?: IntersectionObserver;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -104,8 +104,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
-    if (this._interactionObserver) {
-      this._interactionObserver.disconnect();
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
     }
   }
 
@@ -411,7 +411,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._mediaPlayerItems.length
     ) {
       this._setHeaderHeight();
-      this._attachInteractionObserver();
+      this._attachIntersectionObserver();
     }
 
     if (
@@ -577,12 +577,12 @@ export class HaMediaPlayerBrowse extends LitElement {
   /**
    * Load thumbnails for images on demand as they become visible.
    */
-  private async _attachInteractionObserver(): Promise<void> {
+  private async _attachIntersectionObserver(): Promise<void> {
     if (!this._thumbnails) {
       return;
     }
-    if (!this._interactionObserver) {
-      this._interactionObserver = new IntersectionObserver(
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
         async (entries, observer) => {
           await Promise.all(
             entries.map(async (entry) => {
@@ -608,7 +608,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
       );
     }
-    const observer = this._interactionObserver!;
+    const observer = this._intersectionObserver!;
     this._thumbnails.forEach((thumbnailCard) => {
       observer.observe(thumbnailCard);
     });
