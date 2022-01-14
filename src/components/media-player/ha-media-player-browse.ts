@@ -18,6 +18,7 @@ import {
   eventOptions,
   property,
   query,
+  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -26,6 +27,7 @@ import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
@@ -42,7 +44,7 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
-import "../ha-card";
+import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
@@ -84,18 +86,26 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query(".content") private _content?: HTMLDivElement;
 
+  @queryAll(".lazythumbnail") private _thumbnails?: HaCard[];
+
   private _headerOffsetHeight = 0;
 
   private _resizeObserver?: ResizeObserver;
 
+  // @ts-ignore
+  private _intersectionObserver?: IntersectionObserver;
+
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
+    this.updateComplete.then(() => this._attachResizeObserver());
   }
 
   public disconnectedCallback(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
+    }
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
     }
   }
 
@@ -259,11 +269,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <div class="ha-card-parent">
                           <ha-card
                             outlined
-                            style=${styleMap({
-                              backgroundImage: child.thumbnail
-                                ? `url(${child.thumbnail})`
-                                : "none",
-                            })}
+                            class=${child.thumbnail ? "lazythumbnail" : ""}
+                            data-src=${ifDefined(child.thumbnail)}
                           >
                             ${!child.thumbnail
                               ? html`
@@ -391,7 +398,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   protected firstUpdated(): void {
     this._measureCard();
-    this._attachObserver();
+    this._attachResizeObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -402,6 +409,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._mediaPlayerItems.length
     ) {
       this._setHeaderHeight();
+      this._attachIntersectionObserver();
     }
 
     if (
@@ -553,7 +561,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  private async _attachObserver(): Promise<void> {
+  private async _attachResizeObserver(): Promise<void> {
     if (!this._resizeObserver) {
       await installResizeObserver();
       this._resizeObserver = new ResizeObserver(
@@ -562,6 +570,44 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     this._resizeObserver.observe(this);
+  }
+
+  /**
+   * Load thumbnails for images on demand as they become visible.
+   */
+  private async _attachIntersectionObserver(): Promise<void> {
+    if (!this._thumbnails) {
+      return;
+    }
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
+        async (entries, observer) => {
+          await Promise.all(
+            entries.map(async (entry) => {
+              if (!entry.isIntersecting) {
+                return;
+              }
+              const thumbnailCard = entry.target as HaCard;
+              let thumbnailUrl = thumbnailCard.dataset.src;
+              if (!thumbnailUrl) {
+                return;
+              }
+              if (thumbnailUrl.startsWith("/")) {
+                // Thumbnails served by local API require authentication
+                const signedPath = await getSignedPath(this.hass, thumbnailUrl);
+                thumbnailUrl = signedPath.path;
+              }
+              thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
+              observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
+            })
+          );
+        }
+      );
+    }
+    const observer = this._intersectionObserver!;
+    this._thumbnails.forEach((thumbnailCard) => {
+      observer.observe(thumbnailCard);
+    });
   }
 
   private _closeDialogAction(): void {
