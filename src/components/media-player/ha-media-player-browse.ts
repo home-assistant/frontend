@@ -270,9 +270,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           <ha-card
                             outlined
                             class=${child.thumbnail ? "lazythumbnail" : ""}
-                            data-src=${child.thumbnail
-                              ? `${child.thumbnail}`
-                              : ""}
+                            data-src=${ifDefined(child.thumbnail)}
                           >
                             ${!child.thumbnail
                               ? html`
