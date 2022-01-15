@@ -1,13 +1,20 @@
-import { mdiCheck, mdiPlus } from "@mdi/js";
-import { html, LitElement, PropertyValues } from "lit";
+import {
+  mdiCancel,
+  mdiCodeGreaterThanOrEqual,
+  mdiHomeMapMarker,
+  mdiPlus,
+} from "@mdi/js";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -30,23 +37,21 @@ export class HaConfigUsers extends LitElement {
   @property() public route!: Route;
 
   private _columns = memoizeOne(
-    (narrow: boolean, _language): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
+    (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer<User> = {
         name: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.name"
-          ),
+          title: localize("ui.panel.config.users.picker.headers.name"),
           sortable: true,
           filterable: true,
           width: "25%",
           direction: "asc",
           grows: true,
-          template: (name, user: any) =>
+          template: (name, user) =>
             narrow
               ? html` ${name}<br />
                   <div class="secondary">
-                    ${user.username} |
-                    ${this.hass.localize(`groups.${user.group_ids[0]}`)}
+                    ${user.username ? `${user.username} |` : ""}
+                    ${localize(`groups.${user.group_ids[0]}`)}
                   </div>`
               : html` ${name ||
                 this.hass!.localize(
@@ -54,68 +59,56 @@ export class HaConfigUsers extends LitElement {
                 )}`,
         },
         username: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.username"
-          ),
+          title: localize("ui.panel.config.users.picker.headers.username"),
           sortable: true,
           filterable: true,
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (username) => html`
-            ${username ||
-            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
-          `,
+          template: (username) => html` ${username || "-"} `,
         },
         group_ids: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.group"
-          ),
+          title: localize("ui.panel.config.users.picker.headers.group"),
           sortable: true,
           filterable: true,
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (groupIds) => html`
-            ${this.hass.localize(`groups.${groupIds[0]}`)}
-          `,
+          template: (groupIds) => html` ${localize(`groups.${groupIds[0]}`)} `,
         },
-        is_active: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.is_active"
-          ),
-          type: "icon",
-          sortable: true,
-          filterable: true,
-          width: "80px",
-          template: (is_active) =>
-            is_active
-              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-              : "",
-        },
-        system_generated: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.system"
-          ),
-          type: "icon",
-          sortable: true,
-          filterable: true,
-          width: "160px",
-          template: (generated) =>
-            generated
-              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-              : "",
-        },
-        local_only: {
-          title: this.hass.localize(
-            "ui.panel.config.users.picker.headers.local"
-          ),
-          type: "icon",
-          sortable: true,
-          filterable: true,
-          width: "160px",
-          template: (local) =>
-            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+        icons: {
+          title: "",
+          sortable: false,
+          filterable: false,
+          width: "104px",
+          template: (_, user) => {
+            const icons: [string, string][] = [];
+            if (!user.is_active) {
+              icons.push([
+                mdiCancel,
+                localize("ui.panel.config.users.picker.is_not_active"),
+              ]);
+            }
+            if (user.system_generated) {
+              icons.push([
+                mdiCodeGreaterThanOrEqual,
+                localize("ui.panel.config.users.picker.is_system_generated"),
+              ]);
+            }
+            if (user.local_only) {
+              icons.push([
+                mdiHomeMapMarker,
+                localize("ui.panel.config.users.picker.is_local_only"),
+              ]);
+            }
+            return html`${icons.map(
+              ([icon, label]) =>
+                html`<ha-help-tooltip
+                  .iconPath=${icon}
+                  .label=${label}
+                ></ha-help-tooltip>`
+            )}`;
+          },
         },
       };
 
@@ -136,7 +129,7 @@ export class HaConfigUsers extends LitElement {
         .route=${this.route}
         backPath="/config"
         .tabs=${configSections.persons}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._users}
         @row-click=${this._editUser}
         hasFab
@@ -215,4 +208,11 @@ export class HaConfigUsers extends LitElement {
       },
     });
   }
+
+  static override styles = css`
+    :host {
+      --ha-help-tooltip-size: 24px;
+      --ha-help-tooltip-color: var(--secondary-text-color);
+    }
+  `;
 }

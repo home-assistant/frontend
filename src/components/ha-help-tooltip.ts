@@ -10,9 +10,11 @@ export class HaHelpTooltip extends LitElement {
 
   @property() public position = "top";
 
+  @property() public iconPath = mdiHelpCircle;
+
   protected render(): TemplateResult {
     return html`
-      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
+      <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
       <paper-tooltip
         offset="4"
         .position=${this.position}
@@ -24,6 +26,9 @@ export class HaHelpTooltip extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        display: inline-block;
+      }
       ha-svg-icon {
         --mdc-icon-size: var(--ha-help-tooltip-size, 14px);
         color: var(--ha-help-tooltip-color, var(--disabled-text-color));

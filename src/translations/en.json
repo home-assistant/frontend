@@ -2517,12 +2517,11 @@
             "headers": {
               "name": "Display name",
               "username": "Username",
-              "group": "Group",
-              "system": "System generated",
-              "is_active": "Active",
-              "is_owner": "Owner",
-              "local": "Local only"
+              "group": "Group"
             },
+            "is_not_active": "Disabled",
+            "is_system_generated": "System generated",
+            "is_local_only": "Local only",
             "add_user": "Add user"
           },
           "editor": {
