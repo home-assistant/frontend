@@ -4,7 +4,7 @@ import {
   mdiHomeMapMarker,
   mdiPlus,
 } from "@mdi/js";
-import { css, html, LitElement, PropertyValues } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -13,6 +13,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
@@ -102,11 +103,11 @@ export class HaConfigUsers extends LitElement {
               ]);
             }
             return html`${icons.map(
-              ([icon, label]) =>
-                html`<ha-help-tooltip
-                  .iconPath=${icon}
-                  .label=${label}
-                ></ha-help-tooltip>`
+              ([icon, tooltip]) =>
+                html`<ha-data-table-icon
+                  .path=${icon}
+                  .tooltip=${tooltip}
+                ></ha-data-table-icon>`
             )}`;
           },
         },
@@ -208,11 +209,4 @@ export class HaConfigUsers extends LitElement {
       },
     });
   }
-
-  static override styles = css`
-    :host {
-      --ha-help-tooltip-size: 24px;
-      --ha-help-tooltip-color: var(--secondary-text-color);
-    }
-  `;
 }
