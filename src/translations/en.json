@@ -2517,7 +2517,10 @@
             "headers": {
               "name": "Display name",
               "username": "Username",
-              "group": "Group"
+              "group": "Group",
+              "system": "System generated",
+              "is_active": "Active",
+              "local": "Local only"
             },
             "is_not_active": "Disabled",
             "is_system_generated": "System generated",

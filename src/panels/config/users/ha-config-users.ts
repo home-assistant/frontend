@@ -1,6 +1,7 @@
 import {
   mdiAlphaSCircleOutline,
   mdiCancel,
+  mdiCheck,
   mdiHomeCircleOutline,
   mdiPlus,
 } from "@mdi/js";
@@ -77,12 +78,53 @@ export class HaConfigUsers extends LitElement {
           hidden: narrow,
           template: (groupIds) => html` ${localize(`groups.${groupIds[0]}`)} `,
         },
+        is_active: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.is_active"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "80px",
+          hidden: narrow,
+          template: (is_active) =>
+            is_active
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
+        },
+        system_generated: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.system"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "160px",
+          hidden: narrow,
+          template: (generated) =>
+            generated
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : "",
+        },
+        local_only: {
+          title: this.hass.localize(
+            "ui.panel.config.users.picker.headers.local"
+          ),
+          type: "icon",
+          sortable: true,
+          filterable: true,
+          width: "160px",
+          hidden: narrow,
+          template: (local) =>
+            local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+        },
         icons: {
           title: "",
           type: "icon",
           sortable: false,
           filterable: false,
           width: "104px",
+          hidden: !narrow,
           template: (_, user) => {
             const icons: [string, string][] = [];
             if (!user.is_active) {
