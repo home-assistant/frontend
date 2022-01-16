@@ -1,5 +1,6 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 import { EntityRegistryEntry } from "./entity_registry";
@@ -98,4 +99,9 @@ export const subscribeDeviceRegistry = (
     subscribeDeviceRegistryUpdates,
     conn,
     onChange
+  );
+
+export const sortDeviceRegistryByName = (entries: DeviceRegistryEntry[]) =>
+  entries.sort((entry1, entry2) =>
+    caseInsensitiveStringCompare(entry1.name!, entry2.name!)
   );
