@@ -36,7 +36,7 @@ export class EnergyStrategy {
       }
       view.cards!.push({
         type: "markdown",
-        content: `An error occured while fetching your energy preferences: ${err.message}.`,
+        content: `An error occurred while fetching your energy preferences: ${err.message}.`,
       });
       return view;
     }
