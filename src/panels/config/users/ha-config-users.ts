@@ -1,7 +1,7 @@
 import {
+  mdiAlphaSCircleOutline,
   mdiCancel,
-  mdiCodeGreaterThanOrEqual,
-  mdiHomeMapMarker,
+  mdiHomeCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import { html, LitElement, PropertyValues } from "lit";
@@ -79,6 +79,7 @@ export class HaConfigUsers extends LitElement {
         },
         icons: {
           title: "",
+          type: "icon",
           sortable: false,
           filterable: false,
           width: "104px",
@@ -92,13 +93,13 @@ export class HaConfigUsers extends LitElement {
             }
             if (user.system_generated) {
               icons.push([
-                mdiCodeGreaterThanOrEqual,
+                mdiAlphaSCircleOutline,
                 localize("ui.panel.config.users.picker.is_system_generated"),
               ]);
             }
             if (user.local_only) {
               icons.push([
-                mdiHomeMapMarker,
+                mdiHomeCircleOutline,
                 localize("ui.panel.config.users.picker.is_local_only"),
               ]);
             }
