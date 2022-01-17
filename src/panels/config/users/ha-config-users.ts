@@ -1,7 +1,4 @@
-import {
-  mdiCheck,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiCheck, mdiPlus } from "@mdi/js";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
