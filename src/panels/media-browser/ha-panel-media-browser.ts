@@ -16,6 +16,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
+import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
 import {
   BROWSER_PLAYER,
   MediaPickedEvent,
@@ -36,8 +37,14 @@ class PanelMediaBrowser extends LitElement {
 
   @property() public route!: Route;
 
-  // @ts-ignore
-  @LocalStorage("mediaBrowseEntityId", true)
+  private _navigateIds: MediaPlayerItemId[] = [
+    {
+      media_content_id: undefined,
+      media_content_type: undefined,
+    },
+  ];
+
+  @LocalStorage("mediaBrowseEntityId")
   private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {
@@ -77,15 +84,17 @@ class PanelMediaBrowser extends LitElement {
           <ha-media-player-browse
             .hass=${this.hass}
             .entityId=${this._entityId}
+            .navigateIds=${this._navigateIds}
             @media-picked=${this._mediaPicked}
+            @media-browsed=${this._mediaBrowsed}
           ></ha-media-player-browse>
         </div>
       </ha-app-layout>
     `;
   }
 
-  public updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("route")) {
       return;
@@ -96,10 +105,28 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
-    const routePlayer = this.route.path.substring(1).split("/")[0];
+    const [routePlayer, ...navigateIdsEncoded] = this.route.path
+      .substring(1)
+      .split("/");
+
     if (routePlayer !== this._entityId) {
       this._entityId = routePlayer;
     }
+
+    this._navigateIds = [
+      {
+        media_content_type: undefined,
+        media_content_id: undefined,
+      },
+      ...navigateIdsEncoded.map((navigateId) => {
+        const [media_content_type, media_content_id] =
+          decodeURIComponent(navigateId).split(",");
+        return {
+          media_content_type,
+          media_content_id,
+        };
+      }),
+    ];
   }
 
   private _showSelectMediaPlayerDialog(): void {
@@ -109,6 +136,22 @@ class PanelMediaBrowser extends LitElement {
         navigate(`/media-browser/${entityId}`, { replace: true });
       },
     });
+  }
+
+  private _mediaBrowsed(ev) {
+    if (ev.detail.back) {
+      history.back();
+      return;
+    }
+    let path = "";
+    for (const item of ev.detail.ids.slice(1)) {
+      path +=
+        "/" +
+        encodeURIComponent(
+          `${item.media_content_type},${item.media_content_id}`
+        );
+    }
+    navigate(`/media-browser/${this._entityId}${path}`);
   }
 
   private async _mediaPicked(
