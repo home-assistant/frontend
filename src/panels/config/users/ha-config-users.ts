@@ -99,7 +99,7 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "160px",
+          width: "80px",
           hidden: narrow,
           template: (generated) =>
             generated
@@ -113,7 +113,7 @@ export class HaConfigUsers extends LitElement {
           type: "icon",
           sortable: true,
           filterable: true,
-          width: "160px",
+          width: "80px",
           hidden: narrow,
           template: (local) =>
             local ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
@@ -136,13 +136,13 @@ export class HaConfigUsers extends LitElement {
             if (user.system_generated) {
               icons.push([
                 mdiAlphaSCircleOutline,
-                localize("ui.panel.config.users.picker.is_system_generated"),
+                localize("ui.panel.config.users.picker.is_system"),
               ]);
             }
             if (user.local_only) {
               icons.push([
                 mdiHomeCircleOutline,
-                localize("ui.panel.config.users.picker.is_local_only"),
+                localize("ui.panel.config.users.picker.is_local"),
               ]);
             }
             return html`${icons.map(

@@ -2518,13 +2518,13 @@
               "name": "Display name",
               "username": "Username",
               "group": "Group",
-              "system": "System generated",
+              "system": "System",
               "is_active": "Active",
-              "local": "Local only"
+              "local": "Local"
             },
             "is_not_active": "Disabled",
-            "is_system_generated": "System generated",
-            "is_local_only": "Local only",
+            "is_system": "System user",
+            "is_local": "Local user",
             "add_user": "Add user"
           },
           "editor": {
