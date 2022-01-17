@@ -1006,6 +1006,8 @@
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
           "add_picture": "Add a picture",
+          "assigned_to_area": "Assigned to this area",
+          "targeting_area": "Targeting this area",
           "data_table": {
             "area": "Area",
             "devices": "Devices",
