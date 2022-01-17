@@ -61,6 +61,7 @@ import "./ha-config-flow-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
+import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -137,6 +138,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   );
 
   @state() private _filter?: string;
+
+  @state() private _diagnosticHandlers?: Record<string, boolean>;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -252,6 +255,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._handleAdd(localizePromise);
     }
     this._scanUSBDevices();
+    if (isComponentLoaded(this.hass, "diagnostics")) {
+      fetchDiagnosticHandlers(this.hass).then((infos) => {
+        const handlers = {};
+        for (const info of infos) {
+          handlers[info.domain] = info.handlers.config_entry;
+        }
+        this._diagnosticHandlers = handlers;
+      });
+    }
   }
 
   protected updated(changed: PropertyValues) {
@@ -423,6 +435,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
                     .deviceRegistryEntries=${this._deviceRegistryEntries}
+                    .supportsDiagnostics=${this._diagnosticHandlers
+                      ? this._diagnosticHandlers[domain]
+                      : false}
                   ></ha-integration-card>`
               )
             : this._filter &&
