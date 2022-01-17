@@ -3,13 +3,19 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
+
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-chip-set";
+import "../../../components/ha-chip";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import { adminChangePassword } from "../../../data/auth";
 import {
+  computeUserBadges,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
@@ -55,6 +61,7 @@ class DialogUserDetail extends LitElement {
       return html``;
     }
     const user = this._params.entry;
+    const badges = computeUserBadges(this.hass, user);
     return html`
       <ha-dialog
         open
@@ -71,26 +78,20 @@ class DialogUserDetail extends LitElement {
             ${this.hass.localize("ui.panel.config.users.editor.username")}:
             ${user.username}
           </div>
-          <div>
-            ${user.is_owner
-              ? html`
-                  <span class="state"
-                    >${this.hass.localize(
-                      "ui.panel.config.users.editor.owner"
-                    )}</span
-                  >
-                `
-              : ""}
-            ${user.system_generated
-              ? html`
-                  <span class="state">
-                    ${this.hass.localize(
-                      "ui.panel.config.users.editor.system_generated"
-                    )}
-                  </span>
-                `
-              : ""}
-          </div>
+          ${badges.length === 0
+            ? ""
+            : html`
+                <ha-chip-set>
+                  ${badges.map(
+                    ([icon, label]) => html`
+                      <ha-chip hasIcon>
+                        <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
+                        ${label}
+                      </ha-chip>
+                    `
+                  )}
+                </ha-chip-set>
+              `}
           <div class="form">
             <paper-input
               .value=${this._name}
@@ -320,6 +321,9 @@ class DialogUserDetail extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+        }
+        ha-chip-set {
+          display: block;
         }
         .state {
           background-color: rgba(var(--rgb-primary-text-color), 0.15);

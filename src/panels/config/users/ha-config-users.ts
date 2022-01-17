@@ -1,8 +1,5 @@
 import {
-  mdiAlphaSCircleOutline,
-  mdiCancel,
   mdiCheck,
-  mdiHomeCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import { html, LitElement, PropertyValues } from "lit";
@@ -18,7 +15,13 @@ import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
-import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
+import {
+  computeUserBadges,
+  deleteUser,
+  fetchUsers,
+  updateUser,
+  User,
+} from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
@@ -126,26 +129,8 @@ export class HaConfigUsers extends LitElement {
           width: "104px",
           hidden: !narrow,
           template: (_, user) => {
-            const icons: [string, string][] = [];
-            if (!user.is_active) {
-              icons.push([
-                mdiCancel,
-                localize("ui.panel.config.users.picker.is_not_active"),
-              ]);
-            }
-            if (user.system_generated) {
-              icons.push([
-                mdiAlphaSCircleOutline,
-                localize("ui.panel.config.users.picker.is_system"),
-              ]);
-            }
-            if (user.local_only) {
-              icons.push([
-                mdiHomeCircleOutline,
-                localize("ui.panel.config.users.picker.is_local"),
-              ]);
-            }
-            return html`${icons.map(
+            const badges = computeUserBadges(this.hass, user);
+            return html`${badges.map(
               ([icon, tooltip]) =>
                 html`<ha-data-table-icon
                   .path=${icon}
