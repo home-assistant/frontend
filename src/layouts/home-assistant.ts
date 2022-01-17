@@ -21,13 +21,11 @@ import "./home-assistant-main";
 
 const useHash = __DEMO__;
 const curPath = () =>
-  window.decodeURIComponent(
-    useHash ? location.hash.substr(1) : location.pathname
-  );
+  useHash ? location.hash.substring(1) : location.pathname;
 
 const panelUrl = (path: string) => {
   const dividerPos = path.indexOf("/", 1);
-  return dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+  return dividerPos === -1 ? path.substring(1) : path.substring(1, dividerPos);
 };
 
 @customElement("home-assistant")
