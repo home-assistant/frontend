@@ -44,10 +44,6 @@ import {
   PersistentNotification,
   subscribeNotifications,
 } from "../data/persistent_notification";
-import {
-  ExternalConfig,
-  getExternalConfig,
-} from "../external_app/external_config";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
@@ -192,8 +188,6 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public editMode = false;
 
-  @state() private _externalConfig?: ExternalConfig;
-
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _renderEmptySortable = false;
@@ -270,13 +264,6 @@ class HaSidebar extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-
-    if (this.hass && this.hass.auth.external) {
-      getExternalConfig(this.hass.auth.external).then((conf) => {
-        this._externalConfig = conf;
-      });
-    }
-
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
@@ -559,8 +546,7 @@ class HaSidebar extends LitElement {
 
   private _renderExternalConfiguration() {
     return html`${!this.hass.user?.is_admin &&
-    this._externalConfig &&
-    this._externalConfig.hasSettingsScreen
+    this.hass.auth.external?.config.hasSettingsScreen
       ? html`
           <a
             role="option"

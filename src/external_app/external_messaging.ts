@@ -1,4 +1,6 @@
 import { Connection } from "home-assistant-js-websocket";
+import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
+import { ExternalConfig, getExternalConfig } from "./external_config";
 import {
   externalForwardConnectionEvents,
   externalForwardHaptics,
@@ -42,12 +44,21 @@ interface EMExternalMessageRestart {
   command: "restart";
 }
 
+interface EMExternMessageShowNotifications {
+  id: number;
+  type: "command";
+  command: "notifications/show";
+}
+
 type ExternalMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageRestart;
+  | EMExternalMessageRestart
+  | EMExternMessageShowNotifications;
 
 export class ExternalMessaging {
+  public config!: ExternalConfig;
+
   public commands: { [msgId: number]: CommandInFlight } = {};
 
   public connection?: Connection;
@@ -56,10 +67,11 @@ export class ExternalMessaging {
 
   public msgId = 0;
 
-  public attach() {
+  public async attach() {
     externalForwardConnectionEvents(this);
     externalForwardHaptics(this);
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
+    this.config = await getExternalConfig(this);
   }
 
   /**
@@ -117,6 +129,13 @@ export class ExternalMessaging {
           success: true,
           result: null,
         });
+      } else if (msg.command === "notifications/show") {
+        const hassEl = this.hassEl;
+        if (hassEl) {
+          showNotificationDrawer(hassEl, {
+            narrow: document.body.clientWidth < 870,
+          });
+        }
       } else {
         // eslint-disable-next-line no-console
         console.warn("Received unknown command", msg.command, msg);
@@ -148,6 +167,10 @@ export class ExternalMessaging {
         pendingCmd.reject(msg.error);
       }
     }
+  }
+
+  private get hassEl() {
+    return document.body.querySelector("home-assistant");
   }
 
   protected _sendExternal(msg: EMMessage) {

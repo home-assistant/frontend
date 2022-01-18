@@ -2,6 +2,7 @@ import { ExternalMessaging } from "./external_messaging";
 
 export interface ExternalConfig {
   hasSettingsScreen: boolean;
+  hasSidebar: boolean;
   canWriteTag: boolean;
   hasExoPlayer: boolean;
 }
