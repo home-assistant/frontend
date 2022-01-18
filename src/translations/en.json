@@ -2440,6 +2440,7 @@
             "configure": "Configure",
             "system_options": "System options",
             "documentation": "Documentation",
+            "download_diagnostics": "Download diagnostics",
             "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete the {title} integration?",

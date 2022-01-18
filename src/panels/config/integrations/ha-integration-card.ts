@@ -20,6 +20,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -31,6 +32,7 @@ import {
   ERROR_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { integrationIssuesUrl } from "../../../data/integration";
@@ -72,6 +74,8 @@ export class HaIntegrationCard extends LitElement {
   @property() public selectedConfigEntryId?: string;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public supportsDiagnostics = false;
 
   protected render(): TemplateResult {
     let item = this._selectededConfigEntry;
@@ -357,6 +361,19 @@ export class HaIntegrationCard extends LitElement {
                 )}
               </mwc-list-item>`
             : ""}
+          ${this.supportsDiagnostics
+            ? html`<a
+                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
+                target="_blank"
+                @click=${this._signUrl}
+              >
+                <mwc-list-item>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.download_diagnostics"
+                  )}
+                </mwc-list-item>
+              </a>`
+            : ""}
           ${item.disabled_by === "user"
             ? html`<mwc-list-item @request-selected=${this._handleEnable}>
                 ${this.hass.localize("ui.common.enable")}
@@ -621,6 +638,16 @@ export class HaIntegrationCard extends LitElement {
       title: newName,
     });
     fireEvent(this, "entry-updated", { entry: result.config_entry });
+  }
+
+  private async _signUrl(ev) {
+    const anchor = ev.target.closest("a");
+    ev.preventDefault();
+    const signedUrl = await getSignedPath(
+      this.hass,
+      anchor.getAttribute("href")
+    );
+    document.location.assign(signedUrl.path);
   }
 
   static get styles(): CSSResultGroup {
