@@ -45,6 +45,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
 
@@ -647,7 +648,7 @@ export class HaIntegrationCard extends LitElement {
       this.hass,
       anchor.getAttribute("href")
     );
-    document.location.assign(signedUrl.path);
+    fileDownload(signedUrl.path);
   }
 
   static get styles(): CSSResultGroup {
