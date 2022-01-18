@@ -114,5 +114,8 @@ export const localizeConfigFlowTitle = (
     args.push(key);
     args.push(placeholders[key]);
   });
-  return localize(`component.${flow.handler}.config.flow_title`, ...args);
+  return localize(`component.${flow.handler}.config.flow_title`, ...args) ||
+    "name" in placeholders
+    ? placeholders.name
+    : domainToName(localize, flow.handler);
 };
