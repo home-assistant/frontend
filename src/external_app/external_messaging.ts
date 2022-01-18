@@ -136,15 +136,24 @@ export class ExternalMessaging {
             narrow: document.body.clientWidth < 870,
           });
         }
+        this.fireMessage({
+          id: msg.id,
+          type: "result",
+          success: true,
+          result: null,
+        });
       } else {
+        // @ts-ignore
         // eslint-disable-next-line no-console
         console.warn("Received unknown command", msg.command, msg);
         this.fireMessage({
+          // @ts-ignore
           id: msg.id,
           type: "result",
           success: false,
           error: {
             code: "unknown_command",
+            // @ts-ignore
             message: `Unknown command ${msg.command}`,
           },
         });
