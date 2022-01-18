@@ -14,13 +14,11 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
-import { getSignedPath } from "../../../../../data/auth";
 import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
   fetchZwaveProvisioningEntries,
-  NodeStatus,
   setZwaveDataCollectionPreference,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
@@ -31,14 +29,9 @@ import {
   getConfigEntries,
   ERROR_STATES,
 } from "../../../../../data/config_entries";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { fileDownload } from "../../../../../util/file_download";
 import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSHealNetworkDialog } from "./show-dialog-zwave_js-heal-network";
@@ -212,14 +205,6 @@ class ZWaveJSConfigDashboard extends LitElement {
                     ${this._network.client.ws_server_url}<br />
                   </div>
                   <div class="card-actions">
-                    <mwc-button
-                      @click=${this._dumpDebugClicked}
-                      .disabled=${this._status === "connecting"}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.dump_debug"
-                      )}
-                    </mwc-button>
                     <mwc-button
                       @click=${this._removeNodeClicked}
                       .disabled=${this._status === "connecting"}
@@ -444,60 +429,6 @@ class ZWaveJSConfigDashboard extends LitElement {
       (entry) => entry.entry_id === this.configEntryId
     );
     showOptionsFlowDialog(this, configEntry!);
-  }
-
-  private async _dumpDebugClicked() {
-    await this._fetchNodeStatus();
-
-    const notReadyNodes = this._nodes?.filter((node) => !node.ready);
-    const deadNodes = this._nodes?.filter(
-      (node) => node.status === NodeStatus.Dead
-    );
-
-    if (deadNodes?.length) {
-      await showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.dump_dead_nodes_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.dump_dead_nodes_text"
-        ),
-      });
-    }
-
-    if (
-      notReadyNodes?.length &&
-      notReadyNodes.length !== deadNodes?.length &&
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.dump_not_ready_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.dump_not_ready_text"
-        ),
-        confirmText: this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.dump_not_ready_confirm"
-        ),
-      }))
-    ) {
-      return;
-    }
-
-    let signedPath: { path: string };
-    try {
-      signedPath = await getSignedPath(
-        this.hass,
-        `/api/zwave_js/dump/${this.configEntryId}`
-      );
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: "Error",
-        text: err.error || err.body || err,
-      });
-      return;
-    }
-
-    fileDownload(this, signedPath.path, `zwave_js_dump.jsonl`);
   }
 
   static get styles(): CSSResultGroup {
