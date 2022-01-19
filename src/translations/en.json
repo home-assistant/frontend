@@ -2075,7 +2075,8 @@
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
-                "play": "Play"
+                "play": "Play",
+                "create_automation": "Create Automation"
               }
             },
             "remote": {
