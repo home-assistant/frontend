@@ -4439,6 +4439,7 @@
       "partial_backup": "Partial backup",
       "addons": "Add-ons",
       "folders": "Folders",
+      "size": "Size",
       "password": "Backup password",
       "confirm_password": "Confirm backup password",
       "password_protection": "Password protection",

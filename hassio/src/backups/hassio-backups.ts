@@ -127,6 +127,14 @@ export class HassioBackups extends LitElement {
           html`${entry || backup.slug}
             <div class="secondary">${backup.secondary}</div>`,
       },
+      size: {
+        title: this.supervisor?.localize("backup.size") || "",
+        width: "15%",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
+      },
       date: {
         title: this.supervisor?.localize("backup.created") || "",
         width: "15%",
