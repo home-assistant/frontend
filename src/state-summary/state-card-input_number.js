@@ -26,6 +26,7 @@ class StateCardInputNumber extends mixinBehaviors(
 
           text-align: right;
           line-height: 40px;
+          margin-left: 8px;
         }
         .sliderstate {
           min-width: 45px;
