@@ -320,3 +320,16 @@ export const computeMediaControls = (
 
   return buttons.length > 0 ? buttons : undefined;
 };
+
+export const formatMediaTime = (seconds: number): string => {
+  if (!seconds) {
+    return "";
+  }
+
+  let secondsString = new Date(seconds * 1000).toISOString();
+  secondsString =
+    seconds > 3600
+      ? secondsString.substring(11, 16)
+      : secondsString.substring(14, 19);
+  return secondsString.replace(/^0+/, "").padStart(4, "0");
+};

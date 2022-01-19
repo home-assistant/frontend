@@ -25,6 +25,7 @@ import {
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
+import "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
@@ -89,6 +90,11 @@ class PanelMediaBrowser extends LitElement {
             @media-browsed=${this._mediaBrowsed}
           ></ha-media-player-browse>
         </div>
+        <ha-bar-media-player
+          .hass=${this.hass}
+          .entityId=${this._entityId}
+          .narrow=${this.narrow}
+        ></ha-bar-media-player>
       </ha-app-layout>
     `;
   }
@@ -201,6 +207,12 @@ class PanelMediaBrowser extends LitElement {
         }
         ha-media-player-browse {
           height: calc(100vh - var(--header-height));
+        }
+        ha-bar-media-player {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
         }
         :host([narrow]) app-toolbar mwc-button {
           width: 65px;
