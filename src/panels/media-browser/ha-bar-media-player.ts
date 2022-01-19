@@ -389,7 +389,7 @@ class BarMediaPlayer extends LitElement {
 
       :host([narrow]) .controls-progress {
         flex: unset;
-        min-width: 96px;
+        min-width: 48px;
       }
 
       :host([narrow]) .controls {

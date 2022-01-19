@@ -42,50 +42,19 @@ class PanelMediaBrowser extends LitElement {
   private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {
-    const stateObj = this._entityId
-      ? this.hass.states[this._entityId]
-      : undefined;
-
-    const title =
-      this._entityId === BROWSER_PLAYER
-        ? `${this.hass.localize("ui.components.media-browser.web-browser")}`
-        : stateObj?.attributes.friendly_name
-        ? `${stateObj?.attributes.friendly_name}`
-        : undefined;
-
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title class="heading">
-              <div>
-                ${this.hass.localize(
-                  "ui.components.media-browser.media-player-browser"
-                )}
-              </div>
-              <div class="secondary-text">${title || ""}</div>
-            </div>
-          </app-toolbar>
-        </app-header>
-        <div class="content">
-          <ha-media-player-browse
-            .hass=${this.hass}
-            .entityId=${this._entityId}
-            .navigateIds=${this._navigateIds}
-            @media-picked=${this._mediaPicked}
-            @media-browsed=${this._mediaBrowsed}
-          ></ha-media-player-browse>
-        </div>
-        <ha-bar-media-player
-          .hass=${this.hass}
-          .entityId=${this._entityId}
-          .narrow=${this.narrow}
-        ></ha-bar-media-player>
-      </ha-app-layout>
+      <ha-media-player-browse
+        .hass=${this.hass}
+        .entityId=${this._entityId}
+        .navigateIds=${this._navigateIds}
+        @media-picked=${this._mediaPicked}
+        @media-browsed=${this._mediaBrowsed}
+      ></ha-media-player-browse>
+      <ha-bar-media-player
+        .hass=${this.hass}
+        .entityId=${this._entityId}
+        .narrow=${this.narrow}
+      ></ha-bar-media-player>
     `;
   }
 
@@ -173,8 +142,14 @@ class PanelMediaBrowser extends LitElement {
         :host {
           --mdc-theme-primary: var(--app-header-text-color);
         }
+        .content {
+          margin-bottom: 100px;
+        }
         ha-media-player-browse {
-          height: calc(100vh - var(--header-height));
+          height: calc(100vh - 100px);
+        }
+        :host([narrow]) ha-media-player-browse {
+          height: calc(100vh - 80px);
         }
         ha-bar-media-player {
           position: absolute;

@@ -264,7 +264,7 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
-  if (supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
+  if (supportsFeature(stateObj, SUPPORT_TURN_OFF) && !narrow) {
     buttons.push({
       icon: mdiPower,
       action: "turn_off",
