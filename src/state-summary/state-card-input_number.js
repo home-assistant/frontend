@@ -26,7 +26,6 @@ class StateCardInputNumber extends mixinBehaviors(
 
           text-align: right;
           line-height: 40px;
-          margin-left: 8px;
         }
         .sliderstate {
           min-width: 45px;
@@ -68,10 +67,10 @@ class StateCardInputNumber extends mixinBehaviors(
           on-click="stopPropagation"
           hidden="[[hiddenbox]]"
         >
+          <span slot="suffix">
+            [[stateObj.attributes.unit_of_measurement]]
+          </span>
         </paper-input>
-        <div class="state" hidden="[[hiddenbox]]">
-          [[stateObj.attributes.unit_of_measurement]]
-        </div>
         <div
           id="sliderstate"
           class="state sliderstate"
