@@ -94,8 +94,48 @@ class BarMediaPlayer extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const choosePlayerElement = html`
+      <div class="choose-player">
+        ${!this.narrow
+          ? html`
+              <mwc-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type_select"
+                )}
+                .value=${this.entityId}
+                naturalMenuWidth
+              >
+                <mwc-list-item
+                  .player=${BROWSER_PLAYER}
+                  @click=${this._selectPlayer}
+                  >${this.hass.localize(
+                    "ui.components.media-browser.web-browser"
+                  )}</mwc-list-item
+                >
+                ${this._mediaPlayerEntities.map(
+                  (source) => html`
+                    <mwc-list-item
+                      ?selected=${source.entity_id === this.entityId}
+                      .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                      .player=${source.entity_id}
+                      @click=${this._selectPlayer}
+                      >${computeStateName(source)}</mwc-list-item
+                    >
+                  `
+                )}
+              </mwc-select>
+            `
+          : html`
+              <ha-icon-button
+                .path=${mdiDevices}
+                @click=${this._showSelectMediaPlayerDialog}
+              ></ha-icon-button>
+            `}
+      </div>
+    `;
+
     if (!this._stateObj) {
-      return html``;
+      return choosePlayerElement;
     }
 
     const stateObj = this._stateObj;
@@ -138,7 +178,7 @@ class BarMediaPlayer extends LitElement {
             `
           )}
         </div>
-        ${this._showProgressBar && !this.narrow
+        ${this._showProgressBar
           ? html`
               <div class="progress">
                 <div id="CurrentProgress"></div>
@@ -148,41 +188,7 @@ class BarMediaPlayer extends LitElement {
             `
           : ""}
       </div>
-      <div class="choose-player">
-        ${!this.narrow
-          ? html`
-              <mwc-select
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.conditions.type_select"
-                )}
-                .value=${this.entityId}
-                naturalMenuWidth
-              >
-                <mwc-list-item
-                  .player=${BROWSER_PLAYER}
-                  @click=${this._selectPlayer}
-                  >${this.hass.localize(
-                    "ui.components.media-browser.web-browser"
-                  )}</mwc-list-item
-                >
-                ${this._mediaPlayerEntities.map(
-                  (source) => html`
-                    <mwc-list-item
-                      ?selected=${source.entity_id === this.entityId}
-                      .disabled=${UNAVAILABLE_STATES.includes(source.state)}
-                      .player=${source.entity_id}
-                      @click=${this._selectPlayer}
-                      >${computeStateName(source)}</mwc-list-item
-                    >
-                  `
-                )}
-              </mwc-select>
-            `
-          : html`<ha-icon-button
-              .path=${mdiDevices}
-              @click=${this._showSelectMediaPlayerDialog}
-            ></ha-icon-button>`}
-      </div>
+      ${choosePlayerElement}
     `;
   }
 
@@ -218,7 +224,7 @@ class BarMediaPlayer extends LitElement {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || this._narrow) {
+    if (!this.hass || this.narrow) {
       return false;
     }
 
