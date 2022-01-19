@@ -238,7 +238,8 @@ export const computeMediaDescription = (
 };
 
 export const computeMediaControls = (
-  stateObj: MediaPlayerEntity
+  stateObj: MediaPlayerEntity,
+  narrow?: boolean
 ): ControlButton[] | undefined => {
   if (!stateObj) {
     return undefined;
@@ -272,7 +273,8 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused") &&
-    supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+    supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK) &&
+    !narrow
   ) {
     buttons.push({
       icon: mdiSkipPrevious,
@@ -310,7 +312,8 @@ export const computeMediaControls = (
 
   if (
     (state === "playing" || state === "paused") &&
-    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+    supportsFeature(stateObj, SUPPORT_NEXT_TRACK) &&
+    !narrow
   ) {
     buttons.push({
       icon: mdiSkipNext,

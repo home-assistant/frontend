@@ -3,6 +3,7 @@ import "@material/mwc-linear-progress/mwc-linear-progress";
 import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
+import { mdiDevices } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -29,6 +30,7 @@ import {
 } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
+import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
 @customElement("ha-bar-media-player")
 class BarMediaPlayer extends LitElement {
@@ -97,7 +99,7 @@ class BarMediaPlayer extends LitElement {
     }
 
     const stateObj = this._stateObj;
-    const controls = computeMediaControls(stateObj);
+    const controls = computeMediaControls(stateObj, this.narrow);
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj!.attributes.media_duration!);
 
@@ -106,15 +108,19 @@ class BarMediaPlayer extends LitElement {
         ${this._image
           ? html`<img src=${this.hass.hassUrl(this._image)} />`
           : ""}
-        <div class="media-info">
-          <hui-marquee
-            .text=${stateObj.attributes.media_title || mediaDescription}
-            .active=${this._marqueeActive}
-            @mouseover=${this._marqueeMouseOver}
-            @mouseleave=${this._marqueeMouseLeave}
-          ></hui-marquee>
-          ${stateObj.attributes.media_title ? mediaDescription : ""}
-        </div>
+        ${mediaDescription || stateObj.attributes.media_title
+          ? html`
+              <div class="media-info">
+                <hui-marquee
+                  .text=${stateObj.attributes.media_title || mediaDescription}
+                  .active=${this._marqueeActive}
+                  @mouseover=${this._marqueeMouseOver}
+                  @mouseleave=${this._marqueeMouseLeave}
+                ></hui-marquee>
+                ${stateObj.attributes.media_title ? mediaDescription : ""}
+              </div>
+            `
+          : ""}
       </div>
       <div class="controls-progress">
         <div class="controls">
@@ -132,7 +138,7 @@ class BarMediaPlayer extends LitElement {
             `
           )}
         </div>
-        ${this._showProgressBar
+        ${this._showProgressBar && !this.narrow
           ? html`
               <div class="progress">
                 <div id="CurrentProgress"></div>
@@ -143,30 +149,39 @@ class BarMediaPlayer extends LitElement {
           : ""}
       </div>
       <div class="choose-player">
-        <mwc-select
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type_select"
-          )}
-          .value=${this.entityId}
-          naturalMenuWidth
-        >
-          <mwc-list-item .player=${BROWSER_PLAYER} @click=${this._selectPlayer}
-            >${this.hass.localize(
-              "ui.components.media-browser.web-browser"
-            )}</mwc-list-item
-          >
-          ${this._mediaPlayerEntities.map(
-            (source) => html`
-              <mwc-list-item
-                ?selected=${source.entity_id === this.entityId}
-                .disabled=${UNAVAILABLE_STATES.includes(source.state)}
-                .player=${source.entity_id}
-                @click=${this._selectPlayer}
-                >${computeStateName(source)}</mwc-list-item
+        ${!this.narrow
+          ? html`
+              <mwc-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type_select"
+                )}
+                .value=${this.entityId}
+                naturalMenuWidth
               >
+                <mwc-list-item
+                  .player=${BROWSER_PLAYER}
+                  @click=${this._selectPlayer}
+                  >${this.hass.localize(
+                    "ui.components.media-browser.web-browser"
+                  )}</mwc-list-item
+                >
+                ${this._mediaPlayerEntities.map(
+                  (source) => html`
+                    <mwc-list-item
+                      ?selected=${source.entity_id === this.entityId}
+                      .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                      .player=${source.entity_id}
+                      @click=${this._selectPlayer}
+                      >${computeStateName(source)}</mwc-list-item
+                    >
+                  `
+                )}
+              </mwc-select>
             `
-          )}
-        </mwc-select>
+          : html`<ha-icon-button
+              .path=${mdiDevices}
+              @click=${this._showSelectMediaPlayerDialog}
+            ></ha-icon-button>`}
       </div>
     `;
   }
@@ -284,6 +299,15 @@ class BarMediaPlayer extends LitElement {
     navigate(`/media-browser/${entityId}`, { replace: true });
   }
 
+  private _showSelectMediaPlayerDialog(): void {
+    showSelectMediaPlayerDialog(this, {
+      mediaSources: this._mediaPlayerEntities,
+      sourceSelectedCallback: (entityId) => {
+        navigate(`/media-browser/${entityId}`, { replace: true });
+      },
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -308,6 +332,9 @@ class BarMediaPlayer extends LitElement {
         align-items: center;
         width: 100%;
         padding: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
 
       .choose-player {
@@ -347,6 +374,30 @@ class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 68px;
+      }
+
+      :host([narrow]) {
+        min-height: 80px;
+        max-height: 80px;
+      }
+
+      :host([narrow]) .controls-progress {
+        flex: unset;
+        min-width: 96px;
+      }
+
+      :host([narrow]) .controls {
+        display: flex;
+      }
+
+      :host([narrow]) .choose-player {
+        padding-left: 0;
+        min-width: 48px;
+        flex: unset;
+      }
+
+      :host([narrow]) img {
+        max-height: 48px;
       }
     `;
   }
