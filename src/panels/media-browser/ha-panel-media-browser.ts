@@ -43,13 +43,30 @@ class PanelMediaBrowser extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-media-player-browse
-        .hass=${this.hass}
-        .entityId=${this._entityId}
-        .navigateIds=${this._navigateIds}
-        @media-picked=${this._mediaPicked}
-        @media-browsed=${this._mediaBrowsed}
-      ></ha-media-player-browse>
+      <ha-app-layout>
+        <app-header fixed slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+            ></ha-menu-button>
+            <div main-title class="heading">
+              <div>
+                ${this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )}
+              </div>
+            </div>
+          </app-toolbar>
+        </app-header>
+        <ha-media-player-browse
+          .hass=${this.hass}
+          .entityId=${this._entityId}
+          .navigateIds=${this._navigateIds}
+          @media-picked=${this._mediaPicked}
+          @media-browsed=${this._mediaBrowsed}
+        ></ha-media-player-browse>
+      </ha-app-layout>
       <ha-bar-media-player
         .hass=${this.hass}
         .entityId=${this._entityId}
@@ -142,33 +159,20 @@ class PanelMediaBrowser extends LitElement {
         :host {
           --mdc-theme-primary: var(--app-header-text-color);
         }
-        .content {
-          margin-bottom: 100px;
-        }
+
         ha-media-player-browse {
-          height: calc(100vh - 100px);
+          height: calc(100vh - (100px + var(--header-height)));
         }
+
         :host([narrow]) ha-media-player-browse {
-          height: calc(100vh - 80px);
+          height: calc(100vh - (80px + var(--header-height)));
         }
+
         ha-bar-media-player {
           position: absolute;
           bottom: 0;
           left: 0;
           right: 0;
-        }
-        :host([narrow]) app-toolbar mwc-button {
-          width: 65px;
-        }
-        .heading {
-          overflow: hidden;
-          white-space: nowrap;
-          margin-top: 4px;
-        }
-        .heading .secondary-text {
-          font-size: 14px;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
       `,
     ];
