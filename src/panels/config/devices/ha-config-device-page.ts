@@ -31,6 +31,7 @@ import {
 import {
   fetchDiagnosticHandler,
   getDeviceDiagnosticsDownloadUrl,
+  getConfigEntryDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -171,20 +172,22 @@ export class HaConfigDevicePage extends LitElement {
       findBatteryChargingEntity(this.hass, entities)
   );
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    loadDeviceRegistryDetailDialog();
-  }
+  public willUpdate(changedProps) {
+    super.willUpdate(changedProps);
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (changedProps.has("deviceId")) {
-      this._findRelated();
+    if (
+      changedProps.has("deviceId") ||
+      changedProps.has("devices") ||
+      changedProps.has("deviceId") ||
+      changedProps.has("entries")
+    ) {
+      this._diagnosticDownloadLinks = undefined;
     }
 
     if (
-      (!changedProps.has("devices") && !changedProps.has("entries")) ||
+      this._diagnosticDownloadLinks ||
       !this.devices ||
+      !this.deviceId ||
       !this.entries
     ) {
       return;
@@ -194,20 +197,32 @@ export class HaConfigDevicePage extends LitElement {
     if (!device) {
       return;
     }
+    this._diagnosticDownloadLinks = [];
     for (const integration of this._integrations(device, this.entries)) {
       fetchDiagnosticHandler(this.hass, integration.domain).then((info) => {
-        if (!info.handlers.device) {
+        if (!info.handlers.device && !info.handlers.config_entry) {
           return;
         }
-        const link = getDeviceDiagnosticsDownloadUrl(
-          integration.entry_id,
-          this.deviceId
-        );
+        const link = info.handlers.device
+          ? getDeviceDiagnosticsDownloadUrl(integration.entry_id, this.deviceId)
+          : getConfigEntryDiagnosticsDownloadUrl(integration.entry_id);
         this._diagnosticDownloadLinks =
           this._diagnosticDownloadLinks === undefined
             ? [link]
             : [...this._diagnosticDownloadLinks, link];
       });
+    }
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    loadDeviceRegistryDetailDialog();
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("deviceId")) {
+      this._findRelated();
     }
   }
 
