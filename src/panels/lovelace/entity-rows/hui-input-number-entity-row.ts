@@ -120,8 +120,11 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   type="number"
                   @change=${this._selectedValueChanged}
                   id="input"
-                ></paper-input>
-                ${stateObj.attributes.unit_of_measurement}
+                >
+                  <span slot="suffix">
+                    ${stateObj.attributes.unit_of_measurement}
+                  </span>
+                </paper-input>
               </div>
             `}
       </hui-generic-entity-row>
