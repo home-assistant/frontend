@@ -2265,7 +2265,8 @@
             "area": "Area",
             "integration": "Integration",
             "battery": "Battery",
-            "no_devices": "No devices"
+            "no_devices": "No devices",
+            "no_integration": "No integration"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
