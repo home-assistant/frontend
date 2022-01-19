@@ -328,7 +328,6 @@ class BarMediaPlayer extends LitElement {
 
       mwc-linear-progress {
         width: 100%;
-        --mdc-linear-progress-buffer-color: rgba(200, 200, 200, 0.5);
         padding: 0 4px;
       }
 
@@ -337,7 +336,7 @@ class BarMediaPlayer extends LitElement {
         display: flex;
         align-items: center;
         width: 100%;
-        padding: 16px;
+        padding: 8px 16px;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -363,6 +362,7 @@ class BarMediaPlayer extends LitElement {
         display: flex;
         width: 100%;
         align-items: center;
+        --mdc-theme-primary: var(--accent-color);
       }
 
       .media-info {
@@ -379,7 +379,7 @@ class BarMediaPlayer extends LitElement {
       }
 
       img {
-        max-height: 68px;
+        max-height: 84px;
       }
 
       :host([narrow]) {
@@ -403,7 +403,7 @@ class BarMediaPlayer extends LitElement {
       }
 
       :host([narrow]) img {
-        max-height: 48px;
+        max-height: 64px;
       }
     `;
   }
