@@ -5,13 +5,21 @@ title: Alerts
 # Alert `<ha-alert>`
 The alert offers four severity levels that set a distinctive icon and color.
 
-<ha-alert alert-type="error">This is an error alert — check it out!</ha-alert>
+<ha-alert alert-type="error">
+  This is an error alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="warning">This is an warning alert — check it out!</ha-alert>
+<ha-alert alert-type="warning">
+  This is an warning alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="info">This is an info alert — check it out!</ha-alert>
+<ha-alert alert-type="info">
+  This is an info alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="success">This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success">
+  This is an success alert — check it out!
+</ha-alert>
 
 **Note:** This component is by <a href="https://mui.com/components/alert/" rel="noopener noreferrer" target="_blank">MUI</a> and is not documented in the <a href="https://material.io" rel="noopener noreferrer" target="_blank">Material Design guidelines</a>.
 
@@ -64,20 +72,36 @@ Actions must have a tab index of 0 so that they can be reached by keyboard-only 
 ### Example Usage
 **Alert type**
 
-<ha-alert alert-type="error">This is an error alert — check it out!</ha-alert>
+<ha-alert alert-type="error">
+  This is an error alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="warning">This is an warning alert — check it out!</ha-alert>
+<ha-alert alert-type="warning">
+  This is an warning alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="info">This is an info alert — check it out!</ha-alert>
+<ha-alert alert-type="info">
+  This is an info alert — check it out!
+</ha-alert>
 
-<ha-alert alert-type="success">This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success">
+  This is an success alert — check it out!
+</ha-alert>
 
 
 ```html
-<ha-alert alert-type="error">This is an error alert — check it out!</ha-alert>
-<ha-alert alert-type="warning">This is a warning alert — check it out!</ha-alert>
-<ha-alert alert-type="info">This is an info alert — check it out!</ha-alert>
-<ha-alert alert-type="success">This is a success alert — check it out!</ha-alert>
+<ha-alert alert-type="error">
+  This is an error alert — check it out!
+</ha-alert>
+<ha-alert alert-type="warning">
+  This is a warning alert — check it out!
+</ha-alert>
+<ha-alert alert-type="info">
+  This is an info alert — check it out!
+</ha-alert>
+<ha-alert alert-type="success">
+  This is a success alert — check it out!
+</ha-alert>
 ```
 
 **Title**
@@ -96,18 +120,28 @@ The `title ` option should not be used without a description.
 
 **Dismissable**
 
-<ha-alert alert-type="success" dismissable>This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success" dismissable>
+  This is an success alert — check it out!
+</ha-alert>
 
 ```html
-<ha-alert alert-type="success" dismissable>This is an success alert — check it out!</ha-alert>
+<ha-alert alert-type="success" dismissable>
+  This is an success alert — check it out!
+</ha-alert>
 ```
 
 **Slotted action**
 
-<ha-alert alert-type="success">This is an success alert — check it out!<mwc-button slot="action" label="Undo"></mwc-button></ha-alert>
+<ha-alert alert-type="success">
+  This is an success alert — check it out!
+  <mwc-button slot="action" label="Undo"></mwc-button>
+</ha-alert>
 
 ```html
-<ha-alert alert-type="success">This is an success alert — check it out!<mwc-button slot="action" label="Undo"></mwc-button></ha-alert>
+<ha-alert alert-type="success">
+  This is an success alert — check it out!
+  <mwc-button slot="action" label="Undo"></mwc-button>
+</ha-alert>
 ```
 
 **Slotted icon**
@@ -116,10 +150,14 @@ The `title ` option should not be used without a description.
 
 **Right to left**
 
-<ha-alert alert-type="success" rtl>This is an info alert — check it out!</ha-alert>
+<ha-alert alert-type="success" rtl>
+  This is an info alert — check it out!
+</ha-alert>
 
 ```html
-<ha-alert alert-type="success" rtl>This is an info alert — check it out!</ha-alert>
+<ha-alert alert-type="success" rtl>
+  This is an info alert — check it out!
+</ha-alert>
 ```
 
 ### API
