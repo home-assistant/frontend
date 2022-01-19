@@ -207,7 +207,9 @@ export class HaConfigDeviceDashboard extends LitElement {
                   entryLookup[entId].domain
               )
               .join(", ")
-          : "No integration",
+          : this.hass.localize(
+              "ui.panel.config.devices.data_table.no_integration"
+            ),
         battery_entity: [
           this._batteryEntity(device.id, deviceEntityLookup),
           this._batteryChargingEntity(device.id, deviceEntityLookup),
