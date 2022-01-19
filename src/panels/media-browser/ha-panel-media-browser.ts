@@ -11,23 +11,16 @@ import {
 import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
-import {
-  BROWSER_PLAYER,
-  MediaPickedEvent,
-  SUPPORT_BROWSE_MEDIA,
-} from "../../data/media-player";
+import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
-import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -76,9 +69,6 @@ class PanelMediaBrowser extends LitElement {
               </div>
               <div class="secondary-text">${title || ""}</div>
             </div>
-            <mwc-button @click=${this._showSelectMediaPlayerDialog}>
-              ${this.hass.localize("ui.components.media-browser.choose_player")}
-            </mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -135,15 +125,6 @@ class PanelMediaBrowser extends LitElement {
     ];
   }
 
-  private _showSelectMediaPlayerDialog(): void {
-    showSelectMediaPlayerDialog(this, {
-      mediaSources: this._mediaPlayerEntities,
-      sourceSelectedCallback: (entityId) => {
-        navigate(`/media-browser/${entityId}`, { replace: true });
-      },
-    });
-  }
-
   private _mediaBrowsed(ev) {
     if (ev.detail.back) {
       history.back();
@@ -182,19 +163,6 @@ class PanelMediaBrowser extends LitElement {
       entity_id: this._entityId,
       media_content_id: item.media_content_id,
       media_content_type: item.media_content_type,
-    });
-  }
-
-  private get _mediaPlayerEntities() {
-    return Object.values(this.hass!.states).filter((entity) => {
-      if (
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-      ) {
-        return true;
-      }
-
-      return false;
     });
   }
 
