@@ -89,14 +89,18 @@ const SYSTEM_ICON = mdiAlphaSCircleOutline;
 const LOCAL_ICON = mdiHomeCircleOutline;
 const DISABLED_ICON = mdiCancel;
 
-export const computeUserBadges = (hass: HomeAssistant, user: User) => {
+export const computeUserBadges = (
+  hass: HomeAssistant,
+  user: User,
+  includeSystem: boolean
+) => {
   const labels: [string, string][] = [];
   const translate = (key) => hass.localize(`ui.panel.config.users.${key}`);
 
   if (user.is_owner) {
     labels.push([OWNER_ICON, translate("is_owner")]);
   }
-  if (user.system_generated) {
+  if (includeSystem && user.system_generated) {
     labels.push([SYSTEM_ICON, translate("is_system")]);
   }
   if (user.local_only) {

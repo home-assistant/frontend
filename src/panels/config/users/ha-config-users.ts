@@ -126,7 +126,7 @@ export class HaConfigUsers extends LitElement {
           width: "104px",
           hidden: !narrow,
           template: (_, user) => {
-            const badges = computeUserBadges(this.hass, user);
+            const badges = computeUserBadges(this.hass, user, false);
             return html`${badges.map(
               ([icon, tooltip]) =>
                 html`<ha-data-table-icon

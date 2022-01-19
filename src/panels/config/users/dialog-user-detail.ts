@@ -60,7 +60,7 @@ class DialogUserDetail extends LitElement {
       return html``;
     }
     const user = this._params.entry;
-    const badges = computeUserBadges(this.hass, user);
+    const badges = computeUserBadges(this.hass, user, true);
     return html`
       <ha-dialog
         open
