@@ -203,7 +203,8 @@
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
         "media_volume_unmute": "Volume unmute",
-        "text_to_speak": "Text to speak"
+        "text_to_speak": "Text to speak",
+        "nothing_playing": "Nothing Playing"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
