@@ -4290,7 +4290,6 @@
       "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Click update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "creating_backup": "Creating backup of {name}",
       "no_update": "No update available for {name}"
     },
     "confirm": {
