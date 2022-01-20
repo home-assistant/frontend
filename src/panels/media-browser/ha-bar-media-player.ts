@@ -419,6 +419,7 @@ class BarMediaPlayer extends LitElement {
         padding-left: 0;
         min-width: 48px;
         flex: unset;
+        justify-content: center;
       }
 
       :host([narrow]) img {
