@@ -98,12 +98,12 @@ class BarMediaPlayer extends LitElement {
         <ha-button-menu corner="BOTTOM_START">
           ${this.narrow
             ? html`
-                <ha-svg-icon
+                <ha-icon-button
                   slot="trigger"
                   .path=${this._stateObj
                     ? domainIcon(computeDomain(this.entityId), this._stateObj)
                     : mdiMonitor}
-                ></ha-svg-icon>
+                ></ha-icon-button>
               `
             : html`
                 <mwc-button
