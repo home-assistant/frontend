@@ -3,6 +3,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -89,7 +90,9 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _related?: RelatedResult;
 
-  @state() private _diagnosticDownloadLinks?: string[];
+  @state() private _diagnosticDownloadLinks?: Promise<
+    (TemplateResult | string)[]
+  >;
 
   private _device = memoizeOne(
     (
@@ -193,25 +196,40 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
+    this._diagnosticDownloadLinks = this._renderDiagnosticButtons();
+  }
+
+  private async _renderDiagnosticButtons(): Promise<
+    (TemplateResult | string)[]
+  > {
+    const result: TemplateResult[] = [];
     const device = this._device(this.deviceId, this.devices);
+
     if (!device) {
-      return;
+      return result;
     }
-    this._diagnosticDownloadLinks = [];
-    for (const integration of this._integrations(device, this.entries)) {
-      fetchDiagnosticHandler(this.hass, integration.domain).then((info) => {
+
+    return Promise.all(
+      this._integrations(device, this.entries).map(async (entry) => {
+        const info = await fetchDiagnosticHandler(this.hass, entry.domain);
+
         if (!info.handlers.device && !info.handlers.config_entry) {
-          return;
+          return "";
         }
         const link = info.handlers.device
-          ? getDeviceDiagnosticsDownloadUrl(integration.entry_id, this.deviceId)
-          : getConfigEntryDiagnosticsDownloadUrl(integration.entry_id);
-        this._diagnosticDownloadLinks =
-          this._diagnosticDownloadLinks === undefined
-            ? [link]
-            : [...this._diagnosticDownloadLinks, link];
-      });
-    }
+          ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
+          : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id);
+        return html`
+          <a href=${link} @click=${this._signUrl}>
+            <mwc-button>
+              ${this.hass.localize(
+                `ui.panel.config.devices.download_diagnostics`
+              )}
+            </mwc-button>
+          </a>
+        `;
+      })
+    );
   }
 
   protected firstUpdated(changedProps) {
@@ -320,17 +338,7 @@ export class HaConfigDevicePage extends LitElement {
     );
 
     if (this._diagnosticDownloadLinks) {
-      for (const link of this._diagnosticDownloadLinks) {
-        deviceActions.push(html`
-          <a href=${link} @click=${this._signUrl}>
-            <mwc-button>
-              ${this.hass.localize(
-                `ui.panel.config.devices.download_diagnostics`
-              )}
-            </mwc-button>
-          </a>
-        `);
-      }
+      deviceActions.push(html`${until(this._diagnosticDownloadLinks)}`);
     }
 
     return html`
