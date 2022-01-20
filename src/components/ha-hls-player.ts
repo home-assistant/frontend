@@ -186,6 +186,13 @@ class HaHLSPlayer extends LitElement {
     });
   };
 
+  private _isLLHLSSupported(): bool {
+    // LL-HLS requires use of an http/2 proxy to avoid opening too many connections
+    const protocol =
+      performance.getEntriesByType("navigation")[0].nextHopProtocol;
+    return protocol === "h2";
+  }
+
   private async _renderHLSPolyfill(
     videoEl: HTMLVideoElement,
     Hls: typeof HlsType,
@@ -197,6 +204,7 @@ class HaHLSPlayer extends LitElement {
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
       maxLiveSyncPlaybackRate: 2,
+      lowLatencyMode: this._isLLHLSSupported(),
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
