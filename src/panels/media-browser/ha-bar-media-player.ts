@@ -440,6 +440,10 @@ class BarMediaPlayer extends LitElement {
         background-color: var(--divider-color);
       }
 
+      ha-button-menu mwc-button {
+        line-height: 1;
+      }
+
       :host([narrow]) {
         min-height: 80px;
         max-height: 80px;
