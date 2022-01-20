@@ -119,7 +119,7 @@ export class HassioBackups extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
       name: {
-        title: this.supervisor?.localize("backup.name") || "",
+        title: this.supervisor.localize("backup.name"),
         sortable: true,
         filterable: true,
         grows: true,
@@ -128,7 +128,7 @@ export class HassioBackups extends LitElement {
             <div class="secondary">${backup.secondary}</div>`,
       },
       size: {
-        title: this.supervisor?.localize("backup.size") || "",
+        title: this.supervisor.localize("backup.size"),
         width: "15%",
         hidden: narrow,
         filterable: true,
@@ -136,7 +136,7 @@ export class HassioBackups extends LitElement {
         template: (entry: number) => Math.ceil(entry * 10) / 10 + " MB",
       },
       date: {
-        title: this.supervisor?.localize("backup.created") || "",
+        title: this.supervisor.localize("backup.created"),
         width: "15%",
         direction: "desc",
         hidden: narrow,
@@ -196,11 +196,11 @@ export class HassioBackups extends LitElement {
             slot="trigger"
           ></ha-icon-button>
           <mwc-list-item>
-            ${this.supervisor?.localize("common.reload")}
+            ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
-                ${this.supervisor?.localize("backup.upload_backup")}
+                ${this.supervisor.localize("backup.upload_backup")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
