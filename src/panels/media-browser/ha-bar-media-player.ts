@@ -202,7 +202,9 @@ class BarMediaPlayer extends LitElement {
             @mouseover=${this._marqueeMouseOver}
             @mouseleave=${this._marqueeMouseLeave}
           ></hui-marquee>
-          ${stateObj.attributes.media_title ? mediaDescription : ""}
+          <span class="secondary">
+            ${stateObj.attributes.media_title ? mediaDescription : ""}
+          </span>
         </div>
       </div>
       <div class="controls-progress">
@@ -222,11 +224,11 @@ class BarMediaPlayer extends LitElement {
           )}
         </div>
         ${this.narrow
-          ? html`<mwc-linear-progress determinate></mwc-linear-progress>`
+          ? html`<mwc-linear-progress></mwc-linear-progress>`
           : html`
               <div class="progress">
                 <div id="CurrentProgress"></div>
-                <mwc-linear-progress determinate></mwc-linear-progress>
+                <mwc-linear-progress wide></mwc-linear-progress>
                 <div>${mediaDuration}</div>
               </div>
             `}
@@ -378,10 +380,15 @@ class BarMediaPlayer extends LitElement {
         display: flex;
         align-items: center;
         width: 100%;
-        padding: 8px 16px;
+        margin-right: 16px;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+      }
+
+      .secondary,
+      .progress {
+        color: var(--secondary-text-color);
       }
 
       .choose-player {
@@ -406,6 +413,10 @@ class BarMediaPlayer extends LitElement {
         align-items: center;
       }
 
+      mwc-linear-progress[wide] {
+        margin: 0 4px;
+      }
+
       .media-info {
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -420,12 +431,12 @@ class BarMediaPlayer extends LitElement {
       }
 
       img {
-        max-height: 84px;
+        max-height: 100px;
       }
 
       .blank-image {
-        height: 84px;
-        width: 84px;
+        height: 100px;
+        width: 100px;
         background-color: var(--divider-color);
       }
 
@@ -456,12 +467,12 @@ class BarMediaPlayer extends LitElement {
       }
 
       :host([narrow]) img {
-        max-height: 64px;
+        max-height: 80px;
       }
 
       :host([narrow]) .blank-image {
-        height: 64px;
-        width: 64px;
+        height: 80px;
+        width: 80px;
       }
 
       :host([narrow]) mwc-linear-progress {
