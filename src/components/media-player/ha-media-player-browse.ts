@@ -712,7 +712,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           right: 0;
           left: 0;
           z-index: 5;
-          padding: 20px 24px 10px;
+          padding: 20px 24px 10px 32px;
         }
 
         .header_button {
@@ -811,8 +811,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
-          padding: 0px 24px;
-          margin: 8px 0px;
+          padding: 8px;
         }
 
         :host([dialog]) .children {
