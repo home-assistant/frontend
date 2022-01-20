@@ -413,32 +413,34 @@ export class HaMediaPlayerBrowse extends LitElement {
     let parentProm: Promise<MediaPlayerItem> | undefined;
 
     // See if we can take loading shortcuts if navigating to parent or child
-    if (
-      // Check if we navigated to a child
-      oldNavigateIds &&
-      this.navigateIds.length > oldNavigateIds.length &&
-      oldNavigateIds.every((oldVal, idx) => {
-        const curVal = this.navigateIds[idx];
-        return (
-          curVal.media_content_id === oldVal.media_content_id &&
-          curVal.media_content_type === oldVal.media_content_type
-        );
-      })
-    ) {
-      parentProm = Promise.resolve(oldCurrentItem!);
-    } else if (
-      // Check if we navigated to a parent
-      oldNavigateIds &&
-      this.navigateIds.length < oldNavigateIds.length &&
-      this.navigateIds.every((curVal, idx) => {
-        const oldVal = oldNavigateIds[idx];
-        return (
-          curVal.media_content_id === oldVal.media_content_id &&
-          curVal.media_content_type === oldVal.media_content_type
-        );
-      })
-    ) {
-      currentProm = Promise.resolve(oldParentItem!);
+    if (!changedProps.has("entityId")) {
+      if (
+        // Check if we navigated to a child
+        oldNavigateIds &&
+        this.navigateIds.length > oldNavigateIds.length &&
+        oldNavigateIds.every((oldVal, idx) => {
+          const curVal = this.navigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        parentProm = Promise.resolve(oldCurrentItem!);
+      } else if (
+        // Check if we navigated to a parent
+        oldNavigateIds &&
+        this.navigateIds.length < oldNavigateIds.length &&
+        this.navigateIds.every((curVal, idx) => {
+          const oldVal = oldNavigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        currentProm = Promise.resolve(oldParentItem!);
+      }
     }
     // Fetch current
     if (!currentProm) {
