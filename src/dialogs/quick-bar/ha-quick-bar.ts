@@ -33,7 +33,7 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import "../../components/ha-dialog";
+import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
@@ -131,7 +131,10 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-dialog
-        .heading=${true}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.dialogs.quick-bar.title")
+        )}
         open
         @opened=${this._handleOpened}
         @closed=${this.closeDialog}
@@ -140,7 +143,6 @@ export class QuickBar extends LitElement {
         <paper-input
           dialogInitialFocus
           no-label-float
-          slot="heading"
           class="heading"
           @value-changed=${this._handleSearchChange}
           .label=${this.hass.localize(

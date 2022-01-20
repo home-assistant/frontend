@@ -626,7 +626,8 @@
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
-        "filter_placeholder": "Entity Filter"
+        "filter_placeholder": "Entity Filter",
+        "title": "Quick Search"
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",

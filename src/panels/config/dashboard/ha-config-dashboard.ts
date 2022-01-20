@@ -1,4 +1,4 @@
-import { mdiCloudLock } from "@mdi/js";
+import { mdiCloudLock, mdiMagnify } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -16,6 +16,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import { CloudStatus } from "../../../data/cloud";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import {
   ExternalConfig,
   getExternalConfig,
@@ -65,6 +66,10 @@ class HaConfigDashboard extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.config")}</div>
+            <ha-icon-button
+              .path=${mdiMagnify}
+              @click=${this._showQuickBar}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -121,6 +126,10 @@ class HaConfigDashboard extends LitElement {
         </ha-config-section>
       </ha-app-layout>
     `;
+  }
+
+  private _showQuickBar(): void {
+    showQuickBar(this, { commandMode: true });
   }
 
   static get styles(): CSSResultGroup {
