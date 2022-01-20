@@ -30,10 +30,6 @@ import {
   updateHassioAddon,
 } from "../../../src/data/hassio/addon";
 import {
-  createHassioPartialBackup,
-  HassioPartialBackupCreateParams,
-} from "../../../src/data/hassio/backup";
-import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
@@ -103,7 +99,7 @@ class UpdateAvailableCard extends LitElement {
 
   @state() private _addonInfo?: HassioAddonDetails;
 
-  @state() private _action: "backup" | "update" | null = null;
+  @state() private _updating = false;
 
   @state() private _error?: string;
 
@@ -138,7 +134,7 @@ class UpdateAvailableCard extends LitElement {
                   name: this._name,
                 })}
               </p>`
-            : this._action === null
+            : !this._updating
             ? html`
                 ${this._changelogContent
                   ? html`
@@ -172,18 +168,13 @@ class UpdateAvailableCard extends LitElement {
             : html`<ha-circular-progress alt="Updating" size="large" active>
                 </ha-circular-progress>
                 <p class="progress-text">
-                  ${this._action === "update"
-                    ? this.supervisor.localize("update_available.updating", {
-                        name: this._name,
-                        version: this._version_latest,
-                      })
-                    : this.supervisor.localize(
-                        "update_available.creating_backup",
-                        { name: this._name }
-                      )}
+                  ${this.supervisor.localize("update_available.updating", {
+                    name: this._name,
+                    version: this._version_latest,
+                  })}
                 </p>`}
         </div>
-        ${this._version !== this._version_latest && this._action === null
+        ${this._version !== this._version_latest && !this._updating
           ? html`
               <div class="card-actions">
                 ${changelog
@@ -319,37 +310,16 @@ class UpdateAvailableCard extends LitElement {
 
   private async _update() {
     this._error = undefined;
-    if (this._shouldCreateBackup) {
-      let backupArgs: HassioPartialBackupCreateParams;
-      if (this._updateType === "addon") {
-        backupArgs = {
-          name: `addon_${this.addonSlug}_${this._version}`,
-          addons: [this.addonSlug!],
-          homeassistant: false,
-        };
-      } else {
-        backupArgs = {
-          name: `${this._updateType}_${this._version}`,
-          folders: ["homeassistant"],
-          homeassistant: true,
-        };
-      }
-      this._action = "backup";
-      try {
-        await createHassioPartialBackup(this.hass, backupArgs);
-      } catch (err: any) {
-        this._error = extractApiErrorMessage(err);
-        this._action = null;
-        return;
-      }
-    }
-
-    this._action = "update";
+    this._updating = true;
     try {
       if (this._updateType === "addon") {
-        await updateHassioAddon(this.hass, this.addonSlug!);
+        await updateHassioAddon(
+          this.hass,
+          this.addonSlug!,
+          this._shouldCreateBackup
+        );
       } else if (this._updateType === "core") {
-        await updateCore(this.hass);
+        await updateCore(this.hass, this._shouldCreateBackup);
       } else if (this._updateType === "os") {
         await updateOS(this.hass);
       } else if (this._updateType === "supervisor") {
@@ -358,11 +328,12 @@ class UpdateAvailableCard extends LitElement {
     } catch (err: any) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
-        this._action = null;
+        this._updating = false;
         return;
       }
     }
     fireEvent(this, "update-complete");
+    this._updating = false;
   }
 
   static get styles(): CSSResultGroup {
