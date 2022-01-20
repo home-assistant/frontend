@@ -89,24 +89,29 @@ class BarMediaPlayer extends LitElement {
     const choosePlayerElement = html`
       <div class="choose-player">
         <ha-button-menu corner="BOTTOM_START">
-          <mwc-button
-            slot="trigger"
-            class="trigger"
-            .label=${this.narrow
-              ? ""
-              : `${
-                  this._stateObj
-                    ? computeStateName(this._stateObj)
-                    : BROWSER_PLAYER
-                }
+          ${this.narrow
+            ? html`
+                <ha-svg-icon slot="trigger" .path=${mdiDevices}></ha-svg-icon>
+              `
+            : html`
+                <mwc-button
+                  slot="trigger"
+                  .label=${this.narrow
+                    ? ""
+                    : `${
+                        this._stateObj
+                          ? computeStateName(this._stateObj)
+                          : BROWSER_PLAYER
+                      }
                 `}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiDevices}></ha-svg-icon>
-            <ha-svg-icon
-              slot="trailingIcon"
-              .path=${mdiChevronDown}
-            ></ha-svg-icon>
-          </mwc-button>
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiDevices}></ha-svg-icon>
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </mwc-button>
+              `}
           <mwc-list-item .player=${BROWSER_PLAYER} @click=${this._selectPlayer}
             >${this.hass.localize(
               "ui.components.media-browser.web-browser"
@@ -340,7 +345,7 @@ class BarMediaPlayer extends LitElement {
         padding: 0 4px;
       }
 
-      .trigger {
+      mwc-button[slot="trigger"] {
         --mdc-theme-primary: var(--primary-text-color);
         --mdc-icon-size: 36px;
       }
