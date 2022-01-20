@@ -28,6 +28,7 @@ import "../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 import {
   BROWSER_PLAYER,
+  computeMediaControls,
   computeMediaDescription,
   formatMediaTime,
   getCurrentProgress,
@@ -137,16 +138,18 @@ class BarMediaPlayer extends LitElement {
     }
 
     const stateObj = this._stateObj;
-    const control =
-      (stateObj.state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      ((stateObj.state === "paused" || stateObj.state === "idle") &&
-        supportsFeature(stateObj, SUPPORT_PLAY)) ||
-      (stateObj.state === "on" &&
-        (supportsFeature(stateObj, SUPPORT_PLAY) ||
-          supportsFeature(stateObj, SUPPORT_PAUSE)))
-        ? {
+    const controls = !this.narrow
+      ? computeMediaControls(stateObj)
+      : (stateObj.state === "playing" &&
+          (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+            supportsFeature(stateObj, SUPPORT_STOP))) ||
+        ((stateObj.state === "paused" || stateObj.state === "idle") &&
+          supportsFeature(stateObj, SUPPORT_PLAY)) ||
+        (stateObj.state === "on" &&
+          (supportsFeature(stateObj, SUPPORT_PLAY) ||
+            supportsFeature(stateObj, SUPPORT_PAUSE)))
+      ? [
+          {
             icon:
               stateObj.state === "on"
                 ? mdiPlayPause
@@ -161,8 +164,9 @@ class BarMediaPlayer extends LitElement {
                 : supportsFeature(stateObj, SUPPORT_PAUSE)
                 ? "media_pause"
                 : "media_stop",
-          }
-        : {};
+          },
+        ]
+      : [{}];
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj!.attributes.media_duration!);
 
@@ -187,19 +191,19 @@ class BarMediaPlayer extends LitElement {
       </div>
       <div class="controls-progress">
         <div class="controls">
-          ${!control
-            ? ""
-            : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    `ui.card.media_player.${control.action}`
-                  )}
-                  .path=${control.icon}
-                  action=${control.action!}
-                  @click=${this._handleClick}
-                >
-                </ha-icon-button>
-              `}
+          ${controls!.map(
+            (control) => html`
+              <ha-icon-button
+                .label=${this.hass.localize(
+                  `ui.card.media_player.${control.action}`
+                )}
+                .path=${control.icon}
+                action=${control.action}
+                @click=${this._handleClick}
+              >
+              </ha-icon-button>
+            `
+          )}
         </div>
         ${this._showProgressBar
           ? html`
