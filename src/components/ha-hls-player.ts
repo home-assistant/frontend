@@ -186,11 +186,12 @@ class HaHLSPlayer extends LitElement {
     });
   };
 
-  private _isLLHLSSupported(): bool {
+  private _isLLHLSSupported(): boolean {
     // LL-HLS requires use of an http/2 proxy to avoid opening too many connections
-    const protocol =
-      performance.getEntriesByType("navigation")[0].nextHopProtocol;
-    return protocol === "h2";
+    return (
+      performance.getEntriesByType("navigation")[0] &&
+      performance.getEntriesByType("navigation")[0].nextHopProtocol === "H2"
+    );
   }
 
   private async _renderHLSPolyfill(
