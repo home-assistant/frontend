@@ -4,7 +4,7 @@ import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-pr
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiChevronDown,
-  mdiDevices,
+  mdiMonitor,
   mdiPause,
   mdiPlay,
   mdiPlayPause,
@@ -19,8 +19,10 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -88,11 +90,20 @@ class BarMediaPlayer extends LitElement {
 
   protected render(): TemplateResult {
     const choosePlayerElement = html`
-      <div class="choose-player">
+      <div
+        class="choose-player ${this.entityId === BROWSER_PLAYER
+          ? "browser"
+          : ""}"
+      >
         <ha-button-menu corner="BOTTOM_START">
           ${this.narrow
             ? html`
-                <ha-svg-icon slot="trigger" .path=${mdiDevices}></ha-svg-icon>
+                <ha-svg-icon
+                  slot="trigger"
+                  .path=${this._stateObj
+                    ? domainIcon(computeDomain(this.entityId), this._stateObj)
+                    : mdiMonitor}
+                ></ha-svg-icon>
               `
             : html`
                 <mwc-button
@@ -106,7 +117,12 @@ class BarMediaPlayer extends LitElement {
                       }
                 `}
                 >
-                  <ha-svg-icon slot="icon" .path=${mdiDevices}></ha-svg-icon>
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${this._stateObj
+                      ? domainIcon(computeDomain(this.entityId), this._stateObj)
+                      : mdiMonitor}
+                  ></ha-svg-icon>
                   <ha-svg-icon
                     slot="trailingIcon"
                     .path=${mdiChevronDown}
@@ -174,20 +190,20 @@ class BarMediaPlayer extends LitElement {
       <div class="info">
         ${this._image
           ? html`<img src=${this.hass.hassUrl(this._image)} />`
+          : stateObj.state === "off" || stateObj.state !== "playing"
+          ? html`<div class="blank-image"></div>`
           : ""}
-        ${mediaDescription || stateObj.attributes.media_title
-          ? html`
-              <div class="media-info">
-                <hui-marquee
-                  .text=${stateObj.attributes.media_title || mediaDescription}
-                  .active=${this._marqueeActive}
-                  @mouseover=${this._marqueeMouseOver}
-                  @mouseleave=${this._marqueeMouseLeave}
-                ></hui-marquee>
-                ${stateObj.attributes.media_title ? mediaDescription : ""}
-              </div>
-            `
-          : ""}
+        <div class="media-info">
+          <hui-marquee
+            .text=${stateObj.attributes.media_title ||
+            mediaDescription ||
+            this.hass.localize(`ui.card.media_player.nothing_playing`)}
+            .active=${this._marqueeActive}
+            @mouseover=${this._marqueeMouseOver}
+            @mouseleave=${this._marqueeMouseLeave}
+          ></hui-marquee>
+          ${stateObj.attributes.media_title ? mediaDescription : ""}
+        </div>
       </div>
       <div class="controls-progress">
         <div class="controls">
@@ -205,15 +221,15 @@ class BarMediaPlayer extends LitElement {
             `
           )}
         </div>
-        ${this._showProgressBar
-          ? html`
+        ${this.narrow
+          ? html`<mwc-linear-progress determinate></mwc-linear-progress>`
+          : html`
               <div class="progress">
                 <div id="CurrentProgress"></div>
                 <mwc-linear-progress determinate></mwc-linear-progress>
                 <div>${mediaDuration}</div>
               </div>
-            `
-          : ""}
+            `}
       </div>
       ${choosePlayerElement}
     `;
@@ -251,7 +267,7 @@ class BarMediaPlayer extends LitElement {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || this.narrow) {
+    if (!this.hass) {
       return false;
     }
 
@@ -304,7 +320,9 @@ class BarMediaPlayer extends LitElement {
       this._progressBar.progress =
         currentProgress / this._stateObj!.attributes.media_duration;
 
-      this._currentProgress!.innerHTML = formatMediaTime(currentProgress);
+      if (this._currentProgress) {
+        this._currentProgress.innerHTML = formatMediaTime(currentProgress);
+      }
     }
   }
 
@@ -347,6 +365,7 @@ class BarMediaPlayer extends LitElement {
       mwc-linear-progress {
         width: 100%;
         padding: 0 4px;
+        --mdc-theme-primary: var(--secondary-text-color);
       }
 
       mwc-button[slot="trigger"] {
@@ -385,7 +404,6 @@ class BarMediaPlayer extends LitElement {
         display: flex;
         width: 100%;
         align-items: center;
-        --mdc-theme-primary: var(--accent-color);
       }
 
       .media-info {
@@ -403,6 +421,12 @@ class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 84px;
+      }
+
+      .blank-image {
+        height: 84px;
+        width: 84px;
+        background-color: var(--divider-color);
       }
 
       :host([narrow]) {
@@ -426,8 +450,25 @@ class BarMediaPlayer extends LitElement {
         justify-content: center;
       }
 
+      :host([narrow]) .choose-player.browser {
+        justify-content: flex-end;
+        width: 100%;
+      }
+
       :host([narrow]) img {
         max-height: 64px;
+      }
+
+      :host([narrow]) .blank-image {
+        height: 64px;
+        width: 64px;
+      }
+
+      :host([narrow]) mwc-linear-progress {
+        padding: 0;
+        position: absolute;
+        top: -4px;
+        left: 0;
       }
     `;
   }
