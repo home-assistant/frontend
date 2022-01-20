@@ -413,32 +413,34 @@ export class HaMediaPlayerBrowse extends LitElement {
     let parentProm: Promise<MediaPlayerItem> | undefined;
 
     // See if we can take loading shortcuts if navigating to parent or child
-    if (
-      // Check if we navigated to a child
-      oldNavigateIds &&
-      this.navigateIds.length > oldNavigateIds.length &&
-      oldNavigateIds.every((oldVal, idx) => {
-        const curVal = this.navigateIds[idx];
-        return (
-          curVal.media_content_id === oldVal.media_content_id &&
-          curVal.media_content_type === oldVal.media_content_type
-        );
-      })
-    ) {
-      parentProm = Promise.resolve(oldCurrentItem!);
-    } else if (
-      // Check if we navigated to a parent
-      oldNavigateIds &&
-      this.navigateIds.length < oldNavigateIds.length &&
-      this.navigateIds.every((curVal, idx) => {
-        const oldVal = oldNavigateIds[idx];
-        return (
-          curVal.media_content_id === oldVal.media_content_id &&
-          curVal.media_content_type === oldVal.media_content_type
-        );
-      })
-    ) {
-      currentProm = Promise.resolve(oldParentItem!);
+    if (!changedProps.has("entityId")) {
+      if (
+        // Check if we navigated to a child
+        oldNavigateIds &&
+        this.navigateIds.length > oldNavigateIds.length &&
+        oldNavigateIds.every((oldVal, idx) => {
+          const curVal = this.navigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        parentProm = Promise.resolve(oldCurrentItem!);
+      } else if (
+        // Check if we navigated to a parent
+        oldNavigateIds &&
+        this.navigateIds.length < oldNavigateIds.length &&
+        this.navigateIds.every((curVal, idx) => {
+          const oldVal = oldNavigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        currentProm = Promise.resolve(oldParentItem!);
+      }
     }
     // Fetch current
     if (!currentProm) {
@@ -710,7 +712,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           right: 0;
           left: 0;
           z-index: 5;
-          padding: 20px 24px 10px;
+          padding: 20px 24px 10px 32px;
         }
 
         .header_button {
@@ -809,8 +811,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
-          padding: 0px 24px;
-          margin: 8px 0px;
+          padding: 8px;
         }
 
         :host([dialog]) .children {
