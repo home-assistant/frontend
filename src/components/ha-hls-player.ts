@@ -48,8 +48,11 @@ class HaHLSPlayer extends LitElement {
 
   private _exoPlayer = false;
 
+  private static streamCount: int = 0;
+
   public connectedCallback() {
     super.connectedCallback();
+    HaHLSPlayer.streamCount += 1;
     if (this.hasUpdated) {
       this._startHls();
     }
@@ -57,6 +60,7 @@ class HaHLSPlayer extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    HaHLSPlayer.streamCount -= 1;
     this._cleanUp();
   }
 
@@ -187,12 +191,20 @@ class HaHLSPlayer extends LitElement {
   };
 
   private _isLLHLSSupported(): boolean {
-    // LL-HLS requires use of an http/2 proxy to avoid opening too many connections
-    return (
-      "performance" in window &&
-      performance.getEntriesByType("navigation")[0] &&
-      performance.getEntriesByType("navigation")[0].nextHopProtocol === "H2"
-    );
+    // LL-HLS keeps multiple requests in flight, which can run into browser limitations without
+    // an http/2 proxy to pipeline requests. However, a small number of streams active at
+    // once should be OK.
+    if (HaHLSPlayer.streamCount <= 2) {
+      return true;
+    }
+    if (
+      !("performance" in window) ||
+      performance.getEntriesByType("resource").length === 0
+    ) {
+      return false;
+    }
+    const perfEntry = performance.getEntriesByType("resource")[0];
+    return "nextHopProtocol" in perfEntry && perfEntry.nextHopProtocol === "h2";
   }
 
   private async _renderHLSPolyfill(
