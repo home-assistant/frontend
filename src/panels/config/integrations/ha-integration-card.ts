@@ -362,7 +362,7 @@ export class HaIntegrationCard extends LitElement {
                 )}
               </mwc-list-item>`
             : ""}
-          ${this.supportsDiagnostics
+          ${this.supportsDiagnostics && item.state === "loaded"
             ? html`<a
                 href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                 target="_blank"
