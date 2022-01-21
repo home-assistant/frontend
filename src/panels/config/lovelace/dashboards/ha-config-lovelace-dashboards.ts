@@ -194,6 +194,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
       },
+      {
+        icon: "hass:lightning-bolt",
+        title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
+        url_path: "energy",
+        filename: "",
+      },
       ...dashboards.map((dashboard) => ({
         filename: "",
         ...dashboard,
@@ -255,6 +261,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _editDashboard(ev: CustomEvent) {
     const urlPath = (ev.detail as RowClickedEvent).id;
+
+    if (urlPath === "energy") {
+      navigate("/config/energy");
+      return;
+    }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDialog(dashboard, urlPath);
   }
