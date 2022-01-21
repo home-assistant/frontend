@@ -3,7 +3,6 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -90,9 +89,10 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _related?: RelatedResult;
 
-  @state() private _diagnosticDownloadLinks?: Promise<
-    (TemplateResult | string)[]
-  >;
+  // If a number, it's the request ID so we make sure we don't show older info
+  @state() private _diagnosticDownloadLinks?:
+    | number
+    | (TemplateResult | string)[];
 
   private _device = memoizeOne(
     (
@@ -196,20 +196,18 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    this._diagnosticDownloadLinks = this._renderDiagnosticButtons();
+    this._diagnosticDownloadLinks = Math.random();
+    this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
   }
 
-  private async _renderDiagnosticButtons(): Promise<
-    (TemplateResult | string)[]
-  > {
-    const result: TemplateResult[] = [];
+  private async _renderDiagnosticButtons(requestId: number): Promise<void> {
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
-      return result;
+      return;
     }
 
-    return Promise.all(
+    let links = await Promise.all(
       this._integrations(device, this.entries)
         .filter((entry) => entry.state === "loaded")
         .map(async (entry) => {
@@ -232,6 +230,13 @@ export class HaConfigDevicePage extends LitElement {
           `;
         })
     );
+    if (this._diagnosticDownloadLinks !== requestId) {
+      return;
+    }
+    links = links.filter(Boolean);
+    if (links.length > 0) {
+      this._diagnosticDownloadLinks = links;
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -308,7 +313,7 @@ export class HaConfigDevicePage extends LitElement {
       );
     }
 
-    const deviceActions: TemplateResult[] = [];
+    const deviceActions: (TemplateResult | string)[] = [];
 
     if (configurationUrl) {
       deviceActions.push(html`
@@ -339,8 +344,8 @@ export class HaConfigDevicePage extends LitElement {
       deviceActions
     );
 
-    if (this._diagnosticDownloadLinks) {
-      deviceActions.push(html`${until(this._diagnosticDownloadLinks)}`);
+    if (Array.isArray(this._diagnosticDownloadLinks)) {
+      deviceActions.push(...this._diagnosticDownloadLinks);
     }
 
     return html`
@@ -739,7 +744,7 @@ export class HaConfigDevicePage extends LitElement {
     device,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
-    deviceActions: TemplateResult[]
+    deviceActions: (string | TemplateResult)[]
   ): TemplateResult[] {
     const domains = integrations.map((int) => int.domain);
     const templates: TemplateResult[] = [];
