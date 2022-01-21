@@ -4,6 +4,7 @@ import {
   mdiCellphoneCog,
   mdiCog,
   mdiDevices,
+  mdiHammer,
   mdiHomeAssistant,
   mdiInformation,
   mdiLightningBolt,
@@ -115,6 +116,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiCog,
       iconColor: "#4A5963",
       core: true,
+    },
+    {
+      path: "/developer-tools",
+      translationKey: "developer_tools",
+      iconPath: mdiHammer,
+      iconColor: "#64B5F6",
     },
   ],
   devices: [

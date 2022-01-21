@@ -8,7 +8,6 @@ import {
   mdiClose,
   mdiCog,
   mdiFormatListBulletedType,
-  mdiHammer,
   mdiLightningBolt,
   mdiMenu,
   mdiMenuOpen,
@@ -57,7 +56,7 @@ import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SHOW_AFTER_SPACER = ["config", "developer-tools"];
+const SHOW_AFTER_SPACER = ["config"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
@@ -66,14 +65,12 @@ const SORT_VALUE_URL_PATHS = {
   map: 2,
   logbook: 3,
   history: 4,
-  "developer-tools": 9,
   config: 11,
 };
 
 const PANEL_ICONS = {
   calendar: mdiCalendar,
   config: mdiCog,
-  "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
@@ -1031,19 +1028,6 @@ class HaSidebar extends LitElement {
           font-size: 14px;
           padding: 16px;
           white-space: nowrap;
-        }
-
-        .dev-tools {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          padding: 0 8px;
-          width: 256px;
-          box-sizing: border-box;
-        }
-
-        .dev-tools a {
-          color: var(--sidebar-icon-color);
         }
 
         .tooltip {
