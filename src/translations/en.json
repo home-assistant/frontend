@@ -616,7 +616,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
-            "energy": "[%key:ui::panel::config::energy::caption%]",
+            "energy": "Energy Configuration",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
