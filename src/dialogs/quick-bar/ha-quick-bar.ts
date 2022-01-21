@@ -211,7 +211,7 @@ export class QuickBar extends LitElement {
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
-        ${this._narrow && this._hint
+        ${!this._narrow && this._hint
           ? html`<div class="hint">${this._hint}</div>`
           : ""}
       </ha-dialog>
