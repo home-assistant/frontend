@@ -20,7 +20,6 @@ import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { fireEvent } from "../../common/dom/fire_event";
-import { listenMediaQuery } from "../../common/dom/media_query";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
@@ -97,20 +96,13 @@ export class QuickBar extends LitElement {
 
   @state() private _done = false;
 
+  @state() private _hint?: string;
+
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
 
   private _focusListElement?: ListItem | null;
-
-  private _hint?: string;
-
-  constructor() {
-    super();
-    listenMediaQuery("(max-width: 870px)", (matches) => {
-      this.narrow = matches;
-    });
-  }
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
@@ -218,9 +210,7 @@ export class QuickBar extends LitElement {
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
-        ${this.narrow || this._search
-          ? ""
-          : html`<div class="hint">${this._hint}</div>`}
+        ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
       </ha-dialog>
     `;
   }
@@ -366,13 +356,27 @@ export class QuickBar extends LitElement {
   private _handleSearchChange(ev: CustomEvent): void {
     const newFilter = ev.detail.value;
     const oldCommandMode = this._commandMode;
+    const oldSearch = this._search;
+    let newCommandMode: boolean;
+    let newSearch: string;
 
     if (newFilter.startsWith(">")) {
-      this._commandMode = true;
-      this._search = newFilter.substring(1);
+      newCommandMode = true;
+      newSearch = newFilter.substring(1);
     } else {
-      this._commandMode = false;
-      this._search = newFilter;
+      newCommandMode = false;
+      newSearch = newFilter;
+    }
+
+    if (oldCommandMode === newCommandMode && oldSearch === newSearch) {
+      return;
+    }
+
+    this._commandMode = newCommandMode;
+    this._search = newSearch;
+
+    if (this._hint) {
+      this._hint = undefined;
     }
 
     if (oldCommandMode !== this._commandMode) {
