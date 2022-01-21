@@ -4320,7 +4320,8 @@
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
       "no_results_found": "No results found in {repository}.",
       "registries": "Registries",
-      "repositories": "Repositories"
+      "repositories": "Repositories",
+      "check_updates": "Check for updates"
     },
     "panel": {
       "addons": "Add-ons",
