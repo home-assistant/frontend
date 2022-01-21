@@ -626,7 +626,9 @@
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
-        "filter_placeholder": "Entity Filter"
+        "filter_placeholder": "Entity Filter",
+        "title": "Quick Search",
+        "key_c_hint": "Press 'c' on any page to open this search bar"
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
