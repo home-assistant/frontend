@@ -210,25 +210,27 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     return Promise.all(
-      this._integrations(device, this.entries).map(async (entry) => {
-        const info = await fetchDiagnosticHandler(this.hass, entry.domain);
+      this._integrations(device, this.entries)
+        .filter((entry) => entry.state === "loaded")
+        .map(async (entry) => {
+          const info = await fetchDiagnosticHandler(this.hass, entry.domain);
 
-        if (!info.handlers.device && !info.handlers.config_entry) {
-          return "";
-        }
-        const link = info.handlers.device
-          ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
-          : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id);
-        return html`
-          <a href=${link} @click=${this._signUrl}>
-            <mwc-button>
-              ${this.hass.localize(
-                `ui.panel.config.devices.download_diagnostics`
-              )}
-            </mwc-button>
-          </a>
-        `;
-      })
+          if (!info.handlers.device && !info.handlers.config_entry) {
+            return "";
+          }
+          const link = info.handlers.device
+            ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
+            : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id);
+          return html`
+            <a href=${link} @click=${this._signUrl}>
+              <mwc-button>
+                ${this.hass.localize(
+                  `ui.panel.config.devices.download_diagnostics`
+                )}
+              </mwc-button>
+            </a>
+          `;
+        })
     );
   }
 
