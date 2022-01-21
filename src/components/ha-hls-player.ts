@@ -189,6 +189,7 @@ class HaHLSPlayer extends LitElement {
   private _isLLHLSSupported(): boolean {
     // LL-HLS requires use of an http/2 proxy to avoid opening too many connections
     return (
+      "performance" in window &&
       performance.getEntriesByType("navigation")[0] &&
       performance.getEntriesByType("navigation")[0].nextHopProtocol === "H2"
     );
