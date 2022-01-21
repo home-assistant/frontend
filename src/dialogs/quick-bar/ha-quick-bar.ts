@@ -726,6 +726,7 @@ export class QuickBar extends LitElement {
         .hint {
           padding: 20px;
           font-style: italic;
+          text-align: center;
         }
       `,
     ];
