@@ -209,6 +209,7 @@ export class QuickBar extends LitElement {
   private _handleOpened() {
     this.updateComplete.then(() => {
       this._done = true;
+      this._filterInputField?.inputElement.inputElement.focus();
     });
   }
 
@@ -384,12 +385,12 @@ export class QuickBar extends LitElement {
     this._focusListElement = ev.target as ListItem;
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
-        this._filterInputField?.focus();
+        this._filterInputField?.inputElement.inputElement.focus();
       }
     }
     if (ev.key === "Backspace" || isSingleCharacter) {
       (ev.currentTarget as List).scrollTop = 0;
-      this._filterInputField?.focus();
+      this._filterInputField?.inputElement.inputElement.focus();
     }
   }
 
