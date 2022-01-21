@@ -48,7 +48,7 @@ class HaHLSPlayer extends LitElement {
 
   private _exoPlayer = false;
 
-  private static streamCount: int = 0;
+  private static streamCount = 0;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -203,7 +203,9 @@ class HaHLSPlayer extends LitElement {
     ) {
       return false;
     }
-    const perfEntry = performance.getEntriesByType("resource")[0];
+    const perfEntry = performance.getEntriesByType(
+      "resource"
+    )[0] as PerformanceResourceTiming;
     return "nextHopProtocol" in perfEntry && perfEntry.nextHopProtocol === "h2";
   }
 
