@@ -573,21 +573,27 @@ export class QuickBar extends LitElement {
 
     for (const sectionKey of Object.keys(configSections)) {
       for (const page of configSections[sectionKey]) {
-        if (canShowPage(this.hass, page)) {
-          if (page.component) {
-            const info = this._getNavigationInfoFromConfig(page);
-
-            // Add to list, but only if we do not already have an entry for the same path and component
-            if (
-              info &&
-              !items.some(
-                (e) => e.path === info.path && e.component === info.component
-              )
-            ) {
-              items.push(info);
-            }
-          }
+        if (!canShowPage(this.hass, page)) {
+          continue;
         }
+        if (!page.component) {
+          continue;
+        }
+        const info = this._getNavigationInfoFromConfig(page);
+
+        if (!info) {
+          continue;
+        }
+        // Add to list, but only if we do not already have an entry for the same path and component
+        if (
+          items.some(
+            (e) => e.path === info.path && e.component === info.component
+          )
+        ) {
+          continue;
+        }
+
+        items.push(info);
       }
     }
 
@@ -597,14 +603,15 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    if (page.component) {
-      const caption = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.navigation.${page.component}`
-      );
+    if (!page.component) {
+      return undefined;
+    }
+    const caption = this.hass.localize(
+      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
+    );
 
-      if (page.translationKey && caption) {
-        return { ...page, primaryText: caption };
-      }
+    if (page.translationKey && caption) {
+      return { ...page, primaryText: caption };
     }
 
     return undefined;
