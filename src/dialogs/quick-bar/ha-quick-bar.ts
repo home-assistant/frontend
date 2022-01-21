@@ -80,8 +80,6 @@ type BaseNavigationCommand = Pick<
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
-
   @state() private _commandItems?: CommandItem[];
 
   @state() private _entityItems?: EntityItem[];
@@ -96,6 +94,8 @@ export class QuickBar extends LitElement {
 
   @state() private _done = false;
 
+  @state() private _narrow = false;
+
   @state() private _hint?: string;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
@@ -107,6 +107,7 @@ export class QuickBar extends LitElement {
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
     this._hint = params.hint;
+    this._narrow = matchMedia("(max-width: 600px)").matches;
     this._initializeItemsIfNeeded();
     this._opened = true;
   }
@@ -178,7 +179,7 @@ export class QuickBar extends LitElement {
               ></ha-icon-button>
             `}
           </paper-input>
-          ${this.narrow
+          ${this._narrow
             ? html`
                 <mwc-button
                   .label=${this.hass!.localize("ui.common.close")}
@@ -210,7 +211,9 @@ export class QuickBar extends LitElement {
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
-        ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
+        ${this._narrow && this._hint
+          ? html`<div class="hint">${this._hint}</div>`
+          : ""}
       </ha-dialog>
     `;
   }

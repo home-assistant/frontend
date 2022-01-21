@@ -131,9 +131,7 @@ class HaConfigDashboard extends LitElement {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: true,
-      hint: this.narrow
-        ? undefined
-        : this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
+      hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
     });
   }
 
