@@ -48,8 +48,11 @@ class HaHLSPlayer extends LitElement {
 
   private _exoPlayer = false;
 
+  private static streamCount = 0;
+
   public connectedCallback() {
     super.connectedCallback();
+    HaHLSPlayer.streamCount += 1;
     if (this.hasUpdated) {
       this._startHls();
     }
@@ -57,6 +60,7 @@ class HaHLSPlayer extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    HaHLSPlayer.streamCount -= 1;
     this._cleanUp();
   }
 
@@ -186,6 +190,28 @@ class HaHLSPlayer extends LitElement {
     });
   };
 
+  private _isLLHLSSupported(): boolean {
+    // LL-HLS keeps multiple requests in flight, which can run into browser limitations without
+    // an http/2 proxy to pipeline requests. However, a small number of streams active at
+    // once should be OK.
+    // The stream count may be incremented multiple times before this function is called to check
+    // the count e.g. when loading a page with many streams on it. The race can work in our favor
+    // so we now have a better idea on if we'll use too many browser connections later.
+    if (HaHLSPlayer.streamCount <= 2) {
+      return true;
+    }
+    if (
+      !("performance" in window) ||
+      performance.getEntriesByType("resource").length === 0
+    ) {
+      return false;
+    }
+    const perfEntry = performance.getEntriesByType(
+      "resource"
+    )[0] as PerformanceResourceTiming;
+    return "nextHopProtocol" in perfEntry && perfEntry.nextHopProtocol === "h2";
+  }
+
   private async _renderHLSPolyfill(
     videoEl: HTMLVideoElement,
     Hls: typeof HlsType,
@@ -197,6 +223,7 @@ class HaHLSPlayer extends LitElement {
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
       maxLiveSyncPlaybackRate: 2,
+      lowLatencyMode: this._isLLHLSSupported(),
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
