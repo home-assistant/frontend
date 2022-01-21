@@ -990,7 +990,7 @@
           },
           "developer_tools": {
             "title": "Developer Tools",
-            "description": "Try things out quickly"
+            "description": "Tools to help create automations and scripts"
           }
         },
         "common": {
