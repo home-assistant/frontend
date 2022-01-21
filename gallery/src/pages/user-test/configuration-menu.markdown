@@ -1,5 +1,5 @@
 ---
-title: User Test: Configuration menu
+title: "User Test: Configuration menu"
 ---
 
 # User Test: Configuration menu (10-17 January, 2022)
