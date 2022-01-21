@@ -627,7 +627,8 @@
           }
         },
         "filter_placeholder": "Entity Filter",
-        "title": "Quick Search"
+        "title": "Quick Search",
+        "key_c_hint": "Did you know you can click c on any page to open this search bar?"
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",

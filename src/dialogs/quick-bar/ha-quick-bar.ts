@@ -20,6 +20,7 @@ import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { fireEvent } from "../../common/dom/fire_event";
+import { listenMediaQuery } from "../../common/dom/media_query";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
@@ -33,7 +34,6 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
@@ -81,6 +81,8 @@ type BaseNavigationCommand = Pick<
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @state() private _commandItems?: CommandItem[];
 
   @state() private _entityItems?: EntityItem[];
@@ -101,8 +103,18 @@ export class QuickBar extends LitElement {
 
   private _focusListElement?: ListItem | null;
 
+  private _hint?: string;
+
+  constructor() {
+    super();
+    listenMediaQuery("(max-width: 870px)", (matches) => {
+      this.narrow = matches;
+    });
+  }
+
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
+    this._hint = params.hint;
     this._initializeItemsIfNeeded();
     this._opened = true;
   }
@@ -131,48 +143,58 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-dialog
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.dialogs.quick-bar.title")
-        )}
+        .heading=${true}
         open
         @opened=${this._handleOpened}
         @closed=${this.closeDialog}
         hideActions
       >
-        <paper-input
-          dialogInitialFocus
-          no-label-float
-          class="heading"
-          @value-changed=${this._handleSearchChange}
-          .label=${this.hass.localize(
-            "ui.dialogs.quick-bar.filter_placeholder"
-          )}
-          .value=${this._commandMode ? `>${this._search}` : this._search}
-          @keydown=${this._handleInputKeyDown}
-          @focus=${this._setFocusFirstListItem}
-        >
-          ${this._commandMode
-            ? html`<ha-svg-icon
-                slot="prefix"
-                class="prefix"
-                .path=${mdiConsoleLine}
-              ></ha-svg-icon>`
-            : html`<ha-svg-icon
-                slot="prefix"
-                class="prefix"
-                .path=${mdiMagnify}
-              ></ha-svg-icon>`}
-          ${this._search &&
-          html`
-            <ha-icon-button
-              slot="suffix"
-              @click=${this._clearSearch}
-              .label=${this.hass!.localize("ui.common.clear")}
-              .path=${mdiClose}
-            ></ha-icon-button>
-          `}
-        </paper-input>
+        <div slot="heading" class="heading">
+          <paper-input
+            dialogInitialFocus
+            no-label-float
+            @value-changed=${this._handleSearchChange}
+            .label=${this.hass.localize(
+              "ui.dialogs.quick-bar.filter_placeholder"
+            )}
+            .value=${this._commandMode ? `>${this._search}` : this._search}
+            @keydown=${this._handleInputKeyDown}
+            @focus=${this._setFocusFirstListItem}
+          >
+            ${this._commandMode
+              ? html`
+                  <ha-svg-icon
+                    slot="prefix"
+                    class="prefix"
+                    .path=${mdiConsoleLine}
+                  ></ha-svg-icon>
+                `
+              : html`
+                  <ha-svg-icon
+                    slot="prefix"
+                    class="prefix"
+                    .path=${mdiMagnify}
+                  ></ha-svg-icon>
+                `}
+            ${this._search &&
+            html`
+              <ha-icon-button
+                slot="suffix"
+                @click=${this._clearSearch}
+                .label=${this.hass!.localize("ui.common.clear")}
+                .path=${mdiClose}
+              ></ha-icon-button>
+            `}
+          </paper-input>
+          ${this.narrow
+            ? html`
+                <mwc-button
+                  .label=${this.hass!.localize("ui.common.close")}
+                  @click=${this.closeDialog}
+                ></mwc-button>
+              `
+            : ""}
+        </div>
         ${!items
           ? html`<ha-circular-progress
               size="small"
@@ -196,6 +218,9 @@ export class QuickBar extends LitElement {
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
+        ${this.narrow || this._search
+          ? ""
+          : html`<div class="hint">${this._hint}</div>`}
       </ha-dialog>
     `;
   }
@@ -630,6 +655,13 @@ export class QuickBar extends LitElement {
       css`
         .heading {
           padding: 8px 20px 0px;
+          display: flex;
+          align-items: center;
+          --mdc-theme-primary: var(--primary-text-color);
+        }
+
+        .heading paper-input {
+          flex-grow: 1;
         }
 
         ha-dialog {
@@ -689,6 +721,11 @@ export class QuickBar extends LitElement {
 
         mwc-list-item.command-item {
           text-transform: capitalize;
+        }
+
+        .hint {
+          padding: 20px;
+          font-style: italic;
         }
       `,
     ];
