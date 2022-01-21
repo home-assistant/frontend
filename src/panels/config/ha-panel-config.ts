@@ -6,7 +6,6 @@ import {
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
-  mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
   mdiNfcVariant,
@@ -81,13 +80,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiViewDashboard,
       iconColor: "#B1345C",
       component: "lovelace",
-    },
-    {
-      path: "/config/energy",
-      translationKey: "energy",
-      iconPath: mdiLightningBolt,
-      iconColor: "#F1C447",
-      component: "energy",
     },
     {
       path: "/config/tags",
@@ -198,15 +190,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
       iconColor: "#616161",
-    },
-  ],
-  energy: [
-    {
-      component: "energy",
-      path: "/config/energy",
-      translationKey: "ui.panel.config.energy.caption",
-      iconPath: mdiLightningBolt,
-      iconColor: "#F1C447",
     },
   ],
   lovelace: [
