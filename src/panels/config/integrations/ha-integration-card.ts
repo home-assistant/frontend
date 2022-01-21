@@ -13,6 +13,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
@@ -175,9 +176,9 @@ export class HaIntegrationCard extends LitElement {
   }
 
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
-    const devices = this._getDevices(item);
-    const services = this._getServices(item);
-    const entities = this._getEntities(item);
+    const devices = this._getDevices(item, this.deviceRegistryEntries);
+    const services = this._getServices(item, this.deviceRegistryEntries);
+    const entities = this._getEntities(item, this.entityRegistryEntries);
 
     let stateText: [string, ...unknown[]] | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
@@ -220,6 +221,61 @@ export class HaIntegrationCard extends LitElement {
       }
     }
 
+    let devicesLine: (TemplateResult | string)[] = [];
+
+    for (const [items, localizeKey] of [
+      [devices, "devices"],
+      [services, "services"],
+    ] as [DeviceRegistryEntry[], string][]) {
+      if (items.length === 0) {
+        continue;
+      }
+      const url =
+        items.length === 1
+          ? `/config/devices/device/${items[0].id}`
+          : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`;
+      devicesLine.push(
+        // no white space before/after template on purpose
+        html`<a href=${url}
+          >${this.hass.localize(
+            `ui.panel.config.integrations.config_entry.${localizeKey}`,
+            "count",
+            items.length
+          )}</a
+        >`
+      );
+    }
+
+    if (entities.length) {
+      devicesLine.push(
+        // no white space before/after template on purpose
+        html`<a
+          href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
+          >${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.entities",
+            "count",
+            entities.length
+          )}</a
+        >`
+      );
+    }
+
+    if (devicesLine.length === 2) {
+      devicesLine = [
+        devicesLine[0],
+        ` ${this.hass.localize("ui.common.and")} `,
+        devicesLine[1],
+      ];
+    } else if (devicesLine.length === 3) {
+      devicesLine = [
+        devicesLine[0],
+        ", ",
+        devicesLine[1],
+        ` ${this.hass.localize("ui.common.and")} `,
+        devicesLine[2],
+      ];
+    }
+
     return html`
       ${stateText
         ? html`
@@ -229,53 +285,7 @@ export class HaIntegrationCard extends LitElement {
             </div>
           `
         : ""}
-      <div class="content">
-        ${devices.length || services.length || entities.length
-          ? html`
-              <div>
-                ${devices.length
-                  ? html`
-                      <a
-                        href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.devices",
-                          "count",
-                          devices.length
-                        )}</a
-                      >${services.length ? "," : ""}
-                    `
-                  : ""}
-                ${services.length
-                  ? html`
-                      <a
-                        href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.services",
-                          "count",
-                          services.length
-                        )}</a
-                      >
-                    `
-                  : ""}
-                ${(devices.length || services.length) && entities.length
-                  ? this.hass.localize("ui.common.and")
-                  : ""}
-                ${entities.length
-                  ? html`
-                      <a
-                        href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.entities",
-                          "count",
-                          entities.length
-                        )}</a
-                      >
-                    `
-                  : ""}
-              </div>
-            `
-          : ""}
-      </div>
+      <div class="content">${devicesLine}</div>
       <div class="actions">
         <div>
           ${item.disabled_by === "user"
@@ -421,36 +431,51 @@ export class HaIntegrationCard extends LitElement {
     this.classList.remove("highlight");
   }
 
-  private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
-    if (!this.entityRegistryEntries) {
-      return [];
+  private _getEntities = memoizeOne(
+    (
+      configEntry: ConfigEntry,
+      entityRegistryEntries: EntityRegistryEntry[]
+    ): EntityRegistryEntry[] => {
+      if (!entityRegistryEntries) {
+        return [];
+      }
+      return entityRegistryEntries.filter(
+        (entity) => entity.config_entry_id === configEntry.entry_id
+      );
     }
-    return this.entityRegistryEntries.filter(
-      (entity) => entity.config_entry_id === configEntry.entry_id
-    );
-  }
+  );
 
-  private _getDevices(configEntry: ConfigEntry): DeviceRegistryEntry[] {
-    if (!this.deviceRegistryEntries) {
-      return [];
+  private _getDevices = memoizeOne(
+    (
+      configEntry: ConfigEntry,
+      deviceRegistryEntries: DeviceRegistryEntry[]
+    ): DeviceRegistryEntry[] => {
+      if (!deviceRegistryEntries) {
+        return [];
+      }
+      return deviceRegistryEntries.filter(
+        (device) =>
+          device.config_entries.includes(configEntry.entry_id) &&
+          device.entry_type !== "service"
+      );
     }
-    return this.deviceRegistryEntries.filter(
-      (device) =>
-        device.config_entries.includes(configEntry.entry_id) &&
-        device.entry_type !== "service"
-    );
-  }
+  );
 
-  private _getServices(configEntry: ConfigEntry): DeviceRegistryEntry[] {
-    if (!this.deviceRegistryEntries) {
-      return [];
+  private _getServices = memoizeOne(
+    (
+      configEntry: ConfigEntry,
+      deviceRegistryEntries: DeviceRegistryEntry[]
+    ): DeviceRegistryEntry[] => {
+      if (!deviceRegistryEntries) {
+        return [];
+      }
+      return deviceRegistryEntries.filter(
+        (device) =>
+          device.config_entries.includes(configEntry.entry_id) &&
+          device.entry_type === "service"
+      );
     }
-    return this.deviceRegistryEntries.filter(
-      (device) =>
-        device.config_entries.includes(configEntry.entry_id) &&
-        device.entry_type === "service"
-    );
-  }
+  );
 
   private _showOptions(ev) {
     showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
