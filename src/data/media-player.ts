@@ -333,3 +333,12 @@ export const formatMediaTime = (seconds: number): string => {
       : secondsString.substring(14, 19);
   return secondsString.replace(/^0+/, "").padStart(4, "0");
 };
+
+export const cleanupMediaTitle = (title?: string): string | undefined => {
+  if (!title) {
+    return undefined;
+  }
+
+  const index = title.indexOf("?authSig=");
+  return index > 0 ? title.slice(0, index) : title;
+};

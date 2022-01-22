@@ -30,6 +30,7 @@ import "../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 import {
   BROWSER_PLAYER,
+  cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
   formatMediaTime,
@@ -185,6 +186,7 @@ class BarMediaPlayer extends LitElement {
       : [{}];
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj!.attributes.media_duration!);
+    const mediaTitleClean = cleanupMediaTitle(stateObj.attributes.media_title);
 
     return html`
       <div class="info">
@@ -195,7 +197,7 @@ class BarMediaPlayer extends LitElement {
           : ""}
         <div class="media-info">
           <hui-marquee
-            .text=${stateObj.attributes.media_title ||
+            .text=${mediaTitleClean ||
             mediaDescription ||
             this.hass.localize(`ui.card.media_player.nothing_playing`)}
             .active=${this._marqueeActive}
@@ -203,7 +205,7 @@ class BarMediaPlayer extends LitElement {
             @mouseleave=${this._marqueeMouseLeave}
           ></hui-marquee>
           <span class="secondary">
-            ${stateObj.attributes.media_title ? mediaDescription : ""}
+            ${mediaTitleClean ? mediaDescription : ""}
           </span>
         </div>
       </div>
