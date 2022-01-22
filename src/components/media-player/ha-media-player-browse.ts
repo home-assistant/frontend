@@ -340,7 +340,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 </mwc-list>
               `
           : html`
-              <div class="container">
+              <div class="container no-items">
                 ${this.hass.localize("ui.components.media-browser.no_items")}
                 <br />
                 ${currentItem.media_content_id ===
@@ -694,6 +694,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .container {
           padding: 16px;
+        }
+
+        .no-items {
+          padding-left: 32px;
         }
 
         .content {
