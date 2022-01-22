@@ -64,7 +64,7 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
       return `${formatNumber(
         stateObj.attributes.target_temp_low,
         this.hass.locale
-      )} - ${formatNumber(
+      )} – ${formatNumber(
         stateObj.attributes.target_temp_high,
         this.hass.locale
       )} ${hass.config.unit_system.temperature}`;

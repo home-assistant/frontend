@@ -320,7 +320,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
               `
-            : html` - `;
+            : html`—`;
         },
       };
       if (showDisabled) {
