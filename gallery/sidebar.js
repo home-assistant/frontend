@@ -20,6 +20,7 @@ module.exports = [
       "editor-trigger",
       "editor-condition",
       "editor-action",
+      "selectors",
       "trace",
       "trace-timeline",
     ],
