@@ -38,7 +38,7 @@ interface EditSideBarEvent {
 }
 
 @customElement("home-assistant-main")
-class HomeAssistantMain extends LitElement {
+export class HomeAssistantMain extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route?: Route;
@@ -110,7 +110,15 @@ class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
 
-    this._externalSidebar = this.hass.auth.external?.config.hasSidebar === true;
+    if (this.hass.auth.external) {
+      this._externalSidebar =
+        this.hass.auth.external.config.hasSidebar === true;
+      import("../external_app/external_messaging_commands").then((mod) =>
+        this.hass.auth.external!.addCommandHandler((msg) =>
+          mod.handleExternalMessage(this, msg)
+        )
+      );
+    }
 
     this.addEventListener(
       "hass-edit-sidebar",

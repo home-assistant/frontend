@@ -1,6 +1,3 @@
-import { Connection } from "home-assistant-js-websocket";
-import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
-import { ExternalConfig, getExternalConfig } from "./external_config";
 import {
   externalForwardConnectionEvents,
   externalForwardHaptics,
@@ -50,28 +47,44 @@ interface EMExternMessageShowNotifications {
   command: "notifications/show";
 }
 
+export type EMExternalMessageCommands =
+  | EMExternalMessageRestart
+  | EMExternMessageShowNotifications;
+
 type ExternalMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageRestart
-  | EMExternMessageShowNotifications;
+  | EMExternalMessageCommands;
+
+type ExternalMessageHandler = (msg: EMExternalMessageCommands) => boolean;
+
+export interface ExternalConfig {
+  hasSettingsScreen: boolean;
+  hasSidebar: boolean;
+  canWriteTag: boolean;
+  hasExoPlayer: boolean;
+}
 
 export class ExternalMessaging {
   public config!: ExternalConfig;
 
   public commands: { [msgId: number]: CommandInFlight } = {};
 
-  public connection?: Connection;
-
-  public cache: Record<string, any> = {};
-
   public msgId = 0;
+
+  private _commandHandler?: ExternalMessageHandler;
 
   public async attach() {
     externalForwardConnectionEvents(this);
     externalForwardHaptics(this);
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
-    this.config = await getExternalConfig(this);
+    this.config = await this.sendMessage<ExternalConfig>({
+      type: "config/get",
+    });
+  }
+
+  public addCommandHandler(handler: ExternalMessageHandler) {
+    this._commandHandler = handler;
   }
 
   /**
@@ -109,40 +122,7 @@ export class ExternalMessaging {
     }
 
     if (msg.type === "command") {
-      if (!this.connection) {
-        // eslint-disable-next-line no-console
-        console.warn("Received command without having connection set", msg);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: false,
-          error: {
-            code: "commands_not_init",
-            message: `Commands connection not set`,
-          },
-        });
-      } else if (msg.command === "restart") {
-        this.connection.reconnect(true);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: true,
-          result: null,
-        });
-      } else if (msg.command === "notifications/show") {
-        const hassEl = this.hassEl;
-        if (hassEl) {
-          showNotificationDrawer(hassEl, {
-            narrow: document.body.clientWidth < 870,
-          });
-        }
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: true,
-          result: null,
-        });
-      } else {
+      if (!this._commandHandler || !this._commandHandler(msg)) {
         // @ts-ignore
         // eslint-disable-next-line no-console
         console.warn("Received unknown command", msg.command, msg);
@@ -176,10 +156,6 @@ export class ExternalMessaging {
         pendingCmd.reject(msg.error);
       }
     }
-  }
-
-  private get hassEl() {
-    return document.body.querySelector("home-assistant");
   }
 
   protected _sendExternal(msg: EMMessage) {
