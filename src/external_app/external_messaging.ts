@@ -1,8 +1,3 @@
-import {
-  externalForwardConnectionEvents,
-  externalForwardHaptics,
-} from "./external_events_forwarder";
-
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -75,9 +70,13 @@ export class ExternalMessaging {
   private _commandHandler?: ExternalMessageHandler;
 
   public async attach() {
-    externalForwardConnectionEvents(this);
-    externalForwardHaptics(this);
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
+    window.addEventListener("connection-status", (ev) =>
+      this.fireMessage({
+        type: "connection-status",
+        payload: { event: ev.detail },
+      })
+    );
     this.config = await this.sendMessage<ExternalConfig>({
       type: "config/get",
     });

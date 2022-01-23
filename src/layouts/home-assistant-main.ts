@@ -113,10 +113,8 @@ export class HomeAssistantMain extends LitElement {
     if (this.hass.auth.external) {
       this._externalSidebar =
         this.hass.auth.external.config.hasSidebar === true;
-      import("../external_app/external_messaging_commands").then((mod) =>
-        this.hass.auth.external!.addCommandHandler((msg) =>
-          mod.handleExternalMessage(this, msg)
-        )
+      import("../external_app/external_app_entrypoint").then((mod) =>
+        mod.attachExternalToApp(this)
       );
     }
 
