@@ -122,18 +122,24 @@ export class ExternalMessaging {
 
     if (msg.type === "command") {
       if (!this._commandHandler || !this._commandHandler(msg)) {
-        // @ts-ignore
+        let code: string;
+        let message: string;
+        if (this._commandHandler) {
+          code = "not_ready";
+          message = "Command handler not ready";
+        } else {
+          code = "unknown_command";
+          message = `Unknown command ${msg.command}`;
+        }
         // eslint-disable-next-line no-console
-        console.warn("Received unknown command", msg.command, msg);
+        console.warn(message, msg);
         this.fireMessage({
-          // @ts-ignore
           id: msg.id,
           type: "result",
           success: false,
           error: {
-            code: "unknown_command",
-            // @ts-ignore
-            message: `Unknown command ${msg.command}`,
+            code,
+            message,
           },
         });
       }
