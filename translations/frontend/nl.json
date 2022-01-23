@@ -536,7 +536,7 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Inschakelen voor vertrek",
+                "arm_away": "Inschakelen voor afwezig",
                 "arm_custom_bypass": "Inschakelen met overbrugging",
                 "arm_home": "Inschakelen voor thuis",
                 "arm_night": "Inschakelen voor 's nachts",
