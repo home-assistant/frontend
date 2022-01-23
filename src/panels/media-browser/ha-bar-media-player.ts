@@ -36,6 +36,7 @@ import {
   formatMediaTime,
   getCurrentProgress,
   MediaPlayerEntity,
+  MediaPlayerItem,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_PAUSE,
   SUPPORT_PLAY,
@@ -43,6 +44,7 @@ import {
 } from "../../data/media-player";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
+import { BrowserMediaPlayer } from "./browser-media-player";
 
 @customElement("ha-bar-media-player")
 class BarMediaPlayer extends LitElement {
@@ -58,6 +60,8 @@ class BarMediaPlayer extends LitElement {
   @query("#CurrentProgress") private _currentProgress?: HTMLElement;
 
   @state() private _marqueeActive = false;
+
+  @state() private _browserPlayer?: BrowserMediaPlayer;
 
   private _progressInterval?: number;
 
@@ -87,6 +91,19 @@ class BarMediaPlayer extends LitElement {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
+  }
+
+  public async playItem(item: MediaPlayerItem) {
+    if (this.entityId !== BROWSER_PLAYER) {
+      throw Error("Only browser supported");
+    }
+    if (this._browserPlayer) {
+      this._browserPlayer.stop();
+    }
+    this._browserPlayer = new BrowserMediaPlayer(this.hass, item, () =>
+      this.requestUpdate()
+    );
+    await this._browserPlayer.initialize();
   }
 
   protected render(): TemplateResult {
@@ -150,11 +167,11 @@ class BarMediaPlayer extends LitElement {
       </div>
     `;
 
-    if (!this._stateObj) {
+    const stateObj = this._stateObj;
+
+    if (!stateObj) {
       return choosePlayerElement;
     }
-
-    const stateObj = this._stateObj;
     const controls = !this.narrow
       ? computeMediaControls(stateObj)
       : (stateObj.state === "playing" &&
@@ -211,19 +228,21 @@ class BarMediaPlayer extends LitElement {
       </div>
       <div class="controls-progress">
         <div class="controls">
-          ${controls!.map(
-            (control) => html`
-              <ha-icon-button
-                .label=${this.hass.localize(
-                  `ui.card.media_player.${control.action}`
-                )}
-                .path=${control.icon}
-                action=${control.action}
-                @click=${this._handleClick}
-              >
-              </ha-icon-button>
-            `
-          )}
+          ${controls === undefined
+            ? ""
+            : controls.map(
+                (control) => html`
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      `ui.card.media_player.${control.action}`
+                    )}
+                    .path=${control.icon}
+                    action=${control.action}
+                    @click=${this._handleClick}
+                  >
+                  </ha-icon-button>
+                `
+              )}
         </div>
         ${this.narrow
           ? html`<mwc-linear-progress></mwc-linear-progress>`
@@ -239,7 +258,20 @@ class BarMediaPlayer extends LitElement {
     `;
   }
 
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("entityId") &&
+      this.entityId !== BROWSER_PLAYER &&
+      this._browserPlayer
+    ) {
+      this._browserPlayer?.stop();
+      this._browserPlayer = undefined;
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (!this.hass || !this._stateObj || !changedProps.has("hass")) {
       return;
     }
@@ -267,6 +299,9 @@ class BarMediaPlayer extends LitElement {
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
+    if (this._browserPlayer) {
+      return this._browserPlayer.toStateObj();
+    }
     return this.hass!.states[this.entityId] as MediaPlayerEntity;
   }
 
@@ -332,9 +367,18 @@ class BarMediaPlayer extends LitElement {
 
   private _handleClick(e: MouseEvent): void {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-    this.hass!.callService("media_player", action, {
-      entity_id: this.entityId,
-    });
+
+    if (!this._browserPlayer) {
+      this.hass!.callService("media_player", action, {
+        entity_id: this.entityId,
+      });
+      return;
+    }
+    if (action === "media_pause") {
+      this._browserPlayer.pause();
+    } else if (action === "media_play") {
+      this._browserPlayer.play();
+    }
   }
 
   private _marqueeMouseOver(): void {
