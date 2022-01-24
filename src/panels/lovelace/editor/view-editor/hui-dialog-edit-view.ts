@@ -36,6 +36,7 @@ import {
   PANEL_VIEW_LAYOUT,
   VIEWS_NO_BADGE_SUPPORT,
 } from "../../views/const";
+import { deepEqual } from "../../../../common/util/deep-equal";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -52,6 +53,8 @@ export class HuiDialogEditView extends LitElement {
   @state() private _saving = false;
 
   @state() private _curTab?: string;
+
+  @state() private _dirty = false;
 
   private _curTabIndex = 0;
 
@@ -71,6 +74,7 @@ export class HuiDialogEditView extends LitElement {
       this._config = {};
       this._badges = [];
       this._cards = [];
+      this._dirty = false;
     } else {
       const { cards, badges, ...viewConfig } =
         this._params.lovelace!.config.views[this._params.viewIndex];
@@ -85,6 +89,7 @@ export class HuiDialogEditView extends LitElement {
     this._params = undefined;
     this._config = {};
     this._badges = [];
+    this._dirty = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -214,7 +219,7 @@ export class HuiDialogEditView extends LitElement {
         >
         <mwc-button
           slot="primaryAction"
-          ?disabled=${!this._config || this._saving}
+          ?disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
         >
           ${this._saving
@@ -316,8 +321,13 @@ export class HuiDialogEditView extends LitElement {
   }
 
   private _viewConfigChanged(ev: ViewEditEvent): void {
-    if (ev.detail && ev.detail.config) {
+    if (
+      ev.detail &&
+      ev.detail.config &&
+      !deepEqual(this._config, ev.detail.config)
+    ) {
       this._config = ev.detail.config;
+      this._dirty = true;
     }
   }
 
@@ -327,6 +337,7 @@ export class HuiDialogEditView extends LitElement {
     if (ev.detail.visible && this._config) {
       this._config.visible = ev.detail.visible;
     }
+    this._dirty = true;
   }
 
   private _badgesChanged(ev: EntitiesEditorEvent): void {
@@ -334,6 +345,7 @@ export class HuiDialogEditView extends LitElement {
       return;
     }
     this._badges = processEditorEntities(ev.detail.entities);
+    this._dirty = true;
   }
 
   private _isConfigChanged(): boolean {
