@@ -4,10 +4,7 @@ import { customElement } from "lit/decorators";
 
 @customElement("ha-textfield")
 export class HaTextField extends TextField {
-  override renderIcon(
-    _icon: string,
-    isTrailingIcon: boolean = false
-  ): TemplateResult {
+  override renderIcon(_icon: string, isTrailingIcon = false): TemplateResult {
     const type = isTrailingIcon ? "trailing" : "leading";
 
     return html`
