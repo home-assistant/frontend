@@ -106,7 +106,6 @@ export class Gauge extends LitElement {
                 class="needle"
                 d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
-                transform=${`rotate(${this._angle})`}
               >
               `
             : svg`<path
