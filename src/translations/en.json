@@ -998,6 +998,11 @@
           "learn_more": "Learn more"
         },
         "updates": {
+          "check_unavailable": {
+            "title": "Unable to check for updates",
+            "description": "You need to run the Home Assistant operating system to be able to check and install updates from the Home Assistant user interface."
+          },
+          "check_updates": "Check for updates",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
