@@ -99,7 +99,7 @@ export class QuickBar extends LitElement {
 
   @state() private _hint?: string;
 
-  @query("paper-input", false) private _filterInputField?: HTMLElement;
+  @query("ha-textfield", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
 
