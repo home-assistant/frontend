@@ -132,6 +132,7 @@ class HaPanelDevTemplate extends LitElement {
             .error=${this._error}
             autofocus
             @value-changed=${this._templateChanged}
+            dir="ltr"
           ></ha-code-editor>
           <mwc-button @click=${this._restoreDemo}>
             ${this.hass.localize(
