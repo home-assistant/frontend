@@ -33,7 +33,6 @@ import {
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
-import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
@@ -95,6 +94,10 @@ export class QuickBar extends LitElement {
 
   @state() private _done = false;
 
+  @state() private _narrow = false;
+
+  @state() private _hint?: string;
+
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
@@ -103,6 +106,8 @@ export class QuickBar extends LitElement {
 
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
+    this._hint = params.hint;
+    this._narrow = matchMedia("(max-width: 600px)").matches;
     this._initializeItemsIfNeeded();
     this._opened = true;
   }
@@ -137,40 +142,52 @@ export class QuickBar extends LitElement {
         @closed=${this.closeDialog}
         hideActions
       >
-        <paper-input
-          dialogInitialFocus
-          no-label-float
-          slot="heading"
-          class="heading"
-          @value-changed=${this._handleSearchChange}
-          .label=${this.hass.localize(
-            "ui.dialogs.quick-bar.filter_placeholder"
-          )}
-          .value=${this._commandMode ? `>${this._search}` : this._search}
-          @keydown=${this._handleInputKeyDown}
-          @focus=${this._setFocusFirstListItem}
-        >
-          ${this._commandMode
-            ? html`<ha-svg-icon
-                slot="prefix"
-                class="prefix"
-                .path=${mdiConsoleLine}
-              ></ha-svg-icon>`
-            : html`<ha-svg-icon
-                slot="prefix"
-                class="prefix"
-                .path=${mdiMagnify}
-              ></ha-svg-icon>`}
-          ${this._search &&
-          html`
-            <ha-icon-button
-              slot="suffix"
-              @click=${this._clearSearch}
-              .label=${this.hass!.localize("ui.common.clear")}
-              .path=${mdiClose}
-            ></ha-icon-button>
-          `}
-        </paper-input>
+        <div slot="heading" class="heading">
+          <paper-input
+            dialogInitialFocus
+            no-label-float
+            @value-changed=${this._handleSearchChange}
+            .label=${this.hass.localize(
+              "ui.dialogs.quick-bar.filter_placeholder"
+            )}
+            .value=${this._commandMode ? `>${this._search}` : this._search}
+            @keydown=${this._handleInputKeyDown}
+            @focus=${this._setFocusFirstListItem}
+          >
+            ${this._commandMode
+              ? html`
+                  <ha-svg-icon
+                    slot="prefix"
+                    class="prefix"
+                    .path=${mdiConsoleLine}
+                  ></ha-svg-icon>
+                `
+              : html`
+                  <ha-svg-icon
+                    slot="prefix"
+                    class="prefix"
+                    .path=${mdiMagnify}
+                  ></ha-svg-icon>
+                `}
+            ${this._search &&
+            html`
+              <ha-icon-button
+                slot="suffix"
+                @click=${this._clearSearch}
+                .label=${this.hass!.localize("ui.common.clear")}
+                .path=${mdiClose}
+              ></ha-icon-button>
+            `}
+          </paper-input>
+          ${this._narrow
+            ? html`
+                <mwc-button
+                  .label=${this.hass!.localize("ui.common.close")}
+                  @click=${this.closeDialog}
+                ></mwc-button>
+              `
+            : ""}
+        </div>
         ${!items
           ? html`<ha-circular-progress
               size="small"
@@ -194,6 +211,9 @@ export class QuickBar extends LitElement {
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
+        ${!this._narrow && this._hint
+          ? html`<div class="hint">${this._hint}</div>`
+          : ""}
       </ha-dialog>
     `;
   }
@@ -339,13 +359,27 @@ export class QuickBar extends LitElement {
   private _handleSearchChange(ev: CustomEvent): void {
     const newFilter = ev.detail.value;
     const oldCommandMode = this._commandMode;
+    const oldSearch = this._search;
+    let newCommandMode: boolean;
+    let newSearch: string;
 
     if (newFilter.startsWith(">")) {
-      this._commandMode = true;
-      this._search = newFilter.substring(1);
+      newCommandMode = true;
+      newSearch = newFilter.substring(1);
     } else {
-      this._commandMode = false;
-      this._search = newFilter;
+      newCommandMode = false;
+      newSearch = newFilter;
+    }
+
+    if (oldCommandMode === newCommandMode && oldSearch === newSearch) {
+      return;
+    }
+
+    this._commandMode = newCommandMode;
+    this._search = newSearch;
+
+    if (this._hint) {
+      this._hint = undefined;
     }
 
     if (oldCommandMode !== this._commandMode) {
@@ -428,32 +462,54 @@ export class QuickBar extends LitElement {
   }
 
   private _generateReloadCommands(): CommandItem[] {
-    const reloadableDomains = componentsWithService(this.hass, "reload").sort();
+    // Get all domains that have a direct "reload" service
+    const reloadableDomains = componentsWithService(this.hass, "reload");
 
-    return reloadableDomains.map((domain) => {
-      const commandItem = {
-        primaryText:
-          this.hass.localize(
-            `ui.dialogs.quick-bar.commands.reload.${domain}`
-          ) ||
-          this.hass.localize(
-            "ui.dialogs.quick-bar.commands.reload.reload",
-            "domain",
-            domainToName(this.hass.localize, domain)
-          ),
-        action: () => this.hass.callService(domain, "reload"),
-        iconPath: mdiReload,
-        categoryText: this.hass.localize(
-          `ui.dialogs.quick-bar.commands.types.reload`
+    const commands = reloadableDomains.map((domain) => ({
+      primaryText:
+        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
+        this.hass.localize(
+          "ui.dialogs.quick-bar.commands.reload.reload",
+          "domain",
+          domainToName(this.hass.localize, domain)
         ),
-      };
+      action: () => this.hass.callService(domain, "reload"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        `ui.dialogs.quick-bar.commands.types.reload`
+      ),
+    }));
 
-      return {
-        ...commandItem,
-        categoryKey: "reload",
-        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
-      };
+    // Add "frontend.reload_themes"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.themes"
+      ),
+      action: () => this.hass.callService("frontend", "reload_themes"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
     });
+
+    // Add "homeassistant.reload_core_config"
+    commands.push({
+      primaryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.reload.core"
+      ),
+      action: () =>
+        this.hass.callService("homeassistant", "reload_core_config"),
+      iconPath: mdiReload,
+      categoryText: this.hass.localize(
+        "ui.dialogs.quick-bar.commands.types.reload"
+      ),
+    });
+
+    return commands.map((command) => ({
+      ...command,
+      categoryKey: "reload",
+      strings: [`${command.categoryText} ${command.primaryText}`],
+    }));
   }
 
   private _generateServerControlCommands(): CommandItem[] {
@@ -517,21 +573,27 @@ export class QuickBar extends LitElement {
 
     for (const sectionKey of Object.keys(configSections)) {
       for (const page of configSections[sectionKey]) {
-        if (canShowPage(this.hass, page)) {
-          if (page.component) {
-            const info = this._getNavigationInfoFromConfig(page);
-
-            // Add to list, but only if we do not already have an entry for the same path and component
-            if (
-              info &&
-              !items.some(
-                (e) => e.path === info.path && e.component === info.component
-              )
-            ) {
-              items.push(info);
-            }
-          }
+        if (!canShowPage(this.hass, page)) {
+          continue;
         }
+        if (!page.component) {
+          continue;
+        }
+        const info = this._getNavigationInfoFromConfig(page);
+
+        if (!info) {
+          continue;
+        }
+        // Add to list, but only if we do not already have an entry for the same path and component
+        if (
+          items.some(
+            (e) => e.path === info.path && e.component === info.component
+          )
+        ) {
+          continue;
+        }
+
+        items.push(info);
       }
     }
 
@@ -541,14 +603,15 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    if (page.component) {
-      const caption = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.navigation.${page.component}`
-      );
+    if (!page.component) {
+      return undefined;
+    }
+    const caption = this.hass.localize(
+      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
+    );
 
-      if (page.translationKey && caption) {
-        return { ...page, primaryText: caption };
-      }
+    if (page.translationKey && caption) {
+      return { ...page, primaryText: caption };
     }
 
     return undefined;
@@ -606,6 +669,13 @@ export class QuickBar extends LitElement {
       css`
         .heading {
           padding: 8px 20px 0px;
+          display: flex;
+          align-items: center;
+          --mdc-theme-primary: var(--primary-text-color);
+        }
+
+        .heading paper-input {
+          flex-grow: 1;
         }
 
         ha-dialog {
@@ -665,6 +735,12 @@ export class QuickBar extends LitElement {
 
         mwc-list-item.command-item {
           text-transform: capitalize;
+        }
+
+        .hint {
+          padding: 20px;
+          font-style: italic;
+          text-align: center;
         }
       `,
     ];

@@ -191,7 +191,7 @@ export class HuiEnergyGasGraphCard
                   return datasets[0].label;
                 }
                 const date = new Date(datasets[0].parsed.x);
-                return `${formatTime(date, locale)} - ${formatTime(
+                return `${formatTime(date, locale)} – ${formatTime(
                   addHours(date, 1),
                   locale
                 )}`;

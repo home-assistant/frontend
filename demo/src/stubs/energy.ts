@@ -83,7 +83,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
   }));
   hass.mockWS("energy/info", () => ({ cost_sensors: [] }));
   hass.mockWS("energy/fossil_energy_consumption", ({ period }) => ({
-    start: period === "month" ? 500 : period === "day" ? 20 : 5,
+    start: period === "month" ? 250 : period === "day" ? 10 : 2,
   }));
   const todayString = format(startOfToday(), "yyyy-MM-dd");
   const tomorrowString = format(startOfTomorrow(), "yyyy-MM-dd");

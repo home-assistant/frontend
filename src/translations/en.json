@@ -10,7 +10,7 @@
     "mailbox": "Mailbox",
     "shopping_list": "Shopping List",
     "developer_tools": "Developer Tools",
-    "media_browser": "Media Browser",
+    "media_browser": "Media",
     "profile": "Profile"
   },
   "state": {
@@ -203,7 +203,8 @@
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
         "media_volume_unmute": "Volume unmute",
-        "text_to_speak": "Text to speak"
+        "text_to_speak": "Text to speak",
+        "nothing_playing": "Nothing Playing"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
@@ -505,7 +506,7 @@
         "pick-media": "Pick Media",
         "no_items": "No items",
         "choose_player": "Choose Player",
-        "media-player-browser": "Media Player Browser",
+        "media-player-browser": "Media",
         "web-browser": "Web Browser",
         "media_player": "Media Player",
         "audio_not_supported": "Your browser does not support the audio element.",
@@ -590,7 +591,8 @@
             "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
             "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
             "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
-            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]"
+            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]",
+            "themes": "[%key:ui::panel::config::server_control::section::reloading::themes%]"
           },
           "server_control": {
             "perform_action": "{action} server",
@@ -614,7 +616,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
-            "energy": "[%key:ui::panel::config::energy::caption%]",
+            "energy": "Energy Configuration",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
@@ -624,7 +626,9 @@
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
-        "filter_placeholder": "Entity Filter"
+        "filter_placeholder": "Entity Filter",
+        "title": "Quick Search",
+        "key_c_hint": "Press 'c' on any page to open this search bar"
       },
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
@@ -972,7 +976,7 @@
           },
           "tags": {
             "title": "Tags",
-            "description": "Trigger automations when a NFC tag, QR code, etc. is scanned"
+            "description": "Trigger automations when an NFC tag, QR code, etc. is scanned"
           },
           "people": {
             "title": "People & Zones",
@@ -1005,6 +1009,8 @@
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
           "add_picture": "Add a picture",
+          "assigned_to_area": "Assigned to this area",
+          "targeting_area": "Targeting this area",
           "data_table": {
             "area": "Area",
             "devices": "Devices",
@@ -1037,7 +1043,7 @@
         },
         "tag": {
           "caption": "Tags",
-          "description": "Trigger automations when a NFC tag, QR code, etc. is scanned",
+          "description": "Trigger automations when an NFC tag, QR code, etc. is scanned",
           "learn_more": "Learn more about tags",
           "no_tags": "No tags",
           "add_tag": "Add tag",
@@ -1241,6 +1247,7 @@
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
+            "input_button": "Button",
             "input_datetime": "Date and/or time",
             "counter": "Counter",
             "timer": "Timer"
@@ -1419,7 +1426,7 @@
         },
         "server_control": {
           "caption": "Server Controls",
-          "description": "Restart and stop the Home Assistant server",
+          "description": "Validate and restart the Home Assistant server",
           "section": {
             "validation": {
               "heading": "Configuration validation",
@@ -1440,6 +1447,7 @@
               "person": "People",
               "zone": "Zones",
               "input_boolean": "Input booleans",
+              "input_button": "Input buttons",
               "input_text": "Input texts",
               "input_number": "Input numbers",
               "input_datetime": "Input date times",
@@ -1462,7 +1470,8 @@
               "smtp": "SMTP notify services",
               "mqtt": "Manually configured MQTT entities",
               "rpi_gpio": "Raspberry Pi GPIO entities",
-              "timer": "Timers"
+              "timer": "Timers",
+              "themes": "Themes"
             },
             "server_management": {
               "heading": "Server management",
@@ -1556,7 +1565,8 @@
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
               "add": "Add trigger",
-              "id": "Trigger ID (used by the trigger condition)",
+              "id": "Trigger ID",
+              "edit_id": "Edit trigger ID",
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "Are you sure you want to delete this?",
@@ -2068,7 +2078,8 @@
                 "example_message": "Hello {name}, you can play any text on any supported media player!",
                 "target": "Target",
                 "target_browser": "Browser",
-                "play": "Play"
+                "play": "Play",
+                "create_automation": "Create Automation"
               }
             },
             "remote": {
@@ -2196,6 +2207,7 @@
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
           "open_configuration_url_device": "Visit device",
           "open_configuration_url_service": "Visit service",
+          "download_diagnostics": "Download diagnostics",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
@@ -2258,7 +2270,8 @@
             "area": "Area",
             "integration": "Integration",
             "battery": "Battery",
-            "no_devices": "No devices"
+            "no_devices": "No devices",
+            "no_integration": "No integration"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?",
@@ -2433,6 +2446,8 @@
             "configure": "Configure",
             "system_options": "System options",
             "documentation": "Documentation",
+            "download_diagnostics": "Download diagnostics",
+            "known_issues": "Known issues",
             "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete the {title} integration?",
             "reload": "Reload",
@@ -2472,7 +2487,8 @@
               "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload"
-            }
+            },
+            "open_configuration_url": "Visit device"
           },
           "config_flow": {
             "aborted": "Aborted",
@@ -2506,15 +2522,18 @@
           "caption": "Users",
           "description": "Manage the Home Assistant user accounts",
           "users_privileges_note": "The user group feature is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
+          "is_not_active": "Disabled",
+          "is_system": "System user",
+          "is_local": "Local user",
+          "is_owner": "Owner",
           "picker": {
             "headers": {
               "name": "Display name",
               "username": "Username",
               "group": "Group",
-              "system": "System generated",
+              "system": "System",
               "is_active": "Active",
-              "is_owner": "Owner",
-              "local": "Local only"
+              "local": "Local"
             },
             "add_user": "Add user"
           },
@@ -2535,9 +2554,9 @@
             "group": "Group",
             "active": "Active",
             "local_only": "Can only log in from the local network",
-            "system_generated": "System generated",
-            "system_generated_users_not_removable": "Unable to remove system generated users.",
-            "system_generated_users_not_editable": "Unable to update system generated users.",
+            "system_generated": "System user",
+            "system_generated_users_not_removable": "Unable to remove system users.",
+            "system_generated_users_not_editable": "Unable to update system users.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion": "Are you sure you want to delete {name}?",
             "active_tooltip": "Controls if user can login"
@@ -2756,6 +2775,7 @@
             "highlight_label": "Highlight Devices",
             "zoom_label": "Zoom To Device",
             "auto_zoom": "Auto Zoom",
+            "enable_physics": "Enable Physics",
             "refresh_topology": "Refresh Topology"
           },
           "group_binding": {
@@ -2885,13 +2905,7 @@
             "server_url": "Server URL",
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
-            "not_ready": "{count} not ready",
-            "dump_debug": "Download data",
-            "dump_dead_nodes_title": "Some of your devices are dead",
-            "dump_dead_nodes_text": "Some of your devices didn't respond and are assumed dead. These will not be fully exported.",
-            "dump_not_ready_title": "Not all devices are ready yet",
-            "dump_not_ready_text": "If you create an export while not all devices are ready, you could miss needed data. Give your network some time to query all devices. Do you want to continue with the dump?",
-            "dump_not_ready_confirm": "Download"
+            "not_ready": "{count} not ready"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
@@ -3416,7 +3430,14 @@
             },
             "statistics-graph": {
               "name": "Statistics Graph",
-              "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed."
+              "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
+              "period": "Period",
+              "periods": {
+                "hour": "Hour",
+                "day": "Day",
+                "month": "Month",
+                "5minute": "5 Minutes"
+              }
             },
             "horizontal-stack": {
               "name": "Horizontal Stack",
@@ -4228,7 +4249,7 @@
           "stop": "Failed to stop add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
-          "go_to_config": "Failed to start add-on - configuration validation failed!",
+          "go_to_config": "Edit Config",
           "start_invalid_config": "Go to configuration",
           "validate_config": "Failed to validate add-on configuration",
           "get_changelog": "Failed to get add-on changelog"
@@ -4278,7 +4299,6 @@
       "create_backup": "Create backup before updating",
       "description": "You have {version} installed. Click update to update to version {newest_version}",
       "updating": "Updating {name} to version {version}",
-      "creating_backup": "Creating backup of {name}",
       "no_update": "No update available for {name}"
     },
     "confirm": {
@@ -4302,7 +4322,8 @@
       "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
       "no_results_found": "No results found in {repository}.",
       "registries": "Registries",
-      "repositories": "Repositories"
+      "repositories": "Repositories",
+      "check_updates": "Check for updates"
     },
     "panel": {
       "addons": "Add-ons",
@@ -4427,6 +4448,7 @@
       "partial_backup": "Partial backup",
       "addons": "Add-ons",
       "folders": "Folders",
+      "size": "Size",
       "password": "Backup password",
       "confirm_password": "Confirm backup password",
       "password_protection": "Password protection",

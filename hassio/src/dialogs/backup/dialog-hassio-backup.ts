@@ -330,7 +330,6 @@ class HassioBackupDialog
     }
 
     fileDownload(
-      this,
       signedPath.path,
       `home_assistant_backup_${slugify(this._computeName)}.tar`
     );

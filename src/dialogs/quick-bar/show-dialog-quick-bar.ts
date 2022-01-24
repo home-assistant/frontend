@@ -3,6 +3,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 export interface QuickBarParams {
   entityFilter?: string;
   commandMode?: boolean;
+  hint?: string;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");

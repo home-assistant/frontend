@@ -29,7 +29,6 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
         .main-text {
           @apply --paper-font-common-nowrap;
           color: var(--primary-text-color);
-          text-transform: capitalize;
         }
 
         .main-text[take-height] {

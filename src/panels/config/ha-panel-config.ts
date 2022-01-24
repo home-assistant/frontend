@@ -83,13 +83,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       component: "lovelace",
     },
     {
-      path: "/config/energy",
-      translationKey: "energy",
-      iconPath: mdiLightningBolt,
-      iconColor: "#F1C447",
-      component: "energy",
-    },
-    {
       path: "/config/tags",
       translationKey: "tags",
       iconPath: mdiNfcVariant,
@@ -200,6 +193,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#616161",
     },
   ],
+  // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
       component: "energy",

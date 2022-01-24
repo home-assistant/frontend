@@ -75,7 +75,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
           ? formatNumber(attribute, this.hass.locale)
           : attribute !== undefined
           ? formatAttributeValue(this.hass, attribute)
-          : "-"}
+          : "—"}
         ${this._config.suffix}
       </hui-generic-entity-row>
     `;

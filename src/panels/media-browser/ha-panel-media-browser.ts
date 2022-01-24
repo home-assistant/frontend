@@ -1,23 +1,26 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { supportsFeature } from "../../common/entity/supports-feature";
+import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
-import {
-  BROWSER_PLAYER,
-  MediaPickedEvent,
-  SUPPORT_BROWSE_MEDIA,
-} from "../../data/media-player";
+import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
+import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
+import "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
-import { showSelectMediaPlayerDialog } from "./show-select-media-source-dialog";
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -26,22 +29,19 @@ class PanelMediaBrowser extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  // @ts-ignore
+  @property() public route!: Route;
+
+  private _navigateIds: MediaPlayerItemId[] = [
+    {
+      media_content_id: undefined,
+      media_content_type: undefined,
+    },
+  ];
+
   @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {
-    const stateObj = this._entityId
-      ? this.hass.states[this._entityId]
-      : undefined;
-
-    const title =
-      this._entityId === BROWSER_PLAYER
-        ? `${this.hass.localize("ui.components.media-browser.web-browser")}`
-        : stateObj?.attributes.friendly_name
-        ? `${stateObj?.attributes.friendly_name}`
-        : undefined;
-
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -56,31 +56,75 @@ class PanelMediaBrowser extends LitElement {
                   "ui.components.media-browser.media-player-browser"
                 )}
               </div>
-              <div class="secondary-text">${title || ""}</div>
             </div>
-            <mwc-button @click=${this._showSelectMediaPlayerDialog}>
-              ${this.hass.localize("ui.components.media-browser.choose_player")}
-            </mwc-button>
           </app-toolbar>
         </app-header>
-        <div class="content">
-          <ha-media-player-browse
-            .hass=${this.hass}
-            .entityId=${this._entityId}
-            @media-picked=${this._mediaPicked}
-          ></ha-media-player-browse>
-        </div>
+        <ha-media-player-browse
+          .hass=${this.hass}
+          .entityId=${this._entityId}
+          .navigateIds=${this._navigateIds}
+          @media-picked=${this._mediaPicked}
+          @media-browsed=${this._mediaBrowsed}
+        ></ha-media-player-browse>
       </ha-app-layout>
+      <ha-bar-media-player
+        .hass=${this.hass}
+        .entityId=${this._entityId}
+        .narrow=${this.narrow}
+      ></ha-bar-media-player>
     `;
   }
 
-  private _showSelectMediaPlayerDialog(): void {
-    showSelectMediaPlayerDialog(this, {
-      mediaSources: this._mediaPlayerEntities,
-      sourceSelectedCallback: (entityId) => {
-        this._entityId = entityId;
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (!changedProps.has("route")) {
+      return;
+    }
+
+    if (this.route.path === "") {
+      navigate(`/media-browser/${this._entityId}`, { replace: true });
+      return;
+    }
+
+    const [routePlayer, ...navigateIdsEncoded] = this.route.path
+      .substring(1)
+      .split("/");
+
+    if (routePlayer !== this._entityId) {
+      this._entityId = routePlayer;
+    }
+
+    this._navigateIds = [
+      {
+        media_content_type: undefined,
+        media_content_id: undefined,
       },
-    });
+      ...navigateIdsEncoded.map((navigateId) => {
+        const [media_content_type, media_content_id] =
+          decodeURIComponent(navigateId).split(",");
+        return {
+          media_content_type,
+          media_content_id,
+        };
+      }),
+    ];
+  }
+
+  private _mediaBrowsed(ev) {
+    if (ev.detail.back) {
+      history.back();
+      return;
+    }
+    let path = "";
+    for (const item of ev.detail.ids.slice(1)) {
+      path +=
+        "/" +
+        encodeURIComponent(
+          `${item.media_content_type},${item.media_content_id}`
+        );
+    }
+    navigate(`/media-browser/${this._entityId}${path}`);
   }
 
   private async _mediaPicked(
@@ -108,19 +152,6 @@ class PanelMediaBrowser extends LitElement {
     });
   }
 
-  private get _mediaPlayerEntities() {
-    return Object.values(this.hass!.states).filter((entity) => {
-      if (
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -128,21 +159,20 @@ class PanelMediaBrowser extends LitElement {
         :host {
           --mdc-theme-primary: var(--app-header-text-color);
         }
+
         ha-media-player-browse {
-          height: calc(100vh - var(--header-height));
+          height: calc(100vh - (100px + var(--header-height)));
         }
-        :host([narrow]) app-toolbar mwc-button {
-          width: 65px;
+
+        :host([narrow]) ha-media-player-browse {
+          height: calc(100vh - (80px + var(--header-height)));
         }
-        .heading {
-          overflow: hidden;
-          white-space: nowrap;
-          margin-top: 4px;
-        }
-        .heading .secondary-text {
-          font-size: 14px;
-          overflow: hidden;
-          text-overflow: ellipsis;
+
+        ha-bar-media-player {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
         }
       `,
     ];

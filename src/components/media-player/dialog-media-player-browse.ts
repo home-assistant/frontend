@@ -9,32 +9,30 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "./ha-media-player-browse";
+import type { MediaPlayerItemId } from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _entityId!: string;
-
-  @state() private _mediaContentId?: string;
-
-  @state() private _mediaContentType?: string;
-
-  @state() private _action?: MediaPlayerBrowseAction;
+  @state() private _navigateIds?: MediaPlayerItemId[];
 
   @state() private _params?: MediaPlayerBrowseDialogParams;
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
-    this._entityId = this._params.entityId;
-    this._mediaContentId = this._params.mediaContentId;
-    this._mediaContentType = this._params.mediaContentType;
-    this._action = this._params.action || "play";
+    this._navigateIds = [
+      {
+        media_content_id: this._params.mediaContentId,
+        media_content_type: this._params.mediaContentType,
+      },
+    ];
   }
 
   public closeDialog() {
     this._params = undefined;
+    this._navigateIds = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -55,15 +53,19 @@ class DialogMediaPlayerBrowse extends LitElement {
         <ha-media-player-browse
           dialog
           .hass=${this.hass}
-          .entityId=${this._entityId}
-          .action=${this._action!}
-          .mediaContentId=${this._mediaContentId}
-          .mediaContentType=${this._mediaContentType}
+          .entityId=${this._params.entityId}
+          .navigateIds=${this._navigateIds}
+          .action=${this._action}
           @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
+          @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
       </ha-dialog>
     `;
+  }
+
+  private _mediaBrowsed(ev) {
+    this._navigateIds = ev.detail.ids;
   }
 
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
@@ -71,6 +73,10 @@ class DialogMediaPlayerBrowse extends LitElement {
     if (this._action !== "play") {
       this.closeDialog();
     }
+  }
+
+  private get _action(): MediaPlayerBrowseAction {
+    return this._params!.action || "play";
   }
 
   static get styles(): CSSResultGroup {

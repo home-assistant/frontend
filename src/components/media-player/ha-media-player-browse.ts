@@ -18,6 +18,7 @@ import {
   eventOptions,
   property,
   query,
+  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -26,6 +27,7 @@ import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
@@ -42,7 +44,7 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
-import "../ha-card";
+import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
@@ -51,7 +53,13 @@ import "../ha-svg-icon";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
+    "media-browsed": { ids: MediaPlayerItemId[]; back?: boolean };
   }
+}
+
+export interface MediaPlayerItemId {
+  media_content_id: string | undefined;
+  media_content_type: string | undefined;
 }
 
 @customElement("ha-media-player-browse")
@@ -59,10 +67,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityId!: string;
-
-  @property() public mediaContentId?: string;
-
-  @property() public mediaContentType?: string;
 
   @property() public action: MediaPlayerBrowseAction = "play";
 
@@ -74,72 +78,53 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean, attribute: "scroll", reflect: true })
   private _scrolled = false;
 
-  @state() private _loading = false;
+  @property() public navigateIds!: MediaPlayerItemId[];
 
   @state() private _error?: { message: string; code: string };
 
-  @state() private _mediaPlayerItems: MediaPlayerItem[] = [];
+  @state() private _parentItem?: MediaPlayerItem;
+
+  @state() private _currentItem?: MediaPlayerItem;
 
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
 
+  @queryAll(".lazythumbnail") private _thumbnails?: HaCard[];
+
   private _headerOffsetHeight = 0;
 
   private _resizeObserver?: ResizeObserver;
 
+  // @ts-ignore
+  private _intersectionObserver?: IntersectionObserver;
+
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._attachObserver());
+    this.updateComplete.then(() => this._attachResizeObserver());
   }
 
   public disconnectedCallback(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
-  }
-
-  public navigateBack() {
-    this._mediaPlayerItems!.pop();
-    const item = this._mediaPlayerItems!.pop();
-    if (!item) {
-      return;
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
     }
-    this._navigate(item);
   }
 
   protected render(): TemplateResult {
-    if (this._loading) {
+    if (this._error) {
+      return html`
+        <div class="container">${this._renderError(this._error)}</div>
+      `;
+    }
+
+    if (!this._currentItem) {
       return html`<ha-circular-progress active></ha-circular-progress>`;
     }
 
-    if (this._error && !this._mediaPlayerItems.length) {
-      if (this.dialog) {
-        this._closeDialogAction();
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.components.media-browser.media_browsing_error"
-          ),
-          text: this._renderError(this._error),
-        });
-      } else {
-        return html`
-          <div class="container">${this._renderError(this._error)}</div>
-        `;
-      }
-    }
-
-    if (!this._mediaPlayerItems.length) {
-      return html``;
-    }
-
-    const currentItem =
-      this._mediaPlayerItems[this._mediaPlayerItems.length - 1];
-
-    const previousItem: MediaPlayerItem | undefined =
-      this._mediaPlayerItems.length > 1
-        ? this._mediaPlayerItems[this._mediaPlayerItems.length - 2]
-        : undefined;
+    const currentItem = this._currentItem;
 
     const subtitle = this.hass.localize(
       `ui.components.media-browser.class.${currentItem.media_class}`
@@ -192,11 +177,11 @@ export class HaMediaPlayerBrowse extends LitElement {
             : html``}
           <div class="header-info">
             <div class="breadcrumb">
-              ${previousItem
+              ${this.navigateIds.length > 1
                 ? html`
                     <div class="previous-title" @click=${this.navigateBack}>
                       <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-                      ${previousItem.title}
+                      ${this._parentItem ? this._parentItem.title : ""}
                     </div>
                   `
                 : ""}
@@ -259,11 +244,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                         <div class="ha-card-parent">
                           <ha-card
                             outlined
-                            style=${styleMap({
-                              backgroundImage: child.thumbnail
-                                ? `url(${child.thumbnail})`
-                                : "none",
-                            })}
+                            class=${child.thumbnail ? "lazythumbnail" : ""}
+                            data-src=${ifDefined(child.thumbnail)}
                           >
                             ${!child.thumbnail
                               ? html`
@@ -358,7 +340,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 </mwc-list>
               `
           : html`
-              <div class="container">
+              <div class="container no-items">
                 ${this.hass.localize("ui.components.media-browser.no_items")}
                 <br />
                 ${currentItem.media_content_id ===
@@ -391,51 +373,120 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   protected firstUpdated(): void {
     this._measureCard();
-    this._attachObserver();
+    this._attachResizeObserver();
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size > 1 || !changedProps.has("hass")) {
+      return true;
+    }
+    const oldHass = changedProps.get("hass") as this["hass"];
+    return oldHass === undefined || oldHass.localize !== this.hass.localize;
+  }
+
+  public willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("entityId")) {
+      this._setError(undefined);
+    }
+    if (!changedProps.has("navigateIds")) {
+      return;
+    }
+    const oldNavigateIds = changedProps.get("navigateIds") as
+      | this["navigateIds"]
+      | undefined;
+
+    // We're navigating. Reset the shizzle.
+    this._content?.scrollTo(0, 0);
+    this._scrolled = false;
+    const oldCurrentItem = this._currentItem;
+    const oldParentItem = this._parentItem;
+    this._currentItem = undefined;
+    this._parentItem = undefined;
+    const currentId = this.navigateIds[this.navigateIds.length - 1];
+    const parentId =
+      this.navigateIds.length > 1
+        ? this.navigateIds[this.navigateIds.length - 2]
+        : undefined;
+    let currentProm: Promise<MediaPlayerItem> | undefined;
+    let parentProm: Promise<MediaPlayerItem> | undefined;
+
+    // See if we can take loading shortcuts if navigating to parent or child
+    if (!changedProps.has("entityId")) {
+      if (
+        // Check if we navigated to a child
+        oldNavigateIds &&
+        this.navigateIds.length > oldNavigateIds.length &&
+        oldNavigateIds.every((oldVal, idx) => {
+          const curVal = this.navigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        parentProm = Promise.resolve(oldCurrentItem!);
+      } else if (
+        // Check if we navigated to a parent
+        oldNavigateIds &&
+        this.navigateIds.length < oldNavigateIds.length &&
+        this.navigateIds.every((curVal, idx) => {
+          const oldVal = oldNavigateIds[idx];
+          return (
+            curVal.media_content_id === oldVal.media_content_id &&
+            curVal.media_content_type === oldVal.media_content_type
+          );
+        })
+      ) {
+        currentProm = Promise.resolve(oldParentItem!);
+      }
+    }
+    // Fetch current
+    if (!currentProm) {
+      currentProm = this._fetchData(
+        this.entityId,
+        currentId.media_content_id,
+        currentId.media_content_type
+      );
+    }
+    currentProm.then(
+      (item) => {
+        this._currentItem = item;
+      },
+      (err) => this._setError(err)
+    );
+    // Fetch parent
+    if (!parentProm && parentId !== undefined) {
+      parentProm = this._fetchData(
+        this.entityId,
+        parentId.media_content_id,
+        parentId.media_content_type
+      );
+    }
+    if (parentProm) {
+      parentProm.then((parent) => {
+        this._parentItem = parent;
+      });
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (
-      changedProps.has("_mediaPlayerItems") &&
-      this._mediaPlayerItems.length
-    ) {
-      this._setHeaderHeight();
-    }
-
-    if (
-      changedProps.get("_scrolled") !== undefined &&
-      this._mediaPlayerItems.length
-    ) {
+    if (changedProps.has("_scrolled")) {
       this._animateHeaderHeight();
+    } else if (changedProps.has("_currentItem")) {
+      this._setHeaderHeight();
+      this._attachIntersectionObserver();
     }
+  }
 
-    if (
-      !changedProps.has("entityId") &&
-      !changedProps.has("mediaContentId") &&
-      !changedProps.has("mediaContentType") &&
-      !changedProps.has("action")
-    ) {
-      return;
-    }
-
-    if (changedProps.has("entityId")) {
-      this._error = undefined;
-      this._mediaPlayerItems = [];
-    }
-
-    this._fetchData(this.mediaContentId, this.mediaContentType)
-      .then((itemData) => {
-        if (!itemData) {
-          return;
-        }
-
-        this._mediaPlayerItems = [itemData];
-      })
-      .catch((err) => {
-        this._error = err;
-      });
+  private navigateBack() {
+    fireEvent(this, "media-browsed", {
+      ids: this.navigateIds.slice(0, -1),
+      back: true,
+    });
   }
 
   private async _setHeaderHeight() {
@@ -489,54 +540,19 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
 
-    this._navigate(item);
-  }
-
-  private async _navigate(item: MediaPlayerItem) {
-    this._error = undefined;
-
-    let itemData: MediaPlayerItem;
-
-    try {
-      itemData = await this._fetchData(
-        item.media_content_id,
-        item.media_content_type
-      );
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.components.media-browser.media_browsing_error"
-        ),
-        text: this._renderError(err),
-      });
-      return;
-    }
-
-    this._content?.scrollTo(0, 0);
-    this._scrolled = false;
-    this._mediaPlayerItems = [...this._mediaPlayerItems, itemData];
+    fireEvent(this, "media-browsed", {
+      ids: [...this.navigateIds, item],
+    });
   }
 
   private async _fetchData(
+    entityId: string,
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
-    this._loading = true;
-    let itemData: any;
-    try {
-      itemData =
-        this.entityId !== BROWSER_PLAYER
-          ? await browseMediaPlayer(
-              this.hass,
-              this.entityId,
-              mediaContentId,
-              mediaContentType
-            )
-          : await browseLocalMediaPlayer(this.hass, mediaContentId);
-    } finally {
-      this._loading = false;
-    }
-    return itemData;
+    return entityId !== BROWSER_PLAYER
+      ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
+      : browseLocalMediaPlayer(this.hass, mediaContentId);
   }
 
   private _measureCard(): void {
@@ -553,7 +569,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  private async _attachObserver(): Promise<void> {
+  private async _attachResizeObserver(): Promise<void> {
     if (!this._resizeObserver) {
       await installResizeObserver();
       this._resizeObserver = new ResizeObserver(
@@ -564,8 +580,65 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
+  /**
+   * Load thumbnails for images on demand as they become visible.
+   */
+  private async _attachIntersectionObserver(): Promise<void> {
+    if (!("IntersectionObserver" in window) || !this._thumbnails) {
+      return;
+    }
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
+        async (entries, observer) => {
+          await Promise.all(
+            entries.map(async (entry) => {
+              if (!entry.isIntersecting) {
+                return;
+              }
+              const thumbnailCard = entry.target as HaCard;
+              let thumbnailUrl = thumbnailCard.dataset.src;
+              if (!thumbnailUrl) {
+                return;
+              }
+              if (thumbnailUrl.startsWith("/")) {
+                // Thumbnails served by local API require authentication
+                const signedPath = await getSignedPath(this.hass, thumbnailUrl);
+                thumbnailUrl = signedPath.path;
+              }
+              thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
+              observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
+            })
+          );
+        }
+      );
+    }
+    const observer = this._intersectionObserver!;
+    for (const thumbnailCard of this._thumbnails) {
+      observer.observe(thumbnailCard);
+    }
+  }
+
   private _closeDialogAction(): void {
     fireEvent(this, "close-dialog");
+  }
+
+  private _setError(error: any) {
+    if (!this.dialog) {
+      this._error = error;
+      return;
+    }
+
+    if (!error) {
+      return;
+    }
+
+    this._closeDialogAction();
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.components.media-browser.media_browsing_error"
+      ),
+      text: this._renderError(error),
+    });
   }
 
   private _renderError(err: { message: string; code: string }) {
@@ -623,6 +696,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 16px;
         }
 
+        .no-items {
+          padding-left: 32px;
+        }
+
         .content {
           overflow-y: auto;
           padding-bottom: 20px;
@@ -639,7 +716,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           right: 0;
           left: 0;
           z-index: 5;
-          padding: 20px 24px 10px;
+          padding: 20px 24px 10px 32px;
         }
 
         .header_button {
@@ -738,8 +815,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             minmax(var(--media-browse-item-size, 175px), 0.1fr)
           );
           grid-gap: 16px;
-          padding: 0px 24px;
-          margin: 8px 0px;
+          padding: 8px;
         }
 
         :host([dialog]) .children {

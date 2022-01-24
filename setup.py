@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="home-assistant-frontend",
-    version="20211215.0",
+    version="20220118.0",
     description="The Home Assistant frontend",
     url="https://github.com/home-assistant/frontend",
     author="The Home Assistant Authors",
