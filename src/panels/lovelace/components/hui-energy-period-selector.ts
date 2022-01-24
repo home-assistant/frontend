@@ -103,7 +103,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             : `${formatDateShort(
                 this._startDate,
                 this.hass.locale
-              )} - ${formatDateShort(
+              )} – ${formatDateShort(
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}

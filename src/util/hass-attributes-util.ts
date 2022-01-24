@@ -176,7 +176,7 @@ export function formatAttributeValue(
   value: any
 ): string | TemplateResult {
   if (value === null) {
-    return "-";
+    return "—";
   }
 
   // YAML handling

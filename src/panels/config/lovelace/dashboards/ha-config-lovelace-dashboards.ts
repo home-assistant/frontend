@@ -89,7 +89,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
                     )}${dashboard.filename
-                      ? html` - ${dashboard.filename} `
+                      ? html` – ${dashboard.filename} `
                       : ""}
                   </div>
                 `
@@ -132,8 +132,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
-              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
-              : html` - `,
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
         columns.show_in_sidebar = {
           title: this.hass.localize(
@@ -143,8 +143,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "121px",
           template: (sidebar) =>
             sidebar
-              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
-              : html` - `,
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
       }
 
