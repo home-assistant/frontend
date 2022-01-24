@@ -10,7 +10,7 @@ export class HaTextField extends TextField {
     return html`
       <span
         class="mdc-text-field__icon mdc-text-field__icon--${type}"
-        tabindex="${isTrailingIcon ? 1 : -1}"
+        tabindex=${isTrailingIcon ? 1 : -1}
       >
         <slot name="${type}Icon"></slot>
       </span>
