@@ -756,7 +756,6 @@ export class QuickBar extends LitElement {
 
         .nothing-found {
           padding: 16px 0px;
-          font-size: 16px;
           text-align: center;
         }
       `,
