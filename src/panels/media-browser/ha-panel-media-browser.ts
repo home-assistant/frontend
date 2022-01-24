@@ -38,7 +38,7 @@ class PanelMediaBrowser extends LitElement {
     },
   ];
 
-  @LocalStorage("mediaBrowseEntityId")
+  @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
 
   protected render(): TemplateResult {

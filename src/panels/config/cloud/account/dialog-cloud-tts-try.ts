@@ -31,9 +31,9 @@ export class DialogTryTts extends LitElement {
 
   @query("#message") private _messageInput?: PaperTextareaElement;
 
-  @LocalStorage("cloudTtsTryMessage") private _message!: string;
+  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
 
-  @LocalStorage("cloudTtsTryTarget") private _target!: string;
+  @LocalStorage("cloudTtsTryTarget", false, false) private _target!: string;
 
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
