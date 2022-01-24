@@ -151,7 +151,7 @@ export class QuickBar extends LitElement {
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
             .icon=${true}
-            .iconTrailing=${true}
+            .iconTrailing=${this._search !== undefined}
             @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
             @focus=${this._setFocusFirstListItem}
