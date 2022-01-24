@@ -106,7 +106,7 @@ class BarMediaPlayer extends LitElement {
       this._browserPlayer.stop();
     }
     this._browserPlayer = new BrowserMediaPlayer(this.hass, item, () =>
-      this.requestUpdate()
+      this.requestUpdate("_browserPlayer")
     );
     await this._browserPlayer.initialize();
   }
@@ -265,8 +265,16 @@ class BarMediaPlayer extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this.hass || (!changedProps.has("hass") && !this._browserPlayer)) {
-      return;
+
+    if (this.entityId === BROWSER_PLAYER) {
+      if (!changedProps.has("_browserPlayer")) {
+        return;
+      }
+    } else {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (oldHass && oldHass.states[this.entityId] === this._stateObj) {
+        return;
+      }
     }
 
     const stateObj = this._stateObj;
