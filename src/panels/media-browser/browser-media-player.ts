@@ -1,4 +1,5 @@
 import {
+  BROWSER_PLAYER,
   MediaPlayerEntity,
   MediaPlayerItem,
   SUPPORT_PAUSE,
@@ -68,24 +69,25 @@ export class BrowserMediaPlayer {
 
   public get isPlaying(): boolean {
     return (
-      this.player !== undefined &&
-      !this.player.paused &&
-      !this.player.ended &&
-      this.player.readyState > 2
+      this.player !== undefined && !this.player.paused && !this.player.ended
     );
   }
 
-  toStateObj(): MediaPlayerEntity {
-    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
+  static idleStateObj(): MediaPlayerEntity {
     const now = new Date().toISOString();
-    const base: MediaPlayerEntity = {
+    return {
       state: "idle",
-      entity_id: "media_player.browser",
+      entity_id: BROWSER_PLAYER,
       last_changed: now,
       last_updated: now,
       attributes: {},
       context: { id: "", user_id: null },
     };
+  }
+
+  toStateObj(): MediaPlayerEntity {
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
+    const base = BrowserMediaPlayer.idleStateObj();
     if (!this.player) {
       return base;
     }
@@ -94,7 +96,7 @@ export class BrowserMediaPlayer {
       media_title: this.item.title,
       media_duration: this.player.duration,
       media_position: this.player.currentTime,
-      media_position_updated_at: now,
+      media_position_updated_at: base.last_updated,
       entity_picture: this.item.thumbnail,
       // eslint-disable-next-line no-bitwise
       supported_features: SUPPORT_PLAY | SUPPORT_PAUSE,

@@ -107,71 +107,8 @@ class BarMediaPlayer extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const choosePlayerElement = html`
-      <div
-        class="choose-player ${this.entityId === BROWSER_PLAYER
-          ? "browser"
-          : ""}"
-      >
-        <ha-button-menu corner="BOTTOM_START">
-          ${this.narrow
-            ? html`
-                <ha-icon-button
-                  slot="trigger"
-                  .path=${this._stateObj
-                    ? domainIcon(computeDomain(this.entityId), this._stateObj)
-                    : mdiMonitor}
-                ></ha-icon-button>
-              `
-            : html`
-                <mwc-button
-                  slot="trigger"
-                  .label=${this.narrow
-                    ? ""
-                    : `${
-                        this._stateObj
-                          ? computeStateName(this._stateObj)
-                          : BROWSER_PLAYER
-                      }
-                `}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${this._stateObj
-                      ? domainIcon(computeDomain(this.entityId), this._stateObj)
-                      : mdiMonitor}
-                  ></ha-svg-icon>
-                  <ha-svg-icon
-                    slot="trailingIcon"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
-                </mwc-button>
-              `}
-          <mwc-list-item .player=${BROWSER_PLAYER} @click=${this._selectPlayer}
-            >${this.hass.localize(
-              "ui.components.media-browser.web-browser"
-            )}</mwc-list-item
-          >
-          ${this._mediaPlayerEntities.map(
-            (source) => html`
-              <mwc-list-item
-                ?selected=${source.entity_id === this.entityId}
-                .disabled=${UNAVAILABLE_STATES.includes(source.state)}
-                .player=${source.entity_id}
-                @click=${this._selectPlayer}
-                >${computeStateName(source)}</mwc-list-item
-              >
-            `
-          )}
-        </ha-button-menu>
-      </div>
-    `;
-
+    const isBrowser = this.entityId === BROWSER_PLAYER;
     const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return choosePlayerElement;
-    }
     const controls = !this.narrow
       ? computeMediaControls(stateObj)
       : (stateObj.state === "playing" &&
@@ -205,13 +142,13 @@ class BarMediaPlayer extends LitElement {
     const mediaDuration = formatMediaTime(stateObj!.attributes.media_duration!);
     const mediaTitleClean = cleanupMediaTitle(stateObj.attributes.media_title);
 
+    const mediaArt =
+      stateObj.attributes.entity_picture_local ||
+      stateObj.attributes.entity_picture;
+
     return html`
       <div class="info">
-        ${this._image
-          ? html`<img src=${this.hass.hassUrl(this._image)} />`
-          : stateObj.state === "off" || stateObj.state !== "playing"
-          ? html`<div class="blank-image"></div>`
-          : ""}
+        ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
         <div class="media-info">
           <hui-marquee
             .text=${mediaTitleClean ||
@@ -254,7 +191,58 @@ class BarMediaPlayer extends LitElement {
               </div>
             `}
       </div>
-      ${choosePlayerElement}
+      <div class="choose-player ${isBrowser ? "browser" : ""}">
+        <ha-button-menu corner="BOTTOM_START">
+          ${this.narrow
+            ? html`
+                <ha-icon-button
+                  slot="trigger"
+                  .path=${isBrowser
+                    ? mdiMonitor
+                    : domainIcon(computeDomain(this.entityId), stateObj)}
+                ></ha-icon-button>
+              `
+            : html`
+                <mwc-button
+                  slot="trigger"
+                  .label=${this.narrow
+                    ? ""
+                    : `${computeStateName(stateObj)}
+                `}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${isBrowser
+                      ? mdiMonitor
+                      : domainIcon(computeDomain(this.entityId), stateObj)}
+                  ></ha-svg-icon>
+                  <ha-svg-icon
+                    slot="trailingIcon"
+                    .path=${mdiChevronDown}
+                  ></ha-svg-icon>
+                </mwc-button>
+              `}
+          <mwc-list-item
+            .player=${BROWSER_PLAYER}
+            ?selected=${isBrowser}
+            @click=${this._selectPlayer}
+          >
+            ${this.hass.localize("ui.components.media-browser.web-browser")}
+          </mwc-list-item>
+          ${this._mediaPlayerEntities.map(
+            (source) => html`
+              <mwc-list-item
+                ?selected=${source.entity_id === this.entityId}
+                .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                .player=${source.entity_id}
+                @click=${this._selectPlayer}
+              >
+                ${computeStateName(source)}
+              </mwc-list-item>
+            `
+          )}
+        </ha-button-menu>
+      </div>
     `;
   }
 
@@ -272,7 +260,7 @@ class BarMediaPlayer extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this.hass || !this._stateObj || !changedProps.has("hass")) {
+    if (!this.hass || !changedProps.has("hass")) {
       return;
     }
 
@@ -298,11 +286,14 @@ class BarMediaPlayer extends LitElement {
     }
   }
 
-  private get _stateObj(): MediaPlayerEntity | undefined {
+  private get _stateObj(): MediaPlayerEntity {
     if (this._browserPlayer) {
       return this._browserPlayer.toStateObj();
     }
-    return this.hass!.states[this.entityId] as MediaPlayerEntity;
+    return (
+      (this.hass!.states[this.entityId] as MediaPlayerEntity | undefined) ||
+      BrowserMediaPlayer.idleStateObj()
+    );
   }
 
   private get _showProgressBar() {
@@ -312,10 +303,6 @@ class BarMediaPlayer extends LitElement {
 
     const stateObj = this._stateObj;
 
-    if (!stateObj) {
-      return false;
-    }
-
     return (
       (stateObj.state === "playing" || stateObj.state === "paused") &&
       "media_duration" in stateObj.attributes &&
@@ -323,41 +310,19 @@ class BarMediaPlayer extends LitElement {
     );
   }
 
-  private get _image() {
-    if (!this.hass) {
-      return undefined;
-    }
-
-    const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return undefined;
-    }
-
-    return (
-      stateObj.attributes.entity_picture_local ||
-      stateObj.attributes.entity_picture
+  private get _mediaPlayerEntities() {
+    return Object.values(this.hass!.states).filter(
+      (entity) =>
+        computeStateDomain(entity) === "media_player" &&
+        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
     );
   }
 
-  private get _mediaPlayerEntities() {
-    return Object.values(this.hass!.states).filter((entity) => {
-      if (
-        computeStateDomain(entity) === "media_player" &&
-        supportsFeature(entity, SUPPORT_BROWSE_MEDIA)
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-  }
-
   private _updateProgressBar(): void {
-    if (this._progressBar && this._stateObj?.attributes.media_duration) {
+    if (this._progressBar && this._stateObj.attributes.media_duration) {
       const currentProgress = getCurrentProgress(this._stateObj);
       this._progressBar.progress =
-        currentProgress / this._stateObj!.attributes.media_duration;
+        currentProgress / this._stateObj.attributes.media_duration;
 
       if (this._currentProgress) {
         this._currentProgress.innerHTML = formatMediaTime(currentProgress);
@@ -445,6 +410,10 @@ class BarMediaPlayer extends LitElement {
         padding: 16px;
       }
 
+      .controls {
+        height: 48px;
+      }
+
       .controls-progress {
         flex: 2;
         display: flex;
@@ -478,12 +447,6 @@ class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 100px;
-      }
-
-      .blank-image {
-        height: 100px;
-        width: 100px;
-        background-color: var(--divider-color);
       }
 
       ha-button-menu mwc-button {
@@ -530,6 +493,10 @@ class BarMediaPlayer extends LitElement {
         position: absolute;
         top: -4px;
         left: 0;
+      }
+
+      mwc-list-item[selected] {
+        font-weight: bold;
       }
     `;
   }
