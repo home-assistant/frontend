@@ -91,6 +91,11 @@ class BarMediaPlayer extends LitElement {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
+
+    if (this._browserPlayer) {
+      this._browserPlayer.stop();
+      this._browserPlayer = undefined;
+    }
   }
 
   public async playItem(item: MediaPlayerItem) {
@@ -260,7 +265,7 @@ class BarMediaPlayer extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this.hass || !changedProps.has("hass")) {
+    if (!this.hass || (!changedProps.has("hass") && !this._browserPlayer)) {
       return;
     }
 
@@ -319,14 +324,22 @@ class BarMediaPlayer extends LitElement {
   }
 
   private _updateProgressBar(): void {
-    if (this._progressBar && this._stateObj.attributes.media_duration) {
-      const currentProgress = getCurrentProgress(this._stateObj);
-      this._progressBar.progress =
-        currentProgress / this._stateObj.attributes.media_duration;
+    if (!this._progressBar || !this._currentProgress) {
+      return;
+    }
 
-      if (this._currentProgress) {
-        this._currentProgress.innerHTML = formatMediaTime(currentProgress);
-      }
+    if (!this._stateObj.attributes.media_duration) {
+      this._progressBar.progress = 0;
+      this._currentProgress.innerHTML = "";
+      return;
+    }
+
+    const currentProgress = getCurrentProgress(this._stateObj);
+    this._progressBar.progress =
+      currentProgress / this._stateObj.attributes.media_duration;
+
+    if (this._currentProgress) {
+      this._currentProgress.innerHTML = formatMediaTime(currentProgress);
     }
   }
 
