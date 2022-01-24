@@ -1,9 +1,3 @@
-import { Connection } from "home-assistant-js-websocket";
-import {
-  externalForwardConnectionEvents,
-  externalForwardHaptics,
-} from "./external_events_forwarder";
-
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -42,24 +36,54 @@ interface EMExternalMessageRestart {
   command: "restart";
 }
 
+interface EMExternMessageShowNotifications {
+  id: number;
+  type: "command";
+  command: "notifications/show";
+}
+
+export type EMExternalMessageCommands =
+  | EMExternalMessageRestart
+  | EMExternMessageShowNotifications;
+
 type ExternalMessage =
   | EMMessageResultSuccess
   | EMMessageResultError
-  | EMExternalMessageRestart;
+  | EMExternalMessageCommands;
+
+type ExternalMessageHandler = (msg: EMExternalMessageCommands) => boolean;
+
+export interface ExternalConfig {
+  hasSettingsScreen: boolean;
+  hasSidebar: boolean;
+  canWriteTag: boolean;
+  hasExoPlayer: boolean;
+}
 
 export class ExternalMessaging {
+  public config!: ExternalConfig;
+
   public commands: { [msgId: number]: CommandInFlight } = {};
-
-  public connection?: Connection;
-
-  public cache: Record<string, any> = {};
 
   public msgId = 0;
 
-  public attach() {
-    externalForwardConnectionEvents(this);
-    externalForwardHaptics(this);
+  private _commandHandler?: ExternalMessageHandler;
+
+  public async attach() {
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
+    window.addEventListener("connection-status", (ev) =>
+      this.fireMessage({
+        type: "connection-status",
+        payload: { event: ev.detail },
+      })
+    );
+    this.config = await this.sendMessage<ExternalConfig>({
+      type: "config/get",
+    });
+  }
+
+  public addCommandHandler(handler: ExternalMessageHandler) {
+    this._commandHandler = handler;
   }
 
   /**
@@ -97,36 +121,25 @@ export class ExternalMessaging {
     }
 
     if (msg.type === "command") {
-      if (!this.connection) {
+      if (!this._commandHandler || !this._commandHandler(msg)) {
+        let code: string;
+        let message: string;
+        if (this._commandHandler) {
+          code = "not_ready";
+          message = "Command handler not ready";
+        } else {
+          code = "unknown_command";
+          message = `Unknown command ${msg.command}`;
+        }
         // eslint-disable-next-line no-console
-        console.warn("Received command without having connection set", msg);
+        console.warn(message, msg);
         this.fireMessage({
           id: msg.id,
           type: "result",
           success: false,
           error: {
-            code: "commands_not_init",
-            message: `Commands connection not set`,
-          },
-        });
-      } else if (msg.command === "restart") {
-        this.connection.reconnect(true);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: true,
-          result: null,
-        });
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn("Received unknown command", msg.command, msg);
-        this.fireMessage({
-          id: msg.id,
-          type: "result",
-          success: false,
-          error: {
-            code: "unknown_command",
-            message: `Unknown command ${msg.command}`,
+            code,
+            message,
           },
         });
       }

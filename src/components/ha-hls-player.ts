@@ -9,7 +9,6 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { nextRender } from "../common/util/render-status";
-import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 
@@ -91,18 +90,9 @@ class HaHLSPlayer extends LitElement {
     this._startHls();
   }
 
-  private async _getUseExoPlayer(): Promise<boolean> {
-    if (!this.hass!.auth.external || !this.allowExoPlayer) {
-      return false;
-    }
-    const externalConfig = await getExternalConfig(this.hass!.auth.external);
-    return externalConfig && externalConfig.hasExoPlayer;
-  }
-
   private async _startHls(): Promise<void> {
     this._error = undefined;
 
-    const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
@@ -126,7 +116,8 @@ class HaHLSPlayer extends LitElement {
       return;
     }
 
-    const useExoPlayer = await useExoPlayerPromise;
+    const useExoPlayer =
+      this.allowExoPlayer && this.hass.auth.external?.config.hasExoPlayer;
     const masterPlaylist = await (await masterPlaylistPromise).text();
 
     if (!this.isConnected) {
