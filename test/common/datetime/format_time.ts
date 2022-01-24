@@ -58,7 +58,7 @@ describe("formatTimeWeekday", () => {
 
   it("Formats English times", () => {
     assert.strictEqual(
-      formatTime(dateObj, {
+      formatTimeWeekday(dateObj, {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
@@ -66,7 +66,7 @@ describe("formatTimeWeekday", () => {
       "Wednesday 11:12 PM"
     );
     assert.strictEqual(
-      formatTime(dateObj, {
+      formatTimeWeekday(dateObj, {
         language: "en",
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
