@@ -1,3 +1,4 @@
+import "../../components/ha-textfield";
 import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
@@ -98,7 +99,7 @@ export class QuickBar extends LitElement {
 
   @state() private _hint?: string;
 
-  @query("paper-input", false) private _filterInputField?: HTMLElement;
+  @query("ha-textfield", false) private _filterInputField?: HTMLElement;
 
   private _focusSet = false;
 
@@ -143,28 +144,32 @@ export class QuickBar extends LitElement {
         hideActions
       >
         <div slot="heading" class="heading">
-          <paper-input
+          <ha-textfield
             dialogInitialFocus
-            no-label-float
-            @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize(
+            .placeholder=${this.hass.localize(
+              "ui.dialogs.quick-bar.filter_placeholder"
+            )}
+            aria-label=${this.hass.localize(
               "ui.dialogs.quick-bar.filter_placeholder"
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
+            .icon=${true}
+            .iconTrailing=${this._search !== undefined}
+            @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
             @focus=${this._setFocusFirstListItem}
           >
             ${this._commandMode
               ? html`
                   <ha-svg-icon
-                    slot="prefix"
+                    slot="leadingIcon"
                     class="prefix"
                     .path=${mdiConsoleLine}
                   ></ha-svg-icon>
                 `
               : html`
                   <ha-svg-icon
-                    slot="prefix"
+                    slot="leadingIcon"
                     class="prefix"
                     .path=${mdiMagnify}
                   ></ha-svg-icon>
@@ -172,13 +177,13 @@ export class QuickBar extends LitElement {
             ${this._search &&
             html`
               <ha-icon-button
-                slot="suffix"
+                slot="trailingIcon"
                 @click=${this._clearSearch}
                 .label=${this.hass!.localize("ui.common.clear")}
                 .path=${mdiClose}
               ></ha-icon-button>
             `}
-          </paper-input>
+          </ha-textfield>
           ${this._narrow
             ? html`
                 <mwc-button
@@ -357,7 +362,7 @@ export class QuickBar extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
-    const newFilter = ev.detail.value;
+    const newFilter = (ev.currentTarget as any).value;
     const oldCommandMode = this._commandMode;
     const oldSearch = this._search;
     let newCommandMode: boolean;
@@ -674,7 +679,7 @@ export class QuickBar extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
         }
 
-        .heading paper-input {
+        .heading ha-textfield {
           flex-grow: 1;
         }
 
@@ -699,11 +704,10 @@ export class QuickBar extends LitElement {
         }
 
         ha-svg-icon.prefix {
-          margin: 8px;
           color: var(--primary-text-color);
         }
 
-        paper-input ha-icon-button {
+        ha-textfield ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
         }
