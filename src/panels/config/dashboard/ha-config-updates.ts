@@ -7,7 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
 import { buttonLinkStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-icon-next";
