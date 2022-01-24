@@ -19,7 +19,10 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-button-menu";
 import { CloudStatus } from "../../../data/cloud";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
+import {
+  refreshSupervisorAvailableUpdates,
+  SupervisorAvailableUpdates,
+} from "../../../data/supervisor/root";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import {
   ExternalConfig,
@@ -161,6 +164,7 @@ class HaConfigDashboard extends LitElement {
     switch (ev.detail.index) {
       case 0:
         if (isComponentLoaded(this.hass, "hassio")) {
+          await refreshSupervisorAvailableUpdates(this.hass);
           fireEvent(this, "ha-refresh-supervisor");
           return;
         }
