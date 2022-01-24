@@ -3,15 +3,8 @@ import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -24,10 +17,6 @@ import {
   SupervisorAvailableUpdates,
 } from "../../../data/supervisor/root";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
-import {
-  ExternalConfig,
-  getExternalConfig,
-} from "../../../external_app/external_config";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -53,18 +42,6 @@ class HaConfigDashboard extends LitElement {
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
-
-  @state() private _externalConfig?: ExternalConfig;
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-
-    if (this.hass && this.hass.auth.external) {
-      getExternalConfig(this.hass.auth.external).then((conf) => {
-        this._externalConfig = conf;
-      });
-    }
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -143,7 +120,6 @@ class HaConfigDashboard extends LitElement {
                   <ha-config-navigation
                     .hass=${this.hass}
                     .narrow=${this.narrow}
-                    .externalConfig=${this._externalConfig}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>

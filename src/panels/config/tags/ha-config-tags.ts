@@ -28,7 +28,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { getExternalConfig } from "../../../external_app/external_config";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
@@ -53,14 +52,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   @state() private _tags: Tag[] = [];
 
-  @state() private _canWriteTags = false;
+  private get _canWriteTags() {
+    return this.hass.auth.external?.config.canWriteTag;
+  }
 
   private _columns = memoizeOne(
-    (
-      narrow: boolean,
-      canWriteTags: boolean,
-      _language
-    ): DataTableColumnContainer => {
+    (narrow: boolean, _language): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
@@ -103,7 +100,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           `,
         };
       }
-      if (canWriteTags) {
+      if (this._canWriteTags) {
         columns.write = {
           title: "",
           type: "icon-button",
@@ -152,11 +149,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this._fetchTags();
-    if (this.hass && this.hass.auth.external) {
-      getExternalConfig(this.hass.auth.external).then((conf) => {
-        this._canWriteTags = conf.canWriteTag;
-      });
-    }
   }
 
   protected hassSubscribe() {
@@ -181,11 +173,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.tags}
-        .columns=${this._columns(
-          this.narrow,
-          this._canWriteTags,
-          this.hass.language
-        )}
+        .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         hasFab

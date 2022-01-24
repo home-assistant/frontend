@@ -38,7 +38,7 @@ interface EditSideBarEvent {
 }
 
 @customElement("home-assistant-main")
-class HomeAssistantMain extends LitElement {
+export class HomeAssistantMain extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public route?: Route;
@@ -46,6 +46,8 @@ class HomeAssistantMain extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _sidebarEditMode = false;
+
+  @state() private _externalSidebar = false;
 
   constructor() {
     super();
@@ -56,11 +58,12 @@ class HomeAssistantMain extends LitElement {
 
   protected render(): TemplateResult {
     const hass = this.hass;
-    const sidebarNarrow = this._sidebarNarrow;
+    const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
     const disableSwipe =
       this._sidebarEditMode ||
       !sidebarNarrow ||
-      NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
+      NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1 ||
+      this._externalSidebar;
 
     // Style block in render because of the mixin that is not supported
     return html`
@@ -107,6 +110,14 @@ class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
 
+    if (this.hass.auth.external) {
+      this._externalSidebar =
+        this.hass.auth.external.config.hasSidebar === true;
+      import("../external_app/external_app_entrypoint").then((mod) =>
+        mod.attachExternalToApp(this)
+      );
+    }
+
     this.addEventListener(
       "hass-edit-sidebar",
       (ev: HASSDomEvent<EditSideBarEvent>) => {
@@ -127,6 +138,12 @@ class HomeAssistantMain extends LitElement {
 
     this.addEventListener("hass-toggle-menu", () => {
       if (this._sidebarEditMode) {
+        return;
+      }
+      if (this._externalSidebar) {
+        this.hass.auth.external!.fireMessage({
+          type: "sidebar/show",
+        });
         return;
       }
       if (this._sidebarNarrow) {
