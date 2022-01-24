@@ -673,7 +673,6 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         .heading {
-          padding: 8px 20px 0px;
           display: flex;
           align-items: center;
           --mdc-theme-primary: var(--primary-text-color);
