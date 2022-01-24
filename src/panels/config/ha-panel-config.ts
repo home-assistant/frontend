@@ -32,7 +32,7 @@ import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import {
   fetchSupervisorAvailableUpdates,
   SupervisorAvailableUpdates,
-} from "../../data/supervisor/supervisor";
+} from "../../data/supervisor/root";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -42,6 +42,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
+    "ha-refresh-supervisor": undefined;
   }
 }
 
@@ -446,6 +447,9 @@ class HaPanelConfig extends HassRouterPage {
     }
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorUpdates();
+      this.addEventListener("ha-refresh-supervisor", () => {
+        this._loadSupervisorUpdates();
+      });
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {
           this._loadSupervisorUpdates();

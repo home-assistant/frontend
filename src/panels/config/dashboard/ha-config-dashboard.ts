@@ -1,4 +1,6 @@
-import { mdiCloudLock, mdiMagnify } from "@mdi/js";
+import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -13,9 +15,14 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-button";
+import "../../../components/ha-button-menu";
 import { CloudStatus } from "../../../data/cloud";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import {
+  refreshSupervisorAvailableUpdates,
+  SupervisorAvailableUpdates,
+} from "../../../data/supervisor/root";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import {
   ExternalConfig,
@@ -28,6 +35,8 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -40,6 +49,7 @@ class HaConfigDashboard extends LitElement {
 
   @property() public cloudStatus?: CloudStatus;
 
+  // null means not available
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
@@ -70,6 +80,21 @@ class HaConfigDashboard extends LitElement {
               .path=${mdiMagnify}
               @click=${this._showQuickBar}
             ></ha-icon-button>
+            <ha-button-menu
+              corner="BOTTOM_START"
+              @action=${this._handleMenuAction}
+              activatable
+            >
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+
+              <mwc-list-item>
+                ${this.hass.localize("ui.panel.config.updates.check_updates")}
+              </mwc-list-item>
+            </ha-button-menu>
           </app-toolbar>
         </app-header>
 
@@ -78,9 +103,9 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${isComponentLoaded(this.hass, "hassio") &&
-          this.supervisorUpdates === undefined
-            ? html``
+          ${this.supervisorUpdates === undefined
+            ? // Hide everything until updates loaded
+              html``
             : html`${this.supervisorUpdates?.length
                   ? html`<ha-card>
                       <ha-config-updates
@@ -133,6 +158,27 @@ class HaConfigDashboard extends LitElement {
       commandMode: true,
       hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
     });
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        if (isComponentLoaded(this.hass, "hassio")) {
+          await refreshSupervisorAvailableUpdates(this.hass);
+          fireEvent(this, "ha-refresh-supervisor");
+          return;
+        }
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.updates.check_unavailable.title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.updates.check_unavailable.description"
+          ),
+          warning: true,
+        });
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {
