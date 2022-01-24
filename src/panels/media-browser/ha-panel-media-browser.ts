@@ -16,6 +16,7 @@ import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
 import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
 import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
+import { resolveMediaSource } from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -131,25 +132,28 @@ class PanelMediaBrowser extends LitElement {
     ev: HASSDomEvent<MediaPickedEvent>
   ): Promise<void> {
     const item = ev.detail.item;
-    if (this._entityId === BROWSER_PLAYER) {
-      const resolvedUrl: any = await this.hass.callWS({
-        type: "media_source/resolve_media",
+    if (this._entityId !== BROWSER_PLAYER) {
+      this.hass!.callService("media_player", "play_media", {
+        entity_id: this._entityId,
         media_content_id: item.media_content_id,
+        media_content_type: item.media_content_type,
       });
+    } else if (item.media_content_type.startsWith("audio/")) {
+      await this.shadowRoot!.querySelector("ha-bar-media-player")!.playItem(
+        item
+      );
+    } else {
+      const resolvedUrl: any = await resolveMediaSource(
+        this.hass,
+        item.media_content_id
+      );
 
       showWebBrowserPlayMediaDialog(this, {
         sourceUrl: resolvedUrl.url,
         sourceType: resolvedUrl.mime_type,
         title: item.title,
       });
-      return;
     }
-
-    this.hass!.callService("media_player", "play_media", {
-      entity_id: this._entityId,
-      media_content_id: item.media_content_id,
-      media_content_type: item.media_content_type,
-    });
   }
 
   static get styles(): CSSResultGroup {
