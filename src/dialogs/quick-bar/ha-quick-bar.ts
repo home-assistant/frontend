@@ -146,7 +146,10 @@ export class QuickBar extends LitElement {
         <div slot="heading" class="heading">
           <ha-textfield
             dialogInitialFocus
-            .label=${this.hass.localize(
+            .placeholder=${this.hass.localize(
+              "ui.dialogs.quick-bar.filter_placeholder"
+            )}
+            aria-label=${this.hass.localize(
               "ui.dialogs.quick-bar.filter_placeholder"
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
@@ -676,7 +679,7 @@ export class QuickBar extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
         }
 
-        .heading paper-input {
+        .heading ha-textfield {
           flex-grow: 1;
         }
 
@@ -701,17 +704,12 @@ export class QuickBar extends LitElement {
         }
 
         ha-svg-icon.prefix {
-          margin: 8px;
           color: var(--primary-text-color);
         }
 
-        paper-input ha-icon-button {
+        ha-textfield ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
-        }
-
-        ha-textfield {
-          width: 100%;
         }
 
         .command-category {
