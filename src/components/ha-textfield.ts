@@ -11,7 +11,10 @@ export class HaTextField extends TextField {
     const type = isTrailingIcon ? "trailing" : "leading";
 
     return html`
-      <span class="mdc-text-field__icon mdc-text-field__icon--${type}">
+      <span
+        class="mdc-text-field__icon mdc-text-field__icon--${type}"
+        tabindex="${isTrailingIcon ? 1 : -1}"
+      >
         <slot name="${type}Icon"></slot>
       </span>
     `;
