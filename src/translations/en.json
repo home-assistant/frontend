@@ -10,7 +10,7 @@
     "mailbox": "Mailbox",
     "shopping_list": "Shopping List",
     "developer_tools": "Developer Tools",
-    "media_browser": "Media Browser",
+    "media_browser": "Media",
     "profile": "Profile"
   },
   "state": {
@@ -506,7 +506,7 @@
         "pick-media": "Pick Media",
         "no_items": "No items",
         "choose_player": "Choose Player",
-        "media-player-browser": "Media Player Browser",
+        "media-player-browser": "Media",
         "web-browser": "Web Browser",
         "media_player": "Media Player",
         "audio_not_supported": "Your browser does not support the audio element.",
