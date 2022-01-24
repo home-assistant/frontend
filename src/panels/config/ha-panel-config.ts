@@ -73,7 +73,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/hassio",
       translationKey: "supervisor",
       iconPath: mdiHomeAssistant,
-      iconColor: "#4084CD",
+      iconColor: "#F1C447",
       component: "hassio",
     },
     {
@@ -121,7 +121,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/developer-tools",
       translationKey: "developer_tools",
       iconPath: mdiHammer,
-      iconColor: "#64B5F6",
+      iconColor: "#4084CD",
     },
   ],
   devices: [
