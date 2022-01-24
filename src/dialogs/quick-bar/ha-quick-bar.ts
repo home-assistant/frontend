@@ -198,24 +198,32 @@ export class QuickBar extends LitElement {
               size="small"
               active
             ></ha-circular-progress>`
-          : html`<mwc-list
-              @rangechange=${this._handleRangeChanged}
-              @keydown=${this._handleListItemKeyDown}
-              @selected=${this._handleSelected}
-              style=${styleMap({
-                height: `${Math.min(
-                  items.length * (this._commandMode ? 56 : 72) + 26,
-                  this._done ? 500 : 0
-                )}px`,
-              })}
-            >
-              ${scroll({
-                items,
-                layout: Layout1d,
-                renderItem: (item: QuickBarItem, index) =>
-                  this._renderItem(item, index),
-              })}
-            </mwc-list>`}
+          : items.length === 0
+          ? html`
+              <div class="nothing-found">
+                ${this.hass.localize("ui.dialogs.quick-bar.nothing_found")}
+              </div>
+            `
+          : html`
+              <mwc-list
+                @rangechange=${this._handleRangeChanged}
+                @keydown=${this._handleListItemKeyDown}
+                @selected=${this._handleSelected}
+                style=${styleMap({
+                  height: `${Math.min(
+                    items.length * (this._commandMode ? 56 : 72) + 26,
+                    this._done ? 500 : 0
+                  )}px`,
+                })}
+              >
+                ${scroll({
+                  items,
+                  layout: Layout1d,
+                  renderItem: (item: QuickBarItem, index) =>
+                    this._renderItem(item, index),
+                })}
+              </mwc-list>
+            `}
         ${!this._narrow && this._hint
           ? html`<div class="hint">${this._hint}</div>`
           : ""}
@@ -673,7 +681,6 @@ export class QuickBar extends LitElement {
       haStyleDialog,
       css`
         .heading {
-          padding: 8px 20px 0px;
           display: flex;
           align-items: center;
           --mdc-theme-primary: var(--primary-text-color);
@@ -744,6 +751,12 @@ export class QuickBar extends LitElement {
         .hint {
           padding: 20px;
           font-style: italic;
+          text-align: center;
+        }
+
+        .nothing-found {
+          padding: 16px 0px;
+          font-size: 16px;
           text-align: center;
         }
       `,
