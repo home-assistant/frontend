@@ -274,7 +274,7 @@ class HuiEnergyDistrubutionCard
                           ? formatNumber(lowCarbonEnergy, this.hass.locale, {
                               maximumFractionDigits: 1,
                             })
-                          : "-"}
+                          : "—"}
                         kWh
                       </a>
                       <svg width="80" height="30">

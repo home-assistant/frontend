@@ -67,7 +67,7 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (username) => html` ${username || "-"} `,
+          template: (username) => html`${username || "—"}`,
         },
         group_ids: {
           title: localize("ui.panel.config.users.picker.headers.group"),
