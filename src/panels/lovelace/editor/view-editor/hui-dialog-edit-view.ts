@@ -217,24 +217,20 @@ export class HuiDialogEditView extends LitElement {
         <mwc-button @click=${this.closeDialog} slot="primaryAction"
           >${this.hass!.localize("ui.common.cancel")}</mwc-button
         >
-        ${this._dirty
-          ? html`
-              <mwc-button
-                slot="primaryAction"
-                ?disabled=${!this._config || this._saving}
-                @click=${this._save}
-              >
-                ${this._saving
-                  ? html`<ha-circular-progress
-                      active
-                      size="small"
-                      title="Saving"
-                    ></ha-circular-progress>`
-                  : ""}
-                ${this.hass!.localize("ui.common.save")}</mwc-button
-              >
-            `
-          : ""}
+        <mwc-button
+          slot="primaryAction"
+          ?disabled=${!this._config || this._saving || !this._dirty}
+          @click=${this._save}
+        >
+          ${this._saving
+            ? html`<ha-circular-progress
+                active
+                size="small"
+                title="Saving"
+              ></ha-circular-progress>`
+            : ""}
+          ${this.hass!.localize("ui.common.save")}</mwc-button
+        >
       </ha-dialog>
     `;
   }
