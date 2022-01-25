@@ -4279,7 +4279,7 @@
       "description": "Description",
       "failed_to_restart_name": "Failed to restart {name}",
       "failed_to_update_name": "Failed to update {name}",
-      "learn_more": "Learn more",
+      "learn_more": "[%key:ui::common::learn_more%]",
       "new_version_available": "New version available",
       "newest_version": "Newest Version",
       "refresh": "[%key:ui::common::refresh%]",

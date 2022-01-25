@@ -97,6 +97,14 @@ export class CloudGooglePref extends LitElement {
                         ${this.hass.localize(
                           "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
                         )}
+                        <a
+                          href="https://www.nabucasa.com/config/google_assistant/#local-communication"
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass.localize(
+                            "ui.panel.config.common.learn_more"
+                          )}</a
+                        >
                       </ha-alert>
                     `
                   : ""}
