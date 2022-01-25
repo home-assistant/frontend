@@ -96,7 +96,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .locale=${this.hass.locale}
             .name=${"after"}
             .value=${after?.startsWith("input_datetime.") ? "" : after}
-            enable-second
             @value-changed=${this._valueChanged}
           ></ha-time-input>`}
 
@@ -143,7 +142,6 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .name=${"before"}
             .locale=${this.hass.locale}
             .value=${before?.startsWith("input_datetime.") ? "" : before}
-            enable-second
             @value-changed=${this._valueChanged}
           ></ha-time-input>`}
       ${Object.keys(DAYS).map(
