@@ -5,6 +5,7 @@ import { property, state } from "lit/decorators";
 import "../../../components/ha-icon-button";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
+import { fileDownload } from "../../../util/file_download";
 
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -28,6 +29,9 @@ class ErrorLogCard extends LitElement {
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
                 ${this.hass.localize("ui.panel.config.logs.load_full_log")}
+              </mwc-button>
+              <mwc-button raised @click=${this._downloadLogs}>
+                ${this.hass.localize("ui.panel.config.logs.download_full_log")}
               </mwc-button>
             `}
       </div>
@@ -69,6 +73,15 @@ class ErrorLogCard extends LitElement {
         color: var(--warning-color);
       }
     `;
+  }
+
+  private async _downloadLogs() {
+    fileDownload(
+      `data:text/plain;charset=utf-8,${encodeURIComponent(
+        await fetchErrorLog(this.hass!)
+      )}`,
+      `homeassistant.log`
+    );
   }
 
   private async _refreshErrorLog(): Promise<void> {
