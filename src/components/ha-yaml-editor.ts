@@ -60,6 +60,7 @@ export class HaYamlEditor extends LitElement {
         mode="yaml"
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
+        dir="ltr"
       ></ha-code-editor>
     `;
   }

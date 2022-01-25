@@ -85,6 +85,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         :host([rtl]) .entities th {
           text-align: right;
+          direction: rtl;
         }
 
         .entities tr {
@@ -145,7 +146,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
       <ha-expansion-panel
-        header="Set state"
+        header="[[localize('ui.panel.developer-tools.tabs.states.set_state')]]"
         outlined
         expanded="[[_expanded]]"
         on-expanded-changed="expandedChanged"
@@ -181,6 +182,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="[[_stateAttributes]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
+              dir="ltr"
             ></ha-code-editor>
             <div class="button-row">
               <mwc-button
