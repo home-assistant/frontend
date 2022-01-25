@@ -77,7 +77,7 @@ export const computeLocalize = async (
 
   await loadPolyfillLocales(language);
 
-  // Everytime any of the parameters change, invalidate the strings cache.
+  // Every time any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
 
   return (key, ...args) => {

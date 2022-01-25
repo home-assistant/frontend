@@ -105,6 +105,9 @@
     }
   },
   "ui": {
+    "backup": {
+      "upload_backup": "Upload backup"
+    },
     "card": {
       "alarm_control_panel": {
         "code": "Code",
@@ -4068,7 +4071,8 @@
           "addons": "[%key:supervisor::backup::addons%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
-          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]",
+          "upload_backup": "[%key:supervisor::backup::upload_backup%]"
         }
       },
       "custom": {
@@ -4444,6 +4448,7 @@
       "failed_to_delete": "Failed to delete",
       "could_not_create": "Could not create backup",
       "upload_backup": "Upload backup",
+      "download_backup": "Download backup",
       "create_backup": "Create backup",
       "create": "Create",
       "created": "Created",

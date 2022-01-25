@@ -191,7 +191,7 @@ export class HassioBackups extends LitElement {
           @action=${this._handleAction}
         >
           <ha-icon-button
-            .label=${this.hass.localize("common.menu")}
+            .label=${this.supervisor?.localize("common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>

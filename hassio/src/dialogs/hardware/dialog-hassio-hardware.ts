@@ -39,8 +39,8 @@ class HassioHardwareDialog extends LitElement {
 
   @state() private _filter?: string;
 
-  public showDialog(params: HassioHardwareDialogParams) {
-    this._dialogParams = params;
+  public showDialog(dialogParams: HassioHardwareDialogParams) {
+    this._dialogParams = dialogParams;
   }
 
   public closeDialog() {
@@ -72,7 +72,7 @@ class HassioHardwareDialog extends LitElement {
             ${this._dialogParams.supervisor.localize("dialog.hardware.title")}
           </h2>
           <ha-icon-button
-            .label=${this.hass.localize("common.close")}
+            .label=${this._dialogParams.supervisor.localize("common.close")}
             .path=${mdiClose}
             dialogAction="close"
           ></ha-icon-button>
