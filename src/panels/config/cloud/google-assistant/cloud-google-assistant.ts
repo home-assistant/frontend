@@ -6,6 +6,7 @@ import {
   mdiCloseBox,
   mdiCloseBoxMultiple,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -36,12 +37,17 @@ import {
   updateCloudPref,
 } from "../../../../data/cloud";
 import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
+import {
   fetchCloudGoogleEntities,
   GoogleEntity,
 } from "../../../../data/google_assistant";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -49,7 +55,7 @@ import { showToast } from "../../../../util/toast";
 const DEFAULT_CONFIG_EXPOSE = true;
 
 @customElement("cloud-google-assistant")
-class CloudGoogleAssistant extends LitElement {
+class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus!: CloudStatusLoggedIn;
@@ -58,8 +64,14 @@ class CloudGoogleAssistant extends LitElement {
 
   @state() private _entities?: GoogleEntity[];
 
-  @property()
+  @state()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
+
+  @state()
+  private _entityCategories?: Record<
+    string,
+    EntityRegistryEntry["entity_category"]
+  >;
 
   private _popstateSyncAttached = false;
 
@@ -77,7 +89,7 @@ class CloudGoogleAssistant extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (this._entities === undefined) {
+    if (this._entities === undefined || this._entityCategories === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
@@ -105,10 +117,17 @@ class CloudGoogleAssistant extends LitElement {
         should_expose: null,
       };
       const isExposed = emptyFilter
-        ? this._configIsExposed(entity.entity_id, config)
+        ? this._configIsExposed(
+            entity.entity_id,
+            config,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       const isDomainExposed = emptyFilter
-        ? this._configIsDomainExposed(entity.entity_id)
+        ? this._configIsDomainExposed(
+            entity.entity_id,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -311,15 +330,43 @@ class CloudGoogleAssistant extends LitElement {
     }
   }
 
-  private _configIsDomainExposed(entityId: string) {
+  protected override hassSubscribe(): (
+    | UnsubscribeFunc
+    | Promise<UnsubscribeFunc>
+  )[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        const categories = {};
+
+        for (const entry of entries) {
+          categories[entry.entity_id] = entry.entity_category;
+        }
+
+        this._entityCategories = categories;
+      }),
+    ];
+  }
+
+  private _configIsDomainExposed(
+    entityId: string,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
     const domain = computeDomain(entityId);
     return this.cloudStatus.prefs.google_default_expose
-      ? this.cloudStatus.prefs.google_default_expose.includes(domain)
+      ? !entityCategory &&
+          this.cloudStatus.prefs.google_default_expose.includes(domain)
       : DEFAULT_CONFIG_EXPOSE;
   }
 
-  private _configIsExposed(entityId: string, config: GoogleEntityConfig) {
-    return config.should_expose ?? this._configIsDomainExposed(entityId);
+  private _configIsExposed(
+    entityId: string,
+    config: GoogleEntityConfig,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
+    return (
+      config.should_expose ??
+      this._configIsDomainExposed(entityId, entityCategory)
+    );
   }
 
   private async _fetchData() {
