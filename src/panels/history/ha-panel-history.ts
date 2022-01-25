@@ -210,26 +210,21 @@ class HaPanelHistory extends LitElement {
   }
 
   private _updatePath() {
-    navigate(
-      `/history?${
-        this._entityId
-          ? "&" + createSearchParam({ entity_id: this._entityId })
-          : ""
-      }${
-        this._startDate
-          ? "&" +
-            createSearchParam({ start_date: this._startDate.toISOString() })
-          : ""
-      }${
-        this._endDate
-          ? "&" + createSearchParam({ end_date: this._endDate.toISOString() })
-          : ""
-      }
-      `,
-      {
-        replace: true,
-      }
-    );
+    const params = {};
+
+    if (this._entityId) {
+      params.entity_id = this._entityId;
+    }
+
+    if (this._startDate) {
+      params.start_date = this._startDate.toISOString();
+    }
+
+    if (this._endDate) {
+      params.end_date = this._endDate.toISOString();
+    }
+
+    navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
   static get styles() {
