@@ -2112,7 +2112,9 @@
               "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "enable": "enable",
-              "disable": "disable"
+              "disable": "disable",
+              "not_configured_title": "Alexa is not activated",
+              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app."
             },
             "google": {
               "title": "Google Assistant",

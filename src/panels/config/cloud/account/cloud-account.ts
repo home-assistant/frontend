@@ -1,5 +1,8 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/paper-item/paper-item-body";
+import { mdiDotsVertical } from "@mdi/js";
 import { LitElement, css, html, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
@@ -7,6 +10,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button-menu";
+import "../../../../components/ha-icon-button";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -21,9 +26,10 @@ import "./cloud-google-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 
 @customElement("cloud-account")
-export class CloudAccount extends LitElement {
+export class CloudAccount extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public isWide = false;
@@ -43,6 +49,23 @@ export class CloudAccount extends LitElement {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
+        <ha-button-menu
+          slot="toolbar-icon"
+          corner="BOTTOM_START"
+          @action=${this._handleMenuAction}
+          activatable
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <mwc-list-item>
+            ${this.hass.localize("ui.panel.config.cloud.account.sign_out")}
+          </mwc-list-item>
+        </ha-button-menu>
+
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -115,11 +138,6 @@ export class CloudAccount extends LitElement {
                     )}
                   </mwc-button>
                 </a>
-                <mwc-button @click=${this._handleLogout}
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.account.sign_out"
-                  )}</mwc-button
-                >
               </div>
             </ha-card>
           </ha-config-section>
@@ -200,6 +218,33 @@ export class CloudAccount extends LitElement {
     }
   }
 
+  protected override hassSubscribe() {
+    const googleCheck = () => {
+      if (!this.cloudStatus?.google_registered) {
+        this._fetchSubscriptionInfo();
+      }
+    };
+    return [
+      this.hass.connection.subscribeEvents(() => {
+        if (!this.cloudStatus?.alexa_registered) {
+          this._fetchSubscriptionInfo();
+        }
+      }, "alexa_smart_home"),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_command"
+      ),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_query"
+      ),
+      this.hass.connection.subscribeEvents(
+        googleCheck,
+        "google_assistant_sync"
+      ),
+    ];
+  }
+
   private async _fetchSubscriptionInfo() {
     this._subscription = await fetchCloudSubscriptionInfo(this.hass);
     if (
@@ -211,9 +256,12 @@ export class CloudAccount extends LitElement {
     }
   }
 
-  private async _handleLogout() {
-    await cloudLogout(this.hass);
-    fireEvent(this, "ha-refresh-cloud-status");
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        await cloudLogout(this.hass);
+        fireEvent(this, "ha-refresh-cloud-status");
+    }
   }
 
   _computeRTLDirection(hass) {
@@ -237,7 +285,7 @@ export class CloudAccount extends LitElement {
       }
       .card-actions {
         display: flex;
-        justify-content: space-between;
+        flex-direction: row-reverse;
       }
       .card-actions a {
         text-decoration: none;

@@ -51,6 +51,7 @@ export interface CloudStatusLoggedIn {
   google_registered: boolean;
   google_entities: EntityFilter;
   google_domains: string[];
+  alexa_registered: boolean;
   alexa_entities: EntityFilter;
   prefs: CloudPreferences;
   remote_domain: string | undefined;
