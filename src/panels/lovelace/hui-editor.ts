@@ -15,7 +15,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
-import { computeRTL } from "../../common/util/compute_rtl";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
@@ -92,10 +91,10 @@ class LovelaceFullConfigEditor extends LitElement {
           <ha-code-editor
             mode="yaml"
             autofocus
-            .rtl=${computeRTL(this.hass)}
             .hass=${this.hass}
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
+            dir="ltr"
           >
           </ha-code-editor>
         </div>

@@ -3,6 +3,7 @@ import { until } from "lit/directives/until";
 import checkValidDate from "../common/datetime/check_valid_date";
 import { formatDate } from "../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { formatNumber } from "../common/number/format_number";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
@@ -175,7 +176,7 @@ export function formatAttributeValue(
   value: any
 ): string | TemplateResult {
   if (value === null) {
-    return "-";
+    return "—";
   }
 
   // YAML handling
@@ -188,6 +189,10 @@ export function formatAttributeValue(
     }
     const yaml = jsYamlPromise.then((jsYaml) => jsYaml.dump(value));
     return html`<pre>${until(yaml, "")}</pre>`;
+  }
+
+  if (typeof value === "number") {
+    return formatNumber(value, hass.locale);
   }
 
   if (typeof value === "string") {

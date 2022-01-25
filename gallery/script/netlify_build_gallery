@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_LABEL="Needs design preview"
+TARGET_LABEL="needs design preview"
 
 if [[ "$NETLIFY" != "true" ]]; then
   echo "This script can only be run on Netlify"

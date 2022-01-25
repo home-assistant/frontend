@@ -14,7 +14,7 @@ export interface LoggedError {
 }
 
 export const fetchSystemLog = (hass: HomeAssistant) =>
-  hass.callApi<LoggedError[]>("GET", "error/all");
+  hass.callWS<LoggedError[]>({ type: "system_log/list" });
 
 export const getLoggedErrorIntegration = (item: LoggedError) => {
   // Try to derive from logger name

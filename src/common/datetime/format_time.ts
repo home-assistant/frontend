@@ -43,9 +43,9 @@ export const formatTimeWeekday = (dateObj: Date, locale: FrontendLocaleData) =>
 const formatTimeWeekdayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
+      weekday: "long",
       hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
-      second: "2-digit",
       hour12: useAmPm(locale),
     })
 );

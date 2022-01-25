@@ -7,9 +7,10 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
 import { buttonLinkStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-icon-next";
 
 export const SUPERVISOR_UPDATE_NAMES = {
   core: "Home Assistant Core",
@@ -46,34 +47,33 @@ class HaConfigUpdates extends LitElement {
       </div>
       ${updates.map(
         (update) => html`
-          <paper-icon-item>
-            <span slot="item-icon" class="icon">
-              ${update.update_type === "addon"
-                ? update.icon
-                  ? html`<img src="/api/hassio${update.icon}" />`
-                  : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
-                : html`<ha-logo-svg></ha-logo-svg>`}
-            </span>
-            <paper-item-body two-line>
-              ${update.update_type === "addon"
-                ? update.name
-                : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-              <div secondary>
-                ${this.hass.localize(
-                  "ui.panel.config.updates.version_available",
-                  {
-                    version_available: update.version_latest,
-                  }
-                )}
-              </div>
-            </paper-item-body>
-            <a href="/hassio${update.panel_path}">
-              <mwc-button
-                .label=${this.hass.localize("ui.panel.config.updates.show")}
-              >
-              </mwc-button>
-            </a>
-          </paper-icon-item>
+          <a href="/hassio${update.panel_path}">
+            <paper-icon-item>
+              <span slot="item-icon" class="icon">
+                ${update.update_type === "addon"
+                  ? update.icon
+                    ? html`<img src="/api/hassio${update.icon}" />`
+                    : html`<ha-svg-icon
+                        .path=${mdiPackageVariant}
+                      ></ha-svg-icon>`
+                  : html`<ha-logo-svg></ha-logo-svg>`}
+              </span>
+              <paper-item-body two-line>
+                ${update.update_type === "addon"
+                  ? update.name
+                  : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
+                <div secondary>
+                  ${this.hass.localize(
+                    "ui.panel.config.updates.version_available",
+                    {
+                      version_available: update.version_latest,
+                    }
+                  )}
+                </div>
+              </paper-item-body>
+              ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
+            </paper-icon-item>
+          </a>
         `
       )}
       ${!this._showAll && this.supervisorUpdates.length >= 4
@@ -120,10 +120,10 @@ class HaConfigUpdates extends LitElement {
         ha-logo-svg {
           color: var(--secondary-text-color);
         }
-        button.show-all {
-          color: var(--primary-color);
-          text-decoration: none;
-          margin: 16px;
+        ha-icon-next {
+          color: var(--secondary-text-color);
+          height: 24px;
+          width: 24px;
         }
       `,
     ];

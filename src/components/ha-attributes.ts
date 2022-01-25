@@ -120,7 +120,7 @@ class HaAttributes extends LitElement {
 
   private formatAttribute(attribute: string): string | TemplateResult {
     if (!this.stateObj) {
-      return "-";
+      return "—";
     }
     const value = this.stateObj.attributes[attribute];
     return formatAttributeValue(this.hass, value);

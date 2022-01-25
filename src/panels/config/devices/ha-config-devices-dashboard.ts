@@ -197,7 +197,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         ),
         model: device.model || "<unknown>",
         manufacturer: device.manufacturer || "<unknown>",
-        area: device.area_id ? areaLookup[device.area_id].name : undefined,
+        area: device.area_id ? areaLookup[device.area_id].name : "—",
         integration: device.config_entries.length
           ? device.config_entries
               .filter((entId) => entId in entryLookup)
@@ -207,7 +207,9 @@ export class HaConfigDeviceDashboard extends LitElement {
                   entryLookup[entId].domain
               )
               .join(", ")
-          : "No integration",
+          : this.hass.localize(
+              "ui.panel.config.devices.data_table.no_integration"
+            ),
         battery_entity: [
           this._batteryEntity(device.id, deviceEntityLookup),
           this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -318,7 +320,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                   .batteryChargingStateObj=${batteryCharging}
                 ></ha-battery-icon>
               `
-            : html` - `;
+            : html`—`;
         },
       };
       if (showDisabled) {

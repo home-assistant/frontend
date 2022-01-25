@@ -147,7 +147,7 @@ export class HaStateLabelBadge extends LitElement {
       default:
         return entityState.state === UNKNOWN ||
           entityState.state === UNAVAILABLE
-          ? "-"
+          ? "—"
           : isNumericState(entityState)
           ? formatNumber(entityState.state, this.hass!.locale)
           : computeStateDisplay(

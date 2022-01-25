@@ -61,6 +61,7 @@ class HaPanelDevMqtt extends LitElement {
                 mode="jinja2"
                 .value=${this.payload}
                 @value-changed=${this._handlePayload}
+                dir="ltr"
               ></ha-code-editor>
             </div>
             <div class="card-actions">
