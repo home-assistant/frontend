@@ -73,6 +73,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean }) public dialog = false;
 
   @property({ type: Boolean, attribute: "narrow", reflect: true })
+  // @ts-ignore
   private _narrow = false;
 
   @property() public navigateIds!: MediaPlayerItemId[];
