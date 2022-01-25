@@ -1,9 +1,7 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import "./dialog-hassio-backup-upload";
 
 export interface HassioBackupUploadDialogParams {
-  supervisor?: Supervisor;
   showBackup: (slug: string) => void;
   reloadBackup?: () => Promise<void>;
   onboarding?: boolean;

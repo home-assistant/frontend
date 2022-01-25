@@ -105,6 +105,9 @@
     }
   },
   "ui": {
+    "backup": {
+      "upload_backup": "Upload backup"
+    },
     "card": {
       "alarm_control_panel": {
         "code": "Code",
@@ -4405,7 +4408,7 @@
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
       "could_not_create": "Could not create backup",
-      "upload_backup": "Upload backup",
+      "upload_backup": "[%key:ui::backup::upload_backup%]",
       "download_backup": "Download backup",
       "create_backup": "Create backup",
       "create": "Create",

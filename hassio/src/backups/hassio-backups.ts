@@ -269,7 +269,6 @@ export class HassioBackups extends LitElement {
 
   private _showUploadBackupDialog() {
     showBackupUploadDialog(this, {
-      supervisor: this.supervisor,
       showBackup: (slug: string) =>
         showHassioBackupDialog(this, {
           slug,
