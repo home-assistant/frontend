@@ -351,7 +351,6 @@ export class HuiEntityFilterCardEditor
         .states,
         .card {
           margin-top: 8px;
-          border: 1px solid var(--divider-color);
           padding: 12px;
         }
         @media (max-width: 450px) {
@@ -360,6 +359,9 @@ export class HuiEntityFilterCardEditor
           .card {
             margin: 8px -12px 0;
           }
+        }
+        .card {
+          --entity-picker-display: none;
         }
 
         .state {

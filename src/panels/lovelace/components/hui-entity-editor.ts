@@ -186,6 +186,10 @@ export class HuiEntityEditor extends LitElement {
     return [
       sortableStyles,
       css`
+        :host {
+          display: var(--entity-picker-display);
+        }
+
         .entity {
           display: flex;
           align-items: center;

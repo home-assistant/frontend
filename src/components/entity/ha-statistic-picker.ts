@@ -296,6 +296,10 @@ export class HaStatisticPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: var(--entity-picker-display);
+      }
+
       paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
