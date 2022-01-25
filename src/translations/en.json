@@ -3402,7 +3402,13 @@
             },
             "entity-filter": {
               "name": "Entity Filter",
-              "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
+              "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state.",
+              "filters": "Filters",
+              "card": "Card",
+              "display_states": "States to show",
+              "show_empty": "Show when empty",
+              "state": "state",
+              "delete_state": "Delete state"
             },
             "gauge": {
               "name": "Gauge",

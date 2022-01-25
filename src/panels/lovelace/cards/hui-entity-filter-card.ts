@@ -12,6 +12,11 @@ import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
 
 class EntityFilterCard extends ReactiveElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-entity-filter-card-editor");
+    return document.createElement("hui-entity-filter-card-editor");
+  }
+
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
