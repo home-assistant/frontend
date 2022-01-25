@@ -1,3 +1,4 @@
+import { mdiArrowLeft, mdiPlay } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -8,13 +9,16 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/media-player/ha-media-player-browse";
-import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "../../components/media-player/ha-media-player-browse";
 import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
 import { resolveMediaSource } from "../../data/media_source";
 import "../../layouts/ha-app-layout";
@@ -42,22 +46,47 @@ class PanelMediaBrowser extends LitElement {
   @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
 
+  @query("ha-media-player-browse")
+  private _browseElement?: HaMediaPlayerBrowse;
+
   protected render(): TemplateResult {
+    const currentItem = this._navigateIds[this._navigateIds.length - 1];
+
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
+            ${this._navigateIds.length > 1
+              ? html`
+                  <ha-icon-button
+                    .path=${mdiArrowLeft}
+                    @click=${this._goBack}
+                  ></ha-icon-button>
+                `
+              : html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `}
             <div main-title class="heading">
               <div>
-                ${this.hass.localize(
-                  "ui.components.media-browser.media-player-browser"
-                )}
+                ${!currentItem.title
+                  ? this.hass.localize(
+                      "ui.components.media-browser.media-player-browser"
+                    )
+                  : currentItem.title}
               </div>
             </div>
+
+            ${currentItem.can_play
+              ? html`
+                  <ha-icon-button
+                    @click=${this._play}
+                    .path=${mdiPlay}
+                  ></ha-icon-button>
+                `
+              : ""}
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
@@ -102,27 +131,33 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: undefined,
       },
       ...navigateIdsEncoded.map((navigateId) => {
-        const [media_content_type, media_content_id] =
+        const [media_content_type, media_content_id, title, can_play] =
           decodeURIComponent(navigateId).split(",");
         return {
           media_content_type,
           media_content_id,
+          title,
+          can_play: can_play === "true",
         };
       }),
     ];
   }
 
+  private _goBack() {
+    history.back();
+  }
+
+  private _play() {
+    this._browseElement?.play();
+  }
+
   private _mediaBrowsed(ev) {
-    if (ev.detail.back) {
-      history.back();
-      return;
-    }
     let path = "";
     for (const item of ev.detail.ids.slice(1)) {
       path +=
         "/" +
         encodeURIComponent(
-          `${item.media_content_type},${item.media_content_id}`
+          `${item.media_content_type},${item.media_content_id},${item.title},${item.can_play}`
         );
     }
     navigate(`/media-browser/${this._entityId}${path}`);
@@ -152,6 +187,7 @@ class PanelMediaBrowser extends LitElement {
         sourceUrl: resolvedUrl.url,
         sourceType: resolvedUrl.mime_type,
         title: item.title,
+        can_play: item.can_play,
       });
     }
   }
