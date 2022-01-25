@@ -16,5 +16,6 @@ export const showQuickBar = (
     dialogTag: "ha-quick-bar",
     dialogImport: loadQuickBar,
     dialogParams,
+    addHistory: false,
   });
 };
