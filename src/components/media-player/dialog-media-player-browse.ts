@@ -1,4 +1,4 @@
-import "./../ha-header-bar";
+import "../ha-header-bar";
 import { mdiArrowLeft, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";

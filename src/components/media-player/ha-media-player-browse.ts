@@ -1,4 +1,4 @@
-import "./../ha-card";
+import "../ha-card";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
@@ -45,7 +45,7 @@ import "../ha-button-menu";
 import "../ha-circular-progress";
 import "../ha-icon-button";
 import "../ha-svg-icon";
-import { HaCard } from "./../ha-card";
+import type { HaCard } from "../ha-card";
 import { getSignedPath } from "../../data/auth";
 
 declare global {
@@ -86,6 +86,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   @query(".content") private _content?: HTMLDivElement;
 
   @queryAll(".lazythumbnail") private _thumbnails?: HaCard[];
+
   private _resizeObserver?: ResizeObserver;
 
   // @ts-ignore
