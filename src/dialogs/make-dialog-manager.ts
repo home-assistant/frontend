@@ -26,6 +26,7 @@ interface ShowDialogParams<T> {
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
   dialogParams: T;
+  addHistory?: boolean;
 }
 
 export interface DialogClosedParams {
@@ -124,8 +125,15 @@ export const makeDialogManager = (
   element.addEventListener(
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
-      const { dialogTag, dialogImport, dialogParams } = e.detail;
-      showDialog(element, root, dialogTag, dialogParams, dialogImport);
+      const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
+      showDialog(
+        element,
+        root,
+        dialogTag,
+        dialogParams,
+        dialogImport,
+        addHistory
+      );
     }
   );
 };
