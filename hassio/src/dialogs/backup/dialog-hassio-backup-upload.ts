@@ -53,8 +53,9 @@ export class DialogHassioBackupUpload
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"
-              >${this.hass?.localize("ui.backup.upload_backup") ||
-              "Upload backup"}</span
+              >${this.hass?.localize(
+                "ui.panel.page-onboarding.restore.upload_backup"
+              ) || "Upload backup"}</span
             >
             <ha-icon-button
               .label=${this.hass?.localize("ui.common.close") || "Close"}
