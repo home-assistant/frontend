@@ -57,6 +57,7 @@ export interface CloudStatusLoggedIn {
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
+  http_use_ssl: boolean;
 }
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;

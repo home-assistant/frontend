@@ -86,6 +86,21 @@ export class CloudGooglePref extends LitElement {
                 </ha-alert>
               `
             : html`
+                ${this.cloudStatus.http_use_ssl
+                  ? html`
+                      <ha-alert
+                        alert-type="warning"
+                        .title=${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.http_use_ssl_warning_title"
+                        )}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
+                        )}
+                      </ha-alert>
+                    `
+                  : ""}
+
                 <div class="state-reporting">
                   <h3>
                     ${this.hass.localize(
