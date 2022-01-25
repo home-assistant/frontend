@@ -8,6 +8,7 @@ import type {
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
+import { createCloseHeading } from "../ha-dialog";
 import "./ha-media-player-browse";
 import type { MediaPlayerItemId } from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
@@ -37,9 +38,11 @@ class DialogMediaPlayerBrowse extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._params || !this._navigateIds) {
       return html``;
     }
+
+    const currentItem = this._navigateIds[this._navigateIds.length - 1];
 
     return html`
       <ha-dialog
@@ -48,6 +51,14 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
+        .heading=${createCloseHeading(
+          this.hass,
+          !currentItem.title
+            ? this.hass.localize(
+                "ui.components.media-browser.media-player-browser"
+              )
+            : currentItem.title
+        )}
         @closed=${this.closeDialog}
       >
         <ha-media-player-browse
