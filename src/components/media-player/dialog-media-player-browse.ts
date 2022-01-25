@@ -1,6 +1,9 @@
+import "./../ha-header-bar";
+import { mdiArrowLeft, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -8,7 +11,6 @@ import type {
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
-import { createCloseHeading } from "../ha-dialog";
 import "./ha-media-player-browse";
 import type { MediaPlayerItemId } from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
@@ -51,16 +53,38 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
-        .heading=${createCloseHeading(
-          this.hass,
-          !currentItem.title
-            ? this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )
-            : currentItem.title
-        )}
+        .heading=${true}
         @closed=${this.closeDialog}
       >
+        <div slot="heading">
+          <ha-header-bar>
+            ${this._navigateIds.length > 1
+              ? html`
+                  <ha-icon-button
+                    slot="navigationIcon"
+                    .path=${mdiArrowLeft}
+                    @click=${this._goBack}
+                  ></ha-icon-button>
+                `
+              : ""}
+            <span slot="title">
+              ${!currentItem.title
+                ? this.hass.localize(
+                    "ui.components.media-browser.media-player-browser"
+                  )
+                : currentItem.title}
+            </span>
+
+            <ha-icon-button
+              .label=${this.hass.localize("ui.dialogs.generic.close")}
+              .path=${mdiClose}
+              dialogAction="close"
+              slot="actionItems"
+              class="header_button"
+              dir=${computeRTLDirection(this.hass)}
+            ></ha-icon-button>
+          </ha-header-bar>
+        </div>
         <ha-media-player-browse
           dialog
           .hass=${this.hass}
@@ -73,6 +97,10 @@ class DialogMediaPlayerBrowse extends LitElement {
         ></ha-media-player-browse>
       </ha-dialog>
     `;
+  }
+
+  private _goBack() {
+    this._navigateIds = this._navigateIds?.slice(0, -1);
   }
 
   private _mediaBrowsed(ev) {
@@ -115,6 +143,13 @@ class DialogMediaPlayerBrowse extends LitElement {
             --media-browser-max-height: 100vh - 72px;
             width: 700px;
           }
+        }
+
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
         }
       `,
     ];
