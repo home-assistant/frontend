@@ -77,9 +77,7 @@ class HassioBackupDialog
           <ha-header-bar>
             <span slot="title">${this._backup.name}</span>
             <ha-icon-button
-              .label=${this._dialogParams.supervisor?.localize(
-                "common.close"
-              ) || "Close"}
+              .label=${this.hass?.localize("ui.common.close") || "Close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -116,14 +114,20 @@ class HassioBackupDialog
               @closed=${stopPropagation}
             >
               <ha-icon-button
-                .label=${this._dialogParams.supervisor?.localize(
-                  "common.menu"
-                ) || "Menu"}
+                .label=${this.hass!.localize("ui.common.menu") || "Menu"}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item>Download Backup</mwc-list-item>
-              <mwc-list-item class="error">Delete Backup</mwc-list-item>
+              <mwc-list-item
+                >${this._dialogParams.supervisor?.localize(
+                  "backup.download_backup"
+                )}</mwc-list-item
+              >
+              <mwc-list-item class="error"
+                >${this._dialogParams.supervisor?.localize(
+                  "backup.delete_backup_title"
+                )}</mwc-list-item
+              >
             </ha-button-menu>`
           : ""}
       </ha-dialog>

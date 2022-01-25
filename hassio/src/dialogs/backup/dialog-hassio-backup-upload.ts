@@ -58,9 +58,7 @@ export class DialogHassioBackupUpload
               ) || "Upload backup"}</span
             >
             <ha-icon-button
-              .label=${this._dialogParams.supervisor?.localize(
-                "common.close"
-              ) || "Close"}
+              .label=${this.hass?.localize("ui.common.close") || "Close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
