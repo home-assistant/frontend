@@ -210,7 +210,7 @@ class HaPanelHistory extends LitElement {
   }
 
   private _updatePath() {
-    const params = {};
+    const params: Record<string, string> = {};
 
     if (this._entityId) {
       params.entity_id = this._entityId;

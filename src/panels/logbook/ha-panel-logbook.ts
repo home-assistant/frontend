@@ -1,8 +1,6 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import {
   addDays,
   endOfToday,
@@ -12,8 +10,15 @@ import {
   startOfWeek,
   startOfYesterday,
 } from "date-fns";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { navigate } from "../../common/navigate";
+import {
+  createSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -33,10 +38,6 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import {
-  createSearchParam,
-  extractSearchParam,
-} from "../../common/url/search-params";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -241,7 +242,7 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _updatePath() {
-    const params = {};
+    const params: Record<string, string> = {};
 
     if (this._entityId) {
       params.entity_id = this._entityId;
