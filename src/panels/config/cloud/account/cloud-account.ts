@@ -221,13 +221,13 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   protected override hassSubscribe() {
     const googleCheck = () => {
       if (!this.cloudStatus?.google_registered) {
-        this._fetchSubscriptionInfo();
+        fireEvent(this, "ha-refresh-cloud-status");
       }
     };
     return [
       this.hass.connection.subscribeEvents(() => {
         if (!this.cloudStatus?.alexa_registered) {
-          this._fetchSubscriptionInfo();
+          fireEvent(this, "ha-refresh-cloud-status");
         }
       }, "alexa_smart_home"),
       this.hass.connection.subscribeEvents(
