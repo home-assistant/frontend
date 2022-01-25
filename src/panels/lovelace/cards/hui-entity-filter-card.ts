@@ -8,7 +8,7 @@ import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { EntityFilterCardConfig } from "./types";
 
 class EntityFilterCard extends ReactiveElement implements LovelaceCard {
@@ -62,7 +62,7 @@ class EntityFilterCard extends ReactiveElement implements LovelaceCard {
   }
 
   public setConfig(config: EntityFilterCardConfig): void {
-    if (!config.entities.length || !Array.isArray(config.entities)) {
+    if (!config.entities || !Array.isArray(config.entities)) {
       throw new Error("Entities must be specified");
     }
 
