@@ -23,6 +23,7 @@ import {
 } from "../../../data/area_registry";
 import { AutomationEntity } from "../../../data/automation";
 import {
+  computeDeviceName,
   DeviceRegistryEntry,
   sortDeviceRegistryByName,
 } from "../../../data/device_registry";
@@ -147,7 +148,7 @@ class HaConfigAreaPage extends LitElement {
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
       devices.forEach((entry) => {
-        entry.name = computeEntityRegistryName(this.hass, entry);
+        entry.name = computeDeviceName(entry, this.hass);
       });
       sortDeviceRegistryByName(devices);
     }
@@ -429,21 +430,39 @@ class HaConfigAreaPage extends LitElement {
     let relatedEntities: NameAndEntity<EntityType>[] = [];
 
     if (entries?.length) {
-      groupedEntities = entries.map((entity) => {
-        const entityState = this.hass.states[
-          entity.entity_id
-        ] as unknown as EntityType;
-        return { name: computeStateName(entityState), entity: entityState };
-      });
+      groupedEntities = entries.reduce(
+        (result: NameAndEntity<EntityType>[], entity) => {
+          const entityState = this.hass.states[
+            entity.entity_id
+          ] as unknown as EntityType;
+          if (entityState) {
+            result.push({
+              name: computeStateName(entityState),
+              entity: entityState,
+            });
+          }
+          return result;
+        },
+        []
+      );
       groupedEntities.sort((entry1, entry2) =>
         caseInsensitiveStringCompare(entry1.name!, entry2.name!)
       );
     }
     if (relatedEntityIds?.length) {
-      relatedEntities = relatedEntityIds.map((entity) => {
-        const entityState = this.hass.states[entity] as EntityType;
-        return { name: computeStateName(entityState), entity: entityState };
-      });
+      relatedEntities = relatedEntityIds.reduce(
+        (result: NameAndEntity<EntityType>[], entity) => {
+          const entityState = this.hass.states[entity] as EntityType;
+          if (entityState) {
+            result.push({
+              name: entityState ? computeStateName(entityState) : "",
+              entity: entityState,
+            });
+          }
+          return result;
+        },
+        []
+      );
       relatedEntities.sort((entry1, entry2) =>
         caseInsensitiveStringCompare(entry1.name!, entry2.name!)
       );

@@ -103,5 +103,5 @@ export const subscribeDeviceRegistry = (
 
 export const sortDeviceRegistryByName = (entries: DeviceRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
-    caseInsensitiveStringCompare(entry1.name!, entry2.name!)
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
