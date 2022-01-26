@@ -1,13 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -49,6 +42,8 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    this._generateQR();
   }
 
   public closeDialog(): void {
@@ -168,11 +163,6 @@ class DialogTagDetail
           : ""}
       </ha-dialog>
     `;
-  }
-
-  protected override firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._generateQR();
   }
 
   private _valueChanged(ev: CustomEvent) {
