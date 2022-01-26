@@ -76,8 +76,8 @@ export class HuiLogbookCardEditor
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
           )} (${this.hass.localize(
-      "ui.panel.lovelace.editor.card.config.optional"
-    )})"
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._title}
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
@@ -94,14 +94,15 @@ export class HuiLogbookCardEditor
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.hours_to_show"
             )} (${this.hass.localize(
-      "ui.panel.lovelace.editor.card.config.optional"
-    )})"
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .value=${this._hours_to_show}
             min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
+        <ha-entities-picker
           .label=${`${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.entities"
           )} (${this.hass!.localize(
