@@ -6,9 +6,9 @@ export const computeCardSize = (
 ): number | Promise<number> => {
   if (typeof card.getCardSize === "function") {
     try {
-      return promiseTimeout(500, card.getCardSize() as Promise<number>).catch(
+      return promiseTimeout(500, card.getCardSize()).catch(
         () => 1
-      );
+      ) as Promise<number>;
     } catch (_e: any) {
       return 1;
     }
