@@ -49,6 +49,8 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    this._generateQR();
   }
 
   public closeDialog(): void {
@@ -172,7 +174,6 @@ class DialogTagDetail
 
   protected override firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this._generateQR();
   }
 
   private _valueChanged(ev: CustomEvent) {
