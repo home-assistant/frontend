@@ -184,6 +184,8 @@ export const haStyle = css`
 
   app-toolbar {
     height: var(--header-height);
+    border-bottom: var(--app-header-border-bottom);
+    box-sizing: border-box;
   }
 
   app-header div[sticky] {

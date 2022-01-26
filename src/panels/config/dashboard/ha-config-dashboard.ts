@@ -161,10 +161,6 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
-        app-header {
-          border-bottom: var(--app-header-border-bottom);
-          --header-height: 55px;
-        }
         :host(:not([narrow])) ha-card:last-child {
           margin-bottom: 24px;
         }
