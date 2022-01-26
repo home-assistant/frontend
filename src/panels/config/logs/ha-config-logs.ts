@@ -1,10 +1,4 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
