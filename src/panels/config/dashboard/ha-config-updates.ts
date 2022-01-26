@@ -8,7 +8,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
-import { buttonLinkStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-icon-next";
 
@@ -94,7 +93,6 @@ class HaConfigUpdates extends LitElement {
 
   static get styles(): CSSResultGroup[] {
     return [
-      buttonLinkStyle,
       css`
         .title {
           font-size: 16px;
