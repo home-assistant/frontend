@@ -448,6 +448,7 @@ class BarMediaPlayer extends LitElement {
 
       .controls {
         height: 48px;
+        padding-bottom: 4px;
       }
 
       .controls-progress {
@@ -501,6 +502,7 @@ class BarMediaPlayer extends LitElement {
 
       :host([narrow]) .controls {
         display: flex;
+        padding-bottom: 0;
       }
 
       :host([narrow]) .choose-player {
