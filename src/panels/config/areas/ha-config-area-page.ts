@@ -173,30 +173,29 @@ class HaConfigAreaPage extends LitElement {
     let relatedScripts: NameAndEntity<ScriptEntity>[] = [];
 
     if (isComponentLoaded(this.hass, "automation")) {
-      const data = this._prepareEntities<AutomationEntity>(
+      ({
+        groupedEntities: groupedAutomations,
+        relatedEntities: relatedAutomations,
+      } = this._prepareEntities<AutomationEntity>(
         groupedEntities.automation,
         this._related?.automation
-      );
-      groupedAutomations = data.groupedEntities;
-      relatedAutomations = data.relatedEntities;
+      ));
     }
 
     if (isComponentLoaded(this.hass, "scene")) {
-      const data = this._prepareEntities<SceneEntity>(
-        groupedEntities.scene,
-        this._related?.scene
-      );
-      groupedScenes = data.groupedEntities;
-      relatedScenes = data.relatedEntities;
+      ({ groupedEntities: groupedScenes, relatedEntities: relatedScenes } =
+        this._prepareEntities<SceneEntity>(
+          groupedEntities.scene,
+          this._related?.scene
+        ));
     }
 
     if (isComponentLoaded(this.hass, "script")) {
-      const data = this._prepareEntities<ScriptEntity>(
-        groupedEntities.script,
-        this._related?.script
-      );
-      groupedScripts = data.groupedEntities;
-      relatedScripts = data.relatedEntities;
+      ({ groupedEntities: groupedScripts, relatedEntities: relatedScripts } =
+        this._prepareEntities<ScriptEntity>(
+          groupedEntities.script,
+          this._related?.script
+        ));
     }
 
     return html`
