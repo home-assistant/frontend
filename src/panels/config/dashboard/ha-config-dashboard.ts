@@ -1,25 +1,22 @@
-import { mdiCloudLock } from "@mdi/js";
+import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
+import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-button";
+import "../../../components/ha-button-menu";
 import { CloudStatus } from "../../../data/cloud";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
 import {
-  ExternalConfig,
-  getExternalConfig,
-} from "../../../external_app/external_config";
+  refreshSupervisorAvailableUpdates,
+  SupervisorAvailableUpdates,
+} from "../../../data/supervisor/root";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -27,6 +24,8 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -39,21 +38,10 @@ class HaConfigDashboard extends LitElement {
 
   @property() public cloudStatus?: CloudStatus;
 
+  // null means not available
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
-
-  @state() private _externalConfig?: ExternalConfig;
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-
-    if (this.hass && this.hass.auth.external) {
-      getExternalConfig(this.hass.auth.external).then((conf) => {
-        this._externalConfig = conf;
-      });
-    }
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -65,6 +53,25 @@ class HaConfigDashboard extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.config")}</div>
+            <ha-icon-button
+              .path=${mdiMagnify}
+              @click=${this._showQuickBar}
+            ></ha-icon-button>
+            <ha-button-menu
+              corner="BOTTOM_START"
+              @action=${this._handleMenuAction}
+              activatable
+            >
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+
+              <mwc-list-item>
+                ${this.hass.localize("ui.panel.config.updates.check_updates")}
+              </mwc-list-item>
+            </ha-button-menu>
           </app-toolbar>
         </app-header>
 
@@ -73,9 +80,9 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${isComponentLoaded(this.hass, "hassio") &&
-          this.supervisorUpdates === undefined
-            ? html``
+          ${this.supervisorUpdates === undefined
+            ? // Hide everything until updates loaded
+              html``
             : html`${this.supervisorUpdates?.length
                   ? html`<ha-card>
                       <ha-config-updates
@@ -113,7 +120,6 @@ class HaConfigDashboard extends LitElement {
                   <ha-config-navigation
                     .hass=${this.hass}
                     .narrow=${this.narrow}
-                    .externalConfig=${this._externalConfig}
                     .showAdvanced=${this.showAdvanced}
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
@@ -123,14 +129,38 @@ class HaConfigDashboard extends LitElement {
     `;
   }
 
+  private _showQuickBar(): void {
+    showQuickBar(this, {
+      commandMode: true,
+      hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
+    });
+  }
+
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        if (isComponentLoaded(this.hass, "hassio")) {
+          await refreshSupervisorAvailableUpdates(this.hass);
+          fireEvent(this, "ha-refresh-supervisor");
+          return;
+        }
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.updates.check_unavailable.title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.updates.check_unavailable.description"
+          ),
+          warning: true,
+        });
+        break;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
-        app-header {
-          border-bottom: var(--app-header-border-bottom);
-          --header-height: 55px;
-        }
         :host(:not([narrow])) ha-card:last-child {
           margin-bottom: 24px;
         }

@@ -320,7 +320,11 @@ class HaConfigAreaPage extends LitElement {
                     )}
                   >
                     ${groupedAutomations?.length
-                      ? html`<h3>Assigned to this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.assigned_to_area"
+                            )}:
+                          </h3>
                           ${groupedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
@@ -329,7 +333,11 @@ class HaConfigAreaPage extends LitElement {
                           )}`
                       : ""}
                     ${relatedAutomations?.length
-                      ? html`<h3>Targeting this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.targeting_area"
+                            )}:
+                          </h3>
                           ${relatedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
@@ -359,13 +367,21 @@ class HaConfigAreaPage extends LitElement {
                     )}
                   >
                     ${groupedScenes?.length
-                      ? html`<h3>Assigned to this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.assigned_to_area"
+                            )}:
+                          </h3>
                           ${groupedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
                           )}`
                       : ""}
                     ${relatedScenes?.length
-                      ? html`<h3>Targeting this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.targeting_area"
+                            )}:
+                          </h3>
                           ${relatedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
                           )}`
@@ -390,13 +406,21 @@ class HaConfigAreaPage extends LitElement {
                     )}
                   >
                     ${groupedScripts?.length
-                      ? html`<h3>Assigned to this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.assigned_to_area"
+                            )}:
+                          </h3>
                           ${groupedScripts.map((script) =>
                             this._renderScript(script.name, script.entity)
                           )}`
                       : ""}
                     ${relatedScripts?.length
-                      ? html`<h3>Targeting this area:</h3>
+                      ? html`<h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.areas.targeting_area"
+                            )}:
+                          </h3>
                           ${relatedScripts.map((script) =>
                             this._renderScript(script.name, script.entity)
                           )}`

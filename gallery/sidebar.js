@@ -20,6 +20,7 @@ module.exports = [
       "editor-trigger",
       "editor-condition",
       "editor-action",
+      "selectors",
       "trace",
       "trace-timeline",
     ],
@@ -35,6 +36,10 @@ module.exports = [
   {
     category: "misc",
     header: "Miscelaneous",
+  },
+  {
+    category: "user-test",
+    header: "User Tests",
   },
   {
     category: "design.home-assistant.io",

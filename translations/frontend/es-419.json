@@ -204,6 +204,10 @@
                     "stage": {
                         "description": "Los complementos pueden tener una de tres etapas: \n\n {icon_stable} ** Estable **: estos son complementos listos para usarse en producción. \n\n {icon_experimental} ** Experimental **: estos pueden contener errores y pueden no estar terminados. \n\n {icon_deprecated} ** Obsoleto **: estos complementos ya no recibirán actualizaciones.",
                         "title": "Etapa del complemento"
+                    },
+                    "stages": {
+                        "deprecated": "Obsoleto",
+                        "experimental": "Experimental"
                     }
                 },
                 "changelog": "Registro de cambios",
@@ -274,20 +278,26 @@
             "confirm_password": "Confirmar la contraseña de la instantánea",
             "could_not_create": "No se pudo crear la instantánea",
             "create": "Crear",
+            "create_backup": "Crear copia de seguridad",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está {state}.",
             "created": "Creado",
             "delete_backup_confirm": "borrar",
+            "delete_backup_title": "Eliminar copia de seguridad",
             "delete_selected": "Eliminar instantáneas seleccionadas",
             "enter_password": "Por favor ingrese una contraseña.",
             "failed_to_delete": "No se pudo borrar",
             "folders": "Carpetas",
+            "full_backup": "Copia de seguridad completa",
             "name": "Nombre de la instantánea",
+            "no_backups": "Todavía no tiene ninguna copia de seguridad.",
+            "partial_backup": "Copia de seguridad parcial",
             "password": "Contraseña de instantánea",
             "password_protection": "Protección con contraseña",
             "passwords_not_matching": "Las contraseñas no coinciden",
             "select_type": "Seleccione lo que desea restaurar",
             "selected": "{number} seleccionadas",
-            "type": "Tipo de instantánea"
+            "type": "Tipo de instantánea",
+            "upload_backup": "Cargar copia de seguridad"
         },
         "common": {
             "cancel": "Cancelar",
@@ -340,6 +350,15 @@
             "no_addons": "No hay ningún complemento instalado. ¡Diríjase a la tienda de complementos para comenzar!"
         },
         "dialog": {
+            "datadisk_move": {
+                "description": "Actualmente está utilizando ''{current_path}'' como disco de datos. Mover los discos de datos reiniciará su dispositivo y se estima que tomará {time} minutos. No se podrá acceder a la instalación de Home Assistant durante este período. ¡No desconecte la energía durante la mudanza!",
+                "loading_devices": "Cargando dispositivos",
+                "move": "Mover",
+                "moving": "Mover disco de datos",
+                "moving_desc": "Reiniciando y moviendo el disco de datos. Por favor, tenga paciencia",
+                "no_devices": "No se encontraron dispositivos adjuntos adecuados",
+                "select_device": "Seleccionar nuevo disco de datos"
+            },
             "hardware": {
                 "attributes": "Atributos",
                 "device_path": "Ruta del dispositivo",
@@ -381,13 +400,17 @@
             "repositories": {
                 "add": "Agregar",
                 "remove": "Eliminar",
-                "title": "Administrar repositorios de complementos"
+                "title": "Administrar repositorios de complementos",
+                "used": "El repositorio está en uso para los complementos instalados y no puede ser eliminado."
             },
             "restart_addon": {
                 "confirm_text": "Reiniciar complemento",
                 "text": "¿Desea reiniciar el complemento con sus cambios?"
             },
             "update": {
+                "backup": "Copia de seguridad",
+                "create_backup": "Crea una copia de seguridad de {name} antes de actualizar",
+                "creating_backup": "Creando copia de seguridad de {name}",
                 "updating": "Actualizando {name} a la versión {version}"
             }
         },
@@ -401,6 +424,8 @@
             "not_supported": "Esta redirección no está soportada por su instancia de Home Assistant. Consulte las redirecciones soportadas y la versión en la que fueron introducidas en {link}."
         },
         "panel": {
+            "addons": "Complementos",
+            "backups": "Copias de seguridad",
             "dashboard": "Tablero",
             "store": "Tienda de complementos",
             "system": "Sistema"
@@ -426,6 +451,7 @@
                 "emmc_lifetime_used": "Vida útil de la eMMC utilizada",
                 "failed_to_get_hardware_list": "Fallo al obtener la lista de hardware",
                 "failed_to_import_from_usb": "No se pudo importar desde USB",
+                "failed_to_move": "No se pudo mover el disco de datos",
                 "failed_to_reboot": "Fallo al reiniciar el host",
                 "failed_to_set_hostname": "Error al establecer el nombre de host",
                 "failed_to_shutdown": "Fallo al apagar el host",
@@ -433,6 +459,7 @@
                 "hostname": "Nombre de host",
                 "import_from_usb": "Importar desde USB",
                 "ip_address": "Dirección IP",
+                "move_datadisk": "Mover disco de datos",
                 "new_hostname": "Ingrese un nuevo nombre de host:",
                 "operating_system": "Sistema operativo",
                 "reboot_host": "Reiniciar host",
@@ -478,6 +505,7 @@
                     "apparmor": "AppArmor no está activado en el host",
                     "container": "Contenedores conocidos por causar problemas",
                     "content-trust": "La validación de contenido de confianza está desactivada",
+                    "content_trust": "La validación de contenido de confianza está desactivada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuración de Docker",
                     "docker_version": "Versión de Docker",
@@ -485,13 +513,26 @@
                     "lxc": "LXC",
                     "network_manager": "Administrador de red",
                     "os": "Sistema operativo",
+                    "os_agent": "Agente del sistema operativo",
                     "privileged": "Supervisor no tiene privilegios",
+                    "software": "Se detectó software no compatible",
+                    "source_mods": "Modificaciones de fuente",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Está ejecutando una instalación no soportada",
                 "update_supervisor": "Actualizar Supervisor",
                 "warning": "ADVERTENCIA"
             }
+        },
+        "update_available": {
+            "core_note": "El supervisor volverá a la versión {version} si su instancia no aparece después de la actualización.",
+            "create_backup": "Cree una copia de seguridad antes de actualizar",
+            "creating_backup": "Creando copia de seguridad de {name}",
+            "description": "Tienes {version} instalada. Haga clic en actualizar para actualizar a la versión {newest_version}",
+            "no_update": "No hay actualizaciones disponibles para {name}",
+            "open_release_notes": "Notas de publicación abiertas",
+            "update_name": "Actualizar {name}",
+            "updating": "Actualizando {name} a la versión {version}"
         }
     },
     "ui": {
@@ -510,9 +551,15 @@
                 "code": "Código",
                 "disarm": "Desactivar"
             },
+            "area": {
+                "area_not_found": "Área no encontrada."
+            },
             "automation": {
                 "last_triggered": "Última activación",
                 "trigger": "Ejecutar acciones"
+            },
+            "button": {
+                "press": "Presionar"
             },
             "camera": {
                 "not_available": "Imagen no disponible"
@@ -578,9 +625,15 @@
             "media_player": {
                 "browse_media": "Explorar medios",
                 "media_next_track": "Siguiente",
+                "media_pause": "Pausar",
                 "media_play": "Reproducir",
                 "media_play_pause": "Reproducir/pausa",
                 "media_previous_track": "Anterior",
+                "media_stop": "Detener",
+                "media_volume_down": "Bajar volumen",
+                "media_volume_mute": "Silenciar volumen",
+                "media_volume_unmute": "Activar volumen",
+                "media_volume_up": "Subir el volumen",
                 "sound_mode": "Modo de sonido",
                 "source": "Fuente",
                 "text_to_speak": "Texto a hablar",
@@ -663,6 +716,7 @@
             "and": "y",
             "back": "Atrás",
             "cancel": "Cancelar",
+            "clear": "Limpiar",
             "close": "Cerrar",
             "continue": "Continuar",
             "copied": "Copiado",
@@ -671,9 +725,11 @@
             "disable": "Deshabilitar",
             "enable": "Habilitar",
             "error_required": "Requerido",
+            "help": "Ayuda",
             "leave": "Salir",
             "loading": "Cargando",
             "menu": "Menú",
+            "move": "Mover",
             "next": "Siguiente",
             "no": "No",
             "not_now": "Ahora no",
@@ -685,6 +741,7 @@
             "save": "Guardar",
             "skip": "Omitir",
             "stay": "Permanecer",
+            "submit": "Enviar",
             "successfully_deleted": "Eliminado exitosamente",
             "successfully_saved": "Guardado correctamente",
             "undo": "Deshacer",
@@ -765,6 +822,7 @@
                 },
                 "entity-picker": {
                     "clear": "Limpiar",
+                    "edit": "Editar",
                     "entity": "Entidad",
                     "no_match": "No se encontraron entidades coincidentes",
                     "show_entities": "Mostrar entidades"
@@ -783,7 +841,9 @@
                     "became_unavailable": "dejó de estar disponible",
                     "changed_to_state": "cambiado a {state}",
                     "cleared_device_class": "despejado (no se detecta {device_class})",
+                    "cleared_tampering": "manipulación borrada",
                     "detected_device_class": "detectado {device_class}",
+                    "detected_tampering": "manipulación detectada",
                     "is_closing": "se está cerrando",
                     "is_opening": "se está abriendo",
                     "rose": "salió",
@@ -856,7 +916,15 @@
                 "label": "Imagen",
                 "unsupported_format": "Formato no admitido, elija una imagen JPEG, PNG o GIF."
             },
+            "qr-scanner": {
+                "enter_qr_code": "Ingrese el valor del código QR",
+                "manual_input": "Puede escanear el código QR con otro escáner QR y pegar el código en la entrada de abajo",
+                "not_supported": "Su navegador no admite el escaneo QR.",
+                "only_https_supported": "Sólo se puede utilizar la cámara para escanear un código QR cuando se utiliza HTTPS.",
+                "select_camera": "Seleccionar cámara"
+            },
             "related-filter-menu": {
+                "filter": "Filtrar",
                 "filter_by_area": "Filtrar por área",
                 "filter_by_device": "Filtrar por dispositivo",
                 "filter_by_entity": "Filtrar por entidad",
@@ -931,8 +999,10 @@
                 "add_area_id": "Seleccionar área",
                 "add_device_id": "Seleccionar dispositivo",
                 "add_entity_id": "Seleccionar entidad",
+                "expand": "Expandir",
                 "expand_area_id": "Expanda esta área en los dispositivos y entidades independientes que contiene. Después de expandirse, no actualizará los dispositivos y entidades cuando cambie el área.",
                 "expand_device_id": "Expanda este dispositivo en las entidades independientes que contiene. Después de expandirse, no actualizará las entidades cuando cambie el dispositivo.",
+                "remove": "Eliminar",
                 "remove_area_id": "Eliminar área",
                 "remove_device_id": "Eliminar dispositivo",
                 "remove_entity_id": "Eliminar entidad"
@@ -968,6 +1038,20 @@
                     "change_device_area": "Cambiar el área del dispositivo",
                     "confirm_delete": "¿Está seguro de que desea eliminar esta entrada?",
                     "delete": "Eliminar",
+                    "device_class": "Mostrar como",
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Puerta",
+                            "garage_door": "Puerta de la cochera",
+                            "opening": "Otro",
+                            "window": "Ventana"
+                        },
+                        "cover": {
+                            "door": "Puerta",
+                            "garage": "Puerta de la cochera",
+                            "window": "Ventana"
+                        }
+                    },
                     "device_disabled": "El dispositivo de esta entidad está deshabilitado.",
                     "enabled_cause": "Deshabilitado por {cause}.",
                     "enabled_delay_confirm": "Las entidades habilitadas se agregarán a Home Assistant en {delay} segundos",
@@ -1269,6 +1353,7 @@
                 "key_missing": "Falta la clave obligatoria \" {key} \".",
                 "key_not_expected": "La clave \" {key} \" no se esperaba o no es compatible con el editor visual.",
                 "key_wrong_type": "El valor provisto para \" {key} \" no es compatible con el editor visual. Aceptamos ( {type_correct} ) pero recibimos ( {type_wrong} ).",
+                "no_state_array_support": "Varios valores de estado no son compatibles con el editor visual",
                 "no_template_editor_support": "Plantillas no soportadas en el editor visual",
                 "no_type_provided": "No se ha provisto ningún tipo."
             },
@@ -1310,6 +1395,7 @@
                     "link_profile_page": "tu página de perfil"
                 },
                 "areas": {
+                    "add_picture": "Agregar una imagen",
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
@@ -1321,6 +1407,7 @@
                         "confirmation_title": "¿Está seguro de que desea eliminar esta área?"
                     },
                     "description": "Agrupar dispositivos y entidades en áreas",
+                    "edit_settings": "Configuración de área",
                     "editor": {
                         "area_id": "Identificador del área",
                         "create": "Crear",
@@ -1352,6 +1439,7 @@
                         "header": "Crear una nueva automatización",
                         "how": "¿Cómo desea crear su nueva automatización?",
                         "start_empty": "Comience con una automatización vacía",
+                        "start_empty_description": "Crear una nueva automatización desde cero",
                         "thingtalk": {
                             "create": "Crear",
                             "header": "Describe la automatización que quieres crear",
@@ -1704,6 +1792,12 @@
                             "introduction": "Escriba a continuación lo que debe hacer esta automatización, e intentaremos convertirla en una automatización Home Assistant.",
                             "language_note": "Nota: Solo se admite el inglés por ahora."
                         }
+                    },
+                    "trace": {
+                        "download_trace": "Descargar seguimiento",
+                        "edit_automation": "Editar automatización",
+                        "newer_trace": "Rastro más nuevo",
+                        "older_trace": "Rastro más antiguo"
                     }
                 },
                 "blueprint": {
@@ -1945,7 +2039,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "Tiene cambios sin guardar. ¿Está seguro que quiere salir?"
-                    }
+                    },
+                    "learn_more": "Más información"
                 },
                 "core": {
                     "caption": "General",
@@ -1995,6 +2090,48 @@
                         "include_link": "incluir customize.yaml",
                         "include_sentence": "Parece que tu configuration.yaml no funciona correctamente",
                         "not_applied": "Los cambios realizados aquí están escritos, pero no se aplicarán después de una recarga de configuración a menos que la inclusión esté en su lugar."
+                    }
+                },
+                "dashboard": {
+                    "automations": {
+                        "description": "Gestione automatizaciones, escenas, guiones y ayudantes.",
+                        "title": "Automatizaciones y escenas"
+                    },
+                    "blueprints": {
+                        "description": "Automatizaciones y scripts prediseñados por la comunidad",
+                        "title": "Planos"
+                    },
+                    "companion": {
+                        "description": "Ubicación y notificaciones",
+                        "title": "Aplicación complementaria"
+                    },
+                    "dashboards": {
+                        "description": "Crear conjuntos personalizados de tarjetas para controlar su hogar",
+                        "title": "Paneles"
+                    },
+                    "devices": {
+                        "description": "Integraciones, dispositivos, entidades y áreas",
+                        "title": "Dispositivos y servicios"
+                    },
+                    "energy": {
+                        "description": "Supervise su producción y consumo de energía",
+                        "title": "Energía"
+                    },
+                    "people": {
+                        "description": "Administra las personas y las zonas que rastrea Home Assistant",
+                        "title": "Personas y zonas"
+                    },
+                    "settings": {
+                        "description": "Configuración básica, controles del servidor, registros e información",
+                        "title": "Configuraciones"
+                    },
+                    "supervisor": {
+                        "description": "Cree copias de seguridad, verifique registros o reinicie su sistema",
+                        "title": "Complementos, copias de seguridad y supervisor"
+                    },
+                    "tags": {
+                        "description": "Activar automatizaciones cuando se escanea una etiqueta NFC, un código QR, etc.",
+                        "title": "Etiquetas"
                     }
                 },
                 "devices": {
@@ -2047,20 +2184,26 @@
                         "integration": "Integración",
                         "user": "Usuario"
                     },
+                    "edit_settings": "Editar la configuración",
                     "enabled_cause": "El dispositivo está inhabilitado por {cause} .",
                     "enabled_description": "Los dispositivos deshabilitados no se mostrarán y las entidades que pertenecen al dispositivo se deshabilitarán y no se agregarán a Home Assistant.",
                     "enabled_label": "Habilitar dispositivo",
                     "entities": {
                         "add_entities_lovelace": "Agregar a Lovelace",
+                        "config": "Configuración",
                         "control": "Controles",
+                        "diagnostic": "Diagnóstico",
                         "disabled_entities": "+{count} {count, plural,\n  one {entidad deshabilitada}\n  other {entidades deshabilitadas}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Ocultar deshabilitadas",
                         "none": "Este dispositivo no tiene entidades",
-                        "sensor": "Sensores"
+                        "sensor": "Sensores",
+                        "state": "Estado"
                     },
                     "name": "Nombre",
                     "no_devices": "Sin dispositivos",
+                    "open_configuration_url_device": "Visitar dispositivo",
+                    "open_configuration_url_service": "Servicio de visita",
                     "picker": {
                         "filter": {
                             "filter": "Filtrar",
@@ -2090,11 +2233,29 @@
                     "update_device_error": "Error al actualizar el dispositivo"
                 },
                 "energy": {
+                    "battery": {
+                        "add_battery_system": "Agregar sistema de batería",
+                        "battery_systems": "Sistemas de batería",
+                        "dialog": {
+                            "energy_into_battery": "Energía que ingresa a la batería (kWh)",
+                            "energy_out_of_battery": "Energía que sale de la batería (kWh)",
+                            "header": "Configurar el sistema de batería"
+                        },
+                        "learn_more": "Más información sobre cómo empezar.",
+                        "sub": "Si tiene un sistema de batería, puede configurarlo para monitorear cuánta energía se almacenó y utilizó de su batería.",
+                        "title": "Almacenamiento de baterías en el hogar"
+                    },
                     "caption": "Energía",
+                    "delete_integration": "¿Está seguro de que desea eliminar esta integración? Eliminará las entidades que proporciona",
+                    "delete_source": "¿Está seguro de que desea eliminar esta fuente?",
                     "description": "Controle su producción y consumo de energía",
                     "device_consumption": {
+                        "add_device": "Agregar dispositivo",
                         "add_stat": "Elegir entidad para realizar un seguimiento de la energía",
+                        "devices": "Dispositivos",
                         "dialog": {
+                            "device_consumption_energy": "Energía de consumo del dispositivo (kWh)",
+                            "header": "Agregue un dispositivo",
                             "selected_stat_intro": "Seleccione la entidad que representa el uso de energía del dispositivo."
                         },
                         "learn_more": "Más información sobre cómo empezar.",
@@ -2102,7 +2263,33 @@
                         "sub": "El seguimiento del uso de energía de dispositivos individuales permite a Home Assistant desglosar su uso de energía por dispositivo.",
                         "title": "Dispositivos individuales"
                     },
+                    "gas": {
+                        "add_gas_source": "Agregar fuente de gas",
+                        "dialog": {
+                            "cost_entity": "Utilice una entidad con precio actual",
+                            "cost_entity_input": "Entidad con el precio actual por {unit}",
+                            "cost_number": "Utilice un precio estático",
+                            "cost_number_input": "Precio por {unit}",
+                            "cost_number_suffix": "{currency}/m³",
+                            "cost_para": "Seleccione cómo Home Assistant debe realizar un seguimiento de los costos de la energía consumida.",
+                            "cost_stat": "Utilice una entidad que rastree los costos totales",
+                            "cost_stat_input": "Entidad Costos Totales",
+                            "energy_stat": "Energía consumida (m³)",
+                            "gas_usage": "Uso de gas",
+                            "header": "Configurar el consumo de gas",
+                            "m3_or_kWh": "ft³, m³, Wh, kWh o MWh",
+                            "no_cost": "No realizar un seguimiento de los costos",
+                            "paragraph": "El consumo de gas es el volumen de gas que fluye hacia su hogar."
+                        },
+                        "gas_consumption": "Consumo de gas",
+                        "learn_more": "Más información sobre cómo empezar.",
+                        "sub": "Deje que Home Assistant supervise su consumo de gas.",
+                        "title": "Consumo de gas"
+                    },
                     "grid": {
+                        "add_co2_signal": "Agregar integración de señal de CO2",
+                        "add_consumption": "Agregar consumo",
+                        "add_return": "Añadir retorno",
                         "flow_dialog": {
                             "from": {
                                 "cost_entity": "Utilice una entidad con precio actual",
@@ -2133,17 +2320,88 @@
                                 "paragraph": "La producción de la red es la energía que fluye de sus paneles solares a la red."
                             }
                         },
+                        "grid_carbon_footprint": "Huella de carbono de la red",
+                        "grid_consumption": "Consumo de red",
                         "learn_more": "Más información sobre cómo empezar.",
+                        "return_to_grid": "Devuelto a la red",
                         "sub": "Configure la cantidad de energía que consume de la red y, si produce energía, devuélvala a la red. Esto permite que Home Assistant realice un seguimiento del uso de energía de todo el hogar.",
                         "title": "Red eléctrica"
                     },
+                    "new_device_info": "Después de configurar un nuevo dispositivo, pueden pasar hasta 2 horas para que los nuevos datos lleguen a su panel de energía.",
                     "solar": {
+                        "add_solar_production": "Agregar producción solar",
+                        "dialog": {
+                            "add_forecast": "Agregar pronóstico",
+                            "dont_forecast_production": "No pronostique la producción",
+                            "forecast_production": "Producción pronosticada",
+                            "header": "Configurar paneles solares",
+                            "solar_production_energy": "Energía de producción solar (kWh)",
+                            "solar_production_forecast": "Previsión de producción solar",
+                            "solar_production_forecast_description": "Agregar información de pronóstico de producción solar le permitirá ver rápidamente su producción esperada para hoy."
+                        },
                         "learn_more": "Más información sobre cómo empezar.",
+                        "solar_production": "Producción solar",
                         "stat_predicted_production": "Predicción de su producción de energía solar",
                         "stat_production": "Su producción de energía solar",
                         "stat_return_to_grid": "La energía solar regresa a la red",
                         "sub": "Deje que Home Assistant controle sus paneles solares y le brinde información sobre su rendimiento.",
                         "title": "Paneles solares"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "Las siguientes entidades tienen un estado negativo, mientras que se espera un estado positivo:",
+                                "title": "La entidad tiene un estado negativo"
+                            },
+                            "entity_not_defined": {
+                                "description": "Verifique la integración o su configuración que proporciona:",
+                                "title": "Entidad no definida"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "description": "Las siguientes entidades tienen la clase de estado 'measurement' pero falta 'last_reset':",
+                                "title": "Falta el último reinicio"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "Las siguientes entidades tienen un estado que no se puede analizar como un número:",
+                                "title": "La entidad tiene un estado no numérico"
+                            },
+                            "entity_unavailable": {
+                                "description": "El estado de estas entidades configuradas no está disponible actualmente:",
+                                "title": "Entidad no disponible"
+                            },
+                            "entity_unexpected_device_class": {
+                                "description": "Las siguientes entidades no tienen la clase de dispositivo esperada:",
+                                "title": "Clase de dispositivo inesperada"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "Las siguientes entidades no tienen la clase de estado esperada:",
+                                "title": "Clase de estado inesperada"
+                            },
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "Las siguientes entidades no tienen la clase de estado esperada 'total_increasing'",
+                                "title": "Clase de estado inesperada"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "Las siguientes entidades no tienen las unidades de medida esperadas 'Wh', 'kWh' o 'MWh':",
+                                "title": "Unidad de medida inesperada"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "Las siguientes entidades no tienen las unidades de medida esperadas ''{currency}/kWh'', ''{currency}/Wh'' o ''{currency}/MWh'':",
+                                "title": "Unidad de medida inesperada"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "Las siguientes entidades no tienen las unidades de medida esperadas 'Wh', 'kWh' o 'MWh' para un sensor de energía o 'm³' o 'ft³' para un sensor de gas:",
+                                "title": "Unidad de medida inesperada"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "Las siguientes entidades no tienen las unidades de medida esperadas ' {currency}/kWh'', ''{currency}/Wh'', ''{currency}/MWh '', ''{currency}/m³'' o ''{currency}/ft³'':",
+                                "title": "Unidad de medida inesperada"
+                            },
+                            "recorder_untracked": {
+                                "description": "La grabadora se ha configurado para excluir estas entidades configuradas:",
+                                "title": "Entidad no rastreada"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -2171,6 +2429,7 @@
                         "header": "Entidades",
                         "headers": {
                             "area": "Área",
+                            "disabled_by": "Deshabilitado por",
                             "entity_id": "Identificación de la entidad",
                             "integration": "Integración",
                             "name": "Nombre",
@@ -2229,6 +2488,7 @@
                     "built_using": "Construido usando",
                     "caption": "Información",
                     "copy_github": "Para GitHub",
+                    "copy_menu": "Copiar menú",
                     "copy_raw": "Texto sin formato",
                     "custom_uis": "Interfaces de usuario personalizadas:",
                     "description": "Versión, estado del sistema y enlaces a la documentación",
@@ -2282,6 +2542,7 @@
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
                         "entity_unavailable": "Entidad no disponible",
                         "firmware": "Firmware: {version}",
+                        "hardware": "Hardware: {version}",
                         "hub": "Conectado a través de",
                         "manuf": "por {manufacturer}",
                         "no_area": "Ninguna área",
@@ -2302,7 +2563,9 @@
                             "setup_retry": "Reintentar la instalación"
                         },
                         "system_options": "Opciones de Sistema",
-                        "unnamed_entry": "Entrada sin nombre"
+                        "unknown_via_device": "Dispositivo desconocido",
+                        "unnamed_entry": "Entrada sin nombre",
+                        "via": "Conectado a través de"
                     },
                     "config_flow": {
                         "aborted": "Abortado",
@@ -2371,6 +2634,7 @@
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
+                    "copy": "Copiar entrada de registro",
                     "custom_integration": "integración personalizada",
                     "description": "Ver los registros de Home Assistant",
                     "details": "Detalles del registro ({level})",
@@ -2400,6 +2664,8 @@
                             "yaml": "Archivo YAML"
                         },
                         "confirm_delete": "¿Está seguro de que desea eliminar este tablero?",
+                        "confirm_delete_text": "Su panel de control se eliminará de forma permanente.",
+                        "confirm_delete_title": "¿Eliminar {dashboard_title}?",
                         "default_dashboard": "Este es el tablero predeterminado",
                         "detail": {
                             "create": "Crear",
@@ -2630,6 +2896,7 @@
                     "caption": "Escenas",
                     "description": "Capture estados del dispositivo y recupérelos fácilmente más tarde",
                     "editor": {
+                        "area": "Área",
                         "default_name": "Nueva escena",
                         "devices": {
                             "add": "Agregue un dispositivo",
@@ -2758,6 +3025,7 @@
                             "statistics": "Recargar Entidades estadísticas",
                             "telegram": "Recargar servicios de notificación de Telegram",
                             "template": "Recargar las entidades de plantilla",
+                            "timer": "Temporizadores",
                             "trend": "Recargar Entidades de tendencia",
                             "universal": "Recargar Entidades de reproductores multimedia universales",
                             "zone": "Recargar zonas"
@@ -2810,10 +3078,19 @@
                     "no_tags": "Sin etiquetas",
                     "write": "Escribir"
                 },
+                "updates": {
+                    "more_updates": "+ {count} actualizaciones",
+                    "review": "revisar",
+                    "show": "mostrar",
+                    "show_all_updates": "Mostrar todas las actualizaciones",
+                    "unable_to_fetch": "No se pueden cargar las actualizaciones",
+                    "version_available": "La versión {version_available} está disponible"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Agregar usuario",
                         "create": "Crear",
+                        "local_only": "Solo local",
                         "password": "Contraseña",
                         "password_confirm": "Confirmar contraseña",
                         "password_not_match": "Las contraseñas no coinciden"
@@ -2832,6 +3109,7 @@
                         "delete_user": "Eliminar usuario",
                         "group": "Grupo",
                         "id": "Identificación",
+                        "local_only": "Sólo se puede acceder desde la red local",
                         "name": "Nombre para mostrar",
                         "new_password": "Nueva contraseña",
                         "owner": "Propietario",
@@ -2849,6 +3127,7 @@
                             "group": "Grupo",
                             "is_active": "Activo",
                             "is_owner": "Propietario",
+                            "local": "Solo local",
                             "name": "Nombre para mostrar",
                             "system": "Generado por el sistema",
                             "username": "Nombre de usuario"
@@ -2925,6 +3204,7 @@
                         "create_group": "Zigbee Home Automation - Crear grupo",
                         "create_group_details": "Ingrese los detalles requeridos para crear un nuevo grupo zigbee",
                         "creating_group": "Creando grupo",
+                        "delete": "Eliminar grupo",
                         "group_details": "Aquí están todos los detalles para el grupo Zigbee seleccionado.",
                         "group_id": "Identificación del grupo",
                         "group_info": "Información del grupo",
@@ -2971,6 +3251,7 @@
                     },
                     "edit_home_zone": "El radio de la zona de inicio aún no se puede editar desde la interfaz. Arrastre el marcador en el mapa para mover la zona de inicio.",
                     "edit_home_zone_narrow": "El radio de la zona de inicio aún no se puede editar desde la interfaz. La ubicación se puede cambiar desde la configuración general.",
+                    "edit_zone": "Editar zona",
                     "go_to_core_config": "¿Ir a la configuración general?",
                     "home_zone_core_config": "La ubicación de su zona de inicio se puede editar desde la página de configuración general. El radio de la zona de inicio aún no se puede editar desde la interfaz. ¿Desea ir a la configuración general?",
                     "introduction": "Las zonas le permiten especificar ciertas regiones en el planeta. Cuando una persona está dentro de una zona, el estado tomará el nombre de la zona. Las zonas también se pueden usar como desencadenante o condición dentro de las configuraciones de automatización.",
@@ -2990,6 +3271,10 @@
                         "ozw": {
                             "header": "Migrar a OpenZWave",
                             "introduction": "Este asistente lo ayudará a migrar de la integración heredada de Z-Wave a la integración de OpenZWave que se encuentra actualmente en versión beta."
+                        },
+                        "zwave_js": {
+                            "header": "Migrar a Z-Wave JS",
+                            "introduction": "Esta integración ya no se mantiene y le recomendamos que cambie a la nueva integración de Z-Wave JS. Este asistente lo ayudará a migrar de la integración heredada de Z-Wave a la nueva integración de Z-Wave JS."
                         }
                     },
                     "network_management": {
@@ -3069,14 +3354,40 @@
                 "zwave_js": {
                     "add_node": {
                         "cancel_inclusion": "Cancelar inclusión",
+                        "check_logs": "Consulte los registros para obtener más información.",
+                        "choose_inclusion_strategy": "¿Cómo quiere agregar su dispositivo?",
                         "controller_in_inclusion_mode": "Su controlador Z-Wave ahora está en modo de inclusión.",
+                        "enter_qr_code": "Ingrese el valor del código QR",
                         "follow_device_instructions": "Siga las instrucciones que vienen con su dispositivo para activar el emparejamiento del mismo.",
                         "inclusion_failed": "No se pudo agregar el nodo. Consulte los registros para obtener más información.",
                         "inclusion_finished": "Se ha agregado el nodo.",
                         "interview_failed": "La entrevista del dispositivo falló. Puede haber información adicional disponible en los registros.",
                         "interview_started": "El dispositivo está siendo entrevistado. Esto puede tomar algo de tiempo.",
                         "introduction": "Este asistente lo guiará para agregar un nodo a su red Z-Wave.",
+                        "provisioning_finished": "Se ha agregado el dispositivo. Una vez que lo encienda, estará disponible.",
+                        "qr_code": "Código QR",
+                        "qr_code_paragraph": "Si su dispositivo es compatible con SmartStart, puede escanear el código QR para facilitar el emparejamiento.",
+                        "scan_qr_code": "Escanear código QR",
+                        "searching_device": "Buscando dispositivo",
                         "secure_inclusion_warning": "Los dispositivos seguros requieren ancho de banda adicional; demasiados dispositivos seguros pueden ralentizar su red Z-Wave. Recomendamos usar solo la inclusión segura para dispositivos que lo requieran, como cerraduras o abrepuertas de garaje.",
+                        "security_classes": {
+                            "S0_Legacy": {
+                                "description": "Ejemplo: cerraduras de puerta heredadas sin soporte S2"
+                            },
+                            "S2_AccessControl": {
+                                "description": "Ejemplo: cerraduras de puertas y puertas de cochera",
+                                "title": "Control de acceso S2"
+                            },
+                            "S2_Authenticated": {
+                                "description": "Ejemplo: iluminación, sensores y sistemas de seguridad",
+                                "title": "S2 autenticado"
+                            },
+                            "S2_Unauthenticated": {
+                                "description": "Como S2 autenticado, pero sin verificación de que se incluye el dispositivo correcto",
+                                "title": "S2 sin autenticar"
+                            }
+                        },
+                        "select_camera": "Seleccionar cámara",
                         "start_inclusion": "Iniciar inclusión",
                         "start_secure_inclusion": "Iniciar Inclusión Segura",
                         "title": "Agregar un nodo Z-Wave",
@@ -3085,6 +3396,7 @@
                     },
                     "common": {
                         "add_node": "Agregar nodo",
+                        "back": "Atrás",
                         "close": "Cerrar",
                         "heal_network": "Red de curación",
                         "home_id": "ID de Hogar",
@@ -3095,6 +3407,7 @@
                         "source": "Fuente"
                     },
                     "dashboard": {
+                        "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "driver_version": "Versión del controlador",
                         "dump_dead_nodes_text": "Algunos de sus nodos no respondieron y se supone que están muertos. Estos no se exportarán por completo.",
                         "dump_dead_nodes_title": "Algunos de sus nodos están muertos",
@@ -3106,18 +3419,24 @@
                         "home_id": "ID de Hogar",
                         "introduction": "Administre su red Z-Wave y los nodos Z-Wave",
                         "nodes_ready": "Nodos listos",
+                        "not_ready": "{count} no está listo",
+                        "provisioned_devices": "Dispositivos aprovisionados",
+                        "server_url": "URL del servidor",
                         "server_version": "Versión del servidor"
                     },
                     "device_info": {
                         "device_config": "Configurar dispositivo",
                         "heal_node": "Nodo de curación",
                         "highest_security": "Seguridad máxima",
+                        "is_secure": "Seguro",
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del nodo",
                         "reinterview_device": "Dispositivo de reentrevista",
                         "remove_failed": "Quitar dispositivo fallido",
+                        "unknown": "Desconocido",
                         "zwave_info": "Información de Z-Wave",
-                        "zwave_plus": "Z-Wave Plus"
+                        "zwave_plus": "Z-Wave Plus",
+                        "zwave_plus_version": "Versión {version}"
                     },
                     "heal_network": {
                         "healing_cancelled": "Se canceló la recuperación de la red.",
@@ -3143,6 +3462,7 @@
                         "traffic_warning": "El proceso de recuperación genera una gran cantidad de tráfico en la red Z-Wave. Esto puede hacer que los dispositivos respondan lentamente (o no respondan en absoluto) mientras la curación está en curso."
                     },
                     "logs": {
+                        "download_logs": "Descargar registros",
                         "log_level": "Nivel de registro",
                         "log_level_changed": "El nivel de registro cambió a: {level}",
                         "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS …",
@@ -3177,6 +3497,15 @@
                         "dead": "Muerto",
                         "unknown": "Desconocido"
                     },
+                    "provisioned": {
+                        "confirm_unprovision_text": "Si anula el aprovisionamiento del dispositivo, no se agregará a Home Assistant cuando esté encendido. Si ya está agregado a Home Assistant, al quitar el dispositivo aprovisionado no se eliminará de Home Assistant.",
+                        "confirm_unprovision_title": "¿Está seguro de que desea desaprovisionar el dispositivo?",
+                        "dsk": "DSK",
+                        "included": "Incluido",
+                        "not_included": "No incluido",
+                        "security_classes": "Clases de seguridad",
+                        "unprovison": "Desaprovisionamiento"
+                    },
                     "reinterview_node": {
                         "battery_device_warning": "Deberá reactivar los dispositivos que funcionan con baterías antes de comenzar la reentrevista. Consulte el manual de su dispositivo para obtener instrucciones sobre cómo reactivar el dispositivo.",
                         "in_progress": "El dispositivo está siendo entrevistado. Esto puede tomar algo de tiempo.",
@@ -3208,6 +3537,21 @@
                     "security_classes": {
                         "None": {
                             "title": "Ninguno"
+                        },
+                        "S0_Legacy": {
+                            "description": "Ejemplo: cerraduras de puerta heredadas sin soporte S2"
+                        },
+                        "S2_AccessControl": {
+                            "description": "Ejemplo: cerraduras de puertas y puertas de cochera",
+                            "title": "Control de acceso S2"
+                        },
+                        "S2_Authenticated": {
+                            "description": "Ejemplo: iluminación, sensores y sistemas de seguridad",
+                            "title": "S2 autenticado"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "Como S2 autenticado, pero sin verificación de que se incluye el dispositivo correcto",
+                            "title": "S2 sin autenticar"
                         }
                     }
                 }
@@ -3275,9 +3619,28 @@
                         "title": "Estados"
                     },
                     "statistics": {
+                        "entity": "Entidad",
+                        "fix_issue": {
+                            "fix": "Solucionar problema",
+                            "units_changed": {
+                                "clear": "Eliminar todos los datos estadísticos antiguos de esta entidad",
+                                "fix": "Solucionar problema",
+                                "title": "La unidad de esta entidad cambió",
+                                "update": "Actualice los valores de las estadísticas históricas de ''{metadata_unit}'' a ''{state_unit}''"
+                            }
+                        },
                         "issues": {
-                            "no_state": "No hay estado disponible para esta entidad"
-                        }
+                            "entity_no_longer_recorded": "Esta entidad ya no se está registrando.",
+                            "entity_not_recorded": "Esta entidad está excluida de ser registrada.",
+                            "no_state": "No hay estado disponible para esta entidad",
+                            "units_changed": "La unidad de esta entidad cambió de ''{metadata_unit}'' a ''{state_unit}''.",
+                            "unsupported_state_class": "La clase de estado ''{state_class '' de esta entidad no es compatible.",
+                            "unsupported_unit": "La unidad (''{state_unit}'') de esta entidad no coincide con una unidad de la clase de dispositivo ''{device_class}''.",
+                            "unsupported_unit_metadata": "La unidad (''{metadata_unit}'') de las estadísticas registradas no coincide con la unidad admitida ''{supported_unit}'' de la clase de dispositivo ''{device_class}''.",
+                            "unsupported_unit_state": "La unidad (''{state_unit}'') de esta entidad no coincide con una unidad de la clase de dispositivo ''{device_class}''."
+                        },
+                        "no_issue": "Sin problema",
+                        "title": "Estadísticas"
                     },
                     "templates": {
                         "all_listeners": "Esta plantilla escucha todos los eventos de cambio de estado.",
@@ -3298,6 +3661,14 @@
                 }
             },
             "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "Supervisar dispositivos individuales",
+                    "energy_distribution_title": "Distribución de energía",
+                    "energy_gas_graph_title": "Consumo de gas",
+                    "energy_solar_graph_title": "Producción solar",
+                    "energy_sources_table_title": "Fuentes",
+                    "energy_usage_graph_title": "Uso de energía"
+                },
                 "charts": {
                     "by_device": "Consumo por dispositivo",
                     "solar": "Solar",
@@ -3330,8 +3701,71 @@
                         "no_devices": "Esta página le permite controlar sus dispositivos, sin embargo, parece que aún no tiene dispositivos configurados. Dirígete a la página de integraciones para empezar.",
                         "title": "Bienvenido a casa"
                     },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Esta tarjeta indica cuánta energía consumida por su hogar se generó utilizando combustibles no fósiles como la energía solar, eólica y nuclear. ¡Cuanto más alto, mejor!",
+                            "non_fossil_energy_consumed": "Energía no fósil consumida",
+                            "non_fossil_energy_not_calculated": "No se pudo calcular la energía no fósil consumida"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Uso de energía"
+                        },
+                        "energy_distribution": {
+                            "battery": "Batería",
+                            "gas": "Gas",
+                            "go_to_energy_dashboard": "Ir al panel de energía",
+                            "grid": "Red",
+                            "home": "Casa",
+                            "non_fossil": "No fósil",
+                            "solar": "Solar",
+                            "title_today": "Distribución de energía hoy"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Pronóstico {name}",
+                            "production": "Producción {name}"
+                        },
+                        "energy_sources_table": {
+                            "battery_total": "Total de la batería",
+                            "cost": "Costo",
+                            "energy": "Energía",
+                            "grid_total": "Total de la red",
+                            "source": "Fuente",
+                            "total_costs": "Costos totales"
+                        },
+                        "energy_usage_graph": {
+                            "combined_from_grid": "Combinado desde la red",
+                            "consumed_battery": "Batería consumida",
+                            "consumed_solar": "Energía solar consumida",
+                            "total_consumed": "{num} kWh consumidos totales",
+                            "total_returned": "Total devuelto {num} kWh"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "Si la aguja está en púrpura, devolvió más energía a la red de la que consumió. Si está en azul, consumió más energía de la red de la que devolvió.",
+                            "energy_dependency": "Esta tarjeta indica su uso neto de energía.",
+                            "grid_neutrality_not_calculated": "No se pudo calcular la neutralidad de la red",
+                            "net_consumed_grid": "Consumo neto de la red",
+                            "net_returned_grid": "Neto devuelto a la red",
+                            "red_green_color_explain": "Si es verde, significa que produjo más energía de la que consumió de la red. Si está en rojo, significa que dependió de la red para parte del consumo de energía de su hogar."
+                        },
+                        "loading": "Cargando...",
+                        "no_data": "No hay datos para mostrar. Pueden pasar hasta 2 horas para que lleguen nuevos datos después de configurar su panel de energía.",
+                        "no_data_period": "No hay datos para este período.",
+                        "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Esta tarjeta indica cuánta energía solar producida fue utilizada por su hogar en lugar de devolverla a la red.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Si este número suele ser muy bajo, lo que indica un exceso de producción solar, es posible que desee considerar cargar una batería doméstica o un automóvil eléctrico con sus paneles solares en momentos de alta producción solar.",
+                            "not_produced_solar_energy": "No has producido ninguna energía solar.",
+                            "self_consumed_solar_could_not_calc": "No se pudo calcular la energía solar autoconsumida",
+                            "self_consumed_solar_energy": "Energía solar autoconsumida"
+                        }
+                    },
                     "entities": {
                         "never_triggered": "Nunca activado"
+                    },
+                    "iframe": {
+                        "error_secure_context": "No se pueden cargar iframes que apuntan a sitios web que usan {target_protocol} si Home Assistant se ejecuta a través de {context_protocol} ."
+                    },
+                    "map": {
+                        "reset_focus": "Restablecer el enfoque"
                     },
                     "picture-elements": {
                         "call_service": "Servicio de llamadas {name}",
@@ -3353,6 +3787,7 @@
                         "drag_and_drop": "Arrastrar y soltar",
                         "reorder_items": "Reordenar elementos"
                     },
+                    "show_more_info": "Mostrar más información",
                     "starting": {
                         "description": "Home Assistant está iniciando, por favor espere …"
                     }
@@ -3361,6 +3796,15 @@
                     "message": "Se actualizó la configuración de la interfaz de usuario de Lovelace para este panel. ¿Actualizar para ver cambios?"
                 },
                 "components": {
+                    "energy_period_selector": {
+                        "day": "Día",
+                        "month": "Mes",
+                        "next": "Siguiente",
+                        "previous": "Anterior",
+                        "today": "Hoy",
+                        "week": "Semana",
+                        "year": "Año"
+                    },
                     "timestamp-display": {
                         "invalid": "Marca de tiempo no válida",
                         "invalid_format": "Formato de visualización no válido"
@@ -3385,6 +3829,11 @@
                             "available_states": "Estados disponibles",
                             "description": "La tarjeta del panel de alarma le permite Activar y Desactivar las integraciones de su panel de control de alarma.",
                             "name": "Panel de alarma"
+                        },
+                        "area": {
+                            "description": "La tarjeta Área muestra automáticamente las entidades de un área específica.",
+                            "name": "Área",
+                            "show_camera": "Mostrar la imagen de la cámara en lugar de la imagen del área"
                         },
                         "button": {
                             "default_action_help": "La acción predeterminada depende de las capacidades de la entidad, se alternará o se mostrará el cuadro de diálogo de más información.",
@@ -3600,7 +4049,10 @@
                         "weather-forecast": {
                             "description": "La tarjeta de Pronóstico del tiempo muestra el clima. Muy útil para incluir en las interfaces que las personas muestran en la pared.",
                             "name": "Pronóstico del tiempo",
-                            "show_forecast": "Mostrar pronóstico"
+                            "show_both": "Mostrar el tiempo y el pronóstico actuales",
+                            "show_forecast": "Mostrar pronóstico",
+                            "show_only_current": "Mostrar solo el tiempo actual",
+                            "show_only_forecast": "Mostrar solo pronóstico"
                         }
                     },
                     "cardpicker": {
@@ -3618,7 +4070,8 @@
                         "none": "Ninguno"
                     },
                     "edit_badges": {
-                        "panel_mode": "Estas insignias no se mostrarán porque esta vista está en \"Modo Panel\"."
+                        "panel_mode": "Estas insignias no se mostrarán porque esta vista está en \"Modo Panel\".",
+                        "view_no_badges": "Las insignias no son compatibles con el tipo de vista actual."
                     },
                     "edit_card": {
                         "add": "Agregar tarjeta",
@@ -3631,6 +4084,8 @@
                         "move": "Mover a la vista",
                         "move_after": "Mover tarjeta después de",
                         "move_before": "Mover tarjeta antes de",
+                        "move_down": "Mover la tarjeta hacia abajo",
+                        "move_up": "Mover tarjeta hacia arriba",
                         "options": "Mas opciones",
                         "pick_card": "¿Qué tarjeta desea agregar?",
                         "pick_card_view_title": "¿Qué tarjeta le gustaría agregar a su vista de {name} ?",
@@ -3730,7 +4185,8 @@
                     },
                     "select_view": {
                         "dashboard_label": "Tablero",
-                        "header": "Elija una vista"
+                        "header": "Elija una vista",
+                        "views_label": "Vista"
                     },
                     "sub-element-editor": {
                         "types": {
@@ -3793,6 +4249,9 @@
                 "delete_prompt": "¿Eliminar este mensaje?",
                 "empty": "No tienes ningún mensaje",
                 "playback_title": "Reproducción de mensajes"
+            },
+            "map": {
+                "edit_zones": "Editar zonas"
             },
             "my": {
                 "component_not_loaded": "Esta redirección no es compatible con su instancia de Home Assistant. Necesita la integración {integration} para usar este redireccionamiento.",
@@ -3900,7 +4359,8 @@
                 "initializing": "Inicializando",
                 "logging_in_to_with": "Iniciando sesión en **{locationName}** con **{authProviderName}**.",
                 "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
-                "pick_auth_provider": "O inicia sesión con"
+                "pick_auth_provider": "O inicia sesión con",
+                "store_token": "Mantenerme conectado"
             },
             "page-demo": {
                 "cards": {
@@ -3972,8 +4432,10 @@
                     "confirm_password": "Confirmar la contraseña de la instantánea",
                     "description": "También se puede restaurar desde una instantánea anterior.",
                     "folders": "Carpetas",
+                    "full_backup": "Copia de seguridad completa",
                     "hide_log": "Ocultar registro completo",
                     "in_progress": "Restauración en progreso",
+                    "partial_backup": "Copia de seguridad parcial",
                     "password": "Contraseña de instantánea",
                     "password_protection": "Protección con contraseña",
                     "select_type": "Seleccione lo que desea restaurar",
@@ -4020,6 +4482,7 @@
                     "header": "Cambiar el orden y ocultar elementos de la barra lateral"
                 },
                 "dashboard": {
+                    "default_dashboard_label": "Resumen (predeterminado)",
                     "description": "Elija un tablero predeterminado para este dispositivo.",
                     "dropdown_label": "Tablero",
                     "header": "Tablero"
@@ -4145,6 +4608,8 @@
         "sidebar": {
             "done": "Hecho",
             "external_app_configuration": "Configuración de la aplicación",
+            "hide_panel": "Ocultar panel",
+            "show_panel": "Mostrar panel",
             "sidebar_toggle": "Alternar barra lateral"
         }
     }

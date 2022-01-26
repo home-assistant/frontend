@@ -48,9 +48,9 @@ class HassioBackupDialog
   @query("supervisor-backup-content")
   private _backupContent!: SupervisorBackupContent;
 
-  public async showDialog(params: HassioBackupDialogParams) {
-    this._backup = await fetchHassioBackupInfo(this.hass, params.slug);
-    this._dialogParams = params;
+  public async showDialog(dialogParams: HassioBackupDialogParams) {
+    this._backup = await fetchHassioBackupInfo(this.hass, dialogParams.slug);
+    this._dialogParams = dialogParams;
     this._restoringBackup = false;
   }
 
@@ -77,7 +77,7 @@ class HassioBackupDialog
           <ha-header-bar>
             <span slot="title">${this._backup.name}</span>
             <ha-icon-button
-              .label=${this.hass?.localize("common.close") || "close"}
+              .label=${this.hass?.localize("ui.common.close") || "Close"}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"
@@ -114,12 +114,20 @@ class HassioBackupDialog
               @closed=${stopPropagation}
             >
               <ha-icon-button
-                .label=${this.hass!.localize("common.menu")}
+                .label=${this.hass!.localize("ui.common.menu") || "Menu"}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item>Download Backup</mwc-list-item>
-              <mwc-list-item class="error">Delete Backup</mwc-list-item>
+              <mwc-list-item
+                >${this._dialogParams.supervisor?.localize(
+                  "backup.download_backup"
+                )}</mwc-list-item
+              >
+              <mwc-list-item class="error"
+                >${this._dialogParams.supervisor?.localize(
+                  "backup.delete_backup_title"
+                )}</mwc-list-item
+              >
             </ha-button-menu>`
           : ""}
       </ha-dialog>
@@ -330,7 +338,6 @@ class HassioBackupDialog
     }
 
     fileDownload(
-      this,
       signedPath.path,
       `home_assistant_backup_${slugify(this._computeName)}.tar`
     );

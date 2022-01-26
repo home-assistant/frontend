@@ -1,4 +1,30 @@
 {
+    "panel": {
+        "shopping_list": "Lista da compra"
+    },
+    "state": {
+        "default": {
+            "unavailable": "Non dispoñible",
+            "unknown": "Descoñecido"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Automático",
+                "off": "Apagado",
+                "on": "Acendido"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Descoñecido"
+        },
+        "person": {
+            "home": "Na casa"
+        }
+    },
     "supervisor": {
         "addon": {
             "configuration": {
@@ -223,7 +249,7 @@
             "addon_new_version": "Nova versión dispoñible",
             "addon_running": "O complemento está en execución",
             "addon_stopped": "O complemento está parado",
-            "addons": "Complementos",
+            "addons": "Complementos instalados",
             "no_addons": "Aínda non tes ningún complemento instalado. Diríxete á tenda de complementos para comezar."
         },
         "dialog": {
@@ -260,7 +286,8 @@
             "repositories": {
                 "add": "Engadir",
                 "remove": "Eliminar",
-                "title": "Xestionar os repositorios de complementos"
+                "title": "Xestionar os repositorios de complementos",
+                "used": "O repositorio está en uso para os complementos instalados e non se pode eliminar."
             },
             "restart_addon": {
                 "confirm_text": "Reiniciar complemento",
@@ -366,6 +393,9 @@
                 "update_supervisor": "Actualice o supervisor",
                 "warning": "AVISO"
             }
+        },
+        "update_available": {
+            "no_update": "Non hai ningunha actualización dispoñible para {name}"
         }
     },
     "ui": {
@@ -373,6 +403,14 @@
             "fan": {
                 "direction": "Enderezo",
                 "preset_mode": "Modo predefinido"
+            },
+            "media_player": {
+                "media_pause": "Pausa",
+                "media_stop": "Deter",
+                "media_volume_down": "Baixar o volume",
+                "media_volume_mute": "Silenciar o volume",
+                "media_volume_unmute": "Reactivar o volume",
+                "media_volume_up": "Subir o volume"
             },
             "script": {
                 "run": "Executar"
@@ -410,6 +448,10 @@
                 "low": "Mínimo",
                 "night": "Noite"
             }
+        },
+        "common": {
+            "cancel": "Cancelar",
+            "submit": "Enviar"
         },
         "components": {
             "addon-picker": {
@@ -456,7 +498,15 @@
                     "url": "URL"
                 }
             },
+            "qr-scanner": {
+                "enter_qr_code": "Introduza o valor do código QR",
+                "manual_input": "Podes escanear o código QR con outro escáner QR e pegar o código na seguinte entrada",
+                "not_supported": "O teu navegador non admite o escaneo QR",
+                "only_https_supported": "Só podes usar a túa cámara para escanear un código QR cando utilizas HTTPS.",
+                "select_camera": "Seleccionar cámara"
+            },
             "related-filter-menu": {
+                "filter": "Filtrar",
                 "filter_by_area": "Filtrar por área",
                 "filter_by_device": "Filtrar por dispositivo",
                 "filter_by_entity": "Filtrar por entidade",
@@ -474,7 +524,19 @@
             }
         },
         "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Porta"
+                        }
+                    }
+                }
+            },
             "more_info_control": {
+                "cover": {
+                    "close_tilt_cover": "Pechar a inclinación da persiana"
+                },
                 "remote": {
                     "activity": "Actividade actual"
                 }
@@ -488,6 +550,9 @@
                     "navigation": {
                         "energy": "Enerxía",
                         "tag": "Etiquetas"
+                    },
+                    "reload": {
+                        "themes": "Temas"
                     },
                     "types": {
                         "navigation": "Navegar",
@@ -510,12 +575,15 @@
         "errors": {
             "config": {
                 "edit_in_yaml_supported": "Aínda podes editar a túa configuración en YAML.",
-                "editor_not_available": "Non hai editor visual dispoñible para o tipo \" {type} \".",
+                "editor_not_available": "Non hai ningún editor visual dispoñible para o tipo \"{type}\".",
                 "editor_not_supported": "O editor visual non é compatible con esta configuración",
-                "key_missing": "Falta a clave requirida \" {key} \".",
-                "key_wrong_type": "O editor visual non admite o valor proporcionado para \" {key} Admitimos ( {type_correct} ) pero recibimos ( {type_wrong} ).",
+                "key_missing": "Falta a clave requirida \"{key}\".",
+                "key_wrong_type": "O editor visual non admite o valor proporcionado para \"{key}\". Sopórtase ({type_correct}) pero recibiuse ({type_wrong}).",
                 "no_template_editor_support": "Os modelos non son compatibles co editor visual"
             }
+        },
+        "login-form": {
+            "password": "Contrasinal"
         },
         "panel": {
             "config": {
@@ -556,9 +624,15 @@
                         },
                         "show_trace": "Mostrar rastro",
                         "triggers": {
+                            "edit_id": "Editar ID do disparador",
                             "type": {
                                 "mqtt": {
                                     "label": "MQTT"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "sunrise": "Amencer",
+                                    "sunset": "Solpor"
                                 }
                             }
                         }
@@ -604,6 +678,48 @@
                 },
                 "common": {
                     "learn_more": "Saber máis"
+                },
+                "dashboard": {
+                    "automations": {
+                        "description": "Xestiona automatizacións, escenas, guións e axudantes.",
+                        "title": "Automatizacións e escenas"
+                    },
+                    "blueprints": {
+                        "description": "Scripts e automatizacións preconstruídas pola comunidade",
+                        "title": "Planos"
+                    },
+                    "companion": {
+                        "description": "Localización e notificacións",
+                        "title": "Aplicación complementaria"
+                    },
+                    "dashboards": {
+                        "description": "Crea conxuntos de tarxetas personalizados para controlar o teu fogar",
+                        "title": "Paneis de control"
+                    },
+                    "devices": {
+                        "description": "Integracións, dispositivos, entidades e áreas",
+                        "title": "Dispositivos e servizos"
+                    },
+                    "energy": {
+                        "description": "Monitoriza a túa produción e consumo de enerxía",
+                        "title": "Enerxía"
+                    },
+                    "people": {
+                        "description": "Xestiona as persoas e as áreas que rastrexa o Home Assistant",
+                        "title": "Persoas e Zonas"
+                    },
+                    "settings": {
+                        "description": "Configuración básica, controis do servidor, rexistros e información",
+                        "title": "Configuración"
+                    },
+                    "supervisor": {
+                        "description": "Crea copias de seguridade, revisa os rexistros ou reinicia o teu sistema",
+                        "title": "Complementos, copias de seguridade e Supervisor"
+                    },
+                    "tags": {
+                        "description": "Activar automatizacións cando se escanea unha etiqueta NFC, un código QR, etc.",
+                        "title": "Etiquetas"
+                    }
                 },
                 "devices": {
                     "confirm_disable_config_entry": "Non hai máis dispositivos para a entrada de configuración {entry_name} . Queres deshabilitar a entrada de configuración?",
@@ -686,6 +802,7 @@
                         },
                         "disable_restart_confirm": "Reinicie o Home Assistant para rematar de desactivar esta integración",
                         "enable_restart_confirm": "Reinicie o Home Assistant para rematar de habilitar esta integración",
+                        "hardware": "Hardware: {version}",
                         "not_loaded": "Non cargado, comproba o {logs_link}"
                     },
                     "config_flow": {
@@ -708,6 +825,7 @@
                         "show_ignored": "Amosar integracións ignoradas"
                     }
                 },
+                "introduction": "Aquí podes configurar os teus compoñentes e Home Assistant. Non todo se pode configurar graficamente aínda, pero estamos traballando niso.",
                 "logs": {
                     "level": {
                         "critical": "CRÍTICO",
@@ -754,6 +872,8 @@
                             "reload": "{domain}",
                             "rpi_gpio": "Entidades GPIO de Raspberry Pi",
                             "smtp": "Servizos de notificación SMTP",
+                            "themes": "Temas",
+                            "timer": "Temporizadores",
                             "trend": "Entidades de tendencia"
                         }
                     }
@@ -787,8 +907,14 @@
                     }
                 },
                 "zwave_js": {
+                    "common": {
+                        "back": "Volver"
+                    },
                     "device_info": {
                         "device_config": "Configurar dispositivo"
+                    },
+                    "logs": {
+                        "download_logs": "Descargar rexistros"
                     },
                     "node_config": {
                         "attribution": "{device_database} proporciona os parámetros e as descricións de configuración do dispositivo",
@@ -798,6 +924,11 @@
                         "introduction": "Xestione e axuste os parámetros de configuración específicos do dispositivo (nodo) para o dispositivo seleccionado",
                         "parameter_is_read_only": "Este parámetro é de só lectura.",
                         "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
+                    },
+                    "provisioned": {
+                        "confirm_unprovision_text": "Se desaprovisiona o dispositivo, non se engadirá ao Home Assistant cando estea prendido. Se xa está engadido ao Home Assistant, ao eliminar o dispositivo aprovisionado non se eliminará do Home Assistant.",
+                        "included": "Incluído",
+                        "not_included": "Non incluído"
                     }
                 }
             },
@@ -831,6 +962,9 @@
                     "card": {
                         "alarm-panel": {
                             "description": "A tarxeta Panel de alarma permíte armar e desarmar as integracións do seu panel de control de alarma."
+                        },
+                        "area": {
+                            "show_camera": "Mostra a imaxe da cámara en lugar da imaxe da área"
                         },
                         "button": {
                             "default_action_help": "A acción predeterminada depende das capacidades da entidade, cambiará ou amosará o diálogo de máis información.",

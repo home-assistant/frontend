@@ -56,8 +56,8 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export interface DataTableColumnContainer {
-  [key: string]: DataTableColumnData;
+export interface DataTableColumnContainer<T = any> {
+  [key: string]: DataTableColumnData<T>;
 }
 
 export interface DataTableSortColumnData {
@@ -68,10 +68,10 @@ export interface DataTableSortColumnData {
   direction?: SortingDirection;
 }
 
-export interface DataTableColumnData extends DataTableSortColumnData {
+export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
-  template?: <T>(data: any, row: T) => TemplateResult | string;
+  template?: (data: any, row: T) => TemplateResult | string;
   width?: string;
   maxWidth?: string;
   grows?: boolean;

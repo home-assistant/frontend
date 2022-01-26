@@ -78,6 +78,45 @@
             "not_home": "ไม่อยู่บ้าน"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "label": {
+                        "core": "คอร์"
+                    },
+                    "stages": {
+                        "deprecated": "เลิกใช้",
+                        "experimental": "ทดลอง"
+                    }
+                }
+            }
+        },
+        "common": {
+            "menu": "เมนู",
+            "review": "รีวิว",
+            "show": "แสดง"
+        },
+        "panel": {
+            "addons": "ส่วนเสริม"
+        },
+        "system": {
+            "supervisor": {
+                "unsupported_reason": {
+                    "software": "ตรวจพบซอฟต์แวร์ที่ไม่รองรับ"
+                }
+            }
+        },
+        "update_available": {
+            "core_note": "ตัวควบคุมจะย้อนกลับไปยังเวอร์ชัน {version} ถ้าอินสแตนซ์ของคุณไม่ปรากฎขึ้นหลังจากการอัปเดต",
+            "create_backup": "สร้างข้อมูลสำรองก่อนการอัปเดต",
+            "creating_backup": "กำลังสร้างข้อมูลสำรองของ {name}",
+            "description": "คุณได้ติดตั้งเวอร์ชั่น {version} คลิกอัปเดตเพื่ออัปเดตเป็นเวอร์ชัน {newest_version}",
+            "open_release_notes": "เปิดบันทึกประจำรุ่น",
+            "update_name": "อัปเดต {name}",
+            "updating": "กำลังอัปเดต {name} เป็นเวอร์ชัน {version}"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "คุณต้องการจำการเข้าระบบนี้หรือไม่?",
@@ -94,9 +133,15 @@
                 "code": "รหัส",
                 "disarm": "ปิดระบบสัญญาณกันขโมย"
             },
+            "area": {
+                "area_not_found": "ไม่พบพื้นที่"
+            },
             "automation": {
                 "last_triggered": "การทำงานครั้งล่าสุด",
                 "trigger": "การทำงาน"
+            },
+            "button": {
+                "press": "กด"
             },
             "camera": {
                 "not_available": "ไม่มีรูปภาพ"
@@ -199,13 +244,17 @@
         },
         "common": {
             "cancel": "ยกเลิก",
+            "clear": "ล้าง",
             "copied": "คัดลอกแล้ว",
+            "help": "วิธีใช้",
             "loading": "กำลังโหลด",
+            "move": "ย้าย",
             "save": "บันทึก"
         },
         "components": {
             "entity": {
                 "entity-picker": {
+                    "edit": "แก้ไข",
                     "entity": "เอนทิตี"
                 }
             },
@@ -247,6 +296,10 @@
             },
             "service-picker": {
                 "service": "บริการ"
+            },
+            "target-picker": {
+                "expand": "ขยาย",
+                "remove": "ลบ"
             }
         },
         "dialogs": {
@@ -256,9 +309,11 @@
             },
             "more_info_control": {
                 "details": "รายละเอียด",
+                "logbook": "สมุดบันทึก",
                 "script": {
                     "last_action": "การทำงานครั้งล่าสุด"
                 },
+                "show_more": "แสดงเพิ่มเติม",
                 "sun": {
                     "elevation": "มุมเงย",
                     "rising": "ขึ้นสู่ท้องฟ้าอีกครั้งใน",
@@ -326,8 +381,10 @@
         "panel": {
             "config": {
                 "areas": {
+                    "add_picture": "เพิ่มรูปภาพ",
                     "caption": "ค่าของห้อง",
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",
+                    "edit_settings": "การตั้งค่าพื้นที่",
                     "editor": {
                         "create": "สร้าง",
                         "default_name": "พื้นที่ใหม่",
@@ -555,6 +612,26 @@
                         "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Automation",
                         "no_automations": "เราไม่พบระบบอัตโนมัติใด ๆ สามารถแก้ไขได้",
                         "pick_automation": "เลือกระบบอัตโนมัติเพื่อแก้ไข"
+                    },
+                    "trace": {
+                        "download_trace": "ดาวน์โหลด trace",
+                        "edit_automation": "แก้ไขระบบอัตโนมัติ",
+                        "newer_trace": "การติดตามที่ใหม่กว่า",
+                        "older_trace": "การติดตามที่เก่ากว่า",
+                        "refresh": "รีเฟรช"
+                    }
+                },
+                "blueprint": {
+                    "overview": {
+                        "create_automation": "สร้างการทำงานอัตโนมัติ",
+                        "create_script": "สร้างสคริปต์",
+                        "headers": {
+                            "type": "ประเภท"
+                        },
+                        "types": {
+                            "automation": "ระบบอัตโนมัติ",
+                            "script": "สคริปต์"
+                        }
                     }
                 },
                 "cloud": {
@@ -645,6 +722,16 @@
                 "devices": {
                     "caption": "อุปกรณ์",
                     "description": "จัดการอุปกรณ์ที่กำหนดค่าไว้แล้ว",
+                    "edit_settings": "แก้ไขการตั้งค่า",
+                    "entities": {
+                        "config": "การกำหนดค่า",
+                        "control": "การควบคุม",
+                        "diagnostic": "การวินิจฉัย",
+                        "sensor": "เซนเซอร์",
+                        "state": "สถานะ"
+                    },
+                    "open_configuration_url_device": "เยี่ยมชมอุปกรณ์",
+                    "open_configuration_url_service": "เยี่ยมชมบริการ",
                     "scene": {
                         "create": "สร้างฉากด้วยอุปกรณ์",
                         "no_scenes": "ไม่มีฉาก",
@@ -662,6 +749,9 @@
                     }
                 },
                 "header": "ตั้งค่า Home Assistant",
+                "info": {
+                    "copy_menu": "คัดลอกเมนู"
+                },
                 "integrations": {
                     "attention": "ต้องระบุ",
                     "caption": "ตัวประสานงาน",
@@ -673,7 +763,9 @@
                         "hub": "เชื่อมต่อผ่านทาง",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
-                        "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้"
+                        "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้",
+                        "unknown_via_device": "อุปกรณ์ที่ไม่รู้จัก",
+                        "via": "เชื่อมต่อผ่าน"
                     },
                     "config_flow": {
                         "external_step": {
@@ -693,6 +785,9 @@
                     "reconfigure": "กำหนดค่าใหม่"
                 },
                 "introduction": "ที่นี่คือที่สำหรับกำหนดค่าองค์ประกอบต่างๆ รวมถึงระบบของ Home Assistant ไม่ใช่ทุกอย่างที่จะสามารถตั้งค่าได้ผ่าน UI ในขณะนี้ แต่เรากำลังพัฒนาเพิ่มเติมอยู่นะ",
+                "logs": {
+                    "copy": "คัดลอกรายการบันทึก"
+                },
                 "mqtt": {
                     "title": "MQTT"
                 },
@@ -756,6 +851,13 @@
                         }
                     }
                 },
+                "updates": {
+                    "review": "รีวิว",
+                    "show": "แสดง",
+                    "show_all_updates": "แสดงการปรับปรุงทั้งหมด",
+                    "unable_to_fetch": "ไม่สามารถดึงรายการอัพเดตที่มีอยู่",
+                    "version_available": "เวอร์ชัน {version_available} พร้อมใช้งานแล้ว"
+                },
                 "users": {
                     "add_user": {
                         "caption": "เพิ่มผู้ใช้",
@@ -779,7 +881,13 @@
                     "device_pairing_card": {
                         "CONFIGURED": "การกำหนดค่าเสร็จสมบูรณ์",
                         "CONFIGURED_status_text": "กำลังเริ่มการทำงาน"
+                    },
+                    "groups": {
+                        "delete": "ลบกลุ่ม"
                     }
+                },
+                "zone": {
+                    "edit_zone": "แก้ไขโซน"
                 },
                 "zwave": {
                     "common": {
@@ -819,10 +927,33 @@
                         "source": "แหล่งที่มา"
                     },
                     "device_info": {
-                        "device_config": "กำหนดค่าอุปกรณ์"
+                        "device_config": "กำหนดค่าอุปกรณ์",
+                        "highest_security": "ความปลอดภัยสูงสุด",
+                        "zwave_plus_version": "เวอร์ชัน {version}"
                     },
                     "node_config": {
                         "parameter": "พารามิเตอร์"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "ไม่มี"
+                        },
+                        "S0_Legacy": {
+                            "description": "ตัวอย่าง: Legacy Door Locks ที่ไม่รองรับ S2",
+                            "title": "S0 Legacy"
+                        },
+                        "S2_AccessControl": {
+                            "description": "ตัวอย่าง: กลอนประตูและประตูโรงรถ",
+                            "title": "S2 Access Control"
+                        },
+                        "S2_Authenticated": {
+                            "description": "ตัวอย่าง: ไฟส่องสว่าง เซนเซอร์ และระบบรักษาความปลอดภัย",
+                            "title": "S2 Authenticated"
+                        },
+                        "S2_Unauthenticated": {
+                            "description": "S2 Authenticated แต่ไม่มีการตรวจสอบว่ามีอุปกรณ์ที่ถูกต้องรวมอยู่ด้วย",
+                            "title": "S2 Unauthenticated"
+                        }
                     }
                 }
             },
@@ -837,6 +968,12 @@
                     "states": {
                         "title": "สถานะ"
                     },
+                    "statistics": {
+                        "issues": {
+                            "entity_no_longer_recorded": "เอนทิตีนี้ไม่ได้รับการบันทึกอีกต่อไป",
+                            "no_state": "ไม่มีสถานะสำหรับเอนทิตีนี้"
+                        }
+                    },
                     "templates": {
                         "entity": "รายการ",
                         "listeners": "เทมเพลตนี้รับฟังเหตุการณ์ที่เปลี่ยนแปลงสถานะต่อไปนี้:",
@@ -846,6 +983,14 @@
                 }
             },
             "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "ตรวจสอบอุปกรณ์แต่ละเครื่อง",
+                    "energy_distribution_title": "การกระจายพลังงาน",
+                    "energy_gas_graph_title": "ปริมาณการใช้ก๊าซ",
+                    "energy_solar_graph_title": "การผลิตพลังงานแสงอาทิตย์",
+                    "energy_sources_table_title": "แหล่งที่มา",
+                    "energy_usage_graph_title": "การใช้พลังงาน"
+                },
                 "setup": {
                     "back": "กลับ",
                     "next": "ต่อไป"
@@ -857,6 +1002,37 @@
                         "go_to_integrations_page": "ไปที่หน้าการรวมระบบ",
                         "no_devices": "หน้านี้ช่วยให้คุณควบคุมอุปกรณ์ของคุณได้ แต่ยังไงก็ตามมันดูเหมือนว่าคุณยังไม่ได้ติดตั้งอุปกรณ์อะไรไว้เลย ไปยัง 'หน้าการทำงานด้วยกัน' เพื่อเริ่มติดตั้ง",
                         "title": "ยินดีต้อนรับกลับบ้าน"
+                    },
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "การ์ดใบนี้ระบุว่าบ้านของคุณใช้พลังงานมากเพียงใดโดยใช้เชื้อเพลิงที่ไม่ใช่ฟอสซิล เช่น พลังงานแสงอาทิตย์ ลม และนิวเคลียร์ ยิ่งสูงยิ่งดี!",
+                            "non_fossil_energy_consumed": "การใช้พลังงานที่ไม่ใช่ฟอสซิล",
+                            "non_fossil_energy_not_calculated": "ไม่สามารถคำนวณพลังงานที่ไม่ใช่ฟอสซิลได้"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "การใช้พลังงาน"
+                        },
+                        "energy_distribution": {
+                            "battery": "แบตเตอรี่",
+                            "gas": "แก๊ส",
+                            "go_to_energy_dashboard": "ไปที่แดชบอร์ดพลังงาน",
+                            "grid": "กริด",
+                            "home": "บ้าน",
+                            "non_fossil": "ไม่ใช่ฟอสซิล",
+                            "solar": "แสงอาทิตย์"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "หากเข็มเป็นสีม่วง คุณจะคืนพลังงานให้กับกริดมากกว่าที่คุณใช้ไป หากเป็นสีน้ำเงิน แสดงว่าคุณใช้พลังงานจากกริดมากกว่าที่คุณส่งคืน",
+                            "grid_neutrality_not_calculated": "ไม่สามารถคำนวณความเป็นกลางของกริดได้",
+                            "net_consumed_grid": "ค่าสุทธิที่ใช้จากกริด",
+                            "net_returned_grid": "ค่าสุทธิการคืนกลับสู่กริด"
+                        }
+                    },
+                    "iframe": {
+                        "error_secure_context": "ไม่สามารถโหลด iframes ที่ชี้ไปที่เว็บไซต์โดยใช้ {target_protocol} หาก Home Assistant ให้บริการผ่าน {context_protocol}"
+                    },
+                    "map": {
+                        "reset_focus": "ตั้งค่าโฟกัสใหม่"
                     },
                     "picture-elements": {
                         "call_service": "เรียกบริการ {name}",
@@ -871,13 +1047,29 @@
                         "add_item": "เพิ่มรายการ",
                         "checked_items": "รายการที่เลือก",
                         "clear_items": "ล้างรายการที่เลือก"
-                    }
+                    },
+                    "show_more_info": "แสดงข้อมูลเพิ่มเติม"
                 },
                 "changed_toast": {
                     "message": "อัพเดทการกำหนดค่าส่วนแสดงผล Lovelace แล้ว คุณต้องการจะรีเฟรชหน้าหรือไม่"
                 },
+                "components": {
+                    "energy_period_selector": {
+                        "day": "วัน",
+                        "month": "เดือน",
+                        "next": "ต่อไป",
+                        "previous": "ก่อนหน้า",
+                        "today": "วันนี้",
+                        "week": "สัปดาห์",
+                        "year": "ปี"
+                    }
+                },
                 "editor": {
                     "card": {
+                        "area": {
+                            "description": "การ์ดพื้นที่จะแสดงเอนทิตี้ของพื้นที่เฉพาะโดยอัตโนมัติ",
+                            "name": "พื้นที่"
+                        },
                         "config": {
                             "optional": "ตัวเลือก",
                             "required": "ต้องระบุ"
@@ -900,6 +1092,11 @@
                             "dark_mode": "โหมดมืด?",
                             "default_zoom": "ค่าซูมเริ่มต้น",
                             "source": "แหล่งที่มา"
+                        },
+                        "weather-forecast": {
+                            "show_both": "แสดงสภาพอากาศปัจจุบันและการพยากรณ์",
+                            "show_only_current": "แสดงเฉพาะสภาพอากาศปัจจุบัน",
+                            "show_only_forecast": "แสดงเฉพาะการคาดการณ์"
                         }
                     },
                     "edit_card": {
@@ -908,6 +1105,8 @@
                         "edit": "แก้ไข",
                         "header": "การกำหนดค่าการ์ด",
                         "move": "ย้าย",
+                        "move_down": "ย้ายการ์ดลง",
+                        "move_up": "ย้ายการ์ดขึ้น",
                         "pick_card": "เลือกการ์ดที่คุณอยากจะเพิ่ม",
                         "toggle_editor": "เปิด/ปิดเครื่องมือแก้ไข"
                     },
@@ -943,7 +1142,8 @@
                         "save": "ใช้การควบคุม"
                     },
                     "select_view": {
-                        "dashboard_label": "แดชบอร์ด"
+                        "dashboard_label": "แดชบอร์ด",
+                        "views_label": "แสดง"
                     }
                 },
                 "menu": {
@@ -961,6 +1161,9 @@
                 "delete_prompt": "ลบข้อความนี้หรือไม่?",
                 "empty": "ไม่มีข้อความ",
                 "playback_title": "เล่นข้อความ"
+            },
+            "map": {
+                "edit_zones": "แก้ไขโซน"
             },
             "page-authorize": {
                 "abort_intro": "เข้าสู่ระบบถูกยกเลิก",
@@ -1053,7 +1256,8 @@
                 },
                 "initializing": "กำลังเริ่มการทำงาน",
                 "logging_in_with": "เข้าสู่ระบบด้วย ** {authProviderName} **",
-                "pick_auth_provider": "หรือเข้าสู่ระบบด้วย"
+                "pick_auth_provider": "หรือเข้าสู่ระบบด้วย",
+                "store_token": "ให้ฉันอยู่ในระบบต่อไป"
             },
             "page-demo": {
                 "cards": {
@@ -1142,6 +1346,9 @@
                 "customize_sidebar": {
                     "button": "แก้ไข"
                 },
+                "dashboard": {
+                    "default_dashboard_label": "ภาพรวม (ค่าเริ่มต้น)"
+                },
                 "force_narrow": {
                     "header": "ซ่อนแถบด้านข้างเสมอ"
                 },
@@ -1211,7 +1418,9 @@
         },
         "sidebar": {
             "done": "เสร็จแล้ว",
-            "external_app_configuration": "การกำหนดค่าแอพ"
+            "external_app_configuration": "การกำหนดค่าแอพ",
+            "hide_panel": "ซ่อนแผง",
+            "show_panel": "แสดงแผง"
         }
     }
 }
