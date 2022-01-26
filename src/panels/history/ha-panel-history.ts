@@ -12,7 +12,11 @@ import {
 } from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import { extractSearchParam } from "../../common/url/search-params";
+import { navigate } from "../../common/navigate";
+import {
+  createSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
 import "../../components/entity/ha-entity-picker";
@@ -144,6 +148,10 @@ class HaPanelHistory extends LitElement {
     if (startDate) {
       this._startDate = new Date(startDate);
     }
+    const endDate = extractSearchParam("end_date");
+    if (endDate) {
+      this._endDate = new Date(endDate);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -191,10 +199,32 @@ class HaPanelHistory extends LitElement {
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
     this._endDate = endDate;
+
+    this._updatePath();
   }
 
   private _entityPicked(ev) {
     this._entityId = ev.target.value;
+
+    this._updatePath();
+  }
+
+  private _updatePath() {
+    const params: Record<string, string> = {};
+
+    if (this._entityId) {
+      params.entity_id = this._entityId;
+    }
+
+    if (this._startDate) {
+      params.start_date = this._startDate.toISOString();
+    }
+
+    if (this._endDate) {
+      params.end_date = this._endDate.toISOString();
+    }
+
+    navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
   static get styles() {

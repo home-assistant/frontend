@@ -1555,6 +1555,9 @@
                         "start_heal": "تعمیر دستگاه",
                         "title": " یک دستگاه  Z-Wave را تعمیر کنید"
                     },
+                    "provisioned": {
+                        "unprovison": "پیش بینی نشده"
+                    },
                     "remove_failed_node": {
                         "remove_device": "حذف دستگاه",
                         "title": "یک دستگاه Z-Wave خراب را حذف کنید"

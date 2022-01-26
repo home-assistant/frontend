@@ -1,3 +1,9 @@
+import {
+  mdiCrownCircleOutline,
+  mdiAlphaSCircleOutline,
+  mdiHomeCircleOutline,
+  mdiCancel,
+} from "@mdi/js";
 import { HomeAssistant } from "../types";
 import { Credential } from "./auth";
 
@@ -73,7 +79,36 @@ export const computeUserInitials = (name: string) => {
       .split(" ")
       .slice(0, 3)
       // Of each word, take first letter
-      .map((s) => s.substr(0, 1))
+      .map((s) => s.substring(0, 1))
       .join("")
   );
+};
+
+const OWNER_ICON = mdiCrownCircleOutline;
+const SYSTEM_ICON = mdiAlphaSCircleOutline;
+const LOCAL_ICON = mdiHomeCircleOutline;
+const DISABLED_ICON = mdiCancel;
+
+export const computeUserBadges = (
+  hass: HomeAssistant,
+  user: User,
+  includeSystem: boolean
+) => {
+  const labels: [string, string][] = [];
+  const translate = (key) => hass.localize(`ui.panel.config.users.${key}`);
+
+  if (user.is_owner) {
+    labels.push([OWNER_ICON, translate("is_owner")]);
+  }
+  if (includeSystem && user.system_generated) {
+    labels.push([SYSTEM_ICON, translate("is_system")]);
+  }
+  if (user.local_only) {
+    labels.push([LOCAL_ICON, translate("is_local")]);
+  }
+  if (!user.is_active) {
+    labels.push([DISABLED_ICON, translate("is_not_active")]);
+  }
+
+  return labels;
 };

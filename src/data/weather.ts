@@ -436,3 +436,19 @@ export const getWeatherStateIcon = (
 
   return undefined;
 };
+
+const DAY_IN_MILLISECONDS = 86400000;
+
+export const isForecastHourly = (
+  forecast?: ForecastAttribute[]
+): boolean | undefined => {
+  if (forecast && forecast?.length && forecast?.length > 2) {
+    const date1 = new Date(forecast[1].datetime);
+    const date2 = new Date(forecast[2].datetime);
+    const timeDiff = date2.getTime() - date1.getTime();
+
+    return timeDiff < DAY_IN_MILLISECONDS;
+  }
+
+  return undefined;
+};

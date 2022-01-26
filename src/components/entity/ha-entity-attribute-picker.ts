@@ -14,9 +14,9 @@ import {
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { formatAttributeName } from "../../data/entity_attributes";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import { formatAttributeName } from "../../util/hass-attributes-util";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";

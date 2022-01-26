@@ -28,6 +28,8 @@ const LAZY_LOAD_TYPES = {
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
   "group-entity": () => import("../entity-rows/hui-group-entity-row"),
+  "input-button-entity": () =>
+    import("../entity-rows/hui-input-button-entity-row"),
   "humidifier-entity": () => import("../entity-rows/hui-humidifier-entity-row"),
   "input-datetime-entity": () =>
     import("../entity-rows/hui-input-datetime-entity-row"),
@@ -61,6 +63,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   group: "group",
   humidifier: "humidifier",
   input_boolean: "toggle",
+  input_button: "input-button",
   input_number: "input-number",
   input_select: "input-select",
   input_text: "input-text",

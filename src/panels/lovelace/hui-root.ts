@@ -2,9 +2,7 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
-  mdiClose,
   mdiCodeBraces,
-  mdiCog,
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
@@ -119,13 +117,6 @@ class HUIRoot extends LitElement {
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.menu.exit_edit_mode"
-                    )}
-                    .path=${mdiClose}
-                    @click=${this._editModeDisable}
-                  ></ha-icon-button>
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
@@ -138,6 +129,13 @@ class HUIRoot extends LitElement {
                       @click=${this._editLovelace}
                     ></ha-icon-button>
                   </div>
+                  <mwc-button
+                    class="exit-edit-mode"
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.menu.exit_edit_mode"
+                    )}
+                    @click=${this._editModeDisable}
+                  ></mwc-button>
                   <a
                     href=${documentationUrl(this.hass, "/lovelace/")}
                     rel="noreferrer"
@@ -377,30 +375,36 @@ class HUIRoot extends LitElement {
                             )}
                             <ha-svg-icon
                               slot="graphic"
-                              .path=${mdiCog}
+                              .path=${mdiPencil}
                             ></ha-svg-icon>
                           </mwc-list-item>
                         `
                       : ""}
-                    <a
-                      href=${documentationUrl(this.hass, "/lovelace/")}
-                      rel="noreferrer"
-                      class="menu-link"
-                      target="_blank"
-                    >
-                      <mwc-list-item
-                        graphic="icon"
-                        aria-label=${this.hass!.localize(
-                          "ui.panel.lovelace.menu.help"
-                        )}
-                      >
-                        ${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${mdiHelp}
-                        ></ha-svg-icon>
-                      </mwc-list-item>
-                    </a>
+                    ${this._editMode
+                      ? html`
+                          <a
+                            href=${documentationUrl(this.hass, "/lovelace/")}
+                            rel="noreferrer"
+                            class="menu-link"
+                            target="_blank"
+                          >
+                            <mwc-list-item
+                              graphic="icon"
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.help"
+                              )}
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.help"
+                              )}
+                              <ha-svg-icon
+                                slot="graphic"
+                                .path=${mdiHelp}
+                              ></ha-svg-icon>
+                            </mwc-list-item>
+                          </a>
+                        `
+                      : ""}
                   </ha-button-menu>
                 </app-toolbar>
               `}
@@ -932,6 +936,10 @@ class HUIRoot extends LitElement {
             --lovelace-background,
             var(--primary-background-color)
           );
+        }
+        .exit-edit-mode {
+          --mdc-theme-primary: var(--primary-text-color);
+          --mdc-typography-button-font-size: 14px;
         }
       `,
     ];

@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#2157BC" />
-    <title>HAGallery</title>
+    <title>Home Assistant Design</title>
 
     <script type="module" src="<%= latestGalleryJS %>"></script>
     <style>

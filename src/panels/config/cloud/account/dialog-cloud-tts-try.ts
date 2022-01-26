@@ -1,10 +1,9 @@
 import "@material/mwc-button";
-import { mdiPlayCircleOutline } from "@mdi/js";
+import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
 import "@polymer/paper-input/paper-textarea";
 import type { PaperTextareaElement } from "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
@@ -14,6 +13,7 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-paper-dropdown-menu";
+import { showAutomationEditor } from "../../../../data/automation";
 import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -29,13 +29,11 @@ export class DialogTryTts extends LitElement {
 
   @state() private _params?: TryTtsDialogParams;
 
-  @query("#target") private _targetInput?: PaperListboxElement;
-
   @query("#message") private _messageInput?: PaperTextareaElement;
 
-  @LocalStorage("cloudTtsTryMessage") private _message?: string;
+  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
 
-  @LocalStorage("cloudTtsTryTarget") private _target?: string;
+  @LocalStorage("cloudTtsTryTarget", false, false) private _target!: string;
 
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
@@ -50,6 +48,7 @@ export class DialogTryTts extends LitElement {
     if (!this._params) {
       return html``;
     }
+    const target = this._target || "browser";
     return html`
       <ha-dialog
         open
@@ -83,7 +82,8 @@ export class DialogTryTts extends LitElement {
               id="target"
               slot="dropdown-content"
               attr-for-selected="item-value"
-              .selected=${this._target || "browser"}
+              .selected=${target}
+              @selected-changed=${this._handleTargetChanged}
             >
               <paper-item item-value="browser">
                 ${this.hass.localize(
@@ -108,40 +108,68 @@ export class DialogTryTts extends LitElement {
         </div>
         <mwc-button
           slot="primaryAction"
+          .label=${this.hass.localize(
+            "ui.panel.config.cloud.account.tts.dialog.play"
+          )}
           @click=${this._playExample}
           .disabled=${this._loadingExample}
         >
-          <ha-svg-icon .path=${mdiPlayCircleOutline}></ha-svg-icon>
-          &nbsp;${this.hass.localize(
-            "ui.panel.config.cloud.account.tts.dialog.play"
+          <ha-svg-icon slot="icon" .path=${mdiPlayCircleOutline}></ha-svg-icon>
+        </mwc-button>
+        <mwc-button
+          slot="secondaryAction"
+          .disabled=${target === "browser"}
+          .label=${this.hass.localize(
+            "ui.panel.config.cloud.account.tts.dialog.create_automation"
           )}
+          @click=${this._createAutomation}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiRobot}></ha-svg-icon>
         </mwc-button>
       </ha-dialog>
     `;
   }
 
-  private async _playExample() {
-    const target = String(this._targetInput?.selected);
-    const message = this._messageInput?.value;
+  private _handleTargetChanged(ev) {
+    this._target = ev.detail.value;
+    this.requestUpdate("_target");
+  }
 
-    if (!message || !target) {
+  private async _playExample() {
+    const message = this._messageInput?.value;
+    if (!message) {
       return;
     }
-
     this._message = message;
-    this._target = target;
 
-    if (target === "browser") {
+    if (this._target === "browser") {
       // We create the audio element here + do a play, because iOS requires it to be done by user action
       const audio = new Audio();
       audio.play();
       this._playBrowser(message, audio);
     } else {
       this.hass.callService("tts", "cloud_say", {
-        entity_id: target,
+        entity_id: this._target,
         message,
       });
     }
+  }
+
+  private _createAutomation() {
+    const message = this._messageInput!.value!;
+    this._message = message;
+    showAutomationEditor({
+      action: [
+        {
+          service: "tts.cloud_say",
+          data: {
+            entity_id: this._target,
+            message: message,
+          },
+        },
+      ],
+    });
+    this.closeDialog();
   }
 
   private async _playBrowser(message: string, audio: HTMLAudioElement) {

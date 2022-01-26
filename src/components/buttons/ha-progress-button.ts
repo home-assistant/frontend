@@ -68,6 +68,7 @@ export class HaProgressButton extends LitElement {
         --mdc-theme-primary: white;
         background-color: var(--success-color);
         transition: none;
+        border-radius: 4px;
       }
 
       mwc-button[raised].success {
@@ -79,6 +80,7 @@ export class HaProgressButton extends LitElement {
         --mdc-theme-primary: white;
         background-color: var(--error-color);
         transition: none;
+        border-radius: 4px;
       }
 
       mwc-button[raised].error {

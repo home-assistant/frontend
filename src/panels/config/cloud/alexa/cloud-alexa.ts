@@ -6,6 +6,7 @@ import {
   mdiCloseBox,
   mdiCloseBoxMultiple,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -33,9 +34,14 @@ import {
   updateCloudAlexaEntityConfig,
   updateCloudPref,
 } from "../../../../data/cloud";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../../data/entity_registry";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -43,7 +49,7 @@ const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
 
 @customElement("cloud-alexa")
-class CloudAlexa extends LitElement {
+class CloudAlexa extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property()
@@ -53,8 +59,14 @@ class CloudAlexa extends LitElement {
 
   @state() private _entities?: AlexaEntity[];
 
-  @property()
+  @state()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
+
+  @state()
+  private _entityCategories?: Record<
+    string,
+    EntityRegistryEntry["entity_category"]
+  >;
 
   private _popstateSyncAttached = false;
 
@@ -72,7 +84,7 @@ class CloudAlexa extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (this._entities === undefined) {
+    if (this._entities === undefined || this._entityCategories === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.alexa_entities);
@@ -99,10 +111,17 @@ class CloudAlexa extends LitElement {
         should_expose: null,
       };
       const isExposed = emptyFilter
-        ? this._configIsExposed(entity.entity_id, config)
+        ? this._configIsExposed(
+            entity.entity_id,
+            config,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       const isDomainExposed = emptyFilter
-        ? this._configIsDomainExposed(entity.entity_id)
+        ? this._configIsDomainExposed(
+            entity.entity_id,
+            this._entityCategories![entity.entity_id]
+          )
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -287,6 +306,23 @@ class CloudAlexa extends LitElement {
     }
   }
 
+  protected override hassSubscribe(): (
+    | UnsubscribeFunc
+    | Promise<UnsubscribeFunc>
+  )[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        const categories = {};
+
+        for (const entry of entries) {
+          categories[entry.entity_id] = entry.entity_category;
+        }
+
+        this._entityCategories = categories;
+      }),
+    ];
+  }
+
   private async _fetchData() {
     const entities = await fetchCloudAlexaEntities(this.hass);
     entities.sort((a, b) => {
@@ -305,15 +341,26 @@ class CloudAlexa extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private _configIsDomainExposed(entityId: string) {
+  private _configIsDomainExposed(
+    entityId: string,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
     const domain = computeDomain(entityId);
     return this.cloudStatus.prefs.alexa_default_expose
-      ? this.cloudStatus.prefs.alexa_default_expose.includes(domain)
+      ? !entityCategory &&
+          this.cloudStatus.prefs.alexa_default_expose.includes(domain)
       : DEFAULT_CONFIG_EXPOSE;
   }
 
-  private _configIsExposed(entityId: string, config: AlexaEntityConfig) {
-    return config.should_expose ?? this._configIsDomainExposed(entityId);
+  private _configIsExposed(
+    entityId: string,
+    config: AlexaEntityConfig,
+    entityCategory: EntityRegistryEntry["entity_category"] | undefined
+  ) {
+    return (
+      config.should_expose ??
+      this._configIsDomainExposed(entityId, entityCategory)
+    );
   }
 
   private async _exposeChanged(ev: CustomEvent<ActionDetail>) {

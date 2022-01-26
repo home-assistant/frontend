@@ -95,7 +95,7 @@ class HassioAddonStore extends LitElement {
             ${this.supervisor.localize("store.repositories")}
           </mwc-list-item>
           <mwc-list-item>
-            ${this.supervisor.localize("common.reload")}
+            ${this.supervisor.localize("store.check_updates")}
           </mwc-list-item>
           ${this.hass.userData?.showAdvanced &&
           atLeastVersion(this.hass.config.version, 0, 117)

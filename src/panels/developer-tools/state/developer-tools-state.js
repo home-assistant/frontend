@@ -1,3 +1,4 @@
+import { addHours } from "date-fns";
 import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
@@ -84,6 +85,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         :host([rtl]) .entities th {
           text-align: right;
+          direction: rtl;
         }
 
         .entities tr {
@@ -144,7 +146,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
       </h1>
       <ha-expansion-panel
-        header="Set state"
+        header="[[localize('ui.panel.developer-tools.tabs.states.set_state')]]"
         outlined
         expanded="[[_expanded]]"
         on-expanded-changed="expandedChanged"
@@ -180,6 +182,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="[[_stateAttributes]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
+              dir="ltr"
             ></ha-code-editor>
             <div class="button-row">
               <mwc-button
@@ -200,12 +203,18 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <p>
                 <b
                   >[[localize('ui.panel.developer-tools.tabs.states.last_changed')]]:</b
-                ><br />[[lastChangedString(_entity)]]
+                ><br />
+                <a href="[[historyFromLastChanged(_entity)]]"
+                  >[[lastChangedString(_entity)]]</a
+                >
               </p>
               <p>
                 <b
                   >[[localize('ui.panel.developer-tools.tabs.states.last_updated')]]:</b
-                ><br />[[lastUpdatedString(_entity)]]
+                ><br />
+                <a href="[[historyFromLastUpdated(_entity)]]"
+                  >[[lastUpdatedString(_entity)]]</a
+                >
               </p>
             </template>
           </div>
@@ -405,6 +414,20 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
     this._expanded = true;
+  }
+
+  _getHistoryURL(entityId, inputDate) {
+    const date = new Date(inputDate);
+    const hourBefore = addHours(date, -1).toISOString();
+    return `/history?entity_id=${entityId}&start_date=${hourBefore}`;
+  }
+
+  historyFromLastChanged(entity) {
+    return this._getHistoryURL(entity.entity_id, entity.last_changed);
+  }
+
+  historyFromLastUpdated(entity) {
+    return this._getHistoryURL(entity.entity_id, entity.last_updated);
   }
 
   expandedChanged(ev) {

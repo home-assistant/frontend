@@ -245,7 +245,7 @@ export class HuiDialogEditCard
           <mwc-button @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          ${this._cardConfig !== undefined
+          ${this._cardConfig !== undefined && this._dirty
             ? html`
                 <mwc-button
                   ?disabled=${!this._canSave || this._saving}
@@ -259,9 +259,7 @@ export class HuiDialogEditCard
                           size="small"
                         ></ha-circular-progress>
                       `
-                    : this._dirty
-                    ? this.hass!.localize("ui.common.save")
-                    : this.hass!.localize("ui.common.close")}
+                    : this.hass!.localize("ui.common.save")}
                 </mwc-button>
               `
             : ``}

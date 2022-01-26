@@ -59,7 +59,12 @@ export class HaDeviceCard extends LitElement {
             ? html`
                 <div class="extra-info">
                   ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.firmware",
+                    `ui.panel.config.integrations.config_entry.${
+                      this.device.entry_type === "service" &&
+                      !this.device.hw_version
+                        ? "version"
+                        : "firmware"
+                    }`,
                     "version",
                     this.device.sw_version
                   )}

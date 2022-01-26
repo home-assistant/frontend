@@ -199,7 +199,7 @@ export class HaDeviceEntitiesCard extends LitElement {
               ? stripPrefixFromEntityName(
                   name,
                   `${this.deviceName} `.toLowerCase()
-                )
+                ) || name
               : entry.entity_id}
           </div>
         </paper-item-body>

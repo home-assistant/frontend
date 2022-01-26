@@ -94,6 +94,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               value="[[eventData]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
+              dir="ltr"
             ></ha-code-editor>
           </div>
           <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
