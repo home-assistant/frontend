@@ -2,6 +2,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
@@ -22,7 +23,7 @@ import { formatSystemLogTime } from "./util";
 export class SystemLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public filter: string = "";
+  @property() public filter = "";
 
   public loaded = false;
 
@@ -52,21 +53,23 @@ export class SystemLogCard extends LitElement {
       ? this._items.map((item) => getLoggedErrorIntegration(item))
       : [];
     const filteredItems = this._items
-      ? this._items.filter((item) => {
-          if (this.filter) {
-            const filter = this.filter.toLowerCase();
-            return (
-              item.message.some((message) =>
-                message.toLowerCase().includes(filter)
-              ) ||
-              item.source[0].toLowerCase().includes(filter) ||
-              item.name.toLowerCase().includes(filter) ||
-              this._timestamp(item).toLowerCase().includes(filter) ||
-              this._multipleMessages(item).toLowerCase().includes(filter)
-            );
-          }
-          return item;
-        })
+      ? this._items.filter(
+          memoizeOne((item) => {
+            if (this.filter) {
+              const filter = this.filter.toLowerCase();
+              return (
+                item.message.some((message) =>
+                  message.toLowerCase().includes(filter)
+                ) ||
+                item.source[0].toLowerCase().includes(filter) ||
+                item.name.toLowerCase().includes(filter) ||
+                this._timestamp(item).toLowerCase().includes(filter) ||
+                this._multipleMessages(item).toLowerCase().includes(filter)
+              );
+            }
+            return item;
+          })
+        )
       : [];
     return html`
       <div class="system-log-intro">
