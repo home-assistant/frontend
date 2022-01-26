@@ -1,6 +1,7 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
 
@@ -132,4 +133,9 @@ export const subscribeEntityRegistry = (
     subscribeEntityRegistryUpdates,
     conn,
     onChange
+  );
+
+export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
+  entries.sort((entry1, entry2) =>
+    caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
