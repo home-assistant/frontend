@@ -10,7 +10,7 @@ import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 
 export class CloudAlexaPref extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
@@ -21,6 +21,7 @@ export class CloudAlexaPref extends LitElement {
       return html``;
     }
 
+    const alexa_registered = this.cloudStatus.alexa_registered;
     const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
@@ -36,33 +37,49 @@ export class CloudAlexaPref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
-          <ul>
-            <li>
-              <a
-                href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.cloud.account.alexa.enable_ha_skill"
-                )}
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.nabucasa.com/config/amazon_alexa/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.cloud.account.alexa.config_documentation"
-                )}
-              </a>
-            </li>
-          </ul>
-          ${alexa_enabled
+          <p>
+            ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
+          </p>
+          ${!alexa_enabled
+            ? ""
+            : !alexa_registered
             ? html`
+                <ha-alert
+                  .title=${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.not_configured_title"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.not_configured_text"
+                  )}
+
+                  <ul>
+                    <li>
+                      <a
+                        href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.enable_ha_skill"
+                        )}
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.nabucasa.com/config/amazon_alexa/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.config_documentation"
+                        )}
+                      </a>
+                    </li>
+                  </ul>
+                </ha-alert>
+              `
+            : html`
                 <div class="state-reporting">
                   <h3>
                     ${this.hass!.localize(
@@ -81,18 +98,21 @@ export class CloudAlexaPref extends LitElement {
                     "ui.panel.config.cloud.account.alexa.info_state_reporting"
                   )}
                 </p>
-              `
-            : ""}
+              `}
         </div>
         <div class="card-actions">
-          <mwc-button
-            @click=${this._handleSync}
-            .disabled=${!alexa_enabled || this._syncing}
-          >
-            ${this.hass!.localize(
-              "ui.panel.config.cloud.account.alexa.sync_entities"
-            )}
-          </mwc-button>
+          ${alexa_registered
+            ? html`
+                <mwc-button
+                  @click=${this._handleSync}
+                  .disabled=${!alexa_enabled || this._syncing}
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.alexa.sync_entities"
+                  )}
+                </mwc-button>
+              `
+            : ""}
           <div class="spacer"></div>
           <a href="/config/cloud/alexa">
             <mwc-button
