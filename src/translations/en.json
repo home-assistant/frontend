@@ -2115,25 +2115,30 @@
               "sync_entities_error": "Failed to sync entities:",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "enable": "enable",
-              "disable": "disable"
+              "disable": "disable",
+              "not_configured_title": "Alexa is not activated",
+              "not_configured_text": "Before you can use Alexa, you need to activate the Home Assistant skill for Alexa in the Alexa app."
             },
             "google": {
               "title": "Google Assistant",
               "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "http_use_ssl_warning_title": "Local communication unavailable",
+              "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant because you have configured an SSL certificate for your HTTP integration.",
               "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
-              "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
+              "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
               "security_devices": "Security Devices",
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this PIN when interacting with such devices via Google Assistant.",
               "devices_pin": "Security Devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "sync_entities": "Sync Entities to Google",
-              "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Google Assistant is not activated",
-              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app."
+              "not_configured_text": "Before you can use Google Assistant, you need to activate the Home Assistant Cloud skill for Google Assistant in the Google Home app.",
+              "sync_failed_title": "Syncing failed",
+              "sync_failed_text": "Syncing your entities failed, try again or check the logs."
             },
             "webhooks": {
               "title": "Webhooks",
