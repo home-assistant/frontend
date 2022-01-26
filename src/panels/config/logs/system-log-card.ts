@@ -22,7 +22,7 @@ import { formatSystemLogTime } from "./util";
 export class SystemLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() public filter?: string = "";
+  @property() public filter: string = "";
 
   public loaded = false;
 
@@ -53,7 +53,7 @@ export class SystemLogCard extends LitElement {
       : [];
     const filteredItems = this._items
       ? this._items.filter((item) => {
-          if (this.filter?.length) {
+          if (this.filter) {
             const filter = this.filter.toLowerCase();
             return (
               item.message.some((message) =>
@@ -84,7 +84,7 @@ export class SystemLogCard extends LitElement {
                         ${this.hass.localize("ui.panel.config.logs.no_issues")}
                       </div>
                     `
-                  : filteredItems.length === 0 && this.filter?.length
+                  : filteredItems.length === 0 && this.filter
                   ? html`<div class="card-content">
                       ${this.hass.localize(
                         "ui.panel.config.logs.no_issues_search",

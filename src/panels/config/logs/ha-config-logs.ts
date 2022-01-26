@@ -29,7 +29,7 @@ export class HaConfigLogs extends LitElement {
 
   @property() public route!: Route;
 
-  @state() private _filter?: string;
+  @state() private _filter = "";
 
   @query("system-log-card", true) private systemLog?: SystemLogCard;
 
