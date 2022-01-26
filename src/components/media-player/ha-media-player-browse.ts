@@ -721,7 +721,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .content {
           overflow-y: auto;
-          padding-bottom: 20px;
           box-sizing: border-box;
         }
 
