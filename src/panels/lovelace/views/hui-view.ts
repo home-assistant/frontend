@@ -54,7 +54,11 @@ export class HUIView extends ReactiveElement {
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
-    element.hass = this.hass;
+    try {
+      element.hass = this.hass;
+    } catch {
+      /* ignore */
+    }
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -71,7 +75,11 @@ export class HUIView extends ReactiveElement {
 
   public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
     const element = createBadgeElement(badgeConfig) as LovelaceBadge;
-    element.hass = this.hass;
+    try {
+      element.hass = this.hass;
+    } catch {
+      /* ignore */
+    }
     element.addEventListener(
       "ll-badge-rebuild",
       () => {
@@ -121,11 +129,19 @@ export class HUIView extends ReactiveElement {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._badges.forEach((badge) => {
-          badge.hass = this.hass;
+          try {
+            badge.hass = this.hass;
+          } catch {
+            /* ignore */
+          }
         });
 
         this._cards.forEach((element) => {
-          element.hass = this.hass;
+          try {
+            element.hass = this.hass;
+          } catch {
+            /* ignore */
+          }
         });
 
         this._layoutElement.hass = this.hass;
@@ -238,7 +254,11 @@ export class HUIView extends ReactiveElement {
     const badges = processConfigEntities(config.badges as any);
     this._badges = badges.map((badge) => {
       const element = createBadgeElement(badge);
-      element.hass = this.hass;
+      try {
+        element.hass = this.hass;
+      } catch {
+        /* ignore */
+      }
       return element;
     });
   }
@@ -251,7 +271,11 @@ export class HUIView extends ReactiveElement {
 
     this._cards = config.cards.map((cardConfig) => {
       const element = this.createCardElement(cardConfig);
-      element.hass = this.hass;
+      try {
+        element.hass = this.hass;
+      } catch {
+        /* ignore */
+      }
       return element;
     });
   }
@@ -261,7 +285,11 @@ export class HUIView extends ReactiveElement {
     config: LovelaceCardConfig
   ): void {
     const newCardEl = this.createCardElement(config);
-    newCardEl.hass = this.hass;
+    try {
+      newCardEl.hass = this.hass;
+    } catch {
+      /* ignore */
+    }
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
@@ -275,7 +303,11 @@ export class HUIView extends ReactiveElement {
     config: LovelaceBadgeConfig
   ): void {
     const newBadgeEl = this.createBadgeElement(config);
-    newBadgeEl.hass = this.hass;
+    try {
+      newBadgeEl.hass = this.hass;
+    } catch {
+      /* ignore */
+    }
     if (badgeElToReplace.parentElement) {
       badgeElToReplace.parentElement!.replaceChild(
         newBadgeEl,
