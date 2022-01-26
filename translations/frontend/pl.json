@@ -55,7 +55,7 @@
                 "away": "poza domem",
                 "boost": "wzmocnienie",
                 "comfort": "komfort",
-                "eco": "ekonomicznie",
+                "eco": "eko",
                 "home": "w domu",
                 "none": "brak",
                 "sleep": "noc"
@@ -131,7 +131,7 @@
             "dashboard": {
                 "action_error": {
                     "get_changelog": "Nie udało się uzyskać listy zmian dodatku",
-                    "go_to_config": "Nie udało się uruchomić dodatku - sprawdzanie poprawności konfiguracji nie powiodło się!",
+                    "go_to_config": "Edytuj konfigurację",
                     "install": "Nie udało się zainstalować dodatku",
                     "restart": "Nie udało się ponownie uruchomić dodatku",
                     "start": "Nie udało się uruchomić dodatku",
@@ -298,6 +298,7 @@
             "passwords_not_matching": "Hasła nie są takie same",
             "select_type": "Wybierz, co przywrócić",
             "selected": "wybrano {number}",
+            "size": "Rozmiar",
             "type": "Typ kopii zapasowej",
             "upload_backup": "Prześlij kopię zapasową"
         },
@@ -323,8 +324,10 @@
             "reset_options": "Resetuj opcje",
             "restart": "Uruchom ponownie",
             "restart_name": "Uruchom ponownie",
+            "review": "przegląd",
             "running_version": "Aktualnie używasz wersji {version}",
             "save": "Zapisz",
+            "show": "pokaż",
             "show_more": "Pokaż więcej informacji na ten temat",
             "update": "Aktualizuj",
             "update_available": "{count, plural,\n  one {Oczekująca aktualizacja}\n  few {Oczekujące aktualizacje}\n  many {Oczekujących aktualizacji}\n  other {{count} Oczekujące aktualizacje}\n}",
@@ -405,7 +408,8 @@
             "repositories": {
                 "add": "Dodaj",
                 "remove": "Usuń",
-                "title": "Zarządzaj repozytoriami dodatków"
+                "title": "Zarządzaj repozytoriami dodatków",
+                "used": "Repozytorium jest używane dla zainstalowanych dodatków i nie można go usunąć."
             },
             "restart_addon": {
                 "confirm_text": "Uruchom ponownie dodatek",
@@ -428,12 +432,14 @@
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
         },
         "panel": {
+            "addons": "Dodatki",
             "backups": "Kopie zapasowe",
             "dashboard": "Dashboard",
             "store": "Sklep z dodatkami",
             "system": "System"
         },
         "store": {
+            "check_updates": "Sprawdź aktualizacje",
             "missing_addons": "Brakuje dodatków? Włącz tryb zaawansowany na stronie profilu użytkownika.",
             "no_results_found": "Brak wyników w {repository}.",
             "registries": "Rejestry",
@@ -526,6 +532,16 @@
                 "update_supervisor": "Zaktualizuj Supervisora",
                 "warning": "OSTRZEŻENIE"
             }
+        },
+        "update_available": {
+            "core_note": "Supervisor przywróci wersję {version} jeśli instancja nie pojawi się po aktualizacji.",
+            "create_backup": "Utwórz kopię zapasową przed aktualizacją",
+            "creating_backup": "Tworzenie kopii zapasowej {name}",
+            "description": "Aktualnie zainstalowana jest wersja {version} Kliknij zaktualizuj, aby zaktualizować do wersji {newest_version}",
+            "no_update": "Brak dostępnych aktualizacji dla {name}",
+            "open_release_notes": "Informacje o wydaniu",
+            "update_name": "Aktualizacja {name}",
+            "updating": "Aktualizacja {name} do wersji {version}"
         }
     },
     "ui": {
@@ -544,6 +560,9 @@
                 "clear_code": "Wyczyść",
                 "code": "Kod",
                 "disarm": "Rozbrój"
+            },
+            "area": {
+                "area_not_found": "Nie znaleziono obszaru."
             },
             "automation": {
                 "last_triggered": "Ostatnie uruchomienie",
@@ -615,10 +634,17 @@
             },
             "media_player": {
                 "browse_media": "Przeglądaj media",
-                "media_next_track": "Następny",
+                "media_next_track": "Następny utwór",
+                "media_pause": "Pauza",
                 "media_play": "Odtwarzaj",
                 "media_play_pause": "Odtwarzaj/pauza",
-                "media_previous_track": "Poprzedni",
+                "media_previous_track": "Poprzedni utwór",
+                "media_stop": "Zatrzymaj",
+                "media_volume_down": "Ciszej",
+                "media_volume_mute": "Wycisz",
+                "media_volume_unmute": "Wyłącz wyciszenie",
+                "media_volume_up": "Głośniej",
+                "nothing_playing": "Nic nie gra",
                 "sound_mode": "Tryb dźwięku",
                 "source": "Źródło",
                 "text_to_speak": "Zamień tekst na mowę",
@@ -726,6 +752,7 @@
             "save": "Zapisz",
             "skip": "Pomiń",
             "stay": "Zostań",
+            "submit": "Zatwierdź",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "undo": "Cofnij",
@@ -736,11 +763,11 @@
                 "addon": "Dodatek",
                 "error": {
                     "fetch_addons": {
-                        "description": "Pobieranie dodatków zwróciło błąd.",
-                        "title": "Błąd podczas pobierania dodatków"
+                        "description": "Wystąpił błąd podczas ładowania dodatków.",
+                        "title": "Błąd podczas ładowania dodatków"
                     },
                     "no_supervisor": {
-                        "description": "Nie znaleziono Supervisora, więc nie można wczytać dodatków.",
+                        "description": "Dodatki nie są obsługiwane.",
                         "title": "Brak Supervisora"
                     }
                 }
@@ -850,7 +877,7 @@
                     "was_unplugged": "nastąpiło odłączenie",
                     "was_unsafe": "wykryto zagrożenie"
                 },
-                "retrieval_error": "Błąd podczas pobierania wpisów z dziennika",
+                "retrieval_error": "Nie udało się załadować dziennika",
                 "show_trace": "Pokaż ślad"
             },
             "media-browser": {
@@ -900,7 +927,15 @@
                 "label": "Obraz",
                 "unsupported_format": "Nieobsługiwany format, wybierz obraz JPEG, PNG lub GIF."
             },
+            "qr-scanner": {
+                "enter_qr_code": "Wprowadź wartość kodu QR",
+                "manual_input": "Możesz zeskanować kod QR innym skanerem QR i wkleić kod w polu poniżej",
+                "not_supported": "Twoja przeglądarka nie obsługuje skanowania kodów QR.",
+                "only_https_supported": "Możesz użyć aparatu do zeskanowania kodu QR tylko podczas korzystania z protokołu HTTPS.",
+                "select_camera": "Wybierz kamerę"
+            },
             "related-filter-menu": {
+                "filter": "Filtr",
                 "filter_by_area": "Filtruj według obszaru",
                 "filter_by_device": "Filtruj według urządzenia",
                 "filter_by_entity": "Filtruj według encji",
@@ -976,8 +1011,8 @@
                 "add_device_id": "Wybierz urządzenie",
                 "add_entity_id": "Wybierz encję",
                 "expand": "Rozwiń",
-                "expand_area_id": "Rozwiń ten obszar do listy urządzeń i encji, które on zawiera. Po rozwinięciu lista urządzeń i encji i nie będzie aktualizowana, gdy zmieni się obszar.",
-                "expand_device_id": "Rozwiń to urządzenie do listy encji, które ono zawiera. Po rozwinięciu lista encji i nie będzie aktualizowana, gdy zmieni się urządzenie.",
+                "expand_area_id": "Podziel ten obszar na oddzielne urządzenia i encje.",
+                "expand_device_id": "Podziel to urządzenie na oddzielne encje.",
                 "remove": "Usuń",
                 "remove_area_id": "Usuń obszar",
                 "remove_device_id": "Usuń urządzenie",
@@ -1012,8 +1047,22 @@
                     "area": "Ustaw obszar encji",
                     "area_note": "Domyślnie encje urządzenia znajdują się w tym samym obszarze co urządzenie. Jeśli zmienisz obszar tej encji, nie będzie ona już występować w obszarze urządzenia.",
                     "change_device_area": "Zmień obszar urządzenia",
-                    "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
+                    "confirm_delete": "Czy na pewno chcesz usunąć tę encję?",
                     "delete": "Usuń",
+                    "device_class": "Pokaż jako",
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Drzwi",
+                            "garage_door": "Brama garażowa",
+                            "opening": "Inne",
+                            "window": "Okno"
+                        },
+                        "cover": {
+                            "door": "Drzwi",
+                            "garage": "Brama garażowa",
+                            "window": "Okno"
+                        }
+                    },
                     "device_disabled": "Urządzenie tej encji jest wyłączone",
                     "enabled_cause": "Wyłączone przez {cause}.",
                     "enabled_delay_confirm": "Włączone encje zostaną dodane do Home Assistanta po {delay} sekundach",
@@ -1097,9 +1146,10 @@
                 "cover": {
                     "close_cover": "Zamknij roletę",
                     "close_tile_cover": "Przechylenie zamkniętej rolety",
+                    "close_tilt_cover": "Przechylenie zamkniętej rolety",
                     "open_cover": "Otwórz roletę",
                     "open_tilt_cover": "Przechylenie otwartej rolety",
-                    "stop_cover": "Wstrzymanie rolety"
+                    "stop_cover": "Zatrzymanie rolety"
                 },
                 "details": "Szczegóły",
                 "dismiss": "Zamknij okno dialogowe",
@@ -1224,6 +1274,7 @@
                         "statistics": "Encje komponentu statystyka",
                         "telegram": "Usługi powiadomień komponentu Telegram",
                         "template": "Encje zdefiniowane szablonami",
+                        "themes": "Motywy",
                         "trend": "Encje komponentu trend",
                         "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                         "zone": "Strefy"
@@ -1239,7 +1290,9 @@
                         "server_control": "Serwer"
                     }
                 },
-                "filter_placeholder": "Filtr encji"
+                "filter_placeholder": "Filtr encji",
+                "key_c_hint": "Naciśnij „c” na dowolnej stronie, aby otworzyć ten pasek wyszukiwania",
+                "title": "Szybkie wyszukiwanie"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant niczego nie usłyszał",
@@ -1315,6 +1368,7 @@
                 "key_missing": "Brak wymaganego klucza \"{key}\".",
                 "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
                 "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_state_array_support": "Wielokrotne wartości stanu nie są obsługiwane w edytorze wizualnym",
                 "no_template_editor_support": "Szablony nie są obsługiwane w edytorze wizualnym",
                 "no_type_provided": "Nie wprowadzono typu."
             },
@@ -1356,6 +1410,8 @@
                     "link_profile_page": "strona Twojego profilu"
                 },
                 "areas": {
+                    "add_picture": "Dodaj zdjęcie",
+                    "assigned_to_area": "Przypisane do obszaru",
                     "caption": "Obszary",
                     "data_table": {
                         "area": "Obszar",
@@ -1387,7 +1443,8 @@
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
                         "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
                         "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!"
-                    }
+                    },
+                    "targeting_area": "Nakierowane na obszar"
                 },
                 "automation": {
                     "caption": "Automatyzacje",
@@ -1399,6 +1456,7 @@
                         "header": "Utwórz nową automatyzację",
                         "how": "Jak chcesz utworzyć nową automatyzację?",
                         "start_empty": "Zacznij od pustej automatyzacji",
+                        "start_empty_description": "Stwórz nową automatyzację",
                         "thingtalk": {
                             "create": "Utwórz",
                             "header": "Opisz automatyzację, którą chcesz utworzyć",
@@ -1545,7 +1603,7 @@
                                     "before": "Przed:",
                                     "before_offset": "Przed przesunięciem (opcjonalnie)",
                                     "label": "Słońce",
-                                    "sunrise": "wschód słońca",
+                                    "sunrise": "Wschód słońca",
                                     "sunset": "zachód słońca"
                                 },
                                 "template": {
@@ -1616,8 +1674,9 @@
                             "delete": "Usuń",
                             "delete_confirm": "Czy na pewno chcesz to usunąć?",
                             "duplicate": "Duplikuj",
+                            "edit_id": "Edytuj identyfikator wyzwalacza",
                             "header": "Wyzwalacze",
-                            "id": "Identyfikator wyzwalacza (używany przez warunek wyzwalacza)",
+                            "id": "Identyfikator wyzwalacza",
                             "introduction": "Wyzwalacze uruchamiają przetwarzanie automatyzacji. Możliwe jest stworzenie wielu wyzwalaczy dla tej samej automatyzacji. Po uruchomieniu wyzwalacza Home Assistant sprawdzi ewentualne warunki i wywoła akcje.",
                             "learn_more": "Dowiedz się więcej o wyzwalaczach",
                             "name": "Wyzwalacz",
@@ -1626,7 +1685,7 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania",
+                                        "for": "Czas trwania (opcjonalnie)",
                                         "zone": "Strefa"
                                     },
                                     "label": "Urządzenie",
@@ -1667,10 +1726,10 @@
                                 },
                                 "state": {
                                     "attribute": "Atrybut (opcjonalnie)",
-                                    "for": "Przez",
-                                    "from": "Z",
+                                    "for": "Przez (opcjonalnie)",
+                                    "from": "Z (opcjonalnie)",
                                     "label": "Stan",
-                                    "to": "Na"
+                                    "to": "Na (opcjonalnie)"
                                 },
                                 "sun": {
                                     "event": "Zdarzenie:",
@@ -1870,6 +1929,7 @@
                         "tts": {
                             "default_language": "Używany język domyślny",
                             "dialog": {
+                                "create_automation": "Utwórz automatyzację",
                                 "example_message": "Witaj {name} , możesz odtwarzać dowolny tekst na dowolnym obsługiwanym odtwarzaczu multimedialnym!",
                                 "header": "Wypróbuj zamiany tekstu na mowę",
                                 "play": "Odtwarzaj",
@@ -2004,7 +2064,7 @@
                 },
                 "core": {
                     "caption": "Ogólne",
-                    "description": "System metryczny, lokalizacja, strefa czasowa oraz inne parametry ogólne",
+                    "description": "Lokalizacja, sieć i analityka",
                     "section": {
                         "core": {
                             "core_config": {
@@ -2027,7 +2087,7 @@
                                 "unit_system_metric": "Metryczny"
                             },
                             "header": "Konfiguracja ogólna",
-                            "introduction": "Zmiana konfiguracji może być męczącym procesem. Wiemy. Ta sekcja postara się ułatwić Ci życie."
+                            "introduction": "Zarządzaj swoją lokalizacją, siecią i analityką."
                         }
                     }
                 },
@@ -2050,6 +2110,48 @@
                         "include_link": "plik customize.yaml.",
                         "include_sentence": "Wygląda na to, że Twój plik configuration.yaml nieprawidłowo załącza",
                         "not_applied": "Wprowadzone tutaj zmiany są w nim zapisane, ale nie zostaną zastosowane po ponownym wczytaniu konfiguracji, chyba że dołączony plik jest na miejscu."
+                    }
+                },
+                "dashboard": {
+                    "automations": {
+                        "description": "Zarządzaj automatyzacjami, scenami, skryptami oraz pomocnikami",
+                        "title": "Automatyzacje oraz sceny"
+                    },
+                    "blueprints": {
+                        "description": "Gotowe automatyzacje i skrypty stworzone przez społeczność",
+                        "title": "Schematy"
+                    },
+                    "companion": {
+                        "description": "Lokalizacja oraz powiadomienia",
+                        "title": "Aplikacja towarzysząca"
+                    },
+                    "dashboards": {
+                        "description": "Twórz niestandardowe zestawy kart do sterowania domem",
+                        "title": "Dashboardy"
+                    },
+                    "devices": {
+                        "description": "Integracje, urządzenia, rejestr encji oraz obszary",
+                        "title": "Urządzenia oraz usługi"
+                    },
+                    "energy": {
+                        "description": "Monitoruj produkcję i użycie energii",
+                        "title": "Energia"
+                    },
+                    "people": {
+                        "description": "Zarządzaj osobami oraz strefami, które śledzi Home Assistant",
+                        "title": "Osoby oraz strefy"
+                    },
+                    "settings": {
+                        "description": "Ustawienia ogólne, kontrola serwera, logi oraz informacje",
+                        "title": "Ustawienia"
+                    },
+                    "supervisor": {
+                        "description": "Twórz kopie zapasowe, sprawdzaj logi oraz uruchom ponownie system",
+                        "title": "Dodatki, kopie zapasowe oraz Supervisor"
+                    },
+                    "tags": {
+                        "description": "Uruchamiaj automatyzacje po zeskanowaniu tagu NFC, kodu QR, itp",
+                        "title": "Tagi"
                     }
                 },
                 "devices": {
@@ -2090,7 +2192,8 @@
                         "integration": "Integracja",
                         "manufacturer": "Producent",
                         "model": "Model",
-                        "no_devices": "Brak urządzeń"
+                        "no_devices": "Brak urządzeń",
+                        "no_integration": "Brak integracji"
                     },
                     "delete": "Usuń",
                     "description": "Zarządzaj skonfigurowanymi urządzeniami",
@@ -2102,6 +2205,7 @@
                         "integration": "Integracja",
                         "user": "Użytkownik"
                     },
+                    "download_diagnostics": "Pobierz diagnostykę",
                     "edit_settings": "Edytuj ustawienia",
                     "enabled_cause": "Urządzenie jest wyłączone przez {cause}",
                     "enabled_description": "Wyłączone urządzenia nie będą wyświetlane, a encje do niego należące zostaną wyłączone i nie zostaną dodane do Home Assistanta.",
@@ -2195,7 +2299,7 @@
                             "energy_stat": "Użyty gaz (m³)",
                             "gas_usage": "Użycie gazu",
                             "header": "Konfiguracja użycia gazu",
-                            "m3_or_kWh": "m³ lub kWh",
+                            "m3_or_kWh": "ft³, m³, Wh, kWh lub MWh",
                             "no_cost": "Nie śledź kosztów",
                             "paragraph": "Użycie gazu to jego objętość, która płynie do twojego domu."
                         },
@@ -2300,19 +2404,19 @@
                                 "title": "Nieoczekiwana klasa stanu"
                             },
                             "entity_unexpected_unit_energy": {
-                                "description": "Następujące encje nie mają wymaganej jednostki miary (kWh lub Wh):",
+                                "description": "Następujące encje nie mają wymaganej jednostki miary (Wh, kWh lub MWh):",
                                 "title": "Niewłaściwa jednostka miary"
                             },
                             "entity_unexpected_unit_energy_price": {
-                                "description": "Następujące encje nie mają odpowiedniej jednostki miary: ''{currency}/kWh\" lub \"{currency}/Wh\":",
+                                "description": "Następujące encje nie mają wymaganej jednostki miary (''{currency}/Wh\", ''{currency}/kWh\" lub \"{currency}/MWh\"):",
                                 "title": "Niewłaściwa jednostka miary"
                             },
                             "entity_unexpected_unit_gas": {
-                                "description": "Następujące encje nie mają wymaganej jednostki miary (kWh, m³ lub ft):",
+                                "description": "Następujące encje nie mają wymaganej jednostki miary \"Wh\", \"kWh\" lub \"MWh\" dla sensora energii lub m³ lub ft³ dla sensora gazu:",
                                 "title": "Niewłaściwa jednostka miary"
                             },
                             "entity_unexpected_unit_gas_price": {
-                                "description": "Następujące encje nie mają wymaganej jednostki miary (\"{currency}/kWh\", \"{currency}/Wh\", \"{currency}/m³\" or \"{currency}/ft³\"):",
+                                "description": "Następujące encje nie mają wymaganej jednostki miary (\"{currency}/Wh\", \"{currency}/kWh\", \"{currency}/MWh\", \"{currency}/m³\" lub \"{currency}/ft³\"):",
                                 "title": "Niewłaściwa jednostka miary"
                             },
                             "recorder_untracked": {
@@ -2395,6 +2499,7 @@
                     "types": {
                         "counter": "Licznik",
                         "input_boolean": "Przełącznik",
+                        "input_button": "Przycisk",
                         "input_datetime": "Data/czas",
                         "input_number": "Numer",
                         "input_select": "Pole wyboru",
@@ -2456,14 +2561,18 @@
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disabled_polling": "Automatyczne odpytywanie o zaktualizowane dane jest wyłączone",
                         "documentation": "Dokumentacja",
+                        "download_diagnostics": "Pobierz diagnostykę",
                         "enable_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć uruchamianie tej integracji",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
+                        "hardware": "Sprzęt: {version}",
                         "hub": "połączony poprzez:",
+                        "known_issues": "Znane problemy",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
                         "not_loaded": "Nie wczytano",
+                        "open_configuration_url": "Przejdź do urządzenia",
                         "provided_by_custom_integration": "Dostarczone przez niestandardowy komponent",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
@@ -2480,7 +2589,9 @@
                             "setup_retry": "Próbuję ponownie skonfigurować"
                         },
                         "system_options": "Opcje systemowe",
-                        "unnamed_entry": "Nienazwany wpis"
+                        "unknown_via_device": "Nieznane urządzenie",
+                        "unnamed_entry": "Nienazwany wpis",
+                        "via": "Połączony przez"
                     },
                     "config_flow": {
                         "aborted": "Przerwano",
@@ -2793,6 +2904,7 @@
                         "link_integrations_page": "Strona integracji",
                         "link_presence_detection_integrations": "Integracje wykrywania obecności",
                         "linked_user": "Połączony użytkownik",
+                        "local_only": "Możliwość logowania tylko z sieci lokalnej",
                         "name": "Imię",
                         "name_error_msg": "Imię jest wymagane",
                         "new_person": "Nowa osoba",
@@ -2811,6 +2923,7 @@
                     "caption": "Sceny",
                     "description": "Przechwytuj stany urządzeń i łatwo przywołuj je później",
                     "editor": {
+                        "area": "Obszar",
                         "default_name": "Nowa scena",
                         "devices": {
                             "add": "Dodaj urządzenie",
@@ -2906,7 +3019,7 @@
                 },
                 "server_control": {
                     "caption": "Kontrola serwera",
-                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
+                    "description": "Sprawdź i uruchom ponownie serwer Home Assistant",
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
@@ -2921,6 +3034,7 @@
                             "history_stats": "Encje komponentu historia stanów",
                             "homekit": "HomeKit",
                             "input_boolean": "Pomocnicy typu przełącznik",
+                            "input_button": "Przyciski wprowadzania",
                             "input_datetime": "Pomocnicy typu data i czas",
                             "input_number": "Pomocnicy typu numer",
                             "input_select": "Pomocnicy typu pole wyboru",
@@ -2939,6 +3053,8 @@
                             "statistics": "Encje komponentu statystyka",
                             "telegram": "Usługi powiadomień komponentu Telegram",
                             "template": "Encje zdefiniowane szablonami",
+                            "themes": "Motywy",
+                            "timer": "Timery",
                             "trend": "Encje komponentu trend",
                             "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
                             "zone": "Strefy"
@@ -2947,7 +3063,7 @@
                             "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistanta?",
                             "confirm_stop": "Czy na pewno chcesz zatrzymać Home Assistanta?",
                             "heading": "Zarządzanie serwerem",
-                            "introduction": "Kontroluj swój serwer Home Assistanta... z Home Assistanta.",
+                            "introduction": "Kontroluj serwer Home Assistant.",
                             "restart": "Uruchom ponownie",
                             "stop": "Zatrzymaj"
                         },
@@ -2991,10 +3107,20 @@
                     "no_tags": "Brak tagów",
                     "write": "Zapisz"
                 },
+                "updates": {
+                    "more_updates": "+ {count} {count, plural,\n  one {aktualizacja}\n  few {aktualizacje}\n  many {aktualizacji}\n  other {aktualizacji}\n}",
+                    "review": "przegląd",
+                    "show": "pokaż",
+                    "show_all_updates": "Pokaż wszystkie aktualizacje",
+                    "title": "{count} {count, plural,\n  one {aktualizacja}\n  few {aktualizacje}\n  many {aktualizacji}\n  other {aktualizacje}\n}",
+                    "unable_to_fetch": "Nie można załadować aktualizacji",
+                    "version_available": "Dostępna jest wersja {version_available}"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Dodaj użytkownika",
                         "create": "Utwórz",
+                        "local_only": "Tylko lokalnie",
                         "password": "Hasło",
                         "password_confirm": "Potwierdź hasło",
                         "password_not_match": "Hasła nie są takie same"
@@ -3013,23 +3139,29 @@
                         "delete_user": "Usuń użytkownika",
                         "group": "Grupa",
                         "id": "Identyfikator",
+                        "local_only": "Możliwość logowania tylko z sieci lokalnej",
                         "name": "Wyświetlana nazwa",
                         "new_password": "Nowe hasło",
                         "owner": "Właściciel",
                         "password_changed": "Hasło zostało zmienione pomyślnie",
-                        "system_generated": "Wygenerowany przez system",
+                        "system_generated": "Użytkownik systemu",
                         "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
                         "unnamed_user": "Nienazwany użytkownik",
                         "update_user": "Aktualizuj",
                         "username": "Nazwa użytkownika"
                     },
+                    "is_local": "Użytkownik lokalny",
+                    "is_not_active": "Wyłączony",
+                    "is_owner": "Właściciel",
+                    "is_system": "Użytkownik systemu",
                     "picker": {
                         "add_user": "Dodaj użytkownika",
                         "headers": {
                             "group": "Grupa",
                             "is_active": "Aktywny",
                             "is_owner": "Właściciel",
+                            "local": "Tylko lokalnie",
                             "name": "Wyświetlana nazwa",
                             "system": "Wygenerowany przez system",
                             "username": "Nazwa użytkownika"
@@ -3123,6 +3255,7 @@
                     "visualization": {
                         "auto_zoom": "Auto Zoom",
                         "caption": "Wizualizacja",
+                        "enable_physics": "Włącz fizykę",
                         "header": "Wizualizacja sieci",
                         "highlight_label": "Zaznacz urządzenia",
                         "refresh_topology": "Odśwież topologię",
@@ -3256,13 +3389,21 @@
                 "zwave_js": {
                     "add_node": {
                         "cancel_inclusion": "Anuluj dodawanie węzła",
+                        "check_logs": "Sprawdź logi, aby uzyskać więcej informacji.",
+                        "choose_inclusion_strategy": "Jak chcesz dodać swoje urządzenie?",
                         "controller_in_inclusion_mode": "Kontroler Z-Wave jest teraz w trybie dodawania węzła.",
+                        "enter_qr_code": "Wprowadź kod QR",
                         "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać dodawanie do sieci.",
-                        "inclusion_failed": "Nie można dodać urządzenia. Sprawdź logi, aby uzyskać więcej informacji.",
+                        "inclusion_failed": "Nie udało się dodać urządzenia.",
                         "inclusion_finished": "Urządzenie zostało dodane.",
                         "interview_failed": "Odpytywanie urządzenia nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
                         "interview_started": "Urządzenie jest odpytywane. To może zająć trochę czasu.",
                         "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
+                        "provisioning_finished": "Urządzenie zostało dodane. Będzie dostępne po włączeniu.",
+                        "qr_code": "Kod QR",
+                        "qr_code_paragraph": "Jeśli Twoje urządzenie obsługuje SmartStart, możesz zeskanować kod QR w celu łatwego parowania.",
+                        "scan_qr_code": "Zeskanuj kod QR",
+                        "searching_device": "Wyszukiwanie urządzenia",
                         "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego dodawania tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
                         "security_classes": {
                             "S0_Legacy": {
@@ -3282,6 +3423,7 @@
                                 "title": "S2 Nieuwierzytelniony"
                             }
                         },
+                        "select_camera": "Wybierz kamerę",
                         "start_inclusion": "Rozpocznij dodawanie węzła",
                         "start_secure_inclusion": "Rozpocznij dodawanie bezpiecznego węzła",
                         "title": "Dodaj urządzenie Z-Wave",
@@ -3290,6 +3432,7 @@
                     },
                     "common": {
                         "add_node": "Dodaj urządzenie",
+                        "back": "Wstecz",
                         "close": "Zamknij",
                         "heal_network": "Uzdrawiaj sieć",
                         "home_id": "Identyfikator domu",
@@ -3300,10 +3443,11 @@
                         "source": "Źródło"
                     },
                     "dashboard": {
+                        "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "driver_version": "Wersja sterownika",
                         "dump_dead_nodes_text": "Niektóre z Twoich urządzeń nie odpowiedziały i są uznawane za martwe. Nie zostaną one w pełni wyeksportowane.",
                         "dump_dead_nodes_title": "Niektóre z twoich urządzeń są martwe",
-                        "dump_debug": "Pobierz zrzut swojej sieci, aby zdiagnozować problemy",
+                        "dump_debug": "Pobierz dane",
                         "dump_not_ready_confirm": "Pobierz",
                         "dump_not_ready_text": "Jeśli utworzysz zrzut, gdy nie wszystkie urządzenia są gotowe, może w nim brakować ważnych danych. Daj swojej sieci trochę czasu na odpytanie wszystkich urządzeń. Czy chcesz kontynuować zrzut?",
                         "dump_not_ready_title": "Jeszcze nie wszystkie urządzenia są gotowe",
@@ -3311,6 +3455,9 @@
                         "home_id": "Identyfikator domu",
                         "introduction": "Zarządzaj Twoją siecią i węzłami Z-Wave",
                         "nodes_ready": "Urządzenia gotowe",
+                        "not_ready": "Nie są gotowe {count}",
+                        "provisioned_devices": "Zarejestrowane urządzenia",
+                        "server_url": "Adres URL serwera",
                         "server_version": "Wersja serwera"
                     },
                     "device_info": {
@@ -3351,6 +3498,7 @@
                         "traffic_warning": "Proces uzdrawiania generuje duży ruch w sieci Z-Wave. Może to spowodować, że urządzenia będą reagować wolno (lub wcale) podczas tego procesu."
                     },
                     "logs": {
+                        "download_logs": "Pobierz logi",
                         "log_level": "Poziom loga",
                         "log_level_changed": "Poziom dziennika zmieniony na: {level}",
                         "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS…",
@@ -3384,6 +3532,15 @@
                         "awake": "wybudzony",
                         "dead": "martwy",
                         "unknown": "nieznany"
+                    },
+                    "provisioned": {
+                        "confirm_unprovision_text": "Jeśli wyrejestrujesz urządzenie, nie zostanie ono dodane do Home Assistanta, gdy zostanie włączone. Jeśli zostało już dodane do Home Assistanta, wyrejestrowanie urządzenia nie spowoduje usunięcia go z Home Assistanta.",
+                        "confirm_unprovision_title": "Czy na pewno chcesz wyrejestrować urządzenie?",
+                        "dsk": "DSK",
+                        "included": "Zawiera",
+                        "not_included": "Nie zawiera",
+                        "security_classes": "Klasy bezpieczeństwa",
+                        "unprovison": "Wyrejestruj"
                     },
                     "reinterview_node": {
                         "battery_device_warning": "Przed rozpoczęciem odpytywania, urządzenia zasilane bateryjnie muszą zostać wybudzone. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać informacje dotyczące wybudzania.",
@@ -3599,7 +3756,8 @@
                             "grid": "Sieć",
                             "home": "Dom",
                             "non_fossil": "Niekopalne",
-                            "solar": "Energia słoneczna"
+                            "solar": "Energia słoneczna",
+                            "title_today": "Dzisiejsza dystrybucja energii"
                         },
                         "energy_solar_graph": {
                             "forecast": "Prognoza {name}",
@@ -3708,8 +3866,13 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Dostępne stany",
-                            "description": "Karta Panelu Alarmowego umożliwia Uzbrajanie i Rozbrajanie integracji z centralą alarmową.",
+                            "description": "Karta panelu alarmowego umożliwia uzbrajanie i rozbrajanie centrali alarmowych.",
                             "name": "Panel alarmu"
+                        },
+                        "area": {
+                            "description": "Karta obszaru automatycznie wyświetla przypisane elementy.",
+                            "name": "Obszar",
+                            "show_camera": "Pokaż obraz z kamery zamiast obrazu obszaru"
                         },
                         "button": {
                             "default_action_help": "Domyślna akcja zależy od możliwości encji, encja zostanie przełączona lub zostanie wyświetlone okno \"Więcej informacji\".",
@@ -3912,7 +4075,14 @@
                         },
                         "statistics-graph": {
                             "description": "Karta \"Wykres statystyk\" umożliwia wyświetlenie wykresu statystyk dla każdej z wymienionych encji.",
-                            "name": "Wykres statystyk"
+                            "name": "Wykres statystyk",
+                            "period": "Okres",
+                            "periods": {
+                                "5minute": "5 minut",
+                                "day": "Dzień",
+                                "hour": "Godzina",
+                                "month": "Miesiąc"
+                            }
                         },
                         "thermostat": {
                             "description": "Karta termostatu zapewnia kontrolę nad klimatem umożliwiając zmianę temperatury i trybu pracy encji.",

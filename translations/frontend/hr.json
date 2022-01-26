@@ -102,7 +102,7 @@
             },
             "automation": {
                 "last_triggered": "Zadnje aktivirano",
-                "trigger": "Okidač"
+                "trigger": "Pokreni"
             },
             "camera": {
                 "not_available": "Slika nije dostupna"
@@ -270,6 +270,7 @@
                 "control": "Kontrola",
                 "dismiss": "Odbaci",
                 "editor": {
+                    "advanced": "Napredne postavke",
                     "confirm_delete": "Jeste li sigurni da želite izbrisati ovaj unos?",
                     "delete": "OBRIŠI",
                     "enabled_cause": "Deaktivirano zbog {cause}.",
@@ -295,7 +296,7 @@
                     "last_action": "Posljednja akcija"
                 },
                 "sun": {
-                    "elevation": "Elevacija",
+                    "elevation": "Nadmorska visina",
                     "rising": "Izlazi",
                     "setting": "Zalazi"
                 },
@@ -371,7 +372,7 @@
                     "link_profile_page": "vašoj stranici profila"
                 },
                 "areas": {
-                    "caption": "Registar područja",
+                    "caption": "Područja",
                     "description": "Pregled svih područja u vašem domu.",
                     "editor": {
                         "create": "KREIRAJ",
@@ -379,7 +380,7 @@
                         "update": "AŽURIRAJ"
                     },
                     "picker": {
-                        "header": "Registar područja",
+                        "header": "Područja",
                         "integrations_page": "Stranica integracija",
                         "introduction": "Područja se koriste za organiziranje gdje su uređaji. Ove informacije će se koristiti u cijelom Home Assistant da vam pomogne u organizaciji sučelja, dopuštenja i integracija s drugim sustavima.",
                         "introduction2": "Da biste postavili uređaje u neko područje, pomoću donje veze idite na stranicu s integracijama, a zatim kliknite na konfiguriranu integraciju da biste došli do kartica uređaja."
@@ -436,7 +437,7 @@
                             "delete_confirm": "Sigurno želite pobrisati?",
                             "duplicate": "Dupliciran",
                             "header": "Uvjeti",
-                            "introduction": "Uvjeti su neobvezni dio pravila o automatizaciji i mogu se upotrebljavati kako bi se spriječilo da se neka akcija dogodi prilikom pokretanja. Uvjeti izgledaju vrlo slični pokretačima, ali su vrlo različiti. Okidač će pogledati događaje koji se događaju u sustavu, a stanje samo gleda kako sustav izgleda upravo sada. Okidač može primijetiti da je prekidač uključen. Stanje može vidjeti samo ako je uključen ili isključen prekidač. \n\n [Saznajte više o uvjetima.] (Https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Uvjeti su neobvezni dio automatizacije i mogu se upotrebljavati kako bi se spriječilo izvršavanje automatizacije sve dok svi uvjeti nisu zadovoljeni.",
                             "learn_more": "Saznajte više o uvjetima",
                             "name": "Uvjet",
                             "type": {
@@ -509,7 +510,7 @@
                             "delete_confirm": "Jeste li sigurni dai želite izbrisati?",
                             "duplicate": "Udvostruči",
                             "header": "Okidači",
-                            "introduction": "Okidači su ono što pokreće obradu pravila o automatizaciji. Moguće je odrediti više okidača za isto pravilo. Kada pokrenete okidač, Home Assistant provjerit će uvjete, ako ih ima i pozvati akciju. \n\n [Saznajte više o pokretačima.] (Https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Okidači pokreću automatizacije. Moguće je odrediti više okidača za istu automatizaciju. Kada se okidač pokrene, Home Assistant provjerit će uvjete (ako ih ima) i pozvati akciju.",
                             "learn_more": "Saznajte više o okidačima",
                             "name": "Okidač",
                             "type": {
@@ -671,9 +672,11 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "Valuta",
                                 "edit_requires_storage": "Uređivač je onemogućen jer je konfiguracija spremljena u configuration.yaml.",
-                                "elevation": "Elevacija",
+                                "elevation": "Nadmorska visina",
                                 "elevation_meters": "metara",
+                                "find_currency_value": "Nađite vašu valutu",
                                 "imperial_example": "Fahrenheit, funte",
                                 "latitude": "Zemljopisna širina",
                                 "location_name": "Naziv Home Assistant instalacije",
@@ -686,7 +689,7 @@
                                 "unit_system_metric": "Metrički"
                             },
                             "header": "Konfiguracija i kontrola poslužitelja",
-                            "introduction": "Promjena konfiguracije može biti naporan proces. Znamo. Ovaj će vam odjeljak pokušati olakšati život."
+                            "introduction": "Upravljate vašom lokacijom, mrežnim postavkama i analitikom."
                         }
                     }
                 },
@@ -702,6 +705,16 @@
                     "picker": {
                         "header": "Prilagodba",
                         "introduction": "Podešavanje atributa po entitetu. Dodane/uređene prilagodbe će odmah stupiti na snagu. Uklonjene prilagodbe stupit će na snagu kada se entitet ažurira."
+                    }
+                },
+                "dashboard": {
+                    "devices": {
+                        "description": "Integracije, uređaji, entiteti i područja",
+                        "title": "Uređaji i usluge"
+                    },
+                    "settings": {
+                        "description": "Osnovne postavke, upravljanje poslužiteljem, zapisnici i informacije",
+                        "title": "Postavke"
                     }
                 },
                 "devices": {
@@ -751,10 +764,10 @@
                     "update": "Ažuriraj"
                 },
                 "entities": {
-                    "caption": "Registar entiteta",
+                    "caption": "Entiteti",
                     "description": "Pregled svih poznatih entiteta.",
                     "picker": {
-                        "header": "Registar entiteta",
+                        "header": "Entiteti",
                         "introduction": "Home Assistant drži registar svakog entiteta koji je ikada vidio da se može jedinstveno identificirati. Svaki od tih entiteta imat će dodijeljeni ID entiteta koji će biti rezerviran za samo ovaj entitet.",
                         "introduction2": "Koristite registar entiteta da biste nadjačali naziv, promijenili ID entiteta ili uklonili stavku iz Home Assistant. Napomena, uklanjanjem unosa registra entiteta neće se ukloniti entitet. Da biste to učinili, slijedite donju vezu i uklonite je s stranice integracije."
                     }
@@ -770,6 +783,7 @@
                 "integrations": {
                     "caption": "Integracije",
                     "config_entry": {
+                        "configure": "Konfiguriraj",
                         "delete_confirm": "Jeste li sigurni da želite izbrisati tu integraciju?",
                         "device_unavailable": "uređaj nije dostupan",
                         "entity_unavailable": "entitet nije dostupan",
@@ -799,7 +813,8 @@
                     "discovered": "Otkriven",
                     "integration_not_found": "Integracija nije pronađena.",
                     "new": "Postavite novu integraciju",
-                    "none": "Još ništa nije konfigurirano"
+                    "none": "Još ništa nije konfigurirano",
+                    "search": "Pretraživanje integracija"
                 },
                 "introduction": "Ovdje možete konfigurirati vaše komponente i Home Assistant. Nije moguće baš sve konfigurirati koristeći UI zasada, ali radimo na tome.",
                 "mqtt": {
@@ -901,7 +916,7 @@
                             "confirm_restart": "Jeste li sigurni da želite ponovo pokrenuti Home Assistant?",
                             "confirm_stop": "Jeste li sigurni da želite zaustaviti Home Assostant?",
                             "heading": "Upravljanje poslužiteljem",
-                            "introduction": "Kontrolirajte vaš Home Assistant server ... iz Home Assistant.",
+                            "introduction": "Upravljajte vašim Home Assistantom.",
                             "restart": "Ponovno pokretanje",
                             "stop": "Stop"
                         },
@@ -1190,7 +1205,7 @@
                 },
                 "menu": {
                     "close": "Zatvoriti",
-                    "configure_ui": "Konfiguriraj UI",
+                    "configure_ui": "Uređivanje sučelja",
                     "help": "Pomoć"
                 },
                 "reload_lovelace": "Ponovo učitajte Lovelace",
@@ -1393,9 +1408,9 @@
                     "new_password": "Nova lozinka",
                     "submit": "podnijeti"
                 },
-                "current_user": "Trenutačno ste prijavljeni kao {fullName} .",
+                "current_user": "Trenutno ste prijavljeni kao {fullName}.",
                 "force_narrow": {
-                    "description": "To će po zadanom sakriti bočnu traku, sličnukao na mobitelu.",
+                    "description": "Bočna traka će po zadanom biti sakrivena, slično kao na mobitelu.",
                     "header": "Uvijek sakrij bočnu traku"
                 },
                 "is_owner": "Vi ste vlasnik.",
@@ -1412,9 +1427,9 @@
                     "create": "Izradite token",
                     "create_failed": "Nije uspjelo stvaranje pristupnog tokena.",
                     "delete_failed": "Nije uspjelo brisanje pristupnog tokena.",
-                    "description": "Izradite dugotrajne tokene za pristup kako biste omogućili da vaše skripte stupaju u interakciju sa vašim primjerom Home Assistant-a. Svaki token će vrijediti 10 godina od stvaranja.  Sljedeći tokeni dugogodišnjeg pristupa su trenutno aktivni",
+                    "description": "Izradite dugotrajne tokene za pristup kako biste omogućili da vaše skripte stupaju u interakciju sa vašim primjerom Home Assistanta. Svaki token će vrijediti 10 godina od stvaranja.  Sljedeći su dugotrajni tokeni trenutno aktivni.",
                     "empty_state": "Još nemate dugovječnih tokena pristupa.",
-                    "header": "Tokeni dugog življenja",
+                    "header": "Dugotrajni tokeni",
                     "learn_auth_requests": "Saznajte kako obaviti provjeru autentičnosti zahtjeva.",
                     "prompt_copy_token": "Kopirajte pristupni token. Neće se više prikazati.",
                     "prompt_name": "Ime?"
@@ -1442,7 +1457,7 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Jeste li sigurni da želite izbrisati pristupni token za {name} ?",
-                    "created_at": "Izrađeno na {date}",
+                    "created_at": "Izrađeno {date}",
                     "current_token_tooltip": "Nije moguće izbrisati trenutni token za osvježavanje",
                     "delete_failed": "Nije uspjelo brisanje pristupnog tokena.",
                     "description": "Svaki token za osvježavanje predstavlja sesiju za prijavu. Tokeni osvježavanja bit će automatski uklonjeni kada kliknete odjava. Trenutačno su aktivni sljedeći tokeni za osvježavanje vašeg računa.",
