@@ -88,7 +88,7 @@ export const BROWSER_PLAYER = "browser";
 export type MediaClassBrowserSetting = {
   icon: string;
   thumbnail_ratio?: string;
-  layout?: string;
+  layout?: "grid";
   show_list_images?: boolean;
 };
 

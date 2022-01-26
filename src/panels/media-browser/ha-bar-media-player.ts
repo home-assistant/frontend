@@ -19,6 +19,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -152,7 +153,10 @@ class BarMediaPlayer extends LitElement {
       stateObj.attributes.entity_picture;
 
     return html`
-      <div class="info">
+      <div
+        class="info ${!isBrowser ? "pointer" : ""}"
+        @click=${this._openMoreInfo}
+      >
         ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
         <div class="media-info">
           <hui-marquee
@@ -309,6 +313,13 @@ class BarMediaPlayer extends LitElement {
     );
   }
 
+  private _openMoreInfo() {
+    if (this._browserPlayer) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId: this.entityId });
+  }
+
   private get _showProgressBar() {
     if (!this.hass) {
       return false;
@@ -416,6 +427,10 @@ class BarMediaPlayer extends LitElement {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+      }
+
+      .pointer {
+        cursor: pointer;
       }
 
       .secondary,
