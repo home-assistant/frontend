@@ -1010,7 +1010,7 @@
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
-          "more_updates": "+ {count} Updates",
+          "more_updates": "+{count} updates",
           "show": "show"
         },
         "areas": {
