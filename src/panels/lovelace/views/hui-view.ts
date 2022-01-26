@@ -56,7 +56,7 @@ export class HUIView extends ReactiveElement {
     const element = createCardElement(cardConfig) as LovelaceCard;
     try {
       element.hass = this.hass;
-    } catch {
+    } catch (_e: any) {
       /* ignore */
     }
     element.addEventListener(
@@ -77,7 +77,7 @@ export class HUIView extends ReactiveElement {
     const element = createBadgeElement(badgeConfig) as LovelaceBadge;
     try {
       element.hass = this.hass;
-    } catch {
+    } catch (_e: any) {
       /* ignore */
     }
     element.addEventListener(
@@ -131,7 +131,7 @@ export class HUIView extends ReactiveElement {
         this._badges.forEach((badge) => {
           try {
             badge.hass = this.hass;
-          } catch {
+          } catch (_e: any) {
             /* ignore */
           }
         });
@@ -139,7 +139,7 @@ export class HUIView extends ReactiveElement {
         this._cards.forEach((element) => {
           try {
             element.hass = this.hass;
-          } catch {
+          } catch (_e: any) {
             /* ignore */
           }
         });
@@ -256,7 +256,7 @@ export class HUIView extends ReactiveElement {
       const element = createBadgeElement(badge);
       try {
         element.hass = this.hass;
-      } catch {
+      } catch (_e: any) {
         /* ignore */
       }
       return element;
@@ -273,7 +273,7 @@ export class HUIView extends ReactiveElement {
       const element = this.createCardElement(cardConfig);
       try {
         element.hass = this.hass;
-      } catch {
+      } catch (_e: any) {
         /* ignore */
       }
       return element;
@@ -287,7 +287,7 @@ export class HUIView extends ReactiveElement {
     const newCardEl = this.createCardElement(config);
     try {
       newCardEl.hass = this.hass;
-    } catch {
+    } catch (_e: any) {
       /* ignore */
     }
     if (cardElToReplace.parentElement) {
@@ -305,7 +305,7 @@ export class HUIView extends ReactiveElement {
     const newBadgeEl = this.createBadgeElement(config);
     try {
       newBadgeEl.hass = this.hass;
-    } catch {
+    } catch (_e: any) {
       /* ignore */
     }
     if (badgeElToReplace.parentElement) {
