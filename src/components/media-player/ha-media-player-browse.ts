@@ -255,8 +255,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   ${child.thumbnail
                                     ? html`
                                         <div
-                                          class="${child.media_class ===
-                                          "directory"
+                                          class="${[
+                                            "app",
+                                            "directory",
+                                          ].includes(child.media_class)
                                             ? "centered-image"
                                             : ""} image lazythumbnail"
                                           data-src=${child.thumbnail}
