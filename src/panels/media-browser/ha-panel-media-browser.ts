@@ -9,17 +9,14 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
 import "../../components/media-player/ha-media-player-browse";
-import type {
-  HaMediaPlayerBrowse,
-  MediaPlayerItemId,
-} from "../../components/media-player/ha-media-player-browse";
+import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
 import {
   BROWSER_PLAYER,
   MediaPickedEvent,
@@ -52,9 +49,6 @@ class PanelMediaBrowser extends LitElement {
 
   @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
-
-  @query("ha-media-player-browse")
-  private _browseElement?: HaMediaPlayerBrowse;
 
   protected render(): TemplateResult {
     return html`
