@@ -8,7 +8,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
 import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
-import { buttonLinkStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-icon-next";
 
@@ -78,7 +77,7 @@ class HaConfigUpdates extends LitElement {
       )}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
-            <button class="link show-all" @click=${this._showAllClicked}>
+            <button class="show-more" @click=${this._showAllClicked}>
               ${this.hass.localize("ui.panel.config.updates.more_updates", {
                 count: this.supervisorUpdates!.length - updates.length,
               })}
@@ -94,7 +93,6 @@ class HaConfigUpdates extends LitElement {
 
   static get styles(): CSSResultGroup[] {
     return [
-      buttonLinkStyle,
       css`
         .title {
           font-size: 16px;
@@ -124,6 +122,22 @@ class HaConfigUpdates extends LitElement {
           color: var(--secondary-text-color);
           height: 24px;
           width: 24px;
+        }
+        button.show-more {
+          color: var(--primary-color);
+          text-align: left;
+          cursor: pointer;
+          background: none;
+          border-width: initial;
+          border-style: none;
+          border-color: initial;
+          border-image: initial;
+          padding: 16px;
+          font: inherit;
+        }
+        button.show-more:focus {
+          outline: none;
+          text-decoration: underline;
         }
       `,
     ];
