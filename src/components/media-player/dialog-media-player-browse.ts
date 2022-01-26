@@ -58,35 +58,33 @@ class DialogMediaPlayerBrowse extends LitElement {
         .heading=${true}
         @closed=${this.closeDialog}
       >
-        <div slot="heading">
-          <ha-header-bar>
-            ${this._navigateIds.length > 1
-              ? html`
-                  <ha-icon-button
-                    slot="navigationIcon"
-                    .path=${mdiArrowLeft}
-                    @click=${this._goBack}
-                  ></ha-icon-button>
-                `
-              : ""}
-            <span slot="title">
-              ${!this._currentItem
-                ? this.hass.localize(
-                    "ui.components.media-browser.media-player-browser"
-                  )
-                : this._currentItem.title}
-            </span>
+        <ha-header-bar slot="heading">
+          ${this._navigateIds.length > 1
+            ? html`
+                <ha-icon-button
+                  slot="navigationIcon"
+                  .path=${mdiArrowLeft}
+                  @click=${this._goBack}
+                ></ha-icon-button>
+              `
+            : ""}
+          <span slot="title">
+            ${!this._currentItem
+              ? this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )
+              : this._currentItem.title}
+          </span>
 
-            <ha-icon-button
-              .label=${this.hass.localize("ui.dialogs.generic.close")}
-              .path=${mdiClose}
-              dialogAction="close"
-              slot="actionItems"
-              class="header_button"
-              dir=${computeRTLDirection(this.hass)}
-            ></ha-icon-button>
-          </ha-header-bar>
-        </div>
+          <ha-icon-button
+            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .path=${mdiClose}
+            dialogAction="close"
+            slot="actionItems"
+            class="header_button"
+            dir=${computeRTLDirection(this.hass)}
+          ></ha-icon-button>
+        </ha-header-bar>
         <ha-media-player-browse
           dialog
           .hass=${this.hass}
@@ -132,7 +130,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         ha-media-player-browse {
-          --media-browser-max-height: 100vh;
+          --media-browser-max-height: calc(100vh - 65px);
         }
 
         @media (min-width: 800px) {
@@ -144,7 +142,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             position: initial;
-            --media-browser-max-height: 100vh - 72px;
+            --media-browser-max-height: 100vh - 137px;
             width: 700px;
           }
         }

@@ -1,4 +1,4 @@
-import { mdiArrowLeft, mdiPlay } from "@mdi/js";
+import { mdiArrowLeft } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -83,15 +83,6 @@ class PanelMediaBrowser extends LitElement {
                   : this._currentItem.title}
               </div>
             </div>
-
-            ${this._currentItem?.can_play
-              ? html`
-                  <ha-icon-button
-                    @click=${this._play}
-                    .path=${mdiPlay}
-                  ></ha-icon-button>
-                `
-              : ""}
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
