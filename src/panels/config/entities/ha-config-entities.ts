@@ -76,7 +76,7 @@ export interface StateEntity extends EntityRegistryEntry {
 }
 
 export interface EntityRow extends StateEntity {
-  entity: HassEntity;
+  entity?: HassEntity;
   unavailable: boolean;
   restored: boolean;
   status: string;
