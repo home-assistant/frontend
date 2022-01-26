@@ -1,22 +1,22 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@material/mwc-textfield/mwc-textfield";
+import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-card";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
+import { syncCloudGoogleEntities } from "../../../../data/google_assistant";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { syncCloudGoogleEntities } from "../../../../data/google_assistant";
 
 export class CloudGooglePref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
   @state() private _syncing = false;
 
@@ -136,17 +136,16 @@ export class CloudGooglePref extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
-                  <paper-input
-                    label=${this.hass.localize(
+                  <mwc-textfield
+                    .label=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
                     )}
-                    id="google_secure_devices_pin"
-                    placeholder=${this.hass.localize(
+                    .placeholder=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enter_pin_hint"
                     )}
                     .value=${google_secure_devices_pin || ""}
                     @change=${this._pinChanged}
-                  ></paper-input>
+                  ></mwc-textfield>
                 </div>
               `}
         </div>
@@ -183,10 +182,16 @@ export class CloudGooglePref extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.cloud.account.google.not_configured_title"
+          `ui.panel.config.cloud.account.google.${
+            err.status_code === 404
+              ? "not_configured_title"
+              : "sync_failed_title"
+          }`
         ),
         text: this.hass.localize(
-          "ui.panel.config.cloud.account.google.not_configured_text"
+          `ui.panel.config.cloud.account.google.${
+            err.status_code === 404 ? "not_configured_text" : "sync_failed_text"
+          }`
         ),
       });
       fireEvent(this, "ha-refresh-cloud-status");
@@ -223,7 +228,7 @@ export class CloudGooglePref extends LitElement {
   }
 
   private async _pinChanged(ev) {
-    const input = ev.target as PaperInputElement;
+    const input = ev.target as TextField;
     try {
       await updateCloudPref(this.hass, {
         [input.id]: input.value || null,
@@ -236,7 +241,7 @@ export class CloudGooglePref extends LitElement {
           "ui.panel.config.cloud.account.google.enter_pin_error"
         )} ${err.message}`
       );
-      input.value = this.cloudStatus!.prefs.google_secure_devices_pin;
+      input.value = this.cloudStatus!.prefs.google_secure_devices_pin || "";
     }
   }
 
@@ -254,8 +259,10 @@ export class CloudGooglePref extends LitElement {
         right: auto;
         left: 24px;
       }
-      paper-input {
+      mwc-textfield {
         width: 250px;
+        display: block;
+        margin-top: 8px;
       }
       .card-actions {
         display: flex;
