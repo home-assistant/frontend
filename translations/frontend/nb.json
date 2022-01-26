@@ -119,7 +119,7 @@
                     "header": "Nettverk",
                     "host": "Vert"
                 },
-                "no_configuration": "Dette tillegget utsetter ikke konfigurasjon for deg til å tulle med…",
+                "no_configuration": "Dette tillegget eksponerer ikke konfigurasjon så du kan tulle med den…",
                 "options": {
                     "edit_in_ui": "Rediger i brukergrensesnittet",
                     "edit_in_yaml": "Rediger i YAML",
@@ -131,7 +131,7 @@
             "dashboard": {
                 "action_error": {
                     "get_changelog": "Kunne ikke hente endringslogg for tillegg",
-                    "go_to_config": "Kunne ikke starte tillegget - validering av konfigurasjon mislyktes!",
+                    "go_to_config": "Rediger konfig",
                     "install": "Kunne ikke installere tillegget",
                     "restart": "Kunne ikke starte tillegget på nytt",
                     "start": "Kunne ikke starte tillegget",
@@ -199,7 +199,7 @@
                         "admin": "admin",
                         "backup": "sikkerhetskopi",
                         "default": "Standard",
-                        "homeassistant": "hjemmeassistent",
+                        "homeassistant": "homeassistant",
                         "manager": "Manager"
                     },
                     "stage": {
@@ -212,7 +212,7 @@
                     }
                 },
                 "changelog": "Endringslogg",
-                "cpu_usage": "Tillegg CPU forbruk",
+                "cpu_usage": "Tilleggets CPU-forbruk",
                 "hostname": "Vertsnavn",
                 "install": "Installer",
                 "new_update_available": "{name} {version} er tilgjengelig",
@@ -286,6 +286,7 @@
             "delete_backup_text": "Vil du slette {number} {number, plural,\n one {sikkerhetskopi}\n  other {sikkerhetskopier}\n}?",
             "delete_backup_title": "Slett sikkerhetskopi",
             "delete_selected": "Slett valgte sikkerhetskopier",
+            "download_backup": "Last ned backup",
             "enter_password": "Vennligst skriv inn et passord",
             "failed_to_delete": "Kunne ikke slette",
             "folders": "Mapper",
@@ -298,6 +299,7 @@
             "passwords_not_matching": "Passordene samsvarer ikke",
             "select_type": "Velg hva du vil gjenopprette",
             "selected": "{number} valgt",
+            "size": "Størrelse",
             "type": "Type sikkerhetskopiering",
             "upload_backup": "Last opp sikkerhetskopi"
         },
@@ -323,18 +325,20 @@
             "reset_options": "Tilbakestill innstillinger",
             "restart": "Omstart",
             "restart_name": "Start {name} på nytt",
+            "review": "anmeldelse",
             "running_version": "Du kjører for øyeblikket versjon {version}",
             "save": "Lagre",
+            "show": "Vis",
             "show_more": "Vis mer informasjon om dette",
             "update": "Oppdater",
-            "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
+            "update_available": "{count, plural,\n  one {Oppdatering}\n  other {{count} oppdateringer}\n} pending",
             "version": "Versjon",
             "yes": "Ja"
         },
         "confirm": {
             "reset_options": {
-                "text": "Er du sikker på at du vil tilbakestille alle instillingene dine?",
-                "title": "Tilbakestill instillinger"
+                "text": "Er du sikker på at du vil tilbakestille alle innstillingene dine?",
+                "title": "Tilbakestill innstillinger"
             },
             "restart": {
                 "text": "Er du sikker på at du vil starte {name} på nytt?",
@@ -356,7 +360,7 @@
             "datadisk_move": {
                 "cancel": "Avbryt",
                 "description": "Du bruker for tiden '' {current_path} '' som datadisk. Når du flytter datadisker, startes enheten på nytt, og det anslås å ta {time} minutter. Installasjonen av Home Assistant vil ikke være tilgjengelig i denne perioden. Ikke koble fra strømmen under flyttingen!",
-                "loading_devices": "Laster inn enheter",
+                "loading_devices": "Laster inn entiteter",
                 "move": "Flytt",
                 "moving": "Flytte datadisk",
                 "moving_desc": "Starter på nytt og flytter datadisk. Vær tålmodig",
@@ -405,7 +409,8 @@
             "repositories": {
                 "add": "Legg til",
                 "remove": "Fjern",
-                "title": "Behandle tilleggspakkelagre"
+                "title": "Behandle tilleggspakkelagre",
+                "used": "Repositoriet er i bruk for installerte tillegg og kan ikke fjernes."
             },
             "restart_addon": {
                 "confirm_text": "Start tillegg på nytt",
@@ -420,7 +425,7 @@
         },
         "my": {
             "error": "En ukjent feil har oppstått",
-            "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke inngang",
+            "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke ingress",
             "error_addon_not_found": "Tillegget ble ikke funnet",
             "error_addon_not_installed": "Det forespurte tillegget er ikke installert. Vennligst installer den først",
             "error_addon_not_started": "Det valgte tillegget kjører ikke. Vennligst start den først",
@@ -428,12 +433,14 @@
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
         },
         "panel": {
+            "addons": "Tillegg",
             "backups": "Sikkerhetskopier",
             "dashboard": "Dashboard",
             "store": "Tilleggsbutikk",
             "system": "System"
         },
         "store": {
+            "check_updates": "Sjekk for oppdateringer",
             "missing_addons": "Manglende tillegg? Aktivere avansert modus på din brukerprofilside",
             "no_results_found": "Ingen resultater funnet i {repository}",
             "registries": "Registre",
@@ -441,7 +448,7 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Core CPU forbruk",
+                "cpu_usage": "Core CPU-forbruk",
                 "ram_usage": "Core RAM forbruk"
             },
             "host": {
@@ -479,9 +486,9 @@
                 "beta_release_items": "Dette inkluderer betaversjoner for:",
                 "beta_warning": "Betautgivelser er for testere og tidlige brukere og kan inneholde ustabile kodeendringer",
                 "channel": "Kanal",
-                "cpu_usage": "Supervisor CPU forbruk",
+                "cpu_usage": "Supervisor CPU-forbruk",
                 "failed_to_reload": "Kunne ikke laste inn Supervisor på nytt",
-                "failed_to_set_option": "Kunne ikke sette Supervisor-instilling",
+                "failed_to_set_option": "Kunne ikke sette Supervisor-innstilling",
                 "failed_to_update": "Kunne ikke oppdatere Supervisor",
                 "join_beta_action": "Bli med i beta-kanalen",
                 "join_beta_description": "Få beta-oppdateringer for Home Assistant (RCs), Supervisor og vert",
@@ -526,6 +533,16 @@
                 "update_supervisor": "Oppdater Supervisor",
                 "warning": "ADVARSEL"
             }
+        },
+        "update_available": {
+            "core_note": "Supervisor vil rulles tilbake til versjon {version} hvis din instans ikke starter etter oppdateringen.",
+            "create_backup": "Opprett sikkerhetskopi før oppdatering",
+            "creating_backup": "Oppretter sikkerhetskopi av {name}",
+            "description": "Du har {version} installert. Klikk oppdater for å oppdatere til versjon {newest_version}",
+            "no_update": "Ingen oppdatering tilgjengelig for {name}",
+            "open_release_notes": "Åpne utgivelsesmerknader",
+            "update_name": "Oppdater {name}",
+            "updating": "Oppdaterer {name} til versjon {version}"
         }
     },
     "ui": {
@@ -534,16 +551,22 @@
             "confirm": "Ja",
             "decline": "Nei"
         },
+        "backup": {
+            "upload_backup": "Last opp backup"
+        },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "Aktiver borte",
                 "arm_custom_bypass": "Tilpasset bypass",
                 "arm_home": "Aktiver hjemme",
                 "arm_night": "Aktiver natt",
-                "arm_vacation": "Aktiver borte",
+                "arm_vacation": "Aktiver ferie",
                 "clear_code": "Tøm",
                 "code": "Kode",
                 "disarm": "Deaktivere"
+            },
+            "area": {
+                "area_not_found": "Fant ikke området."
             },
             "automation": {
                 "last_triggered": "Sist utløst",
@@ -615,10 +638,17 @@
             },
             "media_player": {
                 "browse_media": "Bla gjennom medier",
-                "media_next_track": "Neste",
+                "media_next_track": "Neste spor",
+                "media_pause": "Pause",
                 "media_play": "Spill av",
                 "media_play_pause": "Spill av/pause",
-                "media_previous_track": "Forrige",
+                "media_previous_track": "Forrige spor",
+                "media_stop": "Stopp",
+                "media_volume_down": "Volum ned",
+                "media_volume_mute": "Dempet volum",
+                "media_volume_unmute": "Opphev demping av volum",
+                "media_volume_up": "Volum opp",
+                "nothing_playing": "Ingenting spiller",
                 "sound_mode": "Lydmodus",
                 "source": "Kilde",
                 "text_to_speak": "Tekst til tale",
@@ -726,6 +756,7 @@
             "save": "Lagre",
             "skip": "Hopp over",
             "stay": "Bli",
+            "submit": "Send inn",
             "successfully_deleted": "Sletting vellykket",
             "successfully_saved": "Lagring vellykket",
             "undo": "Angre",
@@ -736,11 +767,11 @@
                 "addon": "Tillegg",
                 "error": {
                     "fetch_addons": {
-                        "description": "Henting av tillegg returnerte en feil",
-                        "title": "Feil ved henting av tillegg"
+                        "description": "Det oppsto en feil ved lasting av tillegg.",
+                        "title": "Feil ved innlasting av tillegg"
                     },
                     "no_supervisor": {
-                        "description": "Ingen supervisor funnet, så tillegg kunne ikke lastes inn.",
+                        "description": "Tillegg støttes ikke.",
                         "title": "Ingen supervisor"
                     }
                 }
@@ -820,7 +851,7 @@
             "logbook": {
                 "by": "av",
                 "by_service": "av tjenesten",
-                "entries_not_found": "Finner ingen loggbokoppføringer",
+                "entries_not_found": "Ingen loggbokhendelser funnet.",
                 "messages": {
                     "became_unavailable": "ble utilgjengelig",
                     "changed_to_state": "endret til {state}",
@@ -850,7 +881,7 @@
                     "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
                 },
-                "retrieval_error": "Feil under henting av loggbokoppføring",
+                "retrieval_error": "Kunne ikke laste loggboken",
                 "show_trace": "Vis sporing"
             },
             "media-browser": {
@@ -900,7 +931,15 @@
                 "label": "Bilde",
                 "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
             },
+            "qr-scanner": {
+                "enter_qr_code": "Skriv inn QR-kodeverdi",
+                "manual_input": "Du kan skanne QR-koden med en annen QR-skanner og lime inn koden i inndatafeltet nedenfor",
+                "not_supported": "Din nettleser støtter ikke QR-skanning.",
+                "only_https_supported": "Du kan bare bruke kameraet til å skanne en QR-kode når du bruker HTTPS.",
+                "select_camera": "Velg kamera"
+            },
             "related-filter-menu": {
+                "filter": "Filter",
                 "filter_by_area": "Filtrer etter område",
                 "filter_by_device": "Filtrer etter enhet",
                 "filter_by_entity": "Filtrer etter enhet",
@@ -956,7 +995,7 @@
             },
             "statistic-picker": {
                 "learn_more": "Lær mer om statistikk",
-                "missing_entity": "Hvorfor er ikke enheten min oppført?",
+                "missing_entity": "Hvorfor er ikke entiteten min oppført?",
                 "no_match": "Fant ingen samsvarende statistikk",
                 "no_statistics": "Du har ingen statistikk",
                 "statistic": "Statistikk"
@@ -973,11 +1012,11 @@
             },
             "target-picker": {
                 "add_area_id": "Velg område",
-                "add_device_id": "Velg enhet",
-                "add_entity_id": "Velg entitet",
+                "add_device_id": "Velg kilde",
+                "add_entity_id": "Velg enhet",
                 "expand": "Utvide",
-                "expand_area_id": "Utvid dette området til de separate enhetene og enhetene det inneholder. Etter utvidelse vil den ikke oppdatere enhetene og enhetene når området endres.",
-                "expand_device_id": "Utvid denne enheten til de separate enhetene den inneholder. Etter utvidelse vil den ikke oppdatere enhetene når enheten endres.",
+                "expand_area_id": "Del dette området inn i separate enheter og enheter.",
+                "expand_device_id": "Del denne enheten i separate enheter.",
                 "remove": "Fjern",
                 "remove_area_id": "Fjern område",
                 "remove_device_id": "Fjern enhet",
@@ -1012,8 +1051,22 @@
                     "area": "Angi bare enhetsområde",
                     "area_note": "Enhetene til en enhet er som standard i samme område som enheten. Hvis du endrer området til denne enheten, vil den ikke lenger følge området på enheten.",
                     "change_device_area": "Endre enhetsområdet",
-                    "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
+                    "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
                     "delete": "Slett",
+                    "device_class": "Vis som",
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Dør",
+                            "garage_door": "Garasje dør",
+                            "opening": "Annen",
+                            "window": "Vindu"
+                        },
+                        "cover": {
+                            "door": "Dør",
+                            "garage": "Garasje dør",
+                            "window": "Vindu"
+                        }
+                    },
                     "device_disabled": "Enheten til denne enhtiteen er deaktivert",
                     "enabled_cause": "Deaktivert av {cause}.",
                     "enabled_delay_confirm": "De aktiverte enhetene blir lagt til i Home Assistant om {delay} sekunder",
@@ -1027,7 +1080,7 @@
                     "name": "Navn",
                     "note": "Merk: Dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "open_device_settings": "Åpne enhetsinnstillinger",
-                    "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
+                    "unavailable": "Denne enheten er utilgjengelig.",
                     "update": "Oppdater"
                 },
                 "faq": "dokumentasjon",
@@ -1045,8 +1098,8 @@
             "helper_settings": {
                 "counter": {
                     "initial": "Opprinnelig verdi",
-                    "maximum": "Maksimal verdi",
-                    "minimum": "Minimum verdi",
+                    "maximum": "Maksimumsverdi",
+                    "minimum": "Minimumsverdi",
                     "restore": "Gjenopprett den sist kjente verdien når Home Assistant starter",
                     "step": "Trinnstørrelse"
                 },
@@ -1061,9 +1114,9 @@
                     "time": "Tid"
                 },
                 "input_number": {
-                    "box": "Innputt felt",
-                    "max": "Maksimal verdi",
-                    "min": "Minimum verdi",
+                    "box": "Inndatafelt",
+                    "max": "Maksimumsverdi",
+                    "min": "Minimumsverdi",
                     "mode": "Visningsmodus",
                     "slider": "Glidebryter",
                     "step": "Trinnstørrelse",
@@ -1076,8 +1129,8 @@
                     "options": "Alternativer"
                 },
                 "input_text": {
-                    "max": "Maksimal lengde",
-                    "min": "Minimum lengde",
+                    "max": "Maksimumslengde",
+                    "min": "Minimumslengde",
                     "mode": "Visningsmodus",
                     "password": "Passord",
                     "pattern": "Regex-mønster for validering på klientsiden",
@@ -1097,9 +1150,10 @@
                 "cover": {
                     "close_cover": "Lukk dekselet",
                     "close_tile_cover": "Lukk dekkevinkel",
+                    "close_tilt_cover": "Lukk",
                     "open_cover": "Åpne dekselet",
                     "open_tilt_cover": "Åpne dekkevinkel",
-                    "stop_cover": "Stopp dekke fra å bevege seg"
+                    "stop_cover": "Stopp deksel"
                 },
                 "details": "Detaljer",
                 "dismiss": "Avvis dialog",
@@ -1190,7 +1244,7 @@
                         "person": "Personer",
                         "scene": "Scener",
                         "script": "Skript",
-                        "server_control": "Server-kontroller",
+                        "server_control": "Serverstyring",
                         "tag": "Tagger",
                         "users": "Brukere",
                         "zone": "Soner"
@@ -1202,28 +1256,29 @@
                         "filesize": "Enheter for filstørrelse",
                         "filter": "Filtrere entiteter",
                         "generic": "Generiske IP-kameraenheter",
-                        "generic_thermostat": "Generiske termostat enheter",
-                        "group": "Grupper, gruppeenheter og varsler tjenester",
+                        "generic_thermostat": "Generiske termostatenheter",
+                        "group": "Grupper, gruppeenheter og varslingstjenester",
                         "history_stats": "Historikkstatistiske enheter",
                         "homekit": "HomeKit",
-                        "input_boolean": "Boolske innganger",
-                        "input_datetime": "Inngangsdato ganger",
-                        "input_number": "Inndatanumre",
-                        "input_select": "Inngang velges",
-                        "input_text": "Inngangstekster",
+                        "input_boolean": "Boolske inndata",
+                        "input_datetime": "Inndata dato-tid",
+                        "input_number": "Inndata tall",
+                        "input_select": "Inndata valg",
+                        "input_text": "Inndata tekst",
                         "min_max": "Min/maks enheter",
                         "mqtt": "Manuelt konfigurerte MQTT-enheter",
                         "person": "Personer",
                         "ping": "Ping binære sensorenheter",
                         "reload": "{domain}",
-                        "rest": "Rest enheter og varsle tjenester",
+                        "rest": "Rest-enheter og varslingstjenester",
                         "rpi_gpio": "Raspberry Pi GPIO-enheter",
                         "scene": "Scener",
                         "script": "Skript",
                         "smtp": "SMTP-varslingstjenester",
                         "statistics": "Statistiske enheter",
-                        "telegram": "Telegram varsler tjenester",
+                        "telegram": "Telegram varslingstjenester",
                         "template": "Malenheter",
+                        "themes": "Temaer",
                         "trend": "Trend enheter",
                         "universal": "Enheter for universell mediaspiller",
                         "zone": "Soner"
@@ -1239,7 +1294,10 @@
                         "server_control": "Server"
                     }
                 },
-                "filter_placeholder": "Entitetsfilter"
+                "filter_placeholder": "Entitetsfilter",
+                "key_c_hint": "Trykk 'c' på hvilken som helst side for å åpne søkefeltet",
+                "nothing_found": "Fant ingenting!",
+                "title": "Hurtigsøk"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant hørte ikke noe",
@@ -1270,7 +1328,7 @@
                 "power_source": "Strømkilde",
                 "quirk": "",
                 "services": {
-                    "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
+                    "reconfigure": "Rekonfigurer ZHA-enhet (helbrede enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra ZigBee-nettverket.",
                     "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
                     "zigbee_information": "Vis ZigBee-informasjon for enheten."
@@ -1315,6 +1373,7 @@
                 "key_missing": "Nødvendig nøkkel '' {key} '' mangler.",
                 "key_not_expected": "Nøkkelen ' {key} ' 'forventes ikke eller støttes ikke av den visuelle redaktøren.",
                 "key_wrong_type": "Den oppgitte verdien for '' {key} '' støttes ikke av den visuelle redaktøren. Vi støtter ( {type_correct} ), men mottok ( {type_wrong} ).",
+                "no_state_array_support": "Flere tilstandsverdier støttes ikke i visuell editor",
                 "no_template_editor_support": "Maler støttes ikke i visual editor",
                 "no_type_provided": "Ingen type oppgitt."
             },
@@ -1356,6 +1415,8 @@
                     "link_profile_page": "profilsiden din"
                 },
                 "areas": {
+                    "add_picture": "Legg til et bilde",
+                    "assigned_to_area": "Tildelt dette området",
                     "caption": "Områder",
                     "data_table": {
                         "area": "Område",
@@ -1376,7 +1437,7 @@
                         "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrevd",
-                        "no_linked_entities": "Det er ingen enheter knyttet til dette området.",
+                        "no_linked_entities": "Det er ingen entiteter knyttet til dette området.",
                         "unknown_error": "Ukjent feil",
                         "update": "Oppdater"
                     },
@@ -1387,7 +1448,8 @@
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
                         "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
                         "no_areas": "Det ser ikke ut som om du har noen områder enda!"
-                    }
+                    },
+                    "targeting_area": "Målretting mot dette området"
                 },
                 "automation": {
                     "caption": "Automasjoner",
@@ -1399,6 +1461,7 @@
                         "header": "Opprette en ny automasjon",
                         "how": "Hvordan vil du opprette din nye automasjon?",
                         "start_empty": "Start med en tom automasjon",
+                        "start_empty_description": "Opprette en ny automatisering fra grunnen av",
                         "thingtalk": {
                             "create": "Opprett",
                             "header": "Beskriv automasjonen du vil opprette",
@@ -1616,8 +1679,9 @@
                             "delete": "Slett",
                             "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
+                            "edit_id": "Rediger utløser-ID",
                             "header": "Utløsere",
-                            "id": "Utløser -ID (brukt av utløsertilstanden)",
+                            "id": "Utløser-ID",
                             "introduction": "Utløsere er det som starter en automasjonsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte betingelsene, hvis noen, og utføre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær mer om utløsere",
                             "name": "Utløser",
@@ -1626,7 +1690,7 @@
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
-                                        "for": "Varighet",
+                                        "for": "Varighet (valgfritt)",
                                         "zone": "Sone"
                                     },
                                     "label": "Enhet",
@@ -1667,10 +1731,10 @@
                                 },
                                 "state": {
                                     "attribute": "Attributt (valgfritt)",
-                                    "for": "I",
-                                    "from": "Fra",
+                                    "for": "For (valgfritt)",
+                                    "from": "Fra (valgfritt)",
                                     "label": "Tilstand",
-                                    "to": "Til"
+                                    "to": "Til (valgfritt)"
                                 },
                                 "sun": {
                                     "event": "Hendelse:",
@@ -1870,6 +1934,7 @@
                         "tts": {
                             "default_language": "Standardspråk som skal brukes",
                             "dialog": {
+                                "create_automation": "Opprett automatisering",
                                 "example_message": "Hei {name}, du kan spille hvilken som helst tekst på en hvilken som helst mediaspiller som støttes!",
                                 "header": "Prøv Tekst-til-tale",
                                 "play": "Spill av",
@@ -1884,7 +1949,7 @@
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:",
-                            "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistent fra hvor som helst, uten å utsette forekomsten din for Internett.",
+                            "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistant fra hvor som helst, uten å utsette forekomsten din for Internett.",
                             "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
                             "loading": "Laster inn…",
                             "manage": "Administrer",
@@ -1908,7 +1973,7 @@
                         "not_exposed_entities": "Ikke eksponerte entiteter",
                         "title": ""
                     },
-                    "description_features": "Kontroller hjemmet når du er borte og integrer med Alexa og Google Assistant",
+                    "description_features": "Styr hjemmet når du er borte og integrer med Alexa og Google Assistant",
                     "description_login": "Logget inn som {email}",
                     "description_not_login": "Ikke pålogget",
                     "dialog_certificate": {
@@ -1979,7 +2044,7 @@
                         "email_error_msg": "Ugyldig e-postadresse",
                         "feature_amazon_alexa": "Integrasjon med Amazon Alexa",
                         "feature_google_home": "Integrasjon med Google Assistant",
-                        "feature_remote_control": "Kontroller Home Assistent når du er borte fra hjemmet",
+                        "feature_remote_control": "Kontroller Home Assistant når du er borte fra hjemmet",
                         "feature_webhook_apps": "Enkel integrasjon med webhookbaserte apper som OwnTracks",
                         "headline": "Start prøveversjon",
                         "information": "Opprett en konto for å starte en gratis prøveperiode på en måned med Home Assistant Cloud. Ingen betalingsinformasjon nødvendig.",
@@ -2004,7 +2069,7 @@
                 },
                 "core": {
                     "caption": "Generelt",
-                    "description": "Enhetssystem, plassering, tidssone og andre generelle parametere",
+                    "description": "Plassering, nettverk og analyser",
                     "section": {
                         "core": {
                             "core_config": {
@@ -2017,7 +2082,7 @@
                                 "imperial_example": "Fahrenheit, pund",
                                 "internal_url": "Intern URL",
                                 "latitude": "Breddegrad",
-                                "location_name": "Navn på installasjonen av Home Assistant",
+                                "location_name": "Navn på Home Assistant-installasjonen",
                                 "longitude": "Lengdegrad",
                                 "metric_example": "Celsius, kilogram",
                                 "save_button": "Lagre",
@@ -2027,7 +2092,7 @@
                                 "unit_system_metric": "Metrisk"
                             },
                             "header": "Generell konfigurasjon",
-                            "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere."
+                            "introduction": "Administrer plassering, nettverk og analyser."
                         }
                     }
                 },
@@ -2050,6 +2115,48 @@
                         "include_link": "inkludér customize.yaml",
                         "include_sentence": "Det ser ut til at din configuration.yaml ikke er riktig",
                         "not_applied": "Endringer gjort her er skrevet i den, men vil ikke bli brukt etter en konfigurasjonsinnlasting med mindre inkluderingen er på plass."
+                    }
+                },
+                "dashboard": {
+                    "automations": {
+                        "description": "Administrer automatiseringer, scener, skript og hjelpere",
+                        "title": "Automatisering og scener"
+                    },
+                    "blueprints": {
+                        "description": "Administrer Blueprinter",
+                        "title": "Blueprinter"
+                    },
+                    "companion": {
+                        "description": "Plassering og varsler",
+                        "title": "Kompanjong app"
+                    },
+                    "dashboards": {
+                        "description": "Opprett tilpassede sett med kort for å styre hjemmet ditt",
+                        "title": "Instrumentbord"
+                    },
+                    "devices": {
+                        "description": "Integrasjoner, enheter, entiteter og områder",
+                        "title": "Enheter og tjenester"
+                    },
+                    "energy": {
+                        "description": "Overvåk din energiproduksjon- og forbruk",
+                        "title": "Energi"
+                    },
+                    "people": {
+                        "description": "Administrer personene og sonene som Home Assistant sporer",
+                        "title": "Personer og soner"
+                    },
+                    "settings": {
+                        "description": "Grunnleggende innstillinger, serverstyring, logger og informasjon",
+                        "title": "Innstillinger"
+                    },
+                    "supervisor": {
+                        "description": "Lag sikkerhetskopier, sjekk logger eller start systemet på nytt",
+                        "title": "Tillegg, sikkerhetskopier og Supervisor"
+                    },
+                    "tags": {
+                        "description": "Utløs automatiseringer når en NFC-tag, QR-kode osv. skannes",
+                        "title": "Tagger"
                     }
                 },
                 "devices": {
@@ -2090,7 +2197,8 @@
                         "integration": "Integrasjon",
                         "manufacturer": "Produsent",
                         "model": "Modell",
-                        "no_devices": "Ingen enheter"
+                        "no_devices": "Ingen enheter",
+                        "no_integration": "Ingen integrasjon"
                     },
                     "delete": "Slett",
                     "description": "Administrer konfigurerte enheter",
@@ -2102,6 +2210,7 @@
                         "integration": "Integrasjon",
                         "user": "Bruker"
                     },
+                    "download_diagnostics": "Last ned diagnostikk",
                     "edit_settings": "Redigere innstillinger",
                     "enabled_cause": "Enheten er deaktivert av {cause}",
                     "enabled_description": "Deaktiverte enheter vises ikke, og entiteter som tilhører enheten deaktiveres og ikke legges til i Home Assistant",
@@ -2155,8 +2264,8 @@
                         "add_battery_system": "Legg til batterisystem",
                         "battery_systems": "Batterisystemer",
                         "dialog": {
-                            "energy_into_battery": "Energi som går inn i batteriet (kWh)",
-                            "energy_out_of_battery": "Energi som kommer ut av batteriet (kWh)",
+                            "energy_into_battery": "Energi som går inn i batteriet (kWt)",
+                            "energy_out_of_battery": "Energi som kommer ut av batteriet (kWt)",
                             "header": "Konfigurer batterisystem"
                         },
                         "learn_more": "Mer informasjon om hvordan du kommer i gang.",
@@ -2164,7 +2273,7 @@
                         "title": "Batterilagring"
                     },
                     "caption": "Energi",
-                    "delete_integration": "Er du sikker på at du vil slette denne integreringen? Den vil fjerne enhetene den tilbyr",
+                    "delete_integration": "Er du sikker på at du vil slette denne integreringen? Den vil fjerne entitetene den tilbyr",
                     "delete_source": "Er du sikker på at du vil slette denne kilden?",
                     "description": "Overvåk din energiproduksjon- og forbruk",
                     "device_consumption": {
@@ -2172,7 +2281,7 @@
                         "add_stat": "Velg entitet å spore energien til",
                         "devices": "Enheter",
                         "dialog": {
-                            "device_consumption_energy": "Enhetsforbruk energi (kWh)",
+                            "device_consumption_energy": "Enhetsforbruk energi (kWt)",
                             "header": "Legg til en enhet",
                             "selected_stat_intro": "Velg entiteten som representerer enhetens energiforbruk."
                         },
@@ -2184,8 +2293,8 @@
                     "gas": {
                         "add_gas_source": "Legg til gasskilde",
                         "dialog": {
-                            "cost_entity": "Bruk en enhet med gjeldende pris",
-                            "cost_entity_input": "Enhet med gjeldende pris per {unit}",
+                            "cost_entity": "Bruk en entitet med gjeldende pris",
+                            "cost_entity_input": "Entitet med gjeldende pris per {unit}",
                             "cost_number": "Bruk en statisk pris",
                             "cost_number_input": "Pris per {unit}",
                             "cost_number_suffix": "{currency}/m³",
@@ -2195,7 +2304,7 @@
                             "energy_stat": "Forbrukt energi (m³)",
                             "gas_usage": "Gassbruk",
                             "header": "Konfigurer gassforbruk",
-                            "m3_or_kWh": "m³ eller kWh",
+                            "m3_or_kWh": "ft³, m³, Wt, kWt eller MWt",
                             "no_cost": "Ikke spor kostnader",
                             "paragraph": "Gassforbruk er mengden gass som strømmer til hjemmet ditt."
                         },
@@ -2205,7 +2314,7 @@
                         "title": "Gassforbruk"
                     },
                     "grid": {
-                        "add_co2_signal": "Legg til CO2 -signalintegrasjon",
+                        "add_co2_signal": "Legg til CO2-signalintegrasjon",
                         "add_consumption": "Legg til forbruk",
                         "add_return": "Legg til retur",
                         "flow_dialog": {
@@ -2213,12 +2322,12 @@
                                 "cost_entity": "Bruk en entitet med gjeldende pris",
                                 "cost_entity_input": "Entitet med gjeldende pris",
                                 "cost_number": "Bruk en statisk pris",
-                                "cost_number_input": "Pris per kWh",
-                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_number_input": "Pris per kWt",
+                                "cost_number_suffix": "{currency}/kWt",
                                 "cost_para": "Velg hvordan Home Assistant skal holde oversikt over kostnadene for forbrukt energi.",
                                 "cost_stat": "Bruk en enhet som sporer de totale kostnadene",
                                 "cost_stat_input": "Totale kostnader enhet",
-                                "energy_stat": "Forbrukt energi (kWh)",
+                                "energy_stat": "Forbrukt energi (kWt)",
                                 "header": "Konfigurer strømnettforbruk",
                                 "no_cost": "Ikke spor kostnader",
                                 "paragraph": "Strømnettforbruk er energien som flyter fra strømnettet til hjemmet ditt."
@@ -2227,21 +2336,21 @@
                                 "cost_entity": "Bruk en entitet med gjeldende sats",
                                 "cost_entity_input": "Entitet med gjeldende sats",
                                 "cost_number": "Bruk en statisk sats",
-                                "cost_number_input": "Sats per kWh",
-                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_number_input": "Sats per kWt",
+                                "cost_number_suffix": "{currency}/kWt",
                                 "cost_para": "Får du penger tilbake når du returnerer energi til strømnettet?",
                                 "cost_stat": "Bruk en enhet som sporer de totale mottatte pengene",
                                 "cost_stat_input": "Total kompensasjonsenhet",
-                                "energy_stat": "Energi returnert til strømnettet (kWh)",
+                                "energy_stat": "Energi returnert til strømnettet (kWt)",
                                 "header": "Konfigurer strømnettproduksjon",
                                 "no_cost": "Jeg får ikke penger tilbake",
                                 "paragraph": "Strømnettproduksjon er energien som flyter fra dine solcellepaneler til strømnettet."
                             }
                         },
-                        "grid_carbon_footprint": "Karbonfotavtrykk i nettet",
-                        "grid_consumption": "Nettforbruk",
+                        "grid_carbon_footprint": "Karbonfotavtrykk i strømnettet",
+                        "grid_consumption": "Strømnettforbruk",
                         "learn_more": "Mer informasjon om hvordan du kommer i gang.",
-                        "return_to_grid": "Gå tilbake til rutenettet",
+                        "return_to_grid": "Retur til strømnettet",
                         "sub": "Konfigurer mengden energi du bruker fra strømnettet-, og gir tilbake til strømnettet hvis du produserer energi. Dette gjør at Home Assistant kan spore hele energiforbruket i hjemmet.",
                         "title": "Strømnett"
                     },
@@ -2253,7 +2362,7 @@
                             "dont_forecast_production": "Ikke forutse produksjonen",
                             "forecast_production": "Prognose produksjon",
                             "header": "Konfigurer solcellepaneler",
-                            "solar_production_energy": "Solproduksjonsenergi (kWh)",
+                            "solar_production_energy": "Solproduksjonsenergi (kWt)",
                             "solar_production_forecast": "Prognose for solproduksjon",
                             "solar_production_forecast_description": "Ved å legge til informasjon om solproduksjonsprognoser kan du raskt se forventet produksjon for i dag."
                         },
@@ -2268,27 +2377,27 @@
                     "validation": {
                         "issues": {
                             "entity_negative_state": {
-                                "description": "Følgende enheter har en negativ tilstand mens en positiv tilstand forventes:",
-                                "title": "Enheten har en negativ tilstand"
+                                "description": "Følgende entiteter har en negativ tilstand mens en positiv tilstand forventes:",
+                                "title": "Entiteten har en negativ tilstand"
                             },
                             "entity_not_defined": {
                                 "description": "Kontroller integreringen eller konfigurasjonen som gir:",
-                                "title": "Enheten er ikke definert"
+                                "title": "Entiteten er ikke definert"
                             },
                             "entity_state_class_measurement_no_last_reset": {
                                 "description": "Følgende enheter har tilstandsklasse 'måling', men 'siste_innstilling' mangler:",
                                 "title": "Siste tilbakestilling mangler"
                             },
                             "entity_state_non_numeric": {
-                                "description": "Følgende enheter har en tilstand som ikke kan analyseres som et tall:",
-                                "title": "Enheten har en ikke-numerisk tilstand"
+                                "description": "Følgende entiteter har en tilstand som ikke kan analyseres som et tall:",
+                                "title": "Entiteten har en ikke-numerisk tilstand"
                             },
                             "entity_unavailable": {
-                                "description": "Tilstanden for disse konfigurerte enhetene er for øyeblikket ikke tilgjengelig:",
-                                "title": "Enhet utilgjengelig"
+                                "description": "Tilstanden for disse konfigurerte entitetene er for øyeblikket ikke tilgjengelig:",
+                                "title": "Entitet utilgjengelig"
                             },
                             "entity_unexpected_device_class": {
-                                "description": "Følgende enheter har ikke den forventede enhetsklassen:",
+                                "description": "Følgende entiteter har ikke den forventede enhetsklassen:",
                                 "title": "Uventet enhetsklasse"
                             },
                             "entity_unexpected_state_class": {
@@ -2296,28 +2405,28 @@
                                 "title": "Uventet statsklasse"
                             },
                             "entity_unexpected_state_class_total_increasing": {
-                                "description": "Følgende enheter har ikke den forventede statsklassen 'total_økende'",
+                                "description": "Følgende enhetiteter har ikke forventet tilstandsklasse \"total_increasing\"",
                                 "title": "Uventet tilstandsklasse"
                             },
                             "entity_unexpected_unit_energy": {
-                                "description": "Følgende enheter har ikke de forventede måleenhetene 'kWh' eller 'Wh':",
+                                "description": "Følgende entiteter har ikke de forventede måleenhetene 'Wt', 'kWt' eller 'MWt':",
                                 "title": "Uventet målenhet"
                             },
                             "entity_unexpected_unit_energy_price": {
-                                "description": "Følgende enheter har ikke de forventede måleenhetene '' {currency} /kWh '' eller '' {currency} /Wh '':",
+                                "description": "Følgende entiteter har ikke de forventede måleenhetene ''{currency}/kWt'', ''{currency}/Wt'' eller ''{currency}/MWt'':",
                                 "title": "Uventet målenhet"
                             },
                             "entity_unexpected_unit_gas": {
-                                "description": "Følgende enheter har ikke de forventede måleenhetene 'kWh', 'm³' eller 'ft³':",
+                                "description": "Følgende enheter har ikke de forventede måleenhetene 'Wt', 'kWt' eller 'MWt' for energisensor, eller 'm³' eller 'ft³' for gass-sensor:",
                                 "title": "Uventet måleenhet"
                             },
                             "entity_unexpected_unit_gas_price": {
-                                "description": "Følgende enheter har ikke de forventede måleenhetene '' {currency} /kWh '', '' {currency} /Wh '', '' {currency} /m³ '' eller '' {currency} /ft³ '' :",
+                                "description": "Følgende entiteter har ikke de forventede måleenhetene ''{currency}/kWt'', ''{currency}/Wt'', ''{currency}/m³'' eller ''{currency}/ft³'' :",
                                 "title": "Uventet måleenhet"
                             },
                             "recorder_untracked": {
-                                "description": "Opptakeren er konfigurert til å ekskludere disse konfigurerte enhetene:",
-                                "title": "Enheten spores ikke"
+                                "description": "Opptakeren er konfigurert til å ekskludere disse konfigurerte entitetene:",
+                                "title": "Entiteten spores ikke"
                             }
                         }
                     }
@@ -2378,7 +2487,7 @@
                     "caption": "Hjelpere",
                     "description": "Elementer som hjelper med å bygge automasjoner",
                     "dialog": {
-                        "add_helper": "Legg hjelper",
+                        "add_helper": "Legg til hjelper",
                         "add_platform": "Legg til {platform}",
                         "create": "Opprett"
                     },
@@ -2395,6 +2504,7 @@
                     "types": {
                         "counter": "Teller",
                         "input_boolean": "Veksle",
+                        "input_button": "Knapp",
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
                         "input_select": "",
@@ -2456,14 +2566,18 @@
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
                         "disabled_polling": "Automatisk avstemning for oppdaterte data deaktivert",
                         "documentation": "Dokumentasjon",
+                        "download_diagnostics": "Last ned diagnostikk",
                         "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringen av denne integreringen",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "Enhet utilgjengelig",
                         "firmware": "Fastvare: {version}",
+                        "hardware": "Maskinvare: {version}",
                         "hub": "Tilkoblet via",
+                        "known_issues": "Kjente problemer",
                         "manuf": "av {manufacturer}",
                         "no_area": "Intet område",
                         "not_loaded": "Ikke lastet",
+                        "open_configuration_url": "Besøk enheten",
                         "provided_by_custom_integration": "Levert av en tilpasset integrasjon",
                         "reload": "Last inn på nytt",
                         "reload_confirm": "Integrasjonen ble lastet på nytt",
@@ -2480,7 +2594,9 @@
                             "setup_retry": "Prøver på nytt oppsett"
                         },
                         "system_options": "Systemalternativer",
-                        "unnamed_entry": "Ikke navngitt oppføring"
+                        "unknown_via_device": "Ukjent enhet",
+                        "unnamed_entry": "Ikke navngitt oppføring",
+                        "via": "Tilkoblet via"
                     },
                     "config_flow": {
                         "aborted": "Avbrutt",
@@ -2612,7 +2728,7 @@
                             "open": "Åpne"
                         }
                     },
-                    "description": "Opprett tilpassede sett med kort for å kontrollere hjemmet ditt",
+                    "description": "Opprett tilpassede sett med kort for å styre hjemmet ditt",
                     "resources": {
                         "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
                         "caption": "Ressurser",
@@ -2793,6 +2909,7 @@
                         "link_integrations_page": "Integrasjonsside",
                         "link_presence_detection_integrations": "Integrasjon for tilstedeværelsesdeteksjon",
                         "linked_user": "Koblet bruker",
+                        "local_only": "Kan kun logge inn fra det lokale nettverket",
                         "name": "Navn",
                         "name_error_msg": "Navn er påkrevd",
                         "new_person": "Ny person",
@@ -2807,16 +2924,17 @@
                     "person_not_found_title": "Person ikke funnet"
                 },
                 "scene": {
-                    "activated": "Aktivert scene {name}.",
+                    "activated": "Aktiverte scene {name}.",
                     "caption": "Scener",
                     "description": "Ta opp enhetstilstander og få dem til å huske dem på en enkel måte senere",
                     "editor": {
+                        "area": "Område",
                         "default_name": "Ny scene",
                         "devices": {
                             "add": "Legg til en enhet",
                             "delete": "Slett enhet",
                             "header": "Enheter",
-                            "introduction": "Legg til enhetene du vil bli inkludert i scenen din. Sett alle enhetene til tilstanden du ønsker for denne scenen."
+                            "introduction": "Legg til enhetene du ønsker inkludert i scenen din. Sett alle enhetene til tilstanden du ønsker for denne scenen."
                         },
                         "entities": {
                             "add": "Legg til en entitet",
@@ -2841,16 +2959,16 @@
                         "duplicate": "Duplisere",
                         "duplicate_scene": "Dupliser scenen",
                         "edit_scene": "Rediger scene",
-                        "header": "Sceneditor",
+                        "header": "Scene-editor",
                         "headers": {
                             "name": "Navn"
                         },
-                        "introduction": "Sceneditoren lar deg lage og redigere scener. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
+                        "introduction": "Scene-editoren lar deg lage og redigere scener. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om scener",
                         "no_scenes": "Vi fant ingen scener",
                         "only_editable": "Bare scener som er definert i scenes.yaml kan redigeres.",
                         "pick_scene": "Velg scene du vil redigere",
-                        "show_info_scene": "Vis info om scene"
+                        "show_info_scene": "Vis informasjon om scene"
                     }
                 },
                 "script": {
@@ -2905,8 +3023,8 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Server-kontroller",
-                    "description": "Start på nytt og stopp Home Assistant-serveren",
+                    "caption": "Serverstyring",
+                    "description": "Valider og start Home Assistant-serveren på nytt",
                     "section": {
                         "reloading": {
                             "automation": "Automasjoner",
@@ -2915,30 +3033,33 @@
                             "filesize": "Enheter for filstørrelse",
                             "filter": "Filtrere entiteter",
                             "generic": "Generiske IP-kameraenheter",
-                            "generic_thermostat": "Generiske termostat enheter",
-                            "group": "Grupper, gruppeenheter og varsler tjenester",
+                            "generic_thermostat": "Generiske termostatenheter",
+                            "group": "Grupper, gruppeenheter og varslingstjenester",
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Historikkstatistiske enheter",
                             "homekit": "HomeKit",
-                            "input_boolean": "Boolske innganger",
-                            "input_datetime": "Inngangsdato ganger",
-                            "input_number": "Inndatanumre",
-                            "input_select": "Inngang velges",
-                            "input_text": "Inngangstekster",
+                            "input_boolean": "Boolske inndata",
+                            "input_button": "Inndataknapper",
+                            "input_datetime": "Inndata dato-tid",
+                            "input_number": "Inndata tall",
+                            "input_select": "Inndata valg",
+                            "input_text": "Inndata tekst",
                             "introduction": "Noen deler av Home Assistant kan lastes inn på nytt uten at det krever omstart. Hvis du klikker på et av alternativene nedenfor, vil den nåværende YAML -konfigurasjonen lastes ut og den nye lastes inn.",
                             "min_max": "Min/maks enheter",
                             "mqtt": "Manuelt konfigurerte MQTT-enheter",
                             "person": "Personer",
                             "ping": "Ping binære sensorenheter",
                             "reload": "{domain}",
-                            "rest": "Rest enheter og varsle tjenester",
+                            "rest": "Rest-enheter og varslingstjenester",
                             "rpi_gpio": "Raspberry Pi GPIO-enheter",
                             "scene": "Scener",
                             "script": "Skript",
                             "smtp": "SMTP-varslingstjenester",
                             "statistics": "Statistiske enheter",
-                            "telegram": "Telegram varsler tjenester",
+                            "telegram": "Telegram varslingstjenester",
                             "template": "Malenheter",
+                            "themes": "Temaer",
+                            "timer": "Tidtakere",
                             "trend": "Trend enheter",
                             "universal": "Enheter for universell mediaspiller",
                             "zone": "Soner"
@@ -2947,7 +3068,7 @@
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
                             "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?",
                             "heading": "Serveradministrasjon",
-                            "introduction": "Kontroller Home Assistant -serveren... fra Home Assistant.",
+                            "introduction": "Kontroller din Home Assistant.",
                             "restart": "Omstart",
                             "stop": "Stopp"
                         },
@@ -2967,9 +3088,9 @@
                     "confirm_remove": "Er du sikker på at du vil fjerne taggen {tag} ?",
                     "confirm_remove_title": "Fjerne tag?",
                     "create_automation": "Opprett automasjon med tag",
-                    "description": "Utløs automatisasjoner når en NFC-tag, QR-kode osv. Skannes",
+                    "description": "Utløs automatiseringer når en NFC-tag, QR-kode osv. skannes",
                     "detail": {
-                        "companion_apps": "kompanjong apper",
+                        "companion_apps": "Kompanjong apper",
                         "create": "Opprett",
                         "create_and_write": "Opprette og skrive",
                         "delete": "Slett",
@@ -2979,7 +3100,7 @@
                         "tag_id": "Tag-ID",
                         "tag_id_placeholder": "Automatisk generert når den er tom",
                         "update": "Oppdater",
-                        "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprette en QR-kode nedenfor."
+                        "usage": "En tag kan utløse en automasjon når den skannes, du kan bruke NFC-koder, QR-koder eller hvilken som helst annen type tag. Bruk {companion_link} til å skrive denne taggen til en programmerbar NFC-tag eller opprett en QR-kode nedenfor."
                     },
                     "edit": "Rediger",
                     "headers": {
@@ -2991,10 +3112,25 @@
                     "no_tags": "Ingen tagger",
                     "write": "Skrive"
                 },
+                "updates": {
+                    "check_unavailable": {
+                        "description": "Du må kjøre Home Assistant operativsystem for å kunne sjekke og innstallere oppdateringer fra Home Assistant brukergrensesnittet",
+                        "title": "Kunne ikke sjekke oppdateringer"
+                    },
+                    "check_updates": "Sjekk oppdateringer",
+                    "more_updates": "+ {count} oppdateringer",
+                    "review": "anmeldelse",
+                    "show": "Vis",
+                    "show_all_updates": "Vis alle oppdateringer",
+                    "title": "{count} {count, plural,\n  one {oppdatering}\n  other {oppdateringer}\n  }",
+                    "unable_to_fetch": "Kan ikke laste oppdateringer",
+                    "version_available": "Versjon {version_available} er tilgjengelig"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Legg til bruker",
                         "create": "Opprett",
+                        "local_only": "Kun lokalt",
                         "password": "Passord",
                         "password_confirm": "Bekreft passord",
                         "password_not_match": "Passord samsvarer ikke"
@@ -3013,25 +3149,31 @@
                         "delete_user": "Slett bruker",
                         "group": "Gruppe",
                         "id": "Id",
+                        "local_only": "Kan kun logge inn fra det lokale nettverket",
                         "name": "Visningsnavn",
                         "new_password": "Nytt passord",
                         "owner": "Eier",
                         "password_changed": "Passordet ble endret",
-                        "system_generated": "System opprettet",
-                        "system_generated_users_not_editable": "Kan ikke oppdatere systemopprettede brukere.",
-                        "system_generated_users_not_removable": "Kan ikke fjerne systemopprettede brukere.",
+                        "system_generated": "Systembruker",
+                        "system_generated_users_not_editable": "Kan ikke oppdatere systembrukere.",
+                        "system_generated_users_not_removable": "Kan ikke fjerne systembrukere.",
                         "unnamed_user": "Bruker uten navn",
                         "update_user": "Oppdater",
                         "username": "Brukernavn"
                     },
+                    "is_local": "Lokal bruker",
+                    "is_not_active": "Deaktivert",
+                    "is_owner": "Eier",
+                    "is_system": "Systembruker",
                     "picker": {
                         "add_user": "Legg til bruker",
                         "headers": {
                             "group": "Gruppe",
                             "is_active": "Aktiv",
                             "is_owner": "Eier",
+                            "local": "Lokalt",
                             "name": "Visningsnavn",
-                            "system": "System generert",
+                            "system": "System",
                             "username": "Brukernavn"
                         }
                     },
@@ -3123,6 +3265,7 @@
                     "visualization": {
                         "auto_zoom": "Automatisk zoom",
                         "caption": "Visualisering",
+                        "enable_physics": "Aktiver fysikk",
                         "header": "Nettverksvisualisering",
                         "highlight_label": "Fremhev enheter",
                         "refresh_topology": "Oppdater topologi",
@@ -3256,13 +3399,21 @@
                 "zwave_js": {
                     "add_node": {
                         "cancel_inclusion": "Avbryt inkludering",
+                        "check_logs": "Vennligst sjekk loggene for mer informasjon.",
+                        "choose_inclusion_strategy": "Hvordan vil du legge til enheten",
                         "controller_in_inclusion_mode": "Z-Wave-kontrolleren er nå i inkluderingsmodus",
+                        "enter_qr_code": "Skriv inn QR-kodeverdi",
                         "follow_device_instructions": "Følg instruksjonene som fulgte med enheten for å utløse sammenkobling på enheten",
-                        "inclusion_failed": "Enheten kunne ikke legges til. Vennligst sjekk loggene for mer informasjon.",
+                        "inclusion_failed": "Enheten kunne ikke legges til.",
                         "inclusion_finished": "Enheten er lagt til.",
                         "interview_failed": "Enhetsintervjuet mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
                         "interview_started": "Enheten blir intervjuet. Dette kan ta litt tid.",
                         "introduction": "Denne veiviseren vil guide deg gjennom å legge til en node i Z-Wave-nettverket ditt",
+                        "provisioning_finished": "Enheten er lagt til. Den vil bli tilgjengelig når du slår den på.",
+                        "qr_code": "QR-kode",
+                        "qr_code_paragraph": "Hvis enheten din støtter SmartStart, kan du skanne QR-koden for enkel sammenkobling.",
+                        "scan_qr_code": "Skann QR-kode",
+                        "searching_device": "Søker etter enhet",
                         "secure_inclusion_warning": "Sikre enheter krever ekstra båndbredde; for mange sikre enheter kan redusere Z-Wave-nettverket. Vi anbefaler bare å bruke sikker inkludering for enheter som krever det, for eksempel låser eller garasjeportåpnere.",
                         "security_classes": {
                             "S0_Legacy": {
@@ -3282,6 +3433,7 @@
                                 "title": "S2 Uautentisert"
                             }
                         },
+                        "select_camera": "Velg kamera",
                         "start_inclusion": "Start inkludering",
                         "start_secure_inclusion": "Start sikker inkludering",
                         "title": "Legg til en Z-Wave-enhet",
@@ -3290,6 +3442,7 @@
                     },
                     "common": {
                         "add_node": "Legg til enhet",
+                        "back": "Tilbake",
                         "close": "Lukk",
                         "heal_network": "Helbrede nettverk",
                         "home_id": "Hjem-ID",
@@ -3300,10 +3453,11 @@
                         "source": "Kilde"
                     },
                     "dashboard": {
+                        "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "driver_version": "Driverversjon",
                         "dump_dead_nodes_text": "Noen av enhetene dine svarte ikke og antas å være døde. Disse vil ikke bli fullstendig eksportert.",
                         "dump_dead_nodes_title": "Noen av enhetene dine er døde",
-                        "dump_debug": "Last ned en dump av nettverket ditt for å diagnostisere problemer",
+                        "dump_debug": "Last ned data",
                         "dump_not_ready_confirm": "Last ned",
                         "dump_not_ready_text": "Hvis du oppretter en eksport mens ikke alle enhetene er klare, kan du gå glipp av nødvendige data. Gi nettverket litt tid til å spørre alle enheter. Vil du fortsette med dumpen?",
                         "dump_not_ready_title": "Ikke alle enheter er klare ennå",
@@ -3311,6 +3465,9 @@
                         "home_id": "Hjem-ID",
                         "introduction": "Administrer Z-Wave-nettverket og Z-Wave-enhetene",
                         "nodes_ready": "Enheter klare",
+                        "not_ready": "{count} er ikke klar",
+                        "provisioned_devices": "Klargjorte enheter",
+                        "server_url": "Server URL",
                         "server_version": "Serverversjon"
                     },
                     "device_info": {
@@ -3351,6 +3508,7 @@
                         "traffic_warning": "Helbredelsesprosessen genererer en stor mengde trafikk på Z-Wave-nettverket. Dette kan føre til at enheter reagerer sakte (eller ikke i det hele tatt) mens helbredelsen pågår."
                     },
                     "logs": {
+                        "download_logs": "Last ned logger",
                         "log_level": "Loggnivå",
                         "log_level_changed": "Loggnivå endret til: {level}",
                         "subscribed_to_logs": "Abonnerer på Z-Wave JS-loggmeldinger …",
@@ -3385,8 +3543,17 @@
                         "dead": "Død",
                         "unknown": "Ukjent"
                     },
+                    "provisioned": {
+                        "confirm_unprovision_text": "Hvis du fjerner tilgangen til enheten, blir den ikke lagt til Home Assistant når den slås på. Hvis den allerede er lagt til i Home Assistant, vil ikke fjerning av den klargjorte enheten fjerne den fra Home Assistant.",
+                        "confirm_unprovision_title": "Er du sikker på at du vil fjerne tilgangen til enheten?",
+                        "dsk": "DSK",
+                        "included": "Inkludert",
+                        "not_included": "Ikke inkludert",
+                        "security_classes": "Sikkerhetsklasser",
+                        "unprovison": "Uforbehold"
+                    },
                     "reinterview_node": {
-                        "battery_device_warning": "Du må vekke batteridrevne enheter før du begynner på nytt intervju. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
+                        "battery_device_warning": "Du må vekke batteridrevne enheter før du starter et nytt intervju. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
                         "in_progress": "Enheten blir intervjuet. Dette kan ta litt tid.",
                         "interview_complete": "Enhetsintervjuet er fullført.",
                         "interview_failed": "Enhetsintervjuet mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
@@ -3460,7 +3627,7 @@
                         "notification_event_fired": "Arrangementet {type} vellykket!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
-                        "subscribe_to": "Hendelse for å abonnere på",
+                        "subscribe_to": "Hendelse å abonnere på",
                         "title": "Hendelser",
                         "type": "Hendelse type"
                     },
@@ -3500,26 +3667,26 @@
                         "title": "Tilstander"
                     },
                     "statistics": {
-                        "entity": "Enhet",
+                        "entity": "Entitet",
                         "fix_issue": {
                             "fix": "Løs problemet",
                             "units_changed": {
-                                "clear": "Slett alle gamle statistikkdata for denne enheten",
+                                "clear": "Slett alle gamle statistikkdata for denne entiteten",
                                 "fix": "Løs problemet",
-                                "title": "Enheten til denne enheten endret seg",
+                                "title": "Enheten til denne entiteten endret seg",
                                 "update": "Oppdater de historiske statistikkverdiene fra '' {metadata_unit} '' til '' {state_unit} ''"
                             }
                         },
                         "issue": "Problem",
                         "issues": {
-                            "entity_no_longer_recorded": "Denne enheten blir ikke lenger registrert.",
-                            "entity_not_recorded": "Denne enheten er ekskludert fra å bli registrert.",
-                            "no_state": "Ingen status er tilgjengelig for denne enheten.",
-                            "units_changed": "Enheten til denne enheten endret seg fra '' {metadata_unit} '' til '' {state_unit} ''.",
-                            "unsupported_state_class": "Tilstandsklassen {state_class} for denne enheten støttes ikke.",
-                            "unsupported_unit": "Enheten ({state_unit}) for denne enheten samsvarer ikke med enheten {device_class}.",
-                            "unsupported_unit_metadata": "Enheten ('' {metadata_unit} '') for den registrerte statistikken samsvarer ikke med den støttede enheten '' {supported_unit} '' for {device_class} ' '.",
-                            "unsupported_unit_state": "Enheten ('' {state_unit} '') for denne enheten samsvarer ikke med enheten i {device_class} ''."
+                            "entity_no_longer_recorded": "Denne entiteten blir ikke lenger registrert.",
+                            "entity_not_recorded": "Denne entiteten er ekskludert fra å bli registrert.",
+                            "no_state": "Ingen status er tilgjengelig for denne entiteten.",
+                            "units_changed": "Enheten til denne entiteten endret seg fra ''{metadata_unit}'' til ''{state_unit}''.",
+                            "unsupported_state_class": "Tilstandsklassen {state_class} for denne entiteten støttes ikke.",
+                            "unsupported_unit": "Enheten (''{state_unit}'') for denne entiteten samsvarer ikke med enheten i enhetsklasse ''{device_class}''.",
+                            "unsupported_unit_metadata": "Enheten (''{metadata_unit}'') for den registrerte statistikken samsvarer ikke med den støttede enheten ''{supported_unit}'' for ''{device_class}''.",
+                            "unsupported_unit_state": "Enheten ('' {state_unit} '') for denne entiteten samsvarer ikke med enheten i {device_class} ''."
                         },
                         "no_issue": "Ikke noe problem",
                         "title": "Statistikk"
@@ -3596,10 +3763,11 @@
                             "battery": "Batteri",
                             "gas": "Gass",
                             "go_to_energy_dashboard": "Gå til energidashboardet",
-                            "grid": "Rutenett",
+                            "grid": "Strømnett",
                             "home": "Hjem",
                             "non_fossil": "Ikke-fossilt",
-                            "solar": "Solenergi"
+                            "solar": "Solenergi",
+                            "title_today": "Energidistribusjon i dag"
                         },
                         "energy_solar_graph": {
                             "forecast": "Prognose {name}",
@@ -3609,24 +3777,24 @@
                             "battery_total": "Totalt batteri",
                             "cost": "Kostnad",
                             "energy": "Energi",
-                            "grid_total": "Rutenett totalt",
+                            "grid_total": "Strømnett totalt",
                             "source": "Kilde",
                             "total_costs": "Totale kostnader"
                         },
                         "energy_usage_graph": {
-                            "combined_from_grid": "Kombinert fra rutenett",
+                            "combined_from_grid": "Kombinert fra strømnett",
                             "consumed_battery": "Forbrukt batteri",
                             "consumed_solar": "Forbrukt solenergi",
-                            "total_consumed": "Total forbruk {num} kWh",
-                            "total_returned": "Totalt returnert {num} kWh"
+                            "total_consumed": "Total forbruk {num} kWt",
+                            "total_returned": "Totalt returnert {num} kWt"
                         },
                         "grid_neutrality_gauge": {
                             "color_explain": "Hvis nålen er i det lilla, returnerte du mer energi til nettet enn du brukte fra den. Hvis det er i det blå, brukte du mer energi fra nettet enn du returnerte.",
                             "energy_dependency": "Dette kortet angir netto energiforbruk.",
                             "grid_neutrality_not_calculated": "Nettnøytralitet kunne ikke beregnes",
                             "net_consumed_grid": "Netto forbruk fra nettet",
-                            "net_returned_grid": "Netto returnerte til nettet",
-                            "red_green_color_explain": "Hvis det er grønt, betyr det at du produserte mer energi enn det du brukte fra nettet. Hvis det er rødt, betyr det at du stolte på nettet for en del av hjemmets energiforbruk."
+                            "net_returned_grid": "Netto returnert til nettet",
+                            "red_green_color_explain": "Hvis det er grønt, betyr det at du produserte mer energi enn det du brukte fra strømnettet. Hvis det er rødt, betyr det at du benyttet strømnettet for en del av hjemmets energiforbruk."
                         },
                         "loading": "Laster inn...",
                         "no_data": "Det er ingen data å vise. Det kan ta opptil 2 timer før nye data kommer etter at du har konfigurert energidashbordet.",
@@ -3635,7 +3803,7 @@
                             "card_indicates_solar_energy_used": "Dette kortet angir hvor mye av solenergien du produserte som ble brukt av hjemmet ditt i stedet for å bli returnert til nettet.",
                             "card_indicates_solar_energy_used_charge_home_bat": "Hvis dette tallet vanligvis er veldig lavt, noe som indikerer overflødig solproduksjon, kan du vurdere å lade et hjemmebatteri eller en elbil fra solcellepanelene dine i tider med høy solproduksjon.",
                             "not_produced_solar_energy": "Du har ikke produsert noen solenergi",
-                            "self_consumed_solar_could_not_calc": "Selvforbruket solenergi kunne ikke beregnes",
+                            "self_consumed_solar_could_not_calc": "Selvforbrukt solenergi kunne ikke beregnes",
                             "self_consumed_solar_energy": "Selvforbruket solenergi"
                         }
                     },
@@ -3708,8 +3876,13 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
-                            "description": "Alarmpanelkortet lar deg aktivere og deaktivere alarm kontrollpanelets integrasjoner.",
+                            "description": "Alarmpanelkortet lar deg til- og frakoble integreringene av alarmsentralen.",
                             "name": "Alarmpanel"
+                        },
+                        "area": {
+                            "description": "Områdekortet viser automatisk entiteter i et spesifikt område.",
+                            "name": "Område",
+                            "show_camera": "Vis kamerafeed i stedet for områdebilde"
                         },
                         "button": {
                             "default_action_help": "Standardhandlingen avhenger av enhetens funksjoner, den vil enten bli vekslet eller mer informasjonsdialogboksen vises.",
@@ -3807,7 +3980,7 @@
                             "image": "Bane til bilde",
                             "manual": "Manuell",
                             "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å manuelt skrive YAML?",
-                            "maximum": "Maksimalt",
+                            "maximum": "Maksimum",
                             "minimum": "",
                             "name": "Navn",
                             "no_theme": "Ingen tema",
@@ -3911,8 +4084,15 @@
                             "name": "Handleliste"
                         },
                         "statistics-graph": {
-                            "description": "Med Statistics Graph -kortet kan du vise en graf over statistikken for hver av enhetene som er oppført.",
-                            "name": "Statistikkgraf"
+                            "description": "Med Statistics Graph -kortet kan du vise en graf over statistikken for hver av entitetene som er oppført.",
+                            "name": "Statistikkgraf",
+                            "period": "Periode",
+                            "periods": {
+                                "5minute": "5 minutter",
+                                "day": "Dag",
+                                "hour": "Time",
+                                "month": "Måned"
+                            }
                         },
                         "thermostat": {
                             "description": "Termostatkortet gir kontroll over din klimaentitet. Lar deg endre temperatur og modus for entiteten.",
@@ -3957,7 +4137,7 @@
                         "duplicate": "Dupliser kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
-                        "move": "Gå til visning",
+                        "move": "Flytt til visning",
                         "move_after": "Flytt kortet etter",
                         "move_before": "Flytt kortet før",
                         "move_down": "Flytt kortet ned",
@@ -4035,7 +4215,7 @@
                         "confirm_remove_config_text": "Vi vil automatisk opprette Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
                         "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace UI-konfigurasjonen?",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
-                        "confirm_unsaved_comments": "Konfigurasjonen din kan inneholde kommentarer, disse lagres ikke. Vil du fortsette?",
+                        "confirm_unsaved_comments": "Konfigurasjonen din kan inneholde kommentar(er), disse lagres ikke. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
@@ -4254,7 +4434,7 @@
                             "air": "Luft",
                             "commute_home": "Pendle til hjem",
                             "entertainment": "Underholdning",
-                            "hdmi_input": "HDMI inngang",
+                            "hdmi_input": "HDMI-inngang",
                             "hdmi_switcher": "HDMI-velger",
                             "information": "Informasjon",
                             "lights": "Lys",
@@ -4292,7 +4472,7 @@
                     "intro": "Hei {name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
                     "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp automasjon basert på solen. Dette deles ikke ut av nettet ditt.",
                     "intro_location_detect": "Vi kan hjelpe deg med å fylle ut denne informasjonen ved å gjøre en engangsforespørsel til en ekstern tjeneste.",
-                    "location_name": "Navn på installasjonen av Home Assistant",
+                    "location_name": "Navn på Home Assistant-installasjonen",
                     "location_name_default": "Hjem"
                 },
                 "finish": "Fullfør",
@@ -4316,7 +4496,8 @@
                     "password_protection": "Passordbeskyttelse",
                     "select_type": "Velg hva du vil gjenopprette",
                     "show_log": "Vis full logg",
-                    "type": "Type sikkerhetskopiering"
+                    "type": "Type sikkerhetskopiering",
+                    "upload_backup": "Last opp backup"
                 },
                 "user": {
                     "create_account": "Opprett konto",

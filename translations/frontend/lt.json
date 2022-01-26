@@ -639,12 +639,16 @@
             "entity_registry": {
                 "dismiss": "Atmesti",
                 "editor": {
+                    "delete": "Ištrinti",
                     "device_disabled": "Šio objekto įrenginys išjungtas.",
+                    "enabled_label": "Įgalinti subjektą",
+                    "entity_id": "Subjekto ID",
                     "icon": "Piktograma",
                     "name": "Pavadinimas",
                     "open_device_settings": "Atidaryti įrenginio nustatymus"
                 },
                 "faq": "dokumentacija",
+                "related": "Susijęs",
                 "settings": "Nustatymai"
             },
             "generic": {
@@ -837,7 +841,7 @@
                     "editor": {
                         "create": "SUKURTI",
                         "default_name": "Nauja sritis",
-                        "delete": "IŠTRINTI",
+                        "delete": "Ištrinti",
                         "linked_entities_caption": "Subjektai",
                         "unknown_error": "Nežinoma klaida",
                         "update": "ATNAUJINTI"
@@ -868,7 +872,7 @@
                     "editor": {
                         "actions": {
                             "add": "Pridėti veiksmą",
-                            "delete": "Trinti",
+                            "delete": "Ištrinti",
                             "delete_confirm": "Ar tikrai norite ištrinti?",
                             "duplicate": "Dublikuoti",
                             "header": "Veiksmai",
@@ -1105,6 +1109,7 @@
                     },
                     "picker": {
                         "add_automation": "Pridėti automatikos scenarijų",
+                        "delete_automation": "Ištrinti automatizavimą",
                         "edit_automation": "Redaguoti automatiką",
                         "header": "Automatikos redaktorius",
                         "introduction": "Automatikos redaktorius leidžia kurti ir redaguoti automatikos scenarijus. Spustelėkite toliau pateiktą nuorodą, kad perskaitytumėte instrukcijas ir įsitikintumėte, jog tinkamai sukonfigūravote Home Assistant.",
@@ -1305,6 +1310,11 @@
                         "include_link": "įtraukti customize.yaml"
                     }
                 },
+                "dashboard": {
+                    "devices": {
+                        "description": "Integracijos, įrenginiai, subjektai ir sritys"
+                    }
+                },
                 "devices": {
                     "automation": {
                         "actions": {
@@ -1341,7 +1351,7 @@
                     },
                     "delete": "Ištrinti",
                     "description": "Tvarkyti prijungtus įrenginius",
-                    "device_info": "Įrenginio info",
+                    "device_info": "Įrenginio informacija",
                     "device_not_found": "Įrenginys nerastas",
                     "disabled": "Išjungta",
                     "disabled_by": {
@@ -1354,7 +1364,11 @@
                     "enabled_label": "Įgalinti įrenginį",
                     "entities": {
                         "add_entities_lovelace": "Pridėti į Lovelace",
-                        "entities": "Subjektai"
+                        "config": "Konfigūracija",
+                        "control": "Valdikliai",
+                        "diagnostic": "Diagnostika",
+                        "entities": "Subjektai",
+                        "sensor": "Jutikliai"
                     },
                     "no_devices": "Nėra įrenginių",
                     "picker": {
@@ -1373,14 +1387,17 @@
                     },
                     "scenes": "Scenos",
                     "script": {
-                        "create_disable": "Negalima sukurti skripto su išjungtu įrenginiu"
+                        "create_disable": "Negalima sukurti skripto su išjungtu įrenginiu",
+                        "scripts": "Skriptai"
                     },
+                    "scripts": "Skriptai",
                     "unknown_error": "Nežinoma klaida",
                     "unnamed_device": "Bevardis įrenginys",
                     "update_device_error": "Nepavyko atnaujinti įrenginio"
                 },
                 "energy": {
                     "device_consumption": {
+                        "devices": "Įrenginiai",
                         "dialog": {
                             "selected_stat_intro": "Pasirinkite subjektą, kuris atspindi įrenginio energijos suvartojimą."
                         },
@@ -1409,17 +1426,22 @@
                     "picker": {
                         "filter": {
                             "filter": "Filtras",
-                            "show_all": "Rodyti viską"
+                            "hidden_entities": "{number} paslėtas (-i) {number, plural,\n  one {subjektas}\n  other {subjektai}\n}",
+                            "show_all": "Rodyti viską",
+                            "show_disabled": "Rodyti išjungtus subjektus",
+                            "show_readonly": "Rodyti tik skaitomus subjektus",
+                            "show_unavailable": "Rodyti nepasiekiamus subjektus"
                         },
                         "header": "Subjektų registras",
                         "headers": {
                             "area": "Sritis",
-                            "entity_id": "Subjekto id",
+                            "entity_id": "Subjekto ID",
                             "integration": "Integracija",
                             "name": "Pavadinimas",
                             "status": "Būsena"
                         },
                         "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio.",
+                        "search": "Ieškoti subjektų",
                         "selected": "{number} pasirinkta",
                         "status": {
                             "disabled": "Išjungta",
@@ -1435,6 +1457,7 @@
                     "picker": {
                         "headers": {
                             "editable": "Redaguojamas",
+                            "entity_id": "Subjekto ID",
                             "name": "Pavadinimas",
                             "type": "Tipas"
                         }
@@ -1473,9 +1496,11 @@
                         "configure": "Konfigūruoti",
                         "delete": "Ištrinti",
                         "device_unavailable": "Įrenginis neprieinamas",
+                        "devices": "{count} {count, plural,\n  one {įrenginys}\n  other {įrenginiai}\n}",
                         "documentation": "Dokumentacija",
+                        "entities": "{count} {count, plural,\n  one {subjektas}\n  other {subjektai}\n}",
                         "entity_unavailable": "Subjektas nepasiekiamas",
-                        "firmware": "Programinė įranga: {versija}",
+                        "firmware": "Programinė įranga: {version}",
                         "hub": "Prijungtas per",
                         "manuf": "sukūrė {manufacturer}",
                         "no_area": "Nėra srities",
@@ -1506,7 +1531,8 @@
                     "configured": "Sukonfigūruota",
                     "details": "Integravimo informacija",
                     "disable": {
-                        "show": "Rodyti"
+                        "show": "Rodyti",
+                        "show_disabled": "Rodyti išjungtas integracijas"
                     },
                     "discovered": "Atrasta",
                     "home_assistant_website": "Home Assistant svetainė",
@@ -1515,7 +1541,8 @@
                         "ignore": "Nepaisyti",
                         "ignored": "Nepaisoma"
                     },
-                    "integration": "integracija"
+                    "integration": "integracija",
+                    "search": "Įeškoti integracijų"
                 },
                 "introduction": "Šiame vaizde galima sukonfigūruoti savo komponentus ir Home Assistant. Dar ne viską galima sukonfigūruoti iš vartotojo sąsajos (UI ), tačiau mes prie to dirbame.",
                 "logs": {
@@ -1562,6 +1589,7 @@
                     "resources": {
                         "caption": "Ištekliai",
                         "detail": {
+                            "delete": "Ištrinti",
                             "url": "URL"
                         },
                         "picker": {
@@ -1653,8 +1681,11 @@
                         "default_name": "Nauja scena",
                         "devices": {
                             "add": "Pridėti įrenginį",
-                            "delete": "Pašalinti įrenginį",
+                            "delete": "Ištrinti įrenginį",
                             "header": "Įrenginiai"
+                        },
+                        "entities": {
+                            "delete": "Ištrinti subjektą"
                         },
                         "icon": "Piktograma",
                         "load_error_not_editable": "Redaguoti galima tik scenas, esančias scenes.yaml.",
@@ -1686,6 +1717,7 @@
                         "delete_confirm": "Ar tikrai norite ištrinti šį scenarijų?",
                         "delete_script": "Ištrinti skriptą",
                         "header": "Scenarijus: {name}",
+                        "id": "Subjekto ID",
                         "modes": {
                             "label": "Režimas"
                         },
@@ -2045,7 +2077,7 @@
                             "name": "Subjektai",
                             "secondary_info_values": {
                                 "brightness": "Ryškumas",
-                                "entity-id": "Objekto ID",
+                                "entity-id": "Subjekto ID",
                                 "last-changed": "Paskutinį kartą pakeista",
                                 "last-triggered": "Paskutinį kartą suaktyvinta",
                                 "last-updated": "Paskutinį kartą atnaujinta",
@@ -2256,7 +2288,8 @@
                     "domain": "Domenas",
                     "entity": "Subjektas",
                     "entity_id": "Subjekto ID",
-                    "last_changed": "Paskutinį kartą pakeistas"
+                    "last_changed": "Paskutinį kartą pakeistas",
+                    "search": "Ieškoti subjektų"
                 },
                 "views": {
                     "confirm_delete": "Ištrinti vaizdą?"

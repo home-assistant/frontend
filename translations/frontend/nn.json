@@ -157,7 +157,8 @@
                 "title": "Maskinvare"
             },
             "repositories": {
-                "remove": "Fjern"
+                "remove": "Fjern",
+                "used": "Kodelageret er i bruk av eit installert tillegg og kan ikkje fjernast."
             },
             "restart_addon": {
                 "confirm_text": "Start tillegget på nytt"
@@ -192,6 +193,9 @@
                     "source_mods": "Kjeldeendringar"
                 }
             }
+        },
+        "update_available": {
+            "no_update": "Inga oppdatering tilgjengeleg for {name}"
         }
     },
     "ui": {
@@ -257,6 +261,12 @@
                 "unlock": "Lås opp"
             },
             "media_player": {
+                "media_pause": "Pause",
+                "media_stop": "Stopp",
+                "media_volume_down": "Skru volum ned",
+                "media_volume_mute": "Skru av volum",
+                "media_volume_unmute": "Skru på volum",
+                "media_volume_up": "Skru volum opp",
                 "sound_mode": "Lydmodus",
                 "source": "Kjelde",
                 "text_to_speak": "Tekst til tale"
@@ -343,6 +353,7 @@
             "previous": "Førre",
             "refresh": "Oppdater ",
             "save": "Lagre",
+            "submit": "Send inn",
             "successfully_deleted": "Vellukka sletting",
             "successfully_saved": "Vellukka lagring"
         },
@@ -409,6 +420,16 @@
                 },
                 "retrieval_error": "Feil under henting av loggbokoppføring "
             },
+            "qr-scanner": {
+                "enter_qr_code": "Skriv inn QR-kodeverdi",
+                "manual_input": "Du kan skanne QR-koden med ein annan QR-skanner og lime inn koden i inndataa nedanfor",
+                "not_supported": "Nettlesaren din støttar ikkje QR-skanning",
+                "only_https_supported": "Du kan berre bruke kameraet ditt til å skanne QR-koder når du bruker HTTPS.",
+                "select_camera": "Vel kamera"
+            },
+            "related-filter-menu": {
+                "filter": "Filter"
+            },
             "related-items": {
                 "area": "Område",
                 "device": "Eining",
@@ -466,6 +487,20 @@
                 "editor": {
                     "confirm_delete": "Er du sikker på at du vil slette denne oppføringa?",
                     "delete": "SLETT",
+                    "device_class": "Vis som",
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Dør",
+                            "garage_door": "Garasjedør",
+                            "opening": "Anna",
+                            "window": "Vindauge"
+                        },
+                        "cover": {
+                            "door": "Dør",
+                            "garage": "Garasjedør",
+                            "window": "Vindauge"
+                        }
+                    },
                     "enabled_cause": "Deaktivert av {cause}.",
                     "enabled_description": "Dekativere oppføringar kjem ikkje til å bli lagt til i Home Assistant",
                     "enabled_label": "Aktiver oppføringa",
@@ -536,6 +571,9 @@
                     "navigation": {
                         "energy": "Energi",
                         "tag": "Merknader"
+                    },
+                    "reload": {
+                        "themes": "Tema"
                     }
                 }
             },
@@ -609,6 +647,7 @@
         "panel": {
             "config": {
                 "areas": {
+                    "assigned_to_area": "Knytta til dette området",
                     "caption": "Områderegister",
                     "data_table": {
                         "area": "Område",
@@ -632,11 +671,15 @@
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
                         "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet."
-                    }
+                    },
+                    "targeting_area": "Målretta dette området"
                 },
                 "automation": {
                     "caption": "Automasjon",
                     "description": "Lag og rediger automasjonar",
+                    "dialog_new": {
+                        "start_empty_description": "Lag ein ny automasjon frå botnen av"
+                    },
                     "editor": {
                         "actions": {
                             "add": "Legg til handling",
@@ -765,6 +808,7 @@
                             "delete": "Slett",
                             "delete_confirm": "Er du sikker på at du vil slette?",
                             "duplicate": "Dupliser",
+                            "edit_id": "Rediger utløysar-ID",
                             "header": "Utløysarar",
                             "id": "Utløysar-ID (brukt i utløysings-føresetnaden)",
                             "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.",
@@ -887,6 +931,7 @@
                         },
                         "tts": {
                             "dialog": {
+                                "create_automation": "Lag automasjon ",
                                 "example_message": "Hei {name}! Du kan spele kva som heilst tekst på kva som heilst støtta mediaspelar\"",
                                 "header": "Prøv tekst til tale",
                                 "play": "Spel",
@@ -955,6 +1000,48 @@
                         "introduction": "Modifiser oppføringsattributtane. Dei nyleg lagt til/endra endringane kjem til å bli sett til verks med ein gang. Fjerna endringar kjem i gang når oppføringa er oppdatert."
                     }
                 },
+                "dashboard": {
+                    "automations": {
+                        "description": "Administrer atuomasjonar, scener, skript og hjelparar",
+                        "title": "Automasjon og scener"
+                    },
+                    "blueprints": {
+                        "description": "Førehandsdefinerte automasjonar og skript laga av fellesskapet",
+                        "title": "Teikningar"
+                    },
+                    "companion": {
+                        "description": "Lokasjon og varslar",
+                        "title": "Medfølgande app"
+                    },
+                    "dashboards": {
+                        "description": "Lag tilpassa sett med kort for å kontrollere heimen din",
+                        "title": "Skrivebord "
+                    },
+                    "devices": {
+                        "description": "Integrasjonar, einingar, oppføringar og område ",
+                        "title": "Einingar og tenester"
+                    },
+                    "energy": {
+                        "description": "Overvak energiproduksjon og forbruk",
+                        "title": "Energi"
+                    },
+                    "people": {
+                        "description": "Administrer folk og sonene som Home Assistant sporer",
+                        "title": "Folk og soner"
+                    },
+                    "settings": {
+                        "description": "Grunnleggande innstillingar, serverkontroll, loggar og info",
+                        "title": "Innstillingar"
+                    },
+                    "supervisor": {
+                        "description": "Lag sikkerheitskopiar, sjekk loggar og start systemet ditt på nytt",
+                        "title": "TIllegg, sikkkerheitskopiar og vegleiar"
+                    },
+                    "tags": {
+                        "description": "Utløys automatiseringar når ein NFC-tag, QR-kode, og liknande er skanna",
+                        "title": "Taggar"
+                    }
+                },
                 "devices": {
                     "automation": {
                         "automations": "Automasjonar",
@@ -970,10 +1057,12 @@
                         "area": "Område",
                         "battery": "Batteri",
                         "manufacturer": "Produsent",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_integration": "Inga integrasjon "
                     },
                     "description": "Administrer tilkopla einingar",
                     "device_info": "Einingsinfo ",
+                    "download_diagnostics": "Last ned diagnostikk",
                     "edit_settings": "Rediger innstillingar",
                     "entities": {
                         "config": "Konfigurasjon",
@@ -1156,6 +1245,11 @@
                     }
                 },
                 "header": "Konfigurer Home Assistant",
+                "helpers": {
+                    "types": {
+                        "input_button": "Knapp"
+                    }
+                },
                 "info": {
                     "caption": "Info",
                     "copy_menu": "Kopier meny",
@@ -1188,13 +1282,17 @@
                         "disable_error": "Aktivering eller deaktivering av integasjonen mislukkast",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringa av denne integrasjonen",
                         "disabled_polling": "Automatisk trekking av oppdatert data er deaktivert",
+                        "download_diagnostics": "Last ned diagnostikk",
                         "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringa av denne integrasjonen",
                         "entities": "{count} {count, plural,\n  one {oppføring}\n  other {oppføringar}\n}",
                         "entity_unavailable": "Oppføringa utilgjengeleg",
                         "firmware": "Firmware: {version}",
+                        "hardware": "Maskinvare: {version}",
                         "hub": "Tilkopla via",
+                        "known_issues": "Kjente problem",
                         "manuf": "av {manufacturer}",
                         "no_area": "Inga område",
+                        "open_configuration_url": "Besøk eining",
                         "provided_by_custom_integration": "Levert av ein tilpassa integrasjon ",
                         "rename": "Endre namn",
                         "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
@@ -1222,7 +1320,7 @@
                         "loading": {
                             "fallback_title": "integrasjonen",
                             "loading_flow": "Vent medan {integration} vert sett opp",
-                            "loading_step": "Laster neste steg for {integrasjon}"
+                            "loading_step": "Laster neste steg for {integration}"
                         },
                         "next": "Neste",
                         "pick_flow_step": {
@@ -1277,6 +1375,7 @@
                         "device_tracker_intro": "Vel eininga som høyrer til denne personen.",
                         "device_tracker_pick": "Vel eining for å spore",
                         "device_tracker_picked": "Spor eining",
+                        "local_only": "Kan berre logge inn frå det lokale nettverket",
                         "name": "Namn"
                     }
                 },
@@ -1326,9 +1425,12 @@
                             "core": "Oppdater kjerna",
                             "group": "Oppdater gruppene",
                             "heading": "Konfigurasjonsomlasting",
+                            "input_button": "Inndataknappar",
                             "introduction": "Nokre delar av Home Assistant kan oppdaterast utan ein omstart. Ved å trykke på oppdater, vil Home Assistant forkaste den gjeldande konfigurasjonen og erstatte den med den nye.",
                             "scene": "Omlast scenene",
-                            "script": "Oppdater skripta"
+                            "script": "Oppdater skripta",
+                            "themes": "Tema",
+                            "timer": "Tidtakarar"
                         },
                         "server_management": {
                             "confirm_restart": "Er du sikker på at du ønsker å starte Home Assistant omatt?",
@@ -1351,6 +1453,7 @@
                     "add_user": {
                         "caption": "Legg til brukar",
                         "create": "Lag",
+                        "local_only": "Berre lokalt",
                         "password": "Passord"
                     },
                     "caption": "Brukarar",
@@ -1362,13 +1465,19 @@
                         "change_password": "Bytt passord",
                         "deactivate_user": "Deaktiver brukaren",
                         "delete_user": "Slett brukar",
+                        "local_only": "Kan berre logge inn frå det lokale nettverket",
                         "name": "Namn",
                         "system_generated_users_not_editable": "Kan ikkje oppdatere dei systemgenererte brukarane",
                         "update_user": "Oppdater"
                     },
+                    "is_local": "Lokal brukar",
+                    "is_not_active": "Deaktivert",
+                    "is_owner": "Eigar",
+                    "is_system": "Systembrukar",
                     "picker": {
                         "headers": {
                             "group": "Gruppe ",
+                            "local": "Lokal ",
                             "name": "Namn",
                             "system": "System "
                         }
@@ -1402,6 +1511,7 @@
                         "delete": "Slett gruppe"
                     },
                     "visualization": {
+                        "enable_physics": "Aktiver fysikk",
                         "refresh_topology": "Oppdater topologi"
                     }
                 },
@@ -1531,9 +1641,16 @@
                         }
                     },
                     "common": {
+                        "back": "TIlbake",
                         "heal_network": "Læk nettverket",
                         "reconfigure_server": "Konfigurer serveren på nytt",
                         "source": "Kjelde"
+                    },
+                    "dashboard": {
+                        "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
+                        "not_ready": "{count} ikkje klar",
+                        "provisioned_devices": "Klargjorte einingar",
+                        "server_url": "Server-URL"
                     },
                     "device_info": {
                         "heal_node": "Læk eining",
@@ -1566,6 +1683,7 @@
                         "traffic_warning": "Lækingsprosessen genererer mykje trafikk på Z-Wavenettverket. Dette kan føre til at einingane svarer seint (eller ikkje i det heile) medan lækingsprosessen er i gang."
                     },
                     "logs": {
+                        "download_logs": "Last ned loggar",
                         "log_level": "Loggnivå",
                         "log_level_changed": "Loggnivå endra til: {level}",
                         "subscribed_to_logs": "Abonner på Z-Wave JS-loggmeldingar",
@@ -1579,6 +1697,15 @@
                         "set_param_accepted": "Parameteren har blitt oppdatert.",
                         "set_param_error": "Ein feil oppstod.",
                         "set_param_queued": "Parameterendringa har blitt sett i køa, og vil bli oppdatert når eininga vakner."
+                    },
+                    "provisioned": {
+                        "confirm_unprovision_text": "Dersom du fjernar tilgangen til eininga kjem den ikkje til å bli lagt til i Home Assistant når den vert skrudd på. Dersom den allereie er lagt til i Home Assistant, vil ikkje fjerning av den klargjorte eininga fjerne den frå Home Assistant.",
+                        "confirm_unprovision_title": "Er du sikker på at du vil fjerne eininga?",
+                        "dsk": "DSK",
+                        "included": "Inkludert",
+                        "not_included": "Ikkje inkludert",
+                        "security_classes": "Sikkerheitsklasser",
+                        "unprovison": "Fjern"
                     },
                     "reinterview_node": {
                         "battery_device_warning": "Du må vekke batteridrivne einingar før du startar nytt intervju. Sjå einingshandboka for instruksjoner om korleis du skal vekke eininga.",
@@ -1698,6 +1825,9 @@
                 },
                 "editor": {
                     "card": {
+                        "area": {
+                            "show_camera": "Vis kamerastraum i staden for områdebilde"
+                        },
                         "button": {
                             "description": "Knappekortet let deg legge til knappar som kan uføre oppgåver.",
                             "name": "Knapp"
@@ -1771,7 +1901,14 @@
                         },
                         "statistics-graph": {
                             "description": "Statistikkgraf-kortet let deg vise grafar over statstikk for kvar enkelt opplista oppføring.",
-                            "name": "Statistikkgraf"
+                            "name": "Statistikkgraf",
+                            "period": "Periode",
+                            "periods": {
+                                "5minute": "5 minutt",
+                                "day": "Dag",
+                                "hour": "Time",
+                                "month": "Månad"
+                            }
                         },
                         "weather-forecast": {
                             "show_forecast": "Vis vêrmeldinga"
