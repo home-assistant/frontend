@@ -558,6 +558,10 @@
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
         "enter_qr_code": "Enter QR code value"
+      },
+      "climate-control": {
+        "temperature_up": "Increase temperature",
+        "temperature_down": "Decrease temperature"
       }
     },
     "dialogs": {
