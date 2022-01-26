@@ -33,7 +33,11 @@ import { formatDateWeekday } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
-import { getWeatherUnit, getWind } from "../../../data/weather";
+import {
+  getWeatherUnit,
+  getWind,
+  isForecastHourly,
+} from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
 
 const weatherIcons = {
@@ -81,6 +85,8 @@ class MoreInfoWeather extends LitElement {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
+
+    const hourly = isForecastHourly(this.stateObj.attributes.forecast);
 
     return html`
       <div class="flex">
@@ -169,48 +175,49 @@ class MoreInfoWeather extends LitElement {
             <div class="section">
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
-            ${this.stateObj.attributes.forecast.map(
-              (item) => html`
-                <div class="flex">
-                  ${item.condition
-                    ? html`
-                        <ha-svg-icon
-                          .path=${weatherIcons[item.condition]}
-                        ></ha-svg-icon>
-                      `
-                    : ""}
-                  ${!this._showValue(item.templow)
-                    ? html`
-                        <div class="main">
-                          ${formatTimeWeekday(
-                            new Date(item.datetime),
-                            this.hass.locale
-                          )}
-                        </div>
-                      `
-                    : ""}
-                  ${this._showValue(item.templow)
-                    ? html`
-                        <div class="main">
-                          ${formatDateWeekday(
-                            new Date(item.datetime),
-                            this.hass.locale
-                          )}
-                        </div>
-                        <div class="templow">
-                          ${formatNumber(item.templow, this.hass.locale)}
-                          ${getWeatherUnit(this.hass, "temperature")}
-                        </div>
-                      `
-                    : ""}
-                  <div class="temp">
-                    ${this._showValue(item.temperature)
-                      ? `${formatNumber(item.temperature, this.hass.locale)}
-                    ${getWeatherUnit(this.hass, "temperature")}`
+            ${this.stateObj.attributes.forecast.map((item) =>
+              this._showValue(item.templow) || this._showValue(item.temperature)
+                ? html`<div class="flex">
+                    ${item.condition
+                      ? html`
+                          <ha-svg-icon
+                            .path=${weatherIcons[item.condition]}
+                          ></ha-svg-icon>
+                        `
                       : ""}
-                  </div>
-                </div>
-              `
+                    ${hourly
+                      ? html`
+                          <div class="main">
+                            ${formatTimeWeekday(
+                              new Date(item.datetime),
+                              this.hass.locale
+                            )}
+                          </div>
+                        `
+                      : html`
+                          <div class="main">
+                            ${formatDateWeekday(
+                              new Date(item.datetime),
+                              this.hass.locale
+                            )}
+                          </div>
+                        `}
+                    <div class="templow">
+                      ${this._showValue(item.templow)
+                        ? `${formatNumber(item.templow, this.hass.locale)}
+                          ${getWeatherUnit(this.hass, "temperature")}`
+                        : hourly
+                        ? ""
+                        : "—"}
+                    </div>
+                    <div class="temp">
+                      ${this._showValue(item.temperature)
+                        ? `${formatNumber(item.temperature, this.hass.locale)}
+                        ${getWeatherUnit(this.hass, "temperature")}`
+                        : "—"}
+                    </div>
+                  </div>`
+                : ""
             )}
           `
         : ""}

@@ -6,7 +6,6 @@ import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
-import { ExternalConfig } from "../../../external_app/external_config";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { HomeAssistant } from "../../../types";
 
@@ -20,14 +19,12 @@ class HaConfigNavigation extends LitElement {
 
   @property() public pages!: PageNavigation[];
 
-  @property() public externalConfig?: ExternalConfig;
-
   protected render(): TemplateResult {
     return html`
       ${this.pages.map((page) =>
         (
           page.path === "#external-app-configuration"
-            ? this.externalConfig?.hasSettingsScreen
+            ? this.hass.auth.external?.config.hasSettingsScreen
             : canShowPage(this.hass, page)
         )
           ? html`

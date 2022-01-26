@@ -24,6 +24,7 @@ import "../../../components/ha-state-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
+  cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
   getCurrentProgress,
@@ -182,6 +183,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         entityState === "on");
 
     const mediaDescription = computeMediaDescription(stateObj);
+    const mediaTitleClean = cleanupMediaTitle(stateObj.attributes.media_title);
 
     return html`
       <ha-card>
@@ -244,24 +246,21 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             </div>
           </div>
           ${!isUnavailable &&
-          (mediaDescription || stateObj.attributes.media_title || showControls)
+          (mediaDescription || mediaTitleClean || showControls)
             ? html`
                 <div>
                   <div class="title-controls">
-                    ${!mediaDescription && !stateObj.attributes.media_title
+                    ${!mediaDescription && !mediaTitleClean
                       ? ""
                       : html`
                           <div class="media-info">
                             <hui-marquee
-                              .text=${stateObj.attributes.media_title ||
-                              mediaDescription}
+                              .text=${mediaTitleClean || mediaDescription}
                               .active=${this._marqueeActive}
                               @mouseover=${this._marqueeMouseOver}
                               @mouseleave=${this._marqueeMouseLeave}
                             ></hui-marquee>
-                            ${!stateObj.attributes.media_title
-                              ? ""
-                              : mediaDescription}
+                            ${!mediaTitleClean ? "" : mediaDescription}
                           </div>
                         `}
                     ${!showControls

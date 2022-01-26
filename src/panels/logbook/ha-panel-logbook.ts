@@ -1,8 +1,6 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import {
   addDays,
   endOfToday,
@@ -12,8 +10,15 @@ import {
   startOfWeek,
   startOfYesterday,
 } from "date-fns";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { navigate } from "../../common/navigate";
+import {
+  createSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -33,7 +38,6 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import { extractSearchParam } from "../../common/url/search-params";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -166,6 +170,10 @@ export class HaPanelLogbook extends LitElement {
     if (startDate) {
       this._startDate = new Date(startDate);
     }
+    const endDate = extractSearchParam("end_date");
+    if (endDate) {
+      this._endDate = new Date(endDate);
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -223,10 +231,32 @@ export class HaPanelLogbook extends LitElement {
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
     this._endDate = endDate;
+
+    this._updatePath();
   }
 
   private _entityPicked(ev) {
     this._entityId = ev.target.value;
+
+    this._updatePath();
+  }
+
+  private _updatePath() {
+    const params: Record<string, string> = {};
+
+    if (this._entityId) {
+      params.entity_id = this._entityId;
+    }
+
+    if (this._startDate) {
+      params.start_date = this._startDate.toISOString();
+    }
+
+    if (this._endDate) {
+      params.end_date = this._endDate.toISOString();
+    }
+
+    navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
   }
 
   private _refreshLogbook() {

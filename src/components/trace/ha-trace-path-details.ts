@@ -150,6 +150,7 @@ export class HaTracePathDetails extends LitElement {
       ? html`<ha-code-editor
           .value=${dump(config).trimRight()}
           readOnly
+          dir="ltr"
         ></ha-code-editor>`
       : "Unable to find config";
   }

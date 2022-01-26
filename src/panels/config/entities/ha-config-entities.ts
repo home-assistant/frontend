@@ -76,7 +76,7 @@ export interface StateEntity extends EntityRegistryEntry {
 }
 
 export interface EntityRow extends StateEntity {
-  entity: HassEntity;
+  entity?: HassEntity;
   unavailable: boolean;
   restored: boolean;
   status: string;
@@ -165,12 +165,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoize(
-    (narrow, _language, showDisabled): DataTableColumnContainer => ({
+    (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
         type: "icon",
-        template: (_, entry: any) => html`
+        template: (_, entry: EntityRow) => html`
           <ha-state-icon
+            .title=${entry.entity?.state}
             slot="item-icon"
             .state=${entry.entity}
           ></ha-state-icon>
@@ -185,7 +186,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         direction: "asc",
         grows: true,
         template: narrow
-          ? (name, entity: any) =>
+          ? (name, entity: EntityRow) =>
               html`
                 ${name}<br />
                 <div class="secondary">
@@ -246,7 +247,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         width: "68px",
-        template: (_status, entity: any) =>
+        template: (_status, entity: EntityRow) =>
           entity.unavailable || entity.disabled_by || entity.readonly
             ? html`
                 <div
@@ -284,7 +285,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   </paper-tooltip>
                 </div>
               `
-            : "",
+            : "—",
       },
     })
   );
@@ -377,7 +378,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           name: computeEntityRegistryName(this.hass!, entry),
           unavailable,
           restored,
-          area: area ? area.name : undefined,
+          area: area ? area.name : "—",
           status: restored
             ? this.hass.localize(
                 "ui.panel.config.entities.picker.status.restored"

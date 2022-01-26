@@ -89,7 +89,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
                     )}${dashboard.filename
-                      ? html` - ${dashboard.filename} `
+                      ? html` – ${dashboard.filename} `
                       : ""}
                   </div>
                 `
@@ -132,8 +132,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
-              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
-              : html` - `,
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
         columns.show_in_sidebar = {
           title: this.hass.localize(
@@ -143,8 +143,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "121px",
           template: (sidebar) =>
             sidebar
-              ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon> `
-              : html` - `,
+              ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
+              : html`—`,
         };
       }
 
@@ -193,6 +193,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         url_path: "lovelace",
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+      },
+      {
+        icon: "hass:lightning-bolt",
+        title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
+        url_path: "energy",
+        filename: "",
       },
       ...dashboards.map((dashboard) => ({
         filename: "",
@@ -255,6 +261,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _editDashboard(ev: CustomEvent) {
     const urlPath = (ev.detail as RowClickedEvent).id;
+
+    if (urlPath === "energy") {
+      navigate("/config/energy");
+      return;
+    }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDialog(dashboard, urlPath);
   }

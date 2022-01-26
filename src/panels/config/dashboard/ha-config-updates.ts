@@ -7,9 +7,9 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/supervisor";
-import { buttonLinkStyle } from "../../../resources/styles";
+import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-icon-next";
 
 export const SUPERVISOR_UPDATE_NAMES = {
   core: "Home Assistant Core",
@@ -46,39 +46,38 @@ class HaConfigUpdates extends LitElement {
       </div>
       ${updates.map(
         (update) => html`
-          <paper-icon-item>
-            <span slot="item-icon" class="icon">
-              ${update.update_type === "addon"
-                ? update.icon
-                  ? html`<img src="/api/hassio${update.icon}" />`
-                  : html`<ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>`
-                : html`<ha-logo-svg></ha-logo-svg>`}
-            </span>
-            <paper-item-body two-line>
-              ${update.update_type === "addon"
-                ? update.name
-                : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-              <div secondary>
-                ${this.hass.localize(
-                  "ui.panel.config.updates.version_available",
-                  {
-                    version_available: update.version_latest,
-                  }
-                )}
-              </div>
-            </paper-item-body>
-            <a href="/hassio${update.panel_path}">
-              <mwc-button
-                .label=${this.hass.localize("ui.panel.config.updates.show")}
-              >
-              </mwc-button>
-            </a>
-          </paper-icon-item>
+          <a href="/hassio${update.panel_path}">
+            <paper-icon-item>
+              <span slot="item-icon" class="icon">
+                ${update.update_type === "addon"
+                  ? update.icon
+                    ? html`<img src="/api/hassio${update.icon}" />`
+                    : html`<ha-svg-icon
+                        .path=${mdiPackageVariant}
+                      ></ha-svg-icon>`
+                  : html`<ha-logo-svg></ha-logo-svg>`}
+              </span>
+              <paper-item-body two-line>
+                ${update.update_type === "addon"
+                  ? update.name
+                  : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
+                <div secondary>
+                  ${this.hass.localize(
+                    "ui.panel.config.updates.version_available",
+                    {
+                      version_available: update.version_latest,
+                    }
+                  )}
+                </div>
+              </paper-item-body>
+              ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
+            </paper-icon-item>
+          </a>
         `
       )}
       ${!this._showAll && this.supervisorUpdates.length >= 4
         ? html`
-            <button class="link show-all" @click=${this._showAllClicked}>
+            <button class="show-more" @click=${this._showAllClicked}>
               ${this.hass.localize("ui.panel.config.updates.more_updates", {
                 count: this.supervisorUpdates!.length - updates.length,
               })}
@@ -94,7 +93,6 @@ class HaConfigUpdates extends LitElement {
 
   static get styles(): CSSResultGroup[] {
     return [
-      buttonLinkStyle,
       css`
         .title {
           font-size: 16px;
@@ -120,10 +118,26 @@ class HaConfigUpdates extends LitElement {
         ha-logo-svg {
           color: var(--secondary-text-color);
         }
-        button.show-all {
+        ha-icon-next {
+          color: var(--secondary-text-color);
+          height: 24px;
+          width: 24px;
+        }
+        button.show-more {
           color: var(--primary-color);
-          text-decoration: none;
-          margin: 16px;
+          text-align: left;
+          cursor: pointer;
+          background: none;
+          border-width: initial;
+          border-style: none;
+          border-color: initial;
+          border-image: initial;
+          padding: 16px;
+          font: inherit;
+        }
+        button.show-more:focus {
+          outline: none;
+          text-decoration: underline;
         }
       `,
     ];

@@ -114,7 +114,7 @@ class HassioAddonConfig extends LitElement {
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <ha-icon-button
-                .label=${this.hass.localize("common.menu")}
+                .label=${this.supervisor.localize("common.menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>

@@ -104,7 +104,7 @@ export class DialogHassioNetwork
               ${this.supervisor.localize("dialog.network.title")}
             </span>
             <ha-icon-button
-              .label=${this.hass.localize("common.close")}
+              .label=${this.supervisor.localize("common.close")}
               .path=${mdiClose}
               slot="actionItems"
               dialogAction="cancel"

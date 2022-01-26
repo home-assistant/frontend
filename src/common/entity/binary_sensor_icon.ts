@@ -21,13 +21,14 @@ import {
   mdiLockOpen,
   mdiMusicNote,
   mdiMusicNoteOff,
+  mdiMotionSensor,
+  mdiMotionSensorOff,
   mdiPackage,
   mdiPackageUp,
   mdiPlay,
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRadioboxBlank,
-  mdiRun,
   mdiSmoke,
   mdiSnowflake,
   mdiSquare,
@@ -35,7 +36,6 @@ import {
   mdiStop,
   mdiThermometer,
   mdiVibrate,
-  mdiWalk,
   mdiWater,
   mdiWaterOff,
   mdiWindowClosed,
@@ -78,7 +78,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "moisture":
       return is_off ? mdiWaterOff : mdiWater;
     case "motion":
-      return is_off ? mdiWalk : mdiRun;
+      return is_off ? mdiMotionSensorOff : mdiMotionSensor;
     case "occupancy":
       return is_off ? mdiHomeOutline : mdiHome;
     case "opening":

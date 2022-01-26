@@ -42,6 +42,8 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+
+    this._generateQR();
   }
 
   public closeDialog(): void {
@@ -121,16 +123,9 @@ class DialogTagDetail
                     )}
                   </p>
                 </div>
-
-                <div id="qr">
-                  ${this._qrCode
-                    ? this._qrCode
-                    : html`
-                        <mwc-button @click=${this._generateQR}
-                          >Generate QR code
-                        </mwc-button>
-                      `}
-                </div>
+                ${this._qrCode
+                  ? html` <div id="qr">${this._qrCode}</div> `
+                  : ""}
               `
             : ``}
         </div>
@@ -225,6 +220,9 @@ class DialogTagDetail
       {
         width: 180,
         errorCorrectionLevel: "Q",
+        color: {
+          light: "#fff",
+        },
       }
     );
     const context = canvas.getContext("2d");

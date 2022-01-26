@@ -19,20 +19,144 @@
             "error": "Грешка"
         }
     },
+    "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "label": {
+                        "core": "Core"
+                    },
+                    "stages": {
+                        "deprecated": "Zastarelo",
+                        "experimental": "Eksperimentalno"
+                    }
+                }
+            }
+        },
+        "common": {
+            "menu": "Meni",
+            "review": "pregled",
+            "show": "Prikaži"
+        },
+        "dialog": {
+            "datadisk_move": {
+                "cancel": "Otkaži",
+                "move": "Premesti"
+            },
+            "repositories": {
+                "used": "Skladište se koristi za instalirane dodatke i ne može se ukloniti."
+            }
+        },
+        "panel": {
+            "addons": "Dodaci"
+        },
+        "system": {
+            "supervisor": {
+                "unsupported_reason": {
+                    "software": "Otkriven nepodržani softver"
+                }
+            }
+        },
+        "update_available": {
+            "core_note": "Supervizor će se vratiti na verziju {version} ako se vaša instanca ne pojavi nakon ažuriranja.",
+            "create_backup": "Kreiranje rezervne kopije pre ažuriranja",
+            "creating_backup": "Kreiranje rezervne kopije {name}",
+            "description": "Imate instaliranu {verziju}. Kliknite na dugme \"Ažuriraj\" da biste ažurirali verziju {newest_version}",
+            "no_update": "Nema dostupnih ažuriranja za {name}",
+            "open_release_notes": "Otvaranje napomena uz izdanje",
+            "update_name": "Ažuriraj {ime}",
+            "updating": "Ažuriranje {name} na verziju {version}"
+        }
+    },
     "ui": {
         "card": {
+            "area": {
+                "area_not_found": "Oblast nije pronađena."
+            },
+            "button": {
+                "press": "Pritisnite"
+            },
             "lock": {
                 "lock": "Zaključaj",
                 "unlock": "Otključaj"
             },
             "media_player": {
+                "media_pause": "Pauza",
+                "media_stop": "Zaustavi",
+                "media_volume_down": "Smanji zvuk",
+                "media_volume_mute": "Isključi zvuk",
+                "media_volume_unmute": "Uključi zvuk",
+                "media_volume_up": "Pojačaj zvuk",
                 "sound_mode": "Režim zvuka",
                 "source": "Izvor"
             }
         },
+        "common": {
+            "clear": "Opozovite izbor",
+            "help": "Pomoć",
+            "move": "Premestite",
+            "submit": "Prosledi"
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "edit": "Uređivanje"
+                }
+            },
+            "qr-scanner": {
+                "enter_qr_code": "Unesite vrednost QR koda",
+                "manual_input": "QR kôd možete skenirati drugim QR skenerom i nalepiti kôd u dole navedeni unos",
+                "not_supported": "Vaš pretraživač ne podržava QR skeniranje.",
+                "only_https_supported": "Kameru možete koristiti samo za skeniranje QR koda prilikom korišćenja HTTPS-a.",
+                "select_camera": "Izaberite kameru"
+            },
+            "related-filter-menu": {
+                "filter": "Filter"
+            },
+            "target-picker": {
+                "expand": "Proširi",
+                "remove": "Ukloni"
+            }
+        },
+        "dialogs": {
+            "entity_registry": {
+                "editor": {
+                    "device_class": "Prikaži kao",
+                    "device_classes": {
+                        "binary_sensor": {
+                            "door": "Vrata",
+                            "garage_door": "Garažna vrata",
+                            "opening": "Ostalo",
+                            "window": "Prozor"
+                        },
+                        "cover": {
+                            "door": "Vrata",
+                            "garage": "Garažna vrata",
+                            "window": "Prozor"
+                        }
+                    }
+                }
+            },
+            "more_info_control": {
+                "logbook": "Evidencija",
+                "show_more": "Prikaži više"
+            }
+        },
+        "errors": {
+            "config": {
+                "no_state_array_support": "Više vrednosti stanja nije podržano u programu visual editor"
+            }
+        },
         "panel": {
             "config": {
+                "areas": {
+                    "add_picture": "Dodavanje slike",
+                    "edit_settings": "Postavke oblasti"
+                },
                 "automation": {
+                    "dialog_new": {
+                        "start_empty_description": "Kreiranje nove automatizacije od početka"
+                    },
                     "editor": {
                         "conditions": {
                             "type": {
@@ -54,15 +178,127 @@
                     },
                     "picker": {
                         "learn_more": "Сазнајте више о аутоматизацијама"
+                    },
+                    "trace": {
+                        "edit_automation": "Uređivanje automatizacije"
                     }
                 },
+                "blueprint": {
+                    "overview": {
+                        "create_automation": "Kreiraj automatizaciju",
+                        "create_script": "Kreiranje skripte",
+                        "headers": {
+                            "type": "Tip"
+                        },
+                        "types": {
+                            "automation": "Automatizacija",
+                            "script": "Skripte"
+                        }
+                    }
+                },
+                "dashboard": {
+                    "automations": {
+                        "description": "Upravljanje automatizacijama, scenama, skriptama i pomagačima",
+                        "title": "Automatizacije i scene"
+                    },
+                    "blueprints": {
+                        "description": "Unapred napravljene automatizacije i skripte od strane zajednice",
+                        "title": "Nacrti"
+                    },
+                    "companion": {
+                        "description": "Lokacija i obaveštenja"
+                    },
+                    "dashboards": {
+                        "description": "Kreiranje prilagođenih skupova kartica za kontrolu kuće",
+                        "title": "Kontrolne table"
+                    },
+                    "devices": {
+                        "description": "Integracije, uređaji, entiteti i oblasti",
+                        "title": "Uređaji i usluge"
+                    },
+                    "energy": {
+                        "description": "Praćenje proizvodnje i potrošnje energije",
+                        "title": "Energija"
+                    },
+                    "people": {
+                        "description": "Upravljanje osobama i zonama koje Home Assistant prati",
+                        "title": "Ljudi i zone"
+                    },
+                    "settings": {
+                        "description": "Osnovne postavke, kontrole servera, evidencije i informacije",
+                        "title": "Postavke"
+                    },
+                    "supervisor": {
+                        "description": "Kreiranje rezervnih kopija, provera evidencija ili ponovno pokretanje sistema",
+                        "title": "Dodaci, rezervne kopije i Supervisor"
+                    },
+                    "tags": {
+                        "description": "Aktivirnje automatizacije kada se skenira NFC oznaka, QR kod itd.",
+                        "title": "Oznake"
+                    }
+                },
+                "devices": {
+                    "edit_settings": "Uređivanje postavki",
+                    "entities": {
+                        "config": "Konfiguracija",
+                        "control": "Kontrole",
+                        "diagnostic": "Dijagnostika",
+                        "sensor": "Senzori",
+                        "state": "Stanje"
+                    },
+                    "open_configuration_url_device": "Posetite uređaj",
+                    "open_configuration_url_service": "Posetite servis"
+                },
+                "energy": {
+                    "battery": {
+                        "add_battery_system": "Dodavanje baterijskog sistema",
+                        "battery_systems": "Baterijski sistemi",
+                        "dialog": {
+                            "energy_into_battery": "Energija koja ide u bateriju (kWh)",
+                            "energy_out_of_battery": "Energija koja izlazi iz baterije (kWh)",
+                            "header": "Konfigurisanje sistema baterije"
+                        }
+                    },
+                    "device_consumption": {
+                        "add_device": "Dodaj uređaj",
+                        "devices": "Uređaji",
+                        "dialog": {
+                            "device_consumption_energy": "Energija potrošnje uređaja (kWh)",
+                            "header": "Dodavanje uređaja"
+                        }
+                    },
+                    "gas": {
+                        "add_gas_source": "Dodaj izvor gasa",
+                        "dialog": {
+                            "gas_usage": "Upotreba gasa",
+                            "m3_or_kWh": "ft³, m³, Wh, kWh ili MWh"
+                        },
+                        "gas_consumption": "Potrošnja gasa"
+                    },
+                    "solar": {
+                        "dialog": {
+                            "add_forecast": "Dodaj prognozu"
+                        }
+                    }
+                },
+                "info": {
+                    "copy_menu": "Kopiraj meni"
+                },
                 "integrations": {
+                    "config_entry": {
+                        "hardware": "Hardver: {version}",
+                        "unknown_via_device": "Nepoznat uređaj",
+                        "via": "Povezano preko"
+                    },
                     "config_flow": {
                         "external_step": {
                             "description": "Овај корак захтева да посетите екстерни веб-сајт да би био завршен.",
                             "open_site": "Отворите сајт"
                         }
                     }
+                },
+                "logs": {
+                    "copy": "Kopiranje stavke evidencije"
                 },
                 "mqtt": {
                     "title": "MQTT"
@@ -72,32 +308,229 @@
                         "unknown": "Непознат"
                     }
                 },
+                "person": {
+                    "detail": {
+                        "local_only": "Može da se uloguje samo sa lokalne mreže"
+                    }
+                },
+                "scene": {
+                    "editor": {
+                        "area": "Oblast"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "timer": "Tajmeri"
+                        }
+                    }
+                },
+                "updates": {
+                    "more_updates": "+ {count} ažuriranja",
+                    "review": "pregled",
+                    "show": "Prikaži",
+                    "show_all_updates": "Prikaži sva ažuriranja",
+                    "unable_to_fetch": "Nije moguće učitati ažuriranja",
+                    "version_available": "Dostupna je verzija {version_available}"
+                },
                 "users": {
                     "add_user": {
                         "caption": "Додај корисника",
                         "create": "Направите",
+                        "local_only": "Samo lokalno",
                         "password": "Лозинка"
                     },
                     "editor": {
                         "caption": "Прикажи корисника"
+                    },
+                    "picker": {
+                        "headers": {
+                            "local": "Samo lokalno"
+                        }
                     }
+                },
+                "zha": {
+                    "groups": {
+                        "delete": "Izbriši grupu"
+                    }
+                },
+                "zone": {
+                    "edit_zone": "Uredi zonu"
                 },
                 "zwave": {
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "check_logs": "Više informacija potražite u evidencijama.",
+                        "choose_inclusion_strategy": "Kako želite da dodate uređaj",
+                        "enter_qr_code": "Unesite vrednost QR koda",
+                        "provisioning_finished": "Uređaj je dodat. Kada ga uključite, postaće dostupan.",
+                        "qr_code": "QR kôd",
+                        "qr_code_paragraph": "Ako uređaj podržava SmartStart, možete da skenirate QR kôd radi lakog uparivanja.",
+                        "scan_qr_code": "Skeniraj QR kôd",
+                        "searching_device": "Traženje uređaja",
+                        "select_camera": "Izaberite kameru"
+                    },
+                    "common": {
+                        "back": "Nazad"
+                    },
+                    "dashboard": {
+                        "not_ready": "{count} nije spremno",
+                        "server_url": "URL adresa servera"
+                    },
+                    "device_info": {
+                        "highest_security": "Najviša bezbednost",
+                        "zwave_plus_version": "Verzija {verzija}"
+                    },
+                    "logs": {
+                        "download_logs": "Preuzmi evidencije"
+                    },
+                    "provisioned": {
+                        "included": "Uključeno",
+                        "not_included": "Nije uključeno"
+                    },
+                    "security_classes": {
+                        "None": {
+                            "title": "Nijedan"
+                        }
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "statistics": {
+                        "issues": {
+                            "entity_no_longer_recorded": "Ovaj entitet se više ne snima.",
+                            "no_state": "Nema dostupnog stanja za ovaj entitet."
+                        }
+                    }
+                }
+            },
+            "energy": {
+                "cards": {
+                    "energy_devices_graph_title": "Nadgledanje pojedinačnih uređaja",
+                    "energy_distribution_title": "Distribucija energije",
+                    "energy_gas_graph_title": "Potrošnja gasa",
+                    "energy_solar_graph_title": "Solarna proizvodnja",
+                    "energy_sources_table_title": "Izvori",
+                    "energy_usage_graph_title": "Korišćenje energije"
                 }
             },
             "lovelace": {
                 "cards": {
+                    "energy": {
+                        "carbon_consumed_gauge": {
+                            "card_indicates_energy_used": "Ova kartica ukazuje na to koliko je energije koju je utrošio vaš dom generisano korišćenjem ne-fosilnih goriva kao što su solarna, vetar i nuklearna. Što više, to bolje!",
+                            "non_fossil_energy_consumed": "Potrošena ne-fosilna energija",
+                            "non_fossil_energy_not_calculated": "Potrošena ne-fosilna energija nije mogla biti izračunata"
+                        },
+                        "energy_devices_graph": {
+                            "energy_usage": "Korišćenje energije"
+                        },
+                        "energy_distribution": {
+                            "battery": "Baterija",
+                            "gas": "Gas",
+                            "go_to_energy_dashboard": "Idite na kontrolnu tablu za energiju",
+                            "grid": "Mreža",
+                            "home": "Kuća",
+                            "non_fossil": "Ne-fosilna",
+                            "solar": "Solarna",
+                            "title_today": "Distribucija energije danas"
+                        },
+                        "energy_solar_graph": {
+                            "forecast": "Prognoza {ime}",
+                            "production": "Proizvodnja {ime}"
+                        },
+                        "energy_sources_table": {
+                            "battery_total": "Baterija ukupno",
+                            "cost": "Cena",
+                            "energy": "Energija",
+                            "grid_total": "Mreža ukupno",
+                            "source": "Izvor",
+                            "total_costs": "Ukupna cena"
+                        },
+                        "energy_usage_graph": {
+                            "combined_from_grid": "Kombinovano iz mreže",
+                            "consumed_battery": "Potrošeno baterija",
+                            "consumed_solar": "Potrošeno solarni",
+                            "total_consumed": "Ukupno potrošeno {num} kWh",
+                            "total_returned": "Ukupno vraćeno {num} kWh"
+                        },
+                        "grid_neutrality_gauge": {
+                            "color_explain": "Ako je igla u ljubičastoj boji, vratili ste više energije u mrežu nego što ste konzumirali iz nje. Ako je u plavom, potrošili ste više energije iz mreže nego što ste vratili.",
+                            "energy_dependency": "Ova kartica prikazuje vaše neto korišćenje energije.",
+                            "grid_neutrality_not_calculated": "Nije moguće izračunati neutralnost mreže",
+                            "net_consumed_grid": "Neto utrošeno iz mreže",
+                            "net_returned_grid": "Neto vraćeno u mrežu",
+                            "red_green_color_explain": "Ako je zelena, to znači da ste proizveli više energije nego što ste potrošili iz mreže. Ako je u crvenom, to znači da ste se oslanjali na mrežu za deo potrošnje energije vašeg doma."
+                        },
+                        "loading": "Učitavanje...",
+                        "no_data": "Nema podataka za prikazivanje. Novim podacima može biti potrebno do 2 sata da stignu nakon što konfigurišete kontrolnu tablu za energiju.",
+                        "no_data_period": "Nema podataka za ovaj period.",
+                        "solar_consumed_gauge": {
+                            "card_indicates_solar_energy_used": "Ova kartica ukazuje na to koliko je solarne energije koju ste proizveli koristio vaš dom umesto da bude vraćen u mrežu.",
+                            "card_indicates_solar_energy_used_charge_home_bat": "Ako je ovaj broj obično veoma nizak, što ukazuje na višak solarne proizvodnje, možda bi trebalo da razmislite o punjenju kućne baterije ili električnog automobila iz solarnih panela u vreme velike solarne proizvodnje.",
+                            "not_produced_solar_energy": "Niste proizveli nikakvu solarnu energiju",
+                            "self_consumed_solar_could_not_calc": "Samoutrošena solarna energija nije mogla biti izračunata",
+                            "self_consumed_solar_energy": "Samoutrošena solarna energija"
+                        }
+                    },
+                    "iframe": {
+                        "error_secure_context": "Nije moguće učitati iframe koji pokazuju na Veb lokacije koristeći {target_protocol} ako je Home Assistant serviran preko {context_protocol}."
+                    },
+                    "map": {
+                        "reset_focus": "Uspostavi početne vrednosti fokusa"
+                    },
                     "picture-elements": {
                         "hold": "Придржи:",
                         "more_info": "Покажи више информација: {name}",
                         "navigate_to": "Отиђите на {location}",
                         "tap": "Додирни",
                         "toggle": "Укључи {name}"
+                    },
+                    "show_more_info": "Prikaži više informacija"
+                },
+                "components": {
+                    "energy_period_selector": {
+                        "day": "Dan",
+                        "month": "Mesec",
+                        "next": "Sledeći",
+                        "previous": "Prethodni",
+                        "today": "Danas",
+                        "week": "Nedelja",
+                        "year": "Godina"
+                    }
+                },
+                "editor": {
+                    "card": {
+                        "area": {
+                            "description": "Kartica \"Oblast\" automatski prikazuje entitete određene oblasti.",
+                            "name": "Oblast",
+                            "show_camera": "Prikaži snimak kamere umesto slike oblasti"
+                        },
+                        "weather-forecast": {
+                            "show_both": "Prikaži trenutno vreme i prognozu",
+                            "show_only_current": "Prikaži samo trenutno vreme",
+                            "show_only_forecast": "Prikaži samo prognozu"
+                        }
+                    },
+                    "edit_card": {
+                        "move_down": "Premesti karticu nadole",
+                        "move_up": "Premesti karticu na gore"
+                    },
+                    "select_view": {
+                        "views_label": "Prikaz"
                     }
                 }
+            },
+            "map": {
+                "edit_zones": "Uredi zone"
+            },
+            "page-authorize": {
+                "store_token": "Drži me prijavljenog"
             },
             "page-onboarding": {
                 "integration": {
@@ -111,7 +544,16 @@
                         "password_not_match": "Лозинке се не подударају"
                     }
                 }
+            },
+            "profile": {
+                "dashboard": {
+                    "default_dashboard_label": "Pregled (podrazumevano)"
+                }
             }
+        },
+        "sidebar": {
+            "hide_panel": "Sakrij tablu",
+            "show_panel": "Prikaži tablu"
         }
     }
 }
