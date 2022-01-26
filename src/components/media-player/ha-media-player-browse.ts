@@ -753,7 +753,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           width: 175px;
           margin-right: 16px;
           background-size: cover;
-          border-radius: 50%;
+          border-radius: 2px;
           transition: width 0.4s, height 0.4s;
         }
         .header-info {
