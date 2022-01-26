@@ -14,12 +14,17 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button";
 import "../../components/media-player/ha-media-player-browse";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "../../components/media-player/ha-media-player-browse";
-import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
+import {
+  BROWSER_PLAYER,
+  MediaPickedEvent,
+  MediaPlayerItem,
+} from "../../data/media-player";
 import { resolveMediaSource } from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -36,6 +41,8 @@ class PanelMediaBrowser extends LitElement {
 
   @property() public route!: Route;
 
+  @property() _currentItem?: MediaPlayerItem;
+
   private _navigateIds: MediaPlayerItemId[] = [
     {
       media_content_id: undefined,
@@ -50,8 +57,6 @@ class PanelMediaBrowser extends LitElement {
   private _browseElement?: HaMediaPlayerBrowse;
 
   protected render(): TemplateResult {
-    const currentItem = this._navigateIds[this._navigateIds.length - 1];
-
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -71,15 +76,15 @@ class PanelMediaBrowser extends LitElement {
                 `}
             <div main-title class="heading">
               <div>
-                ${!currentItem.title
+                ${!this._currentItem
                   ? this.hass.localize(
                       "ui.components.media-browser.media-player-browser"
                     )
-                  : currentItem.title}
+                  : this._currentItem.title}
               </div>
             </div>
 
-            ${currentItem.can_play
+            ${this._currentItem?.can_play
               ? html`
                   <ha-icon-button
                     @click=${this._play}
@@ -131,16 +136,15 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: undefined,
       },
       ...navigateIdsEncoded.map((navigateId) => {
-        const [media_content_type, media_content_id, title, can_play] =
+        const [media_content_type, media_content_id] =
           decodeURIComponent(navigateId).split(",");
         return {
           media_content_type,
           media_content_id,
-          title,
-          can_play: can_play === "true",
         };
       }),
     ];
+    this._currentItem = undefined;
   }
 
   private _goBack() {
@@ -151,13 +155,18 @@ class PanelMediaBrowser extends LitElement {
     this._browseElement?.play();
   }
 
-  private _mediaBrowsed(ev) {
+  private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
+    if (ev.detail.ids === this._navigateIds) {
+      this._currentItem = ev.detail.current;
+      return;
+    }
+
     let path = "";
     for (const item of ev.detail.ids.slice(1)) {
       path +=
         "/" +
         encodeURIComponent(
-          `${item.media_content_type},${item.media_content_id},${item.title},${item.can_play}`
+          `${item.media_content_type},${item.media_content_id}`
         );
     }
     navigate(`/media-browser/${this._entityId}${path}`);

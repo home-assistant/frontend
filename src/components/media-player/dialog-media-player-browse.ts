@@ -7,6 +7,7 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaPlayerItem,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -18,6 +19,8 @@ import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _currentItem?: MediaPlayerItem;
 
   @state() private _navigateIds?: MediaPlayerItemId[];
 
@@ -36,6 +39,7 @@ class DialogMediaPlayerBrowse extends LitElement {
   public closeDialog() {
     this._params = undefined;
     this._navigateIds = undefined;
+    this._currentItem = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -43,8 +47,6 @@ class DialogMediaPlayerBrowse extends LitElement {
     if (!this._params || !this._navigateIds) {
       return html``;
     }
-
-    const currentItem = this._navigateIds[this._navigateIds.length - 1];
 
     return html`
       <ha-dialog
@@ -68,11 +70,11 @@ class DialogMediaPlayerBrowse extends LitElement {
                 `
               : ""}
             <span slot="title">
-              ${!currentItem.title
+              ${!this._currentItem
                 ? this.hass.localize(
                     "ui.components.media-browser.media-player-browser"
                   )
-                : currentItem.title}
+                : this._currentItem.title}
             </span>
 
             <ha-icon-button
@@ -101,10 +103,12 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   private _goBack() {
     this._navigateIds = this._navigateIds?.slice(0, -1);
+    this._currentItem = undefined;
   }
 
-  private _mediaBrowsed(ev) {
+  private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
     this._navigateIds = ev.detail.ids;
+    this._currentItem = ev.detail.current;
   }
 
   private _mediaPicked(ev: HASSDomEvent<MediaPickedEvent>): void {
