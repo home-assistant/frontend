@@ -1,13 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { LOGICAL_STATE_ATTRIBUTES } from "../common/const";
-import { haStyle } from "../resources/styles";
-import { HomeAssistant } from "../types";
 import {
   formatAttributeName,
   formatAttributeValue,
-} from "../util/hass-attributes-util";
+  STATE_ATTRIBUTES,
+} from "../data/entity_attributes";
+import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
+
 import "./ha-expansion-panel";
 
 @customElement("ha-attributes")
@@ -26,7 +27,7 @@ class HaAttributes extends LitElement {
     }
 
     const attributes = this.computeDisplayAttributes(
-      LOGICAL_STATE_ATTRIBUTES.concat(
+      STATE_ATTRIBUTES.concat(
         this.extraFilters ? this.extraFilters.split(",") : []
       )
     );

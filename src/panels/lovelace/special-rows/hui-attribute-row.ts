@@ -9,8 +9,8 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
 import { formatNumber } from "../../../common/number/format_number";
+import { formatAttributeValue } from "../../../data/entity_attributes";
 import { HomeAssistant } from "../../../types";
-import { formatAttributeValue } from "../../../util/hass-attributes-util";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";

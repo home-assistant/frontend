@@ -11,6 +11,28 @@ import { HomeAssistant } from "../types";
 
 let jsYamlPromise: Promise<typeof import("../resources/js-yaml-dump")>;
 
+export const STATE_ATTRIBUTES = [
+  "assumed_state",
+  "attribution",
+  "custom_ui_more_info",
+  "custom_ui_state_card",
+  "device_class",
+  "editable",
+  "emulated_hue_name",
+  "emulated_hue",
+  "entity_picture",
+  "friendly_name",
+  "haaska_hidden",
+  "haaska_name",
+  "icon",
+  "initial_state",
+  "last_reset",
+  "restored",
+  "state_class",
+  "supported_features",
+  "unit_of_measurement",
+];
+
 // Convert from internal snake_case format to user-friendly format
 export function formatAttributeName(value: string): string {
   value = value
