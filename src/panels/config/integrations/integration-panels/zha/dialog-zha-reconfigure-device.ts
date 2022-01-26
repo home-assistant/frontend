@@ -55,6 +55,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._status = undefined;
     this._stages = undefined;
     this._clusterConfigurationStatuses = undefined;
+    this._showDetails = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -225,10 +226,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </h2>
 
-                ${this._clusterConfigurationStatuses!.size > 0
+                ${this._clusterConfigurationStatuses?.size
                   ? html`
                       ${Array.from(
-                        this._clusterConfigurationStatuses!.values()
+                        this._clusterConfigurationStatuses.values()
                       ).map(
                         (clusterStatus) => html`
                           <div class="grid-item">
