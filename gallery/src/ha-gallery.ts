@@ -188,6 +188,7 @@ class HaGallery extends LitElement {
 
       .sidebar details {
         margin-top: 1em;
+        margin-left: 1em;
       }
 
       .sidebar summary {
