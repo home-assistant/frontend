@@ -5,7 +5,11 @@ export const computeCardSize = (
 ): number | Promise<number> => {
   if (typeof card.getCardSize === "function") {
     try {
-      return card.getCardSize();
+      const cardSize = card.getCardSize();
+      const timeOut = new Promise((resolve) =>
+        setTimeout(() => resolve(1), 500)
+      );
+      return Promise.race([cardSize, timeOut]) as Promise<number>;
     } catch (_e: any) {
       return 1;
     }
