@@ -1,3 +1,4 @@
+import { mdiArrowLeft } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -13,9 +14,14 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button";
 import "../../components/media-player/ha-media-player-browse";
 import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
-import { BROWSER_PLAYER, MediaPickedEvent } from "../../data/media-player";
+import {
+  BROWSER_PLAYER,
+  MediaPickedEvent,
+  MediaPlayerItem,
+} from "../../data/media-player";
 import { resolveMediaSource } from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -32,6 +38,8 @@ class PanelMediaBrowser extends LitElement {
 
   @property() public route!: Route;
 
+  @property() _currentItem?: MediaPlayerItem;
+
   private _navigateIds: MediaPlayerItemId[] = [
     {
       media_content_id: undefined,
@@ -47,15 +55,26 @@ class PanelMediaBrowser extends LitElement {
       <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
+            ${this._navigateIds.length > 1
+              ? html`
+                  <ha-icon-button
+                    .path=${mdiArrowLeft}
+                    @click=${this._goBack}
+                  ></ha-icon-button>
+                `
+              : html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `}
             <div main-title class="heading">
               <div>
-                ${this.hass.localize(
-                  "ui.components.media-browser.media-player-browser"
-                )}
+                ${!this._currentItem
+                  ? this.hass.localize(
+                      "ui.components.media-browser.media-player-browser"
+                    )
+                  : this._currentItem.title}
               </div>
             </div>
           </app-toolbar>
@@ -110,13 +129,19 @@ class PanelMediaBrowser extends LitElement {
         };
       }),
     ];
+    this._currentItem = undefined;
   }
 
-  private _mediaBrowsed(ev) {
-    if (ev.detail.back) {
-      history.back();
+  private _goBack() {
+    history.back();
+  }
+
+  private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
+    if (ev.detail.ids === this._navigateIds) {
+      this._currentItem = ev.detail.current;
       return;
     }
+
     let path = "";
     for (const item of ev.detail.ids.slice(1)) {
       path +=
@@ -152,6 +177,7 @@ class PanelMediaBrowser extends LitElement {
         sourceUrl: resolvedUrl.url,
         sourceType: resolvedUrl.mime_type,
         title: item.title,
+        can_play: item.can_play,
       });
     }
   }
