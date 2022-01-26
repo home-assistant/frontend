@@ -17,6 +17,7 @@ import {
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
+import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-selector/ha-selector";
@@ -230,7 +231,12 @@ export class HaServiceControl extends LitElement {
         <p>${serviceData?.description}</p>
         ${this._manifest
           ? html` <a
-              href=${this._manifest.documentation}
+              href=${this._manifest.is_built_in
+                ? documentationUrl(
+                    this.hass,
+                    `/integrations/${this._manifest.domain}`
+                  )
+                : this._manifest.documentation}
               title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
               )}
