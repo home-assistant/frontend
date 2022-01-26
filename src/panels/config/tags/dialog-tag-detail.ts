@@ -5,7 +5,6 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -170,10 +169,6 @@ class DialogTagDetail
           : ""}
       </ha-dialog>
     `;
-  }
-
-  protected override firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
   }
 
   private _valueChanged(ev: CustomEvent) {
