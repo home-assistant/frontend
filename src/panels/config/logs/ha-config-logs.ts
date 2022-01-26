@@ -3,7 +3,6 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -29,7 +28,7 @@ export class HaConfigLogs extends LitElement {
 
   @property() public route!: Route;
 
-  @state() private _filter = "";
+  @state() private _filter = extractSearchParam("filter") ?? "";
 
   @query("system-log-card", true) private systemLog?: SystemLogCard;
 
@@ -42,12 +41,6 @@ export class HaConfigLogs extends LitElement {
 
   private async _filterChanged(ev) {
     this._filter = ev.detail.value;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-
-    this._filter = extractSearchParam("filter") ?? "";
   }
 
   protected render(): TemplateResult {
@@ -93,7 +86,10 @@ export class HaConfigLogs extends LitElement {
             .hass=${this.hass}
             .filter=${this._filter}
           ></system-log-card>
-          <error-log-card .hass=${this.hass}></error-log-card>
+          <error-log-card
+            .hass=${this.hass}
+            .filter=${this._filter}
+          ></error-log-card>
         </div>
       </hass-tabs-subpage>
     `;

@@ -49,9 +49,6 @@ export class SystemLogCard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const integrations = this._items
-      ? this._items.map((item) => getLoggedErrorIntegration(item))
-      : [];
     const filteredItems = this._items
       ? this._items.filter(
           memoizeOne((item) => {
@@ -70,6 +67,9 @@ export class SystemLogCard extends LitElement {
             return item;
           })
         )
+      : [];
+    const integrations = filteredItems.length
+      ? filteredItems.map((item) => getLoggedErrorIntegration(item))
       : [];
     return html`
       <div class="system-log-intro">
