@@ -4016,6 +4016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/qrcode@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@types/qrcode@npm:1.4.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: 7ac58687aacc688b83dde43dc349dc42106c6c382b62eb1256e35c6cb7de45e79ef8e917e05b02a81272cd0c1ff21147307244fd57401ba19314851f30636283
+  languageName: node
+  linkType: hard
+
 "@types/qs@npm:*":
   version: 6.9.5
   resolution: "@types/qs@npm:6.9.5"
@@ -9121,6 +9130,7 @@ fsevents@^1.2.7:
     "@types/leaflet-draw": ^1
     "@types/marked": ^2
     "@types/mocha": ^8
+    "@types/qrcode": ^1.4.2
     "@types/sortablejs": ^1
     "@types/webspeechapi": ^0.0.29
     "@typescript-eslint/eslint-plugin": ^4.32.0

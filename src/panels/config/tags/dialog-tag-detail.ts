@@ -1,6 +1,13 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -121,16 +128,9 @@ class DialogTagDetail
                     )}
                   </p>
                 </div>
-
-                <div id="qr">
-                  ${this._qrCode
-                    ? this._qrCode
-                    : html`
-                        <mwc-button @click=${this._generateQR}
-                          >Generate QR code
-                        </mwc-button>
-                      `}
-                </div>
+                ${this._qrCode
+                  ? html` <div id="qr">${this._qrCode}</div> `
+                  : ""}
               `
             : ``}
         </div>
@@ -168,6 +168,11 @@ class DialogTagDetail
           : ""}
       </ha-dialog>
     `;
+  }
+
+  protected override firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    this._generateQR();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -225,6 +230,9 @@ class DialogTagDetail
       {
         width: 180,
         errorCorrectionLevel: "Q",
+        color: {
+          light: "#fff",
+        },
       }
     );
     const context = canvas.getContext("2d");

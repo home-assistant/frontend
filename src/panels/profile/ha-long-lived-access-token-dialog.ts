@@ -65,7 +65,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   private async _generateQR() {
     const qrcode = await import("qrcode");
-    const canvas = await qrcode.toCanvas(this._params?.token, {
+    const canvas = await qrcode.toCanvas(this._params!.token, {
       width: 180,
       errorCorrectionLevel: "Q",
     });
