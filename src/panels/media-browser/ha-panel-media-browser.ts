@@ -142,10 +142,6 @@ class PanelMediaBrowser extends LitElement {
     history.back();
   }
 
-  private _play() {
-    this._browseElement?.play();
-  }
-
   private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
     if (ev.detail.ids === this._navigateIds) {
       this._currentItem = ev.detail.current;
