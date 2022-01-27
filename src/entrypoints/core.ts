@@ -29,6 +29,7 @@ import { HomeAssistant } from "../types";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
 
 window.name = MAIN_WINDOW_NAME;
+(window as any).frontendVersion = __VERSION__;
 
 declare global {
   interface Window {

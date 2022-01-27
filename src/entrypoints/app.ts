@@ -5,5 +5,3 @@ import "../resources/roboto";
 import "../util/legacy-support";
 
 setPassiveTouchGestures(true);
-
-(window as any).frontendVersion = __VERSION__;
