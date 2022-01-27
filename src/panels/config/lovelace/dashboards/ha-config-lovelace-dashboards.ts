@@ -189,7 +189,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         icon: "hass:view-dashboard",
         title: this.hass.localize("panel.states"),
         default: isDefault,
-        sidebar: isDefault,
+        show_in_sidebar: isDefault,
         require_admin: false,
         url_path: "lovelace",
         mode: defaultMode,
