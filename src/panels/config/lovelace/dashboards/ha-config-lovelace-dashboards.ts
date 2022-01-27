@@ -197,6 +197,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
       {
         icon: "hass:lightning-bolt",
         title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
+        show_in_sidebar: true,
+        mode: "storage",
         url_path: "energy",
         filename: "",
       },
