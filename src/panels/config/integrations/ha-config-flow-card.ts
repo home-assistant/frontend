@@ -15,6 +15,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { HomeAssistant } from "../../../types";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
@@ -82,7 +83,12 @@ export class HaConfigFlowCard extends LitElement {
             : ""}
           ${this.manifest
             ? html`<a
-                href=${this.manifest.documentation}
+                href=${this.manifest.is_built_in
+                  ? documentationUrl(
+                      this.hass,
+                      `/integrations/${this.manifest.domain}`
+                    )
+                  : this.manifest.documentation}
                 rel="noreferrer"
                 target="_blank"
               >
