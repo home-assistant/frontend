@@ -8,6 +8,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
 import {
@@ -183,7 +184,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     ).mode;
     const defaultUrlPath = this.hass.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
-    return [
+    const result: Record<string, any>[] = [
       {
         icon: "hass:view-dashboard",
         title: this.hass.localize("panel.states"),
@@ -194,20 +195,23 @@ export class HaConfigLovelaceDashboards extends LitElement {
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
       },
-      {
-        icon: "hass:lightning-bolt",
-        title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
-        show_in_sidebar: true,
-        mode: "storage",
-        url_path: "energy",
-        filename: "",
-      },
       ...dashboards.map((dashboard) => ({
         filename: "",
         ...dashboard,
         default: defaultUrlPath === dashboard.url_path,
       })),
     ];
+    if (isComponentLoaded(this.hass, "energy")) {
+      result.push({
+        icon: "hass:lightning-bolt",
+        title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
+        show_in_sidebar: true,
+        mode: "storage",
+        url_path: "energy",
+        filename: "",
+      });
+    }
+    return result;
   });
 
   protected render(): TemplateResult {
