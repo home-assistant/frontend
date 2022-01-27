@@ -170,6 +170,7 @@ class HaConfigDashboard extends LitElement {
     switch (ev.detail.index) {
       case 0:
         if (isComponentLoaded(this.hass, "hassio")) {
+          this._notifyUpdates = true;
           await refreshSupervisorAvailableUpdates(this.hass);
           fireEvent(this, "ha-refresh-supervisor");
           return;
