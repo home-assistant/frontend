@@ -3,7 +3,14 @@ import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
@@ -26,6 +33,7 @@ import "./ha-config-navigation";
 import "./ha-config-updates";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -42,6 +50,8 @@ class HaConfigDashboard extends LitElement {
   @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   @property() public showAdvanced!: boolean;
+
+  private _notifyUpdates = false;
 
   protected render(): TemplateResult {
     return html`
@@ -127,6 +137,26 @@ class HaConfigDashboard extends LitElement {
         </ha-config-section>
       </ha-app-layout>
     `;
+  }
+
+  protected override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (!changedProps.has("supervisorUpdates") || !this._notifyUpdates) {
+      return;
+    }
+    this._notifyUpdates = false;
+    if (this.supervisorUpdates?.length) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.updates.updates_refreshed"
+        ),
+      });
+    } else {
+      showToast(this, {
+        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
+      });
+    }
   }
 
   private _showQuickBar(): void {
