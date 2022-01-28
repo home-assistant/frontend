@@ -48,21 +48,22 @@ export class SystemLogCard extends LitElement {
     );
   }
 
-  private _getFilteredItems = memoizeOne((items, filter) =>
-    items.filter((item) => {
-      if (filter) {
-        return (
-          item.message.some((message) =>
-            message.toLowerCase().includes(filter)
-          ) ||
-          item.source[0].toLowerCase().includes(filter) ||
-          item.name.toLowerCase().includes(filter) ||
-          this._timestamp(item).toLowerCase().includes(filter) ||
-          this._multipleMessages(item).toLowerCase().includes(filter)
-        );
-      }
-      return item;
-    })
+  private _getFilteredItems = memoizeOne(
+    (items: LoggedError[], filter: string) =>
+      items.filter((item: LoggedError) => {
+        if (filter) {
+          return (
+            item.message.some((message: string) =>
+              message.toLowerCase().includes(filter)
+            ) ||
+            item.source[0].toLowerCase().includes(filter) ||
+            item.name.toLowerCase().includes(filter) ||
+            this._timestamp(item).toLowerCase().includes(filter) ||
+            this._multipleMessages(item).toLowerCase().includes(filter)
+          );
+        }
+        return item;
+      })
   );
 
   protected render(): TemplateResult {
