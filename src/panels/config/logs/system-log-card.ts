@@ -104,10 +104,9 @@ export class SystemLogCard extends LitElement {
                     )}
 
                 <div
-                  class=${classMap({
-                    "card-actions": true,
+                  class="card-actions ${classMap({
                     rtl: computeRTL(this.hass),
-                  })}
+                  })}"
                 >
                   <ha-call-service-button
                     .hass=${this.hass}
