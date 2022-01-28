@@ -134,7 +134,7 @@ class HaConfigInfo extends LitElement {
               : ""}
           </p>
         </div>
-        <div class="content">
+        <div>
           <system-health-card .hass=${this.hass}></system-health-card>
           <integrations-card
             .hass=${this.hass}
@@ -165,10 +165,6 @@ class HaConfigInfo extends LitElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-        }
-
-        .content {
-          direction: ltr;
         }
 
         .about {

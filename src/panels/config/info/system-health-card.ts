@@ -264,6 +264,10 @@ class SystemHealthCard extends LitElement {
         width: 45%;
       }
 
+      td:last-child {
+        direction: ltr;
+      }
+
       .loading-container {
         display: flex;
         align-items: center;
