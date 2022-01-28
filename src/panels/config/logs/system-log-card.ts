@@ -48,25 +48,26 @@ export class SystemLogCard extends LitElement {
     );
   }
 
+  private _getFilteredItems = memoizeOne((items, filter) =>
+    items.filter((item) => {
+      if (filter) {
+        return (
+          item.message.some((message) =>
+            message.toLowerCase().includes(filter)
+          ) ||
+          item.source[0].toLowerCase().includes(filter) ||
+          item.name.toLowerCase().includes(filter) ||
+          this._timestamp(item).toLowerCase().includes(filter) ||
+          this._multipleMessages(item).toLowerCase().includes(filter)
+        );
+      }
+      return item;
+    })
+  );
+
   protected render(): TemplateResult {
     const filteredItems = this._items
-      ? this._items.filter(
-          memoizeOne((item) => {
-            if (this.filter) {
-              const filter = this.filter.toLowerCase();
-              return (
-                item.message.some((message) =>
-                  message.toLowerCase().includes(filter)
-                ) ||
-                item.source[0].toLowerCase().includes(filter) ||
-                item.name.toLowerCase().includes(filter) ||
-                this._timestamp(item).toLowerCase().includes(filter) ||
-                this._multipleMessages(item).toLowerCase().includes(filter)
-              );
-            }
-            return item;
-          })
-        )
+      ? this._getFilteredItems(this._items, this.filter.toLowerCase())
       : [];
     const integrations = filteredItems.length
       ? filteredItems.map((item) => getLoggedErrorIntegration(item))
