@@ -1334,6 +1334,9 @@
           "documentation": "Documentation",
           "issues": "Issues",
           "setup_time": "Setup time",
+          "debug_logging": "Debug",
+          "enable": "Enable",
+          "disable": "Disable",
           "system_health": {
             "manage": "Manage",
             "more_info": "more info"

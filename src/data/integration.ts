@@ -1,5 +1,7 @@
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { debounce } from "../common/util/debounce";
 
 export interface IntegrationManifest {
   is_built_in: boolean;
@@ -29,6 +31,11 @@ export interface IntegrationSetup {
   seconds?: number;
 }
 
+export interface IntegrationLogInfo {
+  domain: string;
+  level?: number;
+}
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
@@ -52,3 +59,39 @@ export const fetchIntegrationManifest = (
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
+
+export const fetchIntegrationLogInfo = (conn) =>
+  conn.sendMessagePromise({
+    type: "integration/log_info",
+  });
+
+export const setIntegrationLogLevel = (
+  hass: HomeAssistant,
+  integration: string,
+  level: string
+) => hass.callWS({ type: "integration/log_level", integration, level });
+
+const subscribeLogInfoUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchIntegrationLogInfo(conn).then((log_infos) =>
+          store.setState(log_infos, true)
+        ),
+      200,
+      true
+    ),
+    "logging_changed"
+  );
+
+export const subscribeLogInfo = (
+  conn: Connection,
+  onChange: (devices: IntegrationLogInfo[]) => void
+) =>
+  createCollection<IntegrationLogInfo[]>(
+    "_integration_log_info",
+    fetchIntegrationLogInfo,
+    subscribeLogInfoUpdates,
+    conn,
+    onChange
+  );

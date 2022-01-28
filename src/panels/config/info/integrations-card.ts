@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   domainToName,
   fetchIntegrationManifests,
@@ -9,13 +10,17 @@ import {
   integrationIssuesUrl,
   IntegrationManifest,
   IntegrationSetup,
+  IntegrationLogInfo,
+  subscribeLogInfo,
+  setIntegrationLogLevel,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("integrations-card")
-class IntegrationsCard extends LitElement {
+class IntegrationsCard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -28,6 +33,10 @@ class IntegrationsCard extends LitElement {
     [domain: string]: IntegrationSetup;
   };
 
+  @state() private _log_infos?: {
+    [integration: string]: IntegrationLogInfo;
+  };
+
   private _sortedIntegrations = memoizeOne((components: string[]) =>
     Array.from(
       new Set(
@@ -37,6 +46,18 @@ class IntegrationsCard extends LitElement {
       )
     ).sort()
   );
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeLogInfo(this.hass.connection!, (log_infos) => {
+        const logInfoLookup: { [integration: string]: IntegrationLogInfo } = {};
+        for (const log_info of log_infos) {
+          logInfoLookup[log_info.domain] = log_info;
+        }
+        this._log_infos = logInfoLookup;
+      }),
+    ];
+  }
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -53,11 +74,14 @@ class IntegrationsCard extends LitElement {
           <thead>
             <tr>
               <th></th>
+              <th></th>
               ${!this.narrow
                 ? html`<th></th>
-                    <th></th>
                     <th></th>`
                 : ""}
+              <th class="debug">
+                ${this.hass.localize("ui.panel.config.info.debug_logging")}
+              </th>
               <th>${this.hass.localize("ui.panel.config.info.setup_time")}</th>
             </tr>
           </thead>
@@ -95,6 +119,7 @@ class IntegrationsCard extends LitElement {
                     : "";
                 const setupSeconds =
                   this._setups?.[domain]?.seconds?.toFixed(2);
+                const logLevel = this._log_infos?.[domain]?.level;
                 return html`
                   <tr>
                     <td>
@@ -119,7 +144,6 @@ class IntegrationsCard extends LitElement {
                       ${this.narrow
                         ? html`<div class="mobile-row">
                             <div>${docLink} ${issueLink}</div>
-                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </div>`
                         : ""}
                     </td>
@@ -128,10 +152,27 @@ class IntegrationsCard extends LitElement {
                       : html`
                           <td>${docLink}</td>
                           <td>${issueLink}</td>
-                          <td class="setup">
-                            ${setupSeconds ? html`${setupSeconds} s` : ""}
-                          </td>
                         `}
+                    <td class="log">
+                      ${logLevel === 10
+                        ? html`<mwc-button
+                            .integration=${domain}
+                            @click=${this._disableDebug}
+                            >${this.hass.localize(
+                              "ui.panel.config.info.disable"
+                            )}</mwc-button
+                          >`
+                        : html`<mwc-button
+                            .integration=${domain}
+                            @click=${this._enableDebug}
+                            >${this.hass.localize(
+                              "ui.panel.config.info.enable"
+                            )}</mwc-button
+                          >`}
+                    </td>
+                    <td class="setup">
+                      ${setupSeconds ? html`${setupSeconds} s` : ""}
+                    </td>
                   </tr>
                 `;
               }
@@ -158,6 +199,16 @@ class IntegrationsCard extends LitElement {
     this._setups = setups;
   }
 
+  private async _disableDebug(e: MouseEvent) {
+    const integration = (e.currentTarget as any).integration;
+    await setIntegrationLogLevel(this.hass, integration, "NOTSET");
+  }
+
+  private async _enableDebug(e: MouseEvent) {
+    const integration = (e.currentTarget as any).integration;
+    await setIntegrationLogLevel(this.hass, integration, "DEBUG");
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       table {
@@ -179,6 +230,9 @@ class IntegrationsCard extends LitElement {
       }
       th {
         text-align: right;
+      }
+      .debug {
+        text-align: center;
       }
       .domain {
         color: var(--secondary-text-color);
