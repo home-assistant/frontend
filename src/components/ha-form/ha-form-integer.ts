@@ -1,6 +1,5 @@
 import "@material/mwc-textfield";
 import type { TextField } from "@material/mwc-textfield";
-import "@material/mwc-slider";
 import type { Slider } from "@material/mwc-slider";
 import {
   css,
@@ -14,6 +13,7 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
 import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
+import "../ha-slider";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
@@ -54,15 +54,16 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                   ></ha-checkbox>
                 `
               : ""}
-            <mwc-slider
-              discrete
+            <ha-slider
+              pin
+              ignore-bar-touch
               .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
               .disabled=${this.disabled ||
               (this.data === undefined && this.schema.optional)}
               @change=${this._valueChanged}
-            ></mwc-slider>
+            ></ha-slider>
           </div>
         </div>
       `;
@@ -168,7 +169,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       .flex {
         display: flex;
       }
-      mwc-slider {
+      ha-slider {
         flex: 1;
       }
       mwc-textfield {
