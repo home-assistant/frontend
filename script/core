@@ -16,9 +16,9 @@ if [ -z $(which hass) ]; then
     git+git://github.com/home-assistant/home-assistant.git@dev
 fi
 
-if [ ! -d "/workspaces/frontend/config" ]; then
+if [ ! -d "${PWD}/config" ]; then
   echo "Creating default configuration."
-  mkdir -p "/workspaces/frontend/config";
+  mkdir -p "${PWD}/config";
   hass --script ensure_config -c config
   echo "demo:
 
@@ -26,24 +26,24 @@ logger:
   default: info
   logs:
     homeassistant.components.frontend: debug
-" >> /workspaces/frontend/config/configuration.yaml
+" >> "${PWD}/config/configuration.yaml"
 
   if [ ! -z "${HASSIO}" ]; then
   echo "
 # frontend:
-#   development_repo: /workspaces/frontend
+#   development_repo: ${PWD}
 
 hassio:
-  development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
+  development_repo: ${PWD}" >> "${PWD}/config/configuration.yaml"
   else
   echo "
 frontend:
-  development_repo: /workspaces/frontend
+  development_repo: ${PWD}
 
 # hassio:
-#   development_repo: /workspaces/frontend" >> /workspaces/frontend/config/configuration.yaml
+#   development_repo: ${PWD}" >> "${PWD}/config/configuration.yaml"
   fi
 
 fi
 
-hass -c /workspaces/frontend/config
+hass -c "${PWD}/config"
