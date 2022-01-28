@@ -12,6 +12,7 @@ import {
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
@@ -66,7 +67,12 @@ class IntegrationsCard extends LitElement {
                 const manifest = this._manifests && this._manifests[domain];
                 const docLink = manifest
                   ? html`<a
-                      href=${manifest.documentation}
+                      href=${manifest.is_built_in
+                        ? documentationUrl(
+                            this.hass,
+                            `/integrations/${manifest.domain}`
+                          )
+                        : manifest.documentation}
                       target="_blank"
                       rel="noreferrer"
                       >${this.hass.localize(

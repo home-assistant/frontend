@@ -21,6 +21,7 @@ import {
 } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
@@ -117,7 +118,12 @@ class DialogSystemLogDetail extends LitElement {
                     ? ""
                     : html`
                         (<a
-                          href=${this._manifest.documentation}
+                          href=${this._manifest.is_built_in
+                            ? documentationUrl(
+                                this.hass,
+                                `/integrations/${this._manifest.domain}`
+                              )
+                            : this._manifest.documentation}
                           target="_blank"
                           rel="noreferrer"
                           >documentation</a

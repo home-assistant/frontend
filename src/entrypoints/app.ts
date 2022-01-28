@@ -9,5 +9,3 @@ import "../util/legacy-support";
 
 setPassiveTouchGestures(true);
 setCancelSyntheticClickEvents(false);
-
-(window as any).frontendVersion = __VERSION__;

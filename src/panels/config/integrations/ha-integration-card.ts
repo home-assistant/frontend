@@ -46,6 +46,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
@@ -331,7 +332,12 @@ export class HaIntegrationCard extends LitElement {
           </mwc-list-item>
           ${this.manifest
             ? html` <a
-                href=${this.manifest.documentation}
+                href=${this.manifest.is_built_in
+                  ? documentationUrl(
+                      this.hass,
+                      `/integrations/${this.manifest.domain}`
+                    )
+                  : this.manifest.documentation}
                 rel="noreferrer"
                 target="_blank"
               >

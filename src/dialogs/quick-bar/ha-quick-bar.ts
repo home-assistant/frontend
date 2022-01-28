@@ -108,7 +108,9 @@ export class QuickBar extends LitElement {
   public async showDialog(params: QuickBarParams) {
     this._commandMode = params.commandMode || this._toggleIfAlreadyOpened();
     this._hint = params.hint;
-    this._narrow = matchMedia("(max-width: 600px)").matches;
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
     this._initializeItemsIfNeeded();
     this._opened = true;
   }
@@ -154,7 +156,7 @@ export class QuickBar extends LitElement {
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
             .icon=${true}
-            .iconTrailing=${this._search !== undefined}
+            .iconTrailing=${this._search !== undefined || this._narrow}
             @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
             @focus=${this._setFocusFirstListItem}
@@ -174,24 +176,26 @@ export class QuickBar extends LitElement {
                     .path=${mdiMagnify}
                   ></ha-svg-icon>
                 `}
-            ${this._search &&
-            html`
-              <ha-icon-button
-                slot="trailingIcon"
-                @click=${this._clearSearch}
-                .label=${this.hass!.localize("ui.common.clear")}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `}
+            ${this._search || this._narrow
+              ? html`
+                  <div slot="trailingIcon">
+                    ${this._search &&
+                    html`<ha-icon-button
+                      @click=${this._clearSearch}
+                      .label=${this.hass!.localize("ui.common.clear")}
+                      .path=${mdiClose}
+                    ></ha-icon-button>`}
+                    ${this._narrow &&
+                    html`
+                      <mwc-button
+                        .label=${this.hass!.localize("ui.common.close")}
+                        @click=${this.closeDialog}
+                      ></mwc-button>
+                    `}
+                  </div>
+                `
+              : ""}
           </ha-textfield>
-          ${this._narrow
-            ? html`
-                <mwc-button
-                  .label=${this.hass!.localize("ui.common.close")}
-                  @click=${this.closeDialog}
-                ></mwc-button>
-              `
-            : ""}
         </div>
         ${!items
           ? html`<ha-circular-progress
@@ -210,10 +214,12 @@ export class QuickBar extends LitElement {
                 @keydown=${this._handleListItemKeyDown}
                 @selected=${this._handleSelected}
                 style=${styleMap({
-                  height: `${Math.min(
-                    items.length * (this._commandMode ? 56 : 72) + 26,
-                    this._done ? 500 : 0
-                  )}px`,
+                  height: this._narrow
+                    ? "calc(100vh - 56px)"
+                    : `${Math.min(
+                        items.length * (this._commandMode ? 56 : 72) + 26,
+                        this._done ? 500 : 0
+                      )}px`,
                 })}
               >
                 ${scroll({
@@ -705,6 +711,12 @@ export class QuickBar extends LitElement {
           }
         }
 
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-textfield {
+            --mdc-shape-small: 0;
+          }
+        }
+
         ha-icon.entity,
         ha-svg-icon.entity {
           margin-left: 20px;
@@ -757,6 +769,11 @@ export class QuickBar extends LitElement {
         .nothing-found {
           padding: 16px 0px;
           text-align: center;
+        }
+
+        div[slot="trailingIcon"] {
+          display: flex;
+          align-items: center;
         }
       `,
     ];

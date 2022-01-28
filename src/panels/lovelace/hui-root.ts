@@ -130,6 +130,7 @@ class HUIRoot extends LitElement {
                     ></ha-icon-button>
                   </div>
                   <mwc-button
+                    outlined
                     class="exit-edit-mode"
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.menu.exit_edit_mode"
@@ -938,7 +939,8 @@ class HUIRoot extends LitElement {
           );
         }
         .exit-edit-mode {
-          --mdc-theme-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
+          --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
           --mdc-typography-button-font-size: 14px;
         }
       `,

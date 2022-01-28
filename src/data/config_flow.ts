@@ -104,18 +104,19 @@ export const localizeConfigFlowTitle = (
   localize: LocalizeFunc,
   flow: DataEntryFlowProgress
 ) => {
-  const placeholders = flow.context.title_placeholders || {};
-  const placeholderKeys = Object.keys(placeholders);
-  if (placeholderKeys.length === 0) {
+  if (
+    !flow.context.title_placeholders ||
+    Object.keys(flow.context.title_placeholders).length === 0
+  ) {
     return domainToName(localize, flow.handler);
   }
-  const args: string[] = [];
-  placeholderKeys.forEach((key) => {
-    args.push(key);
-    args.push(placeholders[key]);
-  });
-  return localize(`component.${flow.handler}.config.flow_title`, ...args) ||
-    "name" in placeholders
-    ? placeholders.name
-    : domainToName(localize, flow.handler);
+  return (
+    localize(
+      `component.${flow.handler}.config.flow_title`,
+      flow.context.title_placeholders
+    ) ||
+    ("name" in flow.context.title_placeholders
+      ? flow.context.title_placeholders.name
+      : domainToName(localize, flow.handler))
+  );
 };
