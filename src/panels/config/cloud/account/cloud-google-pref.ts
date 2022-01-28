@@ -137,6 +137,7 @@ export class CloudGooglePref extends LitElement {
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
                   <mwc-textfield
+                    id="google_secure_devices_pin"
                     .label=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
                     )}
