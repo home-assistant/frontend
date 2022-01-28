@@ -2,7 +2,9 @@ import "@material/mwc-button";
 import { mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-icon-button";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
 
@@ -26,7 +28,13 @@ class ErrorLogCard extends LitElement {
               </ha-card>
             `
           : html`
-              <mwc-button raised @click=${this._refreshErrorLog}>
+              <mwc-button
+                raised
+                @click=${this._refreshErrorLog}
+                class=${classMap({
+                  rtl: computeRTL(this.hass),
+                })}
+              >
                 ${this.hass.localize("ui.panel.config.logs.load_full_log")}
               </mwc-button>
             `}
@@ -67,6 +75,10 @@ class ErrorLogCard extends LitElement {
 
       .warning {
         color: var(--warning-color);
+      }
+
+      .rtl {
+        direction: rtl;
       }
     `;
   }

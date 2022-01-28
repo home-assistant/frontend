@@ -2,11 +2,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-button";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { domainToName } from "../../../data/integration";
 import {
   fetchSystemLog,
@@ -101,7 +103,12 @@ export class SystemLogCard extends LitElement {
                       `
                     )}
 
-                <div class="card-actions">
+                <div
+                  class=${classMap({
+                    "card-actions": true,
+                    rtl: computeRTL(this.hass),
+                  })}
+                >
                   <ha-call-service-button
                     .hass=${this.hass}
                     domain="system_log"
@@ -173,6 +180,10 @@ export class SystemLogCard extends LitElement {
 
       .warning {
         color: var(--warning-color);
+      }
+
+      .rtl {
+        direction: rtl;
       }
     `;
   }
