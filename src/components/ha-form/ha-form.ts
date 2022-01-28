@@ -104,7 +104,7 @@ export class HaForm extends LitElement implements HaFormElement {
     return css`
       .root {
         margin-bottom: -24px;
-        overflow: auto;
+        overflow: clip visible;
       }
       .root > * {
         display: block;
