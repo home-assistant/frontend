@@ -2205,18 +2205,18 @@
           }
         },
         "devices": {
-          "add_prompt": "No {name} have been added using this device yet. You can add one by clicking the + button above.",
+          "add_prompt": "No {name} have been added using this {type} yet. You can add one by clicking the + button above.",
           "caption": "Devices",
           "description": "Manage configured devices",
-          "device_info": "Device info",
+          "device_info": "{type} info",
           "edit_settings": "Edit settings",
-          "unnamed_device": "Unnamed device",
+          "unnamed_device": "Unnamed {type}",
           "unknown_error": "Unknown error",
           "name": "Name",
           "update": "Update",
           "no_devices": "No devices",
-          "enabled_label": "Enable device",
-          "enabled_cause": "The device is disabled by {cause}.",
+          "enabled_label": "Enable {type}",
+          "enabled_cause": "The {type} is disabled by {cause}.",
           "disabled_by": {
             "user": "User",
             "integration": "Integration",
@@ -2226,12 +2226,19 @@
           "open_configuration_url_device": "Visit device",
           "open_configuration_url_service": "Visit service",
           "download_diagnostics": "Download diagnostics",
+          "type": {
+            "device_heading": "Device",
+            "device": "device",
+            "service_heading": "Service",
+            "service": "service"
+          },
           "automation": {
-            "automations": "Automations",
+            "automations_heading": "Automations",
+            "automations": "automations",
             "no_automations": "No automations",
             "unknown_automation": "Unknown automation",
-            "create": "Create automation with device",
-            "create_disable": "Can't create automation with disabled device",
+            "create": "Create automation with {type}",
+            "create_disable": "Can't create automation with disabled {type}",
             "triggers": {
               "caption": "Do something when…",
               "no_triggers": "No triggers",
@@ -2250,19 +2257,21 @@
             "no_device_automations": "There are no automations available for this device."
           },
           "script": {
-            "scripts": "Scripts",
+            "scripts_heading": "Scripts",
+            "scripts": "scripts",
             "no_scripts": "No scripts",
-            "create": "Create script with device",
-            "create_disable": "Can't create script with disabled device"
+            "create": "Create script with {type}",
+            "create_disable": "Can't create script with disabled {type}"
           },
           "scene": {
-            "scenes": "Scenes",
+            "scenes_heading": "Scenes",
+            "scenes": "scenes",
             "no_scenes": "No scenes",
-            "create": "Create scene with device",
-            "create_disable": "Can't create scene with disabled device"
+            "create": "Create scene with {type}",
+            "create_disable": "Can't create scene with disabled {type}"
           },
           "cant_edit": "You can only edit items that are created in the UI.",
-          "device_not_found": "Device not found.",
+          "device_not_found": "Device / service not found.",
           "entities": {
             "entities": "Entities",
             "control": "Controls",
@@ -2274,8 +2283,6 @@
             "hide_disabled": "Hide disabled",
             "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
           },
-          "scripts": "Scripts",
-          "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
