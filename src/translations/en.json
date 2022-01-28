@@ -4098,7 +4098,7 @@
           "back": "Back",
           "done": "Show me my energy dashboard!",
           "step": "Step",
-          "of": "of"
+          "step_of": "of"
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
