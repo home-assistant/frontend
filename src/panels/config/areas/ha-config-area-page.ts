@@ -315,7 +315,7 @@ class HaConfigAreaPage extends LitElement {
               ? html`
                   <ha-card
                     .header=${this.hass.localize(
-                      "ui.panel.config.devices.automation.automations"
+                      "ui.panel.config.devices.automation.automations_heading"
                     )}
                   >
                     ${groupedAutomations?.length
@@ -362,7 +362,7 @@ class HaConfigAreaPage extends LitElement {
               ? html`
                   <ha-card
                     .header=${this.hass.localize(
-                      "ui.panel.config.devices.scene.scenes"
+                      "ui.panel.config.devices.scene.scenes_heading"
                     )}
                   >
                     ${groupedScenes?.length
@@ -401,7 +401,7 @@ class HaConfigAreaPage extends LitElement {
               ? html`
                   <ha-card
                     .header=${this.hass.localize(
-                      "ui.panel.config.devices.script.scripts"
+                      "ui.panel.config.devices.script.scripts_heading"
                     )}
                   >
                     ${groupedScripts?.length
