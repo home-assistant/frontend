@@ -30,7 +30,6 @@ import { debounce } from "../../common/util/debounce";
 import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
-  browseLocalMediaPlayer,
   browseMediaPlayer,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
@@ -50,6 +49,7 @@ import "../ha-circular-progress";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-fab";
+import { browseLocalMediaPlayer } from "../../data/media_source";
 
 declare global {
   interface HASSDomEvents {
@@ -626,6 +626,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _renderError(err: { message: string; code: string }) {
+    // If all media players are offline
+    if (err.code === "unknown_command") {
+      return html`Unable to browse current media player.`;
+    }
     if (err.message === "Media directory does not exist.") {
       return html`
         <h2>

@@ -28,6 +28,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -112,6 +113,18 @@ class PanelMediaBrowser extends LitElement {
       .split("/");
 
     if (routePlayer !== this._entityId) {
+      // Detect if picked player doesn't exist (anymore)
+      // Can happen if URL bookmarked or stored in local storage
+      if (
+        routePlayer !== BROWSER_PLAYER &&
+        this.hass.states[routePlayer] === undefined
+      ) {
+        navigate(`/media-browser/${BROWSER_PLAYER}`, { replace: true });
+        showAlertDialog(this, {
+          text: `Media player ${routePlayer} does not exist`,
+        });
+        return;
+      }
       this._entityId = routePlayer;
     }
 
