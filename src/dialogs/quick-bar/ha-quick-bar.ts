@@ -185,13 +185,14 @@ export class QuickBar extends LitElement {
                       .label=${this.hass!.localize("ui.common.clear")}
                       .path=${mdiClose}
                     ></ha-icon-button>`}
-                    ${this._narrow &&
-                    html`
-                      <mwc-button
-                        .label=${this.hass!.localize("ui.common.close")}
-                        @click=${this.closeDialog}
-                      ></mwc-button>
-                    `}
+                    ${this._narrow
+                      ? html`
+                          <mwc-button
+                            .label=${this.hass!.localize("ui.common.close")}
+                            @click=${this.closeDialog}
+                          ></mwc-button>
+                        `
+                      : ""}
                   </div>
                 `
               : ""}
