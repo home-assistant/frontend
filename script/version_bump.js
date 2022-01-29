@@ -50,14 +50,14 @@ async function main(args) {
     return;
   }
 
-  const setup = fs.readFileSync("setup.py", "utf8");
+  const setup = fs.readFileSync("setup.cfg", "utf8");
   const version = setup.match(/\d{8}\.\d+/)[0];
   const newVersion = method(version);
 
   console.log("Current version:", version);
   console.log("New version:", newVersion);
 
-  fs.writeFileSync("setup.py", setup.replace(version, newVersion), "utf-8");
+  fs.writeFileSync("setup.cfg", setup.replace(version, newVersion), "utf-8");
 
   if (!commit) {
     return;
