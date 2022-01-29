@@ -1123,6 +1123,7 @@ export class HaConfigDevicePage extends LitElement {
           align-self: center;
           align-items: center;
           display: flex;
+          white-space: nowrap;
         }
 
         .column > *:not(:first-child) {
