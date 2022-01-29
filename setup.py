@@ -1,14 +1,7 @@
-from setuptools import setup, find_packages
+"""
+Entry point for setuptools. Required for editable installs.
+TODO: Remove file after updating to pip 21.3
+"""
+from setuptools import setup
 
-setup(
-    name="home-assistant-frontend",
-    version="20220127.0",
-    description="The Home Assistant frontend",
-    url="https://github.com/home-assistant/frontend",
-    author="The Home Assistant Authors",
-    author_email="hello@home-assistant.io",
-    license="Apache-2.0",
-    packages=find_packages(include=["hass_frontend", "hass_frontend.*"]),
-    include_package_data=True,
-    zip_safe=False,
-)
+setup()
