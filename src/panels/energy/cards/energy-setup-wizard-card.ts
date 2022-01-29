@@ -52,8 +52,10 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   protected render(): TemplateResult {
     return html`
       <p>
-        ${this.hass.localize("ui.panel.energy.setup.step")} ${this._step + 1}
-        ${this.hass.localize("ui.panel.energy.setup.step_of")} 5
+        ${this.hass.localize("ui.panel.energy.setup.step", {
+          step: this._step + 1,
+          steps: 5,
+        })}
       </p>
       ${this._step === 0
         ? html`<ha-energy-grid-settings
