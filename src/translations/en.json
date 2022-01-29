@@ -733,6 +733,7 @@
             "cover": {
               "door": "Door",
               "garage": "Garage door",
+              "gate": "Gate",
               "window": "Window"
             }
           },
