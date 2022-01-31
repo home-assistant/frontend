@@ -237,7 +237,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         template: (disabled_by) =>
           this.hass.localize(
             `ui.panel.config.devices.disabled_by.${disabled_by}`
-          ) || disabled_by,
+          ) ||
+          disabled_by ||
+          "—",
       },
       status: {
         title: this.hass.localize(
