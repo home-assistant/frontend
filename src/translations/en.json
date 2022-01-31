@@ -3646,6 +3646,11 @@
         "delete_prompt": "Delete this message?",
         "delete_button": "Delete"
       },
+      "media-browser": {
+        "error": {
+          "player_not_exist": "Media player {name} does not exist"
+        }
+      },
       "map": {
         "edit_zones": "Edit Zones"
       },

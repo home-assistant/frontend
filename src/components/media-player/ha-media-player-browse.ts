@@ -626,10 +626,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _renderError(err: { message: string; code: string }) {
-    // If all media players are offline
-    if (err.code === "unknown_command") {
-      return html`Unable to browse current media player.`;
-    }
     if (err.message === "Media directory does not exist.") {
       return html`
         <h2>

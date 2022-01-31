@@ -121,7 +121,12 @@ class PanelMediaBrowser extends LitElement {
       ) {
         navigate(`/media-browser/${BROWSER_PLAYER}`, { replace: true });
         showAlertDialog(this, {
-          text: `Media player ${routePlayer} does not exist`,
+          text: this.hass.localize(
+            "ui.panel.media-browser.error.player_not_exist",
+            {
+              name: routePlayer,
+            }
+          ),
         });
         return;
       }
