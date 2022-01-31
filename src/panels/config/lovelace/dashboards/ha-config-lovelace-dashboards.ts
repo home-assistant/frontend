@@ -7,6 +7,7 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../common/navigate";
@@ -53,9 +54,19 @@ export class HaConfigLovelaceDashboards extends LitElement {
         icon: {
           title: "",
           type: "icon",
-          template: (icon) =>
+          template: (icon, dashboard) =>
             icon
-              ? html` <ha-icon slot="item-icon" .icon=${icon}></ha-icon> `
+              ? html`
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${icon}
+                    style=${ifDefined(
+                      dashboard.iconColor
+                        ? `color: ${dashboard.iconColor}`
+                        : undefined
+                    )}
+                  ></ha-icon>
+                `
               : html``,
         },
         title: {
@@ -64,7 +75,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          direction: "asc",
           grows: true,
           template: (title, dashboard: any) => {
             const titleTemplate = html`
@@ -194,12 +204,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
         url_path: "lovelace",
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+        iconColor: "var(--primary-color)",
       },
-      ...dashboards.map((dashboard) => ({
-        filename: "",
-        ...dashboard,
-        default: defaultUrlPath === dashboard.url_path,
-      })),
     ];
     if (isComponentLoaded(this.hass, "energy")) {
       result.push({
@@ -209,8 +215,19 @@ export class HaConfigLovelaceDashboards extends LitElement {
         mode: "storage",
         url_path: "energy",
         filename: "",
+        iconColor: "var(--label-badge-yellow)",
       });
     }
+
+    result.push(
+      ...dashboards
+        .sort((a, b) => stringCompare(a.title, b.title))
+        .map((dashboard) => ({
+          filename: "",
+          ...dashboard,
+          default: defaultUrlPath === dashboard.url_path,
+        }))
+    );
     return result;
   });
 
