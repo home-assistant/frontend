@@ -116,15 +116,16 @@ class DataEntryFlowDialog extends LitElement {
           params.continueFlowId
         );
       } catch (err: any) {
-        this._step = undefined;
-        this._params = undefined;
+        this.closeDialog();
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.could_not_load"
-          ),
+          text:
+            err.message ||
+            this.hass.localize(
+              "ui.panel.config.integrations.config_flow.could_not_load"
+            ),
         });
         return;
       }
@@ -177,6 +178,7 @@ class DataEntryFlowDialog extends LitElement {
       });
     }
 
+    this._loading = undefined;
     this._step = undefined;
     this._params = undefined;
     this._devices = undefined;
@@ -372,15 +374,16 @@ class DataEntryFlowDialog extends LitElement {
       try {
         step = await this._params!.flowConfig.createFlow(this.hass, handler);
       } catch (err: any) {
-        this._step = undefined;
-        this._params = undefined;
+        this.closeDialog();
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.could_not_load"
-          ),
+          text:
+            err.message ||
+            this.hass.localize(
+              "ui.panel.config.integrations.config_flow.could_not_load"
+            ),
         });
         return;
       } finally {
@@ -405,6 +408,15 @@ class DataEntryFlowDialog extends LitElement {
       this._loading = "loading_step";
       try {
         this._step = await step;
+      } catch (err: any) {
+        this.closeDialog();
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: err.message,
+        });
+        return;
       } finally {
         this._loading = undefined;
       }
