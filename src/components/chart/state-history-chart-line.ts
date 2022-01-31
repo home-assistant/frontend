@@ -193,7 +193,7 @@ class StateHistoryChartLine extends LitElement {
           fill: fill ? "origin" : false,
           borderColor: color,
           backgroundColor: color + "7F",
-          stepped: false,
+          stepped: "before",
           pointRadius: 0,
           data: [],
         });
