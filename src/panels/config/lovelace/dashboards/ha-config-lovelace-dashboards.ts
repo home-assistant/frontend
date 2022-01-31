@@ -7,6 +7,7 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../common/navigate";
@@ -59,7 +60,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
                   <ha-icon
                     slot="item-icon"
                     .icon=${icon}
-                    style="color: ${dashboard.iconColor}"
+                    style=${ifDefined(
+                      dashboard.iconColor
+                        ? `color: ${dashboard.iconColor}`
+                        : undefined
+                    )}
                   ></ha-icon>
                 `
               : html``,
@@ -216,7 +221,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
     result.push(
       ...dashboards
-        .sort((a, b) => (a.title > b.title ? 1 : b.title > a.title ? -1 : 0))
+        .sort((a, b) => stringCompare(a.title, b.title))
         .map((dashboard) => ({
           filename: "",
           ...dashboard,
