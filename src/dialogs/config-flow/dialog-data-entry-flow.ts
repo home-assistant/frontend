@@ -123,6 +123,7 @@ class DataEntryFlowDialog extends LitElement {
           ),
           text:
             err.message ||
+            err.body ||
             this.hass.localize(
               "ui.panel.config.integrations.config_flow.could_not_load"
             ),
@@ -381,6 +382,7 @@ class DataEntryFlowDialog extends LitElement {
           ),
           text:
             err.message ||
+            err.body ||
             this.hass.localize(
               "ui.panel.config.integrations.config_flow.could_not_load"
             ),
@@ -414,7 +416,7 @@ class DataEntryFlowDialog extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
-          text: err.message,
+          text: err.message || err.body,
         });
         return;
       } finally {
