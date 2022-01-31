@@ -183,12 +183,7 @@ class StateHistoryChartLine extends LitElement {
         prevValues = datavalues;
       };
 
-      const addDataSet = (
-        nameY: string,
-        step = false,
-        fill = false,
-        color?: string
-      ) => {
+      const addDataSet = (nameY: string, fill = false, color?: string) => {
         if (!color) {
           color = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
@@ -198,7 +193,7 @@ class StateHistoryChartLine extends LitElement {
           fill: fill ? "origin" : false,
           borderColor: color,
           backgroundColor: color + "7F",
-          stepped: step ? "before" : false,
+          stepped: false,
           pointRadius: 0,
           data: [],
         });
@@ -239,13 +234,11 @@ class StateHistoryChartLine extends LitElement {
         addDataSet(
           `${this.hass.localize("ui.card.climate.current_temperature", {
             name: name,
-          })}`,
-          true
+          })}`
         );
         if (hasHeat) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.heating", { name: name })}`,
-            true,
             true,
             computedStyles.getPropertyValue("--state-climate-heat-color")
           );
@@ -255,7 +248,6 @@ class StateHistoryChartLine extends LitElement {
         if (hasCool) {
           addDataSet(
             `${this.hass.localize("ui.card.climate.cooling", { name: name })}`,
-            true,
             true,
             computedStyles.getPropertyValue("--state-climate-cool-color")
           );
@@ -268,22 +260,19 @@ class StateHistoryChartLine extends LitElement {
             `${this.hass.localize("ui.card.climate.target_temperature_mode", {
               name: name,
               mode: this.hass.localize("ui.card.climate.high"),
-            })}`,
-            true
+            })}`
           );
           addDataSet(
             `${this.hass.localize("ui.card.climate.target_temperature_mode", {
               name: name,
               mode: this.hass.localize("ui.card.climate.low"),
-            })}`,
-            true
+            })}`
           );
         } else {
           addDataSet(
             `${this.hass.localize("ui.card.climate.target_temperature_entity", {
               name: name,
-            })}`,
-            true
+            })}`
           );
         }
 
@@ -318,14 +307,12 @@ class StateHistoryChartLine extends LitElement {
         addDataSet(
           `${this.hass.localize("ui.card.humidifier.target_humidity_entity", {
             name: name,
-          })}`,
-          true
+          })}`
         );
         addDataSet(
           `${this.hass.localize("ui.card.humidifier.on_entity", {
             name: name,
           })}`,
-          true,
           true
         );
 
@@ -337,9 +324,7 @@ class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        // Only interpolate for sensors
-        const isStep = domain !== "sensor";
-        addDataSet(name, isStep);
+        addDataSet(name);
 
         let lastValue: number;
         let lastDate: Date;
