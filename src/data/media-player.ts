@@ -185,15 +185,6 @@ export const browseMediaPlayer = (
     media_content_type: mediaContentType,
   });
 
-export const browseLocalMediaPlayer = (
-  hass: HomeAssistant,
-  mediaContentId?: string
-): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
-    type: "media_source/browse_media",
-    media_content_id: mediaContentId,
-  });
-
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
   let progress = stateObj.attributes.media_position!;
 
@@ -321,8 +312,8 @@ export const computeMediaControls = (
   return buttons.length > 0 ? buttons : undefined;
 };
 
-export const formatMediaTime = (seconds: number): string => {
-  if (!seconds) {
+export const formatMediaTime = (seconds: number | undefined): string => {
+  if (seconds === undefined) {
     return "";
   }
 

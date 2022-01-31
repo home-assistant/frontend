@@ -115,7 +115,9 @@ class BarMediaPlayer extends LitElement {
   protected render(): TemplateResult {
     const isBrowser = this.entityId === BROWSER_PLAYER;
     const stateObj = this._stateObj;
-    const controls = !this.narrow
+    const controls = !stateObj
+      ? undefined
+      : !this.narrow
       ? computeMediaControls(stateObj)
       : (stateObj.state === "playing" &&
           (supportsFeature(stateObj, SUPPORT_PAUSE) ||
@@ -144,13 +146,16 @@ class BarMediaPlayer extends LitElement {
           },
         ]
       : [{}];
-    const mediaDescription = computeMediaDescription(stateObj);
-    const mediaDuration = formatMediaTime(stateObj!.attributes.media_duration!);
-    const mediaTitleClean = cleanupMediaTitle(stateObj.attributes.media_title);
+    const mediaDescription = stateObj ? computeMediaDescription(stateObj) : "";
+    const mediaDuration = formatMediaTime(stateObj?.attributes.media_duration);
+    const mediaTitleClean = cleanupMediaTitle(
+      stateObj?.attributes.media_title || ""
+    );
 
-    const mediaArt =
-      stateObj.attributes.entity_picture_local ||
-      stateObj.attributes.entity_picture;
+    const mediaArt = stateObj
+      ? stateObj.attributes.entity_picture_local ||
+        stateObj.attributes.entity_picture
+      : undefined;
 
     return html`
       <div
@@ -216,7 +221,7 @@ class BarMediaPlayer extends LitElement {
                   slot="trigger"
                   .label=${this.narrow
                     ? ""
-                    : `${computeStateName(stateObj)}
+                    : `${stateObj ? computeStateName(stateObj) : this.entityId}
                 `}
                 >
                   <ha-svg-icon
@@ -288,7 +293,7 @@ class BarMediaPlayer extends LitElement {
     if (
       !this._progressInterval &&
       this._showProgressBar &&
-      stateObj.state === "playing"
+      stateObj?.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
         () => this._updateProgressBar(),
@@ -296,21 +301,20 @@ class BarMediaPlayer extends LitElement {
       );
     } else if (
       this._progressInterval &&
-      (!this._showProgressBar || stateObj.state !== "playing")
+      (!this._showProgressBar || stateObj?.state !== "playing")
     ) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
   }
 
-  private get _stateObj(): MediaPlayerEntity {
-    if (this._browserPlayer) {
-      return this._browserPlayer.toStateObj();
+  private get _stateObj(): MediaPlayerEntity | undefined {
+    if (this.entityId === BROWSER_PLAYER) {
+      return this._browserPlayer
+        ? this._browserPlayer.toStateObj()
+        : BrowserMediaPlayer.idleStateObj();
     }
-    return (
-      (this.hass!.states[this.entityId] as MediaPlayerEntity | undefined) ||
-      BrowserMediaPlayer.idleStateObj()
-    );
+    return this.hass!.states[this.entityId] as MediaPlayerEntity | undefined;
   }
 
   private _openMoreInfo() {
@@ -328,6 +332,7 @@ class BarMediaPlayer extends LitElement {
     const stateObj = this._stateObj;
 
     return (
+      stateObj &&
       (stateObj.state === "playing" || stateObj.state === "paused") &&
       "media_duration" in stateObj.attributes &&
       "media_position" in stateObj.attributes
@@ -343,19 +348,21 @@ class BarMediaPlayer extends LitElement {
   }
 
   private _updateProgressBar(): void {
-    if (!this._progressBar || !this._currentProgress) {
+    const stateObj = this._stateObj;
+
+    if (!this._progressBar || !this._currentProgress || !stateObj) {
       return;
     }
 
-    if (!this._stateObj.attributes.media_duration) {
+    if (!stateObj.attributes.media_duration) {
       this._progressBar.progress = 0;
       this._currentProgress.innerHTML = "";
       return;
     }
 
-    const currentProgress = getCurrentProgress(this._stateObj);
+    const currentProgress = getCurrentProgress(stateObj);
     this._progressBar.progress =
-      currentProgress / this._stateObj.attributes.media_duration;
+      currentProgress / stateObj.attributes.media_duration;
 
     if (this._currentProgress) {
       this._currentProgress.innerHTML = formatMediaTime(currentProgress);
