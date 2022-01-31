@@ -53,9 +53,15 @@ export class HaConfigLovelaceDashboards extends LitElement {
         icon: {
           title: "",
           type: "icon",
-          template: (icon) =>
+          template: (icon, dashboard) =>
             icon
-              ? html` <ha-icon slot="item-icon" .icon=${icon}></ha-icon> `
+              ? html`
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${icon}
+                    style="color: ${dashboard.iconColor}"
+                  ></ha-icon>
+                `
               : html``,
         },
         title: {
@@ -64,7 +70,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          direction: "asc",
           grows: true,
           template: (title, dashboard: any) => {
             const titleTemplate = html`
@@ -194,12 +199,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
         url_path: "lovelace",
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+        iconColor: "var(--primary-color)",
       },
-      ...dashboards.map((dashboard) => ({
-        filename: "",
-        ...dashboard,
-        default: defaultUrlPath === dashboard.url_path,
-      })),
     ];
     if (isComponentLoaded(this.hass, "energy")) {
       result.push({
@@ -209,8 +210,19 @@ export class HaConfigLovelaceDashboards extends LitElement {
         mode: "storage",
         url_path: "energy",
         filename: "",
+        iconColor: "var(--label-badge-yellow)",
       });
     }
+
+    result.push(
+      ...dashboards
+        .sort((a, b) => (a.title > b.title ? 1 : b.title > a.title ? -1 : 0))
+        .map((dashboard) => ({
+          filename: "",
+          ...dashboard,
+          default: defaultUrlPath === dashboard.url_path,
+        }))
+    );
     return result;
   });
 
