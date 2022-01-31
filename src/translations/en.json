@@ -1928,7 +1928,8 @@
             "edit_script": "Edit script",
             "dev_script": "Debug script",
             "headers": {
-              "name": "Name"
+              "name": "Name",
+              "state": "State"
             },
             "duplicate_script": "Duplicate script",
             "duplicate": "[%key:ui::panel::config::automation::picker::duplicate%]"
