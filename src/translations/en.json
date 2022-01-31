@@ -2337,6 +2337,7 @@
               "ok": "Ok"
             },
             "headers": {
+              "icon": "Icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "integration": "Integration",
