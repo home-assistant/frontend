@@ -2298,6 +2298,7 @@
             "area": "Area",
             "integration": "Integration",
             "battery": "Battery",
+            "disabled_by": "Disabled",
             "no_devices": "No devices",
             "no_integration": "No integration"
           },

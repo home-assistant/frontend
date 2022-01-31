@@ -326,6 +326,9 @@ export class HaConfigDeviceDashboard extends LitElement {
       if (showDisabled) {
         columns.disabled_by = {
           title: "",
+          ariaLabel: this.hass.localize(
+            "ui.panel.config.devices.data_table.disabled_by"
+          ),
           type: "icon",
           template: (disabled_by) =>
             disabled_by
