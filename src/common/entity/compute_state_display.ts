@@ -120,6 +120,7 @@ export const computeStateDisplay = (
   if (
     domain === "button" ||
     domain === "input_button" ||
+    domain === "scene" ||
     (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
   ) {
     return formatDateTime(new Date(compareState), locale);
