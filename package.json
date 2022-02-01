@@ -110,7 +110,7 @@
     "js-yaml": "^4.1.0",
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
-    "lit": "^2.0.2",
+    "lit": "^2.1.2",
     "lit-vaadin-helpers": "^0.2.1",
     "marked": "^3.0.2",
     "memoize-one": "^5.2.1",
@@ -236,10 +236,10 @@
   "resolutions": {
     "@polymer/polymer": "patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "lit": "^2.0.2",
-    "lit-html": "2.0.1",
-    "lit-element": "3.0.1",
-    "@lit/reactive-element": "1.0.1"
+    "lit": "^2.1.2",
+    "lit-html": "2.1.2",
+    "lit-element": "3.1.2",
+    "@lit/reactive-element": "1.2.1"
   },
   "main": "src/home-assistant.js",
   "husky": {

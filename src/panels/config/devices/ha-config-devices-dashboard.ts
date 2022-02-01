@@ -341,7 +341,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                     ${this.hass.localize("ui.panel.config.devices.disabled")}
                   </paper-tooltip>
                 </div>`
-              : "",
+              : "—",
         };
       }
       return columns;
