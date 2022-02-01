@@ -184,6 +184,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "person",
   "remote",
   "script",
+  "scene",
   "sun",
   "timer",
   "vacuum",
@@ -234,7 +235,7 @@ export const DOMAINS_INPUT_ROW = [
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
-export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator", "scene"];
+export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator"];
 
 /** States that we consider "off". */
 export const STATES_OFF = ["closed", "locked", "off"];
