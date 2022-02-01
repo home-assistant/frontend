@@ -417,6 +417,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!changedProps.has("navigateIds")) {
       return;
     }
+
+    this._setError(undefined);
+
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;
