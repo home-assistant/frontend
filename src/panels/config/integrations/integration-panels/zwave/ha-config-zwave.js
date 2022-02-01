@@ -12,6 +12,7 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import { sortStatesByName } from "../../../../../common/entity/states_sort_by_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
@@ -41,6 +42,14 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <style include="iron-flex ha-style ha-form-style">
         app-toolbar {
           border-bottom: 1px solid var(--divider-color);
+        }
+
+        ha-alert {
+          display: block;
+          margin: 16px;
+        }
+        ha-alert a {
+          text-decoration: none;
         }
 
         .content {
@@ -100,6 +109,30 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <div main-title="">[[localize('component.zwave.title')]]</div>
           </app-toolbar>
         </app-header>
+
+        <ha-alert
+          alert-type="warning"
+          title="This integration will stop working soon"
+        >
+          This Z-Wave integration is deprecated and will no longer receive any
+          updates. The technical dependencies will render this integration
+          unusable in the near future. We strongly advise you to migrate to the
+          new
+          <a
+            href="https://www.home-assistant.io/integrations/zwave_js"
+            target="_blank"
+            rel="noreferrer"
+            >Z-Wave JS integration</a
+          >.
+          <a
+            slot="action"
+            href="https://alerts.home-assistant.io/#zwave.markdown"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <mwc-button>learn more</mwc-button>
+          </a>
+        </ha-alert>
 
         <ha-config-section is-wide="[[isWide]]">
           <ha-card
