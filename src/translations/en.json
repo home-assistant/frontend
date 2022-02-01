@@ -1519,7 +1519,10 @@
             "duplicate_automation": "Duplicate automation",
             "duplicate": "Duplicate",
             "headers": {
-              "name": "Name"
+              "toggle": "Enable/disable",
+              "name": "Name",
+              "trigger": "Trigger",
+              "actions": "Actions"
             }
           },
           "dialog_new": {
