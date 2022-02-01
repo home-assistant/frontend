@@ -295,6 +295,7 @@ export class HaDataTable extends LitElement {
               };
               return html`
                 <div
+                  aria-label=${column.ariaLabel}
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({
@@ -322,7 +323,7 @@ export class HaDataTable extends LitElement {
                         ></ha-svg-icon>
                       `
                     : ""}
-                  <span aria-label=${column.ariaLabel}>${column.title}</span>
+                  <span>${column.title}</span>
                 </div>
               `;
             })}
