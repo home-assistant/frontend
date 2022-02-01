@@ -70,7 +70,7 @@ export interface DataTableSortColumnData {
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
-  ariaLabel: TemplateResult | string;
+  ariaLabel?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
   template?: (data: any, row: T) => TemplateResult | string;
   width?: string;
