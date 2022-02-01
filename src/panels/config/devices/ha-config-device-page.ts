@@ -296,6 +296,10 @@ export class HaConfigDevicePage extends LitElement {
           <ha-alert alert-type="warning">
             ${this.hass.localize(
               "ui.panel.config.devices.enabled_cause",
+              "type",
+              this.hass.localize(
+                `ui.panel.config.devices.type.${device.entry_type || "device"}`
+              ),
               "cause",
               this.hass.localize(
                 `ui.panel.config.devices.disabled_by.${device.disabled_by}`
@@ -485,17 +489,29 @@ export class HaConfigDevicePage extends LitElement {
                     <ha-card>
                       <h1 class="card-header">
                         ${this.hass.localize(
-                          "ui.panel.config.devices.automation.automations"
+                          "ui.panel.config.devices.automation.automations_heading"
                         )}
                         <ha-icon-button
                           @click=${this._showAutomationDialog}
                           .disabled=${device.disabled_by}
                           .label=${device.disabled_by
                             ? this.hass.localize(
-                                "ui.panel.config.devices.automation.create_disabled"
+                                "ui.panel.config.devices.automation.create_disabled",
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
+                                )
                               )
                             : this.hass.localize(
-                                "ui.panel.config.devices.automation.create"
+                                "ui.panel.config.devices.automation.create",
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
+                                )
                               )}
                           .path=${mdiPlusCircle}
                         ></ha-icon-button>
@@ -547,6 +563,12 @@ export class HaConfigDevicePage extends LitElement {
                                 "name",
                                 this.hass.localize(
                                   "ui.panel.config.devices.automation.automations"
+                                ),
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
                                 )
                               )}
                             </div>
@@ -561,7 +583,7 @@ export class HaConfigDevicePage extends LitElement {
                     <ha-card>
                       <h1 class="card-header">
                         ${this.hass.localize(
-                          "ui.panel.config.devices.scene.scenes"
+                          "ui.panel.config.devices.scene.scenes_heading"
                         )}
 
                         <ha-icon-button
@@ -569,10 +591,22 @@ export class HaConfigDevicePage extends LitElement {
                           .disabled=${device.disabled_by}
                           .label=${device.disabled_by
                             ? this.hass.localize(
-                                "ui.panel.config.devices.scene.create_disabled"
+                                "ui.panel.config.devices.scene.create_disabled",
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
+                                )
                               )
                             : this.hass.localize(
-                                "ui.panel.config.devices.scene.create"
+                                "ui.panel.config.devices.scene.create",
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
+                                )
                               )}
                           .path=${mdiPlusCircle}
                         ></ha-icon-button>
@@ -627,6 +661,12 @@ export class HaConfigDevicePage extends LitElement {
                                 "name",
                                 this.hass.localize(
                                   "ui.panel.config.devices.scene.scenes"
+                                ),
+                                "type",
+                                this.hass.localize(
+                                  `ui.panel.config.devices.type.${
+                                    device.entry_type || "device"
+                                  }`
                                 )
                               )}
                             </div>
@@ -641,17 +681,29 @@ export class HaConfigDevicePage extends LitElement {
                       <ha-card>
                         <h1 class="card-header">
                           ${this.hass.localize(
-                            "ui.panel.config.devices.script.scripts"
+                            "ui.panel.config.devices.script.scripts_heading"
                           )}
                           <ha-icon-button
                             @click=${this._showScriptDialog}
                             .disabled=${device.disabled_by}
                             .label=${device.disabled_by
                               ? this.hass.localize(
-                                  "ui.panel.config.devices.script.create_disabled"
+                                  "ui.panel.config.devices.script.create_disabled",
+                                  "type",
+                                  this.hass.localize(
+                                    `ui.panel.config.devices.type.${
+                                      device.entry_type || "device"
+                                    }`
+                                  )
                                 )
                               : this.hass.localize(
-                                  "ui.panel.config.devices.script.create"
+                                  "ui.panel.config.devices.script.create",
+                                  "type",
+                                  this.hass.localize(
+                                    `ui.panel.config.devices.type.${
+                                      device.entry_type || "device"
+                                    }`
+                                  )
                                 )}
                             .path=${mdiPlusCircle}
                           ></ha-icon-button>
@@ -685,6 +737,12 @@ export class HaConfigDevicePage extends LitElement {
                                   "name",
                                   this.hass.localize(
                                     "ui.panel.config.devices.script.scripts"
+                                  ),
+                                  "type",
+                                  this.hass.localize(
+                                    `ui.panel.config.devices.type.${
+                                      device.entry_type || "device"
+                                    }`
                                   )
                                 )}
                               </div>
@@ -1065,6 +1123,7 @@ export class HaConfigDevicePage extends LitElement {
           align-self: center;
           align-items: center;
           display: flex;
+          white-space: nowrap;
         }
 
         .column > *:not(:first-child) {

@@ -30,7 +30,6 @@ import { debounce } from "../../common/util/debounce";
 import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
-  browseLocalMediaPlayer,
   browseMediaPlayer,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
@@ -50,6 +49,7 @@ import "../ha-circular-progress";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-fab";
+import { browseLocalMediaPlayer } from "../../data/media_source";
 
 declare global {
   interface HASSDomEvents {
@@ -417,6 +417,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!changedProps.has("navigateIds")) {
       return;
     }
+
+    this._setError(undefined);
+
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;

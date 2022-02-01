@@ -82,12 +82,26 @@ class DialogDeviceRegistryDetail extends LitElement {
               </ha-switch>
               <div>
                 <div>
-                  ${this.hass.localize("ui.panel.config.devices.enabled_label")}
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.enabled_label",
+                    "type",
+                    this.hass.localize(
+                      `ui.panel.config.devices.type.${
+                        device.entry_type || "device"
+                      }`
+                    )
+                  )}
                 </div>
                 <div class="secondary">
                   ${this._disabledBy && this._disabledBy !== "user"
                     ? this.hass.localize(
                         "ui.panel.config.devices.enabled_cause",
+                        "type",
+                        this.hass.localize(
+                          `ui.panel.config.devices.type.${
+                            device.entry_type || "device"
+                          }`
+                        ),
                         "cause",
                         this.hass.localize(
                           `config_entry.disabled_by.${this._disabledBy}`
