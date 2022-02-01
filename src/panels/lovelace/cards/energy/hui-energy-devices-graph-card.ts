@@ -170,6 +170,21 @@ export class HuiEnergyDevicesGraphCard
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
 
+    const startMinHour = addHours(energyData.start, -1);
+
+    Object.values(this._data).forEach((stat) => {
+      // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
+      if (stat.length && new Date(stat[0].start) > startMinHour) {
+        stat.unshift({
+          ...stat[0],
+          start: startMinHour.toISOString(),
+          end: startMinHour.toISOString(),
+          sum: 0,
+          state: 0,
+        });
+      }
+    });
+
     const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];
     const borderColor: string[] = [];
     const backgroundColor: string[] = [];

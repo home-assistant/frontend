@@ -1958,10 +1958,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/reactive-element@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@lit/reactive-element@npm:1.0.1"
-  checksum: 82f8eb195acb766413fa37dafab8dc853547e5fbb901318d9911b3f9410a15ceea37c9a4b0954ab37710e91140af243148af9f72ec3bd14fe71e1d03faaaad7a
+"@lit/reactive-element@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@lit/reactive-element@npm:1.2.1"
+  checksum: 58f1b62c54b1899180b11cd44009ee91ac35099f9016259d3b9cc2f969fc920ab7e7ec32a816986ce89a27c632e25568542c93fdfed6730c19c850f7db0ba4cf
   languageName: node
   linkType: hard
 
@@ -9187,7 +9187,7 @@ fsevents@^1.2.7:
     leaflet: ^1.7.1
     leaflet-draw: ^1.0.4
     lint-staged: ^11.1.2
-    lit: ^2.0.2
+    lit: ^2.1.2
     lit-analyzer: ^1.2.1
     lit-vaadin-helpers: ^0.2.1
     lodash.template: ^4.5.0
@@ -10776,22 +10776,22 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit-element@npm:3.0.1":
-  version: 3.0.1
-  resolution: "lit-element@npm:3.0.1"
+"lit-element@npm:3.1.2":
+  version: 3.1.2
+  resolution: "lit-element@npm:3.1.2"
   dependencies:
-    "@lit/reactive-element": ^1.0.0
-    lit-html: ^2.0.0
-  checksum: 3735cd1b96efb44f1ecdcb07406604d7c6feeab07f81cfc904a0f9ab806fab1211e8bf68827513b12e12e61448e3cd6508664d433abd3f0c5c4408b0a6b2d7a6
+    "@lit/reactive-element": ^1.1.0
+    lit-html: ^2.1.0
+  checksum: 56ae568369af7c51cfe7187136ffb0782308ed3a12aa664085bd6761ff89fb60d3ac2ef286ce15154a2eb179d89f8655f7adaa18b8c083091c03dc75dd2ebf16
   languageName: node
   linkType: hard
 
-"lit-html@npm:2.0.1":
-  version: 2.0.1
-  resolution: "lit-html@npm:2.0.1"
+"lit-html@npm:2.1.2":
+  version: 2.1.2
+  resolution: "lit-html@npm:2.1.2"
   dependencies:
     "@types/trusted-types": ^2.0.2
-  checksum: 7ee9e909ec59009539d5b2d7bd07ceb6e182ed5c6535f36da5265dd2f5dc39f9e5f445e8272953a26948ff5724cf110836c792c439883527a2a3b46ecdbbb395
+  checksum: 0c87d83b3577dbb0a2c50743296b6600a6872eac2f23b48da7ba3e604b8c72a8b0e1e48cfe0e00dd6f4ca921ab57f97e20709756f2115077478ffb05efa6cea0
   languageName: node
   linkType: hard
 
@@ -10804,14 +10804,14 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lit@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "lit@npm:2.0.2"
+"lit@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "lit@npm:2.1.2"
   dependencies:
-    "@lit/reactive-element": ^1.0.0
-    lit-element: ^3.0.0
-    lit-html: ^2.0.0
-  checksum: 52a04b25164da1683c7295b305087794f175165cd1561e03f0c50ae998823f0e26101c82add05dea773e35472fbe3ed84486a4685294897f588d126fe8419e05
+    "@lit/reactive-element": ^1.1.0
+    lit-element: ^3.1.0
+    lit-html: ^2.1.0
+  checksum: dc3d6f30d508e48ad665a5777383c26055ae6514a7bd6a5745ac75cfeeeff8db49aa3b0f32db1a19e43bd7eec2bccd7db8523d5ed445ca0035fe37fddd9fb646
   languageName: node
   linkType: hard
 

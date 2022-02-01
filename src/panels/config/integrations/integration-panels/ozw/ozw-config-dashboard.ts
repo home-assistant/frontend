@@ -21,6 +21,7 @@ import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import "../../../../../components/ha-alert";
 
 export const ozwTabs: PageNavigation[] = [];
 
@@ -64,6 +65,30 @@ class OZWConfigDashboard extends LitElement {
         .tabs=${ozwTabs}
         back-path="/config/integrations"
       >
+        <ha-alert
+          alert-type="warning"
+          title="This integration will stop working soon"
+        >
+          The OpenZWave integration is deprecated and will no longer receive any
+          updates. The technical dependencies will render this integration
+          unusable in the near future. We strongly advise you to migrate to the
+          new
+          <a
+            href="https://www.home-assistant.io/integrations/zwave_js"
+            target="_blank"
+            rel="noreferrer"
+            >Z-Wave JS integration</a
+          >.
+          <a
+            slot="action"
+            href="https://alerts.home-assistant.io/#ozw.markdown"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <mwc-button>learn more</mwc-button>
+          </a>
+        </ha-alert>
+
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.ozw.select_instance.header")}
@@ -161,6 +186,13 @@ class OZWConfigDashboard extends LitElement {
         }
         :host([narrow]) ha-config-section {
           margin-top: -20px;
+        }
+        ha-alert {
+          display: block;
+          margin: 16px;
+        }
+        ha-alert a {
+          text-decoration: none;
         }
         ha-card {
           overflow: hidden;

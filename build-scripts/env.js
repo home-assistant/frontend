@@ -26,11 +26,11 @@ module.exports = {
   },
   version() {
     const version = fs
-      .readFileSync(path.resolve(paths.polymer_dir, "setup.py"), "utf8")
-      .match(/\d{8}\.\d+/);
+      .readFileSync(path.resolve(paths.polymer_dir, "setup.cfg"), "utf8")
+      .match(/version\W+=\W(\d{8}\.\d)/);
     if (!version) {
       throw Error("Version not found");
     }
-    return version[0];
+    return version[1];
   },
 };
