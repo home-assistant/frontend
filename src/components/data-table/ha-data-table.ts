@@ -70,7 +70,7 @@ export interface DataTableSortColumnData {
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
-  ariaLabel?: TemplateResult | string;
+  label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
   template?: (data: any, row: T) => TemplateResult | string;
   width?: string;
@@ -295,7 +295,7 @@ export class HaDataTable extends LitElement {
               };
               return html`
                 <div
-                  aria-label=${column.ariaLabel}
+                  aria-label=${column.label}
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({

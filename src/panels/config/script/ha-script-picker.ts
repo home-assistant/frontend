@@ -69,9 +69,7 @@ class HaScriptPicker extends LitElement {
     const columns: DataTableColumnContainer = {
       activate: {
         title: "",
-        ariaLabel: this.hass.localize(
-          "ui.panel.config.script.picker.run_script"
-        ),
+        label: this.hass.localize("ui.panel.config.script.picker.run_script"),
         type: "icon-button",
         template: (_toggle, script) =>
           html`
@@ -87,7 +85,7 @@ class HaScriptPicker extends LitElement {
       },
       icon: {
         title: "",
-        ariaLabel: this.hass.localize(
+        label: this.hass.localize(
           "ui.panel.config.script.picker.headers.state"
         ),
         type: "icon",
@@ -130,7 +128,7 @@ class HaScriptPicker extends LitElement {
     }
     columns.info = {
       title: "",
-      ariaLabel: this.hass.localize("ui.panel.config.script.picker.show_info"),
+      label: this.hass.localize("ui.panel.config.script.picker.show_info"),
       type: "icon-button",
       template: (_info, script) => html`
         <ha-icon-button
@@ -145,7 +143,7 @@ class HaScriptPicker extends LitElement {
     };
     columns.trace = {
       title: "",
-      ariaLabel: this.hass.localize("ui.panel.config.script.picker.dev_script"),
+      label: this.hass.localize("ui.panel.config.script.picker.dev_script"),
       type: "icon-button",
       template: (_info, script: any) => html`
         <a href="/config/script/trace/${script.entity_id}">
@@ -160,9 +158,7 @@ class HaScriptPicker extends LitElement {
     };
     columns.edit = {
       title: "",
-      ariaLabel: this.hass.localize(
-        "ui.panel.config.script.picker.edit_script"
-      ),
+      label: this.hass.localize("ui.panel.config.script.picker.edit_script"),
       type: "icon-button",
       template: (_info, script: any) => html`
         <a href="/config/script/edit/${script.entity_id}">
