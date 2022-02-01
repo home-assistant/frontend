@@ -169,7 +169,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       icon: {
         title: "",
         ariaLabel: this.hass.localize(
-          "ui.panel.config.entities.picker.headers.icon"
+          "ui.panel.config.entities.picker.headers.state_icon"
         ),
         type: "icon",
         template: (_, entry: EntityRow) => html`

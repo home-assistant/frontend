@@ -2339,7 +2339,7 @@
               "ok": "Ok"
             },
             "headers": {
-              "icon": "Icon",
+              "state_icon": "State icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "integration": "Integration",
