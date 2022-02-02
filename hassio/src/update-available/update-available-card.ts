@@ -33,8 +33,12 @@ import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
-import { updateOS } from "../../../src/data/hassio/host";
-import { updateSupervisor } from "../../../src/data/hassio/supervisor";
+import { fetchHassioHassOsInfo, updateOS } from "../../../src/data/hassio/host";
+import {
+  fetchHassioHomeAssistantInfo,
+  fetchHassioSupervisorInfo,
+  updateSupervisor,
+} from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -212,11 +216,22 @@ class UpdateAvailableCard extends LitElement {
       : "addon";
     this._updateType = updateType as updateType;
 
-    if (updateType === "addon") {
-      if (!this.addonSlug) {
-        this.addonSlug = pathPart;
-      }
-      this._loadAddonData();
+    switch (updateType) {
+      case "addon":
+        if (!this.addonSlug) {
+          this.addonSlug = pathPart;
+        }
+        this._loadAddonData();
+        break;
+      case "core":
+        this._loadCoreData();
+        break;
+      case "supervisor":
+        this._loadSupervisorData();
+        break;
+      case "os":
+        this._loadOsData();
+        break;
     }
   }
 
@@ -305,6 +320,42 @@ class UpdateAvailableCard extends LitElement {
           }
         );
       }
+    }
+  }
+
+  private async _loadSupervisorData() {
+    try {
+      const supervisor = await fetchHassioSupervisorInfo(this.hass);
+      fireEvent(this, "supervisor-update", { supervisor });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this._updateType,
+        text: extractApiErrorMessage(err),
+      });
+    }
+  }
+
+  private async _loadCoreData() {
+    try {
+      const core = await fetchHassioHomeAssistantInfo(this.hass);
+      fireEvent(this, "supervisor-update", { core });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this._updateType,
+        text: extractApiErrorMessage(err),
+      });
+    }
+  }
+
+  private async _loadOsData() {
+    try {
+      const os = await fetchHassioHassOsInfo(this.hass);
+      fireEvent(this, "supervisor-update", { os });
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this._updateType,
+        text: extractApiErrorMessage(err),
+      });
     }
   }
 
