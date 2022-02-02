@@ -1071,8 +1071,10 @@
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
           "headers": {
+            "icon": "Icon",
             "name": "Name",
-            "last_scanned": "Last scanned"
+            "last_scanned": "Last scanned",
+            "write": "Write"
           },
           "detail": {
             "new_tag": "New tag",
