@@ -2568,7 +2568,8 @@
               "group": "Group",
               "system": "System",
               "is_active": "Active",
-              "local": "Local"
+              "local": "Local",
+              "icon": "Icon"
             },
             "add_user": "Add user"
           },
