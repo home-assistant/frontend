@@ -65,7 +65,9 @@ class HassioHardwareDialog extends LitElement {
         scrimClickAction
         hideActions
         @closed=${this.closeDialog}
-        .heading=${true}
+        .heading=${this._dialogParams.supervisor.localize(
+          "dialog.hardware.title"
+        )}
       >
         <div class="header" slot="heading">
           <h2>
