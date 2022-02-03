@@ -176,7 +176,8 @@ export class HaCodeEditor extends ReactiveElement {
     const options = Object.keys(states).map((key) => ({
       type: "variable",
       label: key,
-      info: states[key].state,
+      detail: states[key].attributes.friendly_name,
+      info: `State: ${states[key].state}`,
     }));
 
     return options;
