@@ -39,6 +39,7 @@ import {
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import { SceneEntities, showSceneEditor } from "../../../data/scene";
 import { findRelated, RelatedResult } from "../../../data/search";
 import {
@@ -212,34 +213,53 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     let links = await Promise.all(
-      this._integrations(device, this.entries)
-        .filter((entry) => entry.state === "loaded")
-        .map(async (entry) => {
-          const info = await fetchDiagnosticHandler(this.hass, entry.domain);
+      this._integrations(device, this.entries).map(async (entry) => {
+        if (entry.state !== "loaded") {
+          return false;
+        }
+        const info = await fetchDiagnosticHandler(this.hass, entry.domain);
 
-          if (!info.handlers.device && !info.handlers.config_entry) {
-            return "";
-          }
-          const link = info.handlers.device
+        if (!info.handlers.device && !info.handlers.config_entry) {
+          return false;
+        }
+        return {
+          link: info.handlers.device
             ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
-            : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id);
-          return html`
-            <a href=${link} @click=${this._signUrl}>
-              <mwc-button>
-                ${this.hass.localize(
-                  `ui.panel.config.devices.download_diagnostics`
-                )}
-              </mwc-button>
-            </a>
-          `;
-        })
+            : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
+          domain: entry.domain,
+        };
+      })
     );
+
+    links = links.filter(Boolean);
+
     if (this._diagnosticDownloadLinks !== requestId) {
       return;
     }
-    links = links.filter(Boolean);
     if (links.length > 0) {
-      this._diagnosticDownloadLinks = links;
+      this._diagnosticDownloadLinks = (
+        links as { link: string; domain: string }[]
+      ).map(
+        (link) => html`
+          <a href=${link.link} @click=${this._signUrl}>
+            <mwc-button>
+              ${links.length > 1
+                ? this.hass.localize(
+                    `ui.panel.config.devices.download_diagnostics_integration`,
+                    {
+                      integration: domainToName(
+                        this.hass.localize,
+                        link.domain
+                      ),
+                    }
+                  )
+                : this.hass.localize(
+                    `ui.panel.config.devices.download_diagnostics`
+                  )}
+            </mwc-button>
+          </a>
+        `
+      );
     }
   }
 
