@@ -26,6 +26,7 @@ export interface HaFormBaseSchema {
 }
 
 export interface HaFormSelector extends HaFormBaseSchema {
+  type?: never;
   selector: Selector;
 }
 
