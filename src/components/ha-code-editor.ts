@@ -38,7 +38,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public readOnly = false;
 
-  @property({ type: Boolean, attribute: "autocomplete-entities" }) public autocompleteEntities = false;
+  @property({ type: Boolean, attribute: "autocomplete-entities" })
+  public autocompleteEntities = false;
 
   @property() public error = false;
 
@@ -150,7 +151,7 @@ export class HaCodeEditor extends ReactiveElement {
       ),
     ];
 
-    if (!this.readOnly && this.autocompleteEntites && this.hass) {
+    if (!this.readOnly && this.autocompleteEntities && this.hass) {
       extensions.push(
         this._loadedCodeMirror.autocompletion({
           override: [this._entityCompletions.bind(this)],
