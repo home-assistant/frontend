@@ -89,7 +89,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     if (this.data === value) {
       return;
     }
-    if (value === "" && this.schema.optional) {
+    if (value === "" && !this.schema.required) {
       value = undefined;
     }
     fireEvent(this, "value-changed", {

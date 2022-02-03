@@ -29,7 +29,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.schema.optional && this.schema.options!.length < 6) {
+    if (this.schema.required && this.schema.options!.length < 6) {
       return html`
         <div>
           ${this.label}
@@ -59,7 +59,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
-        ${this.schema.optional
+        ${!this.schema.required
           ? html`<mwc-list-item value=""></mwc-list-item>`
           : ""}
         ${this.schema.options!.map(
