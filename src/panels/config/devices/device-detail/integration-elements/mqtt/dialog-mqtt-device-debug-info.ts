@@ -15,7 +15,8 @@ import {
 import { haStyleDialog } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
-import "./mqtt-messages";
+import "./mqtt-rx-messages";
+import "./mqtt-tx-messages";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 
 @customElement("dialog-mqtt-device-debug-info")

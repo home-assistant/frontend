@@ -1,12 +1,12 @@
 import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
 import { MQTTMessage } from "../../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../../types";
 
-class MQTTMessages extends LitElement {
+export abstract class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
   @property() public messages!: MQTTMessage[];
@@ -25,7 +25,7 @@ class MQTTMessages extends LitElement {
 
   @state() private _showTopic = false;
 
-  direction: string = "<direction>"
+  abstract readonly direction: string;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -168,21 +168,5 @@ class MQTTMessages extends LitElement {
         font-family: var(--code-font-family, monospace);
       }
     `;
-  }
-}
-
-@customElement("mqtt-rx-messages")
-class MQTTRxMessages extends MQTTMessages {
-  direction: string = "Received"
-}
-@customElement("mqtt-tx-messages")
-class MQTTTxMessages extends MQTTMessages {
-  direction: string = "Transmitted"
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "mqtt-rx-messages": MQTTRxMessages;
-    "mqtt-tx-messages": MQTTTxMessages;
   }
 }
