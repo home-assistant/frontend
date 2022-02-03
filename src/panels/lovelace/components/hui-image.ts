@@ -104,6 +104,8 @@ export class HuiImage extends LitElement {
       if (this._shouldStartCameraUpdates(oldHass)) {
         this._startIntersectionObserverOrUpdates();
       } else if (!this.hass!.connected) {
+        this._cameraImageSrc = undefined;
+        this._loadedImageSrc = undefined;
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
       }
