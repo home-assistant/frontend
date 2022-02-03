@@ -173,7 +173,7 @@ export class HuiDialogEditView extends LitElement {
         scrimClickAction
         escapeKeyAction
         @closed=${this.closeDialog}
-        .heading=${true}
+        .heading=${this._viewConfigTitle}
       >
         <div slot="heading">
           <h2>${this._viewConfigTitle}</h2>

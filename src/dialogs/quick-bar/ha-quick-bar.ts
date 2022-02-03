@@ -139,7 +139,7 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-dialog
-        .heading=${true}
+        heading="Quick Bar"
         open
         @opened=${this._handleOpened}
         @closed=${this.closeDialog}

@@ -71,7 +71,7 @@ class HassioBackupDialog
         open
         scrimClickAction
         @closed=${this.closeDialog}
-        .heading=${true}
+        .heading=${this._backup.name}
       >
         <div slot="heading">
           <ha-header-bar>
