@@ -201,6 +201,10 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _renderDiagnosticButtons(requestId: number): Promise<void> {
+    if (!isComponentLoaded(this.hass, "diagnostics")) {
+      return;
+    }
+
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
