@@ -47,7 +47,9 @@ export class DialogHassioBackupUpload
         scrimClickAction
         escapeKeyAction
         hideActions
-        .heading=${true}
+        .heading=${this.hass?.localize(
+          "ui.panel.page-onboarding.restore.upload_backup"
+        ) || "Upload backup"}
         @closed=${this.closeDialog}
       >
         <div slot="heading">

@@ -176,7 +176,7 @@ export class HuiDialogEditCard
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
-        .heading=${true}
+        .heading=${heading}
       >
         <div slot="heading">
           <ha-header-bar>

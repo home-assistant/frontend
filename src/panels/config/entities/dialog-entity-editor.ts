@@ -74,7 +74,9 @@ export class DialogEntityEditor extends LitElement {
     return html`
       <ha-dialog
         open
-        .heading=${true}
+        .heading=${stateObj
+          ? computeStateName(stateObj)
+          : entry?.name || entityId}
         hideActions
         @closed=${this.closeDialog}
         @close-dialog=${this.closeDialog}

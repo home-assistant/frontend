@@ -105,7 +105,7 @@ export class MoreInfoDialog extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${true}
+        .heading=${name}
         hideActions
         data-domain=${domain}
       >

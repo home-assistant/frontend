@@ -65,28 +65,26 @@ export class HuiCreateDialogCard
       return html``;
     }
 
+    const title = this._viewConfig.title
+      ? this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
+          "name",
+          `"${this._viewConfig.title}"`
+        )
+      : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
+
     return html`
       <ha-dialog
         open
         scrimClickAction
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
-        .heading=${true}
+        .heading=${title}
         class=${classMap({ table: this._currTabIndex === 1 })}
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this._viewConfig.title
-                ? this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-                    "name",
-                    `"${this._viewConfig.title}"`
-                  )
-                : this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.pick_card"
-                  )}
-            </span>
+            <span slot="title"> ${title} </span>
           </ha-header-bar>
           <mwc-tab-bar
             .activeIndex=${this._currTabIndex}
