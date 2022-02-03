@@ -231,9 +231,7 @@ export class QuickBar extends LitElement {
                 })}
               </mwc-list>
             `}
-        ${!this._narrow && this._hint
-          ? html`<div class="hint">${this._hint}</div>`
-          : ""}
+        ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
       </ha-dialog>
     `;
   }
@@ -715,6 +713,12 @@ export class QuickBar extends LitElement {
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-textfield {
             --mdc-shape-small: 0;
+          }
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 690px) {
+          .hint {
+            display: none;
           }
         }
 
