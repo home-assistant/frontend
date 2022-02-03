@@ -9,6 +9,10 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property() public filter = "";
+
+  @state() private _isLogLoaded = false;
+
   @state() private _errorHTML!: TemplateResult[] | string;
 
   protected render(): TemplateResult {
@@ -43,6 +47,14 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+
+    if (changedProps.has("filter") && this._isLogLoaded) {
+      this._refreshErrorLog();
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       .error-log-intro {
@@ -55,10 +67,14 @@ class ErrorLogCard extends LitElement {
       }
 
       .error-log {
-        @apply --paper-font-code)
-          clear: both;
+        font-family: var(--code-font-family, monospace);
+        clear: both;
         text-align: left;
         padding-top: 12px;
+      }
+
+      .error-log > div:hover {
+        background-color: var(--secondary-background-color);
       }
 
       .error {
@@ -74,24 +90,33 @@ class ErrorLogCard extends LitElement {
   private async _refreshErrorLog(): Promise<void> {
     this._errorHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     const log = await fetchErrorLog(this.hass!);
+    this._isLogLoaded = true;
 
     this._errorHTML = log
-      ? log.split("\n").map((entry) => {
-          if (entry.includes("INFO"))
-            return html`<div class="info">${entry}</div>`;
+      ? log
+          .split("\n")
+          .filter((entry) => {
+            if (this.filter) {
+              return entry.toLowerCase().includes(this.filter.toLowerCase());
+            }
+            return entry;
+          })
+          .map((entry) => {
+            if (entry.includes("INFO"))
+              return html`<div class="info">${entry}</div>`;
 
-          if (entry.includes("WARNING"))
-            return html`<div class="warning">${entry}</div>`;
+            if (entry.includes("WARNING"))
+              return html`<div class="warning">${entry}</div>`;
 
-          if (
-            entry.includes("ERROR") ||
-            entry.includes("FATAL") ||
-            entry.includes("CRITICAL")
-          )
-            return html`<div class="error">${entry}</div>`;
+            if (
+              entry.includes("ERROR") ||
+              entry.includes("FATAL") ||
+              entry.includes("CRITICAL")
+            )
+              return html`<div class="error">${entry}</div>`;
 
-          return html`<div>${entry}</div>`;
-        })
+            return html`<div>${entry}</div>`;
+          })
       : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 }
