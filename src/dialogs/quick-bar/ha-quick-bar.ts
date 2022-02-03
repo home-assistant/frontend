@@ -139,9 +139,7 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-dialog
-        .heading=${this.hass.localize(
-              "ui.dialogs.quick-bar.title"
-            )}
+        .heading=${this.hass.localize("ui.dialogs.quick-bar.title")}
         open
         @opened=${this._handleOpened}
         @closed=${this.closeDialog}
