@@ -162,19 +162,42 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 (topic) => html`
                   <li>
                     <code>${topic.topic}</code>
-                    <mqtt-messages
+                    <mqtt-rx-messages
                       .hass=${this.hass}
                       .messages=${topic.messages}
                       .showDeserialized=${this._showDeserialized}
                       .showAsYaml=${this._showAsYaml}
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
-                        "ui.dialogs.mqtt_device_debug_info.recent_messages",
+                        "ui.dialogs.mqtt_device_debug_info.recent_rx_messages",
                         "n",
                         topic.messages.length
                       )}
                     >
-                    </mqtt-messages>
+                    </mqtt-rx-messages>
+                  </li>
+                `
+              )}
+            </ul>
+            Transmitted messages:
+            <ul>
+              ${entity.transmitted.map(
+                (topic) => html`
+                  <li>
+                    <code>${topic.topic}</code>
+                    <mqtt-tx-messages
+                      .hass=${this.hass}
+                      .messages=${topic.messages}
+                      .showDeserialized=${this._showDeserialized}
+                      .showAsYaml=${this._showAsYaml}
+                      .subscribedTopic=${topic.topic}
+                      .summary=${this.hass!.localize(
+                        "ui.dialogs.mqtt_device_debug_info.recent_tx_messages",
+                        "n",
+                        topic.messages.length
+                      )}
+                    >
+                    </mqtt-tx-messages>
                   </li>
                 `
               )}

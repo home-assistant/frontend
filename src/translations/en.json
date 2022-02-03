@@ -885,7 +885,8 @@
         "no_entities": "No entities",
         "no_triggers": "No triggers",
         "payload_display": "Payload display",
-        "recent_messages": "{n} most recently received message(s)",
+        "recent_rx_messages": "{n} most recently received message(s)",
+        "recent_tx_messages": "{n} most recently transmitted message(s)",
         "show_as_yaml": "Show as YAML",
         "triggers": "Triggers"
       }

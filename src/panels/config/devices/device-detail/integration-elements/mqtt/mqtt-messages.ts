@@ -6,7 +6,6 @@ import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_
 import { MQTTMessage } from "../../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../../types";
 
-@customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
@@ -25,6 +24,8 @@ class MQTTMessages extends LitElement {
   @state() private _payloadsJson = new WeakMap();
 
   @state() private _showTopic = false;
+
+  direction: string = "<direction>"
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -50,7 +51,7 @@ class MQTTMessages extends LitElement {
                 (message) => html`
                   <li class="message">
                     <div class="time">
-                      Received
+                      ${this.direction}
                       ${formatTimeWithSeconds(
                         new Date(message.time),
                         this.hass.locale
@@ -170,8 +171,18 @@ class MQTTMessages extends LitElement {
   }
 }
 
+@customElement("mqtt-rx-messages")
+class MQTTRxMessages extends MQTTMessages {
+  direction: string = "Received"
+}
+@customElement("mqtt-tx-messages")
+class MQTTTxMessages extends MQTTMessages {
+  direction: string = "Transmitted"
+}
+
 declare global {
   interface HTMLElementTagNameMap {
-    "mqtt-messages": MQTTMessages;
+    "mqtt-rx-messages": MQTTRxMessages;
+    "mqtt-tx-messages": MQTTTxMessages;
   }
 }
