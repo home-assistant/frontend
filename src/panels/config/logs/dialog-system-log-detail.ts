@@ -69,8 +69,18 @@ class DialogSystemLogDetail extends LitElement {
         // Custom components with our official docs should not link to our docs
         !this._manifest.documentation.includes("://www.home-assistant.io"));
 
+    const title = this.hass.localize(
+      "ui.panel.config.logs.details",
+      "level",
+      html`<span class=${item.level.toLowerCase()}
+        >${this.hass.localize(
+          "ui.panel.config.logs.level." + item.level.toLowerCase()
+        )}</span
+      >`
+    );
+
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${true}>
+      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
         <ha-header-bar slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -78,17 +88,7 @@ class DialogSystemLogDetail extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">
-            ${this.hass.localize(
-              "ui.panel.config.logs.details",
-              "level",
-              html`<span class=${item.level.toLowerCase()}
-                >${this.hass.localize(
-                  "ui.panel.config.logs.level." + item.level.toLowerCase()
-                )}</span
-              >`
-            )}
-          </span>
+          <span slot="title"> ${title} </span>
           <ha-icon-button
             id="copy"
             @click=${this._copyLog}

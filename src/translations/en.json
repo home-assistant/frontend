@@ -1344,6 +1344,8 @@
           "caption": "Logs",
           "description": "View the Home Assistant logs",
           "details": "Log Details ({level})",
+          "search": "Search logs",
+          "no_issues_search": "No issues found for search term ''{term}''",
           "load_full_log": "Load Full Home Assistant Log",
           "loading_log": "Loading error log…",
           "no_errors": "No errors have been reported",
@@ -2229,6 +2231,7 @@
           "open_configuration_url_device": "Visit device",
           "open_configuration_url_service": "Visit service",
           "download_diagnostics": "Download diagnostics",
+          "download_diagnostics_integration": "Download {integration} diagnostics",
           "type": {
             "device_heading": "Device",
             "device": "device",

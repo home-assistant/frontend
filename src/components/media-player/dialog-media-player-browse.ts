@@ -55,7 +55,11 @@ class DialogMediaPlayerBrowse extends LitElement {
         escapeKeyAction
         hideActions
         flexContent
-        .heading=${true}
+        .heading=${!this._currentItem
+          ? this.hass.localize(
+              "ui.components.media-browser.media-player-browser"
+            )
+          : this._currentItem.title}
         @closed=${this.closeDialog}
       >
         <ha-header-bar slot="heading">

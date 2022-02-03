@@ -94,7 +94,7 @@ export class DialogHassioNetwork
         open
         scrimClickAction
         escapeKeyAction
-        .heading=${true}
+        .heading=${this.supervisor.localize("dialog.network.title")}
         hideActions
         @closed=${this.closeDialog}
       >

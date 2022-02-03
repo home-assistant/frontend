@@ -82,7 +82,7 @@ async function processEvent(
   event: SupervisorEvent,
   key: string
 ) {
-  if (event.event !== "supervisor-update" || event.update_key !== key) {
+  if (event.event !== "supervisor_update" || event.update_key !== key) {
     return;
   }
 
