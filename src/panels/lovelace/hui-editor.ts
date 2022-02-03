@@ -91,7 +91,7 @@ class LovelaceFullConfigEditor extends LitElement {
           <ha-code-editor
             mode="yaml"
             autofocus
-            hasAutocomplete
+            autocomplete-entities
             .hass=${this.hass}
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
