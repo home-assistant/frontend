@@ -7,7 +7,7 @@ import type {
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { HassEntities } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
@@ -43,8 +43,6 @@ export class HaCodeEditor extends ReactiveElement {
   @property() public error = false;
 
   @state() private _value = "";
-
-  private _states: HassEntity[] | null = [];
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
@@ -153,7 +151,6 @@ export class HaCodeEditor extends ReactiveElement {
     ];
 
     if (!this.readOnly && this.hasAutocomplete) {
-      this._states = this._getStates(this.hass!.states);
       extensions.push(
         this._loadedCodeMirror.autocompletion({
           override: [this._entityCompletions.bind(this)],
@@ -172,19 +169,17 @@ export class HaCodeEditor extends ReactiveElement {
     });
   }
 
-  private _getStates = memoizeOne((states: HassEntities | null | undefined) => {
+  private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
       return [];
     }
-    const entityIds = Object.keys(states)
-      .sort()
-      .map((key) => states[key]);
+    const options = Object.keys(states).map((key) => ({
+      type: "variable",
+      label: key,
+      info: states[key].state,
+    }));
 
-    if (!entityIds.length) {
-      return null;
-    }
-
-    return entityIds;
+    return options;
   });
 
   private _entityCompletions(
@@ -193,25 +188,21 @@ export class HaCodeEditor extends ReactiveElement {
     const entityWord = context.matchBefore(/[a-z_]{3,}\./);
 
     if (
-      !this._states ||
-      !this._states.length ||
       !entityWord ||
       (entityWord.from === entityWord.to && !context.explicit)
     ) {
       return null;
     }
 
-    const options: Completion[] = this._states.map(
-      (entity_state: HassEntity) => ({
-        type: "variable",
-        label: entity_state.entity_id,
-        info: entity_state.state,
-      })
-    );
+    const states = this._getStates(this.hass!.states);
+
+    if (!states || !states.length) {
+      return null;
+    }
 
     return {
       from: Number(entityWord.from),
-      options,
+      options: states,
       span: /^\w*.\w*$/,
     };
   }
@@ -232,10 +223,9 @@ export class HaCodeEditor extends ReactiveElement {
     fireEvent(this, "value-changed", { value: this._value });
   }
 
-  // Only Lit 2.0 will use this
   static get styles(): CSSResultGroup {
     return css`
-      :host(.error-state) div.cm-wrap .cm-gutters {
+      :host(.error-state) .cm-gutters {
         border-color: var(--error-state-color, red);
       }
     `;
