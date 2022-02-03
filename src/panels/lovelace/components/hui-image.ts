@@ -106,6 +106,9 @@ export class HuiImage extends LitElement {
       } else if (!this.hass!.connected) {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
+        this._loadState = LoadState.Loading;
+        this._cameraImageSrc = undefined;
+        this._loadedImageSrc = undefined;
       }
     }
     if (changedProps.has("_imageVisible")) {
