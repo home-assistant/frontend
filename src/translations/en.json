@@ -2231,6 +2231,7 @@
           "open_configuration_url_device": "Visit device",
           "open_configuration_url_service": "Visit service",
           "download_diagnostics": "Download diagnostics",
+          "download_diagnostics_integration": "Download {integration} diagnostics",
           "type": {
             "device_heading": "Device",
             "device": "device",
