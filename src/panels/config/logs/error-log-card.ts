@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import "../../../components/ha-icon-button";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
@@ -96,14 +95,12 @@ class ErrorLogCard extends LitElement {
     this._errorHTML = log
       ? log
           .split("\n")
-          .filter(
-            memoizeOne((entry) => {
-              if (this.filter) {
-                return entry.toLowerCase().includes(this.filter.toLowerCase());
-              }
-              return entry;
-            })
-          )
+          .filter((entry) => {
+            if (this.filter) {
+              return entry.toLowerCase().includes(this.filter.toLowerCase());
+            }
+            return entry;
+          })
           .map((entry) => {
             if (entry.includes("INFO"))
               return html`<div class="info">${entry}</div>`;
