@@ -1,13 +1,13 @@
-import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import type {
+  Completion,
   CompletionContext,
   CompletionResult,
-  Completion,
 } from "@codemirror/autocomplete";
+import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { HassEntities } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { HassEntities } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
