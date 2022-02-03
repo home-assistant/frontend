@@ -1,5 +1,21 @@
 import { HassEntity } from "home-assistant-js-websocket";
 
+export const validFilter = (filter: any): boolean => {
+  if (typeof filter === "string") {
+    return true;
+  }
+
+  if (Array.isArray(filter)) {
+    return filter.every((f) => typeof f === "string");
+  }
+
+  if (typeof filter === "object") {
+    return !!filter.value;
+  }
+
+  return false;
+};
+
 export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
   const operator = filter.operator || "==";
   let value = filter.value ?? filter;
