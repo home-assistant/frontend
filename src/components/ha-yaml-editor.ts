@@ -62,7 +62,7 @@ export class HaYamlEditor extends LitElement {
         .hass=${this.hass}
         .value=${this._yaml}
         mode="yaml"
-        hasAutocomplete
+        autocomplete-entities
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
         dir="ltr"

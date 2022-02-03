@@ -32,13 +32,13 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property() public mode = "yaml";
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public readOnly = false;
 
-  @property({ type: Boolean }) public hasAutocomplete = false;
+  @property({ type: Boolean, attribute: "autocomplete-entities" }) public autocompleteEntities = false;
 
   @property() public error = false;
 
@@ -150,7 +150,7 @@ export class HaCodeEditor extends ReactiveElement {
       ),
     ];
 
-    if (!this.readOnly && this.hasAutocomplete) {
+    if (!this.readOnly && this.autocompleteEntites && this.hass) {
       extensions.push(
         this._loadedCodeMirror.autocompletion({
           override: [this._entityCompletions.bind(this)],
