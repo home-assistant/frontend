@@ -1,5 +1,5 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import {
+import type {
   CompletionContext,
   CompletionResult,
   Completion,
@@ -195,7 +195,8 @@ export class HaCodeEditor extends ReactiveElement {
     if (
       !this._states ||
       !this._states.length ||
-      (entityWord && entityWord.from === entityWord.to && !context.explicit)
+      !entityWord ||
+      (entityWord.from === entityWord.to && !context.explicit)
     ) {
       return null;
     }
@@ -209,8 +210,9 @@ export class HaCodeEditor extends ReactiveElement {
     );
 
     return {
-      from: Number(entityWord?.from),
+      from: Number(entityWord.from),
       options,
+      span: /^\w*.\w*$/,
     };
   }
 
