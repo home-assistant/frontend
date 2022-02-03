@@ -1,6 +1,5 @@
 // Compat needs to be first import
 import "../resources/compatibility";
-import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import "../resources/safari-14-attachshadow-patch";
 
 import { PolymerElement } from "@polymer/polymer";
@@ -15,8 +14,6 @@ import { baseEntrypointStyles } from "../resources/styles";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
-
-setCancelSyntheticClickEvents(false);
 
 declare global {
   interface Window {
@@ -50,7 +47,7 @@ function initialize(
 ) {
   const style = document.createElement("style");
 
-  style.innerHTML = `body { margin:0; }
+  style.innerHTML = `body { margin:0; } 
   @media (prefers-color-scheme: dark) {
     body {
       background-color: #111111;
