@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -107,17 +107,6 @@ class HaServicePicker extends LitElement {
     this.value = ev.detail.value;
     fireEvent(this, "change");
     fireEvent(this, "value-changed", { value: this.value });
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      ha-combo-box {
-        width: 100%;
-      }
-    `;
   }
 }
 

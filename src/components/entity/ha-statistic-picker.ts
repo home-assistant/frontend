@@ -3,8 +3,6 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
@@ -260,18 +258,6 @@ export class HaStatisticPicker extends LitElement {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        width: 200px;
-      }
-      ha-combo-box {
-        width: 100%;
-      }
-    `;
   }
 }
 

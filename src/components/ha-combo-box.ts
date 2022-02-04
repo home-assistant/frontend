@@ -135,6 +135,7 @@ export class HaComboBox extends LitElement {
           aria-label=${this.hass.localize("ui.components.combo-box.show")}
           class="toggle-button"
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+          @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
     `;
@@ -145,8 +146,20 @@ export class HaComboBox extends LitElement {
     fireEvent(this, "value-changed", { value: undefined });
   }
 
+  private _toggleOpen(ev: Event) {
+    if (this._opened) {
+      this._comboBox?.close();
+      ev.stopPropagation();
+    } else {
+      this._comboBox?.inputElement.focus();
+    }
+  }
+
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
+    // delay this so we can handle click event before setting _opened
+    setTimeout(() => {
+      this._opened = ev.detail.value;
+    }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
   }
@@ -169,7 +182,7 @@ export class HaComboBox extends LitElement {
     return css`
       :host {
         display: block;
-        width: 200px;
+        width: 100%;
         margin-top: 4px;
       }
       vaadin-combo-box-light {

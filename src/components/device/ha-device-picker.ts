@@ -1,8 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
@@ -308,18 +306,6 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        width: 200px;
-      }
-      ha-combo-box {
-        width: 100%;
-      }
-    `;
   }
 }
 
