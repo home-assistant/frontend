@@ -538,7 +538,11 @@ export class HuiEnergySourcesTableCard
               ${types.gas
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">Gas total</th>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.gas_total"
+                      )}
+                    </th>
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
