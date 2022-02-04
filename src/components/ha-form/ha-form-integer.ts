@@ -45,7 +45,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         <div>
           ${this.label}
           <div class="flex">
-            ${this.schema.optional
+            ${!this.schema.required
               ? html`
                   <ha-checkbox
                     @change=${this._handleCheckboxChange}
@@ -61,7 +61,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
               .disabled=${this.disabled ||
-              (this.data === undefined && this.schema.optional)}
+              (this.data === undefined && !this.schema.required)}
               @change=${this._valueChanged}
             ></ha-slider>
           </div>
@@ -100,7 +100,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       return this.data;
     }
 
-    if (this.schema.optional) {
+    if (!this.schema.required) {
       return this.schema.valueMin || 0;
     }
 
