@@ -29,7 +29,10 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
     // This polyfill is loaded in workers to support ES5, filter it out.
     latestBuild && require.resolve("proxy-polyfill/src/index.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
-    isHassioBuild && require.resolve("../../src/components/ha-icon.ts"),
+    isHassioBuild &&
+      require.resolve(
+        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
+      ),
   ].filter(Boolean);
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
