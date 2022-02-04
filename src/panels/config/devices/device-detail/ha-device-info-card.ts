@@ -55,10 +55,13 @@ export class HaDeviceCard extends LitElement {
                     "ui.panel.config.integrations.config_entry.via"
                   )}
                   <span class="hub"
-                    >${this._computeDeviceName(
-                      this.devices,
-                      this.device.via_device_id
-                    )}</span
+                    ><a
+                      href="/config/devices/device/${this.device.via_device_id}"
+                      >${this._computeDeviceName(
+                        this.devices,
+                        this.device.via_device_id
+                      )}</a
+                    ></span
                   >
                 </div>
               `
@@ -134,6 +137,10 @@ export class HaDeviceCard extends LitElement {
       .model {
         color: var(--secondary-text-color);
         word-wrap: break-word;
+      }
+      a {
+        text-decoration: underline;
+        color: var(--primary-color);
       }
     `;
   }
