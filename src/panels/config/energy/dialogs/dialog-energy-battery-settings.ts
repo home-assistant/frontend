@@ -127,6 +127,9 @@ export class DialogEnergyBatterySettings
         ha-dialog {
           --mdc-dialog-max-width: 430px;
         }
+        ha-statistic-picker {
+          width: 100%;
+        }
       `,
     ];
   }

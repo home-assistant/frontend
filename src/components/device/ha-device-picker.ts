@@ -1,18 +1,9 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list-item";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import memoizeOne from "memoize-one";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
-import { mdiCheck } from "@mdi/js";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
@@ -46,36 +37,12 @@ export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
-// eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<style>
-    paper-item {
-      padding: 0;
-      margin: -10px;
-      margin-left: 0;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      margin-right: -2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-item {
-      margin-left: 10px;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-item>
-    <paper-item-body two-line>
-      ${item.name}
-      <span secondary>${item.area}</span>
-    </paper-item-body>
-  </paper-item>`;
+const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
+  twoline
+>
+  <span>${item.name}</span>
+  <span slot="secondary">${item.area}</span>
+</mwc-list-item>`;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
@@ -334,19 +301,6 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      paper-input > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
   }
 }
 
