@@ -19,12 +19,15 @@ registerStyles(
       padding: 0;
     }
     :host([focused]:not([disabled])) {
+      background-color: rgba(0, 0, 0, 0.12);
+    }
+    :host([selected]:not([disabled])) {
       background-color: transparent;
       color: var(--mdc-theme-primary);
       --mdc-ripple-color: var(--mdc-theme-primary);
       --mdc-theme-text-primary-on-background: var(--mdc-theme-primary);
     }
-    :host([focused]:not([disabled])):before {
+    :host([selected]:not([disabled])):before {
       background-color: var(--mdc-theme-primary);
       opacity: 0.12;
       content: "";
@@ -33,6 +36,9 @@ registerStyles(
       left: 0;
       width: 100%;
       height: 100%;
+    }
+    :host([selected][focused]:not([disabled])):before {
+      opacity: 0.24;
     }
     :host(:hover:not([disabled])) {
       background-color: transparent;
