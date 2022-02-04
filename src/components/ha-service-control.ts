@@ -480,6 +480,9 @@ export class HaServiceControl extends LitElement {
         display: block;
         margin: var(--service-control-padding, 0 16px);
       }
+      ha-service-picker {
+        padding-top: 16px;
+      }
       ha-yaml-editor {
         padding: 16px 0;
       }

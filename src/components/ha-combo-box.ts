@@ -1,25 +1,59 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-textfield/mwc-textfield";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
+import type { ComboBoxLight } from "@vaadin/combo-box/vaadin-combo-box-light";
+import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
-// eslint-disable-next-line lit/prefer-static-styles
-const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
-    paper-item {
-      margin: -5px -10px;
+registerStyles(
+  "vaadin-combo-box-item",
+  css`
+    :host {
       padding: 0;
     }
-  </style>
-  <paper-item>${item}</paper-item>`;
+    :host([focused]:not([disabled])) {
+      background-color: rgba(0, 0, 0, 0.12);
+    }
+    :host([selected]:not([disabled])) {
+      background-color: transparent;
+      color: var(--mdc-theme-primary);
+      --mdc-ripple-color: var(--mdc-theme-primary);
+      --mdc-theme-text-primary-on-background: var(--mdc-theme-primary);
+    }
+    :host([selected]:not([disabled])):before {
+      background-color: var(--mdc-theme-primary);
+      opacity: 0.12;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    :host([selected][focused]:not([disabled])):before {
+      opacity: 0.24;
+    }
+    :host(:hover:not([disabled])) {
+      background-color: transparent;
+    }
+    [part="content"] {
+      width: 100%;
+    }
+    [part="checkmark"] {
+      display: none;
+    }
+  `
+);
+
+const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) =>
+  html`<mwc-list-item>${item}</mwc-list-item>`;
 
 @customElement("ha-combo-box")
 export class HaComboBox extends LitElement {
@@ -46,24 +80,25 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @state() private _opened?: boolean;
+  @property({ type: Boolean, reflect: true, attribute: "opened" })
+  private _opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
   public open() {
     this.updateComplete.then(() => {
-      (this._comboBox as any)?.open();
+      this._comboBox?.open();
     });
   }
 
   public focus() {
     this.updateComplete.then(() => {
-      this.shadowRoot?.querySelector("paper-input")?.focus();
+      this._comboBox?.inputElement?.focus();
     });
   }
 
   public get selectedItem() {
-    return (this._comboBox as any).selectedItem;
+    return this._comboBox.selectedItem;
   }
 
   protected render(): TemplateResult {
@@ -72,7 +107,7 @@ export class HaComboBox extends LitElement {
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
         .itemLabelPath=${this.itemLabelPath}
-        .value=${this.value}
+        .value=${this.value || ""}
         .items=${this.items}
         .filteredItems=${this.filteredItems}
         .allowCustomValue=${this.allowCustomValue}
@@ -81,8 +116,9 @@ export class HaComboBox extends LitElement {
         @opened-changed=${this._openedChanged}
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
+        attr-for-value="value"
       >
-        <paper-input
+        <mwc-textfield
           .label=${this.label}
           .disabled=${this.disabled}
           class="input"
@@ -90,26 +126,23 @@ export class HaComboBox extends LitElement {
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
+          .suffix=${html`<div style="width: 28px;"></div>`}
         >
-          ${this.value
-            ? html`
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.components.combo-box.clear")}
-                  .path=${mdiClose}
-                  slot="suffix"
-                  class="clear-button"
-                  @click=${this._clearValue}
-                ></ha-icon-button>
-              `
-            : ""}
-
-          <ha-icon-button
-            .label=${this.hass.localize("ui.components.combo-box.show")}
-            .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            slot="suffix"
-            class="toggle-button"
-          ></ha-icon-button>
-        </paper-input>
+        </mwc-textfield>
+        ${this.value
+          ? html`<ha-svg-icon
+              aria-label=${this.hass.localize("ui.components.combo-box.clear")}
+              class="clear-button"
+              .path=${mdiClose}
+              @click=${this._clearValue}
+            ></ha-svg-icon>`
+          : ""}
+        <ha-svg-icon
+          aria-label=${this.hass.localize("ui.components.combo-box.show")}
+          class="toggle-button"
+          .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+          @click=${this._toggleOpen}
+        ></ha-svg-icon>
       </vaadin-combo-box-light>
     `;
   }
@@ -119,8 +152,20 @@ export class HaComboBox extends LitElement {
     fireEvent(this, "value-changed", { value: undefined });
   }
 
+  private _toggleOpen(ev: Event) {
+    if (this._opened) {
+      this._comboBox?.close();
+      ev.stopPropagation();
+    } else {
+      this._comboBox?.inputElement.focus();
+    }
+  }
+
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
+    // delay this so we can handle click event before setting _opened
+    setTimeout(() => {
+      this._opened = ev.detail.value;
+    }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
   }
@@ -141,10 +186,38 @@ export class HaComboBox extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > ha-icon-button {
+      :host {
+        display: block;
+        width: 100%;
+        margin-top: 4px;
+      }
+      vaadin-combo-box-light {
+        position: relative;
+      }
+      mwc-textfield {
+        width: 100%;
+      }
+      mwc-textfield > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);
+      }
+      ha-svg-icon {
+        color: var(--input-dropdown-icon-color);
+        position: absolute;
+        cursor: pointer;
+      }
+      .toggle-button {
+        right: 12px;
+        top: -10px;
+      }
+      :host([opened]) .toggle-button {
+        color: var(--primary-color);
+      }
+      .clear-button {
+        --mdc-icon-size: 20px;
+        top: -7px;
+        right: 36px;
       }
     `;
   }

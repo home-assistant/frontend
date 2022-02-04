@@ -1,17 +1,8 @@
-import { mdiCheck } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -76,54 +67,24 @@ export class HaStatisticPicker extends LitElement {
     id: string;
     name: string;
     state?: HassEntity;
-    // eslint-disable-next-line lit/prefer-static-styles
-  }> = (item) => html`<style>
-      paper-icon-item {
-        padding: 0;
-        margin: -8px;
-      }
-      #content {
-        display: flex;
-        align-items: center;
-      }
-      ha-svg-icon {
-        padding-left: 2px;
-        color: var(--secondary-text-color);
-      }
-      :host(:not([selected])) ha-svg-icon {
-        display: none;
-      }
-      :host([selected]) paper-icon-item {
-        margin-left: 0;
-      }
-      a {
-        color: var(--primary-color);
-      }
-    </style>
-    <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-    <paper-icon-item>
-      ${item.state
-        ? html`<state-badge
-            slot="item-icon"
-            .stateObj=${item.state}
-          ></state-badge>`
-        : ""}
-      <paper-item-body two-line="">
-        ${item.name}
-        <span secondary
-          >${item.id === "" || item.id === "__missing"
-            ? html`<a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=${documentationUrl(this.hass, "/more-info/statistics/")}
-                >${this.hass.localize(
-                  "ui.components.statistic-picker.learn_more"
-                )}</a
-              >`
-            : item.id}</span
-        >
-      </paper-item-body>
-    </paper-icon-item>`;
+  }> = (item) => html` <mwc-list-item graphic="avatar" twoline>
+    ${item.state
+      ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
+      : ""}
+    <span>${item.name}</span>
+    <span slot="secondary"
+      >${item.id === "" || item.id === "__missing"
+        ? html`<a
+            target="_blank"
+            rel="noopener noreferrer"
+            href=${documentationUrl(this.hass, "/more-info/statistics/")}
+            >${this.hass.localize(
+              "ui.components.statistic-picker.learn_more"
+            )}</a
+          >`
+        : item.id}</span
+    >
+  </mwc-list-item>`;
 
   private _getStatistics = memoizeOne(
     (
@@ -292,19 +253,6 @@ export class HaStatisticPicker extends LitElement {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      paper-input > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
   }
 }
 

@@ -1,4 +1,3 @@
-import { mdiCheck } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
@@ -12,39 +11,12 @@ import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import { HaComboBox } from "./ha-combo-box";
 
-// eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`<style>
-    paper-item {
-      padding: 0;
-      margin: -10px;
-      margin-left: 0px;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    :host([selected]) paper-item {
-      margin-left: 0;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      margin-right: -2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-item>
-    <paper-item-body two-line>
-      ${item.name}
-      <span secondary>${item.slug}</span>
-    </paper-item-body>
-  </paper-item>`;
+const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
+  item
+) => html`<mwc-list-item twoline>
+  <span>${item.name}</span>
+  <span slot="secondary">${item.slug}</span>
+</mwc-list-item>`;
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {

@@ -1,5 +1,5 @@
 import "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
@@ -284,7 +284,14 @@ export class HuiStatisticsGraphCardEditor
   }
 
   static get styles(): CSSResultGroup {
-    return configElementStyle;
+    return [
+      configElementStyle,
+      css`
+        ha-statistics-picker {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

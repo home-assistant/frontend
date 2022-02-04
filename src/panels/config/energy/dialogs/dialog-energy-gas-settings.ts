@@ -294,6 +294,9 @@ export class DialogEnergyGasSettings
         ha-formfield {
           display: block;
         }
+        ha-statistic-picker {
+          width: 100%;
+        }
         .price-options {
           display: block;
           padding-left: 52px;

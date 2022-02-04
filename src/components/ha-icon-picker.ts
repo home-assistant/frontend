@@ -2,7 +2,7 @@ import { mdiCheck, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
