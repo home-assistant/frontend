@@ -176,6 +176,7 @@ class IntegrationsCard extends LitElement {
       td.setup {
         text-align: right;
         white-space: nowrap;
+        direction: ltr;
       }
       th {
         text-align: right;
