@@ -1,11 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
