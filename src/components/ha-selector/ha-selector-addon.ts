@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { AddonSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
@@ -22,6 +22,12 @@ export class HaAddonSelector extends LitElement {
       allow-custom-entity
     ></ha-addon-picker>`;
   }
+
+  static styles = css`
+    ha-addon-picker {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

@@ -1,14 +1,16 @@
+import "@material/mwc-list/mwc-list-item";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
-import "@material/mwc-list/mwc-list-item";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
@@ -306,6 +308,18 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      :host {
+        display: block;
+        width: 200px;
+      }
+      ha-combo-box {
+        width: 100%;
+      }
+    `;
   }
 }
 

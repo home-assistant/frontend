@@ -1,5 +1,5 @@
 import { mdiDevices } from "@mdi/js";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
@@ -109,7 +109,14 @@ export class DialogEnergyDeviceSettings
   }
 
   static get styles(): CSSResultGroup {
-    return haStyleDialog;
+    return [
+      haStyleDialog,
+      css`
+        ha-statistic-picker {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

@@ -248,6 +248,9 @@ export class DialogEnergySolarSettings
         ha-formfield {
           display: block;
         }
+        ha-statistic-picker {
+          width: 100%;
+        }
         .forecast-options {
           padding-left: 32px;
         }

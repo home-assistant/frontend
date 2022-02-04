@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-textfield/mwc-textfield";
-import { mdiMenuUp, mdiMenuDown, mdiClose } from "@mdi/js";
+import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type { ComboBoxLight } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
@@ -47,7 +47,7 @@ registerStyles(
 );
 
 const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) =>
-  html` <mwc-list-item>${item}</mwc-list-item>`;
+  html`<mwc-list-item>${item}</mwc-list-item>`;
 
 @customElement("ha-combo-box")
 export class HaComboBox extends LitElement {
@@ -120,6 +120,7 @@ export class HaComboBox extends LitElement {
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
+          .suffix=${html`<div style="width: 28px;"></div>`}
         >
         </mwc-textfield>
         ${this.value
@@ -166,11 +167,16 @@ export class HaComboBox extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: block;
+        width: 200px;
+        margin-top: 4px;
+      }
       vaadin-combo-box-light {
         position: relative;
       }
       mwc-textfield {
-        width: 200px;
+        width: 100%;
       }
       mwc-textfield > ha-icon-button {
         --mdc-icon-button-size: 24px;
