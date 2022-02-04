@@ -1,4 +1,5 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import "@material/mwc-list/mwc-check-list-item";
 import "@material/mwc-textfield";
 import "@material/mwc-formfield";
 import {
@@ -60,14 +61,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     const renderedOptions = options.map((item: string | [string, string]) => {
       const value = optionValue(item);
       return html`
-        <mwc-formfield .label=${optionLabel(item)}>
-          <ha-checkbox
-            .checked=${data.includes(value)}
-            .value=${value}
-            .disabled=${this.disabled}
-            @change=${this._valueChanged}
-          ></ha-checkbox>
-        </mwc-formfield>
+        <mwc-check-list-item .checked=${data.includes(value)}>
+          ${optionLabel(item)}
+        </mwc-check-list-item>
       `;
     });
 
