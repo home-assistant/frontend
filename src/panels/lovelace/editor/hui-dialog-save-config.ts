@@ -113,6 +113,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   )}
                 </p>
                 <ha-yaml-editor
+                  .hass=${this.hass}
                   .defaultValue=${this._params!.lovelace.config}
                 ></ha-yaml-editor>
               `}

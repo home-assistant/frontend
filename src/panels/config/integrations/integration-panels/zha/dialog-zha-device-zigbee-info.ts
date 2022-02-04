@@ -44,7 +44,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       >
         <ha-code-editor
           mode="yaml"
-          readonly
+          readOnly
           .value=${this._signature}
           dir="ltr"
         >
