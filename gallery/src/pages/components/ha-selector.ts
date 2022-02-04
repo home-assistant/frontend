@@ -48,10 +48,15 @@ const SCHEMAS: {
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
       action: { name: "Action", selector: { action: {} } },
-      text: { name: "Text", selector: { text: { multiline: false } } },
+      text: {
+        name: "Text",
+        selector: { text: { multiline: false } },
+      },
       text_multiline: {
         name: "Text multiline",
-        selector: { text: { multiline: true } },
+        selector: {
+          text: { multiline: true },
+        },
       },
       object: { name: "Object", selector: { object: {} } },
       select: {
