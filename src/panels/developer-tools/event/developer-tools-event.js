@@ -91,7 +91,6 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <div class="code-editor">
             <ha-code-editor
               mode="yaml"
-              hass="[[hass]]"
               value="[[eventData]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
