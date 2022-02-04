@@ -3145,6 +3145,7 @@
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
+              "gas_total": "Gas total",
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
