@@ -11,12 +11,16 @@ import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
+import "../ha-selector/ha-selector";
 import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
+import { HomeAssistant } from "../../types";
 
 const getValue = (obj, item) => (obj ? obj[item.name] : null);
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
+  @property() public hass!: HomeAssistant;
+
   @property() public data!: HaFormDataContainer;
 
   @property() public schema!: HaFormSchema[];
@@ -62,12 +66,21 @@ export class HaForm extends LitElement implements HaFormElement {
                   </ha-alert>
                 `
               : ""}
-            ${dynamicElement(`ha-form-${item.type}`, {
-              schema: item,
-              data: getValue(this.data, item),
-              label: this._computeLabel(item),
-              disabled: this.disabled,
-            })}
+            ${"selector" in item
+              ? html`<ha-selector
+                  .schema=${item}
+                  .hass=${this.hass}
+                  .selector=${item.selector}
+                  .value=${getValue(this.data, item)}
+                  .label=${this._computeLabel(item)}
+                  .disabled=${this.disabled}
+                ></ha-selector>`
+              : dynamicElement(`ha-form-${item.type}`, {
+                  schema: item,
+                  data: getValue(this.data, item),
+                  label: this._computeLabel(item),
+                  disabled: this.disabled,
+                })}
           `;
         })}
       </div>
