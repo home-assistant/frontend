@@ -1,13 +1,10 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCalendar } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import "app-datepicker";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
-import "./ha-dialog";
 import "./ha-svg-icon";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
@@ -32,7 +29,7 @@ const showDatePickerDialog = (
 };
 @customElement("ha-date-input")
 export class HaDateInput extends LitElement {
-  @property() public locale!: HomeAssistant["locale"];
+  @property({ attribute: false }) public locale!: HomeAssistant["locale"];
 
   @property() public value?: string;
 
