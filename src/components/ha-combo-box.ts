@@ -101,7 +101,7 @@ export class HaComboBox extends LitElement {
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
         .itemLabelPath=${this.itemLabelPath}
-        .value=${this.value}
+        .value=${this.value || ""}
         .items=${this.items}
         .filteredItems=${this.filteredItems}
         .allowCustomValue=${this.allowCustomValue}

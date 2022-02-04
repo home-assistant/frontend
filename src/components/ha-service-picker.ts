@@ -113,7 +113,6 @@ class HaServicePicker extends LitElement {
     return css`
       :host {
         display: block;
-        width: 100%;
       }
       ha-combo-box {
         width: 100%;
