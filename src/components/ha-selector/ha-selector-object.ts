@@ -18,6 +18,7 @@ export class HaObjectSelector extends LitElement {
 
   protected render() {
     return html`<ha-yaml-editor
+      .hass=${this.hass}
       .disabled=${this.disabled}
       .placeholder=${this.placeholder}
       .defaultValue=${this.value}

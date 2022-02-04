@@ -269,6 +269,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                           `
                         : ``}
                       <ha-yaml-editor
+                        .hass=${this.hass}
                         .defaultValue=${this._preprocessYaml()}
                         @value-changed=${this._yamlChanged}
                       ></ha-yaml-editor>

@@ -49,6 +49,7 @@ export class HaEventAction extends LitElement implements ActionElement {
         @value-changed=${this._eventChanged}
       ></paper-input>
       <ha-yaml-editor
+        .hass=${this.hass}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.event.service_data"
         )}

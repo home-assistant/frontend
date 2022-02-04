@@ -220,6 +220,7 @@ export default class HaAutomationActionRow extends LitElement {
                   )}
                 </h2>
                 <ha-yaml-editor
+                  .hass=${this.hass}
                   .defaultValue=${this.action}
                   @value-changed=${this._onYamlChange}
                 ></ha-yaml-editor>

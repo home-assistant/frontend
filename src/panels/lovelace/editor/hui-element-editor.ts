@@ -197,6 +197,8 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 <ha-code-editor
                   mode="yaml"
                   autofocus
+                  autocomplete-entities
+                  .hass=${this.hass}
                   .value=${this.yaml}
                   .error=${Boolean(this._errors)}
                   @value-changed=${this._handleYAMLChanged}

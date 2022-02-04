@@ -100,6 +100,7 @@ class HaPanelDevService extends LitElement {
                 @value-changed=${this._serviceChanged}
               ></ha-service-picker>
               <ha-yaml-editor
+                .hass=${this.hass}
                 .defaultValue=${this._serviceData}
                 @value-changed=${this._yamlChanged}
               ></ha-yaml-editor>`
