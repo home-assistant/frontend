@@ -3101,7 +3101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-a11y-announcer@npm:^3.0.0, @polymer/iron-a11y-announcer@npm:^3.0.0-pre.26":
+"@polymer/iron-a11y-announcer@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/iron-a11y-announcer@npm:3.0.2"
   dependencies:
@@ -3223,7 +3223,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-media-query@npm:^3.0.0, @polymer/iron-media-query@npm:^3.0.0-pre.26":
+"@polymer/iron-media-query@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-media-query@npm:3.0.1"
   dependencies:
@@ -3524,6 +3524,13 @@ __metadata:
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
   checksum: 3c04d877ffec4bb65da38c9b8c4beb64c9c53c2598bf11e2fe5adf1cfde68e6a37b287df3b49ce0fcfd57e3c9c1aeb03868002b244172ab24c9e7375356c6d16
+  languageName: node
+  linkType: hard
+
+"@reallyland/esm@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@reallyland/esm@npm:0.0.1"
+  checksum: 08ba000c1c6970a15f06649b33861e775bfd0aef41b76e4d58430580ddf1fbc35a00637fbd14a8ecdfa06069d96bc29331b60b1aaeb77b233de8463f4aa4c885
   languageName: node
   linkType: hard
 
@@ -3979,6 +3986,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash-es@npm:^4.17.4":
+  version: 4.17.5
+  resolution: "@types/lodash-es@npm:4.17.5"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 8910f646310aa008bb45071619fe85abf917bbc2c7cc0af883a971de261723247695a58dd966bfa9defd946cef79811d8b075eb6f0af12343080ab0ae6614e12
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.14.178
+  resolution: "@types/lodash@npm:4.14.178"
+  checksum: a69a04a60bfc5257c3130a554b4efa0c383f0141b7b3db8ab7cf07ad2a46ea085fce66d0242da41da7e5647b133d5dfb2c15add9cbed8d7fef955e4a1e5b3128
+  languageName: node
+  linkType: hard
+
 "@types/marked@npm:^2":
   version: 2.0.5
   resolution: "@types/marked@npm:2.0.5"
@@ -4032,6 +4055,20 @@ __metadata:
   version: 5.0.3
   resolution: "@types/parse5@npm:5.0.3"
   checksum: d6b7495cb1850f9f2e9c5e103ede9f2d30a5320669707b105c403868adc9e4bf8d3a7ff314cc23f67826bbbbbc0e6147346ce9062ab429f099dba7a01f463919
+  languageName: node
+  linkType: hard
+
+"@types/parse5@npm:^6.0.0":
+  version: 6.0.3
+  resolution: "@types/parse5@npm:6.0.3"
+  checksum: ddb59ee4144af5dfcc508a8dcf32f37879d11e12559561e65788756b95b33e6f03ea027d88e1f5408f9b7bfb656bf630ace31a2169edf44151daaf8dd58df1b7
+  languageName: node
+  linkType: hard
+
+"@types/prismjs@npm:^1.16.5":
+  version: 1.26.0
+  resolution: "@types/prismjs@npm:1.26.0"
+  checksum: cd5e7a6214c1f4213ec512a5fcf6d8fe37a56b813fc57ac95b5ff5ee074742bfdbd2f2730d9fd985205bf4586728e09baa97023f739e5aa1c9735a7c1ecbd11a
   languageName: node
   linkType: hard
 
@@ -4230,19 +4267,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/button@npm:^22.0.4":
-  version: 22.0.4
-  resolution: "@vaadin/button@npm:22.0.4"
-  dependencies:
-    "@polymer/polymer": ^3.0.0
-    "@vaadin/component-base": ^22.0.4
-    "@vaadin/vaadin-lumo-styles": ^22.0.4
-    "@vaadin/vaadin-material-styles": ^22.0.4
-    "@vaadin/vaadin-themable-mixin": ^22.0.4
-  checksum: 70f8eeddd7c8d19eb859f2dd5f848e9b6b83f1f4bc8cb3d1fdc613f0637df9c04f0f91e49d23c4d390ce4ffa8a301ea77c364c29de278e8c32e5e7ccbcaf8f67
-  languageName: node
-  linkType: hard
-
 "@vaadin/combo-box@npm:^22.0.4":
   version: 22.0.4
   resolution: "@vaadin/combo-box@npm:22.0.4"
@@ -4272,26 +4296,6 @@ __metadata:
     "@vaadin/vaadin-usage-statistics": ^2.1.0
     lit: ^2.0.0
   checksum: d18e7cebdd2928e33641ee035927540239e8a65d23521aca2e35d9992a44060d951e877af09088de0ffa88daa11f86a02b86a087cb29b51d9ada574009159509
-  languageName: node
-  linkType: hard
-
-"@vaadin/date-picker@npm:^22.0.4":
-  version: 22.0.4
-  resolution: "@vaadin/date-picker@npm:22.0.4"
-  dependencies:
-    "@open-wc/dedupe-mixin": ^1.3.0
-    "@polymer/iron-a11y-announcer": ^3.0.0
-    "@polymer/iron-media-query": ^3.0.0
-    "@polymer/polymer": ^3.2.0
-    "@vaadin/button": ^22.0.4
-    "@vaadin/component-base": ^22.0.4
-    "@vaadin/field-base": ^22.0.4
-    "@vaadin/input-container": ^22.0.4
-    "@vaadin/vaadin-lumo-styles": ^22.0.4
-    "@vaadin/vaadin-material-styles": ^22.0.4
-    "@vaadin/vaadin-overlay": ^22.0.4
-    "@vaadin/vaadin-themable-mixin": ^22.0.4
-  checksum: bfc0bc3a9bec920d7a0b0d2b3968f6c5ca17cea752f37b7d707e8912b8c35e2780b1a78d4cdca1094519cb70554f95ee5ab69f212c677482935a7a4fc3b42a43
   languageName: node
   linkType: hard
 
@@ -5122,6 +5126,18 @@ __metadata:
     normalize-path: ^3.0.0
     picomatch: ^2.0.4
   checksum: 985163db2292fac9e5a1e072bf99f1b5baccf196e4de25a0b0b81865ebddeb3b3eb4480734ef0a2ac8c002845396b91aa89121f5b84f93981a4658164a9ec6e9
+  languageName: node
+  linkType: hard
+
+"app-datepicker@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "app-datepicker@npm:5.0.1"
+  dependencies:
+    "@material/mwc-button": ^0.25.3
+    lit: ^2.0.2
+    nodemod: 2.8.4
+    tslib: ^2.3.0
+  checksum: 619b6e725aca8a89a4ed28bd2390ad8e1c5a8da075928947d270e3dd5df98f6082fdf7ca1190d382d3ad73bacabcd048af21c8579e8f40c0032eba74a2e8c667
   languageName: node
   linkType: hard
 
@@ -9158,7 +9174,6 @@ fsevents@^1.2.7:
     "@typescript-eslint/eslint-plugin": ^4.32.0
     "@typescript-eslint/parser": ^4.32.0
     "@vaadin/combo-box": ^22.0.4
-    "@vaadin/date-picker": ^22.0.4
     "@vaadin/vaadin-themable-mixin": ^22.0.4
     "@vibrant/color": ^3.2.1-alpha.1
     "@vibrant/core": ^3.2.1-alpha.1
@@ -9167,6 +9182,7 @@ fsevents@^1.2.7:
     "@web/dev-server": ^0.0.24
     "@web/dev-server-rollup": ^0.2.11
     "@webcomponents/webcomponentsjs": ^2.2.10
+    app-datepicker: ^5.0.1
     babel-loader: ^8.2.2
     chai: ^4.3.4
     chart.js: ^3.3.2
@@ -10818,6 +10834,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lit-ntml@npm:^2.18.2":
+  version: 2.20.0
+  resolution: "lit-ntml@npm:2.20.0"
+  dependencies:
+    "@reallyland/esm": ^0.0.1
+    parse5: ^6.0.1
+    tslib: ^2.0.2
+  checksum: 49d59ff05959ed725799c69691aa81d759426900150f91edd17debb1cd05ace1ac766172d80b196610e1f1b7b87215cccd9ba13e93638e4f75afeab87303471c
+  languageName: node
+  linkType: hard
+
 "lit-vaadin-helpers@npm:^0.3.0":
   version: 0.3.0
   resolution: "lit-vaadin-helpers@npm:0.3.0"
@@ -11961,6 +11988,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"nodemod@npm:2.8.4":
+  version: 2.8.4
+  resolution: "nodemod@npm:2.8.4"
+  dependencies:
+    "@types/lodash-es": ^4.17.4
+    "@types/parse5": ^6.0.0
+    "@types/prismjs": ^1.16.5
+    lit-ntml: ^2.18.2
+    normalize-diacritics: ^2.13.2
+    tslib: ^2.1.0
+  checksum: 6dbf61aeca7d1c58d8e122a0801179daccdbd23a0ded0b602cc94c1a20bf664d08b817c57b7489af4193b3b044505bb7c849491eea5eea9248fa65e16b217da0
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^4.0.1":
   version: 4.0.1
   resolution: "nopt@npm:4.0.1"
@@ -11981,6 +12022,15 @@ fsevents@^1.2.7:
   bin:
     nopt: bin/nopt.js
   checksum: d35fdec187269503843924e0114c0c6533fb54bbf1620d0f28b4b60ba01712d6687f62565c55cc20a504eff0fbe5c63e22340c3fad549ad40469ffb611b04f2f
+  languageName: node
+  linkType: hard
+
+"normalize-diacritics@npm:^2.13.2":
+  version: 2.14.0
+  resolution: "normalize-diacritics@npm:2.14.0"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: f29169bebce5227ac270545fde176db2d52890fb0caa8c394454dbd8553c7f4e3c09a5535e9ee6b139c558ccabbdf1e08bb153ded69cfc58f2f9e472f48703c3
   languageName: node
   linkType: hard
 
@@ -15227,7 +15277,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1, tslib@npm:^2.1.0, tslib@npm:^2.2.0":
+"tslib@npm:^2.0.1, tslib@npm:^2.0.2, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
