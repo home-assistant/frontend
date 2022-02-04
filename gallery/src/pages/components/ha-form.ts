@@ -50,13 +50,11 @@ const SCHEMAS: {
       {
         type: "boolean",
         name: "bool",
-        optional: true,
         default: false,
       },
       {
         type: "integer",
         name: "int",
-        optional: true,
         default: 10,
       },
       {
@@ -67,7 +65,6 @@ const SCHEMAS: {
       {
         type: "string",
         name: "string",
-        optional: true,
         default: "Default",
       },
       {
@@ -77,7 +74,6 @@ const SCHEMAS: {
           ["other", "other"],
         ],
         name: "select",
-        optional: true,
         default: "default",
       },
       {
@@ -87,7 +83,6 @@ const SCHEMAS: {
           other: "Other",
         },
         name: "multi",
-        optional: true,
         default: ["default"],
       },
       {
@@ -108,7 +103,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int with default",
-        optional: true,
         default: 10,
       },
       {
@@ -122,7 +116,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int range optional",
-        optional: true,
         valueMin: 0,
         valueMax: 10,
       },
@@ -148,7 +141,6 @@ const SCHEMAS: {
           ["other", "Other"],
         ],
         name: "select optional",
-        optional: true,
       },
       {
         type: "select",
@@ -161,7 +153,6 @@ const SCHEMAS: {
           ["option", "1000"],
         ],
         name: "select many otions",
-        optional: true,
         default: "default",
       },
     ],
@@ -190,7 +181,6 @@ const SCHEMAS: {
           option: "1000",
         },
         name: "multi many otions",
-        optional: true,
         default: ["default"],
       },
     ],
@@ -239,11 +229,10 @@ const SCHEMAS: {
         valueMin: 1,
         valueMax: 65535,
         name: "port",
-        optional: true,
         default: 80,
       },
-      { type: "string", name: "path", optional: true, default: "/" },
-      { type: "boolean", name: "ssl", optional: true, default: false },
+      { type: "string", name: "path", default: "/" },
+      { type: "boolean", name: "ssl", default: false },
     ],
   },
 ];
