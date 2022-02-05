@@ -35,20 +35,20 @@ export class HaWebhookTrigger extends LitElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
         )}
-        name="webhook_id"
         id="webhook_id"
+        name="webhook_id"
         .value=${webhookId}
         @value-changed=${this._valueChanged}
-      ></paper-input>
-      <ha-icon-button
-        id="copy"
-        @click=${this._copyId}
-        slot="actionItems"
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.copy_to_clipboard"
-        )}
-        .path=${mdiContentCopy}
-      ></ha-icon-button>
+      >
+        <ha-icon-button
+          @click=${this._copyId}
+          slot="suffix"
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.copy_to_clipboard"
+          )}
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
+      </paper-input>
     `;
   }
 
