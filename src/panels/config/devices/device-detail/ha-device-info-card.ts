@@ -141,10 +141,6 @@ export class HaDeviceCard extends LitElement {
           color: var(--secondary-text-color);
           word-wrap: break-word;
         }
-        a {
-          text-decoration: underline;
-          color: var(--primary-color);
-        }
       `,
     ];
   }
