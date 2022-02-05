@@ -38,11 +38,12 @@ export class HaSelectSelector extends LitElement {
   }
 
   private _valueChanged(ev) {
-    if (this.disabled || !ev.detail.value) {
+    ev.stopPropagation();
+    if (this.disabled || !ev.target.value) {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.detail.value.itemValue,
+      value: ev.target.value,
     });
   }
 
