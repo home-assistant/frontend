@@ -5,6 +5,7 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
 } from "../../../../data/device_registry";
+import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { loadDeviceRegistryDetailDialog } from "../device-registry-detail/show-dialog-device-registry-detail";
 
@@ -115,33 +116,36 @@ export class HaDeviceCard extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      ha-card {
-        flex: 1 0 100%;
-        min-width: 0;
-      }
-      .device {
-        width: 30%;
-      }
-      .area {
-        color: var(--primary-text-color);
-      }
-      .extra-info {
-        margin-top: 8px;
-        word-wrap: break-word;
-      }
-      .manuf,
-      .model {
-        color: var(--secondary-text-color);
-        word-wrap: break-word;
-      }
-      a {
-        text-decoration: underline;
-        color: var(--primary-color);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+        ha-card {
+          flex: 1 0 100%;
+          min-width: 0;
+        }
+        .device {
+          width: 30%;
+        }
+        .area {
+          color: var(--primary-text-color);
+        }
+        .extra-info {
+          margin-top: 8px;
+          word-wrap: break-word;
+        }
+        .manuf,
+        .model {
+          color: var(--secondary-text-color);
+          word-wrap: break-word;
+        }
+        a {
+          text-decoration: underline;
+          color: var(--primary-color);
+        }
+      `,
+    ];
   }
 }
