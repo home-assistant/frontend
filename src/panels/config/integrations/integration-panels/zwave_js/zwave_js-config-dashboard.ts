@@ -19,7 +19,10 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
   fetchZwaveProvisioningEntries,
+  InclusionState,
   setZwaveDataCollectionPreference,
+  stopZwaveExclusion,
+  stopZwaveInclusion,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
   ZwaveJSProvisioningEntry,
@@ -107,13 +110,48 @@ class ZWaveJSConfigDashboard extends LitElement {
               "ui.panel.config.zwave_js.dashboard.introduction"
             )}
           </div>
+          ${this._network &&
+          this._status === "connected" &&
+          (this._network?.controller.inclusion_state ===
+            InclusionState.Including ||
+            this._network?.controller.inclusion_state ===
+              InclusionState.Excluding)
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this._network?.controller.inclusion_state ===
+                  InclusionState.Including
+                    ? this.hass.localize(
+                        "ui.panel.config.zwave_js.common.inclusion_in_progress"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.zwave_js.common.exclusion_in_progress"
+                      )}
+                  <mwc-button
+                    slot="action"
+                    .label=${this._network?.controller.inclusion_state ===
+                    InclusionState.Including
+                      ? this.hass.localize(
+                          "ui.panel.config.zwave_js.common.cancel_inclusion"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.zwave_js.common.cancel_exclusion"
+                        )}
+                    @click=${this._network?.controller.inclusion_state ===
+                    InclusionState.Including
+                      ? this._cancelInclusion
+                      : this._cancelExclusion}
+                  >
+                  </mwc-button>
+                </ha-alert>
+              `
+            : ""}
           ${this._network
             ? html`
                 <ha-card class="content network-status">
                   <div class="card-content">
                     <div class="heading">
                       <div class="icon">
-                        ${this._status === "connecting"
+                        ${this._status === "disconnected"
                           ? html`<ha-circular-progress
                               active
                             ></ha-circular-progress>`
@@ -127,7 +165,7 @@ class ZWaveJSConfigDashboard extends LitElement {
                               ></ha-svg-icon>
                             `}
                       </div>
-                      ${this._status !== "connecting"
+                      ${this._status !== "disconnected"
                         ? html`
                             <div class="details">
                               ${this.hass.localize(
@@ -205,26 +243,26 @@ class ZWaveJSConfigDashboard extends LitElement {
                     ${this._network.client.ws_server_url}<br />
                   </div>
                   <div class="card-actions">
-                    <mwc-button
-                      @click=${this._removeNodeClicked}
-                      .disabled=${this._status === "connecting"}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_node"
-                      )}
-                    </mwc-button>
+                    ${this._status === "connected" &&
+                    this._network?.controller.inclusion_state ===
+                      InclusionState.Idle
+                      ? html`
+                          <mwc-button @click=${this._removeNodeClicked}>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.common.remove_node"
+                            )}
+                          </mwc-button>
+                        `
+                      : ""}
                     <mwc-button
                       @click=${this._healNetworkClicked}
-                      .disabled=${this._status === "connecting"}
+                      .disabled=${this._status === "disconnected"}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.heal_network"
                       )}
                     </mwc-button>
-                    <mwc-button
-                      @click=${this._openOptionFlow}
-                      .disabled=${this._status === "connecting"}
-                    >
+                    <mwc-button @click=${this._openOptionFlow}>
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.reconfigure_server"
                       )}
@@ -267,18 +305,22 @@ class ZWaveJSConfigDashboard extends LitElement {
               `
             : ``}
         </ha-config-section>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.zwave_js.common.add_node"
-          )}
-          .disabled=${this._status === "connecting"}
-          extended
-          ?rtl=${computeRTL(this.hass)}
-          @click=${this._addNodeClicked}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        ${this._status === "connected" &&
+        this._network?.controller.inclusion_state === InclusionState.Idle
+          ? html`
+              <ha-fab
+                slot="fab"
+                .label=${this.hass.localize(
+                  "ui.panel.config.zwave_js.common.add_node"
+                )}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+                @click=${this._addNodeClicked}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            `
+          : ""}
       </hass-tabs-subpage>
     `;
   }
@@ -410,6 +452,16 @@ class ZWaveJSConfigDashboard extends LitElement {
     showZWaveJSHealNetworkDialog(this, {
       entry_id: this.configEntryId!,
     });
+  }
+
+  private async _cancelInclusion() {
+    stopZwaveInclusion(this.hass!, this.configEntryId!);
+    await this._fetchData();
+  }
+
+  private async _cancelExclusion() {
+    stopZwaveExclusion(this.hass!, this.configEntryId!);
+    await this._fetchData();
   }
 
   private _dataCollectionToggled(ev) {

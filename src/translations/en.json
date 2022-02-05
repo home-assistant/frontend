@@ -2923,7 +2923,11 @@
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
-            "heal_network": "Heal Network"
+            "heal_network": "Heal Network",
+            "cancel_inclusion": "Cancel Inclusion",
+            "inclusion_in_progress": "Inclusion in progress",
+            "cancel_exclusion": "Cancel Exclusion",
+            "exclusion_in_progress": "Exclusion in progress"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
