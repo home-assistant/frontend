@@ -571,6 +571,9 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
+    if (this.filter) {
+      return;
+    }
     this._debounceSearch(ev.detail.value);
   }
 

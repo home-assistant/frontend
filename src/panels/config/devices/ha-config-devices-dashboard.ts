@@ -67,7 +67,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state() private _showDisabled = false;
 
-  @state() private _filter = "";
+  @state() private _filter: string = history.state?.filter || "";
 
   @state() private _numHiddenDevices = 0;
 
@@ -490,6 +490,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    history.replaceState({ filter: this._filter }, "");
   }
 
   private _clearFilter() {
