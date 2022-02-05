@@ -178,19 +178,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     // new format
     let segments = this._config!.segments;
     if (segments) {
-      segments = [...segments].sort(
-        (a, b) =>
-          (a?.from || Number.NEGATIVE_INFINITY) -
-          (b?.from || Number.NEGATIVE_INFINITY)
-      );
+      segments = [...segments].sort((a, b) => a?.from - b?.from);
 
       for (let i = 0; i < segments.length; i++) {
         const segment = segments[i];
         if (
           segment &&
-          numberValue >= (segment.from || Number.NEGATIVE_INFINITY) &&
-          (i + 1 === segments.length ||
-            numberValue < (segments[i + 1]?.from || Number.NEGATIVE_INFINITY))
+          numberValue >= segment.from &&
+          (i + 1 === segments.length || numberValue < segments[i + 1]?.from)
         ) {
           return segment.color;
         }

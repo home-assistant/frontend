@@ -176,7 +176,7 @@ export interface SeverityConfig {
 }
 
 export interface GaugeSegment {
-  from?: number;
+  from: number;
   color: string;
 }
 

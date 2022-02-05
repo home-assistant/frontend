@@ -26,7 +26,7 @@ import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const gaugeSegmentStruct = object({
-  from: optional(number()),
+  from: number(),
   color: string(),
 });
 
@@ -353,7 +353,7 @@ export class HuiGaugeCardEditor
     this._config = {
       ...this._config,
       segments: (this._config!.segments || []).concat([
-        { from: undefined, color: "#000000" },
+        { from: 0, color: "#000000" },
       ]),
     };
 
@@ -368,9 +368,7 @@ export class HuiGaugeCardEditor
     this._config = {
       ...this._config,
       segments: this._config!.segments?.concat().sort(
-        (a, b) =>
-          (a.from || Number.NEGATIVE_INFINITY) -
-          (b.from || Number.NEGATIVE_INFINITY)
+        (a, b) => a.from - b.from
       ),
     };
 
@@ -412,9 +410,9 @@ export class HuiGaugeCardEditor
     this._config = {
       ...this._config,
       segments: (this._config.segments || []).concat([
-        { from: this._config!.severity!.red, color: "#db4437" },
-        { from: this._config!.severity!.yellow, color: "#ffa600" },
-        { from: this._config!.severity!.green, color: "#43a047" },
+        { from: this._config!.severity!.red || 0, color: "#db4437" },
+        { from: this._config!.severity!.yellow || 0, color: "#ffa600" },
+        { from: this._config!.severity!.green || 0, color: "#43a047" },
       ]),
     };
     delete this._config.severity;
