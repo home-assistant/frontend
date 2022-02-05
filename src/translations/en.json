@@ -3434,11 +3434,16 @@
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge?",
-              "severity": {
-                "define": "Define Severity?",
-                "green": "Green",
-                "red": "Red",
-                "yellow": "Yellow"
+              "colors": "Colors",
+              "add_segment": "Add Segment",
+              "remove_segment": "Remove Segment",
+              "sort_segments": "Sort",
+              "sort_info": "Sorts all segments by \"From value\"",
+              "migrate_button": "Migrate",
+              "migrate_info": "You are using the old color configuration format. Click the \"Migrate\" button below to automatically migrate to the new format without any loss, or manually remove the \"severity\" object from the card configuration.",
+              "segments": {
+                "from": "From value",
+                "color": "Color"
               },
               "description": "The Gauge card is a basic card that allows visually seeing sensor data."
             },

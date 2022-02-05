@@ -1,7 +1,9 @@
 import "@polymer/paper-input/paper-input";
+import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
+  array,
   assert,
   assign,
   boolean,
@@ -15,13 +17,18 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
-import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
+import { GaugeCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+
+const gaugeSegmentStruct = object({
+  from: optional(number()),
+  color: string(),
+});
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -34,6 +41,7 @@ const cardConfigStruct = assign(
     severity: optional(object()),
     theme: optional(string()),
     needle: optional(boolean()),
+    segments: optional(array(gaugeSegmentStruct)),
   })
 );
 
@@ -75,10 +83,6 @@ export class HuiGaugeCardEditor
 
   get _max(): number {
     return this._config!.max || 100;
-  }
-
-  get _severity(): SeverityConfig | undefined {
-    return this._config!.severity || undefined;
   }
 
   protected render(): TemplateResult {
@@ -160,55 +164,93 @@ export class HuiGaugeCardEditor
             @change=${this._toggleNeedle}
           ></ha-switch
         ></ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.gauge.severity.define"
-          )}
-          .dir=${computeRTLDirection(this.hass)}
-        >
-          <ha-switch
-            .checked=${this._config!.severity !== undefined}
-            @change=${this._toggleSeverity}
-          ></ha-switch
-        ></ha-formfield>
-        ${this._config!.severity !== undefined
-          ? html`
-              <paper-input
-                type="number"
-                .label="${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.gauge.severity.green"
-                )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.required"
-            )})"
-                .value=${this._severity ? this._severity.green : 0}
-                .configValue=${"green"}
-                @value-changed=${this._severityChanged}
-              ></paper-input>
-              <paper-input
-                type="number"
-                .label="${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.gauge.severity.yellow"
-                )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.required"
-            )})"
-                .value=${this._severity ? this._severity.yellow : 0}
-                .configValue=${"yellow"}
-                @value-changed=${this._severityChanged}
-              ></paper-input>
-              <paper-input
-                type="number"
-                .label="${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.gauge.severity.red"
-                )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.required"
-            )})"
-                .value=${this._severity ? this._severity.red : 0}
-                .configValue=${"red"}
-                @value-changed=${this._severityChanged}
-              ></paper-input>
-          </div>
-          `
-          : ""}
+
+        ${
+          // display warning if old format is used
+          this._config!.severity === undefined
+            ? ""
+            : html` <ha-alert alert-type="warning"
+                  >${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.gauge.migrate_info"
+                  )}
+                </ha-alert>
+                <mwc-button @click=${this._migrateConfig}
+                  >${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.gauge.migrate_button"
+                  )}</mwc-button
+                >`
+        }
+
+        <h3>
+          ${`${this.hass.localize(
+            "ui.panel.lovelace.editor.card.gauge.colors"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
+        </h3>
+
+        <div class="actions">
+          <mwc-button
+            @click=${this._addRow}
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.gauge.add_segment"
+            )}
+          ></mwc-button>
+
+          <mwc-button
+            @click=${this._sortRows}
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.gauge.sort_segments"
+            )}
+            title=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.gauge.sort_info"
+            )}
+          ></mwc-button>
+        </div>
+
+        <div class="segments">
+          ${
+            // display all defined segments
+            this._config!.segments?.map(
+              (segment, index) => html`<div class="segment">
+                <paper-input
+                  type="number"
+                  .label="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.gauge.segments.from"
+                  )} (${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.config.optional"
+                  )})"
+                  .index=${index}
+                  .value=${segment.from?.toString()}
+                  .configValue=${"from"}
+                  @change=${this._editRow}
+                ></paper-input>
+                <paper-input
+                  type="color"
+                  class="colorPicker"
+                  .label="${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.gauge.segments.color"
+                  )} (${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.config.required"
+                  )})"
+                  .index=${index}
+                  .value=${segment.color}
+                  .configValue=${"color"}
+                  @change=${this._editRow}
+                ></paper-input>
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.card.gauge.segments.color"
+                  )}
+                  .path=${mdiClose}
+                  class="remove-icon"
+                  .index=${index}
+                  @click=${this._removeRow}
+                ></ha-icon-button>
+              </div>`
+            )
+          }
+        </div>
       </div>
     `;
   }
@@ -217,19 +259,21 @@ export class HuiGaugeCardEditor
     return [
       configElementStyle,
       css`
-        .severity {
-          display: none;
-          width: 100%;
-          padding-left: 16px;
-          flex-direction: row;
-          flex-wrap: wrap;
+        .colorPicker {
+          flex-grow: 1;
+          margin-left: 4px;
         }
-        .severity > * {
-          flex: 1 0 30%;
-          padding-right: 4px;
-        }
-        ha-switch[checked] ~ .severity {
+        .segment {
           display: flex;
+          flex-direction: row;
+          align-items: flex-end;
+        }
+        .remove-icon {
+          color: var(--secondary-text-color);
+        }
+        .actions {
+          display: flex;
+          justify-content: space-between;
         }
       `,
     ];
@@ -251,40 +295,85 @@ export class HuiGaugeCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _toggleSeverity(ev: EntitiesEditorEvent): void {
+  private _removeRow(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
 
-    if ((ev.target as EditorTarget).checked) {
-      this._config = {
-        ...this._config,
-        severity: {
-          green: 0,
-          yellow: 0,
-          red: 0,
-        },
-      };
-    } else {
+    const target = ev.target as EditorTarget;
+    const newSegments = this._config!.segments?.concat();
+    newSegments?.splice(target.index!, 1);
+
+    if (newSegments?.length === 0) {
       this._config = { ...this._config };
-      delete this._config.severity;
+      delete this._config.segments;
+    } else {
+      this._config = { ...this._config, segments: newSegments };
     }
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _severityChanged(ev: EntitiesEditorEvent): void {
+  private _editRow(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
-    const severity = {
-      ...this._config.severity,
-      [target.configValue!]: Number(target.value),
-    };
+
+    const target = ev.target as EditorTarget;
+    const newSegments = this._config!.segments?.concat();
+
+    switch (target.configValue) {
+      case "from":
+        newSegments![target.index!] = {
+          ...newSegments![target.index!],
+          from: Number(target.value),
+        };
+        break;
+      case "color":
+        newSegments![target.index!] = {
+          ...newSegments![target.index!],
+          color: target.value || "",
+        };
+        break;
+    }
+
     this._config = {
       ...this._config,
-      severity,
+      segments: newSegments,
     };
+
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _addRow(): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      segments: (this._config!.segments || []).concat([
+        { from: undefined, color: "#000000" },
+      ]),
+    };
+
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _sortRows(): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      segments: this._config!.segments?.concat().sort(
+        (a, b) =>
+          (a.from || Number.NEGATIVE_INFINITY) -
+          (b.from || Number.NEGATIVE_INFINITY)
+      ),
+    };
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -309,6 +398,27 @@ export class HuiGaugeCardEditor
         this._config = { ...this._config, [target.configValue!]: value };
       }
     }
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  /**
+   * Migrates the old "severity"-based config to the new config format
+   */
+  private _migrateConfig(): void {
+    if (!this._config || !this.hass || !this._config.severity) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      segments: (this._config.segments || []).concat([
+        { from: this._config!.severity!.red, color: "#db4437" },
+        { from: this._config!.severity!.yellow, color: "#ffa600" },
+        { from: this._config!.severity!.green, color: "#43a047" },
+      ]),
+    };
+    delete this._config.severity;
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 }

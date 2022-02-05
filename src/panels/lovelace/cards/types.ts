@@ -175,6 +175,11 @@ export interface SeverityConfig {
   red?: number;
 }
 
+export interface GaugeSegment {
+  from?: number;
+  color: string;
+}
+
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
@@ -184,6 +189,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   severity?: SeverityConfig;
   theme?: string;
   needle?: boolean;
+  segments?: GaugeSegment[];
 }
 
 export interface ConfigEntity extends EntityConfig {
