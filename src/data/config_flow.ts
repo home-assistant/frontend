@@ -13,6 +13,7 @@ export const DISCOVERY_SOURCES = [
   "ssdp",
   "zeroconf",
   "discovery",
+  "integration_discovery",
   "mqtt",
   "hassio",
 ];
