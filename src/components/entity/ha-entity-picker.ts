@@ -246,6 +246,7 @@ export class HaEntityPicker extends LitElement {
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
+    ev.stopPropagation();
     const newValue = ev.detail.value;
     if (newValue !== this._value) {
       this._setValue(newValue);
