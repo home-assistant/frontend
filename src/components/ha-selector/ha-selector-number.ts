@@ -90,6 +90,9 @@ export class HaNumberSelector extends LitElement {
       ha-slider {
         flex: 1;
       }
+      mwc-textfield {
+        width: 70px;
+      }
       .single {
         flex: 1;
       }
