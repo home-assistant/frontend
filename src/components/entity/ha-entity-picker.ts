@@ -1,25 +1,16 @@
-import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
+import "@material/mwc-list/mwc-list-item";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
-import { customElement, property, query } from "lit/decorators";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
@@ -27,35 +18,15 @@ import "./state-badge";
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
 // eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
-    paper-icon-item {
-      padding: 0;
-      margin: -8px;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-icon-item>
-    <state-badge slot="item-icon" .stateObj=${item}></state-badge>
-    <paper-item-body two-line="">
-      ${computeStateName(item)}
-      <span secondary>${item.entity_id}</span>
-    </paper-item-body>
-  </paper-icon-item>`;
-
+const rowRenderer: ComboBoxLitRenderer<HassEntity & { friendly_name: string }> =
+  (item) =>
+    html`<mwc-list-item graphic="avatar" twoline>
+      ${item.state
+        ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
+        : ""}
+      <span>${item.friendly_name}</span>
+      <span slot="secondary">${item.entity_id}</span>
+    </mwc-list-item>`;
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -107,19 +78,19 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public hideClearIcon = false;
 
-  @property({ type: Boolean }) private _opened = false;
+  @state() private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
+  @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
   public open() {
     this.updateComplete.then(() => {
-      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+      this.comboBox?.open();
     });
   }
 
   public focus() {
     this.updateComplete.then(() => {
-      this.shadowRoot?.querySelector("paper-input")?.focus();
+      this.comboBox?.focus();
     });
   }
 
@@ -156,7 +127,10 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
-      states = entityIds.sort().map((key) => hass!.states[key]);
+      states = entityIds.sort().map((key) => ({
+        ...hass!.states[key],
+        friendly_name: computeStateName(hass!.states[key]) || key,
+      }));
 
       if (includeDeviceClasses) {
         states = states.filter(
@@ -196,6 +170,9 @@ export class HaEntityPicker extends LitElement {
             last_changed: "",
             last_updated: "",
             context: { id: "", user_id: null },
+            friendly_name: this.hass!.localize(
+              "ui.components.entity.entity-picker.no_match"
+            ),
             attributes: {
               friendly_name: this.hass!.localize(
                 "ui.components.entity.entity-picker.no_match"
@@ -241,62 +218,23 @@ export class HaEntityPicker extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <vaadin-combo-box-light
+      <ha-combo-box
         item-value-path="entity_id"
-        item-label-path="entity_id"
+        item-label-path="friendly_name"
+        .hass=${this.hass}
         .value=${this._value}
+        .label=${this.label === undefined
+          ? this.hass.localize("ui.components.entity.entity-picker.entity")
+          : this.label}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
-        ${comboBoxRenderer(rowRenderer)}
+        .renderer=${rowRenderer}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
       >
-        <paper-input
-          .autofocus=${this.autofocus}
-          .label=${this.label === undefined
-            ? this.hass.localize("ui.components.entity.entity-picker.entity")
-            : this.label}
-          .disabled=${this.disabled}
-          class="input"
-          autocapitalize="none"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-        >
-          <div class="suffix" slot="suffix">
-            ${this.value && !this.hideClearIcon
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass.localize(
-                      "ui.components.entity.entity-picker.clear"
-                    )}
-                    .path=${mdiClose}
-                    class="clear-button"
-                    tabindex="-1"
-                    @click=${this._clearValue}
-                    no-ripple
-                  ></ha-icon-button>
-                `
-              : ""}
-
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.components.entity.entity-picker.show_entities"
-              )}
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-              class="toggle-button"
-              tabindex="-1"
-            ></ha-icon-button>
-          </div>
-        </paper-input>
-      </vaadin-combo-box-light>
+      </ha-combo-box>
     `;
-  }
-
-  private _clearValue(ev: Event) {
-    ev.stopPropagation();
-    this._setValue("");
   }
 
   private get _value() {
@@ -317,9 +255,9 @@ export class HaEntityPicker extends LitElement {
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
     (this.comboBox as any).filteredItems = this._states.filter(
-      (state) =>
-        state.entity_id.toLowerCase().includes(filterString) ||
-        computeStateName(state).toLowerCase().includes(filterString)
+      (entityState) =>
+        entityState.entity_id.toLowerCase().includes(filterString) ||
+        computeStateName(entityState).toLowerCase().includes(filterString)
     );
   }
 
@@ -329,22 +267,6 @@ export class HaEntityPicker extends LitElement {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
     }, 0);
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .suffix {
-        display: flex;
-      }
-      ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 0px 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    `;
   }
 }
 

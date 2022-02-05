@@ -38,7 +38,7 @@ export type HaDevicePickerDeviceFilterFunc = (
 ) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
-  twoline
+  .twoline=${!!item.area}
 >
   <span>${item.name}</span>
   <span slot="secondary">${item.area}</span>
