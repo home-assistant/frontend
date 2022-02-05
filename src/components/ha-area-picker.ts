@@ -336,6 +336,10 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev: CustomEvent): void {
     this._filter = ev.detail.value;
+    if (!this._filter) {
+      this.comboBox.filteredItems = this.comboBox.items;
+      return;
+    }
     // @ts-ignore
     if (!this.noAdd && this.comboBox._comboBox.filteredItems?.length === 0) {
       this.comboBox.filteredItems = [
@@ -349,7 +353,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         },
       ];
     } else {
-      this.comboBox.filteredItems = undefined;
+      this.comboBox.filteredItems = this.comboBox.items?.filter((item) =>
+        item.name.toLowerCase().includes(this._filter!.toLowerCase())
+      );
     }
   }
 
@@ -359,9 +365,6 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
-    if (!this._opened) {
-      this.comboBox.filteredItems = undefined;
-    }
   }
 
   private _areaChanged(ev: PolymerChangedEvent<string>) {
