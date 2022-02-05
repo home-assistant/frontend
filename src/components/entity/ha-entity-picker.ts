@@ -20,7 +20,7 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntity & { friendly_name: string }> =
   (item) =>
-    html`<mwc-list-item graphic="avatar" twoline>
+    html`<mwc-list-item graphic="avatar" .twoline=${!!item.entity_id}>
       ${item.state
         ? html`<state-badge slot="graphic" .stateObj=${item}></state-badge>`
         : ""}

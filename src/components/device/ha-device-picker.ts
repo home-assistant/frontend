@@ -105,7 +105,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (!devices.length) {
         return [
           {
-            id: "",
+            id: "no_device",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_devices"),
           },
@@ -201,7 +201,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (!outputDevices.length) {
         return [
           {
-            id: "",
+            id: "no_device",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_match"),
           },
@@ -270,7 +270,6 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
         item-value-path="id"
-        item-id-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._deviceChanged}
@@ -285,6 +284,10 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   private _deviceChanged(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
+
+    if (newValue === "no_device") {
+      return;
+    }
 
     if (newValue !== this._value) {
       this._setValue(newValue);
