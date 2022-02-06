@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -6,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { NumberSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-slider";
+import "@material/mwc-textfield/mwc-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -36,27 +36,23 @@ export class HaNumberSelector extends LitElement {
           >
           </ha-slider>`
         : ""}
-      <paper-input
+      <mwc-textfield
+        inputMode="numeric"
         pattern="[0-9]+([\\.][0-9]+)?"
         .label=${this.selector.number.mode !== "box" ? undefined : this.label}
         .placeholder=${this.placeholder}
-        .noLabelFloat=${this.selector.number.mode !== "box"}
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
         .value=${this.value}
         .step=${this.selector.number.step ?? 1}
         .disabled=${this.disabled}
+        .suffix=${this.selector.number.unit_of_measurement}
         type="number"
-        auto-validate
-        @value-changed=${this._handleInputChange}
+        autoValidate
+        @input=${this._handleInputChange}
       >
-        ${this.selector.number.unit_of_measurement
-          ? html`<div slot="suffix">
-              ${this.selector.number.unit_of_measurement}
-            </div>`
-          : ""}
-      </paper-input>`;
+      </mwc-textfield>`;
   }
 
   private get _value() {
@@ -93,6 +89,9 @@ export class HaNumberSelector extends LitElement {
       }
       ha-slider {
         flex: 1;
+      }
+      mwc-textfield {
+        width: 70px;
       }
       .single {
         flex: 1;
