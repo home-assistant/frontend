@@ -1668,8 +1668,9 @@
                   "seconds": "Seconds"
                 },
                 "webhook": {
+                  "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
-                  "webhook_id": "Webhook ID"
+                  "webhook_id": "Webhook ID (treat this like a password, use a unique secret value)"
                 },
                 "zone": {
                   "label": "Zone",

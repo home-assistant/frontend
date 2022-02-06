@@ -41,10 +41,10 @@ export class HaWebhookTrigger extends LitElement {
         @value-changed=${this._valueChanged}
       >
         <ha-icon-button
-          @click=${this._copyId}
+          @click=${this._copyUrl}
           slot="suffix"
           .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.copy_to_clipboard"
+            "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
           )}
           .path=${mdiContentCopy}
         ></ha-icon-button>
@@ -56,12 +56,13 @@ export class HaWebhookTrigger extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  private async _copyId(): Promise<void> {
+  private async _copyUrl(): Promise<void> {
     const inputElement = this.shadowRoot?.querySelector(
       "#webhook_id"
     ) as PaperInputElement;
+    const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
-    await copyToClipboard(inputElement.value);
+    await copyToClipboard(url);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
