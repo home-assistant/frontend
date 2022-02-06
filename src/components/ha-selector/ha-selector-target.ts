@@ -1,8 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import "@polymer/paper-input/paper-input";
 import {
   HassEntity,
   HassServiceTarget,

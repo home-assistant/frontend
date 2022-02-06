@@ -1,9 +1,11 @@
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { SelectSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../ha-paper-dropdown-menu";
+import "@material/mwc-select/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -18,46 +20,37 @@ export class HaSelectSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html`<ha-paper-dropdown-menu
-      .disabled=${this.disabled}
+    return html`<mwc-select
+      fixedMenuPosition
+      naturalMenuWidth
       .label=${this.label}
+      .value=${this.value}
+      .disabled=${this.disabled}
+      @closed=${stopPropagation}
+      @selected=${this._valueChanged}
     >
-      <paper-listbox
-        slot="dropdown-content"
-        attr-for-selected="item-value"
-        .selected=${this.value}
-        @selected-item-changed=${this._valueChanged}
-      >
-        ${this.selector.select.options.map(
-          (item: string) => html`
-            <paper-item .itemValue=${item}> ${item} </paper-item>
-          `
-        )}
-      </paper-listbox>
-    </ha-paper-dropdown-menu>`;
+      ${this.selector.select.options.map(
+        (item: string) => html`
+          <mwc-list-item .value=${item}>${item}</mwc-list-item>
+        `
+      )}
+    </mwc-select>`;
   }
 
   private _valueChanged(ev) {
-    if (this.disabled || !ev.detail.value) {
+    ev.stopPropagation();
+    if (this.disabled || !ev.target.value) {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.detail.value.itemValue,
+      value: ev.target.value,
     });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-paper-dropdown-menu {
+      mwc-select {
         width: 100%;
-        min-width: 200px;
-        display: block;
-      }
-      paper-listbox {
-        min-width: 200px;
-      }
-      paper-item {
-        cursor: pointer;
       }
     `;
   }

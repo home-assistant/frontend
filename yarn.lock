@@ -2665,7 +2665,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-textfield@npm:0.25.3":
+"@material/mwc-textarea@npm:^0.25.3":
+  version: 0.25.3
+  resolution: "@material/mwc-textarea@npm:0.25.3"
+  dependencies:
+    "@material/mwc-base": ^0.25.3
+    "@material/mwc-textfield": ^0.25.3
+    lit: ^2.0.0
+    tslib: ^2.0.1
+  checksum: 918e28b72f7c687c481cd9ee00f652cd6c212d37cd281197cb02c87f04153792c5a60a86276e82f44684e7c7b4947e0e2e5fceaa08fc075a030ea769c1501d8e
+  languageName: node
+  linkType: hard
+
+"@material/mwc-textfield@npm:0.25.3, @material/mwc-textfield@npm:^0.25.3":
   version: 0.25.3
   resolution: "@material/mwc-textfield@npm:0.25.3"
   dependencies:
@@ -9133,6 +9145,7 @@ fsevents@^1.2.7:
     "@material/mwc-switch": 0.25.3
     "@material/mwc-tab": 0.25.3
     "@material/mwc-tab-bar": 0.25.3
+    "@material/mwc-textarea": ^0.25.3
     "@material/mwc-textfield": 0.25.3
     "@material/mwc-top-app-bar-fixed": ^0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0

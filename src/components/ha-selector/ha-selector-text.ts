@@ -1,10 +1,10 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
-import { html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { StringSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
+import "@material/mwc-textfield/mwc-textfield";
+import "@material/mwc-textarea/mwc-textarea";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
@@ -22,25 +22,26 @@ export class HaTextSelector extends LitElement {
 
   protected render() {
     if (this.selector.text?.multiline) {
-      return html`<paper-textarea
+      return html`<mwc-textarea
         .label=${this.label}
         .placeholder=${this.placeholder}
-        .value=${this.value}
+        .value=${this.value || ""}
         .disabled=${this.disabled}
-        @value-changed=${this._handleChange}
+        @input=${this._handleChange}
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
-      ></paper-textarea>`;
+        required
+      ></mwc-textarea>`;
     }
-    return html`<paper-input
-      required
-      .value=${this.value}
-      .placeholder=${this.placeholder}
+    return html`<mwc-textfield
+      .value=${this.value || ""}
+      .placeholder=${this.placeholder || ""}
       .disabled=${this.disabled}
-      @value-changed=${this._handleChange}
-      .label=${this.label}
-    ></paper-input>`;
+      @input=${this._handleChange}
+      .label=${this.label || ""}
+      required
+    ></mwc-textfield>`;
   }
 
   private _handleChange(ev) {
@@ -49,6 +50,15 @@ export class HaTextSelector extends LitElement {
       return;
     }
     fireEvent(this, "value-changed", { value });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      mwc-textfield,
+      mwc-textarea {
+        width: 100%;
+      }
+    `;
   }
 }
 

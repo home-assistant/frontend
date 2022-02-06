@@ -25,7 +25,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-input ha-slider") private _input?: HTMLElement;
+  @query("mwc-textfield ha-slider") private _input?: HTMLElement;
 
   private _lastValue?: HaFormIntegerData;
 
