@@ -19,12 +19,12 @@ export class HaWebhookTrigger extends LitElement {
     // The webhook_id should be treated like a password. Generate a default
     // value that would be hard for someone to guess. This generates a
     // 144-bit random value. The output is a 24 character url-safe string.
-    const random_bytes = crypto.getRandomValues(new Uint8Array(18));
-    const base64_str = btoa(String.fromCharCode(...random_bytes));
-    const url_safe_id = base64_str.replace(/\+/g, "-").replace(/\//g, "_");
+    const randomBytes = crypto.getRandomValues(new Uint8Array(18));
+    const base64Str = btoa(String.fromCharCode(...randomBytes));
+    const urlSafeId = base64Str.replace(/\+/g, "-").replace(/\//g, "_");
 
     return {
-      webhook_id: url_safe_id,
+      webhook_id: urlSafeId,
     };
   }
 
