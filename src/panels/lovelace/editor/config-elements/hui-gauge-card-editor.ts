@@ -218,7 +218,7 @@ export class HuiGaugeCardEditor
                   .label="${this.hass!.localize(
                     "ui.panel.lovelace.editor.card.gauge.segments.from"
                   )} (${this.hass!.localize(
-                    "ui.panel.lovelace.editor.card.config.optional"
+                    "ui.panel.lovelace.editor.card.config.required"
                   )})"
                   .index=${index}
                   .value=${segment.from?.toString()}
