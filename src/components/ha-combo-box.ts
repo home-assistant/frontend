@@ -63,9 +63,9 @@ export class HaComboBox extends LitElement {
 
   @property() public value?: string;
 
-  @property() public items?: [];
+  @property() public items?: any[];
 
-  @property() public filteredItems?: [];
+  @property() public filteredItems?: any[];
 
   @property({ attribute: "allow-custom-value", type: Boolean })
   public allowCustomValue?: boolean;
