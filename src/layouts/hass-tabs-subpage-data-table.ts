@@ -234,6 +234,9 @@ export class HaTabsSubpageDataTable extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
+    if (this.filter === ev.detail.value) {
+      return;
+    }
     this.filter = ev.detail.value;
     fireEvent(this, "search-changed", { value: this.filter });
   }
