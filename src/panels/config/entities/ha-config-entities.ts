@@ -109,7 +109,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _showReadOnly = true;
 
-  @state() private _filter = "";
+  @state() private _filter: string = history.state?.filter || "";
 
   @state() private _numHiddenEntities = 0;
 
@@ -711,6 +711,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(

@@ -137,7 +137,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
-  @state() private _filter?: string;
+  @state() private _filter: string = history.state?.filter || "";
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
@@ -613,6 +613,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    history.replaceState({ filter: this._filter }, "");
   }
 
   private async _highlightEntry() {
