@@ -400,7 +400,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   entityIdChanged() {
-    if (this._entityId === "") {
+    if (!this._entityId) {
       this._entity = undefined;
       this._state = "";
       this._stateAttributes = "";
