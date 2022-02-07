@@ -139,7 +139,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       if (!areas.length) {
         return [
           {
-            area_id: "",
+            area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_areas"),
             picture: null,
           },
@@ -263,7 +263,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       if (!outputAreas.length) {
         outputAreas = [
           {
-            area_id: "",
+            area_id: "no_areas",
             name: this.hass.localize("ui.components.area-picker.no_match"),
             picture: null,
           },
@@ -369,7 +369,11 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   private _areaChanged(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    let newValue = ev.detail.value;
+
+    if (newValue === "no_areas") {
+      newValue = "";
+    }
 
     if (!["add_new_suggestion", "add_new"].includes(newValue)) {
       if (newValue !== this._value) {
