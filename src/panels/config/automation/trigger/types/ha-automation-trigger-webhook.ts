@@ -56,12 +56,15 @@ export class HaWebhookTrigger extends LitElement {
     const randomBytes = crypto.getRandomValues(new Uint8Array(18));
     const base64Str = btoa(String.fromCharCode(...randomBytes));
     const urlSafeId = base64Str.replace(/\+/g, "-").replace(/\//g, "_");
+
+    // Include the automation name to give the user context about what the
+    // webhook_id is used for.
     const lowerAlias = this._config?.alias?.toLowerCase() || "";
     const urlSafeAlias = lowerAlias
       .replace(/[^a-z0-9_\s-]/g, "")
       .replace(/[\s-]+/g, "-");
 
-    return `${urlSafeId}-${urlSafeAlias}`;
+    return `${urlSafeAlias}-${urlSafeId}`;
   }
 
   protected render() {
