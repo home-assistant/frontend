@@ -1,12 +1,17 @@
 import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-icon-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiContentCopy } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../../util/toast";
-import { WebhookTrigger } from "../../../../../data/automation";
+import {
+  WebhookTrigger,
+  AutomationConfig,
+} from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
@@ -16,21 +21,60 @@ export class HaWebhookTrigger extends LitElement {
 
   @property() public trigger!: WebhookTrigger;
 
+  @state() private _config?: AutomationConfig;
+
+  private _unsub?: UnsubscribeFunc;
+
   public static get defaultConfig() {
+    return {
+      webhook_id: undefined,
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    const details = { callback: (config) => this._automationUpdated(config) };
+    fireEvent(this, "subscribe-automation-config", details);
+    this._unsub = (details as any).unsub;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsub) {
+      this._unsub();
+    }
+  }
+
+  private _automationUpdated(config?: AutomationConfig) {
+    this._config = config;
+  }
+
+  private _generateWebhookId(): string {
     // The webhook_id should be treated like a password. Generate a default
     // value that would be hard for someone to guess. This generates a
     // 144-bit random value. The output is a 24 character url-safe string.
     const randomBytes = crypto.getRandomValues(new Uint8Array(18));
     const base64Str = btoa(String.fromCharCode(...randomBytes));
     const urlSafeId = base64Str.replace(/\+/g, "-").replace(/\//g, "_");
+    const lowerAlias = this._config?.alias?.toLowerCase() || "";
+    const urlSafeAlias = lowerAlias
+      .replace(/ /g, "-")
+      .replace(/[^a-zA-Z0-9-_]/g, "");
 
-    return {
-      webhook_id: urlSafeId,
-    };
+    return `${urlSafeId}-${urlSafeAlias}`;
   }
 
   protected render() {
-    const { webhook_id: webhookId } = this.trigger;
+    const { webhook_id: triggerWebhookId } = this.trigger;
+
+    // Generate a random webhookId for new Webhook triggers.
+    let webhookId = triggerWebhookId;
+    if (triggerWebhookId === undefined) {
+      webhookId = this._generateWebhookId();
+      const newTrigger = { ...this.trigger, webhook_id: webhookId };
+      fireEvent(this, "value-changed", { value: newTrigger });
+    }
+
     return html`
       <paper-input
         .label=${this.hass.localize(
