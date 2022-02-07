@@ -111,6 +111,11 @@ export class HaDeviceCondition extends LitElement {
   private _devicePicked(ev) {
     ev.stopPropagation();
     this._deviceId = ev.target.value;
+    if (this._deviceId === undefined) {
+      fireEvent(this, "value-changed", {
+        value: { ...HaDeviceCondition.defaultConfig, condition: "device" },
+      });
+    }
   }
 
   private _deviceConditionPicked(ev) {
