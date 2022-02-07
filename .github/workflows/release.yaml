@@ -88,8 +88,6 @@ jobs:
           asset_path: ./dist/${{ steps.file-names.outputs.wheel }}
           asset_name: ${{ steps.file-names.outputs.wheel }}
           asset_content_type: application/zip
-      - name: Print release url
-        run: echo "Release assets uploaded! View release at ${{ github.event.release.html_url }}"
 
   wheels-init:
     name: Init wheels build
