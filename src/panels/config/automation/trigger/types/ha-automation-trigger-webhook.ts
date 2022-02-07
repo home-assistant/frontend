@@ -1,7 +1,12 @@
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-icon-overflow-menu";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { mdiContentCopy } from "@mdi/js";
+import {
+  mdiCheckboxBlankOutline,
+  mdiCheckboxMarkedOutline,
+  mdiContentCopy,
+} from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,6 +21,8 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
+const ALLOWED_METHODS = ["GET", "HEAD", "POST", "PUT"];
+const DEFAULT_METHODS = ["POST", "PUT"];
 const DEFAULT_WEBHOOK_ID = "";
 
 @customElement("ha-automation-trigger-webhook")
@@ -33,6 +40,8 @@ export class HaWebhookTrigger extends LitElement {
   public static get defaultConfig() {
     return {
       webhook_id: DEFAULT_WEBHOOK_ID,
+      allow_internet: false,
+      allow_methods: [...DEFAULT_METHODS],
     };
   }
 
@@ -75,40 +84,90 @@ export class HaWebhookTrigger extends LitElement {
       if (this.trigger.webhook_id === DEFAULT_WEBHOOK_ID) {
         this.trigger.webhook_id = this._generateWebhookId();
       }
+      if (this.trigger.allow_internet === undefined) {
+        this.trigger.allow_internet = false;
+      }
+      if (this.trigger.allow_methods === undefined) {
+        this.trigger.allow_methods = [...DEFAULT_METHODS];
+      }
     }
   }
 
   protected render() {
-    const { webhook_id: webhookId } = this.trigger;
+    const {
+      webhook_id: webhookId,
+      allow_internet: allowInternet,
+      allow_methods: allowMethods,
+    } = this.trigger;
+
+    const overflowMenuItems = ALLOWED_METHODS.map((method) => ({
+      path: this._selectedPath(allowMethods?.includes(method)),
+      label: method,
+      action: () => this._allowMethodsChanged(method),
+    }));
+    overflowMenuItems.push({
+      path: this._selectedPath(allowInternet),
+      label: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.type.webhook.allow_internet"
+      ),
+      action: () => this._allowInternetChanged(),
+    });
 
     return html`
-      <ha-textfield
-        name="webhook_id"
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
-        )}
-        .helper=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
-        )}
-        .disabled=${this.disabled}
-        iconTrailing
-        .value=${webhookId || ""}
-        @input=${this._valueChanged}
-      >
-        <ha-icon-button
-          @click=${this._copyUrl}
-          slot="trailingIcon"
+      <div class="flex">
+        <ha-textfield
+          name="webhook_id"
           .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
           )}
-          .path=${mdiContentCopy}
-        ></ha-icon-button>
-      </ha-textfield>
+          .helper=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
+          )}
+          .disabled=${this.disabled}
+          iconTrailing
+          .value=${webhookId || ""}
+          @input=${this._valueChanged}
+        >
+          <ha-icon-button
+            @click=${this._copyUrl}
+            slot="trailingIcon"
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
+            )}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+        </ha-textfield>
+        <ha-icon-overflow-menu
+          .hass=${this.hass}
+          .narrow=${true}
+          .items=${overflowMenuItems}
+        ></ha-icon-overflow-menu>
+      </div>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  private _allowInternetChanged(): void {
+    const newTrigger = {
+      ...this.trigger,
+      allow_internet: !this.trigger.allow_internet,
+    };
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _allowMethodsChanged(method: string): void {
+    const methods = this.trigger.allow_methods ?? [];
+    const newMethods = [...methods];
+    if (methods.includes(method)) {
+      newMethods.splice(newMethods.indexOf(method), 1);
+    } else {
+      newMethods.push(method);
+    }
+    const newTrigger = { ...this.trigger, allow_methods: newMethods };
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
   private async _copyUrl(ev): Promise<void> {
@@ -121,9 +180,17 @@ export class HaWebhookTrigger extends LitElement {
     });
   }
 
+  private _selectedPath(value?: boolean): string {
+    return value ? mdiCheckboxMarkedOutline : mdiCheckboxBlankOutline;
+  }
+
   static styles = css`
+    .flex {
+      display: flex;
+    }
+
     ha-textfield {
-      display: block;
+      flex: 1;
     }
 
     ha-textfield > ha-icon-button {

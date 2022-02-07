@@ -2257,6 +2257,7 @@
                   "seconds": "Seconds"
                 },
                 "webhook": {
+                  "allow_internet": "Allow access from the internet",
                   "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
                   "webhook_id": "Webhook ID",

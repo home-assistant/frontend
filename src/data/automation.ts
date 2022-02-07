@@ -123,6 +123,8 @@ export interface TimePatternTrigger extends BaseTrigger {
 export interface WebhookTrigger extends BaseTrigger {
   platform: "webhook";
   webhook_id: string;
+  allow_internet?: boolean;
+  allow_methods?: string[];
 }
 
 export interface ZoneTrigger extends BaseTrigger {
