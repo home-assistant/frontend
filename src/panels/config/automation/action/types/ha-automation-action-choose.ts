@@ -10,7 +10,6 @@ import { Condition } from "../../../../../data/automation";
 import { Action, ChooseAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "../ha-automation-action";
 import { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-form/ha-form";
 
