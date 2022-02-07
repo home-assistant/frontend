@@ -89,24 +89,20 @@ class HaConfigInfo extends LitElement {
             <a href="https://www.python.org" target="_blank" rel="noreferrer"
               >Python 3</a
             >,
+            <a href="https://lit.dev" target="_blank" rel="noreferrer">Lit</a>,
+            ${this.hass.localize("ui.panel.config.info.icons_by")}
             <a
-              href="https://www.polymer-project.org"
-              target="_blank"
-              rel="noreferrer"
-              >Polymer</a
-            >, ${this.hass.localize("ui.panel.config.info.icons_by")}
-            <a
-              href="https://www.google.com/design/icons/"
+              href="https://fonts.google.com/icons?selected=Material+Icons"
               target="_blank"
               rel="noreferrer"
               >Google</a
             >
             ${this.hass.localize("ui.common.and")}
             <a
-              href="https://MaterialDesignIcons.com"
+              href="https://materialdesignicons.com/"
               target="_blank"
               rel="noreferrer"
-              >MaterialDesignIcons.com</a
+              >Material Design Icons</a
             >.
           </p>
           <p>
