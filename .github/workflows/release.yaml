@@ -61,8 +61,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
       - name: Download build artifacts
         uses: actions/download-artifact@v2
       - name: Get build file names
