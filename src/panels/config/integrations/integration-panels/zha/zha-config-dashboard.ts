@@ -106,7 +106,7 @@ class ZHAConfigDashboard extends LitElement {
         </ha-card>
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
-              ([section, schema]) => html` <ha-card
+              ([section, schema]) => html`<ha-card
                 header=${this.hass.localize(
                   `component.zha.config_panel.${section}.title`
                 )}

@@ -50,7 +50,11 @@ const SCHEMAS: {
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
-        selector: { text: { multiline: false } },
+        selector: { text: {} },
+      },
+      password: {
+        name: "Password",
+        selector: { text: { type: "password" } },
       },
       text_multiline: {
         name: "Text multiline",

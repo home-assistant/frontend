@@ -19,22 +19,21 @@ import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { RegistriesDialogParams } from "./show-dialog-registries";
 
-const SCHEMA = [
+const SCHEMA: HaFormSchema[] = [
   {
-    type: "string",
     name: "registry",
     required: true,
+    selector: { text: {} },
   },
   {
-    type: "string",
     name: "username",
     required: true,
+    selector: { text: {} },
   },
   {
-    type: "string",
     name: "password",
     required: true,
-    format: "password",
+    selector: { text: { type: "password" } },
   },
 ];
 
