@@ -57,10 +57,8 @@ export class HaWebhookTrigger extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  private async _copyUrl(): Promise<void> {
-    const inputElement = this.shadowRoot?.querySelector(
-      "#webhook_id"
-    ) as PaperInputElement;
+  private async _copyUrl(ev): Promise<void> {
+    const inputElement = ev.target.parentElement as PaperInputElement;
     const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
     await copyToClipboard(url);
