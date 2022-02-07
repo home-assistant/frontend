@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-icon-button";
 import { mdiContentCopy } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
@@ -68,6 +68,13 @@ export class HaWebhookTrigger extends LitElement {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
+
+  static styles = css`
+    paper-input > ha-icon-button {
+      --mdc-icon-button-size: 24px;
+      --mdc-icon-size: 18px;
+    }
+  `;
 }
 
 declare global {
