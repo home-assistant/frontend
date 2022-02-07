@@ -16,6 +16,8 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
+const DEFAULT_WEBHOOK_ID = "default webhook id";
+
 @customElement("ha-automation-trigger-webhook")
 export class HaWebhookTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -28,7 +30,7 @@ export class HaWebhookTrigger extends LitElement {
 
   public static get defaultConfig() {
     return {
-      webhook_id: undefined,
+      webhook_id: DEFAULT_WEBHOOK_ID,
     };
   }
 
@@ -70,7 +72,7 @@ export class HaWebhookTrigger extends LitElement {
 
     // Generate a random webhookId for new Webhook triggers.
     let webhookId = triggerWebhookId;
-    if (triggerWebhookId === undefined) {
+    if (webhookId === DEFAULT_WEBHOOK_ID) {
       webhookId = this._generateWebhookId();
       const newTrigger = { ...this.trigger, webhook_id: webhookId };
       fireEvent(this, "value-changed", { value: newTrigger });
