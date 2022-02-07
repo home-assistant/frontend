@@ -6,6 +6,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../../util/toast";
 import {
@@ -59,10 +60,7 @@ export class HaWebhookTrigger extends LitElement {
 
     // Include the automation name to give the user context about what the
     // webhook_id is used for.
-    const lowerAlias = this._config?.alias?.toLowerCase() || "";
-    const urlSafeAlias = lowerAlias
-      .replace(/[^a-z0-9_\s-]/g, "")
-      .replace(/[\s-]+/g, "-");
+    const urlSafeAlias = slugify(this._config?.alias?.toLowerCase() || "", "-");
 
     return `${urlSafeAlias}-${urlSafeId}`;
   }
