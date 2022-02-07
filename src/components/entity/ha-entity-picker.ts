@@ -115,6 +115,27 @@ export class HaEntityPicker extends LitElement {
       }
       let entityIds = Object.keys(hass.states);
 
+      if (!entityIds.length) {
+        return [
+          {
+            entity_id: "",
+            state: "",
+            last_changed: "",
+            last_updated: "",
+            context: { id: "", user_id: null },
+            friendly_name: this.hass!.localize(
+              "ui.components.entity.entity-picker.no_entities"
+            ),
+            attributes: {
+              friendly_name: this.hass!.localize(
+                "ui.components.entity.entity-picker.no_entities"
+              ),
+              icon: "mdi:magnify",
+            },
+          },
+        ];
+      }
+
       if (includeDomains) {
         entityIds = entityIds.filter((eid) =>
           includeDomains.includes(computeDomain(eid))
