@@ -205,7 +205,7 @@ export class HaComboBox extends LitElement {
       :host {
         display: block;
         width: 100%;
-        margin-top: 12px;
+        margin-top: 4px;
       }
       vaadin-combo-box-light {
         position: relative;
