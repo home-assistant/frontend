@@ -95,7 +95,22 @@ export interface ActionSelector {
 
 export interface StringSelector {
   text: {
-    multiline: boolean;
+    multiline?: boolean;
+    type?:
+      | "number"
+      | "text"
+      | "search"
+      | "tel"
+      | "url"
+      | "email"
+      | "password"
+      | "date"
+      | "month"
+      | "week"
+      | "time"
+      | "datetime-local"
+      | "color";
+    suffix?: string;
   };
 }
 
