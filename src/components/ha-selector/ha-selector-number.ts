@@ -62,9 +62,9 @@ export class HaNumberSelector extends LitElement {
   private _handleInputChange(ev) {
     ev.stopPropagation();
     const value =
-      ev.detail.value === "" || isNaN(ev.detail.value)
+      ev.target.value === "" || isNaN(ev.target.value)
         ? undefined
-        : Number(ev.detail.value);
+        : Number(ev.target.value);
     if (this.value === value) {
       return;
     }
