@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-textfield/mwc-textfield";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import type { ComboBoxLight } from "@vaadin/combo-box/vaadin-combo-box-light";
@@ -11,6 +10,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import "./ha-textfield";
 
 registerStyles(
   "vaadin-combo-box-item",
@@ -57,11 +57,21 @@ const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) =>
 
 @customElement("ha-combo-box")
 export class HaComboBox extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public label?: string;
 
   @property() public value?: string;
+
+  @property() public placeholder?: string;
+
+  @property() public validationMessage?: string;
+
+  @property({ attribute: "error-message" }) public errorMessage?: string;
+
+  @property({ type: Boolean }) public invalid?: boolean;
+
+  @property({ type: Boolean }) public icon?: boolean;
 
   @property() public items?: any[];
 
@@ -118,27 +128,33 @@ export class HaComboBox extends LitElement {
         @value-changed=${this._valueChanged}
         attr-for-value="value"
       >
-        <mwc-textfield
+        <ha-textfield
           .label=${this.label}
+          .placeholder=${this.placeholder}
           .disabled=${this.disabled}
+          .validationMessage=${this.validationMessage}
+          .errorMessage=${this.errorMessage}
           class="input"
           autocapitalize="none"
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
           .suffix=${html`<div style="width: 28px;"></div>`}
+          .icon=${this.icon}
+          .invalid=${this.invalid}
         >
-        </mwc-textfield>
+          <slot name="icon" slot="leadingIcon"></slot>
+        </ha-textfield>
         ${this.value
           ? html`<ha-svg-icon
-              aria-label=${this.hass.localize("ui.components.combo-box.clear")}
+              aria-label=${this.hass?.localize("ui.components.combo-box.clear")}
               class="clear-button"
               .path=${mdiClose}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
         <ha-svg-icon
-          aria-label=${this.hass.localize("ui.components.combo-box.show")}
+          aria-label=${this.hass?.localize("ui.components.combo-box.show")}
           class="toggle-button"
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
           @click=${this._toggleOpen}
@@ -194,10 +210,10 @@ export class HaComboBox extends LitElement {
       vaadin-combo-box-light {
         position: relative;
       }
-      mwc-textfield {
+      ha-textfield {
         width: 100%;
       }
-      mwc-textfield > ha-icon-button {
+      ha-textfield > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);
