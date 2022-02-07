@@ -57,7 +57,7 @@ export interface TriggerElement extends LitElement {
 
 export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   ev.stopPropagation();
-  const name = (ev.target as any)?.name;
+  const name = (ev.currentTarget as any)?.name;
   if (!name) {
     return;
   }

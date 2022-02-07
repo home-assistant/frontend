@@ -175,7 +175,7 @@ export class HuiEntityCardEditor
     if (!this._config || !this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
+    const target = ev.currentTarget! as EditorTarget;
 
     if (
       this[`_${target.configValue}`] === target.value ||
