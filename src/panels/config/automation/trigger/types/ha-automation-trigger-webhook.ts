@@ -1,8 +1,9 @@
+import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-icon-button";
 import { mdiContentCopy } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../../util/toast";
 import { WebhookTrigger } from "../../../../../data/automation";
