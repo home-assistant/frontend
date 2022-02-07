@@ -52,9 +52,6 @@ registerStyles(
   `
 );
 
-const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) =>
-  html`<mwc-list-item>${item}</mwc-list-item>`;
-
 @customElement("ha-combo-box")
 export class HaComboBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -112,7 +109,7 @@ export class HaComboBox extends LitElement {
         .filteredItems=${this.filteredItems}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}
-        ${comboBoxRenderer(this.renderer || defaultRowRenderer)}
+        ${comboBoxRenderer(this.renderer || this._defaultRowRenderer)}
         @opened-changed=${this._openedChanged}
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
@@ -146,6 +143,13 @@ export class HaComboBox extends LitElement {
       </vaadin-combo-box-light>
     `;
   }
+
+  private _defaultRowRenderer: ComboBoxLitRenderer<
+    string | Record<string, any>
+  > = (item) =>
+    html`<mwc-list-item>
+      ${this.itemLabelPath ? item[this.itemLabelPath] : item}
+    </mwc-list-item>`;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();

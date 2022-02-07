@@ -24,7 +24,7 @@ export const handleChangeEvent = (
   ev: CustomEvent
 ) => {
   ev.stopPropagation();
-  const name = (ev.target as any)?.name;
+  const name = (ev.currentTarget as any)?.name;
   if (!name) {
     return;
   }
