@@ -31,6 +31,7 @@ export class HaTextSelector extends LitElement {
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
         .disabled=${this.disabled}
+        .type=${this.selector.text?.type}
         @input=${this._handleChange}
         autocapitalize="none"
         autocomplete="off"
