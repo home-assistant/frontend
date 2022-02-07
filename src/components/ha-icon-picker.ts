@@ -174,6 +174,7 @@ export class HaIconPicker extends LitElement {
     return css`
       ha-icon,
       ha-svg-icon {
+        color: var(--primary-text-color);
         position: relative;
         bottom: 2px;
       }

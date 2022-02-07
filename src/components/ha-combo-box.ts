@@ -19,7 +19,7 @@ registerStyles(
       padding: 0;
     }
     :host([focused]:not([disabled])) {
-      background-color: rgba(0, 0, 0, 0.12);
+      background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.12);
     }
     :host([selected]:not([disabled])) {
       background-color: transparent;
