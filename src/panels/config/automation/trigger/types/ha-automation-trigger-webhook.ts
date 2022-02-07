@@ -58,8 +58,8 @@ export class HaWebhookTrigger extends LitElement {
     const urlSafeId = base64Str.replace(/\+/g, "-").replace(/\//g, "_");
     const lowerAlias = this._config?.alias?.toLowerCase() || "";
     const urlSafeAlias = lowerAlias
-      .replace(/ /g, "-")
-      .replace(/[^a-zA-Z0-9-_]/g, "");
+      .replace(/[^a-z0-9_\s-]/g, "")
+      .replace(/[\s-]+/g, "-");
 
     return `${urlSafeId}-${urlSafeAlias}`;
   }
