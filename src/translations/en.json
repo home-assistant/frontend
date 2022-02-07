@@ -358,6 +358,7 @@
           "entity": "Entity",
           "edit": "Edit",
           "clear": "Clear",
+          "no_entities": "You don't have any entities",
           "no_match": "No matching entities found",
           "show_entities": "Show entities"
         },

@@ -67,7 +67,7 @@ export class HaStatisticPicker extends LitElement {
     id: string;
     name: string;
     state?: HassEntity;
-  }> = (item) => html` <mwc-list-item graphic="avatar" twoline>
+  }> = (item) => html`<mwc-list-item graphic="avatar" twoline>
     ${item.state
       ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
       : ""}
