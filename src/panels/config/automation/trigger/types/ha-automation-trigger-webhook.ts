@@ -36,7 +36,6 @@ export class HaWebhookTrigger extends LitElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
         )}
-        id="webhook_id"
         name="webhook_id"
         .value=${webhookId}
         @value-changed=${this._valueChanged}
