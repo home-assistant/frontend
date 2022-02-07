@@ -109,7 +109,6 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _actionChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    console.log(ev.detail.value);
     const value = ev.detail.value.sequence as Action[];
     const index = (ev.target as any).idx;
     const choose = this.action.choose
