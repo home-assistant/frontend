@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-icon-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiContentCopy } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,7 +16,7 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
-const DEFAULT_WEBHOOK_ID = "default webhook id";
+const DEFAULT_WEBHOOK_ID = "";
 
 @customElement("ha-automation-trigger-webhook")
 export class HaWebhookTrigger extends LitElement {
@@ -67,16 +67,17 @@ export class HaWebhookTrigger extends LitElement {
     return `${urlSafeAlias}-${urlSafeId}`;
   }
 
-  protected render() {
-    const { webhook_id: triggerWebhookId } = this.trigger;
-
-    // Generate a random webhookId for new Webhook triggers.
-    let webhookId = triggerWebhookId;
-    if (webhookId === DEFAULT_WEBHOOK_ID) {
-      webhookId = this._generateWebhookId();
-      const newTrigger = { ...this.trigger, webhook_id: webhookId };
-      fireEvent(this, "value-changed", { value: newTrigger });
+  public willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("trigger")) {
+      if (this.trigger.webhook_id === DEFAULT_WEBHOOK_ID) {
+        this.trigger.webhook_id = this._generateWebhookId();
+      }
     }
+  }
+
+  protected render() {
+    const { webhook_id: webhookId } = this.trigger;
 
     return html`
       <paper-input
