@@ -85,11 +85,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.choose.default"
         )}:
       </h2>
-      <ha-automation-action
-        .actions=${action.default || []}
-        @value-changed=${this._defaultChanged}
+      <ha-form
         .hass=${this.hass}
-      ></ha-automation-action>
+        .schema=${[{ name: "default", selector: { action: {} } }]}
+        .data=${action.default ? action : { default: [] }}
+        @value-changed=${this._defaultChanged}
+      ></ha-form>
     `;
   }
 
@@ -142,7 +143,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   private _defaultChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value as Action[];
+    const value = ev.detail.value.default as Action[];
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
