@@ -35,7 +35,11 @@ export class HaWebhookTrigger extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    const details = { callback: (config) => { this._config = config; } };
+    const details = {
+      callback: (config) => {
+        this._config = config;
+      },
+    };
     fireEvent(this, "subscribe-automation-config", details);
     this._unsub = (details as any).unsub;
   }
@@ -45,10 +49,6 @@ export class HaWebhookTrigger extends LitElement {
     if (this._unsub) {
       this._unsub();
     }
-  }
-
-  private _automationUpdated(config?: AutomationConfig) {
-    this._config = config;
   }
 
   private _generateWebhookId(): string {
