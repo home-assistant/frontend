@@ -1,20 +1,19 @@
-import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiContentCopy } from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import type { HaTextField } from "../../../../../components/ha-textfield";
 import { showToast } from "../../../../../util/toast";
 import {
   WebhookTrigger,
   AutomationConfig,
 } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const DEFAULT_WEBHOOK_ID = "";
 
@@ -80,37 +79,41 @@ export class HaWebhookTrigger extends LitElement {
     const { webhook_id: webhookId } = this.trigger;
 
     return html`
-      <paper-input
+      <ha-textfield
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
         )}
-        name="webhook_id"
+        .helper=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
+        )}
+        .iconTrailing=${true}
         .value=${webhookId}
-        @value-changed=${this._valueChanged}
+        @input=${this._webhookIdChanged}
       >
         <ha-icon-button
           @click=${this._copyUrl}
-          slot="suffix"
+          slot="trailingIcon"
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
           )}
           .path=${mdiContentCopy}
         ></ha-icon-button>
-      </paper-input>
-      <div class="helper-text">
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
-        )}
-      </div>
+      </ha-textfield>
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+  private _webhookIdChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const newValue = (ev.currentTarget as any).value;
+    if (this.trigger.webhook_id === newValue) {
+      return;
+    }
+    const newTrigger = { ...this.trigger, webhook_id: newValue };
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
   private async _copyUrl(ev): Promise<void> {
-    const inputElement = ev.target.parentElement as PaperInputElement;
+    const inputElement = ev.target.parentElement as HaTextField;
     const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
     await copyToClipboard(url);
@@ -120,14 +123,15 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   static styles = css`
-    .helper-text {
-      padding-left: 1em;
-      color: var(--paper-input-container-color, var(--secondary-text-color));
-      font-family: var(--paper-font-caption_-_font-family);
-      font-size: var(--paper-font-caption_-_font-size);
-      font-weight: var(--paper-font-caption_-_font-weight);
+    ha-textfield {
+      display: block;
+      --mdc-text-field-fill-color: var(
+        --ha-card-background,
+        var(--card-background-color, white)
+      );
     }
-    paper-input > ha-icon-button {
+
+    ha-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
     }
