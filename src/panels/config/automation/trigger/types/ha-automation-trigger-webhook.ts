@@ -104,7 +104,7 @@ export class HaWebhookTrigger extends LitElement {
 
   private _webhookIdChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newValue = (ev.currentTarget as any).value;
+    const newValue = (ev.currentTarget as HaTextField).value;
     if (this.trigger.webhook_id === newValue) {
       return;
     }
