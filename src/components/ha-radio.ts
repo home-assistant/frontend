@@ -1,11 +1,19 @@
 import { Radio } from "@material/mwc-radio";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 
+const styles = [
+  ...Radio.styles,
+  css`
+    :host {
+      --mdc-theme-secondary: var(--primary-color);
+    }
+  `,
+];
 @customElement("ha-radio")
 export class HaRadio extends Radio {
-  public firstUpdated() {
-    super.firstUpdated();
-    this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
+  static get styles() {
+    return styles;
   }
 }
 

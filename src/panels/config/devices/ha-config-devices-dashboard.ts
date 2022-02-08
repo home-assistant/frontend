@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -19,6 +18,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-check-list-item";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -435,19 +435,15 @@ export class HaConfigDeviceDashboard extends LitElement {
             )}
             .path=${mdiFilterVariant}
           ></ha-icon-button>
-          <mwc-list-item
+          <ha-check-list-item
+            left
             @request-selected=${this._showDisabledChanged}
-            graphic="control"
             .selected=${this._showDisabled}
           >
-            <ha-checkbox
-              slot="graphic"
-              .checked=${this._showDisabled}
-            ></ha-checkbox>
             ${this.hass!.localize(
               "ui.panel.config.devices.picker.filter.show_disabled"
             )}
-          </mwc-list-item>
+          </ha-check-list-item>
         </ha-button-menu>
       </hass-tabs-subpage-data-table>
     `;

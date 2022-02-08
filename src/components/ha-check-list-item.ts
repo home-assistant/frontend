@@ -1,17 +1,18 @@
-import { Checkbox } from "@material/mwc-checkbox";
 import { css } from "lit";
+import { CheckListItem } from "@material/mwc-list/mwc-check-list-item";
 import { customElement } from "lit/decorators";
 
 const styles = [
-  ...Checkbox.styles,
+  ...CheckListItem.styles,
   css`
     :host {
       --mdc-theme-secondary: var(--primary-color);
     }
   `,
 ];
-@customElement("ha-checkbox")
-export class HaCheckbox extends Checkbox {
+
+@customElement("ha-check-list-item")
+export class HaCheckListItem extends CheckListItem {
   static get styles() {
     return styles;
   }
@@ -19,6 +20,6 @@ export class HaCheckbox extends Checkbox {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-checkbox": HaCheckbox;
+    "ha-check-list-item": HaCheckListItem;
   }
 }
