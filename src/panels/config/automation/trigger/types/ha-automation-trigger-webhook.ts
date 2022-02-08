@@ -14,6 +14,7 @@ import {
   AutomationConfig,
 } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const DEFAULT_WEBHOOK_ID = "";
 
@@ -80,6 +81,7 @@ export class HaWebhookTrigger extends LitElement {
 
     return html`
       <ha-textfield
+        name="webhook_id"
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
         )}
@@ -87,8 +89,8 @@ export class HaWebhookTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
         )}
         .iconTrailing=${true}
-        .value=${webhookId}
-        @input=${this._webhookIdChanged}
+        .value=${webhookId || ""}
+        @input=${this._valueChanged}
       >
         <ha-icon-button
           @click=${this._copyUrl}
@@ -102,14 +104,8 @@ export class HaWebhookTrigger extends LitElement {
     `;
   }
 
-  private _webhookIdChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const newValue = (ev.currentTarget as HaTextField).value;
-    if (this.trigger.webhook_id === newValue) {
-      return;
-    }
-    const newTrigger = { ...this.trigger, webhook_id: newValue };
-    fireEvent(this, "value-changed", { value: newTrigger });
+  private _valueChanged(ev: CustomEvent): void {
+    handleChangeEvent(this, ev);
   }
 
   private async _copyUrl(ev): Promise<void> {
