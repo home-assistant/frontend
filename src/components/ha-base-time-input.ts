@@ -146,7 +146,7 @@ export class HaBaseTimeInput extends LitElement {
         >
         </ha-textfield>
         ${this.enableSecond
-          ? html` <ha-textfield
+          ? html`<ha-textfield
               id="sec"
               type="number"
               inputmode="numeric"
