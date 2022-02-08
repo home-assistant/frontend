@@ -96,6 +96,11 @@ export class HaWebhookTrigger extends LitElement {
           .path=${mdiContentCopy}
         ></ha-icon-button>
       </paper-input>
+      <div class="helper-text">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
+        )}
+      </div>
     `;
   }
 
@@ -114,6 +119,13 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   static styles = css`
+    .helper-text {
+      padding-left: 1em;
+      color: var(--paper-input-container-color, var(--secondary-text-color));
+      font-family: var(--paper-font-caption_-_font-family);
+      font-size: var(--paper-font-caption_-_font-size);
+      font-weight: var(--paper-font-caption_-_font-weight);
+    }
     paper-input > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
