@@ -62,7 +62,7 @@ export class HaWebhookTrigger extends LitElement {
 
     // Include the automation name to give the user context about what the
     // webhook_id is used for.
-    const urlSafeAlias = slugify(this._config?.alias?.toLowerCase() || "", "-");
+    const urlSafeAlias = slugify(this._config?.alias || "", "-");
 
     return `${urlSafeAlias}-${urlSafeId}`;
   }
