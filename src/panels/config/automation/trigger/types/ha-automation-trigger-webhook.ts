@@ -121,10 +121,6 @@ export class HaWebhookTrigger extends LitElement {
   static styles = css`
     ha-textfield {
       display: block;
-      --mdc-text-field-fill-color: var(
-        --ha-card-background,
-        var(--card-background-color, white)
-      );
     }
 
     ha-textfield > ha-icon-button {
