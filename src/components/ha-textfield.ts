@@ -1,9 +1,10 @@
-import { TextField } from "@material/mwc-textfield";
-import { TemplateResult, html, PropertyValues } from "lit";
+import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
+import { styles } from "@material/mwc-textfield/mwc-textfield.css";
+import { TemplateResult, html, PropertyValues, css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textfield")
-export class HaTextField extends TextField {
+export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public invalid?: boolean;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
@@ -37,6 +38,15 @@ export class HaTextField extends TextField {
       </span>
     `;
   }
+
+  static override styles = [
+    styles,
+    css`
+      .mdc-text-field__input {
+        width: var(--ha-textfield-input-width, 100%);
+      }
+    `,
+  ];
 }
 
 declare global {

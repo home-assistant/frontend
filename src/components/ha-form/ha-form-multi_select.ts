@@ -1,6 +1,4 @@
-import "@material/mwc-formfield";
 import "@material/mwc-select/mwc-select";
-import "@material/mwc-textfield";
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import {
   css,
@@ -16,7 +14,9 @@ import "../ha-button-menu";
 import { HaCheckListItem } from "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-formfield";
 import "../ha-svg-icon";
+import "../ha-textfield";
 import {
   HaFormElement,
   HaFormMultiSelectData,
@@ -65,14 +65,14 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         ${this.label}${options.map((item: string | [string, string]) => {
           const value = optionValue(item);
           return html`
-            <mwc-formfield .label=${optionLabel(item)}>
+            <ha-formfield .label=${optionLabel(item)}>
               <ha-checkbox
                 .checked=${data.includes(value)}
                 .value=${value}
                 .disabled=${this.disabled}
                 @change=${this._valueChanged}
               ></ha-checkbox>
-            </mwc-formfield>
+            </ha-formfield>
           `;
         })}
       </div> `;
@@ -88,7 +88,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         multi
         activatable
       >
-        <mwc-textfield
+        <ha-textfield
           slot="trigger"
           .label=${this.label}
           .value=${data
@@ -96,7 +96,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             .join(", ")}
           .disabled=${this.disabled}
           tabindex="-1"
-        ></mwc-textfield>
+        ></ha-textfield>
         <ha-svg-icon
           slot="trigger"
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
@@ -122,7 +122,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   protected firstUpdated() {
     this.updateComplete.then(() => {
       const { formElement, mdcRoot } =
-        this.shadowRoot?.querySelector("mwc-textfield") || ({} as any);
+        this.shadowRoot?.querySelector("ha-textfield") || ({} as any);
       if (formElement) {
         formElement.style.textOverflow = "ellipsis";
       }
@@ -202,11 +202,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         display: block;
         cursor: pointer;
       }
-      mwc-formfield {
+      ha-formfield {
         display: block;
         padding-right: 16px;
       }
-      mwc-textfield {
+      ha-textfield {
         display: block;
         pointer-events: none;
       }

@@ -1,21 +1,18 @@
 import { css } from "lit";
-import { CheckListItem } from "@material/mwc-list/mwc-check-list-item";
+import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
+import { styles } from "@material/mwc-list/mwc-control-list-item.css";
 import { customElement } from "lit/decorators";
 
-const styles = [
-  ...CheckListItem.styles,
-  css`
-    :host {
-      --mdc-theme-secondary: var(--primary-color);
-    }
-  `,
-];
-
 @customElement("ha-check-list-item")
-export class HaCheckListItem extends CheckListItem {
-  static get styles() {
-    return styles;
-  }
+export class HaCheckListItem extends CheckListItemBase {
+  static override styles = [
+    styles,
+    css`
+      :host {
+        --mdc-theme-secondary: var(--primary-color);
+      }
+    `,
+  ];
 }
 
 declare global {
