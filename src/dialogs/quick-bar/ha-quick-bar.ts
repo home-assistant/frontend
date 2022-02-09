@@ -1,5 +1,4 @@
-import "../../components/ha-textfield";
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -13,7 +12,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -36,11 +35,12 @@ import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
+import "../../components/ha-textfield";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import {
   ConfirmationDialogParams,
@@ -210,25 +210,24 @@ export class QuickBar extends LitElement {
               </div>
             `
           : html`
-              <mwc-list
-                @rangechange=${this._handleRangeChanged}
-                @keydown=${this._handleListItemKeyDown}
-                @selected=${this._handleSelected}
-                style=${styleMap({
-                  height: this._narrow
-                    ? "calc(100vh - 56px)"
-                    : `${Math.min(
-                        items.length * (this._commandMode ? 56 : 72) + 26,
-                        this._done ? 500 : 0
-                      )}px`,
-                })}
-              >
-                ${scroll({
-                  items,
-                  layout: Layout1d,
-                  renderItem: (item: QuickBarItem, index) =>
-                    this._renderItem(item, index),
-                })}
+              <mwc-list @selected=${this._handleSelected}>
+                <lit-virtualizer
+                  scroller
+                  @keydown=${this._handleListItemKeyDown}
+                  @rangechange=${this._handleRangeChanged}
+                  class="ha-scrollbar"
+                  style=${styleMap({
+                    height: this._narrow
+                      ? "calc(100vh - 56px)"
+                      : `${Math.min(
+                          items.length * (this._commandMode ? 56 : 72) + 26,
+                          this._done ? 500 : 0
+                        )}px`,
+                  })}
+                  .items=${items}
+                  .renderItem=${this._renderItem}
+                >
+                </lit-virtualizer>
               </mwc-list>
             `}
         ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
@@ -261,14 +260,14 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _renderItem(item: QuickBarItem, index?: number) {
+  private _renderItem = (item: QuickBarItem, index: number): TemplateResult => {
     if (!item) {
       return html``;
     }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
       : this._renderEntityItem(item as EntityItem, index);
-  }
+  };
 
   private _renderEntityItem(item: EntityItem, index?: number) {
     return html`
@@ -431,16 +430,21 @@ export class QuickBar extends LitElement {
 
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
-    const isFirstListItem =
-      (ev.target as HTMLElement).getAttribute("index") === "0";
+    const index = (ev.target as HTMLElement).getAttribute("index");
+    const isFirstListItem = index === "0";
     this._focusListElement = ev.target as ListItem;
+    if (ev.key === "ArrowDown") {
+      this._getItemAtIndex(Number(index) + 1)?.focus();
+    }
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
+      } else {
+        this._getItemAtIndex(Number(index) - 1)?.focus();
       }
     }
     if (ev.key === "Backspace" || isSingleCharacter) {
-      (ev.currentTarget as List).scrollTop = 0;
+      (ev.currentTarget as HTMLElement).scrollTop = 0;
       this._filterInputField?.focus();
     }
   }
@@ -683,6 +687,7 @@ export class QuickBar extends LitElement {
 
   static get styles() {
     return [
+      haStyleScrollbar,
       haStyleDialog,
       css`
         .heading {
@@ -779,6 +784,10 @@ export class QuickBar extends LitElement {
         div[slot="trailingIcon"] {
           display: flex;
           align-items: center;
+        }
+
+        lit-virtualizer {
+          contain: size layout !important;
         }
       `,
     ];
