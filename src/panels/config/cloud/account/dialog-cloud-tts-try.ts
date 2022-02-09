@@ -1,18 +1,18 @@
 import "@material/mwc-button";
+import "@material/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
-import "@polymer/paper-input/paper-textarea";
-import type { PaperTextareaElement } from "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-paper-dropdown-menu";
+import type { HaTextArea } from "../../../../components/ha-textarea";
+import "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
 import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
@@ -29,7 +29,7 @@ export class DialogTryTts extends LitElement {
 
   @state() private _params?: TryTtsDialogParams;
 
-  @query("#message") private _messageInput?: PaperTextareaElement;
+  @query("#message") private _messageInput?: HaTextArea;
 
   @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
 
@@ -61,7 +61,8 @@ export class DialogTryTts extends LitElement {
         )}
       >
         <div>
-          <paper-textarea
+          <ha-textarea
+            autogrow
             id="message"
             label="Message"
             .value=${this._message ||
@@ -71,40 +72,38 @@ export class DialogTryTts extends LitElement {
               this.hass.user!.name
             )}
           >
-          </paper-textarea>
+          </ha-textarea>
 
-          <ha-paper-dropdown-menu
+          <mwc-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.target"
             )}
+            id="target"
+            .value=${target}
+            @selected=${this._handleTargetChanged}
+            fixedMenuPosition
+            naturalMenuWidth
+            @closed=${stopPropagation}
           >
-            <paper-listbox
-              id="target"
-              slot="dropdown-content"
-              attr-for-selected="item-value"
-              .selected=${target}
-              @selected-changed=${this._handleTargetChanged}
-            >
-              <paper-item item-value="browser">
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.tts.dialog.target_browser"
-                )}
-              </paper-item>
-              ${Object.values(this.hass.states)
-                .filter(
-                  (entity) =>
-                    computeStateDomain(entity) === "media_player" &&
-                    supportsFeature(entity, SUPPORT_PLAY_MEDIA)
-                )
-                .map(
-                  (entity) => html`
-                    <paper-item .itemValue=${entity.entity_id}>
-                      ${computeStateName(entity)}
-                    </paper-item>
-                  `
-                )}
-            </paper-listbox>
-          </ha-paper-dropdown-menu>
+            <mwc-list-item value="browser">
+              ${this.hass.localize(
+                "ui.panel.config.cloud.account.tts.dialog.target_browser"
+              )}
+            </mwc-list-item>
+            ${Object.values(this.hass.states)
+              .filter(
+                (entity) =>
+                  computeStateDomain(entity) === "media_player" &&
+                  supportsFeature(entity, SUPPORT_PLAY_MEDIA)
+              )
+              .map(
+                (entity) => html`
+                  <mwc-list-item .value=${entity.entity_id}>
+                    ${computeStateName(entity)}
+                  </mwc-list-item>
+                `
+              )}
+          </mwc-select>
         </div>
         <mwc-button
           slot="primaryAction"
@@ -131,7 +130,7 @@ export class DialogTryTts extends LitElement {
   }
 
   private _handleTargetChanged(ev) {
-    this._target = ev.detail.value;
+    this._target = ev.target.value;
     this.requestUpdate("_target");
   }
 
@@ -214,6 +213,13 @@ export class DialogTryTts extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
+        }
+        ha-textarea,
+        mwc-select {
+          width: 100%;
+        }
+        mwc-select {
+          margin-top: 8px;
         }
       `,
     ];

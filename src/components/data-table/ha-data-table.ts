@@ -945,6 +945,7 @@ export class HaDataTable extends LitElement {
         }
         .scroller {
           height: calc(100% - 57px);
+          overflow: overlay !important;
         }
 
         .mdc-data-table__table.auto-height .scroller {
