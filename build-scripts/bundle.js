@@ -32,7 +32,7 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
     isHassioBuild &&
       require.resolve(
         path.resolve(paths.polymer_dir, "src/components/ha-icon.ts"),
-        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
+        path.resolve(paths.polymer_dir, "src/data/custom_icons.ts")
       ),
   ].filter(Boolean);
 
