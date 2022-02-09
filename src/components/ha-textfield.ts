@@ -42,6 +42,9 @@ export class HaTextField extends TextFieldBase {
   static override styles = [
     styles,
     css`
+      .mdc-text-field__input {
+        width: var(--ha-textfield-input-width, 100%);
+      }
       .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
         padding: var(--text-field-padding, 0px 16px);
       }
