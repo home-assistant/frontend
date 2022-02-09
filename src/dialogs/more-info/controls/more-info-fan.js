@@ -1,6 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -10,11 +8,12 @@ import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
-import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import { SUPPORT_SET_SPEED } from "../../../data/fan";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 
 /*
  * @appliesMixin EventsMixin
@@ -38,12 +37,8 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
           display: block;
         }
 
-        ha-paper-dropdown-menu {
+        mwc-select {
           width: 100%;
-        }
-
-        paper-item {
-          cursor: pointer;
         }
       </style>
 
@@ -62,25 +57,21 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </div>
 
         <div class="container-preset_modes">
-          <ha-paper-dropdown-menu
-            label-float=""
-            dynamic-align=""
+          <mwc-select
             label="[[localize('ui.card.fan.preset_mode')]]"
+            value="[[stateObj.attributes.preset_mode]]"
+            on-selected="presetModeChanged"
+            fixedMenuPosition
+            naturalMenuWidth
+            on-closed="stopPropagation"
           >
-            <paper-listbox
-              slot="dropdown-content"
-              selected="[[stateObj.attributes.preset_mode]]"
-              on-selected-changed="presetModeChanged"
-              attr-for-selected="item-name"
+            <template
+              is="dom-repeat"
+              items="[[stateObj.attributes.preset_modes]]"
             >
-              <template
-                is="dom-repeat"
-                items="[[stateObj.attributes.preset_modes]]"
-              >
-                <paper-item item-name$="[[item]]">[[item]]</paper-item>
-              </template>
-            </paper-listbox>
-          </ha-paper-dropdown-menu>
+              <mwc-list-item value="[[item]]">[[item]]</mwc-list-item>
+            </template>
+          </mwc-select>
         </div>
 
         <div class="container-oscillating">
@@ -180,7 +171,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   presetModeChanged(ev) {
     const oldVal = this.stateObj.attributes.preset_mode;
-    const newVal = ev.detail.value;
+    const newVal = ev.target.value;
 
     if (!newVal || oldVal === newVal) return;
 
@@ -188,6 +179,10 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       entity_id: this.stateObj.entity_id,
       preset_mode: newVal,
     });
+  }
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
   }
 
   percentageChanged(ev) {
