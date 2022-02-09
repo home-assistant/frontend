@@ -1272,6 +1272,7 @@
           },
           "picker": {
             "headers": {
+              "icon": "Icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
