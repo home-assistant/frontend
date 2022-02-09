@@ -366,7 +366,7 @@ export class HaDataTable extends LitElement {
     }
     return html`
       <div
-        aria-rowindex=${index! + 2}
+        aria-rowindex=${index + 2}
         role="row"
         .rowId=${row[this.id]}
         @click=${this._handleRowClick}
