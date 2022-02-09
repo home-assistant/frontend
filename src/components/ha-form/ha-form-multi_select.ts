@@ -210,9 +210,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         display: block;
         pointer-events: none;
       }
-      mwc-check-list-item {
-        --mdc-theme-secondary: var(--primary-color);
-      }
       ha-svg-icon {
         color: var(--input-dropdown-icon-color);
         position: absolute;
