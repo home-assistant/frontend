@@ -92,6 +92,7 @@ class DialogAreaDetail extends LitElement {
                 "ui.panel.config.areas.editor.name_required"
               )}
               .invalid=${nameInvalid}
+              dialogInitialFocus
             ></paper-input>
             <ha-picture-upload
               .hass=${this.hass}
