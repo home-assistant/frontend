@@ -1,4 +1,3 @@
-import "@material/mwc-textfield/mwc-textfield";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { StringSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-textarea";
+import "../ha-textfield";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
@@ -39,7 +39,7 @@ export class HaTextSelector extends LitElement {
         autogrow
       ></ha-textarea>`;
     }
-    return html`<mwc-textfield
+    return html`<ha-textfield
         .value=${this.value || ""}
         .placeholder=${this.placeholder || ""}
         .disabled=${this.disabled}
@@ -51,7 +51,7 @@ export class HaTextSelector extends LitElement {
             html`<div style="width: 24px"></div>`
           : this.selector.text?.suffix}
         required
-      ></mwc-textfield>
+      ></ha-textfield>
       ${this.selector.text?.type === "password"
         ? html`<ha-icon-button
             toggles
@@ -80,8 +80,8 @@ export class HaTextSelector extends LitElement {
         display: block;
         position: relative;
       }
-      mwc-textfield,
-      ha-textarea {
+      ha-textarea,
+      ha-textfield {
         width: 100%;
       }
       ha-icon-button {
