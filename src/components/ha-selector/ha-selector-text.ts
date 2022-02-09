@@ -1,4 +1,3 @@
-import "@material/mwc-textarea/mwc-textarea";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { StringSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
+import "../ha-textarea";
 import "../ha-textfield";
 
 @customElement("ha-selector-text")
@@ -26,7 +26,7 @@ export class HaTextSelector extends LitElement {
 
   protected render() {
     if (this.selector.text?.multiline) {
-      return html`<mwc-textarea
+      return html`<ha-textarea
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
@@ -36,7 +36,8 @@ export class HaTextSelector extends LitElement {
         autocomplete="off"
         spellcheck="false"
         required
-      ></mwc-textarea>`;
+        autogrow
+      ></ha-textarea>`;
     }
     return html`<ha-textfield
         .value=${this.value || ""}
@@ -79,8 +80,8 @@ export class HaTextSelector extends LitElement {
         display: block;
         position: relative;
       }
-      ha-textfield,
-      mwc-textarea {
+      ha-textarea,
+      ha-textfield {
         width: 100%;
       }
       ha-icon-button {
