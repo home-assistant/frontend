@@ -171,7 +171,7 @@ export const theme = EditorView.theme({
 
   ".cm-gutters": {
     backgroundColor:
-      "var(--paper-dialog-background-color, var(--primary-background-color))",
+      "var(--code-editor-gutter-color, var(--mdc-text-field-fill-color, whitesmoke))",
     color: "var(--paper-dialog-color, var(--secondary-text-color))",
     border: "none",
     borderRight:
