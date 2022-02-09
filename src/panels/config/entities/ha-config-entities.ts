@@ -168,6 +168,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.state_icon"
+        ),
         type: "icon",
         template: (_, entry: EntityRow) => html`
           <ha-state-icon

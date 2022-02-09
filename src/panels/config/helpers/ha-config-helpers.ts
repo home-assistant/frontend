@@ -41,6 +41,9 @@ export class HaConfigHelpers extends LitElement {
     const columns: DataTableColumnContainer = {
       icon: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.icon"
+        ),
         type: "icon",
         template: (icon, helper: any) =>
           icon
@@ -88,6 +91,9 @@ export class HaConfigHelpers extends LitElement {
     };
     columns.editable = {
       title: "",
+      label: this.hass.localize(
+        "ui.panel.config.helpers.picker.headers.editable"
+      ),
       type: "icon",
       template: (editable) => html`
         ${!editable

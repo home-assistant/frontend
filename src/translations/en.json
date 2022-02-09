@@ -1073,8 +1073,10 @@
           "confirm_remove": "Are you sure you want to remove tag {tag}?",
           "automation_title": "Tag {name} is scanned",
           "headers": {
+            "icon": "Icon",
             "name": "Name",
-            "last_scanned": "Last scanned"
+            "last_scanned": "Last scanned",
+            "write": "Write"
           },
           "detail": {
             "new_tag": "New tag",
@@ -1272,6 +1274,7 @@
           },
           "picker": {
             "headers": {
+              "icon": "Icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
@@ -1378,12 +1381,14 @@
             },
             "picker": {
               "headers": {
+                "icon": "Icon",
                 "title": "Title",
                 "conf_mode": "Configuration method",
                 "default": "Default",
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
-                "filename": "Filename"
+                "filename": "Filename",
+                "url": "Open"
               },
               "open": "Open",
               "add_dashboard": "Add dashboard"
@@ -1523,7 +1528,10 @@
             "duplicate_automation": "Duplicate automation",
             "duplicate": "Duplicate",
             "headers": {
-              "name": "Name"
+              "toggle": "Enable/disable",
+              "name": "Name",
+              "trigger": "Trigger",
+              "actions": "Actions"
             }
           },
           "dialog_new": {
@@ -1932,7 +1940,8 @@
             "edit_script": "Edit script",
             "dev_script": "Debug script",
             "headers": {
-              "name": "Name"
+              "name": "Name",
+              "state": "State"
             },
             "duplicate_script": "Duplicate script",
             "duplicate": "[%key:ui::panel::config::automation::picker::duplicate%]"
@@ -1988,7 +1997,11 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "Duplicate",
             "headers": {
-              "name": "Name"
+              "activate": "Activate",
+              "state": "State",
+              "name": "Name",
+              "show_info": "Show information",
+              "edit": "Edit"
             }
           },
           "editor": {
@@ -2303,6 +2316,7 @@
             "area": "Area",
             "integration": "Integration",
             "battery": "Battery",
+            "disabled_by": "Disabled",
             "no_devices": "No devices",
             "no_integration": "No integration"
           },
@@ -2342,6 +2356,7 @@
               "ok": "Ok"
             },
             "headers": {
+              "state_icon": "State icon",
               "name": "Name",
               "entity_id": "Entity ID",
               "integration": "Integration",
@@ -2567,7 +2582,8 @@
               "group": "Group",
               "system": "System",
               "is_active": "Active",
-              "local": "Local"
+              "local": "Local",
+              "icon": "Icon"
             },
             "add_user": "Add user"
           },
@@ -3196,6 +3212,7 @@
           "title": "Unused entities",
           "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
           "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+          "state_icon": "State",
           "entity": "Entity",
           "entity_id": "Entity ID",
           "domain": "Domain",
