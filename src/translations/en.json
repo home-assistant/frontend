@@ -1377,12 +1377,14 @@
             },
             "picker": {
               "headers": {
+                "icon": "Icon",
                 "title": "Title",
                 "conf_mode": "Configuration method",
                 "default": "Default",
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
-                "filename": "Filename"
+                "filename": "Filename",
+                "url": "Open"
               },
               "open": "Open",
               "add_dashboard": "Add dashboard"
