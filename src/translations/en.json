@@ -3206,6 +3206,7 @@
           "title": "Unused entities",
           "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
           "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+          "state_icon": "State",
           "entity": "Entity",
           "entity_id": "Entity ID",
           "domain": "Domain",
