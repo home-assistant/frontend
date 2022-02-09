@@ -1,4 +1,6 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -10,17 +12,15 @@ import {
   mdiVolumePlus,
 } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-slider";
+import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
@@ -139,23 +139,21 @@ class MoreInfoMediaPlayer extends LitElement {
                 class="source-input"
                 .path=${mdiLoginVariant}
               ></ha-svg-icon>
-              <ha-paper-dropdown-menu
+              <mwc-select
                 .label=${this.hass.localize("ui.card.media_player.source")}
+                .value=${stateObj.attributes.source!}
+                @selected=${this._handleSourceChanged}
+                fixedMenuPosition
+                naturalMenuWidth
+                @closed=${stopPropagation}
               >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="item-name"
-                  .selected=${stateObj.attributes.source!}
-                  @iron-select=${this._handleSourceChanged}
-                >
-                  ${stateObj.attributes.source_list!.map(
-                    (source) =>
-                      html`
-                        <paper-item .itemName=${source}>${source}</paper-item>
-                      `
-                  )}
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                ${stateObj.attributes.source_list!.map(
+                  (source) =>
+                    html`
+                      <mwc-list-item .value=${source}>${source}</mwc-list-item>
+                    `
+                )}
+              </mwc-select>
             </div>
           `
         : ""}
@@ -164,24 +162,20 @@ class MoreInfoMediaPlayer extends LitElement {
         ? html`
             <div class="sound-input">
               <ha-svg-icon .path=${mdiMusicNote}></ha-svg-icon>
-              <ha-paper-dropdown-menu
-                dynamic-align
-                label-float
+              <mwc-select
                 .label=${this.hass.localize("ui.card.media_player.sound_mode")}
+                .value=${stateObj.attributes.sound_mode!}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleSoundModeChanged}
+                @closed=${stopPropagation}
               >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="item-name"
-                  .selected=${stateObj.attributes.sound_mode!}
-                  @iron-select=${this._handleSoundModeChanged}
-                >
-                  ${stateObj.attributes.sound_mode_list.map(
-                    (mode) => html`
-                      <paper-item .itemName=${mode}>${mode}</paper-item>
-                    `
-                  )}
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                ${stateObj.attributes.sound_mode_list.map(
+                  (mode) => html`
+                    <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                  `
+                )}
+              </mwc-select>
             </div>
           `
         : ""}
@@ -242,14 +236,10 @@ class MoreInfoMediaPlayer extends LitElement {
         margin-top: 24px;
       }
 
-      .source-input ha-paper-dropdown-menu,
-      .sound-input ha-paper-dropdown-menu {
+      .source-input mwc-select,
+      .sound-input mwc-select {
         margin-left: 10px;
         flex-grow: 1;
-      }
-
-      paper-item {
-        cursor: pointer;
       }
     `;
   }
@@ -279,8 +269,8 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSourceChanged(e: CustomEvent) {
-    const newVal = e.detail.item.itemName;
+  private _handleSourceChanged(e) {
+    const newVal = e.target.value;
 
     if (!newVal || this.stateObj!.attributes.source === newVal) {
       return;
@@ -292,8 +282,8 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSoundModeChanged(e: CustomEvent) {
-    const newVal = e.detail.item.itemName;
+  private _handleSoundModeChanged(e) {
+    const newVal = e.target.value;
 
     if (!newVal || this.stateObj?.attributes.sound_mode === newVal) {
       return;

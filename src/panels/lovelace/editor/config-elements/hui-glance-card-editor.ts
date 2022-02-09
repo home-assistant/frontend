@@ -1,6 +1,3 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -31,6 +28,7 @@ import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import "@polymer/paper-input/paper-input";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

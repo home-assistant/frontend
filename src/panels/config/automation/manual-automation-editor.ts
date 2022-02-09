@@ -1,7 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
-import { PaperListboxElement } from "@polymer/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -81,30 +79,23 @@ export class HaManualAutomationEditor extends LitElement {
                 >`
               )}
             </p>
-            <paper-dropdown-menu-light
+            <mwc-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
               )}
-              no-animations
+              .value=${this.config.mode ? MODES.indexOf(this.config.mode) : 0}
+              @selected=${this._modeChanged}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this.config.mode
-                  ? MODES.indexOf(this.config.mode)
-                  : 0}
-                @iron-select=${this._modeChanged}
-              >
-                ${MODES.map(
-                  (mode) => html`
-                    <paper-item .mode=${mode}>
-                      ${this.hass.localize(
-                        `ui.panel.config.automation.editor.modes.${mode}`
-                      ) || mode}
-                    </paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu-light>
+              ${MODES.map(
+                (mode) => html`
+                  <mwc-list-item .value=${mode}>
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.modes.${mode}`
+                    ) || mode}
+                  </mwc-list-item>
+                `
+              )}
+            </mwc-select>
             ${this.config.mode && MODES_MAX.includes(this.config.mode)
               ? html`<paper-input
                   .label=${this.hass.localize(
@@ -263,9 +254,8 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private _modeChanged(ev: CustomEvent) {
-    const mode = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.mode;
+  private _modeChanged(ev) {
+    const mode = ev.target.value;
 
     if (
       mode === this.config!.mode ||

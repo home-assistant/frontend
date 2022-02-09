@@ -8,15 +8,13 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-paper-dropdown-menu";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   VacuumEntity,
@@ -31,6 +29,8 @@ import {
   VACUUM_SUPPORT_STOP,
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
+import "@material/mwc-select/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 
 interface VacuumCommand {
   translationKey: string;
@@ -173,25 +173,23 @@ class MoreInfoVacuum extends LitElement {
         ? html`
             <div>
               <div class="flex-horizontal">
-                <ha-paper-dropdown-menu
+                <mwc-select
                   .label=${this.hass!.localize(
                     "ui.dialogs.more_info_control.vacuum.fan_speed"
                   )}
                   .disabled=${stateObj.state === UNAVAILABLE}
+                  .value=${stateObj.attributes.fan_speed}
+                  @selected=${this.handleFanSpeedChanged}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @closed=${stopPropagation}
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    .selected=${stateObj.attributes.fan_speed}
-                    @iron-select=${this.handleFanSpeedChanged}
-                    attr-for-selected="item-name"
-                  >
-                    ${stateObj.attributes.fan_speed_list!.map(
-                      (mode) => html`
-                        <paper-item .itemName=${mode}> ${mode} </paper-item>
-                      `
-                    )}
-                  </paper-listbox>
-                </ha-paper-dropdown-menu>
+                  ${stateObj.attributes.fan_speed_list!.map(
+                    (mode) => html`
+                      <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                    `
+                  )}
+                </mwc-select>
                 <div
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
                 >
@@ -221,9 +219,9 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  private handleFanSpeedChanged(ev: CustomEvent) {
+  private handleFanSpeedChanged(ev) {
     const oldVal = this.stateObj!.attributes.fan_speed;
-    const newVal = ev.detail.item.itemName;
+    const newVal = ev.target.value;
 
     if (!newVal || oldVal === newVal) {
       return;
