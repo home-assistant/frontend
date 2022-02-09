@@ -41,8 +41,10 @@ export const theme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
-      "var(--code-editor-background-color, var(--card-background-color))",
+      "var(--code-editor-background-color, var(--mdc-text-field-fill-color, whitesmoke))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.3)" },
+    borderRadius:
+      "var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0px 0px",
     caretColor: "var(--secondary-text-color)",
     height: "var(--code-mirror-height, auto)",
     maxHeight: "var(--code-mirror-max-height, unset)",
@@ -64,7 +66,10 @@ export const theme = EditorView.theme({
 
   ".cm-scroller": { outline: "none" },
 
-  ".cm-content": { caretColor: "var(--secondary-text-color)" },
+  ".cm-content": {
+    caretColor: "var(--secondary-text-color)",
+    paddingTop: "16px",
+  },
 
   ".cm-panels": {
     backgroundColor: "var(--primary-background-color)",
