@@ -61,6 +61,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
+          label: this.hass.localize("ui.panel.config.tag.headers.icon"),
           type: "icon",
           template: (_icon, tag) => html`<tag-image .tag=${tag}></tag-image>`,
         },
@@ -103,6 +104,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       if (this._canWriteTags) {
         columns.write = {
           title: "",
+          label: this.hass.localize("ui.panel.config.tag.headers.write"),
           type: "icon-button",
           template: (_write, tag: any) => html` <ha-icon-button
             .tag=${tag}
