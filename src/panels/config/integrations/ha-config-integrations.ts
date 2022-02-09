@@ -1,5 +1,4 @@
 import { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -26,6 +25,8 @@ import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-check-list-item";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
@@ -308,21 +309,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .path=${mdiFilterVariant}
       >
       </ha-icon-button>
-      <mwc-list-item graphic="control" .selected=${this._showIgnored}>
-        <ha-checkbox slot="graphic" .checked=${this._showIgnored}></ha-checkbox>
+      <ha-check-list-item left .selected=${this._showIgnored}>
         ${this.hass.localize(
           "ui.panel.config.integrations.ignore.show_ignored"
         )}
-      </mwc-list-item>
-      <mwc-list-item graphic="control" .selected=${this._showDisabled}>
-        <ha-checkbox
-          slot="graphic"
-          .checked=${this._showDisabled}
-        ></ha-checkbox>
+      </ha-check-list-item>
+      <ha-check-list-item left .selected=${this._showDisabled}>
         ${this.hass.localize(
           "ui.panel.config.integrations.disable.show_disabled"
         )}
-      </mwc-list-item>
+      </ha-check-list-item>
     </ha-button-menu>`;
 
     return html`

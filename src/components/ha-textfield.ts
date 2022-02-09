@@ -1,9 +1,10 @@
-import { TextField } from "@material/mwc-textfield";
-import { css, CSSResult, html, PropertyValues, TemplateResult } from "lit";
+import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
+import { styles } from "@material/mwc-textfield/mwc-textfield.css";
+import { TemplateResult, html, PropertyValues, css, CSSResult } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textfield")
-export class HaTextField extends TextField {
+export class HaTextField extends TextFieldBase {
   @property({ type: Boolean }) public invalid?: boolean;
 
   @property({ attribute: "error-message" }) public errorMessage?: string;

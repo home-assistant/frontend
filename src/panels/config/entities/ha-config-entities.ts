@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
@@ -35,6 +34,7 @@ import type {
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-check-list-item";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -586,45 +586,35 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
                 .path=${mdiFilterVariant}
               ></ha-icon-button>
-              <mwc-list-item
+              <ha-check-list-item
                 @request-selected=${this._showDisabledChanged}
-                graphic="control"
                 .selected=${this._showDisabled}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showDisabled}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_disabled"
                 )}
-              </mwc-list-item>
-              <mwc-list-item
+              </ha-check-list-item>
+              <ha-check-list-item
                 @request-selected=${this._showRestoredChanged}
                 graphic="control"
                 .selected=${this._showUnavailable}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showUnavailable}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_unavailable"
                 )}
-              </mwc-list-item>
-              <mwc-list-item
+              </ha-check-list-item>
+              <ha-check-list-item
                 @request-selected=${this._showReadOnlyChanged}
                 graphic="control"
                 .selected=${this._showReadOnly}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showReadOnly}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_readonly"
                 )}
-              </mwc-list-item>
+              </ha-check-list-item>
             </ha-button-menu>`}
         ${includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">

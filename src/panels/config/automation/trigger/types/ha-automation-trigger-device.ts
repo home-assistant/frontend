@@ -111,6 +111,11 @@ export class HaDeviceTrigger extends LitElement {
   private _devicePicked(ev) {
     ev.stopPropagation();
     this._deviceId = ev.target.value;
+    if (this._deviceId === undefined) {
+      fireEvent(this, "value-changed", {
+        value: { ...HaDeviceTrigger.defaultConfig, platform: "device" },
+      });
+    }
   }
 
   private _deviceTriggerPicked(ev) {
