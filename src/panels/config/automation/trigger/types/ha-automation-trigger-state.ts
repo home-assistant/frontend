@@ -80,6 +80,17 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const trgFor = createDurationData(this.trigger.for);
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this.trigger}
+        .schema=${[
+          { name: "entity_id", selector: { entity: {} } },
+          { name: "from", selector: { text: {} } },
+          { name: "to", selector: { text: {} } },
+          { name: "for", selector: { time: {} } },
+        ]}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <ha-entity-picker
         .value=${entity_id}
         @value-changed=${this._valueChanged}
