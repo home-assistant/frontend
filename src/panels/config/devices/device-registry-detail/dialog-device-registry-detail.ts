@@ -68,6 +68,7 @@ class DialogDeviceRegistryDetail extends LitElement {
               .label=${this.hass.localize("ui.panel.config.devices.name")}
               .placeholder=${device.name || ""}
               .disabled=${this._submitting}
+              dialogInitialFocus
             ></paper-input>
             <ha-area-picker
               .hass=${this.hass}

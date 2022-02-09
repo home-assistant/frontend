@@ -115,6 +115,7 @@ export class DialogEntityEditor extends LitElement {
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.settings"
               )}
+              dialogInitialFocus
             >
             </mwc-tab>
             ${Object.entries(this._extraTabs).map(
