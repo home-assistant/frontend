@@ -20,8 +20,7 @@ export class HaIconSelector extends LitElement {
   protected render() {
     return html`
       <ha-icon-picker
-        .label=${this.hass.localize("ui.panel.config.script.editor.icon")}
-        .name=${"icon"}
+        .label=${this.label}
         .value=${this.value}
         @value-changed=${this._valueChanged}
       >

@@ -20,6 +20,7 @@ import {
 } from "lit";
 import { property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -30,6 +31,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import {
   HaFormDataContainer,
+  HaFormSchema,
   HaFormSelector,
 } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
@@ -102,63 +104,66 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
-  private _schema?: HaFormSelector[];
+  private _schema = memoizeOne(
+    (hasID: boolean, useBluePrint?: boolean, currentMode?: string) => {
+      const schema: HaFormSchema[] = [];
 
-  protected willUpdate(): void {
-    if (this._mode !== "gui" || !this._config) {
-      return;
-    }
-
-    const schema = BASE_GUI_SCHEMA;
-    if (!this.scriptEntityId) {
-      schema!.push({
-        name: "id",
-        selector: {
-          text: {
-            type: "text",
+      if (!hasID) {
+        schema!.push({
+          name: "id",
+          selector: {
+            text: {},
           },
-        },
-      });
-    }
+        });
+      }
 
-    if (!("use_blueprint" in this._config)) {
-      schema!.push({
-        name: "mode",
-        selector: {
-          select: {
-            options: MODES.map((mode) => ({
-              label: `
-                ${
-                  this.hass.localize(
-                    `ui.panel.config.script.editor.modes.${mode}`
-                  ) || mode
-                }
-              `,
-              value: mode,
-            })),
+      if (!useBluePrint) {
+        schema!.push({
+          name: "mode",
+          selector: {
+            select: {
+              options: MODES.map((mode) => ({
+                label: `
+                  ${
+                    this.hass.localize(
+                      `ui.panel.config.script.editor.modes.${mode}`
+                    ) || mode
+                  }
+                `,
+                value: mode,
+              })),
+            },
           },
-        },
-      });
-    }
+        });
+      }
 
-    if (this._config.mode && MODES_MAX.includes(this._config.mode)) {
-      schema!.push({
-        name: "max",
-        selector: {
-          text: {
-            type: "number",
+      if (currentMode && MODES_MAX.includes(currentMode)) {
+        schema!.push({
+          name: "max",
+          selector: {
+            text: {
+              type: "number",
+            },
           },
-        },
-      });
-    }
+        });
+      }
 
-    this._schema = schema;
-  }
+      schema.unshift(...BASE_GUI_SCHEMA);
+
+      return schema;
+    }
+  );
 
   protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
+
+    const schema = this._schema(
+      !!this.scriptEntityId,
+      "use_blueprint" in this._config,
+      this._config.mode
+    );
 
     const data = {
       mode: MODES[0],
@@ -295,7 +300,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           <ha-card>
                             <div class="card-content">
                               <ha-form
-                                .schema=${this._schema}
+                                .schema=${schema}
                                 .data=${data}
                                 .hass=${this.hass}
                                 .computeLabel=${this._computeLabelCallback}
