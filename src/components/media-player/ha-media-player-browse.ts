@@ -101,6 +101,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   // @ts-ignore
   private _intersectionObserver?: IntersectionObserver;
 
+  public get currentItem(): MediaPlayerItem | undefined {
+    return this._currentItem;
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachResizeObserver());
@@ -112,6 +116,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
     if (this._intersectionObserver) {
       this._intersectionObserver.disconnect();
+    }
+  }
+
+  public async refresh() {
+    const currentId = this.navigateIds[this.navigateIds.length - 1];
+    try {
+      this._currentItem = await this._fetchData(
+        this.entityId,
+        currentId.media_content_id,
+        currentId.media_content_type
+      );
+    } catch (err) {
+      this._setError(err);
     }
   }
 

@@ -1,4 +1,4 @@
-import { mdiArrowLeft } from "@mdi/js";
+import { mdiArrowLeft, mdiUpload } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -9,20 +9,27 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
 import "../../components/media-player/ha-media-player-browse";
-import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "../../components/media-player/ha-media-player-browse";
 import {
   BROWSER_PLAYER,
   MediaPickedEvent,
   MediaPlayerItem,
 } from "../../data/media-player";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  isLocalMediaSourceContentId,
+  resolveMediaSource,
+  uploadLocalMedia,
+} from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -51,6 +58,8 @@ class PanelMediaBrowser extends LitElement {
   @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
 
+  @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
+
   protected render(): TemplateResult {
     return html`
       <ha-app-layout>
@@ -69,15 +78,25 @@ class PanelMediaBrowser extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                 `}
-            <div main-title class="heading">
-              <div>
-                ${!this._currentItem
-                  ? this.hass.localize(
-                      "ui.components.media-browser.media-player-browser"
-                    )
-                  : this._currentItem.title}
-              </div>
+            <div main-title>
+              ${!this._currentItem
+                ? this.hass.localize(
+                    "ui.components.media-browser.media-player-browser"
+                  )
+                : this._currentItem.title}
             </div>
+            ${isLocalMediaSourceContentId(
+              this._navigateIds[this._navigateIds.length - 1]
+                .media_content_id || ""
+            )
+              ? html`
+                  <ha-icon-button
+                    .label=${this.hass!.localize("ui.panel.map.edit_zones")}
+                    .path=${mdiUpload}
+                    @click=${this._startUpload}
+                  ></ha-icon-button>
+                `
+              : ""}
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
@@ -198,6 +217,26 @@ class PanelMediaBrowser extends LitElement {
         can_play: item.can_play,
       });
     }
+  }
+
+  private async _startUpload() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.addEventListener("change", async () => {
+      try {
+        await uploadLocalMedia(
+          this.hass,
+          this._browser.currentItem!.media_content_id!,
+          input.files![0]
+        );
+      } catch (err) {
+        alert(err);
+        return;
+      }
+
+      await this._browser.refresh();
+    });
+    input.click();
   }
 
   static get styles(): CSSResultGroup {
