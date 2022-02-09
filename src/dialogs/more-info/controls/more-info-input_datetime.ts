@@ -43,7 +43,6 @@ class MoreInfoInputDatetime extends LitElement {
                     : this.stateObj.state}
                   .locale=${this.hass.locale}
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
-                  hide-label
                   @value-changed=${this._timeChanged}
                   @click=${this._stopEventPropagation}
                 ></ha-time-input>
