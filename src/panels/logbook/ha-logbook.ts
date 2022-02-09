@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -97,12 +97,13 @@ class HaLogbook extends LitElement {
         @scroll=${this._saveScrollPos}
       >
         ${this.virtualize
-          ? scroll({
-              items: this.entries,
-              layout: Layout1d,
-              renderItem: (item: LogbookEntry, index) =>
-                this._renderLogbookItem(item, index),
-            })
+          ? html`<lit-virtualizer
+              scroller
+              class="ha-scrollbar"
+              .items=${this.entries}
+              .renderItem=${this._renderLogbookItem}
+            >
+            </lit-virtualizer>`
           : this.entries.map((item, index) =>
               this._renderLogbookItem(item, index)
             )}
@@ -110,11 +111,11 @@ class HaLogbook extends LitElement {
     `;
   }
 
-  private _renderLogbookItem(
+  private _renderLogbookItem = (
     item: LogbookEntry,
-    index?: number
-  ): TemplateResult {
-    if (index === undefined) {
+    index: number
+  ): TemplateResult => {
+    if (!item || index === undefined) {
       return html``;
     }
 
@@ -239,7 +240,7 @@ class HaLogbook extends LitElement {
         </div>
       </div>
     `;
-  }
+  };
 
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
@@ -362,8 +363,13 @@ class HaLogbook extends LitElement {
           max-height: var(--logbook-max-height);
         }
 
-        :host([virtualize]) .container {
+        .container,
+        lit-virtualizer {
           height: 100%;
+        }
+
+        lit-virtualizer {
+          contain: size layout !important;
         }
 
         .narrow .entry {
