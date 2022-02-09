@@ -183,7 +183,7 @@ export class HuiDialogEditView extends LitElement {
             .selected=${this._curTabIndex}
             @selected-item-changed=${this._handleTabSelected}
           >
-            <paper-tab id="tab-settings"
+            <paper-tab id="tab-settings" dialogInitialFocus
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_view.tab_settings"
               )}</paper-tab
