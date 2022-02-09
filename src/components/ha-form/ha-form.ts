@@ -52,8 +52,7 @@ export class HaForm extends LitElement implements HaFormElement {
     if (
       !selectorImported &&
       changedProperties.has("schema") &&
-      this.schema &&
-      this.schema.some((item) => "selector" in item)
+      this.schema?.some((item) => "selector" in item)
     ) {
       selectorImported = true;
       import("../ha-selector/ha-selector");
