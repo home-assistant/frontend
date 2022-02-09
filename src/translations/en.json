@@ -1993,7 +1993,11 @@
             "duplicate_scene": "Duplicate scene",
             "duplicate": "Duplicate",
             "headers": {
-              "name": "Name"
+              "activate": "Activate",
+              "state": "State",
+              "name": "Name",
+              "show_info": "Show information",
+              "edit": "Edit"
             }
           },
           "editor": {
