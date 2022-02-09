@@ -1,6 +1,6 @@
 import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
 import { styles } from "@material/mwc-textfield/mwc-textfield.css";
-import { TemplateResult, html, PropertyValues, css, CSSResult } from "lit";
+import { TemplateResult, html, PropertyValues, css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textfield")
@@ -39,36 +39,34 @@ export class HaTextField extends TextFieldBase {
     `;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      ...TextField.styles,
-      css`
-        .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
-          padding: var(--text-field-padding, 0px 16px);
-        }
-        .mdc-text-field__affix--suffix {
-          padding-left: var(--text-field-suffix-padding-left, 12px);
-          padding-right: var(--text-field-suffix-padding-right, 0px);
-        }
+  static override styles = [
+    styles,
+    css`
+      .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
+        padding: var(--text-field-padding, 0px 16px);
+      }
+      .mdc-text-field__affix--suffix {
+        padding-left: var(--text-field-suffix-padding-left, 12px);
+        padding-right: var(--text-field-suffix-padding-right, 0px);
+      }
 
-        input {
-          text-align: var(--text-field-text-align);
-        }
+      input {
+        text-align: var(--text-field-text-align);
+      }
 
-        /* Chrome, Safari, Edge, Opera */
-        :host([no-spinner]) input::-webkit-outer-spin-button,
-        :host([no-spinner]) input::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
+      /* Chrome, Safari, Edge, Opera */
+      :host([no-spinner]) input::-webkit-outer-spin-button,
+      :host([no-spinner]) input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
 
-        /* Firefox */
-        :host([no-spinner]) input[type="number"] {
-          -moz-appearance: textfield;
-        }
-      `,
-    ];
-  }
+      /* Firefox */
+      :host([no-spinner]) input[type="number"] {
+        -moz-appearance: textfield;
+      }
+    `,
+  ];
 }
 
 declare global {
