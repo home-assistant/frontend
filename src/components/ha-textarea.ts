@@ -2,7 +2,7 @@ import { TextAreaBase } from "@material/mwc-textarea/mwc-textarea-base";
 import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield.css";
 import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
 import { css, PropertyValues } from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-textarea")
 export class HaTextArea extends TextAreaBase {
@@ -15,14 +15,6 @@ export class HaTextArea extends TextAreaBase {
     }
   }
 
-  @eventOptions({ passive: true })
-  protected handleInputChange() {
-    super.handleInputChange();
-    if (this.autogrow) {
-      this.mdcRoot.dataset.value = this.value;
-    }
-  }
-
   static override styles = [
     textfieldStyles,
     textareaStyles,
@@ -31,14 +23,17 @@ export class HaTextArea extends TextAreaBase {
         max-height: 200px;
       }
       :host([autogrow]) .mdc-text-field {
+        position: relative;
         min-height: 74px;
+        min-width: 178px;
       }
       :host([autogrow]) .mdc-text-field:after {
         content: attr(data-value);
         margin-top: 23px;
         margin-bottom: 9px;
         line-height: 1.5rem;
-        padding: 0px 16px 0px 16px;
+        min-height: 42px;
+        padding: 0px 32px 0 16px;
         letter-spacing: var(
           --mdc-typography-subtitle1-letter-spacing,
           0.009375em
@@ -48,8 +43,11 @@ export class HaTextArea extends TextAreaBase {
       }
       :host([autogrow]) .mdc-text-field__input {
         position: absolute;
-        top: 0;
-        bottom: 0;
+        height: calc(100% - 32px);
+      }
+      :host([autogrow]) .mdc-text-field.mdc-text-field--no-label:after {
+        margin-top: 16px;
+        margin-bottom: 16px;
       }
     `,
   ];
