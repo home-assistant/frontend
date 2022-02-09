@@ -35,10 +35,13 @@ export const uploadLocalMedia = async (
   const fd = new FormData();
   fd.append("media_content_id", media_content_id);
   fd.append("file", file);
-  const resp = await hass.fetchWithAuth("/api/media_source/upload", {
-    method: "POST",
-    body: fd,
-  });
+  const resp = await hass.fetchWithAuth(
+    "/api/media_source/local_source/upload",
+    {
+      method: "POST",
+      body: fd,
+    }
+  );
   if (resp.status === 413) {
     throw new Error("Uploaded image is too large");
   } else if (resp.status !== 200) {
