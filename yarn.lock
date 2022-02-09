@@ -1960,25 +1960,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@0.6.0":
-  version: 0.6.0
-  resolution: "@lit-labs/virtualizer@npm:0.6.0"
+"@lit-labs/virtualizer@0.7.0-pre.2":
+  version: 0.7.0-pre.2
+  resolution: "@lit-labs/virtualizer@npm:0.7.0-pre.2"
   dependencies:
     event-target-shim: ^5.0.1
-    lit: ^2.0.0-rc.1
+    lit: ^2.0.0
     tslib: ^1.10.0
-  checksum: c18a49c331a66f82a896a8de7d856277cc48dc4c9ca90df9513c1a73c887a36d1363178233a902d8d0fe5e1aa88f71302d68ac7a0cb1dc6ccbe593282d1cee72
+  checksum: 88d5fffe73213c305160257e4e3a63a93087a90e63ca6640a81d156faacb68a8f84a82b94153b9364aeab3f5de45484acad1f8dcc2673e8464e394672358a3cc
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 0.6.0
-  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::version=0.6.0&hash=0c4ec6&locator=home-assistant-frontend%40workspace%3A."
+"@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 0.7.0-pre.2
+  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=cef165&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     event-target-shim: ^5.0.1
-    lit: ^2.0.0-rc.1
+    lit: ^2.0.0
     tslib: ^1.10.0
-  checksum: 66bed3149dce8a0099e567ec3f1d249fb1855bf0df41e644453d044debe5f686c8c1b2078d45b4de5c488e821119eae1734b040a2145862efec54c442b83ff0f
+  checksum: ea8bdd610530fc9b50dd327cc3b8c70d4e45300636d731969af7b9475047c91066fe7973e04ac91f80111c116c80a989f1507da7fbfc526f7c0dff3a54719a4d
   languageName: node
   linkType: hard
 
@@ -9124,7 +9124,7 @@ fsevents@^1.2.7:
     "@fullcalendar/interaction": 5.9.0
     "@fullcalendar/list": 5.9.0
     "@koa/cors": ^3.1.0
-    "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch"
+    "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch"
     "@material/chips": 14.0.0-canary.261f2db59.0
     "@material/data-table": 14.0.0-canary.261f2db59.0
     "@material/mwc-button": 0.25.3
