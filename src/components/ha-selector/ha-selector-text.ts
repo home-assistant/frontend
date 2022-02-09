@@ -35,7 +35,7 @@ export class HaTextSelector extends LitElement {
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
-        required
+        ?required=${!this.selector.text.optional}
         autogrow
       ></ha-textarea>`;
     }
@@ -50,7 +50,7 @@ export class HaTextSelector extends LitElement {
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
           : this.selector.text?.suffix}
-        required
+        ?required=${!this.selector.text.optional}
       ></ha-textfield>
       ${this.selector.text?.type === "password"
         ? html`<ha-icon-button

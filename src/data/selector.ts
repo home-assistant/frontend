@@ -31,6 +31,10 @@ export interface DeviceSelector {
   };
 }
 
+export interface DurationSelector {
+  duration: { optional: boolean };
+}
+
 export interface AddonSelector {
   addon: {
     name?: string;
@@ -111,6 +115,7 @@ export interface StringSelector {
       | "datetime-local"
       | "color";
     suffix?: string;
+    optional?: boolean;
   };
 }
 
