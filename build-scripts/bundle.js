@@ -31,7 +31,8 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
-        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
+        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts"),
+        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
       ),
   ].filter(Boolean);
 
