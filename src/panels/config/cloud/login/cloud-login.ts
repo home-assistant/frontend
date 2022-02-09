@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-textfield/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -12,6 +10,8 @@ import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-textfield";
 import { cloudLogin } from "../../../../data/cloud";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
@@ -38,9 +38,9 @@ export class CloudLogin extends LitElement {
 
   @state() private _error?: string;
 
-  @query("#email", true) private _emailField!: TextField;
+  @query("#email", true) private _emailField!: HaTextField;
 
-  @query("#password", true) private _passwordField!: TextField;
+  @query("#password", true) private _passwordField!: HaTextField;
 
   protected render(): TemplateResult {
     return html`
@@ -108,7 +108,7 @@ export class CloudLogin extends LitElement {
                 ${this._error
                   ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                   : ""}
-                <mwc-textfield
+                <ha-textfield
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.email"
                   )}
@@ -121,8 +121,8 @@ export class CloudLogin extends LitElement {
                   .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.login.email_error_msg"
                   )}
-                ></mwc-textfield>
-                <mwc-textfield
+                ></ha-textfield>
+                <ha-textfield
                   id="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.login.password"
@@ -136,7 +136,7 @@ export class CloudLogin extends LitElement {
                   .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.login.password_error_msg"
                   )}
-                ></mwc-textfield>
+                ></ha-textfield>
                 <button
                   class="link pwd-forgot-link"
                   .disabled=${this._requestInProgress}

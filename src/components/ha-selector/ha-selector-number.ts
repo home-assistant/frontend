@@ -5,7 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { NumberSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-slider";
-import "@material/mwc-textfield/mwc-textfield";
+import "../ha-textfield";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -36,7 +36,7 @@ export class HaNumberSelector extends LitElement {
           >
           </ha-slider>`
         : ""}
-      <mwc-textfield
+      <ha-textfield
         inputMode="numeric"
         pattern="[0-9]+([\\.][0-9]+)?"
         .label=${this.selector.number.mode !== "box" ? undefined : this.label}
@@ -50,13 +50,14 @@ export class HaNumberSelector extends LitElement {
         .suffix=${this.selector.number.unit_of_measurement}
         type="number"
         autoValidate
+        ?no-spinner=${this.selector.number.mode !== "box"}
         @input=${this._handleInputChange}
       >
-      </mwc-textfield>`;
+      </ha-textfield>`;
   }
 
   private get _value() {
-    return this.value || 0;
+    return this.value ?? 0;
   }
 
   private _handleInputChange(ev) {
@@ -90,10 +91,11 @@ export class HaNumberSelector extends LitElement {
       ha-slider {
         flex: 1;
       }
-      mwc-textfield {
-        width: 70px;
+      ha-textfield {
+        --ha-textfield-input-width: 40px;
       }
       .single {
+        --ha-textfield-input-width: unset;
         flex: 1;
       }
     `;

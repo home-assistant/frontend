@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-textfield/mwc-textfield";
 import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -809,10 +808,6 @@ class DialogZWaveJSAddNode extends LitElement {
             margin-left: 0;
             margin-top: 16px;
           }
-        }
-
-        mwc-textfield {
-          width: 100%;
         }
 
         ha-svg-icon {
