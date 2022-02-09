@@ -45,6 +45,29 @@ export class HaTextField extends TextFieldBase {
       .mdc-text-field__input {
         width: var(--ha-textfield-input-width, 100%);
       }
+      .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
+        padding: var(--text-field-padding, 0px 16px);
+      }
+      .mdc-text-field__affix--suffix {
+        padding-left: var(--text-field-suffix-padding-left, 12px);
+        padding-right: var(--text-field-suffix-padding-right, 0px);
+      }
+
+      input {
+        text-align: var(--text-field-text-align);
+      }
+
+      /* Chrome, Safari, Edge, Opera */
+      :host([no-spinner]) input::-webkit-outer-spin-button,
+      :host([no-spinner]) input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      :host([no-spinner]) input[type="number"] {
+        -moz-appearance: textfield;
+      }
     `,
   ];
 }
