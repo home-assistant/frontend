@@ -94,6 +94,7 @@ export class HuiCreateDialogCard
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
               )}
+              dialogInitialFocus
             ></mwc-tab>
             <mwc-tab
               .label=${this.hass!.localize(
