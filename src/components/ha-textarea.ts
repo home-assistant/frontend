@@ -11,7 +11,7 @@ export class HaTextArea extends TextAreaBase {
   updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (this.autogrow && changedProperties.has("value")) {
-      this.mdcRoot.dataset.value = this.value;
+      this.mdcRoot.dataset.value = this.value + ".";
     }
   }
 
