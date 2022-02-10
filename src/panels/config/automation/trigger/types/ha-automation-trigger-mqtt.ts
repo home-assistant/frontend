@@ -6,7 +6,7 @@ import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
 
-const SCHEMA = [
+const SCHEMA: HaFormSchema[] = [
   { name: "topic", selector: { text: {} } },
   { name: "payload", required: false, selector: { text: {} } },
 ];
