@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
