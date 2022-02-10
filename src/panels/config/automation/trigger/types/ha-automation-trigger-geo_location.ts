@@ -1,10 +1,12 @@
 import "../../../../../components/ha-form/ha-form";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
@@ -12,7 +14,29 @@ export class HaGeolocationTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
 
-  @state() private _schema?: HaFormSchema[];
+  private _schema = memoizeOne((localize: LocalizeFunc) => [
+    { name: "source", selector: { text: {} } },
+    { name: "zone", selector: { entity: { domain: "zone" } } },
+    {
+      name: "event",
+      type: "select",
+      required: true,
+      options: [
+        [
+          "enter",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.geo_location.enter"
+          ),
+        ],
+        [
+          "leave",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.geo_location.leave"
+          ),
+        ],
+      ],
+    },
+  ]);
 
   public static get defaultConfig() {
     return {
@@ -22,36 +46,6 @@ export class HaGeolocationTrigger extends LitElement {
     };
   }
 
-  protected firstUpdated(): void {
-    if (!this.hass) {
-      return;
-    }
-
-    this._schema = [
-      { name: "source", selector: { text: {} } },
-      { name: "zone", selector: { entity: { domain: "zone" } } },
-      {
-        name: "event",
-        type: "select",
-        required: true,
-        options: [
-          [
-            "enter",
-            this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.geo_location.enter"
-            ),
-          ],
-          [
-            "leave",
-            this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.geo_location.leave"
-            ),
-          ],
-        ],
-      },
-    ];
-  }
-
   protected render() {
     if (!this._schema) {
       return html``;
@@ -59,7 +53,7 @@ export class HaGeolocationTrigger extends LitElement {
 
     return html`
       <ha-form
-        .schema=${this._schema}
+        .schema=${this._schema(this.hass.localize)}
         .data=${this.trigger}
         .hass=${this.hass}
         .computeLabel=${this._computeLabelCallback}
@@ -74,11 +68,9 @@ export class HaGeolocationTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => {
-    return this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
     );
-  }
 }
 
 declare global {
