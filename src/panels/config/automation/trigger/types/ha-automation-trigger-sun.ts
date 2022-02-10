@@ -4,9 +4,9 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SunTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { TriggerElement } from "../ha-automation-trigger-row";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
-import { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-sun")
 export class HaSunTrigger extends LitElement implements TriggerElement {
