@@ -84,6 +84,10 @@ export class HaNumericStateTrigger extends LitElement {
     switch (schema.name) {
       case "entity_id":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
+      case "attribute":
+        return this.hass.localize(
+          "ui.components.entity.entity-attribute-picker.attribute"
+        );
       case "for":
         return this.hass.localize(
           `ui.panel.config.automation.editor.triggers.type.state.for`
