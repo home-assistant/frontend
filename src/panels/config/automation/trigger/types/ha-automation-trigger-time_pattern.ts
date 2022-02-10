@@ -6,6 +6,12 @@ import { TimePatternTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
 
+const SCHEMA: HaFormSchema[] = [
+  { name: "hours", selector: { text: {} } },
+  { name: "minutes", selector: { text: {} } },
+  { name: "seconds", selector: { text: {} } },
+];
+
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -20,11 +26,7 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
     return html`
       <ha-form
         .hass=${this.hass}
-        .schema=${[
-          { name: "hours", selector: { text: {} } },
-          { name: "minutes", selector: { text: {} } },
-          { name: "seconds", selector: { text: {} } },
-        ]}
+        .schema=${SCHEMA}
         .data=${this.trigger}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -38,11 +40,9 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
-    return this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.time_pattern.${schema.name}`
     );
-  }
 }
 
 declare global {
