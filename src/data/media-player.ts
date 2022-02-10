@@ -261,8 +261,7 @@ export const computeMediaControls = (
     });
   }
 
-  const assumedState =
-    state === "on" && stateObj.attributes.assumed_state === true;
+  const assumedState = stateObj.attributes.assumed_state === true;
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
