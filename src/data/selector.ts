@@ -1,7 +1,9 @@
 export type Selector =
   | AddonSelector
+  | AttributeSelector
   | EntitySelector
   | DeviceSelector
+  | DurationSelector
   | AreaSelector
   | TargetSelector
   | NumberSelector
