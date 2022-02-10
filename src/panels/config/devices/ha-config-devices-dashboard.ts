@@ -521,7 +521,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     return [
       css`
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
         }
       `,
       haStyle,

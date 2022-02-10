@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
-import "../../../common/search/search-input";
 import {
   DataTableColumnContainer,
   RowClickedEvent,

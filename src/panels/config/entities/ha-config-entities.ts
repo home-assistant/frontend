@@ -20,7 +20,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
@@ -863,8 +862,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 58px;
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          height: 56px;
+          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          border-bottom: 1px solid
+            var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+          box-sizing: border-box;
         }
         .header-toolbar {
           display: flex;
@@ -892,7 +894,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           margin: 8px;
         }
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
         }
       `,
     ];

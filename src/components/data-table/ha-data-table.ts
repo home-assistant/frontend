@@ -928,11 +928,10 @@ export class HaDataTable extends LitElement {
         }
         .table-header {
           border-bottom: 1px solid var(--divider-color);
-          padding: 0 16px;
         }
         search-input {
-          position: relative;
-          top: 2px;
+          display: block;
+          flex: 1;
         }
         slot[name="header"] {
           display: block;

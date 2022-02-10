@@ -663,7 +663,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
         }
         .container {
           display: grid;
@@ -686,31 +686,36 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
         search-input.header {
           display: block;
-          position: relative;
-          left: -8px;
           color: var(--secondary-text-color);
-          margin-left: 16px;
+          margin-left: 8px;
+          --mdc-text-field-fill-color: transparant;
+          --mdc-text-field-idle-line-color: var(--divider-color);
+          --mdc-ripple-color: transparant;
         }
         .search {
           display: flex;
+          justify-content: flex-end;
+          width: 100%;
+          margin-right: 8px;
           align-items: center;
-          padding: 0 16px;
-          background: var(--sidebar-background-color);
-          border-bottom: 1px solid var(--divider-color);
+          height: 56px;
+          position: sticky;
+          top: 0;
+          z-index: 2;
         }
         .search search-input {
-          flex: 1;
-          position: relative;
-          top: 2px;
+          display: block;
+          position: absolute;
+          top: 0;
+          right: 0;
+          left: 0;
         }
-
         .active-filters {
           color: var(--primary-text-color);
           position: relative;
           display: flex;
           align-items: center;
           padding: 2px 2px 2px 8px;
-          margin-left: 4px;
           font-size: 14px;
         }
         .active-filters mwc-button {

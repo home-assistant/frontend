@@ -195,9 +195,14 @@ export class HuiCreateDialogCard
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
+        hui-card-picker {
+          --card-picker-search-shape: 0;
+          --card-picker-search-margin: -2px -24px 0;
+        }
         hui-entity-picker-table {
           display: block;
           height: calc(100vh - 198px);
+          --mdc-shape-small: 0;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           hui-entity-picker-table {

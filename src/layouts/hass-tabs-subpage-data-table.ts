@@ -159,28 +159,28 @@ export class HaTabsSubpageDataTable extends LitElement {
     const headerToolbar = html`<search-input
         .hass=${this.hass}
         .filter=${this.filter}
-        no-label-float
-        no-underline
         @value-changed=${this._handleSearchChange}
         .label=${this.searchLabel ||
         this.hass.localize("ui.components.data-table.search")}
       >
-      </search-input
-      >${filterInfo
-        ? html`<div class="active-filters">
-            ${this.narrow
-              ? html`<div>
-                  <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${filterInfo}
-                  </paper-tooltip>
-                </div>`
-              : filterInfo}
-            <mwc-button @click=${this._clearFilter}>
-              ${this.hass.localize("ui.components.data-table.clear")}
-            </mwc-button>
-          </div>`
-        : ""}<slot name="filter-menu"></slot>`;
+      </search-input>
+      <div class="filters">
+        ${filterInfo
+          ? html`<div class="active-filters">
+              ${this.narrow
+                ? html`<div>
+                    <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
+                    <paper-tooltip animation-delay="0" position="left">
+                      ${filterInfo}
+                    </paper-tooltip>
+                  </div>`
+                : filterInfo}
+              <mwc-button @click=${this._clearFilter}>
+                ${this.hass.localize("ui.components.data-table.clear")}
+              </mwc-button>
+            </div>`
+          : ""}<slot name="filter-menu"></slot>
+      </div>`;
 
     return html`
       <hass-tabs-subpage
@@ -257,23 +257,35 @@ export class HaTabsSubpageDataTable extends LitElement {
         display: block;
       }
       .table-header {
-        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
-        padding: 0 16px;
         display: flex;
         align-items: center;
+        --mdc-shape-small: 0;
+        height: 56px;
       }
       .search-toolbar {
         display: flex;
         align-items: center;
         color: var(--secondary-text-color);
       }
-      search-input {
-        position: relative;
-        top: 2px;
-        flex-grow: 1;
+      .table-header search-input {
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
       }
-      search-input.header {
-        left: -8px;
+      .search-toolbar search-input {
+        display: block;
+        color: var(--secondary-text-color);
+        --mdc-text-field-fill-color: transparant;
+        --mdc-text-field-idle-line-color: var(--divider-color);
+        --mdc-ripple-color: transparant;
+      }
+      .filters {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin-right: 8px;
       }
       .active-filters {
         color: var(--primary-text-color);
