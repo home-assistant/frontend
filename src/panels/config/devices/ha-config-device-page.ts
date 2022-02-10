@@ -812,12 +812,15 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _showScriptDialog() {
-    showDeviceAutomationDialog(this, { deviceId: this.deviceId, script: true });
+    showDeviceAutomationDialog(this, {
+      device: this._device(this.deviceId, this.devices)!,
+      script: true,
+    });
   }
 
   private _showAutomationDialog() {
     showDeviceAutomationDialog(this, {
-      deviceId: this.deviceId,
+      device: this._device(this.deviceId, this.devices)!,
       script: false,
     });
   }
