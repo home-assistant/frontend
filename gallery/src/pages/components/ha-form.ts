@@ -40,7 +40,12 @@ const SCHEMAS: {
     schema: [
       { name: "addon", selector: { addon: {} } },
       { name: "entity", selector: { entity: {} } },
-      { name: "device", selector: { device: {} } },
+      {
+        name: "Attribute",
+        selector: { attribute: { entity_id: "" } },
+      },
+      { name: "Device", selector: { device: {} } },
+      { name: "Duration", selector: { duration: {} } },
       { name: "area", selector: { area: {} } },
       { name: "target", selector: { target: {} } },
       { name: "number", selector: { number: { min: 0, max: 10 } } },
