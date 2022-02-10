@@ -39,11 +39,9 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
-    return this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.mqtt.${schema.name}`
     );
-  }
 }
 
 declare global {
