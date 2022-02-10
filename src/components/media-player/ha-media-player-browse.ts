@@ -101,10 +101,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   // @ts-ignore
   private _intersectionObserver?: IntersectionObserver;
 
-  public get currentItem(): MediaPlayerItem | undefined {
-    return this._currentItem;
-  }
-
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachResizeObserver());

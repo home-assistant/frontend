@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -46,7 +46,7 @@ class PanelMediaBrowser extends LitElement {
 
   @property() public route!: Route;
 
-  @property() _currentItem?: MediaPlayerItem;
+  @state() _currentItem?: MediaPlayerItem;
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
@@ -85,9 +85,9 @@ class PanelMediaBrowser extends LitElement {
                   )
                 : this._currentItem.title}
             </div>
-            ${isLocalMediaSourceContentId(
-              this._navigateIds[this._navigateIds.length - 1]
-                .media_content_id || ""
+            ${this._currentItem &&
+            isLocalMediaSourceContentId(
+              this._currentItem.media_content_id || ""
             )
               ? html`
                   <ha-icon-button
@@ -226,7 +226,7 @@ class PanelMediaBrowser extends LitElement {
       try {
         await uploadLocalMedia(
           this.hass,
-          this._browser.currentItem!.media_content_id!,
+          this._currentItem!.media_content_id!,
           input.files![0]
         );
       } catch (err) {
