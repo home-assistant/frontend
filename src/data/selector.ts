@@ -32,7 +32,8 @@ export interface DeviceSelector {
 }
 
 export interface DurationSelector {
-  duration: { optional: boolean };
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  duration: {};
 }
 
 export interface AddonSelector {
@@ -115,7 +116,6 @@ export interface StringSelector {
       | "datetime-local"
       | "color";
     suffix?: string;
-    optional?: boolean;
   };
 }
 

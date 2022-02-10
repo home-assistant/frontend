@@ -16,6 +16,8 @@ import { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
 import { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -31,9 +33,9 @@ const stateTriggerStruct = assign(
 
 const SCHEMA = [
   { name: "entity_id", selector: { entity: {} } },
-  { name: "from", selector: { text: { optional: true } } },
-  { name: "to", selector: { text: { optional: true } } },
-  { name: "for", selector: { duration: { optional: true } } },
+  { name: "from", required: false, selector: { text: {} } },
+  { name: "to", required: false, selector: { text: {} } },
+  { name: "for", required: false, selector: { duration: {} } },
 ];
 
 @customElement("ha-automation-trigger-state")
@@ -76,35 +78,40 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
+    const trgFor = createDurationData(this.trigger.for);
+
+    const data = { ...this.trigger, ...{ for: trgFor } };
+
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this.trigger}
+        .data=${data}
         .schema=${SCHEMA}
         @value-changed=${this._valueChanged}
+        .computeLabel=${this._computeLabelCallback}
       ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const values = ev.detail.value as any;
-    let newTrigger = { ...this.trigger };
+    const newTrigger = ev.detail.value;
 
-    for (const key of Object.keys(values)) {
-      const value = values[key];
+    Object.keys(newTrigger).forEach((key) =>
+      newTrigger[key] === undefined || newTrigger[key] === ""
+        ? delete newTrigger[key]
+        : {}
+    );
 
-      if (value === this.trigger![key]) {
-        continue;
-      }
-
-      if (values[key] === undefined) {
-        delete newTrigger[key];
-      } else {
-        newTrigger = { ...newTrigger, [key]: value };
-      }
-    }
     fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _computeLabelCallback(schema: HaFormSchema): string {
+    return this.hass.localize(
+      schema.name === "entity_id"
+        ? "ui.components.entity.entity-picker.entity"
+        : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
+    );
   }
 }
 

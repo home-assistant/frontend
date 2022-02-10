@@ -16,6 +16,7 @@ import "./ha-selector-target";
 import "./ha-selector-text";
 import "./ha-selector-time";
 import "./ha-selector-duration";
+import { HaFormSchema } from "../ha-form/types";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
@@ -30,6 +31,8 @@ export class HaSelector extends LitElement {
   @property() public placeholder?: any;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property() public schema?: HaFormSchema;
 
   public focus() {
     this.shadowRoot!.getElementById("selector")?.focus();
@@ -48,6 +51,7 @@ export class HaSelector extends LitElement {
         label: this.label,
         placeholder: this.placeholder,
         disabled: this.disabled,
+        required: this.schema?.required,
         id: "selector",
       })}
     `;

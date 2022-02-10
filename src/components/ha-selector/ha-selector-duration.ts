@@ -16,13 +16,15 @@ export class HaTimeDuration extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`
       <ha-duration-input
         .label=${this.label}
         .data=${this.value}
         .disabled=${this.disabled}
-        .required=${!this.selector.duration.optional}
+        .required=${this.required}
       ></ha-duration-input>
     `;
   }
