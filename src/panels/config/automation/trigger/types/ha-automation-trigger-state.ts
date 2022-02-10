@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
@@ -10,19 +9,15 @@ import {
   string,
   union,
 } from "superstruct";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import "../../../../../components/entity/ha-entity-attribute-picker";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-duration-input";
 import { StateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
-import {
-  handleChangeEvent,
-  TriggerElement,
-} from "../ha-automation-trigger-row";
+import { TriggerElement } from "../ha-automation-trigger-row";
+import "../../../../../components/ha-form/ha-form";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -35,6 +30,13 @@ const stateTriggerStruct = assign(
     for: optional(union([string(), forDictStruct])),
   })
 );
+
+const SCHEMA = [
+  { name: "entity_id", selector: { entity: {} } },
+  { name: "from", required: false, selector: { text: {} } },
+  { name: "to", required: false, selector: { text: {} } },
+  { name: "for", required: false, selector: { duration: {} } },
+];
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
@@ -76,57 +78,40 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
-    const { entity_id, attribute, to, from } = this.trigger;
     const trgFor = createDurationData(this.trigger.for);
 
+    const data = { ...this.trigger, ...{ for: trgFor } };
+
     return html`
-      <ha-entity-picker
-        .value=${entity_id}
-        @value-changed=${this._valueChanged}
-        .name=${"entity_id"}
+      <ha-form
         .hass=${this.hass}
-        allow-custom-entity
-      ></ha-entity-picker>
-      <ha-entity-attribute-picker
-        .hass=${this.hass}
-        .entityId=${entity_id}
-        .value=${attribute}
-        .name=${"attribute"}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.attribute"
-        )}
+        .data=${data}
+        .schema=${SCHEMA}
         @value-changed=${this._valueChanged}
-        allow-custom-value
-      ></ha-entity-attribute-picker>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.from"
-        )}
-        .name=${"from"}
-        .value=${from}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.to"
-        )}
-        .name=${"to"}
-        .value=${to}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <ha-duration-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.for"
-        )}
-        .name=${"for"}
-        .data=${trgFor}
-        @value-changed=${this._valueChanged}
-      ></ha-duration-input>
+        .computeLabel=${this._computeLabelCallback}
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newTrigger = ev.detail.value;
+
+    Object.keys(newTrigger).forEach((key) =>
+      newTrigger[key] === undefined || newTrigger[key] === ""
+        ? delete newTrigger[key]
+        : {}
+    );
+
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _computeLabelCallback(schema: HaFormSchema): string {
+    return this.hass.localize(
+      schema.name === "entity_id"
+        ? "ui.components.entity.entity-picker.entity"
+        : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
+    );
   }
 }
 

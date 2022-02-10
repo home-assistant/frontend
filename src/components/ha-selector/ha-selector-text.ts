@@ -22,6 +22,8 @@ export class HaTextSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   @state() private _unmaskedPassword = false;
 
   protected render() {
@@ -35,7 +37,7 @@ export class HaTextSelector extends LitElement {
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
-        required
+        .required=${this.required}
         autogrow
       ></ha-textarea>`;
     }
@@ -50,7 +52,7 @@ export class HaTextSelector extends LitElement {
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
           : this.selector.text?.suffix}
-        required
+        .required=${this.required}
       ></ha-textfield>
       ${this.selector.text?.type === "password"
         ? html`<ha-icon-button
