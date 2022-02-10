@@ -1,10 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
-import { TimePatternTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
-import { TriggerElement } from "../ha-automation-trigger-row";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { TimePatternTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const SCHEMA: HaFormSchema[] = [
   { name: "hours", selector: { text: {} } },
