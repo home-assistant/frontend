@@ -91,7 +91,7 @@ class PanelMediaBrowser extends LitElement {
             )
               ? html`
                   <ha-icon-button
-                    .label=${this.hass!.localize("ui.panel.map.edit_zones")}
+                    .label=${this.hass!.localize("ui.components.media-browser.upload")}
                     .path=${mdiUpload}
                     @click=${this._startUpload}
                   ></ha-icon-button>
