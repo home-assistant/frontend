@@ -1,5 +1,5 @@
 import "../../../../../components/ha-form/ha-form";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
@@ -71,11 +71,6 @@ export class HaGeolocationTrigger extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
-        : {}
-    );
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
@@ -84,13 +79,6 @@ export class HaGeolocationTrigger extends LitElement {
       `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
     );
   }
-
-  static styles = css`
-    label {
-      display: flex;
-      align-items: center;
-    }
-  `;
 }
 
 declare global {
