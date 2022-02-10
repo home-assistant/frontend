@@ -47,10 +47,6 @@ export class HaGeolocationTrigger extends LitElement {
   }
 
   protected render() {
-    if (!this._schema) {
-      return html``;
-    }
-
     return html`
       <ha-form
         .schema=${this._schema(this.hass.localize)}
