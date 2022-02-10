@@ -1,6 +1,7 @@
 import { mdiArrowLeft, mdiUpload } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@material/mwc-button";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +16,7 @@ import { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
+import "../../components/ha-svg-icon";
 import "../../components/media-player/ha-media-player-browse";
 import type {
   HaMediaPlayerBrowse,
@@ -90,11 +92,14 @@ class PanelMediaBrowser extends LitElement {
               this._currentItem.media_content_id || ""
             )
               ? html`
-                  <ha-icon-button
-                    .label=${this.hass!.localize("ui.components.media-browser.upload")}
-                    .path=${mdiUpload}
+                  <mwc-button
+                    .label=${this.hass.localize(
+                      "ui.components.media-browser.file_management.add_media"
+                    )}
                     @click=${this._startUpload}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon>
+                  </mwc-button>
                 `
               : ""}
           </app-toolbar>
@@ -229,11 +234,17 @@ class PanelMediaBrowser extends LitElement {
           this._currentItem!.media_content_id!,
           input.files![0]
         );
-      } catch (err) {
-        alert(err);
+      } catch (err: any) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.components.media-browser.file_management.upload_failed",
+            {
+              reason: err.message || err,
+            }
+          ),
+        });
         return;
       }
-
       await this._browser.refresh();
     });
     input.click();
@@ -260,6 +271,10 @@ class PanelMediaBrowser extends LitElement {
           bottom: 0;
           left: 0;
           right: 0;
+        }
+
+        ha-svg-icon[slot="icon"] {
+          vertical-align: middle;
         }
       `,
     ];
