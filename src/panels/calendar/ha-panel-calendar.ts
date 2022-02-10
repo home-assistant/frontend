@@ -1,8 +1,6 @@
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
 import { mdiRefresh } from "@mdi/js";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -25,10 +23,10 @@ import {
   fetchCalendarEvents,
   getCalendars,
 } from "../../data/calendar";
-import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
+import "../../components/ha-top-app-bar";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -59,21 +57,19 @@ class PanelCalendar extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.calendar")}</div>
-            <ha-icon-button
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.common.refresh")}
-              @click=${this._handleRefresh}
-            ></ha-icon-button>
-          </app-toolbar>
-        </app-header>
+      <ha-top-app-bar>
+        <ha-menu-button
+          slot="navigationIcon"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+        ></ha-menu-button>
+        <div slot="title">${this.hass.localize("panel.calendar")}</div>
+        <ha-icon-button
+          slot="actionItems"
+          .path=${mdiRefresh}
+          .label=${this.hass.localize("ui.common.refresh")}
+          @click=${this._handleRefresh}
+        ></ha-icon-button>
         <div class="content">
           <div class="calendar-list">
             <div class="calendar-list-header">
@@ -108,7 +104,7 @@ class PanelCalendar extends LitElement {
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
-      </ha-app-layout>
+      </ha-top-app-bar>
     `;
   }
 
