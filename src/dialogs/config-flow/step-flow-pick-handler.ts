@@ -12,12 +12,16 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
+import { getConfigEntries } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
+import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
@@ -26,6 +30,7 @@ import { configFlowContentStyles } from "./styles";
 interface HandlerObj {
   name: string;
   slug: string;
+  show_add?: boolean;
 }
 
 declare global {
@@ -77,6 +82,14 @@ class StepFlowPickHandler extends LitElement {
   protected render(): TemplateResult {
     const handlers = this._getHandlers();
 
+    const addDeviceRows: HandlerObj[] = ["zha", "zwave_js"]
+      .filter((domain) => isComponentLoaded(this.hass, domain))
+      .map((domain) => ({
+        name: domainToName(this.hass.localize, domain),
+        slug: domain,
+        show_add: true,
+      }));
+
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
@@ -88,36 +101,20 @@ class StepFlowPickHandler extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       <div
+        class="container"
         style=${styleMap({
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
       >
+        ${addDeviceRows.length
+          ? html`
+              ${addDeviceRows.map((handler) => this._renderRow(handler))}
+              <div class="divider"></div>
+            `
+          : ""}
         ${handlers.length
-          ? handlers.map(
-              (handler: HandlerObj) =>
-                html`
-                  <paper-icon-item
-                    @click=${this._handlerPicked}
-                    .handler=${handler}
-                  >
-                    <img
-                      slot="item-icon"
-                      loading="lazy"
-                      src=${brandsUrl({
-                        domain: handler.slug,
-                        type: "icon",
-                        useFallback: true,
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      referrerpolicy="no-referrer"
-                    />
-
-                    <paper-item-body> ${handler.name} </paper-item-body>
-                    <ha-icon-next></ha-icon-next>
-                  </paper-icon-item>
-                `
-            )
+          ? handlers.map((handler) => this._renderRow(handler))
           : html`
               <p>
                 ${this.hass.localize(
@@ -144,6 +141,32 @@ class StepFlowPickHandler extends LitElement {
     `;
   }
 
+  private _renderRow(handler: HandlerObj) {
+    return html`
+      <paper-icon-item @click=${this._handlerPicked} .handler=${handler}>
+        <img
+          slot="item-icon"
+          loading="lazy"
+          src=${brandsUrl({
+            domain: handler.slug,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+          referrerpolicy="no-referrer"
+        />
+        <paper-item-body
+          >${handler.show_add
+            ? this.hass.localize(
+                `ui.panel.config.integrations.add_${handler.slug}_device`
+              )
+            : handler.name}</paper-item-body
+        >
+        <ha-icon-next></ha-icon-next>
+      </paper-icon-item>
+    `;
+  }
+
   public willUpdate(changedProps: PropertyValues): void {
     if (this._filter === undefined && this.initialFilter !== undefined) {
       this._filter = this.initialFilter;
@@ -161,20 +184,13 @@ class StepFlowPickHandler extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
+    if (!changedProps.has("handlers")) {
+      return;
+    }
     // Store the width and height so that when we search, box doesn't jump
-    const div = this.shadowRoot!.querySelector("div")!;
-    if (!this._width) {
-      const width = div.clientWidth;
-      if (width) {
-        this._width = width;
-      }
-    }
-    if (!this._height) {
-      const height = div.clientHeight;
-      if (height) {
-        this._height = height;
-      }
-    }
+    const div = this.shadowRoot!.querySelector("div.container")!;
+    this._width = div.clientWidth;
+    this._height = div.clientHeight;
   }
 
   private _getHandlers() {
@@ -190,8 +206,31 @@ class StepFlowPickHandler extends LitElement {
   }
 
   private async _handlerPicked(ev) {
+    const handler: HandlerObj = ev.currentTarget.handler;
+
+    if (handler.show_add) {
+      if (handler.slug === "zwave_js") {
+        const entries = await getConfigEntries(this.hass);
+        const entry = entries.find((ent) => ent.domain === "zwave_js");
+
+        if (!entry) {
+          return;
+        }
+
+        showZWaveJSAddNodeDialog(this, {
+          entry_id: entry.entry_id,
+        });
+      } else if (handler.slug === "zha") {
+        navigate("/config/zha/add");
+      }
+
+      // This closes dialog.
+      fireEvent(this, "flow-update");
+      return;
+    }
+
     fireEvent(this, "handler-picked", {
-      handler: ev.currentTarget.handler.slug,
+      handler: handler.slug,
     });
   }
 
@@ -219,7 +258,11 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin: -12px 16px 0;
+          margin: 8px 0;
+        }
+        .divider {
+          margin: 8px 0;
+          border-top: 1px solid var(--divider-color);
         }
         ha-icon-next {
           margin-right: 8px;
