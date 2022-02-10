@@ -1,10 +1,7 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-formfield";
 import type { SunTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
@@ -65,7 +62,8 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string =>
+    this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.sun.${schema.name}`
     );
 }
