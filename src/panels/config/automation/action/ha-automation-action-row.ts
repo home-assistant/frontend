@@ -342,12 +342,14 @@ export default class HaAutomationActionRow extends LitElement {
       haStyle,
       css`
         .card-menu {
-          float: right;
+          position: absolute;
+          right: 16px;
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
         .rtl .card-menu {
-          float: left;
+          right: initial;
+          left: 16px;
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
@@ -357,6 +359,9 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
+        }
+        mwc-select {
+          margin-bottom: 16px;
         }
       `,
     ];

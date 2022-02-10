@@ -332,6 +332,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
+        mwc-select {
+          margin-bottom: 16px;
+        }
       `,
     ];
   }

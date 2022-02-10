@@ -67,7 +67,7 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("value")) {
       return;
     }
@@ -481,9 +481,6 @@ export class HaServiceControl extends LitElement {
       ha-yaml-editor {
         display: block;
         margin: var(--service-control-padding, 0 16px);
-      }
-      ha-service-picker {
-        padding-top: 16px;
       }
       ha-yaml-editor {
         padding: 16px 0;
