@@ -162,7 +162,7 @@ class StepFlowPickHandler extends LitElement {
               )
             : handler.name}</paper-item-body
         >
-        <ha-icon-next></ha-icon-next>
+        ${handler.show_add ? "" : html`<ha-icon-next></ha-icon-next>`}
       </paper-icon-item>
     `;
   }
