@@ -5,9 +5,9 @@ import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import { NumericStateTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { NumericStateTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
 
 const SCHEMA: HaFormSchema[] = [
   { name: "entity_id", selector: { entity: {} } },
