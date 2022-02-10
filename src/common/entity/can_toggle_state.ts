@@ -6,9 +6,17 @@ import { supportsFeature } from "./supports-feature";
 
 export const canToggleState = (hass: HomeAssistant, stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);
+
   if (domain === "group") {
-    return stateObj.state === "on" || stateObj.state === "off";
+    for (const entity of stateObj.attributes.entity_id) {
+      const d = computeStateDomain(hass.states[entity]);
+      if (canToggleDomain(hass, d)) {
+        return stateObj.state === "on" || stateObj.state === "off";
+      }
+    }
+    return false;
   }
+
   if (domain === "climate") {
     return supportsFeature(stateObj, 4096);
   }
