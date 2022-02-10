@@ -862,8 +862,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 58px;
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          height: 56px;
+          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          border-bottom: 1px solid
+            var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+          box-sizing: border-box;
         }
         .header-toolbar {
           display: flex;
