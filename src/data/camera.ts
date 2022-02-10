@@ -121,5 +121,5 @@ const CAMERA_MEDIA_SOURCE_PREFIX = "media-source://camera/";
 export const isCameraMediaSource = (mediaContentId: string) =>
   mediaContentId.startsWith(CAMERA_MEDIA_SOURCE_PREFIX);
 
-export const getEntityIdFromMCameraMediaSource = (mediaContentId: string) =>
+export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
   mediaContentId.substring(CAMERA_MEDIA_SOURCE_PREFIX.length);
