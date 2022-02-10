@@ -18,27 +18,27 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public trigger!: SunTrigger;
 
   private _schema = memoizeOne((localize: LocalizeFunc) => [
-      {
-        name: "event",
-        type: "select",
-        required: true,
-        options: [
-          [
-            "sunrise",
-            localize(
-              "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
-            ),
-          ],
-          [
-            "sunset",
-            localize(
-              "ui.panel.config.automation.editor.triggers.type.sun.sunset"
-            ),
-          ],
+    {
+      name: "event",
+      type: "select",
+      required: true,
+      options: [
+        [
+          "sunrise",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
+          ),
         ],
-      },
-      { name: "offset", selector: { text: {} } },
-    ]);
+        [
+          "sunset",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.sun.sunset"
+          ),
+        ],
+      ],
+    },
+    { name: "offset", selector: { text: {} } },
+  ]);
 
   public static get defaultConfig() {
     return {
@@ -65,11 +65,9 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
-    return this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.sun.${schema.name}`
     );
-  }
 }
 
 declare global {
