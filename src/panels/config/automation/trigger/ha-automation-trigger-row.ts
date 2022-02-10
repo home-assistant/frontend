@@ -61,7 +61,7 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
+  const newVal = (ev.target as any)?.value;
 
   if ((element.trigger[name] || "") === newVal) {
     return;
