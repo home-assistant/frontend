@@ -27,6 +27,11 @@ export class HaBaseTimeInput extends LitElement {
   @property({ type: Boolean }) autoValidate = false;
 
   /**
+   * determines if inputs are required
+   */
+  @property({ type: Boolean }) public required?: boolean;
+
+  /**
    * 12 or 24 hr format
    */
   @property({ type: Number }) format: 12 | 24 = 12;
@@ -115,7 +120,7 @@ export class HaBaseTimeInput extends LitElement {
           @input=${this._valueChanged}
           @focus=${this._onFocus}
           no-spinner
-          required
+          .required=${this.required}
           .autoValidate=${this.autoValidate}
           maxlength="2"
           .max=${this._hourMax}
@@ -135,7 +140,7 @@ export class HaBaseTimeInput extends LitElement {
           @focus=${this._onFocus}
           name="minutes"
           no-spinner
-          required
+          .required=${this.required}
           .autoValidate=${this.autoValidate}
           maxlength="2"
           max="59"
@@ -156,7 +161,7 @@ export class HaBaseTimeInput extends LitElement {
               @focus=${this._onFocus}
               name="seconds"
               no-spinner
-              required
+              .required=${this.required}
               .autoValidate=${this.autoValidate}
               maxlength="2"
               max="59"
@@ -177,7 +182,7 @@ export class HaBaseTimeInput extends LitElement {
               @focus=${this._onFocus}
               name="milliseconds"
               no-spinner
-              required
+              .required=${this.required}
               .autoValidate=${this.autoValidate}
               maxlength="3"
               max="999"
@@ -189,7 +194,7 @@ export class HaBaseTimeInput extends LitElement {
         ${this.format === 24
           ? ""
           : html`<mwc-select
-              required
+              .required=${this.required}
               .value=${this.amPm}
               .disabled=${this.disabled}
               name="amPm"

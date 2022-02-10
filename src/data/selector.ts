@@ -31,6 +31,11 @@ export interface DeviceSelector {
   };
 }
 
+export interface DurationSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  duration: {};
+}
+
 export interface AddonSelector {
   addon: {
     name?: string;

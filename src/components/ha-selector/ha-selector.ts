@@ -15,6 +15,7 @@ import "./ha-selector-select";
 import "./ha-selector-target";
 import "./ha-selector-text";
 import "./ha-selector-time";
+import "./ha-selector-duration";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
@@ -29,6 +30,8 @@ export class HaSelector extends LitElement {
   @property() public placeholder?: any;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = true;
 
   public focus() {
     this.shadowRoot?.getElementById("selector")?.focus();
@@ -47,6 +50,7 @@ export class HaSelector extends LitElement {
         label: this.label,
         placeholder: this.placeholder,
         disabled: this.disabled,
+        required: this.required,
         id: "selector",
       })}
     `;
