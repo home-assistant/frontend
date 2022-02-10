@@ -92,7 +92,7 @@ export class DialogDeviceAutomation extends LitElement {
           {
             type: this.hass.localize(
               `ui.panel.config.devices.type.${
-                device.entry_type || "device"
+                this._params.device.entry_type || "device"
               }`
             ),
           }
