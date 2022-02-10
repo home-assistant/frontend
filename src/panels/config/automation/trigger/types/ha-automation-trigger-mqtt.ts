@@ -36,11 +36,6 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
-        : {}
-    );
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
