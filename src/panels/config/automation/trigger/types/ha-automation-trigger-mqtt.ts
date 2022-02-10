@@ -7,8 +7,8 @@ import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
 
 const SCHEMA: HaFormSchema[] = [
-  { name: "topic", selector: { text: {} } },
-  { name: "payload", required: false, selector: { text: {} } },
+  { name: "topic", required: true, selector: { text: {} } },
+  { name: "payload", selector: { text: {} } },
 ];
 
 @customElement("ha-automation-trigger-mqtt")
