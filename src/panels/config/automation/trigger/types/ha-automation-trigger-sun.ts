@@ -6,9 +6,7 @@ import "../../../../../components/ha-radio";
 import "../../../../../components/ha-formfield";
 import type { SunTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import {
-  TriggerElement,
-} from "../ha-automation-trigger-row";
+import { TriggerElement } from "../ha-automation-trigger-row";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-sun")
