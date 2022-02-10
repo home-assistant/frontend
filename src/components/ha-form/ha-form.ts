@@ -137,7 +137,7 @@ export class HaForm extends LitElement implements HaFormElement {
         display: block;
       }
       .root > *:not([own-margin]) {
-        margin-bottom: 16px;
+        margin-bottom: 24px;
       }
       ha-alert[own-margin] {
         margin-bottom: 4px;
