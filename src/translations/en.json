@@ -524,6 +524,10 @@
         "no_local_media_found": "No local media found",
         "no_media_folder": "It looks like you have not yet created a media directory.",
         "setup_local_help": "Check the {documentation} on how to setup local media.",
+        "file_management": {
+          "upload_failed": "Upload failed: {reason}",
+          "add_media": "Add Media"
+        },
         "class": {
           "album": "Album",
           "app": "App",
