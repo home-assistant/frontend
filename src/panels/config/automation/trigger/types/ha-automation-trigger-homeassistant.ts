@@ -1,10 +1,12 @@
 import "../../../../../components/ha-form/ha-form";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HassTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
+import { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-homeassistant")
 export class HaHassTrigger extends LitElement {
@@ -12,7 +14,27 @@ export class HaHassTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: HassTrigger;
 
-  @state() private _schema?: HaFormSchema[];
+  private _schema = memoizeOne((localize: LocalizeFunc) => [
+    {
+      name: "event",
+      type: "select",
+      required: true,
+      options: [
+        [
+          "start",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
+          ),
+        ],
+        [
+          "shutdown",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
+          ),
+        ],
+      ],
+    },
+  ]);
 
   public static get defaultConfig() {
     return {
@@ -20,38 +42,10 @@ export class HaHassTrigger extends LitElement {
     };
   }
 
-  protected firstUpdated(): void {
-    if (!this.hass) {
-      return;
-    }
-
-    this._schema = [
-      {
-        name: "event",
-        type: "select",
-        required: true,
-        options: [
-          [
-            "start",
-            this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
-            ),
-          ],
-          [
-            "shutdown",
-            this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
-            ),
-          ],
-        ],
-      },
-    ];
-  }
-
   protected render() {
     return html`
       <ha-form
-        .schema=${this._schema}
+        .schema=${this._schema(this.hass.localize)}
         .data=${this.trigger}
         .hass=${this.hass}
         .computeLabel=${this._computeLabelCallback}
@@ -63,11 +57,6 @@ export class HaHassTrigger extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
-        : {}
-    );
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
