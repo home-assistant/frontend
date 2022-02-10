@@ -75,6 +75,7 @@ export class HuiDialogSelectView extends LitElement {
               )}
               dynamic-align
               .disabled=${!this._dashboards.length}
+              dialogInitialFocus
             >
               <paper-listbox
                 slot="dropdown-content"
@@ -107,7 +108,7 @@ export class HuiDialogSelectView extends LitElement {
         ${this._config
           ? this._config.views.length > 1
             ? html`
-                <mwc-list>
+                <mwc-list dialogInitialFocus>
                   ${this._config.views.map(
                     (view, idx) => html`
                       <mwc-radio-list-item
@@ -127,7 +128,11 @@ export class HuiDialogSelectView extends LitElement {
               `
             : ""
           : html`<div>No config found.</div>`}
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button slot="primaryAction" @click=${this._selectView}>
