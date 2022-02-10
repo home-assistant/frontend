@@ -1,7 +1,5 @@
 import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
-import type { List } from "@material/mwc-list/mwc-list";
-import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
@@ -123,18 +121,28 @@ export class QuickBar extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _getItems = memoizeOne(
+    (commandMode: boolean, commandItems, entityItems, filter: string) => {
+      const items = commandMode ? commandItems : entityItems;
+
+      if (items && filter && filter !== " ") {
+        return this._filterItems(items, filter);
+      }
+      return items;
+    }
+  );
+
   protected render() {
     if (!this._opened) {
       return html``;
     }
 
-    let items: QuickBarItem[] | undefined = this._commandMode
-      ? this._commandItems
-      : this._entityItems;
-
-    if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items, this._filter);
-    }
+    const items: QuickBarItem[] | undefined = this._getItems(
+      this._commandMode,
+      this._commandItems,
+      this._entityItems,
+      this._filter
+    );
 
     return html`
       <ha-dialog
@@ -209,11 +217,12 @@ export class QuickBar extends LitElement {
               </div>
             `
           : html`
-              <mwc-list @selected=${this._handleSelected}>
+              <mwc-list>
                 <lit-virtualizer
                   scroller
                   @keydown=${this._handleListItemKeyDown}
                   @rangechange=${this._handleRangeChanged}
+                  @click=${this._handleItemClick}
                   class="ha-scrollbar"
                   style=${styleMap({
                     height: this._narrow
@@ -335,16 +344,6 @@ export class QuickBar extends LitElement {
     this.closeDialog();
   }
 
-  private _handleSelected(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    if (index < 0) {
-      return;
-    }
-
-    const item = ((ev.target as List).items[index] as any).item;
-    this.processItemAndCloseDialog(item, index);
-  }
-
   private _handleInputKeyDown(ev: KeyboardEvent) {
     if (ev.code === "Enter") {
       const firstItem = this._getItemAtIndex(0);
@@ -442,10 +441,23 @@ export class QuickBar extends LitElement {
         this._getItemAtIndex(Number(index) - 1)?.focus();
       }
     }
+    if (ev.key === "Enter" || ev.key === " ") {
+      this.processItemAndCloseDialog(
+        (ev.target as any).item,
+        Number((ev.target as HTMLElement).getAttribute("index"))
+      );
+    }
     if (ev.key === "Backspace" || isSingleCharacter) {
       (ev.currentTarget as HTMLElement).scrollTop = 0;
       this._filterInputField?.focus();
     }
+  }
+
+  private _handleItemClick(ev) {
+    this.processItemAndCloseDialog(
+      (ev.target as any).item,
+      Number((ev.target as HTMLElement).getAttribute("index"))
+    );
   }
 
   private _generateEntityItems(): EntityItem[] {
