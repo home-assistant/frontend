@@ -88,7 +88,10 @@ export class DialogDeviceAutomation extends LitElement {
         .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
-          }.create`
+          }.create`,
+          {
+            type: this.hass.localize("ui.panel.config.devices.type.device"),
+          }
         )}
       >
         <div @entry-selected=${this.closeDialog}>
