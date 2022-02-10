@@ -9,6 +9,7 @@ import {
   string,
   union,
 } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import { StateTrigger } from "../../../../../data/automation";
@@ -33,6 +34,7 @@ const stateTriggerStruct = assign(
 
 const SCHEMA = [
   { name: "entity_id", selector: { entity: {} } },
+  { name: "attribute", selector: { attribute: { entity_id: "" } } },
   { name: "from", required: false, selector: { text: {} } },
   { name: "to", required: false, selector: { text: {} } },
   { name: "for", required: false, selector: { duration: {} } },
@@ -47,6 +49,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   public static get defaultConfig() {
     return { entity_id: "" };
   }
+
+  private _schema = memoizeOne((entityId) => {
+    const schema = [...SCHEMA];
+    schema[1] = {
+      name: "attribute",
+      selector: { attribute: { entity_id: entityId } },
+    };
+    return schema;
+  });
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -81,12 +92,13 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const trgFor = createDurationData(this.trigger.for);
 
     const data = { ...this.trigger, ...{ for: trgFor } };
+    const schema = this._schema(this.trigger.entity_id);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${schema}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>

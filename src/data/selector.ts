@@ -11,11 +11,18 @@ export type Selector =
   | StringSelector
   | ObjectSelector
   | SelectSelector;
+
 export interface EntitySelector {
   entity: {
     integration?: string;
     domain?: string;
     device_class?: string;
+  };
+}
+
+export interface AttributeSelector {
+  attribute: {
+    entity_id: string;
   };
 }
 
