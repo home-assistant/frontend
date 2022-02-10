@@ -1,6 +1,7 @@
-import { mdiArrowLeft } from "@mdi/js";
+import { mdiArrowLeft, mdiUpload } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@material/mwc-button";
 import {
   css,
   CSSResultGroup,
@@ -9,20 +10,28 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
+import "../../components/ha-svg-icon";
 import "../../components/media-player/ha-media-player-browse";
-import type { MediaPlayerItemId } from "../../components/media-player/ha-media-player-browse";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "../../components/media-player/ha-media-player-browse";
 import {
   BROWSER_PLAYER,
   MediaPickedEvent,
   MediaPlayerItem,
 } from "../../data/media-player";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  isLocalMediaSourceContentId,
+  resolveMediaSource,
+  uploadLocalMedia,
+} from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -43,7 +52,7 @@ class PanelMediaBrowser extends LitElement {
 
   @property() public route!: Route;
 
-  @property() _currentItem?: MediaPlayerItem;
+  @state() _currentItem?: MediaPlayerItem;
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
@@ -54,6 +63,8 @@ class PanelMediaBrowser extends LitElement {
 
   @LocalStorage("mediaBrowseEntityId", true, false)
   private _entityId = BROWSER_PLAYER;
+
+  @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
 
   protected render(): TemplateResult {
     return html`
@@ -73,15 +84,28 @@ class PanelMediaBrowser extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                 `}
-            <div main-title class="heading">
-              <div>
-                ${!this._currentItem
-                  ? this.hass.localize(
-                      "ui.components.media-browser.media-player-browser"
-                    )
-                  : this._currentItem.title}
-              </div>
+            <div main-title>
+              ${!this._currentItem
+                ? this.hass.localize(
+                    "ui.components.media-browser.media-player-browser"
+                  )
+                : this._currentItem.title}
             </div>
+            ${this._currentItem &&
+            isLocalMediaSourceContentId(
+              this._currentItem.media_content_id || ""
+            )
+              ? html`
+                  <mwc-button
+                    .label=${this.hass.localize(
+                      "ui.components.media-browser.file_management.add_media"
+                    )}
+                    @click=${this._startUpload}
+                  >
+                    <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon>
+                  </mwc-button>
+                `
+              : ""}
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
@@ -215,6 +239,32 @@ class PanelMediaBrowser extends LitElement {
     });
   }
 
+  private async _startUpload() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.addEventListener("change", async () => {
+      try {
+        await uploadLocalMedia(
+          this.hass,
+          this._currentItem!.media_content_id!,
+          input.files![0]
+        );
+      } catch (err: any) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.components.media-browser.file_management.upload_failed",
+            {
+              reason: err.message || err,
+            }
+          ),
+        });
+        return;
+      }
+      await this._browser.refresh();
+    });
+    input.click();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -236,6 +286,10 @@ class PanelMediaBrowser extends LitElement {
           bottom: 0;
           left: 0;
           right: 0;
+        }
+
+        ha-svg-icon[slot="icon"] {
+          vertical-align: middle;
         }
       `,
     ];

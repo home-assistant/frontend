@@ -114,6 +114,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
+  public async refresh() {
+    const currentId = this.navigateIds[this.navigateIds.length - 1];
+    try {
+      this._currentItem = await this._fetchData(
+        this.entityId,
+        currentId.media_content_id,
+        currentId.media_content_type
+      );
+    } catch (err) {
+      this._setError(err);
+    }
+  }
+
   public play(): void {
     if (this._currentItem?.can_play) {
       this._runAction(this._currentItem);
