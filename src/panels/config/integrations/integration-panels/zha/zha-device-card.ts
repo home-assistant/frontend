@@ -1,5 +1,4 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import memoizeOne from "memoize-one";

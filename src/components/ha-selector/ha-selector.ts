@@ -31,7 +31,7 @@ export class HaSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   public focus() {
-    this.shadowRoot!.getElementById("selector")?.focus();
+    this.shadowRoot?.getElementById("selector")?.focus();
   }
 
   private get _type() {

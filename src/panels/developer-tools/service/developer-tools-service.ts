@@ -92,28 +92,31 @@ class HaPanelDevService extends LitElement {
             "ui.panel.developer-tools.tabs.services.description"
           )}
         </p>
-
-        ${this._yamlMode
-          ? html`<ha-service-picker
-                .hass=${this.hass}
-                .value=${this._serviceData?.service}
-                @value-changed=${this._serviceChanged}
-              ></ha-service-picker>
-              <ha-yaml-editor
-                .hass=${this.hass}
-                .defaultValue=${this._serviceData}
-                @value-changed=${this._yamlChanged}
-              ></ha-yaml-editor>`
-          : html`<ha-card
-              ><div>
+        <ha-card>
+          ${this._yamlMode
+            ? html`<div class="card-content">
+                <ha-service-picker
+                  .hass=${this.hass}
+                  .value=${this._serviceData?.service}
+                  @value-changed=${this._serviceChanged}
+                ></ha-service-picker>
+                <ha-yaml-editor
+                  .hass=${this.hass}
+                  .defaultValue=${this._serviceData}
+                  @value-changed=${this._yamlChanged}
+                ></ha-yaml-editor>
+              </div>`
+            : html`
                 <ha-service-control
                   .hass=${this.hass}
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   showAdvanced
                   @value-changed=${this._serviceDataChanged}
-                ></ha-service-control></div
-            ></ha-card>`}
+                  class="card-content"
+                ></ha-service-control>
+              `}
+        </ha-card>
       </div>
       <div class="button-row">
         <div class="buttons">

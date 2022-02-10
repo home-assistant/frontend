@@ -93,6 +93,7 @@ class DialogUserDetail extends LitElement {
               `}
           <div class="form">
             <paper-input
+              dialogInitialFocus
               .value=${this._name}
               .disabled=${user.system_generated}
               @value-changed=${this._nameChanged}

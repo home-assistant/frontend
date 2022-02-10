@@ -440,16 +440,6 @@ class HassioHostInfo extends LitElement {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
         }
-        @media (min-width: 563px) {
-          paper-listbox {
-            max-height: 150px;
-            overflow: auto;
-          }
-        }
-        paper-item {
-          cursor: pointer;
-          min-height: 35px;
-        }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
         }
