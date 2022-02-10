@@ -984,6 +984,12 @@ export class HaSceneEditor extends SubscribeMixin(
         ha-fab.saving {
           opacity: var(--light-disabled-opacity);
         }
+        ha-icon-picker,
+        ha-area-picker,
+        ha-entity-picker {
+          display: block;
+          margin-top: 8px;
+        }
       `,
     ];
   }

@@ -1,7 +1,7 @@
-import { CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import "@material/mwc-select";
 import type { Select } from "@material/mwc-select";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -143,9 +143,14 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
   }
 
-  static get styles(): CSSResultGroup {
-    return haStyle;
-  }
+  static styles = [
+    haStyle,
+    css`
+      mwc-select {
+        margin-bottom: 16px;
+      }
+    `,
+  ];
 }
 
 declare global {

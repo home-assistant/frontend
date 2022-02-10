@@ -78,6 +78,7 @@ export class HuiEntityEditor extends LitElement {
         )}
       </div>
       <ha-entity-picker
+        class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
       ></ha-entity-picker>
@@ -170,7 +171,7 @@ export class HuiEntityEditor extends LitElement {
     const index = (ev.target as any).index;
     const newConfigEntities = this.entities!.concat();
 
-    if (value === "") {
+    if (value === "" || value === undefined) {
       newConfigEntities.splice(index, 1);
     } else {
       newConfigEntities[index] = {
@@ -186,6 +187,13 @@ export class HuiEntityEditor extends LitElement {
     return [
       sortableStyles,
       css`
+        ha-entity-picker {
+          margin-top: 8px;
+        }
+        .add-entity {
+          display: block;
+          margin-left: 31px;
+        }
         .entity {
           display: flex;
           align-items: center;
