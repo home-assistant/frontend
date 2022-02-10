@@ -4,7 +4,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
 import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
-import { TriggerElement } from "../ha-automation-trigger-row";
+import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const SCHEMA: HaFormSchema[] = [
   { name: "topic", required: true, selector: { text: {} } },
