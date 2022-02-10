@@ -1678,8 +1678,10 @@
                   "seconds": "Seconds"
                 },
                 "webhook": {
+                  "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
-                  "webhook_id": "Webhook ID"
+                  "webhook_id": "Webhook ID",
+                  "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess."
                 },
                 "zone": {
                   "label": "Zone",
