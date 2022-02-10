@@ -60,7 +60,8 @@ export class HaHassTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string =>
+    this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
     );
 
