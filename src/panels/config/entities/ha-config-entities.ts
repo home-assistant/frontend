@@ -20,7 +20,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
@@ -892,7 +891,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           margin: 8px;
         }
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
         }
       `,
     ];

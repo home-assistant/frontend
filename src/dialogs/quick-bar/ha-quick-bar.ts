@@ -24,7 +24,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
-import "../../common/search/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
