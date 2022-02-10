@@ -6,8 +6,10 @@ import { HomeAssistant } from "../../types";
 import "./ha-selector-action";
 import "./ha-selector-addon";
 import "./ha-selector-area";
+import "./ha-selector-attribute";
 import "./ha-selector-boolean";
 import "./ha-selector-device";
+import "./ha-selector-duration";
 import "./ha-selector-entity";
 import "./ha-selector-number";
 import "./ha-selector-object";
@@ -15,7 +17,6 @@ import "./ha-selector-select";
 import "./ha-selector-target";
 import "./ha-selector-text";
 import "./ha-selector-time";
-import "./ha-selector-duration";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

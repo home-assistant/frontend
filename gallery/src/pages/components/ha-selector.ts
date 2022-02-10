@@ -21,7 +21,12 @@ const SCHEMAS: {
     name: "One of each",
     input: {
       entity: { name: "Entity", selector: { entity: {} } },
+      attribute: {
+        name: "Attribute",
+        selector: { attribute: { entity_id: "" } },
+      },
       device: { name: "Device", selector: { device: {} } },
+      duration: { name: "Duration", selector: { duration: {} } },
       addon: { name: "Addon", selector: { addon: {} } },
       area: { name: "Area", selector: { area: {} } },
       target: { name: "Target", selector: { target: {} } },

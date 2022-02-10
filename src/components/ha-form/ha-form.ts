@@ -81,6 +81,7 @@ export class HaForm extends LitElement implements HaFormElement {
               : ""}
             ${"selector" in item
               ? html`<ha-selector
+                  .schema=${item}
                   .hass=${this.hass}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
