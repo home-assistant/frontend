@@ -34,10 +34,13 @@ const stateTriggerStruct = assign(
 
 const SCHEMA = [
   { name: "entity_id", selector: { entity: {} } },
-  { name: "attribute", selector: { attribute: { entity_id: "" } } },
-  { name: "from", required: false, selector: { text: {} } },
-  { name: "to", required: false, selector: { text: {} } },
-  { name: "for", required: false, selector: { duration: {} } },
+  {
+    name: "attribute",
+    selector: { attribute: { entity_id: "" } },
+  },
+  { name: "from", selector: { text: {} } },
+  { name: "to", selector: { text: {} } },
+  { name: "for", selector: { duration: {} } },
 ];
 
 @customElement("ha-automation-trigger-state")
