@@ -4515,7 +4515,7 @@
       "password_protection": "Password protection",
       "enter_password": "Please enter a password.",
       "passwords_not_matching": "The passwords does not match",
-      "backup_already_running": "A backup or restore progress is already running, creating a new backup is currently not possible, try again later."
+      "backup_already_running": "A backup or restore is already running, creating a new backup is currently not possible, try again later."
     },
     "dialog": {
       "network": {
