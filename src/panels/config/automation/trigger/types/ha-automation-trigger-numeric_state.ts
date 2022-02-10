@@ -9,33 +9,27 @@ import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 
-const SCHEMA: HaFormSchema[] = [
-  { name: "entity_id", selector: { entity: {} } },
-  { name: "attribute", selector: { attribute: { entity_id: "" } } },
-  { name: "above", required: false, selector: { text: {} } },
-  { name: "below", required: false, selector: { text: {} } },
-  {
-    name: "value_template",
-    required: false,
-    selector: { text: { multiline: true } },
-  },
-  { name: "for", required: false, selector: { duration: {} } },
-];
-
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: NumericStateTrigger;
 
-  private _schema = memoizeOne((entityId) => {
-    const schema = [...SCHEMA];
-    schema[1] = {
+  private _schema = memoizeOne((entityId) => [
+    { name: "entity_id", selector: { entity: {} } },
+    {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
-    };
-    return schema;
-  });
+    },
+    { name: "above", required: false, selector: { text: {} } },
+    { name: "below", required: false, selector: { text: {} } },
+    {
+      name: "value_template",
+      required: false,
+      selector: { text: { multiline: true } },
+    },
+    { name: "for", required: false, selector: { duration: {} } },
+  ]);
 
   public willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -60,7 +54,7 @@ export class HaNumericStateTrigger extends LitElement {
   public render() {
     const trgFor = createDurationData(this.trigger.for);
 
-    const data = { ...this.trigger, ...{ for: trgFor } };
+    const data = { ...this.trigger, for: trgFor };
     const schema = this._schema(this.trigger.entity_id);
 
     return html`
@@ -80,7 +74,7 @@ export class HaNumericStateTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
+  private _computeLabelCallback = (schema: HaFormSchema): string => {
     switch (schema.name) {
       case "entity_id":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
@@ -97,7 +91,7 @@ export class HaNumericStateTrigger extends LitElement {
           `ui.panel.config.automation.editor.triggers.type.numeric_state.${schema.name}`
         );
     }
-  }
+  };
 }
 
 declare global {
