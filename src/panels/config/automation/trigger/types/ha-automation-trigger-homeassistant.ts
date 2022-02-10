@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HassTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { HaFormSchema } from "../../../../../components/ha-form/types";
-import { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-homeassistant")
 export class HaHassTrigger extends LitElement {
