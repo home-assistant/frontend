@@ -11,7 +11,7 @@ import {
 } from "lit";
 import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
@@ -29,6 +29,10 @@ import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  getEntityIdFromCameraMediaSource,
+  isCameraMediaSource,
+} from "../../data/camera";
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -181,23 +185,34 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: item.media_content_id,
         media_content_type: item.media_content_type,
       });
-    } else if (item.media_content_type.startsWith("audio/")) {
+      return;
+    }
+
+    if (isCameraMediaSource(item.media_content_id)) {
+      fireEvent(this, "hass-more-info", {
+        entityId: getEntityIdFromCameraMediaSource(item.media_content_id),
+      });
+      return;
+    }
+
+    if (item.media_content_type.startsWith("audio/")) {
       await this.shadowRoot!.querySelector("ha-bar-media-player")!.playItem(
         item
       );
-    } else {
-      const resolvedUrl: any = await resolveMediaSource(
-        this.hass,
-        item.media_content_id
-      );
-
-      showWebBrowserPlayMediaDialog(this, {
-        sourceUrl: resolvedUrl.url,
-        sourceType: resolvedUrl.mime_type,
-        title: item.title,
-        can_play: item.can_play,
-      });
+      return;
     }
+
+    const resolvedUrl: any = await resolveMediaSource(
+      this.hass,
+      item.media_content_id
+    );
+
+    showWebBrowserPlayMediaDialog(this, {
+      sourceUrl: resolvedUrl.url,
+      sourceType: resolvedUrl.mime_type,
+      title: item.title,
+      can_play: item.can_play,
+    });
   }
 
   static get styles(): CSSResultGroup {
