@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
