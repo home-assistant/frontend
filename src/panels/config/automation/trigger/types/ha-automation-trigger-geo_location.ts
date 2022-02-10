@@ -1,19 +1,19 @@
+import "../../../../../components/ha-form/ha-form";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
-import type { HaRadio } from "../../../../../components/ha-radio";
+import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-trigger-row";
-
-const includeDomains = ["zone"];
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
+
+  @state() private _schema?: HaFormSchema;
 
   public static get defaultConfig() {
     return {
@@ -23,10 +23,50 @@ export class HaGeolocationTrigger extends LitElement {
     };
   }
 
+  protected firstUpdated(): void {
+    if (!this.hass) {
+      return;
+    }
+
+    this._schema = [
+      { name: "source", selector: { text: {} } },
+      { name: "zone", selector: { entity: { domain: "zone" } } },
+      {
+        name: "event",
+        type: "select",
+        required: true,
+        options: [
+          [
+            "enter",
+            this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.geo_location.enter"
+            ),
+          ],
+          [
+            "leave",
+            this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.geo_location.leave"
+            ),
+          ],
+        ],
+      },
+    ];
+  }
+
   protected render() {
+    if (!this._schema) {
+      return html``;
+    }
     const { source, zone, event } = this.trigger;
 
     return html`
+      <ha-form
+        .schema=${this._schema}
+        .data=${this.trigger}
+        .hass=${this.hass}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <paper-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.geo_location.source"
@@ -40,10 +80,8 @@ export class HaGeolocationTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.geo_location.zone"
         )}
         .value=${zone}
-        @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        .includeDomains=${includeDomains}
       ></ha-entity-picker>
       <label>
         ${this.hass.localize(
@@ -58,7 +96,6 @@ export class HaGeolocationTrigger extends LitElement {
             name="event"
             value="enter"
             .checked=${event === "enter"}
-            @change=${this._radioGroupPicked}
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
@@ -70,7 +107,6 @@ export class HaGeolocationTrigger extends LitElement {
             name="event"
             value="leave"
             .checked=${event === "leave"}
-            @change=${this._radioGroupPicked}
           ></ha-radio>
         </ha-formfield>
       </label>
@@ -78,24 +114,20 @@ export class HaGeolocationTrigger extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newTrigger = ev.detail.value;
+    Object.keys(newTrigger).forEach((key) =>
+      newTrigger[key] === undefined || newTrigger[key] === ""
+        ? delete newTrigger[key]
+        : {}
+    );
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _zonePicked(ev: CustomEvent) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this.trigger, zone: ev.detail.value },
-    });
-  }
-
-  private _radioGroupPicked(ev: CustomEvent) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.trigger,
-        event: (ev.target as HaRadio).value,
-      },
-    });
+  private _computeLabelCallback(schema: HaFormSchema): string {
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
+    );
   }
 
   static styles = css`
