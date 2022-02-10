@@ -194,7 +194,7 @@ export class HaBaseTimeInput extends LitElement {
         ${this.format === 24
           ? ""
           : html`<mwc-select
-              ?required=${this.required}
+              .required=${this.required}
               .value=${this.amPm}
               .disabled=${this.disabled}
               name="amPm"
