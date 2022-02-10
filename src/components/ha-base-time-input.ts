@@ -161,7 +161,7 @@ export class HaBaseTimeInput extends LitElement {
               @focus=${this._onFocus}
               name="seconds"
               no-spinner
-              ?required=${this.required}
+              .required=${this.required}
               .autoValidate=${this.autoValidate}
               maxlength="2"
               max="59"
