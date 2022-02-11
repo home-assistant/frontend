@@ -105,10 +105,10 @@ export class HaConfigLogs extends LitElement {
         }
         search-input {
           display: block;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: var(--divider-color);
         }
         search-input.header {
-          --mdc-text-field-fill-color: transparant;
-          --mdc-text-field-idle-line-color: var(--divider-color);
           --mdc-ripple-color: transparant;
         }
         .content {

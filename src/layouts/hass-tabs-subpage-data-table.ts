@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -157,30 +156,27 @@ export class HaTabsSubpageDataTable extends LitElement {
       : hiddenLabel;
 
     const headerToolbar = html`<search-input
-        .hass=${this.hass}
-        .filter=${this.filter}
-        @value-changed=${this._handleSearchChange}
-        .label=${this.searchLabel ||
-        this.hass.localize("ui.components.data-table.search")}
-      >
-      </search-input>
-      <div class="filters">
-        ${filterInfo
-          ? html`<div class="active-filters">
-              ${this.narrow
-                ? html`<div>
-                    <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-                    <paper-tooltip animation-delay="0" position="left">
-                      ${filterInfo}
-                    </paper-tooltip>
-                  </div>`
-                : filterInfo}
-              <mwc-button @click=${this._clearFilter}>
-                ${this.hass.localize("ui.components.data-table.clear")}
-              </mwc-button>
-            </div>`
-          : ""}<slot name="filter-menu"></slot>
-      </div>`;
+      .hass=${this.hass}
+      .filter=${this.filter}
+      .suffix=${!this.narrow}
+      @value-changed=${this._handleSearchChange}
+      .label=${this.searchLabel ||
+      this.hass.localize("ui.components.data-table.search")}
+    >
+      ${!this.narrow
+        ? html`<div class="filters" slot="suffix">
+            ${filterInfo
+              ? html`<div class="active-filters">
+                  ${filterInfo}
+                  <mwc-button @click=${this._clearFilter}>
+                    ${this.hass.localize("ui.components.data-table.clear")}
+                  </mwc-button>
+                </div>`
+              : ""}
+            <slot name="filter-menu"></slot>
+          </div>`
+        : ""}
+    </search-input>`;
 
     return html`
       <hass-tabs-subpage
@@ -195,7 +191,16 @@ export class HaTabsSubpageDataTable extends LitElement {
         .mainPage=${this.mainPage}
         .supervisor=${this.supervisor}
       >
-        <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
+        <div slot="toolbar-icon">
+          ${this.narrow
+            ? html`<div class="filter-menu">
+                <slot name="filter-menu"></slot>${this.numHidden ||
+                this.activeFilters
+                  ? html`<span class="badge">${this.numHidden || "!"}</span>`
+                  : ""}
+              </div>`
+            : ""}<slot name="toolbar-icon"></slot>
+        </div>
         ${this.narrow
           ? html`
               <div slot="header">
@@ -267,6 +272,12 @@ export class HaTabsSubpageDataTable extends LitElement {
         align-items: center;
         color: var(--secondary-text-color);
       }
+      search-input {
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
+        --text-field-overflow: visible;
+        z-index: 5;
+      }
       .table-header search-input {
         display: block;
         position: absolute;
@@ -276,15 +287,16 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
       .search-toolbar search-input {
         display: block;
+        width: 100%;
         color: var(--secondary-text-color);
-        --mdc-text-field-fill-color: transparant;
-        --mdc-text-field-idle-line-color: var(--divider-color);
         --mdc-ripple-color: transparant;
       }
       .filters {
+        --mdc-text-field-fill-color: initial;
+        --mdc-text-field-idle-line-color: initial;
+        --text-field-overflow: initial;
         display: flex;
         justify-content: flex-end;
-        width: 100%;
         margin-right: 8px;
       }
       .active-filters {
@@ -295,6 +307,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         padding: 2px 2px 2px 8px;
         margin-left: 4px;
         font-size: 14px;
+        width: max-content;
       }
       .active-filters ha-svg-icon {
         color: var(--primary-color);
@@ -312,6 +325,24 @@ export class HaTabsSubpageDataTable extends LitElement {
         bottom: 0;
         left: 0;
         content: "";
+      }
+      .badge {
+        min-width: 20px;
+        box-sizing: border-box;
+        border-radius: 50%;
+        font-weight: 400;
+        background-color: var(--primary-color);
+        line-height: 20px;
+        text-align: center;
+        padding: 0px 4px;
+        color: var(--text-primary-color);
+        position: absolute;
+        right: 0;
+        top: 4px;
+        font-size: 0.65em;
+      }
+      .filter-menu {
+        position: relative;
       }
     `;
   }

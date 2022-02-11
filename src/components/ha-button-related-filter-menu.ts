@@ -73,6 +73,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           .hass=${this.hass}
           .value=${this.value?.area}
           no-add
+          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._areaPicked}
         ></ha-area-picker>
         <ha-device-picker
@@ -81,6 +82,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           )}
           .hass=${this.hass}
           .value=${this.value?.device}
+          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._devicePicked}
         ></ha-device-picker>
         <ha-entity-picker
@@ -103,7 +105,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     this._open = true;
   }
 
-  private _onClosed(): void {
+  private _onClosed(ev): void {
+    ev.stopPropagation();
     this._open = false;
   }
 
@@ -173,9 +176,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
       :host {
         display: inline-block;
         position: relative;
-      }
-      :host([narrow]) {
-        position: static;
+        --mdc-menu-min-width: 200px;
       }
       ha-area-picker,
       ha-device-picker,
@@ -186,7 +187,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         box-sizing: border-box;
       }
       :host([narrow]) ha-area-picker,
-      :host([narrow]) ha-device-picker {
+      :host([narrow]) ha-device-picker,
+      :host([narrow]) ha-entity-picker {
         width: 100%;
       }
     `;
