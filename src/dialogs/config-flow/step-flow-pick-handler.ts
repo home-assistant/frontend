@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import Fuse from "fuse.js";
 import {
@@ -5,8 +6,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -102,8 +103,7 @@ class StepFlowPickHandler extends LitElement {
         .label=${this.hass.localize("ui.panel.config.integrations.search")}
         @keypress=${this._maybeSubmit}
       ></search-input>
-      <div
-        class="container"
+      <mwc-list
         style=${styleMap({
           width: `${this._width}px`,
           height: `${this._height}px`,
@@ -112,7 +112,7 @@ class StepFlowPickHandler extends LitElement {
         ${addDeviceRows.length
           ? html`
               ${addDeviceRows.map((handler) => this._renderRow(handler))}
-              <div class="divider"></div>
+              <li divider padded class="divider" role="separator"></li>
             `
           : ""}
         ${handlers.length
@@ -139,7 +139,7 @@ class StepFlowPickHandler extends LitElement {
                 >.
               </p>
             `}
-      </div>
+      </mwc-list>
     `;
   }
 
@@ -169,10 +169,26 @@ class StepFlowPickHandler extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (this._filter === undefined && this.initialFilter !== undefined) {
       this._filter = this.initialFilter;
     }
-    super.willUpdate(changedProps);
+    if (this.initialFilter !== undefined && this._filter === "") {
+      this.initialFilter = undefined;
+      this._filter = "";
+      this._width = undefined;
+      this._height = undefined;
+    } else if (
+      this.hasUpdated &&
+      changedProps.has("_filter") &&
+      (!this._width || !this._height)
+    ) {
+      // Store the width and height so that when we search, box doesn't jump
+      const boundingRect =
+        this.shadowRoot!.querySelector("mwc-list")!.getBoundingClientRect();
+      this._width = boundingRect.width;
+      this._height = boundingRect.height;
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -181,21 +197,6 @@ class StepFlowPickHandler extends LitElement {
       () => this.shadowRoot!.querySelector("search-input")!.focus(),
       0
     );
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!changedProps.has("handlers")) {
-      return;
-    }
-    // Wait until list item initialized
-    const firstListItem = this.shadowRoot!.querySelector("mwc-list-item")!;
-    firstListItem.updateComplete.then(() => {
-      // Store the width and height so that when we search, box doesn't jump
-      const div = this.shadowRoot!.querySelector("div.container")!;
-      this._width = div.clientWidth;
-      this._height = div.clientHeight;
-    });
   }
 
   private _getHandlers() {
@@ -263,30 +264,25 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin-top: 8px;
-        }
-        .divider {
-          margin: 8px 0;
-          border-top: 1px solid var(--divider-color);
+          margin: 16px 16px 0;
         }
         ha-icon-next {
           margin-right: 8px;
         }
-        div {
+        mwc-list {
           overflow: auto;
           max-height: 600px;
+        }
+        .divider {
+          border-bottom-color: var(--divider-color);
         }
         h2 {
           padding-right: 66px;
         }
         @media all and (max-height: 900px) {
-          div {
+          mwc-list {
             max-height: calc(100vh - 134px);
           }
-        }
-        paper-icon-item {
-          cursor: pointer;
-          margin-bottom: 4px;
         }
         p {
           text-align: center;
