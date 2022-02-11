@@ -29,7 +29,7 @@ import { configFlowContentStyles } from "./styles";
 interface HandlerObj {
   name: string;
   slug: string;
-  show_add?: boolean;
+  is_add?: boolean;
 }
 
 declare global {
@@ -88,7 +88,7 @@ class StepFlowPickHandler extends LitElement {
           `ui.panel.config.integrations.add_${domain}_device`
         ),
         slug: domain,
-        show_add: true,
+        is_add: true,
       }))
       .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
 
@@ -147,7 +147,7 @@ class StepFlowPickHandler extends LitElement {
     return html`
       <mwc-list-item
         graphic="medium"
-        .hasMeta=${!handler.show_add}
+        .hasMeta=${!handler.is_add}
         .handler=${handler}
         @click=${this._handlerPicked}
       >
@@ -163,9 +163,7 @@ class StepFlowPickHandler extends LitElement {
           referrerpolicy="no-referrer"
         />
         <span>${handler.name}</span>
-        ${handler.show_add
-          ? ""
-          : html`<ha-icon-next slot="meta"></ha-icon-next>`}
+        ${handler.is_add ? "" : html`<ha-icon-next slot="meta"></ha-icon-next>`}
       </mwc-list-item>
     `;
   }
@@ -215,7 +213,7 @@ class StepFlowPickHandler extends LitElement {
   private async _handlerPicked(ev) {
     const handler: HandlerObj = ev.currentTarget.handler;
 
-    if (handler.show_add) {
+    if (handler.is_add) {
       if (handler.slug === "zwave_js") {
         const entries = await getConfigEntries(this.hass);
         const entry = entries.find((ent) => ent.domain === "zwave_js");
