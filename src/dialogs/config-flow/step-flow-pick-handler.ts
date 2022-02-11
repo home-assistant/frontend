@@ -1,5 +1,4 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-check-list-item";
 import Fuse from "fuse.js";
 import {
   css,
@@ -143,9 +142,14 @@ class StepFlowPickHandler extends LitElement {
 
   private _renderRow(handler: HandlerObj) {
     return html`
-      <paper-icon-item @click=${this._handlerPicked} .handler=${handler}>
+      <mwc-list-item
+        graphic="medium"
+        .hasMeta=${!handler.show_add}
+        .handler=${handler}
+        @click=${this._handlerPicked}
+      >
         <img
-          slot="item-icon"
+          slot="graphic"
           loading="lazy"
           src=${brandsUrl({
             domain: handler.slug,
@@ -155,15 +159,17 @@ class StepFlowPickHandler extends LitElement {
           })}
           referrerpolicy="no-referrer"
         />
-        <paper-item-body
-          >${handler.show_add
+        <span>
+          ${handler.show_add
             ? this.hass.localize(
                 `ui.panel.config.integrations.add_${handler.slug}_device`
               )
-            : handler.name}</paper-item-body
-        >
-        ${handler.show_add ? "" : html`<ha-icon-next></ha-icon-next>`}
-      </paper-icon-item>
+            : handler.name}
+        </span>
+        ${handler.show_add
+          ? ""
+          : html`<ha-icon-next slot="meta"></ha-icon-next>`}
+      </mwc-list-item>
     `;
   }
 
@@ -187,10 +193,14 @@ class StepFlowPickHandler extends LitElement {
     if (!changedProps.has("handlers")) {
       return;
     }
-    // Store the width and height so that when we search, box doesn't jump
-    const div = this.shadowRoot!.querySelector("div.container")!;
-    this._width = div.clientWidth;
-    this._height = div.clientHeight;
+    // Wait until list item initialized
+    const firstListItem = this.shadowRoot!.querySelector("mwc-list-item")!;
+    firstListItem.updateComplete.then(() => {
+      // Store the width and height so that when we search, box doesn't jump
+      const div = this.shadowRoot!.querySelector("div.container")!;
+      this._width = div.clientWidth;
+      this._height = div.clientHeight;
+    });
   }
 
   private _getHandlers() {
@@ -258,7 +268,7 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin: 8px 0;
+          margin-top: 8px;
         }
         .divider {
           margin: 8px 0;
