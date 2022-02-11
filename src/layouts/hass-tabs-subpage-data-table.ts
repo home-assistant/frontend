@@ -164,7 +164,11 @@ export class HaTabsSubpageDataTable extends LitElement {
       this.hass.localize("ui.components.data-table.search")}
     >
       ${!this.narrow
-        ? html`<div class="filters" slot="suffix">
+        ? html`<div
+            class="filters"
+            slot="suffix"
+            @click=${this._preventDefault}
+          >
             ${filterInfo
               ? html`<div class="active-filters">
                   ${filterInfo}
@@ -194,10 +198,10 @@ export class HaTabsSubpageDataTable extends LitElement {
         <div slot="toolbar-icon">
           ${this.narrow
             ? html`<div class="filter-menu">
-                <slot name="filter-menu"></slot>${this.numHidden ||
-                this.activeFilters
+                ${this.numHidden || this.activeFilters
                   ? html`<span class="badge">${this.numHidden || "!"}</span>`
                   : ""}
+                <slot name="filter-menu"></slot>
               </div>`
             : ""}<slot name="toolbar-icon"></slot>
         </div>
@@ -236,6 +240,10 @@ export class HaTabsSubpageDataTable extends LitElement {
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _preventDefault(ev) {
+    ev.preventDefault();
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -292,12 +300,14 @@ export class HaTabsSubpageDataTable extends LitElement {
         --mdc-ripple-color: transparant;
       }
       .filters {
-        --mdc-text-field-fill-color: initial;
-        --mdc-text-field-idle-line-color: initial;
+        --mdc-text-field-fill-color: var(--input-fill-color);
+        --mdc-text-field-idle-line-color: var(--input-idle-line-color);
+        --mdc-shape-small: 4px;
         --text-field-overflow: initial;
         display: flex;
         justify-content: flex-end;
         margin-right: 8px;
+        color: var(--primary-text-color);
       }
       .active-filters {
         color: var(--primary-text-color);
@@ -308,6 +318,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         margin-left: 4px;
         font-size: 14px;
         width: max-content;
+        cursor: initial;
       }
       .active-filters ha-svg-icon {
         color: var(--primary-color);
