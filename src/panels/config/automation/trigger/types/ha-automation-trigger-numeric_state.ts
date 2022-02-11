@@ -1,14 +1,13 @@
 import "../../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
