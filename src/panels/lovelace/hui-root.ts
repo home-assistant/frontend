@@ -276,13 +276,7 @@ class HUIRoot extends LitElement {
                         ></ha-icon-button>
                       `
                     : ""}
-                  ${this._editMode ||
-                  (this.hass!.user?.is_admin && !this.hass!.config.safe_mode) ||
-                  (this.hass.panels.lovelace?.config as LovelacePanelConfig)
-                    ?.mode === "yaml" ||
-                  this._yamlMode ||
-                  (this.narrow &&
-                    this._conversation(this.hass.config.components))
+                  ${this._showButtonMenu
                     ? html`
                         <ha-button-menu corner="BOTTOM_START">
                           <ha-icon-button
@@ -641,6 +635,17 @@ class HUIRoot extends LitElement {
 
   private get _viewRoot(): HTMLDivElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
+  }
+
+  private get _showButtonMenu(): boolean {
+    return (
+      (this.narrow && this._conversation(this.hass.config.components)) ||
+      this._editMode ||
+      (this.hass!.user?.is_admin && !this.hass!.config.safe_mode) ||
+      (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
+        "yaml" ||
+      this._yamlMode
+    );
   }
 
   private _handleRefresh(ev: CustomEvent<RequestSelectedDetail>): void {
