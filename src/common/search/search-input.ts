@@ -15,6 +15,9 @@ class SearchInput extends LitElement {
   @property() public filter?: string;
 
   @property({ type: Boolean })
+  public suffix = false;
+
+  @property({ type: Boolean })
   public autofocus = false;
 
   @property({ type: String })
@@ -33,7 +36,7 @@ class SearchInput extends LitElement {
         .label=${this.label || "Search"}
         .value=${this.filter || ""}
         .icon=${true}
-        .iconTrailing=${this.filter}
+        .iconTrailing=${this.filter || this.suffix}
         @input=${this._filterInputChanged}
       >
         <slot name="prefix" slot="leadingIcon">
@@ -43,16 +46,22 @@ class SearchInput extends LitElement {
             .path=${mdiMagnify}
           ></ha-svg-icon>
         </slot>
-        ${this.filter &&
-        html`
-          <ha-icon-button
-            slot="trailingIcon"
-            @click=${this._clearSearch}
-            .label=${this.hass.localize("ui.common.clear")}
-            .path=${mdiClose}
-            class="clear-button"
-          ></ha-icon-button>
-        `}
+        <div
+          style="display: flex;     align-items: center;
+"
+          slot="trailingIcon"
+        >
+          ${this.filter &&
+          html`
+            <ha-icon-button
+              @click=${this._clearSearch}
+              .label=${this.hass.localize("ui.common.clear")}
+              .path=${mdiClose}
+              class="clear-button"
+            ></ha-icon-button>
+          `}
+          <slot name="suffix"></slot>
+        </div>
       </ha-textfield>
     `;
   }
@@ -80,9 +89,6 @@ class SearchInput extends LitElement {
       }
       ha-svg-icon {
         outline: none;
-      }
-      ha-icon-button {
-        --mdc-icon-button-size: 24px;
       }
       .clear-button {
         --mdc-icon-size: 20px;

@@ -4,6 +4,7 @@ import { mdiFilterVariant } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { computeDeviceName } from "../data/device_registry";
 import { findRelated, RelatedResult } from "../data/search";
@@ -65,6 +66,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         .fullwidth=${this.narrow}
         .corner=${this.corner}
         @closed=${this._onClosed}
+        @focus=${stopPropagation}
+        @click=${stopPropagation}
       >
         <ha-area-picker
           .label=${this.hass.localize(
@@ -73,6 +76,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           .hass=${this.hass}
           .value=${this.value?.area}
           no-add
+          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._areaPicked}
         ></ha-area-picker>
         <ha-device-picker
@@ -81,6 +85,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           )}
           .hass=${this.hass}
           .value=${this.value?.device}
+          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._devicePicked}
         ></ha-device-picker>
         <ha-entity-picker
@@ -103,7 +108,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     this._open = true;
   }
 
-  private _onClosed(): void {
+  private _onClosed(ev): void {
+    ev.stopPropagation();
     this._open = false;
   }
 
@@ -173,9 +179,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
       :host {
         display: inline-block;
         position: relative;
-      }
-      :host([narrow]) {
-        position: static;
+        --mdc-menu-min-width: 200px;
       }
       ha-area-picker,
       ha-device-picker,
@@ -186,7 +190,8 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         box-sizing: border-box;
       }
       :host([narrow]) ha-area-picker,
-      :host([narrow]) ha-device-picker {
+      :host([narrow]) ha-device-picker,
+      :host([narrow]) ha-entity-picker {
         width: 100%;
       }
     `;

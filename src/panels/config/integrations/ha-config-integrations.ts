@@ -297,29 +297,35 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._filter
     );
 
-    const filterMenu = html`<ha-button-menu
-      corner="BOTTOM_START"
-      multi
-      slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}
-      @action=${this._handleMenuAction}
+    const filterMenu = html`<div
+      slot=${ifDefined(this.narrow ? "toolbar-icon" : "suffix")}
     >
-      <ha-icon-button
-        slot="trigger"
-        .label=${this.hass.localize("ui.common.menu")}
-        .path=${mdiFilterVariant}
+      <ha-button-menu
+        corner="BOTTOM_START"
+        multi
+        @action=${this._handleMenuAction}
       >
-      </ha-icon-button>
-      <ha-check-list-item left .selected=${this._showIgnored}>
-        ${this.hass.localize(
-          "ui.panel.config.integrations.ignore.show_ignored"
-        )}
-      </ha-check-list-item>
-      <ha-check-list-item left .selected=${this._showDisabled}>
-        ${this.hass.localize(
-          "ui.panel.config.integrations.disable.show_disabled"
-        )}
-      </ha-check-list-item>
-    </ha-button-menu>`;
+        <ha-icon-button
+          slot="trigger"
+          .label=${this.hass.localize("ui.common.menu")}
+          .path=${mdiFilterVariant}
+        >
+        </ha-icon-button>
+        <ha-check-list-item left .selected=${this._showIgnored}>
+          ${this.hass.localize(
+            "ui.panel.config.integrations.ignore.show_ignored"
+          )}
+        </ha-check-list-item>
+        <ha-check-list-item left .selected=${this._showDisabled}>
+          ${this.hass.localize(
+            "ui.panel.config.integrations.disable.show_disabled"
+          )}
+        </ha-check-list-item>
+      </ha-button-menu>
+      ${!this._showDisabled && this.narrow && disabledCount
+        ? html`<span class="badge">${disabledCount}</span>`
+        : ""}
+    </div>`;
 
     return html`
       <hass-tabs-subpage
@@ -336,8 +342,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .filter=${this._filter}
                   class="header"
-                  no-label-float
-                  no-underline
                   @value-changed=${this._handleSearchChange}
                   .label=${this.hass.localize(
                     "ui.panel.config.integrations.search"
@@ -350,29 +354,29 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               <div class="search">
                 <search-input
                   .hass=${this.hass}
-                  no-label-float
-                  no-underline
+                  suffix
                   .filter=${this._filter}
                   @value-changed=${this._handleSearchChange}
                   .label=${this.hass.localize(
                     "ui.panel.config.integrations.search"
                   )}
-                ></search-input>
-                ${!this._showDisabled && disabledCount
-                  ? html`<div class="active-filters">
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.disable.disabled_integrations",
-                        { number: disabledCount }
-                      )}
-                      <mwc-button
-                        @click=${this._toggleShowDisabled}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.integrations.disable.show"
+                >
+                  ${!this._showDisabled && disabledCount
+                    ? html`<div class="active-filters" slot="suffix">
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.disable.disabled_integrations",
+                          { number: disabledCount }
                         )}
-                      ></mwc-button>
-                    </div>`
-                  : ""}
-                ${filterMenu}
+                        <mwc-button
+                          @click=${this._toggleShowDisabled}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.integrations.disable.show"
+                          )}
+                        ></mwc-button>
+                      </div>`
+                    : ""}
+                  ${filterMenu}
+                </search-input>
               </div>
             `}
 
@@ -683,13 +687,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .empty-message h1 {
           margin-bottom: 0;
         }
-
+        search-input {
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: var(--divider-color);
+          --text-field-overflow: visible;
+        }
         search-input.header {
           display: block;
           color: var(--secondary-text-color);
           margin-left: 8px;
-          --mdc-text-field-fill-color: transparant;
-          --mdc-text-field-idle-line-color: var(--divider-color);
           --mdc-ripple-color: transparant;
         }
         .search {
@@ -717,6 +723,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           align-items: center;
           padding: 2px 2px 2px 8px;
           font-size: 14px;
+          width: max-content;
         }
         .active-filters mwc-button {
           margin-left: 8px;
@@ -731,6 +738,21 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           bottom: 0;
           left: 0;
           content: "";
+        }
+        .badge {
+          min-width: 20px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 400;
+          background-color: var(--primary-color);
+          line-height: 20px;
+          text-align: center;
+          padding: 0px 4px;
+          color: var(--text-primary-color);
+          position: absolute;
+          right: 14px;
+          top: 8px;
+          font-size: 0.65em;
         }
       `,
     ];
