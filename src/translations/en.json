@@ -2478,6 +2478,8 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "add_zwave_js_device": "Add Z-Wave device",
+          "add_zha_device": "Add Zigbee device",
           "disable": {
             "show_disabled": "Show disabled integrations",
             "disabled_integrations": "{number} disabled",
