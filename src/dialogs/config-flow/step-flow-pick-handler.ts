@@ -1,4 +1,4 @@
-import "@material/mwc-list/mwc-check-list-item";
+import "@material/mwc-list/mwc-list-item";
 import Fuse from "fuse.js";
 import {
   css,
