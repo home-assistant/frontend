@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import Fuse from "fuse.js";
 import {
@@ -5,8 +6,8 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -102,8 +103,7 @@ class StepFlowPickHandler extends LitElement {
         .label=${this.hass.localize("ui.panel.config.integrations.search")}
         @keypress=${this._maybeSubmit}
       ></search-input>
-      <div
-        class="container"
+      <mwc-list
         style=${styleMap({
           width: `${this._width}px`,
           height: `${this._height}px`,
@@ -112,7 +112,7 @@ class StepFlowPickHandler extends LitElement {
         ${addDeviceRows.length
           ? html`
               ${addDeviceRows.map((handler) => this._renderRow(handler))}
-              <div class="divider"></div>
+              <li divider padded class="divider" role="separator"></li>
             `
           : ""}
         ${handlers.length
@@ -139,7 +139,7 @@ class StepFlowPickHandler extends LitElement {
                 >.
               </p>
             `}
-      </div>
+      </mwc-list>
     `;
   }
 
@@ -185,7 +185,7 @@ class StepFlowPickHandler extends LitElement {
     ) {
       // Store the width and height so that when we search, box doesn't jump
       const boundingRect =
-        this.shadowRoot!.querySelector("div")!.getBoundingClientRect();
+        this.shadowRoot!.querySelector("mwc-list")!.getBoundingClientRect();
       this._width = boundingRect.width;
       this._height = boundingRect.height;
     }
@@ -264,24 +264,23 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin-top: 8px 16px 0;
-        }
-        .divider {
-          margin: 8px 0;
-          border-top: 1px solid var(--divider-color);
+          margin: 8px 16px 0;
         }
         ha-icon-next {
           margin-right: 8px;
         }
-        div {
+        mwc-list {
           overflow: auto;
           max-height: 600px;
+        }
+        .divider {
+          border-bottom-color: var(--divider-color);
         }
         h2 {
           padding-right: 66px;
         }
         @media all and (max-height: 900px) {
-          div {
+          mwc-list {
             max-height: calc(100vh - 134px);
           }
         }
