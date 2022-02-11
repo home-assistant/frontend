@@ -46,11 +46,7 @@ class SearchInput extends LitElement {
             .path=${mdiMagnify}
           ></ha-svg-icon>
         </slot>
-        <div
-          style="display: flex;     align-items: center;
-"
-          slot="trailingIcon"
-        >
+        <div class="trailing" slot="trailingIcon">
           ${this.filter &&
           html`
             <ha-icon-button
@@ -95,6 +91,10 @@ class SearchInput extends LitElement {
       }
       ha-textfield {
         display: inherit;
+      }
+      .trailing {
+        display: flex;
+        align-items: center;
       }
     `;
   }
