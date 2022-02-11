@@ -300,6 +300,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const filterMenu = html`<div
       slot=${ifDefined(this.narrow ? "toolbar-icon" : "suffix")}
     >
+      ${!this._showDisabled && this.narrow && disabledCount
+        ? html`<span class="badge">${disabledCount}</span>`
+        : ""}
       <ha-button-menu
         corner="BOTTOM_START"
         multi
@@ -323,9 +326,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           )}
         </ha-check-list-item>
       </ha-button-menu>
-      ${!this._showDisabled && this.narrow && disabledCount
-        ? html`<span class="badge">${disabledCount}</span>`
-        : ""}
     </div>`;
 
     return html`

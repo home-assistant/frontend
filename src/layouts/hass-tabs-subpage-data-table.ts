@@ -198,10 +198,10 @@ export class HaTabsSubpageDataTable extends LitElement {
         <div slot="toolbar-icon">
           ${this.narrow
             ? html`<div class="filter-menu">
-                <slot name="filter-menu"></slot>${this.numHidden ||
-                this.activeFilters
+                ${this.numHidden || this.activeFilters
                   ? html`<span class="badge">${this.numHidden || "!"}</span>`
                   : ""}
+                <slot name="filter-menu"></slot>
               </div>`
             : ""}<slot name="toolbar-icon"></slot>
         </div>
