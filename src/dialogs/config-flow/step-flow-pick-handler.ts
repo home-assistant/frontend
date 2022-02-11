@@ -84,10 +84,13 @@ class StepFlowPickHandler extends LitElement {
     const addDeviceRows: HandlerObj[] = ["zha", "zwave_js"]
       .filter((domain) => isComponentLoaded(this.hass, domain))
       .map((domain) => ({
-        name: domainToName(this.hass.localize, domain),
+        name: this.hass.localize(
+          `ui.panel.config.integrations.add_${domain}_device`
+        ),
         slug: domain,
         show_add: true,
-      }));
+      }))
+      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
 
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
@@ -159,13 +162,7 @@ class StepFlowPickHandler extends LitElement {
           })}
           referrerpolicy="no-referrer"
         />
-        <span>
-          ${handler.show_add
-            ? this.hass.localize(
-                `ui.panel.config.integrations.add_${handler.slug}_device`
-              )
-            : handler.name}
-        </span>
+        <span>${handler.name}</span>
         ${handler.show_add
           ? ""
           : html`<ha-icon-next slot="meta"></ha-icon-next>`}
