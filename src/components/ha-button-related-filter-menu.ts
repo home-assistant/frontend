@@ -4,7 +4,6 @@ import { mdiFilterVariant } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { computeDeviceName } from "../data/device_registry";
 import { findRelated, RelatedResult } from "../data/search";
@@ -66,8 +65,6 @@ export class HaRelatedFilterButtonMenu extends LitElement {
         .fullwidth=${this.narrow}
         .corner=${this.corner}
         @closed=${this._onClosed}
-        @focus=${stopPropagation}
-        @click=${stopPropagation}
       >
         <ha-area-picker
           .label=${this.hass.localize(
