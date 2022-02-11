@@ -1,4 +1,4 @@
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheck,
@@ -9,7 +9,6 @@ import {
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import {
   css,
   CSSResultGroup,
@@ -29,13 +28,12 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import {
+import type {
   HaFormDataContainer,
   HaFormSchema,
   HaFormSelector,
 } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
@@ -54,7 +52,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/ha-app-layout";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
@@ -512,10 +510,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _computeLabelCallback(
+  private _computeLabelCallback = (
     schema: HaFormSelector,
     data: HaFormDataContainer
-  ): string {
+  ): string => {
     switch (schema.name) {
       case "mode":
         return this.hass.localize("ui.panel.config.script.editor.modes.label");
@@ -528,28 +526,32 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           `ui.panel.config.script.editor.${schema.name}`
         );
     }
-  }
+  };
 
-  private _computeHelperCallback(schema: HaFormSelector): string | undefined {
+  private _computeHelperCallback = (
+    schema: HaFormSelector
+  ): string | undefined => {
     if (schema.name === "mode") {
       return this.hass.localize(
         "ui.panel.config.script.editor.modes.description",
         "documentation_link",
-        html`<a
-          href=${documentationUrl(
-            this.hass,
-            "/integrations/script/#script-modes"
-          )}
-          target="_blank"
-          rel="noreferrer"
-          >${this.hass.localize(
-            "ui.panel.config.script.editor.modes.documentation"
-          )}</a
-        >`
+        html`
+          <a
+            href=${documentationUrl(
+              this.hass,
+              "/integrations/script/#script-modes"
+            )}
+            target="_blank"
+            rel="noreferrer"
+            >${this.hass.localize(
+              "ui.panel.config.script.editor.modes.documentation"
+            )}</a
+          >
+        `
       );
     }
     return undefined;
-  }
+  };
 
   private async _runScript(ev: CustomEvent) {
     ev.stopPropagation();
