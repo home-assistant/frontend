@@ -1,4 +1,5 @@
 import "../../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../../components/ha-form/ha-form";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
