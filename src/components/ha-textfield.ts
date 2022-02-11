@@ -68,6 +68,14 @@ export class HaTextField extends TextFieldBase {
       :host([no-spinner]) input[type="number"] {
         -moz-appearance: textfield;
       }
+
+      .mdc-text-field__ripple {
+        overflow: hidden;
+      }
+
+      .mdc-text-field {
+        overflow: var(--text-field-overflow);
+      }
     `,
   ];
 }
