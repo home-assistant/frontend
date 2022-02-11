@@ -46,6 +46,8 @@ export class HomeAssistantMain extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @property({ type: Boolean }) public showDevToolsDrawer?: boolean;
+
   @state() private _sidebarEditMode = false;
 
   @state() private _externalSidebar = false;
@@ -81,7 +83,7 @@ export class HomeAssistantMain extends LitElement {
         responsive-width="0"
       >
         <app-drawer
-          id="drawer"
+          id="sidebarDrawer"
           align="start"
           slot="drawer"
           .disableSwipe=${disableSwipe}
@@ -100,12 +102,13 @@ export class HomeAssistantMain extends LitElement {
         </app-drawer>
 
         <app-drawer
-          id="drawer"
+          id="devToolsDrawer"
           align="end"
           slot="drawer"
           .disableSwipe=${true}
           .swipeOpen=${false}
-          .persistent=${false}
+          .persistent=${true}
+          .opened=${this.showDevToolsDrawer}
         >
           <div>test</div>
         </app-drawer>
@@ -137,7 +140,7 @@ export class HomeAssistantMain extends LitElement {
 
         if (this._sidebarEditMode) {
           if (this._sidebarNarrow) {
-            this.drawer.open();
+            this.sidebarDrawer.open();
           } else {
             fireEvent(this, "hass-dock-sidebar", {
               dock: "docked",
@@ -159,10 +162,10 @@ export class HomeAssistantMain extends LitElement {
         return;
       }
       if (this._sidebarNarrow) {
-        if (this.drawer.opened) {
-          this.drawer.close();
+        if (this.sidebarDrawer.opened) {
+          this.sidebarDrawer.close();
         } else {
-          this.drawer.open();
+          this.sidebarDrawer.open();
         }
       } else {
         fireEvent(this, "hass-dock-sidebar", {
@@ -188,21 +191,15 @@ export class HomeAssistantMain extends LitElement {
       this.narrow || this.hass.dockedSidebar !== "auto"
     );
 
-    // if (localStorage["showDeveloperTools"] === "true") {
-    //   this.drawer.open();
-    // } else {
-    //   this.drawer.close();
-    // }
-
     if (changedProps.has("route") && this._sidebarNarrow) {
-      this.drawer.close();
+      this.sidebarDrawer.close();
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     // Make app-drawer adjust to a potential LTR/RTL change
     if (oldHass && oldHass.language !== this.hass!.language) {
-      this.drawer._resetPosition();
+      this.sidebarDrawer._resetPosition();
     }
   }
 
@@ -210,8 +207,8 @@ export class HomeAssistantMain extends LitElement {
     return this.narrow || this.hass.dockedSidebar === "always_hidden";
   }
 
-  private get drawer(): AppDrawerElement {
-    return this.shadowRoot!.querySelector("app-drawer")!;
+  private get sidebarDrawer(): AppDrawerElement {
+    return this.shadowRoot!.querySelector("#sidebarDrawer")!;
   }
 
   private get appLayout(): AppDrawerLayoutElement {

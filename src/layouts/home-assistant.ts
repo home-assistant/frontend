@@ -85,6 +85,16 @@ export class HomeAssistantAppEl extends ShortcutsMixin(HassElement) {
       storeState(this.hass!);
     });
 
+    this.addEventListener("dev-tools-toggle", () => {
+      const main = this.shadowRoot?.querySelector("home-assistant-main");
+
+      if (!main) {
+        return;
+      }
+
+      main.showDevToolsDrawer = !main.showDevToolsDrawer;
+    });
+
     // Navigation
     const updateRoute = (path = curPath()) => {
       if (this._route && path === this._route.path) {

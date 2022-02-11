@@ -1,5 +1,6 @@
 import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
+import { fireEvent } from "../common/dom/fire_event";
 import {
   QuickBarParams,
   showQuickBar,
@@ -12,6 +13,7 @@ declare global {
   interface HASSDomEvents {
     "hass-quick-bar": QuickBarParams;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
+    "dev-tools-toggle": never;
   }
 }
 
@@ -55,6 +57,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _toggleDeveloperToolsSidebar(): void {
       localStorage.showDeveloperTools =
         localStorage.showDeveloperTools !== "true";
+      fireEvent(this, "dev-tools-toggle");
       this.requestUpdate();
     }
 
