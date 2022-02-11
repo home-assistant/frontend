@@ -219,7 +219,7 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin: -12px 16px 0;
+          margin: 8px 16px 0;
         }
         ha-icon-next {
           margin-right: 8px;

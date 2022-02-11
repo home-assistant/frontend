@@ -352,6 +352,10 @@ export class MoreInfoDialog extends LitElement {
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
         }
 
+        .content {
+          outline: none;
+        }
+
         @media all and (min-width: 451px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-max-width: 90vw;
