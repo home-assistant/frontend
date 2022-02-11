@@ -18,6 +18,7 @@ import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
+import "../panels/developer-tools/ha-panel-developer-tools";
 
 const NON_SWIPABLE_PANELS = ["map"];
 
@@ -98,6 +99,17 @@ export class HomeAssistantMain extends LitElement {
           ></ha-sidebar>
         </app-drawer>
 
+        <app-drawer
+          id="drawer"
+          align="end"
+          slot="drawer"
+          .disableSwipe=${true}
+          .swipeOpen=${false}
+          .persistent=${false}
+        >
+          <div>test</div>
+        </app-drawer>
+
         <partial-panel-resolver
           .narrow=${this.narrow}
           .hass=${hass}
@@ -175,6 +187,12 @@ export class HomeAssistantMain extends LitElement {
       "expanded",
       this.narrow || this.hass.dockedSidebar !== "auto"
     );
+
+    // if (localStorage["showDeveloperTools"] === "true") {
+    //   this.drawer.open();
+    // } else {
+    //   this.drawer.close();
+    // }
 
     if (changedProps.has("route") && this._sidebarNarrow) {
       this.drawer.close();

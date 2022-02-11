@@ -32,6 +32,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
+        d: () => this._toggleDeveloperToolsSidebar(),
       });
     }
 
@@ -49,6 +50,12 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         this.hass.enableShortcuts &&
         this._canOverrideAlphanumericInput(e)
       );
+    }
+
+    private _toggleDeveloperToolsSidebar(): void {
+      localStorage.showDeveloperTools =
+        localStorage.showDeveloperTools !== "true";
+      this.requestUpdate();
     }
 
     private _canOverrideAlphanumericInput(e: KeyboardEvent) {

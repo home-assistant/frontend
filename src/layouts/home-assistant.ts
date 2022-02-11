@@ -5,7 +5,7 @@ import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
-import QuickBarMixin from "../state/quick-bar-mixin";
+import ShortcutsMixin from "../state/shortcuts-mixin";
 import { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
@@ -29,7 +29,7 @@ const panelUrl = (path: string) => {
 };
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
+export class HomeAssistantAppEl extends ShortcutsMixin(HassElement) {
   @state() private _route: Route;
 
   private _panelUrl: string;
