@@ -169,10 +169,26 @@ class StepFlowPickHandler extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (this._filter === undefined && this.initialFilter !== undefined) {
       this._filter = this.initialFilter;
     }
-    super.willUpdate(changedProps);
+    if (this.initialFilter !== undefined && this._filter === "") {
+      this.initialFilter = undefined;
+      this._filter = "";
+      this._width = undefined;
+      this._height = undefined;
+    } else if (
+      this.hasUpdated &&
+      changedProps.has("_filter") &&
+      (!this._width || !this._height)
+    ) {
+      // Store the width and height so that when we search, box doesn't jump
+      const boundingRect =
+        this.shadowRoot!.querySelector("div")!.getBoundingClientRect();
+      this._width = boundingRect.width;
+      this._height = boundingRect.height;
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -181,21 +197,6 @@ class StepFlowPickHandler extends LitElement {
       () => this.shadowRoot!.querySelector("search-input")!.focus(),
       0
     );
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!changedProps.has("handlers")) {
-      return;
-    }
-    // Wait until list item initialized
-    const firstListItem = this.shadowRoot!.querySelector("mwc-list-item")!;
-    firstListItem.updateComplete.then(() => {
-      // Store the width and height so that when we search, box doesn't jump
-      const div = this.shadowRoot!.querySelector("div.container")!;
-      this._width = div.clientWidth;
-      this._height = div.clientHeight;
-    });
   }
 
   private _getHandlers() {
@@ -263,7 +264,7 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin-top: 8px;
+          margin-top: 8px 16px 0;
         }
         .divider {
           margin: 8px 0;
@@ -283,10 +284,6 @@ class StepFlowPickHandler extends LitElement {
           div {
             max-height: calc(100vh - 134px);
           }
-        }
-        paper-icon-item {
-          cursor: pointer;
-          margin-bottom: 4px;
         }
         p {
           text-align: center;

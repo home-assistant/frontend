@@ -292,12 +292,14 @@ export class HaTabsSubpageDataTable extends LitElement {
         --mdc-ripple-color: transparant;
       }
       .filters {
-        --mdc-text-field-fill-color: initial;
-        --mdc-text-field-idle-line-color: initial;
+        --mdc-text-field-fill-color: var(--input-fill-color);
+        --mdc-text-field-idle-line-color: var(--input-idle-line-color);
+        --mdc-shape-small: 4px;
         --text-field-overflow: initial;
         display: flex;
         justify-content: flex-end;
         margin-right: 8px;
+        color: var(--primary-text-color);
       }
       .active-filters {
         color: var(--primary-text-color);

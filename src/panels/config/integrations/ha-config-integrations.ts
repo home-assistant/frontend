@@ -754,6 +754,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           top: 8px;
           font-size: 0.65em;
         }
+        ha-button-menu {
+          color: var(--primary-text-color);
+        }
       `,
     ];
   }

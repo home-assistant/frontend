@@ -338,7 +338,9 @@ export class MoreInfoDialog extends LitElement {
           flex-shrink: 0;
           display: block;
         }
-
+        .content {
+          outline: none;
+        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-header-bar {
             --mdc-theme-primary: var(--app-header-background-color);
