@@ -261,8 +261,10 @@ export const computeMediaControls = (
     });
   }
 
+  const assumedState = stateObj.attributes.assumed_state === true;
+
   if (
-    (state === "playing" || state === "paused") &&
+    (state === "playing" || state === "paused" || assumedState) &&
     supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
   ) {
     buttons.push({
@@ -272,14 +274,15 @@ export const computeMediaControls = (
   }
 
   if (
-    (state === "playing" &&
+    !assumedState &&
+    ((state === "playing" &&
       (supportsFeature(stateObj, SUPPORT_PAUSE) ||
         supportsFeature(stateObj, SUPPORT_STOP))) ||
-    ((state === "paused" || state === "idle") &&
-      supportsFeature(stateObj, SUPPORT_PLAY)) ||
-    (state === "on" &&
-      (supportsFeature(stateObj, SUPPORT_PLAY) ||
-        supportsFeature(stateObj, SUPPORT_PAUSE)))
+      ((state === "paused" || state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY)) ||
+      (state === "on" &&
+        (supportsFeature(stateObj, SUPPORT_PLAY) ||
+          supportsFeature(stateObj, SUPPORT_PAUSE))))
   ) {
     buttons.push({
       icon:
@@ -299,8 +302,29 @@ export const computeMediaControls = (
     });
   }
 
+  if (assumedState && supportsFeature(stateObj, SUPPORT_PLAY)) {
+    buttons.push({
+      icon: mdiPlay,
+      action: "media_play",
+    });
+  }
+
+  if (assumedState && supportsFeature(stateObj, SUPPORT_PAUSE)) {
+    buttons.push({
+      icon: mdiPause,
+      action: "media_pause",
+    });
+  }
+
+  if (assumedState && supportsFeature(stateObj, SUPPORT_STOP)) {
+    buttons.push({
+      icon: mdiStop,
+      action: "media_stop",
+    });
+  }
+
   if (
-    (state === "playing" || state === "paused") &&
+    (state === "playing" || state === "paused" || assumedState) &&
     supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
   ) {
     buttons.push({
