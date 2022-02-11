@@ -164,7 +164,11 @@ export class HaTabsSubpageDataTable extends LitElement {
       this.hass.localize("ui.components.data-table.search")}
     >
       ${!this.narrow
-        ? html`<div class="filters" slot="suffix">
+        ? html`<div
+            class="filters"
+            slot="suffix"
+            @click=${this._preventDefault}
+          >
             ${filterInfo
               ? html`<div class="active-filters">
                   ${filterInfo}
@@ -236,6 +240,10 @@ export class HaTabsSubpageDataTable extends LitElement {
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _preventDefault(ev) {
+    ev.preventDefault();
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -310,6 +318,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         margin-left: 4px;
         font-size: 14px;
         width: max-content;
+        cursor: initial;
       }
       .active-filters ha-svg-icon {
         color: var(--primary-color);

@@ -304,6 +304,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         corner="BOTTOM_START"
         multi
         @action=${this._handleMenuAction}
+        @click=${this._preventDefault}
       >
         <ha-icon-button
           slot="trigger"
@@ -362,7 +363,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   )}
                 >
                   ${!this._showDisabled && disabledCount
-                    ? html`<div class="active-filters" slot="suffix">
+                    ? html`<div
+                        class="active-filters"
+                        slot="suffix"
+                        @click=${this._preventDefault}
+                      >
                         ${this.hass.localize(
                           "ui.panel.config.integrations.disable.disabled_integrations",
                           { number: disabledCount }
@@ -505,6 +510,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         </ha-fab>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _preventDefault(ev) {
+    ev.preventDefault();
   }
 
   private _loadConfigEntries() {
@@ -724,6 +733,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 2px 2px 2px 8px;
           font-size: 14px;
           width: max-content;
+          cursor: initial;
         }
         .active-filters mwc-button {
           margin-left: 8px;
