@@ -15,7 +15,7 @@ export class HaNumericStateTrigger extends LitElement {
 
   @property() public trigger!: NumericStateTrigger;
 
-  private _schema = memoizeOne((entityId) => [
+  private _schema = memoizeOne((entityId): HaFormSchema[] => [
     { name: "entity_id", selector: { entity: {} } },
     {
       name: "attribute",
