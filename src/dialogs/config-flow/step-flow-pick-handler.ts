@@ -21,7 +21,6 @@ import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import { configFlowContentStyles } from "./styles";
 import "@material/mwc-list/mwc-list-item";
-import { afterNextRender } from "../../common/util/render-status";
 
 interface HandlerObj {
   name: string;
@@ -147,10 +146,26 @@ class StepFlowPickHandler extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (this._filter === undefined && this.initialFilter !== undefined) {
       this._filter = this.initialFilter;
     }
-    super.willUpdate(changedProps);
+    if (this.initialFilter !== undefined && this._filter === "") {
+      this.initialFilter = undefined;
+      this._filter = "";
+      this._width = undefined;
+      this._height = undefined;
+    } else if (
+      this.hasUpdated &&
+      changedProps.has("_filter") &&
+      (!this._width || !this._height)
+    ) {
+      // Store the width and height so that when we search, box doesn't jump
+      const boundingRect =
+        this.shadowRoot!.querySelector("div")!.getBoundingClientRect();
+      this._width = boundingRect.width;
+      this._height = boundingRect.height;
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -159,21 +174,6 @@ class StepFlowPickHandler extends LitElement {
       () => this.shadowRoot!.querySelector("search-input")!.focus(),
       0
     );
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    // Store the width and height so that when we search, box doesn't jump
-    if (!this._width || !this._height) {
-      this.updateComplete.then(() => {
-        afterNextRender(() => {
-          const boundingRect =
-            this.shadowRoot!.querySelector("div")!.getBoundingClientRect();
-          this._width = boundingRect.width;
-          this._height = boundingRect.height;
-        });
-      });
-    }
   }
 
   private _getHandlers() {
