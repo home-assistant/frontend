@@ -19,6 +19,9 @@ export const computeStateDisplay = (
   if (compareState === UNKNOWN || compareState === UNAVAILABLE) {
     return localize(`state.default.${compareState}`);
   }
+  if (compareState === "") {
+    return localize(`state.default.${UNKNOWN}`);
+  }
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (isNumericState(stateObj)) {
@@ -123,7 +126,11 @@ export const computeStateDisplay = (
     domain === "scene" ||
     (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
   ) {
-    return formatDateTime(new Date(compareState), locale);
+    try {
+      return formatDateTime(new Date(compareState), locale);
+    } catch (_err) {
+      return compareState;
+    }
   }
 
   return (
