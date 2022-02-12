@@ -1,5 +1,6 @@
 import {
   mdiAccount,
+  mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiCellphoneCog,
   mdiCog,
@@ -70,6 +71,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       component: "blueprint",
     },
     {
+      path: "/config/backup",
+      translationKey: "backup",
+      iconPath: mdiBackupRestore,
+      iconColor: "#4084CD",
+      component: "backup",
+    },
+    {
       path: "/hassio",
       translationKey: "supervisor",
       iconPath: mdiHomeAssistant,
@@ -109,6 +117,15 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiCog,
       iconColor: "#4A5963",
       core: true,
+    },
+  ],
+  backup: [
+    {
+      path: "/config/backup",
+      translationKey: "ui.panel.config.backup.caption",
+      iconPath: mdiBackupRestore,
+      iconColor: "#4084CD",
+      component: "backup",
     },
   ],
   devices: [
@@ -292,6 +309,10 @@ class HaPanelConfig extends HassRouterPage {
       automation: {
         tag: "ha-config-automation",
         load: () => import("./automation/ha-config-automation"),
+      },
+      backup: {
+        tag: "ha-config-backup",
+        load: () => import("./backup/ha-config-backup"),
       },
       blueprint: {
         tag: "ha-config-blueprint",
