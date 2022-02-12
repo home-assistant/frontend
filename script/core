@@ -4,7 +4,7 @@
 # Stop on errors
 set -e
 
-WD="${WORKSPACE_DIRECTORY:=/workspaces/frontend/}"
+WD="${WORKSPACE_DIRECTORY:=/workspaces/frontend}"
 
 if [ -z "${DEVCONTAINER}" ]; then
   echo "This task should only run inside a devcontainer, for local install HA Core in a venv."
