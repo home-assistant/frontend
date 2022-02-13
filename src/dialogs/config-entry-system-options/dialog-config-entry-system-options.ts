@@ -83,6 +83,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
             .checked=${!this._disableNewEntities}
             @change=${this._disableNewEntitiesChanged}
             .disabled=${this._submitting}
+            dialogInitialFocus
           ></ha-switch>
         </ha-formfield>
         ${this._allowUpdatePolling()

@@ -47,7 +47,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           ${this._params.issue.data.supported_unit}?
         </p>
 
-        <mwc-button slot="primaryAction" @click=${this._fixIssue}>
+        <mwc-button
+          slot="primaryAction"
+          @click=${this._fixIssue}
+          dialogInitialFocus
+        >
           Fix
         </mwc-button>
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>

@@ -111,6 +111,7 @@ export class DialogAddUser extends LitElement {
                 .errorMessage=${this.hass.localize("ui.common.error_required")}
                 @value-changed=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
+                dialogInitialFocus
               ></paper-input>`
             : ""}
           <paper-input
@@ -125,6 +126,7 @@ export class DialogAddUser extends LitElement {
             autocapitalize="none"
             @value-changed=${this._handleValueChanged}
             .errorMessage=${this.hass.localize("ui.common.error_required")}
+            dialogInitialFocus
           ></paper-input>
 
           <paper-input
