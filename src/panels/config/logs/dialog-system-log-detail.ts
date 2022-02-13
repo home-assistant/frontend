@@ -227,6 +227,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         .contents {
           padding: 16px;
+          outline: none;
         }
         .error {
           color: var(--error-color);
