@@ -65,6 +65,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             name="action"
             .checked=${this._action === "update"}
             @change=${this._handleActionChanged}
+            dialogInitialFocus
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
