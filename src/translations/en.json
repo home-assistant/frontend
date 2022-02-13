@@ -3692,6 +3692,7 @@
         },
         "tts": {
           "message": "Message",
+          "example_message": "Hello {name}, you can play any text on any supported media player!",
           "language": "Language",
           "gender": "Gender",
           "gender_male": "Male",

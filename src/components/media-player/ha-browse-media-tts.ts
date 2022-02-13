@@ -16,6 +16,7 @@ import { HomeAssistant } from "../../types";
 import "../ha-textarea";
 import { buttonLinkStyle } from "../../resources/styles";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { LocalStorage } from "../../common/decorators/local-storage";
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
@@ -31,12 +32,17 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _cloudTTSInfo?: CloudTTSInfo;
 
+  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
+
   protected render() {
     return html`
       <ha-textarea
         autogrow
         .label=${this.hass.localize("ui.panel.media-browser.tts.message")}
-        .value=${"hello"}
+        .value=${this._message ||
+        this.hass.localize("ui.panel.media-browser.tts.example_message", {
+          name: this.hass.user?.name || "",
+        })}
       >
       </ha-textarea>
       ${this._cloudDefaultOptions ? this._renderCloudOptions() : ""}
@@ -97,6 +103,22 @@ class BrowseMediaTTS extends LitElement {
     `;
   }
 
+  protected override willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("message")) {
+      return;
+    }
+
+    // Re-rendering can reset message because textarea content is newer than local storage.
+    // But we don't want to write every keystroke to local storage.
+    // So instead we just do it when we're going to render.
+    const message = this.shadowRoot!.querySelector("ha-textarea")?.value;
+    if (message !== undefined && message !== this._message) {
+      this._message = message;
+    }
+  }
+
   async _handleLanguageChange(ev) {
     if (ev.target.value === this._cloudOptions![0]) {
       return;
@@ -138,13 +160,11 @@ class BrowseMediaTTS extends LitElement {
   }
 
   private async _ttsClicked(): Promise<void> {
+    const message = this.shadowRoot!.querySelector("ha-textarea")!.value;
+    this._message = message;
     const item = { ...this.item };
-
     const query = new URLSearchParams();
-    query.append(
-      "message",
-      this.shadowRoot!.querySelector("ha-textarea")!.value
-    );
+    query.append("message", message);
     if (this._cloudOptions) {
       query.append("language", this._cloudOptions[0]);
       query.append("gender", this._cloudOptions[1]);
