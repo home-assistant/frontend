@@ -19,9 +19,6 @@ export const computeStateDisplay = (
   if (compareState === UNKNOWN || compareState === UNAVAILABLE) {
     return localize(`state.default.${compareState}`);
   }
-  if (compareState === "") {
-    return localize(`state.default.${UNKNOWN}`);
-  }
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (isNumericState(stateObj)) {
