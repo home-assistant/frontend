@@ -92,7 +92,7 @@ class HaConfigBackup extends LitElement {
                 label: this.hass.localize(
                   "ui.panel.config.backup.remove_backup"
                 ),
-                action: () => this._removeBackup(backup.slug),
+                action: () => this._removeBackup(backup),
               },
             ]}
             style="color: var(--secondary-text-color)"
@@ -176,8 +176,20 @@ class HaConfigBackup extends LitElement {
     await this._getBackups();
   }
 
-  private async _removeBackup(slug: string): Promise<void> {
-    await removeBackup(this.hass, slug);
+  private async _removeBackup(backup: BackupContent): Promise<void> {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize("ui.panel.config.backup.remove.title"),
+      text: this.hass.localize("ui.panel.config.backup.remove.description", {
+        name: backup.name,
+      }),
+      confirmText: this.hass.localize("ui.panel.config.backup.remove.confirm"),
+    });
+    if (!confirm) {
+      return;
+    }
+
+    await removeBackup(this.hass, backup.slug);
+    await this._getBackups();
   }
 }
 
