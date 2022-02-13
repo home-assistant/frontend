@@ -3689,6 +3689,17 @@
       "media-browser": {
         "error": {
           "player_not_exist": "Media player {name} does not exist"
+        },
+        "tts": {
+          "message": "Message",
+          "language": "Language",
+          "gender": "Gender",
+          "gender_male": "Male",
+          "gender_female": "Female",
+          "action_play": "Say",
+          "action_pick": "Select",
+          "set_as_default": "Set as default options",
+          "faild_to_store_defaults": "Failed to store defaults: {error}"
         }
       },
       "map": {
