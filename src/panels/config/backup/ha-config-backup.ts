@@ -73,7 +73,7 @@ class HaConfigBackup extends LitElement {
       actions: {
         title: "",
         width: "15%",
-        template: (entry: string, backup: BackupContent) =>
+        template: (_: string, backup: BackupContent) =>
           html` <ha-icon-overflow-menu
             .hass=${this.hass}
             .narrow=${this.narrow}
