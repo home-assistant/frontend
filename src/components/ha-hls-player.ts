@@ -43,6 +43,8 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _errorIsFatal = false;
+
   private _hlsPolyfillInstance?: HlsLite;
 
   private _exoPlayer = false;
@@ -53,6 +55,7 @@ class HaHLSPlayer extends LitElement {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
     if (this.hasUpdated) {
+      this._resetError();
       this._startHls();
     }
   }
@@ -64,16 +67,23 @@ class HaHLSPlayer extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (this._error) {
-      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
-    }
     return html`
-      <video
-        ?autoplay=${this.autoPlay}
-        .muted=${this.muted}
-        ?playsinline=${this.playsInline}
-        ?controls=${this.controls}
-      ></video>
+      ${this._error
+        ? html`<ha-alert
+            alert-type="error"
+            class=${this._errorIsFatal ? "fatal" : "retry"}
+          >
+            ${this._error}
+          </ha-alert>`
+        : ""}
+      ${!this._errorIsFatal
+        ? html`<video
+            ?autoplay=${this.autoPlay}
+            .muted=${this.muted}
+            ?playsinline=${this.playsInline}
+            ?controls=${this.controls}
+          ></video>`
+        : ""}
     `;
   }
 
@@ -87,12 +97,11 @@ class HaHLSPlayer extends LitElement {
     }
 
     this._cleanUp();
+    this._resetError();
     this._startHls();
   }
 
   private async _startHls(): Promise<void> {
-    this._error = undefined;
-
     const masterPlaylistPromise = fetch(this.url);
 
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
@@ -110,8 +119,8 @@ class HaHLSPlayer extends LitElement {
     }
 
     if (!hlsSupported) {
-      this._error = this.hass.localize(
-        "ui.components.media-browser.video_not_supported"
+      this._setFatalError(
+        this.hass.localize("ui.components.media-browser.video_not_supported")
       );
       return;
     }
@@ -219,9 +228,16 @@ class HaHLSPlayer extends LitElement {
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+      this._resetError();
       hls.loadSource(url);
     });
-    hls.on(Hls.Events.ERROR, (_, data: any) => {
+    hls.on(Hls.Events.FRAG_LOADED, (_event, _data: any) => {
+      this._resetError();
+    });
+    hls.on(Hls.Events.ERROR, (_event, data: any) => {
+      // Some errors are recovered automatically by the hls player itself, and the others handled
+      // in this function require special actions to recover. Errors retried in this function
+      // are done with backoff to not cause unecessary failures.
       if (!data.fatal) {
         return;
       }
@@ -241,22 +257,22 @@ class HaHLSPlayer extends LitElement {
                 error += " (" + data.response.code + ")";
               }
             }
-            this._error = error;
-            return;
+            this._setRetryableError(error);
+            break;
           }
           case Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT:
-            this._error = "Timeout while starting stream";
-            return;
+            this._setRetryableError("Timeout while starting stream");
+            break;
           default:
-            this._error = "Unknown stream network error (" + data.details + ")";
-            return;
+            this._setRetryableError("Stream network error");
+            break;
         }
-        this._error = "Error with media stream contents (" + data.details + ")";
+        hls.startLoad();
       } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-        this._error = "Error with media stream contents (" + data.details + ")";
+        this._setRetryableError("Error with media stream contents");
+        hls.recoverMediaError();
       } else {
-        this._error =
-          "Unknown error with stream (" + data.type + ", " + data.details + ")";
+        this._setFatalError("Error playing stream");
       }
     });
   }
@@ -284,6 +300,21 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
+  private _resetError() {
+    this._error = undefined;
+    this._errorIsFatal = false;
+  }
+
+  private _setFatalError(errorMessage: string) {
+    this._error = errorMessage;
+    this._errorIsFatal = true;
+  }
+
+  private _setRetryableError(errorMessage: string) {
+    this._error = errorMessage;
+    this._errorIsFatal = false;
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host,
@@ -296,9 +327,13 @@ class HaHLSPlayer extends LitElement {
         max-height: var(--video-max-height, calc(100vh - 97px));
       }
 
-      ha-alert {
+      .fatal {
         display: block;
         padding: 100px 16px;
+      }
+
+      .retry {
+        display: block;
       }
     `;
   }
