@@ -71,6 +71,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             <ha-switch
               .checked=${this._showDeserialized}
               @change=${this._showDeserializedChanged}
+              dialogInitialFocus
             >
             </ha-switch>
           </ha-formfield>
