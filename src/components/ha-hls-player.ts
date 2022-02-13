@@ -43,7 +43,7 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _errorIsFatal: bool; // Determines how error is rendered
+  @state() private _errorIsFatal: boolean; // Determines how error is rendered
 
   private _hlsPolyfillInstance?: HlsLite;
 
@@ -119,7 +119,7 @@ class HaHLSPlayer extends LitElement {
     }
 
     if (!hlsSupported) {
-      this._fatalError(
+      this._setFatalError(
         this.hass.localize("ui.components.media-browser.video_not_supported")
       );
       return;
