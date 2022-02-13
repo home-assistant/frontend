@@ -4,7 +4,6 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
-import { slugify } from "../../../common/string/slugify";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
@@ -155,10 +154,7 @@ class HaConfigBackup extends LitElement {
       this.hass,
       getBackupDownloadUrl(backup.slug)
     );
-    fileDownload(
-      signedUrl.path,
-      `home_assistant_backup_${slugify(backup.name)}.tar`
-    );
+    fileDownload(signedUrl.path);
   }
 
   private async _generateBackup(): Promise<void> {
