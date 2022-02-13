@@ -1,9 +1,6 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-settings-row";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -38,22 +35,16 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             >[[localize('ui.panel.profile.language.link_promo')]]</a
           >
         </span>
-        <ha-paper-dropdown-menu
+        <mwc-select
           label="[[localize('ui.panel.profile.language.dropdown_label')]]"
-          dynamic-align=""
+          value="{{languageSelection}}"
         >
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="language-tag"
-            selected="{{languageSelection}}"
-          >
-            <template is="dom-repeat" items="[[languages]]">
-              <paper-item language-tag$="[[item.key]]" is-rtl$="[[item.isRTL]]">
-                [[item.nativeName]]
-              </paper-item>
-            </template>
-          </paper-listbox>
-        </ha-paper-dropdown-menu>
+          <template is="dom-repeat" items="[[languages]]">
+            <mwc-list-item value="[[item.key]]" is-rtl$="[[item.isRTL]]">
+              [[item.nativeName]]
+            </mwc-list-item>
+          </template>
+        </mwc-select>
       </ha-settings-row>
     `;
   }

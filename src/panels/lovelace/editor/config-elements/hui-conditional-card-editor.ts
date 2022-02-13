@@ -13,6 +13,7 @@ import {
   string,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -142,33 +143,33 @@ export class HuiConditionalCardEditor
                       <ha-entity-picker
                         .hass=${this.hass}
                         .value=${cond.entity}
-                        .index=${idx}
+                        .idx=${idx}
                         .configValue=${"entity"}
                         @change=${this._changeCondition}
                         allow-custom-entity
                       ></ha-entity-picker>
                     </div>
                     <div class="state">
-                      <paper-dropdown-menu>
-                        <paper-listbox
-                          .selected=${cond.state_not !== undefined ? 1 : 0}
-                          slot="dropdown-content"
-                          .index=${idx}
-                          .configValue=${"invert"}
-                          @selected-item-changed=${this._changeCondition}
-                        >
-                          <paper-item
-                            >${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.conditional.state_equal"
-                            )}</paper-item
-                          >
-                          <paper-item
-                            >${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.conditional.state_not_equal"
-                            )}</paper-item
-                          >
-                        </paper-listbox>
-                      </paper-dropdown-menu>
+                      <mwc-select
+                        .value=${cond.state_not !== undefined
+                          ? "true"
+                          : "false"}
+                        .idx=${idx}
+                        .configValue=${"invert"}
+                        @selected=${this._changeCondition}
+                        @closed=${stopPropagation}
+                      >
+                        <mwc-list-item value="false">
+                          ${this.hass!.localize(
+                            "ui.panel.lovelace.editor.card.conditional.state_equal"
+                          )}
+                        </mwc-list-item>
+                        <mwc-list-item value="true">
+                          ${this.hass!.localize(
+                            "ui.panel.lovelace.editor.card.conditional.state_not_equal"
+                          )}
+                        </mwc-list-item>
+                      </mwc-select>
                       <paper-input
                         .label="${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.generic.state"
@@ -178,7 +179,7 @@ export class HuiConditionalCardEditor
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
                           : cond.state}
-                        .index=${idx}
+                        .idx=${idx}
                         .configValue=${"state"}
                         @value-changed=${this._changeCondition}
                       ></paper-input>
@@ -274,9 +275,9 @@ export class HuiConditionalCardEditor
     }
     const conditions = [...this._config.conditions];
     if (target.configValue === "entity" && target.value === "") {
-      conditions.splice(target.index, 1);
+      conditions.splice(target.idx, 1);
     } else {
-      const condition = { ...conditions[target.index] };
+      const condition = { ...conditions[target.idx] };
       if (target.configValue === "entity") {
         condition.entity = target.value;
       } else if (target.configValue === "state") {
@@ -286,7 +287,7 @@ export class HuiConditionalCardEditor
           condition.state = target.value;
         }
       } else if (target.configValue === "invert") {
-        if (target.selected === 1) {
+        if (target.value === "true") {
           if (condition.state) {
             condition.state_not = condition.state;
             delete condition.state;
@@ -296,7 +297,7 @@ export class HuiConditionalCardEditor
           delete condition.state_not;
         }
       }
-      conditions[target.index] = condition;
+      conditions[target.idx] = condition;
     }
     this._config = { ...this._config, conditions };
     fireEvent(this, "config-changed", { config: this._config });
@@ -321,7 +322,7 @@ export class HuiConditionalCardEditor
           display: flex;
           align-items: flex-end;
         }
-        .condition .state paper-dropdown-menu {
+        .condition .state mwc-select {
           margin-right: 16px;
         }
         .condition .state paper-input {

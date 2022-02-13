@@ -22,10 +22,6 @@ documentContainer.innerHTML = `<dom-module id="ha-form-style">
         @apply --layout-vertical;
         @apply --layout-start;
       }
-
-      paper-dropdown-menu.form-control {
-        margin: -9px 0;
-      }
     </style>
   </template>
 </dom-module>`;

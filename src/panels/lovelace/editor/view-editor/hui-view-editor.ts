@@ -121,26 +121,21 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <paper-dropdown-menu
+        <mwc-select
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.edit_view.type"
           )}
+          .value=${this._type}
+          @selected=${this._typeChanged}
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected=${this._type}
-            attr-for-selected="type"
-            @iron-select=${this._typeChanged}
-          >
-            ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
-              (type) => html`<paper-item .type=${type}>
-                ${this.hass.localize(
-                  `ui.panel.lovelace.editor.edit_view.types.${type}`
-                )}
-              </paper-item>`
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
+            (type) => html`<mwc-list-item .value=${type}>
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_view.types.${type}`
+              )}
+            </mwc-list-item>`
+          )}
+        </mwc-select>
       </div>
     `;
   }
@@ -166,7 +161,7 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _typeChanged(ev): void {
-    const selected = ev.target.selected;
+    const selected = ev.target.value;
     if (selected === "") {
       return;
     }

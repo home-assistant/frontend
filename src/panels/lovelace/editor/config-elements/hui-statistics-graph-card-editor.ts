@@ -27,7 +27,8 @@ import { StatisticType } from "../../../../data/history";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-select/mwc-select";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -118,30 +119,28 @@ export class HuiStatisticsGraphCardEditor
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
-          <paper-dropdown-menu
+          <mwc-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.statistics-graph.period"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue=${"period"}
-            @iron-select=${this._periodSelected}
+            @selected=${this._periodSelected}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._period}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="period"
-              .selected=${this._period}
-            >
-              ${periods.map(
-                (period) =>
-                  html`<paper-item .period=${period}>
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                    )}
-                  </paper-item>`
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${periods.map(
+              (period) =>
+                html`<mwc-list-item .value=${period}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                  )}
+                </mwc-list-item>`
+            )}
+          </mwc-select>
           <paper-input
             type="number"
             .label="${this.hass.localize(
@@ -242,8 +241,8 @@ export class HuiStatisticsGraphCardEditor
     });
   }
 
-  private _periodSelected(ev: CustomEvent) {
-    const newPeriod = ev.detail.item
+  private _periodSelected(ev) {
+    const newPeriod = ev.target.value
       .period as StatisticsGraphCardConfig["period"];
     if (newPeriod === this._period) {
       return;

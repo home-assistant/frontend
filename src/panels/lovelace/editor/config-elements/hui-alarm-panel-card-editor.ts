@@ -1,11 +1,9 @@
 import { mdiClose } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../../types";
@@ -109,18 +107,20 @@ export class HuiAlarmPanelCardEditor
             </div>
           `
         )}
-        <paper-dropdown-menu
+        <mwc-select
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.alarm-panel.available_states"
           )}
-          @value-changed=${this._stateAdded}
+          @selected=${this._stateAdded}
+          @closed=${stopPropagation}
+          fixedMenuPosition
+          naturalMenuWidth
         >
-          <paper-listbox slot="dropdown-content">
-            ${states.map(
-              (entityState) => html` <paper-item>${entityState}</paper-item> `
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          ${states.map(
+            (entityState) =>
+              html`<mwc-list-item>${entityState}</mwc-list-item> `
+          )}
+        </mwc-select>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value=${this._theme}

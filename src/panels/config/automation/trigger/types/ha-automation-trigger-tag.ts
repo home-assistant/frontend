@@ -6,7 +6,6 @@ import { TagTrigger } from "../../../../../data/automation";
 import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
-import "../../../../../components/ha-paper-dropdown-menu";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 
 @customElement("ha-automation-trigger-tag")
@@ -29,27 +28,22 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
   protected render() {
     const { tag_id } = this.trigger;
     return html`
-      <ha-paper-dropdown-menu
+      <mwc-select
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.tag.label"
         )}
-        ?disabled=${this._tags.length === 0}
+        .disabled=${this._tags.length === 0}
+        .value=${tag_id}
+        @selected=${this._tagChanged}
       >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected=${tag_id}
-          attr-for-selected="tag_id"
-          @iron-select=${this._tagChanged}
-        >
-          ${this._tags.map(
-            (tag) => html`
-              <paper-item tag_id=${tag.id} .tag=${tag}>
-                ${tag.name || tag.id}
-              </paper-item>
-            `
-          )}
-        </paper-listbox>
-      </ha-paper-dropdown-menu>
+        ${this._tags.map(
+          (tag) => html`
+            <paper-item .value=${tag.id} .tag=${tag}>
+              ${tag.name || tag.id}
+            </paper-item>
+          `
+        )}
+      </mwc-select>
     `;
   }
 
@@ -64,8 +58,14 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        tag_id: ev.detail.item.tag.id,
+        tag_id: ev.target.value,
       },
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-tag": HaTagTrigger;
   }
 }
