@@ -43,7 +43,7 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _errorIsFatal: boolean; // Determines how error is rendered
+  @state() private _errorIsFatal = false;
 
   private _hlsPolyfillInstance?: HlsLite;
 
