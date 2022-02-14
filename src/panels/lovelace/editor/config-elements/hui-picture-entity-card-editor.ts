@@ -1,11 +1,11 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
@@ -17,9 +17,9 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -155,22 +155,24 @@ export class HuiPictureEntityCardEditor
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
-          <paper-dropdown-menu
+          <mwc-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.camera_view"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue=${"camera_view"}
-            @value-changed=${this._valueChanged}
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${views.indexOf(this._camera_view)}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${views.indexOf(this._camera_view)}
-            >
-              ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${views.map(
+              (view) =>
+                html`<mwc-list-item .value=${view}>${view}</mwc-list-item> `
+            )}
+          </mwc-select>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.aspect_ratio"

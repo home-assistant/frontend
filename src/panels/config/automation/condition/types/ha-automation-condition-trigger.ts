@@ -1,4 +1,5 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -48,41 +49,35 @@ export class HaTriggerCondition extends LitElement {
         "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
       );
     }
-    return html`<paper-dropdown-menu-light
+    return html`<mwc-select
       .label=${this.hass.localize(
         "ui.panel.config.automation.editor.conditions.type.trigger.id"
       )}
-      no-animations
+      .value=${id}
+      @selected=${this._triggerPicked}
     >
-      <paper-listbox
-        slot="dropdown-content"
-        .selected=${id}
-        attr-for-selected="data-trigger-id"
-        @selected-item-changed=${this._triggerPicked}
-      >
-        ${ensureArray(this._triggers).map((trigger) =>
-          trigger.id
-            ? html`
-                <paper-item data-trigger-id=${trigger.id}>
-                  ${trigger.id}
-                </paper-item>
-              `
-            : ""
-        )}
-      </paper-listbox>
-    </paper-dropdown-menu-light>`;
+      ${ensureArray(this._triggers).map((trigger) =>
+        trigger.id
+          ? html`
+              <mwc-list-item .value=${trigger.id}>
+                ${trigger.id}
+              </mwc-list-item>
+            `
+          : ""
+      )}
+    </mwc-select>`;
   }
 
   private _automationUpdated(config?: AutomationConfig) {
     this._triggers = config?.trigger;
   }
 
-  private _triggerPicked(ev: CustomEvent) {
+  private _triggerPicked(ev) {
     ev.stopPropagation();
-    if (!ev.detail.value) {
+    if (!ev.target.value) {
       return;
     }
-    const newTrigger = ev.detail.value.dataset.triggerId;
+    const newTrigger = ev.target.value;
     if (this.condition.id === newTrigger) {
       return;
     }
