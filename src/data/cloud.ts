@@ -186,10 +186,3 @@ export const updateCloudAlexaEntityConfig = (
     entity_id: entityId,
     ...values,
   });
-
-export interface CloudTTSInfo {
-  languages: Array<[string, string]>;
-}
-
-export const getCloudTTSInfo = (hass: HomeAssistant) =>
-  hass.callWS<CloudTTSInfo>({ type: "cloud/tts/info" });
