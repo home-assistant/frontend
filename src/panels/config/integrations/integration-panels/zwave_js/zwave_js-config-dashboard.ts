@@ -125,13 +125,10 @@ class ZWaveJSConfigDashboard extends LitElement {
                       )}
                   <mwc-button
                     slot="action"
-                    .label=${this._network?.controller.inclusion_state ===
-                    InclusionState.Including
-                      ? this.hass.localize(
-                          "ui.panel.config.zwave_js.common.cancel_inclusion"
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.zwave_js.common.cancel_exclusion"
+                    .label=${this.hass.localize(
+                          `ui.panel.config.zwave_js.common.cancel_${this._network.controller.inclusion_state ===
+                  InclusionState.Including
+                    ? "inclusion" : "exclusion"}`
                         )}
                     @click=${this._network?.controller.inclusion_state ===
                     InclusionState.Including
