@@ -1503,12 +1503,12 @@
               "themes": "Themes"
             },
             "server_management": {
-              "heading": "Home Assistant Core",
-              "introduction": "Restarting Home Assistant Core will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
-              "restart": "Restart Core",
-              "confirm_restart": "Are you sure you want to restart Home Assistant Core?",
+              "heading": "Home Assistant",
+              "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
+              "restart": "Restart",
+              "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
-              "confirm_stop": "Are you sure you want to stop Home Assistant Core?"
+              "confirm_stop": "Are you sure you want to stop Home Assistant?"
             }
           }
         },
