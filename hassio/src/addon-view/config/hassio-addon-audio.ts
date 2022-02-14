@@ -1,7 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -11,7 +10,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "web-animations-js/web-animations-next-lite.min";
+import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
@@ -58,48 +57,44 @@ class HassioAddonAudio extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
 
-          <paper-dropdown-menu
+          <mwc-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.input"
             )}
-            @iron-select=${this._setInputDevice}
+            @selected=${this._setInputDevice}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._selectedInput!}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedInput!}
-            >
-              ${this._inputDevices &&
-              this._inputDevices.map(
-                (item) => html`
-                  <paper-item device=${item.device || ""}>
-                    ${item.name}
-                  </paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
-          <paper-dropdown-menu
+            ${this._inputDevices &&
+            this._inputDevices.map(
+              (item) => html`
+                <mwc-list-item .value=${item.device || ""}>
+                  ${item.name}
+                </mwc-list-item>
+              `
+            )}
+          </mwc-select>
+          <mwc-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.output"
             )}
-            @iron-select=${this._setOutputDevice}
+            @selected=${this._setOutputDevice}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._selectedOutput!}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedOutput!}
-            >
-              ${this._outputDevices &&
-              this._outputDevices.map(
-                (item) => html`
-                  <paper-item device=${item.device || ""}
-                    >${item.name}</paper-item
-                  >
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${this._outputDevices &&
+            this._outputDevices.map(
+              (item) => html`
+                <mwc-list-item .value=${item.device || ""}
+                  >${item.name}</mwc-list-item
+                >
+              `
+            )}
+          </mwc-select>
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
@@ -138,12 +133,12 @@ class HassioAddonAudio extends LitElement {
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.item.getAttribute("device");
+    const device = ev.target.value;
     this._selectedInput = device;
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.item.getAttribute("device");
+    const device = ev.target.value;
     this._selectedOutput = device;
   }
 

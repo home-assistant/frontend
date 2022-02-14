@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -11,15 +13,16 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entities-picker";
 import type { HomeAssistant } from "../../../../types";
 import type { CalendarCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -80,29 +83,25 @@ export class HuiCalendarCardEditor
             .configValue=${"title"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <paper-dropdown-menu
+          <mwc-select
             .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.calendar.inital_view"
             )}
+            .value=${this._initial_view}
+            .configValue=${"initial_view"}
+            @selected=${this._viewChanged}
+            @closed=${stopPropagation}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="view"
-              .selected=${this._initial_view}
-              .configValue=${"initial_view"}
-              @iron-select=${this._viewChanged}
-            >
-              ${views.map(
-                (view) => html`
-                  <paper-item .view=${view}
-                    >${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.calendar.views.${view}`
-                    )}
-                  </paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${views.map(
+              (view) => html`
+                <mwc-list-item .value=${view}
+                  >${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.calendar.views.${view}`
+                  )}
+                </mwc-list-item>
+              `
+            )}
+          </mwc-select>
         </div>
         <hui-theme-select-editor
           .hass=${this.hass}
@@ -157,18 +156,18 @@ export class HuiCalendarCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _viewChanged(ev: CustomEvent): void {
+  private _viewChanged(ev): void {
     if (!this._config || !this.hass) {
       return;
     }
 
-    if (ev.detail.item.view === "") {
+    if (ev.target.value === "") {
       this._config = { ...this._config };
       delete this._config.initial_view;
     } else {
       this._config = {
         ...this._config,
-        initial_view: ev.detail.item.view,
+        initial_view: ev.target.value,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });

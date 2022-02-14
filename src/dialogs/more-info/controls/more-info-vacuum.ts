@@ -241,9 +241,6 @@ class MoreInfoVacuum extends LitElement {
       .status-subtitle {
         color: var(--secondary-text-color);
       }
-      paper-item {
-        cursor: pointer;
-      }
       .flex-horizontal {
         display: flex;
         flex-direction: row;

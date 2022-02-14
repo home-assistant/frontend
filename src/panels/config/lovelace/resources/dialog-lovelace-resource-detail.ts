@@ -1,11 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-paper-dropdown-menu";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
@@ -14,6 +11,9 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const detectResourceType = (url: string) => {
   const ext = url.split(".").pop() || "";
@@ -102,48 +102,44 @@ export class DialogLovelaceResourceDetail extends LitElement {
               dialogInitialFocus
             ></paper-input>
             <br />
-            <ha-paper-dropdown-menu
+            <mwc-select
               .label=${this.hass!.localize(
                 "ui.panel.config.lovelace.resources.detail.type"
               )}
+              .value=${this._type}
+              @selected=${this._typeChanged}
+              @closed=${stopPropagation}
+              .invalid=${!this._type}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._type}
-                @iron-select=${this._typeChanged}
-                attr-for-selected="type"
-                .invalid=${!this._type}
-              >
-                <paper-item type="module">
-                  ${this.hass!.localize(
-                    "ui.panel.config.lovelace.resources.types.module"
-                  )}
-                </paper-item>
-                ${this._type === "js"
-                  ? html`
-                      <paper-item type="js">
-                        ${this.hass!.localize(
-                          "ui.panel.config.lovelace.resources.types.js"
-                        )}
-                      </paper-item>
-                    `
-                  : ""}
-                <paper-item type="css">
-                  ${this.hass!.localize(
-                    "ui.panel.config.lovelace.resources.types.css"
-                  )}
-                </paper-item>
-                ${this._type === "html"
-                  ? html`
-                      <paper-item type="html">
-                        ${this.hass!.localize(
-                          "ui.panel.config.lovelace.resources.types.html"
-                        )}
-                      </paper-item>
-                    `
-                  : ""}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>
+              <mwc-list-item value="module">
+                ${this.hass!.localize(
+                  "ui.panel.config.lovelace.resources.types.module"
+                )}
+              </mwc-list-item>
+              ${this._type === "js"
+                ? html`
+                    <mwc-list-item value="js">
+                      ${this.hass!.localize(
+                        "ui.panel.config.lovelace.resources.types.js"
+                      )}
+                    </mwc-list-item>
+                  `
+                : ""}
+              <mwc-list-item value="css">
+                ${this.hass!.localize(
+                  "ui.panel.config.lovelace.resources.types.css"
+                )}
+              </mwc-list-item>
+              ${this._type === "html"
+                ? html`
+                    <mwc-list-item value="html">
+                      ${this.hass!.localize(
+                        "ui.panel.config.lovelace.resources.types.html"
+                      )}
+                    </mwc-list-item>
+                  `
+                : ""}
+            </mwc-select>
           </div>
         </div>
         ${this._params.resource
@@ -185,8 +181,8 @@ export class DialogLovelaceResourceDetail extends LitElement {
     }
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    this._type = ev.detail.item.getAttribute("type");
+  private _typeChanged(ev) {
+    this._type = ev.target.value;
   }
 
   private async _updateResource() {

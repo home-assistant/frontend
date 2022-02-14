@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -99,37 +101,34 @@ export class HuiGenericEntityRowEditor
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
         </div>
-        <paper-dropdown-menu .label=${"Secondary Info"}>
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="value"
-            .selected=${this._config.secondary_info || "none"}
-            .configValue=${"secondary_info"}
-            @iron-select=${this._valueChanged}
+        <mwc-select
+          label="Secondary Info"
+          .selected=${this._config.secondary_info || "none"}
+          .configValue=${"secondary_info"}
+          @selected=${this._valueChanged}
+        >
+          <mwc-list-item value=""
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
+            )}</mwc-list-item
           >
-            <paper-item value=""
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
-              )}</paper-item
-            >
-            ${Object.keys(SecondaryInfoValues).map((info) => {
-              if (
-                !("domains" in SecondaryInfoValues[info]) ||
-                ("domains" in SecondaryInfoValues[info] &&
-                  SecondaryInfoValues[info].domains!.includes(domain))
-              ) {
-                return html`
-                  <paper-item .value=${info}
-                    >${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
-                    )}</paper-item
-                  >
-                `;
-              }
-              return "";
-            })}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          ${Object.keys(SecondaryInfoValues).map((info) => {
+            if (
+              !("domains" in SecondaryInfoValues[info]) ||
+              ("domains" in SecondaryInfoValues[info] &&
+                SecondaryInfoValues[info].domains!.includes(domain))
+            ) {
+              return html`
+                <mwc-list-item .value=${info}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
+                  )}
+                </mwc-list-item>
+              `;
+            }
+            return "";
+          })}
+        </mwc-select>
       </div>
     `;
   }

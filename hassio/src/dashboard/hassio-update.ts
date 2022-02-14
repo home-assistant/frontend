@@ -148,7 +148,6 @@ export class HassioUpdate extends LitElement {
         }
         ha-settings-row {
           padding: 0;
-          --paper-item-body-two-line-min-height: 32px;
         }
       `,
     ];

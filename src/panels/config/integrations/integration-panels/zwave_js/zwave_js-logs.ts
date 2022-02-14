@@ -1,6 +1,6 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import { mdiDownload } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -77,26 +77,20 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
             <div class="card-content">
               ${this._logConfig
                 ? html`
-                    <paper-dropdown-menu
-                      dynamic-align
+                    <mwc-select
                       .label=${this.hass.localize(
                         "ui.panel.config.zwave_js.logs.log_level"
                       )}
+                      .value=${this._logConfig.level}
+                      @selected=${this._dropdownSelected}
                     >
-                      <paper-listbox
-                        slot="dropdown-content"
-                        .selected=${this._logConfig.level}
-                        attr-for-selected="value"
-                        @iron-select=${this._dropdownSelected}
-                      >
-                        <paper-item value="error">Error</paper-item>
-                        <paper-item value="warn">Warn</paper-item>
-                        <paper-item value="info">Info</paper-item>
-                        <paper-item value="verbose">Verbose</paper-item>
-                        <paper-item value="debug">Debug</paper-item>
-                        <paper-item value="silly">Silly</paper-item>
-                      </paper-listbox>
-                    </paper-dropdown-menu>
+                      <mwc-list-item value="error">Error</mwc-list-item>
+                      <mwc-list-item value="warn">Warn</mwc-list-item>
+                      <mwc-list-item value="info">Info</mwc-list-item>
+                      <mwc-list-item value="verbose">Verbose</mwc-list-item>
+                      <mwc-list-item value="debug">Debug</mwc-list-item>
+                      <mwc-list-item value="silly">Silly</mwc-list-item>
+                    </mwc-select>
                   `
                 : ""}
             </div>
@@ -142,7 +136,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }
-    const selected = ev.target.selected;
+    const selected = ev.target.value;
     if (this._logConfig.level === selected) {
       return;
     }
