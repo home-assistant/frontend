@@ -43,6 +43,16 @@ import {
   isCameraMediaSource,
 } from "../../data/camera";
 
+const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
+  let path = `/media-browser/${entityId}`;
+  for (const item of items.slice(1)) {
+    path +=
+      "/" +
+      encodeURIComponent(`${item.media_content_type},${item.media_content_id}`);
+  }
+  return path;
+};
+
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -120,6 +130,7 @@ class PanelMediaBrowser extends LitElement {
         .hass=${this.hass}
         .entityId=${this._entityId}
         .narrow=${this.narrow}
+        @player-picked=${this._playerPicked}
       ></ha-bar-media-player>
     `;
   }
@@ -179,7 +190,9 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private _goBack() {
-    history.back();
+    navigate(
+      createMediaPanelUrl(this._entityId, this._navigateIds.slice(0, -1))
+    );
   }
 
   private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
@@ -188,15 +201,9 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
-    let path = "";
-    for (const item of ev.detail.ids.slice(1)) {
-      path +=
-        "/" +
-        encodeURIComponent(
-          `${item.media_content_type},${item.media_content_id}`
-        );
-    }
-    navigate(`/media-browser/${this._entityId}${path}`);
+    navigate(createMediaPanelUrl(this._entityId, ev.detail.ids), {
+      replace: ev.detail.replace,
+    });
   }
 
   private async _mediaPicked(
@@ -237,6 +244,14 @@ class PanelMediaBrowser extends LitElement {
       title: item.title,
       can_play: item.can_play,
     });
+  }
+
+  private _playerPicked(ev) {
+    const entityId: string = ev.detail.entityId;
+    if (entityId === this._entityId) {
+      return;
+    }
+    navigate(createMediaPanelUrl(entityId, this._navigateIds));
   }
 
   private async _startUpload() {
