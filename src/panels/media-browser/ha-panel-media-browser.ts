@@ -1,4 +1,4 @@
-import { mdiArrowLeft, mdiProgressUpload, mdiUpload } from "@mdi/js";
+import { mdiArrowLeft, mdiUpload } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
@@ -15,6 +15,7 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-svg-icon";
 import "../../components/media-player/ha-media-player-browse";
@@ -112,12 +113,21 @@ class PanelMediaBrowser extends LitElement {
                     .disabled=${this._uploading > 0}
                     @click=${this._startUpload}
                   >
-                    <ha-svg-icon
-                      .path=${this._uploading > 0
-                        ? mdiProgressUpload
-                        : mdiUpload}
-                      slot="icon"
-                    ></ha-svg-icon>
+                    ${this._uploading > 0
+                      ? html`
+                          <ha-circular-progress
+                            size="tiny"
+                            active
+                            alt=""
+                            slot="icon"
+                          ></ha-circular-progress>
+                        `
+                      : html`
+                          <ha-svg-icon
+                            .path=${mdiUpload}
+                            slot="icon"
+                          ></ha-svg-icon>
+                        `}
                   </mwc-button>
                 `
               : ""}
@@ -321,7 +331,8 @@ class PanelMediaBrowser extends LitElement {
           right: 0;
         }
 
-        ha-svg-icon[slot="icon"] {
+        ha-svg-icon[slot="icon"],
+        ha-circular-progress[slot="icon"] {
           vertical-align: middle;
         }
       `,
