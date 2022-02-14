@@ -146,8 +146,8 @@ class HassioSupervisorLog extends LitElement {
           white-space: pre-wrap;
         }
         mwc-select {
-          padding: 0 2%;
-          width: 96%;
+          width: 100%;
+          margin-bottom: 4px;
         }
       `,
     ];
