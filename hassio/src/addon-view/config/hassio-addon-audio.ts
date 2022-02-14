@@ -56,8 +56,8 @@ class HassioAddonAudio extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-
-          <mwc-select
+          ${this._inputDevices &&
+          html`<mwc-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.input"
             )}
@@ -67,16 +67,16 @@ class HassioAddonAudio extends LitElement {
             naturalMenuWidth
             .value=${this._selectedInput!}
           >
-            ${this._inputDevices &&
-            this._inputDevices.map(
+            ${this._inputDevices.map(
               (item) => html`
                 <mwc-list-item .value=${item.device || ""}>
                   ${item.name}
                 </mwc-list-item>
               `
             )}
-          </mwc-select>
-          <mwc-select
+          </mwc-select>`}
+          ${this._outputDevices &&
+          html`<mwc-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.output"
             )}
@@ -86,15 +86,14 @@ class HassioAddonAudio extends LitElement {
             naturalMenuWidth
             .value=${this._selectedOutput!}
           >
-            ${this._outputDevices &&
-            this._outputDevices.map(
+            ${this._outputDevices.map(
               (item) => html`
                 <mwc-list-item .value=${item.device || ""}
                   >${item.name}</mwc-list-item
                 >
               `
             )}
-          </mwc-select>
+          </mwc-select>`}
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
@@ -121,12 +120,18 @@ class HassioAddonAudio extends LitElement {
         .card-actions {
           text-align: right;
         }
+        mwc-select {
+          width: 100%;
+        }
+        mwc-select:last-child {
+          margin-top: 8px;
+        }
       `,
     ];
   }
 
-  protected update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("addon")) {
       this._addonChanged();
     }

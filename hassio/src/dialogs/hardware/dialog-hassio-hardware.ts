@@ -178,7 +178,7 @@ class HassioHardwareDialog extends LitElement {
           padding: 0.2em 0.4em;
         }
         search-input {
-          margin: 0 16px;
+          margin: 8px 16px 0;
           display: block;
         }
         .device-property {
