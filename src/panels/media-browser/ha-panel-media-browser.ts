@@ -242,6 +242,7 @@ class PanelMediaBrowser extends LitElement {
   private async _startUpload() {
     const input = document.createElement("input");
     input.type = "file";
+    input.accept = "audio/*,video/*,image/*";
     input.addEventListener("change", async () => {
       try {
         await uploadLocalMedia(
