@@ -526,7 +526,8 @@
         "setup_local_help": "Check the {documentation} on how to setup local media.",
         "file_management": {
           "upload_failed": "Upload failed: {reason}",
-          "add_media": "Add Media"
+          "add_media": "Add Media",
+          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}"
         },
         "class": {
           "album": "Album",

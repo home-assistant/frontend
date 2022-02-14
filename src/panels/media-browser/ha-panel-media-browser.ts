@@ -1,4 +1,4 @@
-import { mdiArrowLeft, mdiUpload } from "@mdi/js";
+import { mdiArrowLeft, mdiProgressUpload, mdiUpload } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
@@ -54,6 +54,8 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
+  @state() _uploading = 0;
+
   private _navigateIds: MediaPlayerItemId[] = [
     {
       media_content_id: undefined,
@@ -97,12 +99,25 @@ class PanelMediaBrowser extends LitElement {
             )
               ? html`
                   <mwc-button
-                    .label=${this.hass.localize(
-                      "ui.components.media-browser.file_management.add_media"
-                    )}
+                    .label=${this._uploading > 0
+                      ? this.hass.localize(
+                          "ui.components.media-browser.file_management.uploading",
+                          {
+                            count: this._uploading,
+                          }
+                        )
+                      : this.hass.localize(
+                          "ui.components.media-browser.file_management.add_media"
+                        )}
+                    .disabled=${this._uploading > 0}
                     @click=${this._startUpload}
                   >
-                    <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon>
+                    <ha-svg-icon
+                      .path=${this._uploading > 0
+                        ? mdiProgressUpload
+                        : mdiUpload}
+                      slot="icon"
+                    ></ha-svg-icon>
                   </mwc-button>
                 `
               : ""}
@@ -240,29 +255,44 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private async _startUpload() {
+    if (this._uploading > 0) {
+      return;
+    }
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "audio/*,video/*,image/*";
-    input.addEventListener("change", async () => {
-      try {
-        await uploadLocalMedia(
-          this.hass,
-          this._currentItem!.media_content_id!,
-          input.files![0]
-        );
-      } catch (err: any) {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.components.media-browser.file_management.upload_failed",
-            {
-              reason: err.message || err,
+    input.multiple = true;
+    input.addEventListener(
+      "change",
+      async () => {
+        const files = input.files!;
+        const target = this._currentItem!.media_content_id!;
+
+        try {
+          for (let i = 0; i < files.length; i++) {
+            this._uploading = files.length - i;
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await uploadLocalMedia(this.hass, target, files[i]);
+            } catch (err: any) {
+              showAlertDialog(this, {
+                text: this.hass.localize(
+                  "ui.components.media-browser.file_management.upload_failed",
+                  {
+                    reason: err.message || err,
+                  }
+                ),
+              });
+              return;
             }
-          ),
-        });
-        return;
-      }
-      await this._browser.refresh();
-    });
+          }
+        } finally {
+          this._uploading = 0;
+          await this._browser.refresh();
+        }
+      },
+      { once: true }
+    );
     input.click();
   }
 
@@ -270,6 +300,12 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        app-toolbar mwc-button {
+          --mdc-theme-primary: var(--app-header-text-color);
+          /* We use icon + text to show disabled state */
+          --mdc-button-disabled-ink-color: var(--app-header-text-color);
+        }
+
         ha-media-player-browse {
           height: calc(100vh - (100px + var(--header-height)));
         }
