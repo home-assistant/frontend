@@ -1,10 +1,10 @@
-import "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
   DeviceRegistryEntry,
@@ -17,7 +17,6 @@ import {
 } from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-registry-basic-editor")
@@ -123,16 +122,16 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       computeDomain(this.entry.entity_id);
 
     return html`
-      <paper-input
+      <ha-textfield
+        error-message="Domain needs to stay the same"
         .value=${this._entityId}
-        @value-changed=${this._entityIdChanged}
         .label=${this.hass.localize(
           "ui.dialogs.entity_registry.editor.entity_id"
         )}
-        error-message="Domain needs to stay the same"
         .invalid=${invalidDomainUpdate}
         .disabled=${this._submitting}
-      ></paper-input>
+        @input=${this._entityIdChanged}
+      ></ha-textfield>
       <ha-area-picker
         .hass=${this.hass}
         .value=${this._areaId}
@@ -177,8 +176,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
     this._areaId = ev.detail.value;
   }
 
-  private _entityIdChanged(ev: PolymerChangedEvent<string>): void {
-    this._entityId = ev.detail.value;
+  private _entityIdChanged(ev): void {
+    this._entityId = ev.target.value;
   }
 
   private _disabledByChanged(ev: Event): void {
@@ -198,6 +197,10 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       }
       .secondary {
         color: var(--secondary-text-color);
+      }
+      ha-textfield {
+        display: block;
+        margin-bottom: 8px;
       }
     `;
   }
