@@ -53,7 +53,14 @@ import { browseLocalMediaPlayer } from "../../data/media_source";
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
-    "media-browsed": { ids: MediaPlayerItemId[]; current?: MediaPlayerItem };
+    "media-browsed": {
+      // Items of the new browse stack
+      ids: MediaPlayerItemId[];
+      // Current fetched item for this browse stack
+      current?: MediaPlayerItem;
+      // If the new stack should replace the old stack
+      replace?: boolean;
+    };
   }
 }
 
@@ -425,8 +432,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     if (changedProps.has("entityId")) {
       this._setError(undefined);
-    }
-    if (!changedProps.has("navigateIds")) {
+    } else if (!changedProps.has("navigateIds")) {
+      // Neither entity ID or navigateIDs changed, nothing to fetch
       return;
     }
 
@@ -435,6 +442,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;
+    const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
     this._content?.scrollTo(0, 0);
@@ -443,11 +451,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldParentItem = this._parentItem;
     this._currentItem = undefined;
     this._parentItem = undefined;
-    const currentId = this.navigateIds[this.navigateIds.length - 1];
+    const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
-      this.navigateIds.length > 1
-        ? this.navigateIds[this.navigateIds.length - 2]
-        : undefined;
+      navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
     let currentProm: Promise<MediaPlayerItem> | undefined;
     let parentProm: Promise<MediaPlayerItem> | undefined;
 
@@ -456,9 +462,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       if (
         // Check if we navigated to a child
         oldNavigateIds &&
-        this.navigateIds.length > oldNavigateIds.length &&
+        navigateIds.length === oldNavigateIds.length + 1 &&
         oldNavigateIds.every((oldVal, idx) => {
-          const curVal = this.navigateIds[idx];
+          const curVal = navigateIds[idx];
           return (
             curVal.media_content_id === oldVal.media_content_id &&
             curVal.media_content_type === oldVal.media_content_type
@@ -469,8 +475,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       } else if (
         // Check if we navigated to a parent
         oldNavigateIds &&
-        this.navigateIds.length < oldNavigateIds.length &&
-        this.navigateIds.every((curVal, idx) => {
+        navigateIds.length === oldNavigateIds.length - 1 &&
+        navigateIds.every((curVal, idx) => {
           const oldVal = oldNavigateIds[idx];
           return (
             curVal.media_content_id === oldVal.media_content_id &&
@@ -493,11 +499,33 @@ export class HaMediaPlayerBrowse extends LitElement {
       (item) => {
         this._currentItem = item;
         fireEvent(this, "media-browsed", {
-          ids: this.navigateIds,
+          ids: navigateIds,
           current: item,
         });
       },
-      (err) => this._setError(err)
+      (err) => {
+        // When we change entity ID, we will first try to see if the new entity is
+        // able to resolve the new path. If that results in an error, browse the root.
+        const isNewEntityWithSamePath =
+          oldNavigateIds &&
+          changedProps.has("entityId") &&
+          navigateIds.length === oldNavigateIds.length &&
+          oldNavigateIds.every(
+            (oldItem, idx) =>
+              navigateIds[idx].media_content_id === oldItem.media_content_id &&
+              navigateIds[idx].media_content_type === oldItem.media_content_type
+          );
+        if (isNewEntityWithSamePath) {
+          fireEvent(this, "media-browsed", {
+            ids: [
+              { media_content_id: undefined, media_content_type: undefined },
+            ],
+            replace: true,
+          });
+        } else {
+          this._setError(err);
+        }
+      }
     );
     // Fetch parent
     if (!parentProm && parentId !== undefined) {
