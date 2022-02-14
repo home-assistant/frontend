@@ -60,23 +60,6 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./blueprint-script-editor";
 
-const BASE_GUI_SCHEMA: HaFormSelector[] = [
-  {
-    name: "alias",
-    selector: {
-      text: {
-        type: "text",
-      },
-    },
-  },
-  {
-    name: "icon",
-    selector: {
-      icon: {},
-    },
-  },
-];
-
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -104,7 +87,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _schema = memoizeOne(
     (hasID: boolean, useBluePrint?: boolean, currentMode?: string) => {
-      const schema: HaFormSchema[] = [];
+      const schema: HaFormSchema[] = [
+        {
+          name: "alias",
+          selector: {
+            text: {
+              type: "text",
+            },
+          },
+        },
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+        },
+      ];
 
       if (!hasID) {
         schema!.push({
@@ -145,8 +143,6 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           },
         });
       }
-
-      schema.unshift(...BASE_GUI_SCHEMA);
 
       return schema;
     }

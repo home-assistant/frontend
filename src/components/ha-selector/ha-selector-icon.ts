@@ -23,8 +23,7 @@ export class HaIconSelector extends LitElement {
         .label=${this.label}
         .value=${this.value}
         @value-changed=${this._valueChanged}
-      >
-      </ha-icon-picker>
+      ></ha-icon-picker>
     `;
   }
 
