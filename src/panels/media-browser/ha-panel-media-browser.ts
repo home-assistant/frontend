@@ -190,7 +190,9 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private _goBack() {
-    history.back();
+    navigate(
+      createMediaPanelUrl(this._entityId, this._navigateIds.slice(0, -1))
+    );
   }
 
   private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
