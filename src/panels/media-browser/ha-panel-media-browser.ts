@@ -278,28 +278,25 @@ class PanelMediaBrowser extends LitElement {
         const files = input.files!;
         const target = this._currentItem!.media_content_id!;
 
-        try {
-          for (let i = 0; i < files.length; i++) {
-            this._uploading = files.length - i;
-            try {
-              // eslint-disable-next-line no-await-in-loop
-              await uploadLocalMedia(this.hass, target, files[i]);
-            } catch (err: any) {
-              showAlertDialog(this, {
-                text: this.hass.localize(
-                  "ui.components.media-browser.file_management.upload_failed",
-                  {
-                    reason: err.message || err,
-                  }
-                ),
-              });
-              return;
-            }
+        for (let i = 0; i < files.length; i++) {
+          this._uploading = files.length - i;
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            await uploadLocalMedia(this.hass, target, files[i]);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              text: this.hass.localize(
+                "ui.components.media-browser.file_management.upload_failed",
+                {
+                  reason: err.message || err,
+                }
+              ),
+            });
+            break;
           }
-        } finally {
-          this._uploading = 0;
-          await this._browser.refresh();
         }
+        this._uploading = 0;
+        await this._browser.refresh();
       },
       { once: true }
     );
