@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiPlay, mdiPlus } from "@mdi/js";
+import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -265,32 +265,25 @@ export class HaMediaPlayerBrowse extends LitElement {
                 : !currentItem.children?.length
                 ? html`
                     <div class="container no-items">
-                      ${this.hass.localize(
-                        "ui.components.media-browser.no_items"
-                      )}
-                      <br />
                       ${currentItem.media_content_id ===
                       "media-source://media_source/local/."
-                        ? html`<br />${this.hass.localize(
-                              "ui.components.media-browser.learn_adding_local_media",
-                              "documentation",
-                              html`<a
-                                href=${documentationUrl(
-                                  this.hass,
-                                  "/more-info/local-media/add-media"
+                        ? html`
+                            <div class="highlight-add-button">
+                              <span>
+                                <ha-svg-icon
+                                  .path=${mdiArrowUpRight}
+                                ></ha-svg-icon>
+                              </span>
+                              <span>
+                                ${this.hass.localize(
+                                  "ui.components.media-browser.file_management.highlight_button"
                                 )}
-                                target="_blank"
-                                rel="noreferrer"
-                                >${this.hass.localize(
-                                  "ui.components.media-browser.documentation"
-                                )}</a
-                              >`
-                            )}
-                            <br />
-                            ${this.hass.localize(
-                              "ui.components.media-browser.local_media_files"
-                            )}`
-                        : ""}
+                              </span>
+                            </div>
+                          `
+                        : this.hass.localize(
+                            "ui.components.media-browser.no_items"
+                          )}
                     </div>
                   `
                 : childrenMediaClass.layout === "grid"
@@ -770,6 +763,18 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .no-items {
           padding-left: 32px;
+        }
+
+        .highlight-add-button {
+          display: flex;
+          flex-direction: row-reverse;
+          margin-right: 48px;
+        }
+
+        .highlight-add-button ha-svg-icon {
+          position: relative;
+          top: -0.5em;
+          margin-left: 8px;
         }
 
         .content {

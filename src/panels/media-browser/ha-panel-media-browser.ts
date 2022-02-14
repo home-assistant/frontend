@@ -15,6 +15,7 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-svg-icon";
 import "../../components/media-player/ha-media-player-browse";
@@ -64,6 +65,8 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
+  @state() _uploading = 0;
+
   private _navigateIds: MediaPlayerItemId[] = [
     {
       media_content_id: undefined,
@@ -107,12 +110,34 @@ class PanelMediaBrowser extends LitElement {
             )
               ? html`
                   <mwc-button
-                    .label=${this.hass.localize(
-                      "ui.components.media-browser.file_management.add_media"
-                    )}
+                    .label=${this._uploading > 0
+                      ? this.hass.localize(
+                          "ui.components.media-browser.file_management.uploading",
+                          {
+                            count: this._uploading,
+                          }
+                        )
+                      : this.hass.localize(
+                          "ui.components.media-browser.file_management.add_media"
+                        )}
+                    .disabled=${this._uploading > 0}
                     @click=${this._startUpload}
                   >
-                    <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon>
+                    ${this._uploading > 0
+                      ? html`
+                          <ha-circular-progress
+                            size="tiny"
+                            active
+                            alt=""
+                            slot="icon"
+                          ></ha-circular-progress>
+                        `
+                      : html`
+                          <ha-svg-icon
+                            .path=${mdiUpload}
+                            slot="icon"
+                          ></ha-svg-icon>
+                        `}
                   </mwc-button>
                 `
               : ""}
@@ -255,29 +280,41 @@ class PanelMediaBrowser extends LitElement {
   }
 
   private async _startUpload() {
+    if (this._uploading > 0) {
+      return;
+    }
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "audio/*,video/*,image/*";
-    input.addEventListener("change", async () => {
-      try {
-        await uploadLocalMedia(
-          this.hass,
-          this._currentItem!.media_content_id!,
-          input.files![0]
-        );
-      } catch (err: any) {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.components.media-browser.file_management.upload_failed",
-            {
-              reason: err.message || err,
-            }
-          ),
-        });
-        return;
-      }
-      await this._browser.refresh();
-    });
+    input.multiple = true;
+    input.addEventListener(
+      "change",
+      async () => {
+        const files = input.files!;
+        const target = this._currentItem!.media_content_id!;
+
+        for (let i = 0; i < files.length; i++) {
+          this._uploading = files.length - i;
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            await uploadLocalMedia(this.hass, target, files[i]);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              text: this.hass.localize(
+                "ui.components.media-browser.file_management.upload_failed",
+                {
+                  reason: err.message || err,
+                }
+              ),
+            });
+            break;
+          }
+        }
+        this._uploading = 0;
+        await this._browser.refresh();
+      },
+      { once: true }
+    );
     input.click();
   }
 
@@ -285,6 +322,12 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
+        app-toolbar mwc-button {
+          --mdc-theme-primary: var(--app-header-text-color);
+          /* We use icon + text to show disabled state */
+          --mdc-button-disabled-ink-color: var(--app-header-text-color);
+        }
+
         ha-media-player-browse {
           height: calc(100vh - (100px + var(--header-height)));
         }
@@ -300,7 +343,8 @@ class PanelMediaBrowser extends LitElement {
           right: 0;
         }
 
-        ha-svg-icon[slot="icon"] {
+        ha-svg-icon[slot="icon"],
+        ha-circular-progress[slot="icon"] {
           vertical-align: middle;
         }
       `,
