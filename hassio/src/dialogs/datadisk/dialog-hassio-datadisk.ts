@@ -1,6 +1,3 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -90,18 +87,19 @@ class HassioDatadiskDialog extends LitElement {
                     )}
                     <br /><br />
 
-                    <paper-dropdown-menu
+                    <mwc-select
                       .label=${this.dialogParams.supervisor.localize(
                         "dialog.datadisk_move.select_device"
                       )}
-                      @value-changed=${this._select_device}
+                      @selected=${this._select_device}
                     >
-                      <paper-listbox slot="dropdown-content">
-                        ${this.devices.map(
-                          (device) => html`<paper-item>${device}</paper-item>`
-                        )}
-                      </paper-listbox>
-                    </paper-dropdown-menu>
+                      ${this.devices.map(
+                        (device) =>
+                          html`<mwc-list-item .value=${device}
+                            >${device}</mwc-list-item
+                          >`
+                      )}
+                    </mwc-select>
                   `
                 : this.devices === undefined
                 ? this.dialogParams.supervisor.localize(
@@ -130,8 +128,8 @@ class HassioDatadiskDialog extends LitElement {
     `;
   }
 
-  private _select_device(event) {
-    this.selectedDevice = event.detail.value;
+  private _select_device(ev) {
+    this.selectedDevice = ev.target.value;
   }
 
   private async _moveDatadisk() {
