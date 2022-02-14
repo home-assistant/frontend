@@ -10,8 +10,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
+  fetchZwaveNodeStatus,
   getZwaveJsIdentifiersFromDevice,
   ZWaveJSNodeIdentifiers,
+  ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -29,43 +31,67 @@ export class HaDeviceActionsZWaveJS extends LitElement {
 
   @state() private _nodeId?: number;
 
+  @state() private _node?: ZWaveJSNodeStatus;
+
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      this._entryId = this.device.config_entries[0];
-
       const identifiers: ZWaveJSNodeIdentifiers | undefined =
         getZwaveJsIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
       this._nodeId = identifiers.node_id;
+      this._entryId = this.device.config_entries[0];
+
+      this._fetchNodeDetails();
     }
   }
 
+  protected async _fetchNodeDetails() {
+    if (!this._nodeId || !this._entryId) {
+      return;
+    }
+
+    this._node = await fetchZwaveNodeStatus(
+      this.hass,
+      this._entryId,
+      this._nodeId
+    );
+  }
+
   protected render(): TemplateResult {
+    if (!this._node) {
+      return html``;
+    }
     return html`
-      <a
-        .href=${`/config/zwave_js/node_config/${this.device.id}?config_entry=${this._entryId}`}
-      >
-        <mwc-button>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.device_info.device_config"
-          )}
-        </mwc-button>
-      </a>
-      <mwc-button @click=${this._reinterviewClicked}>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.reinterview_device"
-        )}
-      </mwc-button>
-      <mwc-button @click=${this._healNodeClicked}>
-        ${this.hass.localize("ui.panel.config.zwave_js.device_info.heal_node")}
-      </mwc-button>
-      <mwc-button @click=${this._removeFailedNode}>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.remove_failed"
-        )}
-      </mwc-button>
+      ${!this._node.is_controller_node
+        ? html`
+            <a
+              .href=${`/config/zwave_js/node_config/${this.device.id}?config_entry=${this._entryId}`}
+            >
+              <mwc-button>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.device_info.device_config"
+                )}
+              </mwc-button>
+            </a>
+            <mwc-button @click=${this._reinterviewClicked}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.reinterview_device"
+              )}
+            </mwc-button>
+            <mwc-button @click=${this._healNodeClicked}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.heal_node"
+              )}
+            </mwc-button>
+            <mwc-button @click=${this._removeFailedNode}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.remove_failed"
+              )}
+            </mwc-button>
+          `
+        : ""}
     `;
   }
 
