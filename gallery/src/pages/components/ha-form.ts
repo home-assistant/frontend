@@ -61,6 +61,12 @@ const SCHEMAS: {
           select: { options: ["Everyone Home", "Some Home", "All gone"] },
         },
       },
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+      },
     ],
   },
   {
