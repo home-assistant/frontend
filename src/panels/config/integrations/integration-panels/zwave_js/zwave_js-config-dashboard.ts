@@ -118,13 +118,10 @@ class ZWaveJSConfigDashboard extends LitElement {
               InclusionState.Excluding)
             ? html`
                 <ha-alert alert-type="info">
-                  ${this._network?.controller.inclusion_state ===
+                  ${this.hass.localize(
+                        `ui.panel.config.zwave_js.common.${this._network.controller.inclusion_state ===
                   InclusionState.Including
-                    ? this.hass.localize(
-                        "ui.panel.config.zwave_js.common.inclusion_in_progress"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.zwave_js.common.exclusion_in_progress"
+                    ? "inclusion" : "exclusion"}_in_progress`
                       )}
                   <mwc-button
                     slot="action"
