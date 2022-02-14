@@ -63,7 +63,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _provisioningEntries?: ZwaveJSProvisioningEntry[];
 
-  @state() private _status = "unknown";
+  @state() private _status = "connected" || "disconnected";
 
   @state() private _icon = mdiCircle;
 
