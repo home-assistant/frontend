@@ -3006,7 +3006,7 @@
           },
           "add_node": {
             "title": "Add a Z-Wave Device",
-            "searching_device": "Searching for device...",
+            "searching_device": "Searching for devices...",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "choose_inclusion_strategy": "How do you want to add your device",
             "qr_code": "QR Code",
