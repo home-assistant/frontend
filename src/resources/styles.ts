@@ -312,6 +312,7 @@ export const haStyleDialog = css`
     --mdc-dialog-heading-ink-color: var(--primary-text-color);
     --mdc-dialog-content-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
+    --ha-dialog-border-radius: 16px;
   }
 
   ha-dialog .form {

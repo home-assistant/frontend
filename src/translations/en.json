@@ -689,7 +689,7 @@
             "server_control": "[%key:ui::panel::config::server_control::caption%]"
           }
         },
-        "filter_placeholder": "Entity Filter",
+        "filter_placeholder": "Search for entities, pages or commands",
         "title": "Quick Search",
         "key_c_hint": "Press 'c' on any page to open this search bar",
         "nothing_found": "Nothing found!"
