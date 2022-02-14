@@ -266,9 +266,6 @@ export class CloudRegister extends LitElement {
         a {
           color: var(--primary-color);
         }
-        paper-item {
-          cursor: pointer;
-        }
         h1 {
           margin: 0;
         }

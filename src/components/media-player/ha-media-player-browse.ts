@@ -2,7 +2,6 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPlay, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,

@@ -615,10 +615,6 @@ class MoreInfoLight extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      paper-item {
-        cursor: pointer;
-      }
-
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
