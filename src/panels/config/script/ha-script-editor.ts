@@ -105,7 +105,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       ];
 
       if (!hasID) {
-        schema!.push({
+        schema.push({
           name: "id",
           selector: {
             text: {},
