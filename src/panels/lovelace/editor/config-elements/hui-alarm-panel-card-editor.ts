@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";

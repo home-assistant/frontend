@@ -1,8 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
@@ -14,10 +17,9 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

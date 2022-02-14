@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import { mdiDownload } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";

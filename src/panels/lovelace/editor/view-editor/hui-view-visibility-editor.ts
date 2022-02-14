@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import {
   css,
   CSSResultGroup,
@@ -15,7 +17,6 @@ import "../../../../components/user/ha-user-badge";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
 import { fetchUsers, User } from "../../../../data/user";
 import { HomeAssistant } from "../../../../types";
-import "@material/mwc-list/mwc-list-item";
 
 declare global {
   interface HASSDomEvents {

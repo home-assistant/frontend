@@ -1,3 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -11,16 +13,16 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entities-picker";
 import type { HomeAssistant } from "../../../../types";
 import type { CalendarCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

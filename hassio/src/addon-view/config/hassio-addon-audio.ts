@@ -1,4 +1,6 @@
 import "@material/mwc-button";
+import "@material/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -8,7 +10,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "web-animations-js/web-animations-next-lite.min";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";

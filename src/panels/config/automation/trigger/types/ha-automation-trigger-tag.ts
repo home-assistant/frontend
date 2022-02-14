@@ -1,12 +1,14 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import { TagTrigger } from "../../../../../data/automation";
 import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
-import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {
@@ -38,9 +40,9 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
       >
         ${this._tags.map(
           (tag) => html`
-            <paper-item .value=${tag.id} .tag=${tag}>
+            <mwc-list-item .value=${tag.id}>
               ${tag.name || tag.id}
-            </paper-item>
+            </mwc-list-item>
           `
         )}
       </mwc-select>

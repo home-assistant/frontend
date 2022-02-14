@@ -1,4 +1,6 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -38,7 +40,6 @@ import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import "@material/mwc-select/mwc-select";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: ["window", "door", "garage", "gate"],

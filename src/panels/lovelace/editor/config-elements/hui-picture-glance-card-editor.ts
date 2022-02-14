@@ -1,8 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, object, optional, string, assign } from "superstruct";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -14,11 +17,10 @@ import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

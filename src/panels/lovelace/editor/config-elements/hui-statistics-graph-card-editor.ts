@@ -1,34 +1,35 @@
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
+  assign,
   literal,
   number,
   object,
   optional,
   string,
   union,
-  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/entity/ha-statistics-picker";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
+import { StatisticType } from "../../../../data/history";
 import { HomeAssistant } from "../../../../types";
 import { StatisticsGraphCardConfig } from "../../cards/types";
+import { processConfigEntities } from "../../common/process-config-entities";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "../../../../components/entity/ha-statistics-picker";
-import { processConfigEntities } from "../../common/process-config-entities";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-checkbox";
-import { StatisticType } from "../../../../data/history";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import "@material/mwc-select/mwc-select";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const statTypeStruct = union([
   literal("sum"),
