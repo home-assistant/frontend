@@ -114,7 +114,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       }
 
       if (!useBluePrint) {
-        schema!.push({
+        schema.push({
           name: "mode",
           selector: {
             select: {
