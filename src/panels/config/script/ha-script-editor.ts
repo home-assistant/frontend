@@ -134,7 +134,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       }
 
       if (currentMode && MODES_MAX.includes(currentMode)) {
-        schema!.push({
+        schema.push({
           name: "max",
           selector: {
             text: {
