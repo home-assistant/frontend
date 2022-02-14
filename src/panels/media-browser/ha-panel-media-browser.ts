@@ -219,17 +219,17 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
-    if (item.media_content_type.startsWith("audio/")) {
+    const resolvedUrl = await resolveMediaSource(
+      this.hass,
+      item.media_content_id
+    );
+
+    if (resolvedUrl.mime_type.startsWith("audio/")) {
       await this.shadowRoot!.querySelector("ha-bar-media-player")!.playItem(
         item
       );
       return;
     }
-
-    const resolvedUrl: any = await resolveMediaSource(
-      this.hass,
-      item.media_content_id
-    );
 
     showWebBrowserPlayMediaDialog(this, {
       sourceUrl: resolvedUrl.url,
@@ -270,10 +270,6 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
-        :host {
-          --mdc-theme-primary: var(--app-header-text-color);
-        }
-
         ha-media-player-browse {
           height: calc(100vh - (100px + var(--header-height)));
         }
