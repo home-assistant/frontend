@@ -26,6 +26,7 @@ import {
 } from "../cards/types";
 import { LovelaceRowConfig } from "../entity-rows/types";
 import { ButtonsHeaderFooterConfig } from "../header-footer/types";
+import { HELPER_DOMAINS } from "../../config/helpers/const";
 
 const HIDE_DOMAIN = new Set([
   "automation",
@@ -281,7 +282,7 @@ export const generateViewConfig = (
     ungroupedEntitites[domain].push(state.entity_id);
   });
 
-  let cards: LovelaceCardConfig[] = [];
+  const cards: LovelaceCardConfig[] = [];
 
   if ("person" in ungroupedEntitites) {
     const personCards: LovelaceCardConfig[] = [];
@@ -340,8 +341,8 @@ export const generateViewConfig = (
   }
 
   splitted.groups.forEach((groupEntity) => {
-    cards = cards.concat(
-      computeCards(
+    cards.push(
+      ...computeCards(
         groupEntity.attributes.entity_id.map(
           (entityId): [string, HassEntity] => [entityId, entities[entityId]]
         ),
@@ -353,11 +354,38 @@ export const generateViewConfig = (
     );
   });
 
+  // Group helper entities in a single card
+  const helperEntities: string[] = [];
+
+  for (const domain of HELPER_DOMAINS) {
+    if (!(domain in ungroupedEntitites)) {
+      continue;
+    }
+    helperEntities.push(...ungroupedEntitites[domain]);
+    delete ungroupedEntitites[domain];
+  }
+
+  // Prepare translations for cards
+  const domainTranslations: Record<string, string> = {};
+
+  for (const domain of Object.keys(ungroupedEntitites)) {
+    domainTranslations[domain] = domainToName(localize, domain);
+  }
+
+  if (helperEntities.length) {
+    ungroupedEntitites._helpers = helperEntities;
+    domainTranslations._helpers = localize(
+      "ui.panel.lovelace.strategy.original-states.helpers"
+    );
+  }
+
   Object.keys(ungroupedEntitites)
-    .sort()
+    .sort((domain1, domain2) =>
+      stringCompare(domainTranslations[domain1], domainTranslations[domain2])
+    )
     .forEach((domain) => {
-      cards = cards.concat(
-        computeCards(
+      cards.push(
+        ...computeCards(
           ungroupedEntitites[domain]
             .sort((a, b) =>
               stringCompare(
@@ -370,7 +398,7 @@ export const generateViewConfig = (
               entities[entityId],
             ]),
           {
-            title: domainToName(localize, domain),
+            title: domainTranslations[domain],
           }
         )
       );
