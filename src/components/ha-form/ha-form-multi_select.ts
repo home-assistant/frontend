@@ -11,7 +11,8 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
-import { HaCheckListItem } from "../ha-check-list-item";
+import "../ha-check-list-item";
+import type { HaCheckListItem } from "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-formfield";
