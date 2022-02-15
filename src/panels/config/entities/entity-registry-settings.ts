@@ -1,3 +1,4 @@
+import "../../../components/ha-alert";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
@@ -136,7 +137,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </div>
           `
         : ""}
-      ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : ""}
       <div class="form container">
         <ha-textfield
           .value=${this._name}
