@@ -140,8 +140,6 @@ class OnboardingIntegrations extends LitElement {
     this._scanUSBDevices();
     loadConfigFlowDialog();
     this._loadConfigEntries();
-    /* polyfill for paper-dropdown */
-    import("web-animations-js/web-animations-next-lite.min");
   }
 
   private _createFlow() {
