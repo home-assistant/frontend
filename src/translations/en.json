@@ -3113,6 +3113,11 @@
         }
       },
       "lovelace": {
+        "strategy": {
+          "original-states": {
+            "helpers": "[%key:ui::panel::config::helpers::caption%]"
+          }
+        },
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "show_more_info": "Show more information",
