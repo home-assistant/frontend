@@ -63,29 +63,10 @@ jobs:
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v2
-      - name: Get build file names
-        id: file-names
-        run: |
-          echo "::set-output name=sdist::$(ls dist/ | grep '.*.tar.gz' | tail -n 1)"
-          echo "::set-output name=wheel::$(ls dist/ | grep '.*.whl' | tail -n 1)"
-      - name: Upload release asset (sdist)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release assets
+        uses: home-assistant/actions/helpers/release-assets@master
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/${{ steps.file-names.outputs.sdist }}
-          asset_name: ${{ steps.file-names.outputs.sdist }}
-          asset_content_type: application/gzip
-      - name: Upload release asset (wheel)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./dist/${{ steps.file-names.outputs.wheel }}
-          asset_name: ${{ steps.file-names.outputs.wheel }}
-          asset_content_type: application/zip
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   wheels-init:
     name: Init wheels build
