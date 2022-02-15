@@ -440,19 +440,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
         search-input {
           flex: 1;
+          display: block;
         }
 
         search-input.header {
-          display: block;
-          position: relative;
-          top: -2px;
           color: var(--secondary-text-color);
         }
 
         ha-device-picker {
           flex: 1;
-          position: relative;
-          top: -4px;
         }
 
         .controls {

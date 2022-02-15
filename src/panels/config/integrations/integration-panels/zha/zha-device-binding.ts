@@ -1,8 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select";
 import {
   css,
   CSSResultGroup,
@@ -21,6 +20,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import { ItemSelectedEvent } from "./types";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
@@ -62,23 +62,25 @@ export class ZHADeviceBindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu label="Bindable Devices" class="menu">
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._bindTargetIndex}
-                @iron-select=${this._bindTargetIndexChanged}
-              >
-                ${this.bindableDevices.map(
-                  (device) => html`
-                    <paper-item
-                      >${device.user_given_name
-                        ? device.user_given_name
-                        : device.name}</paper-item
-                    >
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+            <mwc-select
+              label="Bindable Devices"
+              class="menu"
+              .value=${String(this._bindTargetIndex)}
+              @selected=${this._bindTargetIndexChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
+            >
+              ${this.bindableDevices.map(
+                (device, idx) => html`
+                  <mwc-list-item .value=${String(idx)}>
+                    ${device.user_given_name
+                      ? device.user_given_name
+                      : device.name}
+                  </mwc-list-item>
+                `
+              )}
+            </mwc-select>
           </div>
           ${this._showHelp
             ? html`
@@ -111,7 +113,7 @@ export class ZHADeviceBindingControl extends LitElement {
   }
 
   private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = event.target!.selected;
+    this._bindTargetIndex = Number(event.target!.value);
     this._deviceToBind =
       this._bindTargetIndex === -1
         ? undefined

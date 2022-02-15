@@ -156,7 +156,7 @@ class HassioDatadiskDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        paper-dropdown-menu {
+        mwc-select {
           width: 100%;
         }
         ha-circular-progress {
