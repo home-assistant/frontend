@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -20,6 +19,7 @@ import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
+import "../../../components/ha-textfield";
 
 @customElement("hui-number-entity-row")
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
@@ -98,7 +98,6 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                   pin
                   @change=${this._selectedValueChanged}
                   ignore-bar-touch
-                  id="input"
                 ></ha-slider>
                 <span class="state">
                   ${computeStateDisplay(
@@ -112,20 +111,18 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <div class="flex state">
-                <paper-input
-                  no-label-float
-                  auto-validate
+                <ha-textfield
+                  autoValidate
                   .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
-                  .value=${Number(stateObj.state)}
+                  .value=${stateObj.state}
+                  .suffix=${stateObj.attributes.unit_of_measurement}
                   type="number"
                   @change=${this._selectedValueChanged}
-                  id="input"
-                ></paper-input>
-                ${stateObj.attributes.unit_of_measurement}
+                ></ha-textfield>
               </div>
             `}
       </hui-generic-entity-row>
@@ -148,7 +145,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
         min-width: 45px;
         text-align: end;
       }
-      paper-input {
+      ha-textfield {
         text-align: end;
       }
       ha-slider {
@@ -187,19 +184,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private get _inputElement(): { value: string } {
-    // linter recommended the following syntax
-    return this.shadowRoot!.getElementById("input") as unknown as {
-      value: string;
-    };
-  }
-
-  private _selectedValueChanged(): void {
-    const element = this._inputElement;
+  private _selectedValueChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    if (element.value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, element.value!);
+    if (ev.target.value !== stateObj.state) {
+      setValue(this.hass!, stateObj.entity_id, ev.target.value!);
     }
   }
 }
