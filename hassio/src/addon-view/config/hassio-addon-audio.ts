@@ -110,8 +110,7 @@ class HassioAddonAudio extends LitElement {
       hassioStyle,
       css`
         :host,
-        ha-card,
-        paper-dropdown-menu {
+        ha-card {
           display: block;
         }
         paper-item {

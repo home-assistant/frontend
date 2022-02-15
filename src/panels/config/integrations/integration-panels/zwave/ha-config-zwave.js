@@ -514,6 +514,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
+    import("web-animations-js/web-animations-next-lite.min");
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );

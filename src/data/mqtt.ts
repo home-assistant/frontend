@@ -22,6 +22,7 @@ export interface MQTTEntityDebugInfo {
   entity_id: string;
   discovery_data: MQTTDiscoveryDebugInfo;
   subscriptions: MQTTTopicDebugInfo[];
+  transmitted: MQTTTopicDebugInfo[];
 }
 
 export interface MQTTTriggerDebugInfo {

@@ -8,9 +8,3 @@ import "../resources/safari-14-attachshadow-patch";
 import "../resources/array.flat.polyfill";
 
 setCancelSyntheticClickEvents(false);
-
-/* polyfill for paper-dropdown */
-setTimeout(
-  () => import("web-animations-js/web-animations-next-lite.min"),
-  2000
-);
