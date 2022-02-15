@@ -97,7 +97,7 @@ export const computeCards = (
   const entities: Array<string | LovelaceRowConfig> = [];
 
   const titlePrefix = entityCardOptions.title
-    ? `${entityCardOptions.title} `.toLowerCase()
+    ? entityCardOptions.title.toLowerCase()
     : undefined;
 
   const footerEntities: ButtonsHeaderFooterConfig["entities"] = [];
