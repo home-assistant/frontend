@@ -93,6 +93,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   <ha-switch
                     .checked=${this._emptyConfig}
                     @change=${this._emptyConfigChanged}
+                    dialogInitialFocus
                   ></ha-switch
                 ></ha-formfield>
               `
@@ -115,6 +116,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._params!.lovelace.config}
+                  dialogInitialFocus
                 ></ha-yaml-editor>
               `}
         </div>
