@@ -5,6 +5,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
+  mdiCog,
   mdiContentCopy,
 } from "@mdi/js";
 import { css, html, LitElement, PropertyValues } from "lit";
@@ -139,6 +140,7 @@ export class HaWebhookTrigger extends LitElement {
         </ha-textfield>
         <ha-icon-overflow-menu
           .hass=${this.hass}
+          .iconPath=${mdiCog}
           .narrow=${true}
           .items=${overflowMenuItems}
         ></ha-icon-overflow-menu>
@@ -196,6 +198,10 @@ export class HaWebhookTrigger extends LitElement {
     ha-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       --mdc-icon-size: 18px;
+    }
+
+    ha-icon-overflow-menu {
+      padding-top: 4px;
     }
   `;
 }

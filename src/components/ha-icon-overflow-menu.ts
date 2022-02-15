@@ -26,6 +26,8 @@ export interface IconOverflowMenuItem {
 export class HaIconOverflowMenu extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: String }) public iconPath = mdiDotsVertical;
+
   @property({ type: Array }) public items: IconOverflowMenuItem[] = [];
 
   @property({ type: Boolean }) public narrow = false;
@@ -42,7 +44,7 @@ export class HaIconOverflowMenu extends LitElement {
             >
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
-                .path=${mdiDotsVertical}
+                .path=${this.iconPath}
                 slot="trigger"
               ></ha-icon-button>
 
