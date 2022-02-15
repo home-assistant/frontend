@@ -33,6 +33,10 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
       require.resolve(
         path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
       ),
+    isHassioBuild &&
+      require.resolve(
+        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
+      ),
   ].filter(Boolean);
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({

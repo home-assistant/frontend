@@ -1,7 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResultGroup,

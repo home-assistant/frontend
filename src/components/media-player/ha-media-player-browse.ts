@@ -1,8 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiPlay, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
+import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -49,11 +48,20 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-fab";
 import { browseLocalMediaPlayer } from "../../data/media_source";
+import { isTTSMediaSource } from "../../data/tts";
+import "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
     "media-picked": MediaPickedEvent;
-    "media-browsed": { ids: MediaPlayerItemId[]; current?: MediaPlayerItem };
+    "media-browsed": {
+      // Items of the new browse stack
+      ids: MediaPlayerItemId[];
+      // Current fetched item for this browse stack
+      current?: MediaPlayerItem;
+      // If the new stack should replace the old stack
+      replace?: boolean;
+    };
   }
 }
 
@@ -246,159 +254,159 @@ export class HaMediaPlayerBrowse extends LitElement {
                       ${this._renderError(this._error)}
                     </div>
                   `
-                : currentItem.children?.length
-                ? childrenMediaClass.layout === "grid"
-                  ? html`
-                      <div
-                        class="children ${classMap({
-                          portrait:
-                            childrenMediaClass.thumbnail_ratio === "portrait",
-                        })}"
-                      >
-                        ${currentItem.children.map(
-                          (child) => html`
-                            <div
-                              class="child"
-                              .item=${child}
-                              @click=${this._childClicked}
-                            >
-                              <ha-card outlined>
-                                <div class="thumbnail">
-                                  ${child.thumbnail
-                                    ? html`
-                                        <div
-                                          class="${[
-                                            "app",
-                                            "directory",
-                                          ].includes(child.media_class)
-                                            ? "centered-image"
-                                            : ""} image lazythumbnail"
-                                          data-src=${child.thumbnail}
-                                        ></div>
-                                      `
-                                    : html`
-                                        <div class="icon-holder image">
-                                          <ha-svg-icon
-                                            class="folder"
-                                            .path=${MediaClassBrowserSettings[
-                                              child.media_class === "directory"
-                                                ? child.children_media_class ||
-                                                  child.media_class
-                                                : child.media_class
-                                            ].icon}
-                                          ></ha-svg-icon>
-                                        </div>
-                                      `}
-                                  ${child.can_play
-                                    ? html`
-                                        <ha-icon-button
-                                          class="play ${classMap({
-                                            can_expand: child.can_expand,
-                                          })}"
-                                          .item=${child}
-                                          .label=${this.hass.localize(
-                                            `ui.components.media-browser.${this.action}-media`
-                                          )}
-                                          .path=${this.action === "play"
-                                            ? mdiPlay
-                                            : mdiPlus}
-                                          @click=${this._actionClicked}
-                                        ></ha-icon-button>
-                                      `
-                                    : ""}
-                                </div>
-                                <div class="title">
-                                  ${child.title}
-                                  <paper-tooltip
-                                    fitToVisibleBounds
-                                    position="top"
-                                    offset="4"
-                                    >${child.title}</paper-tooltip
-                                  >
-                                </div>
-                              </ha-card>
-                            </div>
-                          `
-                        )}
-                      </div>
-                    `
-                  : html`
-                      <mwc-list>
-                        ${currentItem.children.map(
-                          (child) => html`
-                            <mwc-list-item
-                              @click=${this._childClicked}
-                              .item=${child}
-                              .graphic=${mediaClass.show_list_images
-                                ? "medium"
-                                : "avatar"}
-                              dir=${computeRTLDirection(this.hass)}
-                            >
-                              <div
-                                class=${classMap({
-                                  graphic: true,
-                                  lazythumbnail:
-                                    mediaClass.show_list_images === true,
-                                })}
-                                data-src=${ifDefined(
-                                  mediaClass.show_list_images && child.thumbnail
-                                    ? child.thumbnail
-                                    : undefined
-                                )}
-                                slot="graphic"
-                              >
-                                <ha-icon-button
-                                  class="play ${classMap({
-                                    show:
-                                      !mediaClass.show_list_images ||
-                                      !child.thumbnail,
-                                  })}"
-                                  .item=${child}
-                                  .label=${this.hass.localize(
-                                    `ui.components.media-browser.${this.action}-media`
-                                  )}
-                                  .path=${this.action === "play"
-                                    ? mdiPlay
-                                    : mdiPlus}
-                                  @click=${this._actionClicked}
-                                ></ha-icon-button>
-                              </div>
-                              <span class="title">${child.title}</span>
-                            </mwc-list-item>
-                            <li divider role="separator"></li>
-                          `
-                        )}
-                      </mwc-list>
-                    `
-                : html`
+                : isTTSMediaSource(currentItem.media_content_id)
+                ? html`
+                    <ha-browse-media-tts
+                      .item=${currentItem}
+                      .hass=${this.hass}
+                      .action=${this.action}
+                    ></ha-browse-media-tts>
+                  `
+                : !currentItem.children?.length
+                ? html`
                     <div class="container no-items">
-                      ${this.hass.localize(
-                        "ui.components.media-browser.no_items"
-                      )}
-                      <br />
                       ${currentItem.media_content_id ===
                       "media-source://media_source/local/."
-                        ? html`<br />${this.hass.localize(
-                              "ui.components.media-browser.learn_adding_local_media",
-                              "documentation",
-                              html`<a
-                                href=${documentationUrl(
-                                  this.hass,
-                                  "/more-info/local-media/add-media"
+                        ? html`
+                            <div class="highlight-add-button">
+                              <span>
+                                <ha-svg-icon
+                                  .path=${mdiArrowUpRight}
+                                ></ha-svg-icon>
+                              </span>
+                              <span>
+                                ${this.hass.localize(
+                                  "ui.components.media-browser.file_management.highlight_button"
                                 )}
-                                target="_blank"
-                                rel="noreferrer"
-                                >${this.hass.localize(
-                                  "ui.components.media-browser.documentation"
-                                )}</a
-                              >`
-                            )}
-                            <br />
-                            ${this.hass.localize(
-                              "ui.components.media-browser.local_media_files"
-                            )}`
-                        : ""}
+                              </span>
+                            </div>
+                          `
+                        : this.hass.localize(
+                            "ui.components.media-browser.no_items"
+                          )}
                     </div>
+                  `
+                : childrenMediaClass.layout === "grid"
+                ? html`
+                    <div
+                      class="children ${classMap({
+                        portrait:
+                          childrenMediaClass.thumbnail_ratio === "portrait",
+                      })}"
+                    >
+                      ${currentItem.children.map(
+                        (child) => html`
+                          <div
+                            class="child"
+                            .item=${child}
+                            @click=${this._childClicked}
+                          >
+                            <ha-card outlined>
+                              <div class="thumbnail">
+                                ${child.thumbnail
+                                  ? html`
+                                      <div
+                                        class="${["app", "directory"].includes(
+                                          child.media_class
+                                        )
+                                          ? "centered-image"
+                                          : ""} image lazythumbnail"
+                                        data-src=${child.thumbnail}
+                                      ></div>
+                                    `
+                                  : html`
+                                      <div class="icon-holder image">
+                                        <ha-svg-icon
+                                          class="folder"
+                                          .path=${MediaClassBrowserSettings[
+                                            child.media_class === "directory"
+                                              ? child.children_media_class ||
+                                                child.media_class
+                                              : child.media_class
+                                          ].icon}
+                                        ></ha-svg-icon>
+                                      </div>
+                                    `}
+                                ${child.can_play
+                                  ? html`
+                                      <ha-icon-button
+                                        class="play ${classMap({
+                                          can_expand: child.can_expand,
+                                        })}"
+                                        .item=${child}
+                                        .label=${this.hass.localize(
+                                          `ui.components.media-browser.${this.action}-media`
+                                        )}
+                                        .path=${this.action === "play"
+                                          ? mdiPlay
+                                          : mdiPlus}
+                                        @click=${this._actionClicked}
+                                      ></ha-icon-button>
+                                    `
+                                  : ""}
+                              </div>
+                              <div class="title">
+                                ${child.title}
+                                <paper-tooltip
+                                  fitToVisibleBounds
+                                  position="top"
+                                  offset="4"
+                                  >${child.title}</paper-tooltip
+                                >
+                              </div>
+                            </ha-card>
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `
+                : html`
+                    <mwc-list>
+                      ${currentItem.children.map(
+                        (child) => html`
+                          <mwc-list-item
+                            @click=${this._childClicked}
+                            .item=${child}
+                            .graphic=${mediaClass.show_list_images
+                              ? "medium"
+                              : "avatar"}
+                            dir=${computeRTLDirection(this.hass)}
+                          >
+                            <div
+                              class=${classMap({
+                                graphic: true,
+                                lazythumbnail:
+                                  mediaClass.show_list_images === true,
+                              })}
+                              data-src=${ifDefined(
+                                mediaClass.show_list_images && child.thumbnail
+                                  ? child.thumbnail
+                                  : undefined
+                              )}
+                              slot="graphic"
+                            >
+                              <ha-icon-button
+                                class="play ${classMap({
+                                  show:
+                                    !mediaClass.show_list_images ||
+                                    !child.thumbnail,
+                                })}"
+                                .item=${child}
+                                .label=${this.hass.localize(
+                                  `ui.components.media-browser.${this.action}-media`
+                                )}
+                                .path=${this.action === "play"
+                                  ? mdiPlay
+                                  : mdiPlus}
+                                @click=${this._actionClicked}
+                              ></ha-icon-button>
+                            </div>
+                            <span class="title">${child.title}</span>
+                          </mwc-list-item>
+                          <li divider role="separator"></li>
+                        `
+                      )}
+                    </mwc-list>
                   `
             }
           </div>
@@ -425,8 +433,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     if (changedProps.has("entityId")) {
       this._setError(undefined);
-    }
-    if (!changedProps.has("navigateIds")) {
+    } else if (!changedProps.has("navigateIds")) {
+      // Neither entity ID or navigateIDs changed, nothing to fetch
       return;
     }
 
@@ -435,6 +443,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldNavigateIds = changedProps.get("navigateIds") as
       | this["navigateIds"]
       | undefined;
+    const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
     this._content?.scrollTo(0, 0);
@@ -443,11 +452,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     const oldParentItem = this._parentItem;
     this._currentItem = undefined;
     this._parentItem = undefined;
-    const currentId = this.navigateIds[this.navigateIds.length - 1];
+    const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
-      this.navigateIds.length > 1
-        ? this.navigateIds[this.navigateIds.length - 2]
-        : undefined;
+      navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
     let currentProm: Promise<MediaPlayerItem> | undefined;
     let parentProm: Promise<MediaPlayerItem> | undefined;
 
@@ -456,9 +463,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       if (
         // Check if we navigated to a child
         oldNavigateIds &&
-        this.navigateIds.length > oldNavigateIds.length &&
+        navigateIds.length === oldNavigateIds.length + 1 &&
         oldNavigateIds.every((oldVal, idx) => {
-          const curVal = this.navigateIds[idx];
+          const curVal = navigateIds[idx];
           return (
             curVal.media_content_id === oldVal.media_content_id &&
             curVal.media_content_type === oldVal.media_content_type
@@ -469,8 +476,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       } else if (
         // Check if we navigated to a parent
         oldNavigateIds &&
-        this.navigateIds.length < oldNavigateIds.length &&
-        this.navigateIds.every((curVal, idx) => {
+        navigateIds.length === oldNavigateIds.length - 1 &&
+        navigateIds.every((curVal, idx) => {
           const oldVal = oldNavigateIds[idx];
           return (
             curVal.media_content_id === oldVal.media_content_id &&
@@ -493,11 +500,33 @@ export class HaMediaPlayerBrowse extends LitElement {
       (item) => {
         this._currentItem = item;
         fireEvent(this, "media-browsed", {
-          ids: this.navigateIds,
+          ids: navigateIds,
           current: item,
         });
       },
-      (err) => this._setError(err)
+      (err) => {
+        // When we change entity ID, we will first try to see if the new entity is
+        // able to resolve the new path. If that results in an error, browse the root.
+        const isNewEntityWithSamePath =
+          oldNavigateIds &&
+          changedProps.has("entityId") &&
+          navigateIds.length === oldNavigateIds.length &&
+          oldNavigateIds.every(
+            (oldItem, idx) =>
+              navigateIds[idx].media_content_id === oldItem.media_content_id &&
+              navigateIds[idx].media_content_type === oldItem.media_content_type
+          );
+        if (isNewEntityWithSamePath) {
+          fireEvent(this, "media-browsed", {
+            ids: [
+              { media_content_id: undefined, media_content_type: undefined },
+            ],
+            replace: true,
+          });
+        } else {
+          this._setError(err);
+        }
+      }
     );
     // Fetch parent
     if (!parentProm && parentId !== undefined) {
@@ -734,6 +763,18 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .no-items {
           padding-left: 32px;
+        }
+
+        .highlight-add-button {
+          display: flex;
+          flex-direction: row-reverse;
+          margin-right: 48px;
+        }
+
+        .highlight-add-button ha-svg-icon {
+          position: relative;
+          top: -0.5em;
+          margin-left: 8px;
         }
 
         .content {

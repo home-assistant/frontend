@@ -126,6 +126,7 @@ export interface ZWaveJSNodeStatus {
   is_routing: boolean | null;
   zwave_plus_version: number | null;
   highest_security_class: SecurityClass | null;
+  is_controller_node: boolean;
 }
 
 export interface ZwaveJSNodeMetadata {

@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
-import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,7 +18,6 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
@@ -158,28 +158,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ></ha-icon-picker>
         ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
         (domain === "cover" && this.entry.original_device_class === null)
-          ? html`<ha-paper-dropdown-menu
+          ? html`<mwc-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
               )}
+              .value=${this._deviceClass}
+              @selected=${this._deviceClassChanged}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                attr-for-selected="item-value"
-                .selected=${this._deviceClass}
-                @selected-item-changed=${this._deviceClassChanged}
-              >
-                ${OVERRIDE_DEVICE_CLASSES[domain].map(
-                  (deviceClass: string) => html`
-                    <paper-item .itemValue=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
-                    </paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>`
+              ${OVERRIDE_DEVICE_CLASSES[domain].map(
+                (deviceClass: string) => html`
+                  <mwc-list-item .value=${deviceClass}>
+                    ${this.hass.localize(
+                      `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                    )}
+                  </mwc-list-item>
+                `
+              )}
+            </mwc-select>`
           : ""}
         <paper-input
           .value=${this._entityId}
@@ -302,12 +297,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._entityId = ev.detail.value;
   }
 
-  private _deviceClassChanged(ev: PolymerChangedEvent<PaperItemElement>): void {
+  private _deviceClassChanged(ev): void {
     this._error = undefined;
-    if (ev.detail.value === null) {
-      return;
-    }
-    this._deviceClass = (ev.detail.value as any).itemValue;
+    this._deviceClass = ev.target.value;
   }
 
   private _areaPicked(ev: CustomEvent) {
@@ -425,7 +417,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
-        ha-paper-dropdown-menu {
+        mwc-select {
           width: 100%;
         }
         ha-switch {

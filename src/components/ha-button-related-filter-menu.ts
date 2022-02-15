@@ -75,7 +75,6 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           .hass=${this.hass}
           .value=${this.value?.area}
           no-add
-          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._areaPicked}
           @click=${this._preventDefault}
         ></ha-area-picker>
@@ -85,7 +84,6 @@ export class HaRelatedFilterButtonMenu extends LitElement {
           )}
           .hass=${this.hass}
           .value=${this.value?.device}
-          .excludeDomains=${this.excludeDomains}
           @value-changed=${this._devicePicked}
           @click=${this._preventDefault}
         ></ha-device-picker>

@@ -10,6 +10,10 @@ describe("canToggleState", () => {
         turn_off: null,
       },
     },
+    states: {
+      "light.bla": { entity_id: "light.bla" },
+      "light.test": { entity_id: "light.test" },
+    },
   };
 
   it("Detects lights toggle", () => {
@@ -24,7 +28,11 @@ describe("canToggleState", () => {
     const stateObj: any = {
       entity_id: "group.bla",
       state: "on",
+      attributes: {
+        entity_id: ["light.bla", "light.test"],
+      },
     };
+
     assert.isTrue(canToggleState(hass, stateObj));
   });
 

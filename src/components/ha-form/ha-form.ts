@@ -32,7 +32,12 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
-  @property() public computeLabel?: (schema: HaFormSchema) => string;
+  @property() public computeLabel?: (
+    schema: HaFormSchema,
+    data?: HaFormDataContainer
+  ) => string;
+
+  @property() public computeHelper?: (schema: HaFormSchema) => string;
 
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
@@ -71,6 +76,7 @@ export class HaForm extends LitElement implements HaFormElement {
           : ""}
         ${this.schema.map((item) => {
           const error = getValue(this.error, item);
+
           return html`
             ${error
               ? html`
@@ -85,14 +91,15 @@ export class HaForm extends LitElement implements HaFormElement {
                   .hass=${this.hass}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
-                  .label=${this._computeLabel(item)}
+                  .label=${this._computeLabel(item, this.data)}
                   .disabled=${this.disabled}
+                  .helper=${this._computeHelper(item)}
                   .required=${item.required || false}
                 ></ha-selector>`
               : dynamicElement(`ha-form-${item.type}`, {
                   schema: item,
                   data: getValue(this.data, item),
-                  label: this._computeLabel(item),
+                  label: this._computeLabel(item, this.data),
                   disabled: this.disabled,
                 })}
           `;
@@ -107,6 +114,7 @@ export class HaForm extends LitElement implements HaFormElement {
     root.addEventListener("value-changed", (ev) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+
       fireEvent(this, "value-changed", {
         value: { ...this.data, [schema.name]: ev.detail.value },
       });
@@ -114,12 +122,16 @@ export class HaForm extends LitElement implements HaFormElement {
     return root;
   }
 
-  private _computeLabel(schema: HaFormSchema) {
+  private _computeLabel(schema: HaFormSchema, data: HaFormDataContainer) {
     return this.computeLabel
-      ? this.computeLabel(schema)
+      ? this.computeLabel(schema, data)
       : schema
       ? schema.name
       : "";
+  }
+
+  private _computeHelper(schema: HaFormSchema) {
+    return this.computeHelper ? this.computeHelper(schema) : "";
   }
 
   private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {

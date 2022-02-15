@@ -1,4 +1,4 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
@@ -65,14 +65,6 @@ class MoreInfoRemote extends LitElement {
       entity_id: this.stateObj!.entity_id,
       activity: newVal,
     });
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      paper-item {
-        cursor: pointer;
-      }
-    `;
   }
 }
 

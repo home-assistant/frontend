@@ -104,7 +104,7 @@ class DialogSystemLogDetail extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        <div class="contents">
+        <div class="contents" tabindex="-1" dialogInitialFocus>
           <p>
             Logger: ${item.name}<br />
             Source: ${item.source.join(":")}
@@ -227,6 +227,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         .contents {
           padding: 16px;
+          outline: none;
         }
         .error {
           color: var(--error-color);

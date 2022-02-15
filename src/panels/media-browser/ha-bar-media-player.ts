@@ -25,7 +25,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../data/entity";
@@ -46,6 +45,12 @@ import {
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
 import { BrowserMediaPlayer } from "./browser-media-player";
+
+declare global {
+  interface HASSDomEvents {
+    "player-picked": { entityId: string };
+  }
+}
 
 @customElement("ha-bar-media-player")
 class BarMediaPlayer extends LitElement {
@@ -399,7 +404,7 @@ class BarMediaPlayer extends LitElement {
 
   private _selectPlayer(ev: CustomEvent): void {
     const entityId = (ev.currentTarget as any).player;
-    navigate(`/media-browser/${entityId}`, { replace: true });
+    fireEvent(this, "player-picked", { entityId });
   }
 
   static get styles(): CSSResultGroup {
