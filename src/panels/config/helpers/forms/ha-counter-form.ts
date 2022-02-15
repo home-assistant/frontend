@@ -155,12 +155,12 @@ class HaCounterForm extends LitElement {
     const configValue = target.configValue;
     const value =
       target.type === "number"
-        ? ev.detail.value !== ""
+        ? target.value !== ""
           ? Number(target.value)
           : undefined
         : target.localName === "ha-switch"
         ? (ev.target as HaSwitch).checked
-        : ev.detail.value || target.value;
+        : ev.detail?.value || target.value;
     if (this[`_${configValue}`] === value) {
       return;
     }

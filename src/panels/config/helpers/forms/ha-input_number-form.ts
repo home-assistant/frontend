@@ -183,7 +183,7 @@ class HaInputNumberForm extends LitElement {
     const value =
       target.type === "number"
         ? Number(target.value)
-        : ev.detail.value || target.value;
+        : ev.detail?.value || target.value;
 
     if (this[`_${configValue}`] === value) {
       return;
