@@ -1,5 +1,4 @@
 import { mdiDelete } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";

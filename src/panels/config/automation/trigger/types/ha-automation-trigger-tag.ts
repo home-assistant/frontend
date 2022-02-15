@@ -1,6 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select";
-import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
