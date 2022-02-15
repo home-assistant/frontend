@@ -30,6 +30,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/ha-textfield";
 
 let Sortable;
 
