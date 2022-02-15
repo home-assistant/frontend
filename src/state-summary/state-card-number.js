@@ -1,12 +1,12 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
-import "@polymer/paper-input/paper-input";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
 import "../components/ha-slider";
+import "../components/ha-textfield";
 
 class StateCardNumber extends mixinBehaviors(
   [IronResizableBehavior],
@@ -32,7 +32,7 @@ class StateCardNumber extends mixinBehaviors(
         ha-slider[hidden] {
           display: none !important;
         }
-        paper-input {
+        ha-textfield {
           text-align: right;
           margin-left: auto;
         }
@@ -53,20 +53,20 @@ class StateCardNumber extends mixinBehaviors(
           ignore-bar-touch=""
         >
         </ha-slider>
-        <paper-input
-          no-label-float=""
+        <ha-textfield
           auto-validate=""
           pattern="[0-9]+([\\.][0-9]+)?"
           step="[[step]]"
           min="[[min]]"
           max="[[max]]"
-          value="{{value}}"
+          value="[[value]]"
           type="number"
+          on-input="onInput"
           on-change="selectedValueChanged"
           on-click="stopPropagation"
           hidden="[[hiddenbox]]"
         >
-        </paper-input>
+        </ha-textfield>
         <div class="state" hidden="[[hiddenbox]]">
           [[stateObj.attributes.unit_of_measurement]]
         </div>
@@ -176,6 +176,10 @@ class StateCardNumber extends mixinBehaviors(
     if (this.mode === "slider" && prevMode !== "slider") {
       this.hiddenState();
     }
+  }
+
+  onInput(ev) {
+    this.value = ev.target.value;
   }
 
   selectedValueChanged() {
