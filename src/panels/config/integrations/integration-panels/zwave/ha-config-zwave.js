@@ -4,6 +4,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { setCancelSyntheticClickEvents } from "@polymer/polymer/lib/utils/settings";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -517,6 +518,14 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
+  }
+
+  attached() {
+    setCancelSyntheticClickEvents(true);
+  }
+
+  detached() {
+    setCancelSyntheticClickEvents(false);
   }
 
   serviceCalled(ev) {
