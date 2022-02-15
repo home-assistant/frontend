@@ -1,15 +1,18 @@
 import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
 import { MQTTMessage } from "../../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../../types";
 
-export abstract class MQTTMessages extends LitElement {
+@customElement("mqtt-messages")
+class MQTTMessages extends LitElement {
   public hass!: HomeAssistant;
 
   @property() public messages!: MQTTMessage[];
+
+  @property() public direction!: string;
 
   @property() public showAsYaml = false;
 
@@ -24,8 +27,6 @@ export abstract class MQTTMessages extends LitElement {
   @state() private _payloadsJson = new WeakMap();
 
   @state() private _showTopic = false;
-
-  abstract readonly direction: string;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -168,5 +169,11 @@ export abstract class MQTTMessages extends LitElement {
         font-family: var(--code-font-family, monospace);
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "mqtt-messages": MQTTMessages;
   }
 }

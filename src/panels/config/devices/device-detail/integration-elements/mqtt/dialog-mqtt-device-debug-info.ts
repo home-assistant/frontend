@@ -15,8 +15,7 @@ import {
 import { haStyleDialog } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
-import "./mqtt-rx-messages";
-import "./mqtt-tx-messages";
+import "./mqtt-messages";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 
 @customElement("dialog-mqtt-device-debug-info")
@@ -163,14 +162,15 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 (topic) => html`
                   <li>
                     <code>${topic.topic}</code>
-                    <mqtt-rx-messages
+                    <mqtt-messages
                       .hass=${this.hass}
+                      direction="Received"
                       .messages=${topic.messages}
                       .showDeserialized=${this._showDeserialized}
                       .showAsYaml=${this._showAsYaml}
                       .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
-                        "ui.dialogs.mqtt_device_debug_info.recent_rx_messages",
+                        "ui.dialogs.mqtt_device_debug_info.recent_messages",
                         "n",
                         topic.messages.length
                       )}
@@ -186,8 +186,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 (topic) => html`
                   <li>
                     <code>${topic.topic}</code>
-                    <mqtt-tx-messages
+                    <mqtt-messages
                       .hass=${this.hass}
+                      direction="Transmitted"
                       .messages=${topic.messages}
                       .showDeserialized=${this._showDeserialized}
                       .showAsYaml=${this._showAsYaml}
