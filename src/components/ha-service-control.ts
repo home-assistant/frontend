@@ -489,9 +489,6 @@ export class HaServiceControl extends LitElement {
         margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
       }
-      :host(:not([narrow])) ha-settings-row paper-input {
-        width: 60%;
-      }
       :host(:not([narrow])) ha-settings-row ha-selector {
         width: 60%;
       }
