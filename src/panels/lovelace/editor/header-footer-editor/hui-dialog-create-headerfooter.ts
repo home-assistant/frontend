@@ -69,7 +69,7 @@ export class HuiCreateDialogHeaderFooter
                   dialogInitialFocus
                 >
                   <ha-svg-icon .path=${headerFooter.icon}></ha-svg-icon>
-                  <div id=${"card-name-" + index} role="none presentation">
+                  <div .id=${"card-name-" + index} role="none presentation">
                     ${this.hass!.localize(
                       `ui.panel.lovelace.editor.header-footer.types.${headerFooter.type}.name`
                     )}
