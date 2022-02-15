@@ -88,9 +88,11 @@ class PanelShoppingList extends LitElement {
       haStyle,
       css`
         :host {
-          --mdc-theme-primary: var(--app-header-text-color);
           display: block;
           height: 100%;
+        }
+        app-header {
+          --mdc-theme-primary: var(--app-header-text-color);
         }
         :host([narrow]) app-toolbar mwc-button {
           width: 65px;
