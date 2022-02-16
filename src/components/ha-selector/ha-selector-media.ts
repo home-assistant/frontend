@@ -9,11 +9,11 @@ import {
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
-import { MediaSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { MediaSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-form/ha-form";
-import { HaFormSchema } from "../ha-form/types";
+import type { HaFormSchema } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 
 const MANUAL_SCHEMA = [
