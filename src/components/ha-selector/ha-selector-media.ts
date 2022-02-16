@@ -9,7 +9,7 @@ import {
   MediaPickedEvent,
   SUPPORT_BROWSE_MEDIA,
 } from "../../data/media-player";
-import type { MediaSelector } from "../../data/selector";
+import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-form/ha-form";
@@ -27,18 +27,7 @@ export class HaMediaSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: MediaSelector;
 
-  @property({ attribute: false }) public value?: {
-    entity_id: string;
-    media_content_id?: string;
-    media_content_type?: string;
-    extra?: {
-      title?: string;
-      thumbnail?: string | null;
-      media_class?: string;
-      children_media_class?: string | null;
-      navigateIds?: { media_content_type: string; media_content_id: string }[];
-    };
-  };
+  @property({ attribute: false }) public value?: MediaSelectorValue;
 
   @property() public label?: string;
 
@@ -144,9 +133,7 @@ export class HaMediaSelector extends LitElement {
         : ""}`;
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => {
-    return this.hass.localize(`ui.components.selectors.media.${schema.name}`);
-  }
+  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(`ui.components.selectors.media.${schema.name}`);
 
   private _entityChanged(ev: CustomEvent) {
     ev.stopPropagation();

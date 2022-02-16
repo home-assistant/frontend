@@ -99,6 +99,7 @@ export interface PlayMediaAction {
   entity_id: string;
   media_content_type: string;
   media_content_id: string;
+  extra?: Record<string, any>;
 }
 
 export interface RepeatAction {

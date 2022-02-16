@@ -155,3 +155,16 @@ export interface MediaSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   media: {};
 }
+
+export interface MediaSelectorValue {
+  entity_id: string;
+  media_content_id?: string;
+  media_content_type?: string;
+  extra?: {
+    title?: string;
+    thumbnail?: string | null;
+    media_class?: string;
+    children_media_class?: string | null;
+    navigateIds?: { media_content_type: string; media_content_id: string }[];
+  };
+}
