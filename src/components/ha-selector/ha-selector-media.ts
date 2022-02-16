@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import { getSignedPath } from "../../data/auth";
 import {
   MediaClassBrowserSettings,
   MediaPickedEvent,
@@ -34,6 +35,31 @@ export class HaMediaSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @state() private _manual = false;
+
+  @state() private _thumbnailUrl?: string | null;
+
+  willUpdate(changedProps) {
+    if (
+      changedProps.has("value") &&
+      this.value?.extra?.thumbnail !==
+        changedProps.get("value")?.extra?.thumbnail
+    ) {
+      if (
+        this.value?.extra?.thumbnail &&
+        this.value.extra.thumbnail.startsWith("/")
+      ) {
+        this._thumbnailUrl = undefined;
+        // Thumbnails served by local API require authentication
+        getSignedPath(this.hass, this.value.extra.thumbnail).then(
+          (signedPath) => {
+            this._thumbnailUrl = signedPath.path;
+          }
+        );
+      } else {
+        this._thumbnailUrl = this.value?.extra?.thumbnail;
+      }
+    }
+  }
 
   protected render() {
     const stateObj = this.value?.entity_id
@@ -93,8 +119,8 @@ export class HaMediaSelector extends LitElement {
                           ),
                       })}
                         image"
-                      style=${this.value?.extra.thumbnail
-                        ? `background-image: url(${this.value.extra.thumbnail});`
+                      style=${this._thumbnailUrl
+                        ? `background-image: url(${this._thumbnailUrl});`
                         : ""}
                     ></div>
                   `
