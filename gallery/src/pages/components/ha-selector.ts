@@ -73,6 +73,7 @@ const SCHEMAS: {
         selector: { select: { options: ["Option 1", "Option 2"] } },
       },
       icon: { name: "Icon", selector: { icon: {} } },
+      media: { name: "Media", selector: { media: {} } },
     },
   },
 ];

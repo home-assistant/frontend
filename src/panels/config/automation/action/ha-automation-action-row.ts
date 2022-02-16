@@ -30,11 +30,13 @@ import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import "./types/ha-automation-action-media_content_id";
 
 const OPTIONS = [
   "condition",
   "delay",
   "event",
+  "media_content_id",
   "scene",
   "service",
   "wait_template",

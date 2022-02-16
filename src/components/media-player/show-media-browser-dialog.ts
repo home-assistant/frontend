@@ -3,6 +3,7 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import { MediaPlayerItemId } from "./ha-media-player-browse";
 
 export interface MediaPlayerBrowseDialogParams {
   action: MediaPlayerBrowseAction;
@@ -10,6 +11,7 @@ export interface MediaPlayerBrowseDialogParams {
   mediaPickedCallback: (pickedMedia: MediaPickedEvent) => void;
   mediaContentId?: string;
   mediaContentType?: string;
+  navigateIds?: MediaPlayerItemId[];
 }
 
 export const showMediaBrowserDialog = (

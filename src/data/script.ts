@@ -94,6 +94,13 @@ export interface WaitForTriggerAction {
   continue_on_timeout?: boolean;
 }
 
+export interface PlayMediaAction {
+  alias?: string;
+  entity_id: string;
+  media_content_type: string;
+  media_content_id: string;
+}
+
 export interface RepeatAction {
   alias?: string;
   repeat: CountRepeat | WhileRepeat | UntilRepeat;
@@ -150,6 +157,7 @@ export type Action =
   | RepeatAction
   | ChooseAction
   | VariablesAction
+  | PlayMediaAction
   | UnknownAction;
 
 export interface ActionTypes {

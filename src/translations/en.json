@@ -317,6 +317,17 @@
       "copied_clipboard": "Copied to clipboard"
     },
     "components": {
+      "selectors": {
+        "media": {
+          "pick_media_player": "Select media player",
+          "browse_not_supported": "This media player does not support browsing media, but you can enter the media ID and type manually.",
+          "pick_media": "Pick media",
+          "browse_media": "Browse media",
+          "manual": "Enter media ID manual",
+          "media_content_id": "Media content ID",
+          "media_content_type": "Media content type"
+        }
+      },
       "logbook": {
         "entries_not_found": "No logbook events found.",
         "by": "by",
@@ -1797,6 +1808,9 @@
               "type": {
                 "service": {
                   "label": "Call service"
+                },
+                "media_content_id": {
+                  "label": "Play media"
                 },
                 "delay": {
                   "label": "Wait for time to pass (delay)",

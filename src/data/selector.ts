@@ -13,7 +13,8 @@ export type Selector =
   | StringSelector
   | ObjectSelector
   | SelectSelector
-  | IconSelector;
+  | IconSelector
+  | MediaSelector;
 
 export interface EntitySelector {
   entity: {
@@ -148,4 +149,9 @@ export interface SelectSelector {
 export interface IconSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   icon: {};
+}
+
+export interface MediaSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  media: {};
 }

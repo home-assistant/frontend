@@ -1,0 +1,269 @@
+import { mdiPlayBox, mdiPlus } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import {
+  MediaClassBrowserSettings,
+  MediaPickedEvent,
+  SUPPORT_BROWSE_MEDIA,
+} from "../../data/media-player";
+import { MediaSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
+import "../ha-alert";
+import "../ha-form/ha-form";
+import { HaFormSchema } from "../ha-form/types";
+import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
+
+const MANUAL_SCHEMA = [
+  { name: "media_content_id", required: false, selector: { text: {} } },
+  { name: "media_content_type", required: false, selector: { text: {} } },
+];
+
+@customElement("ha-selector-media")
+export class HaMediaSelector extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public selector!: MediaSelector;
+
+  @property({ attribute: false }) public value?: {
+    entity_id: string;
+    media_content_id?: string;
+    media_content_type?: string;
+    extra?: {
+      title?: string;
+      thumbnail?: string | null;
+      media_class?: string;
+      children_media_class?: string | null;
+      navigateIds?: { media_content_type: string; media_content_id: string }[];
+    };
+  };
+
+  @property() public label?: string;
+
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  @state() private _manual = false;
+
+  protected render() {
+    const stateObj = this.value?.entity_id
+      ? this.hass.states[this.value.entity_id]
+      : undefined;
+
+    const supportsBrowse =
+      stateObj && supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA);
+
+    return html`<ha-entity-picker
+        .hass=${this.hass}
+        .value=${this.value?.entity_id}
+        .label=${this.label ||
+        this.hass.localize("ui.components.selectors.media.pick_media_player")}
+        .disabled=${this.disabled}
+        include-domains='["media_player"]'
+        allow-custom-entity
+        @value-changed=${this._entityChanged}
+      ></ha-entity-picker>
+      ${this._manual || (stateObj && !supportsBrowse)
+        ? html`${!supportsBrowse
+              ? html`<ha-alert>
+                  ${this.hass.localize(
+                    "ui.components.selectors.media.browse_not_supported"
+                  )}
+                </ha-alert>`
+              : ""}
+            <ha-form
+              .hass=${this.hass}
+              .data=${this.value}
+              .schema=${MANUAL_SCHEMA}
+              .computeLabel=${this._computeLabelCallback}
+            ></ha-form>`
+        : html`<ha-card
+            outlined
+            @click=${this._pickMedia}
+            class=${this.disabled || !this.value?.entity_id ? "disabled" : ""}
+          >
+            <div
+              class="thumbnail ${classMap({
+                portrait:
+                  !!this.value?.extra?.media_class &&
+                  MediaClassBrowserSettings[
+                    this.value.extra.children_media_class ||
+                      this.value.extra.media_class
+                  ].thumbnail_ratio === "portrait",
+              })}"
+            >
+              ${this.value?.extra?.thumbnail
+                ? html`
+                    <div
+                      class="${classMap({
+                        "centered-image":
+                          !!this.value.extra.media_class &&
+                          ["app", "directory"].includes(
+                            this.value.extra.media_class
+                          ),
+                      })}
+                        image"
+                      style=${this.value?.extra.thumbnail
+                        ? `background-image: url(${this.value.extra.thumbnail});`
+                        : ""}
+                    ></div>
+                  `
+                : html`
+                    <div class="icon-holder image">
+                      <ha-svg-icon
+                        class="folder"
+                        .path=${!this.value?.media_content_id
+                          ? mdiPlus
+                          : this.value?.extra?.media_class
+                          ? MediaClassBrowserSettings[
+                              this.value.extra.media_class === "directory"
+                                ? this.value.extra.children_media_class ||
+                                  this.value.extra.media_class
+                                : this.value.extra.media_class
+                            ].icon
+                          : mdiPlayBox}
+                      ></ha-svg-icon>
+                    </div>
+                  `}
+            </div>
+            <div class="title">
+              ${!this.value?.media_content_id
+                ? this.hass.localize("ui.components.selectors.media.pick_media")
+                : this.value.extra?.title || this.value.media_content_id}
+            </div>
+          </ha-card>`}
+      ${supportsBrowse
+        ? html`<mwc-button @click=${this._switchManual}
+            >${this.hass.localize(
+              `ui.components.selectors.media.${
+                this._manual ? "browse_media" : "manual"
+              }`
+            )}
+          </mwc-button>`
+        : ""}`;
+  }
+
+  private _computeLabelCallback(schema: HaFormSchema): string {
+    return this.hass.localize(`ui.components.selectors.media.${schema.name}`);
+  }
+
+  private _entityChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        entity_id: ev.detail.value,
+        media_content_id: "",
+        media_content_type: "",
+      },
+    });
+  }
+
+  private _pickMedia() {
+    showMediaBrowserDialog(this, {
+      action: "pick",
+      entityId: this.value!.entity_id,
+      navigateIds: this.value!.extra?.navigateIds,
+      mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.value,
+            media_content_id: pickedMedia.item.media_content_id,
+            media_content_type: pickedMedia.item.media_content_type,
+            extra: {
+              title: pickedMedia.item.title,
+              thumbnail: pickedMedia.item.thumbnail,
+              media_class: pickedMedia.item.media_class,
+              children_media_class: pickedMedia.item.children_media_class,
+              navigateIds: pickedMedia.navigateIds.map((id) => ({
+                media_content_type: id.media_content_type,
+                media_content_id: id.media_content_id,
+              })),
+            },
+          },
+        });
+      },
+    });
+  }
+
+  private _switchManual() {
+    this._manual = !this._manual;
+    if (!this._manual) {
+      this._pickMedia();
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-entity-picker {
+        display: block;
+        margin-bottom: 16px;
+      }
+      mwc-button {
+        margin-top: 8px;
+      }
+      ha-alert {
+        display: block;
+        margin-bottom: 16px;
+      }
+      ha-card {
+        position: relative;
+        width: 200px;
+        box-sizing: border-box;
+        cursor: pointer;
+      }
+      ha-card.disabled {
+        pointer-events: none;
+        color: var(--disabled-text-color);
+      }
+      ha-card .thumbnail {
+        width: 100%;
+        position: relative;
+        box-sizing: border-box;
+        transition: padding-bottom 0.1s ease-out;
+        padding-bottom: 100%;
+      }
+
+      ha-card .thumbnail.portrait {
+        padding-bottom: 150%;
+      }
+
+      ha-card .image {
+        border-radius: 3px 3px 0 0;
+      }
+
+      .title {
+        font-size: 16px;
+        padding-top: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 16px;
+        padding-left: 16px;
+        padding-right: 4px;
+        white-space: nowrap;
+      }
+
+      .image {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .icon-holder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-selector-media": HaMediaSelector;
+  }
+}

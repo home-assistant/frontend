@@ -562,7 +562,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _runAction(item: MediaPlayerItem): void {
-    fireEvent(this, "media-picked", { item });
+    fireEvent(this, "media-picked", { item, navigateIds: this.navigateIds });
   }
 
   private async _childClicked(ev: MouseEvent): Promise<void> {
