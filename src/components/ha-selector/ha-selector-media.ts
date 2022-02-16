@@ -176,7 +176,7 @@ export class HaMediaSelector extends LitElement {
   private _pickMedia() {
     showMediaBrowserDialog(this, {
       action: "pick",
-      entityId: this.value!.entity_id,
+      entityId: this.value!.entity_id!,
       navigateIds: this.value!.extra?.navigateIds,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
         fireEvent(this, "value-changed", {

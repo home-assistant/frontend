@@ -157,7 +157,7 @@ export interface MediaSelector {
 }
 
 export interface MediaSelectorValue {
-  entity_id: string;
+  entity_id?: string;
   media_content_id?: string;
   media_content_type?: string;
   extra?: {
