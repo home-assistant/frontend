@@ -64,7 +64,8 @@ export class HaMediaSelector extends LitElement {
       : undefined;
 
     const supportsBrowse =
-      stateObj && supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA);
+      !this.value?.entity_id ||
+      (stateObj && supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA));
 
     return html`<ha-entity-picker
         .hass=${this.hass}
@@ -76,7 +77,7 @@ export class HaMediaSelector extends LitElement {
         allow-custom-entity
         @value-changed=${this._entityChanged}
       ></ha-entity-picker>
-      ${this._manual || (stateObj && !supportsBrowse)
+      ${this._manual || !supportsBrowse
         ? html`${!supportsBrowse
               ? html`<ha-alert>
                   ${this.hass.localize(
