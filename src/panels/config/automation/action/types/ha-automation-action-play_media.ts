@@ -3,9 +3,9 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-service-control";
+import "../../../../../components/ha-selector/ha-selector-media";
 import { PlayMediaAction } from "../../../../../data/script";
-import { MediaSelectorValue } from "../../../../../data/selector";
+import type { MediaSelectorValue } from "../../../../../data/selector";
 import type { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
@@ -31,7 +31,7 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
       entity_id: (action.target?.entity_id as string) || action.entity_id,
       media_content_id: action.data?.media_content_id,
       media_content_type: action.data?.media_content_type,
-      extra: action.extra,
+      metadata: action.metadata,
     })
   );
 
@@ -63,6 +63,6 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-action-media_content_id": HaPlayMediaAction;
+    "ha-automation-action-play_media": HaPlayMediaAction;
   }
 }

@@ -41,22 +41,22 @@ export class HaMediaSelector extends LitElement {
   willUpdate(changedProps) {
     if (
       changedProps.has("value") &&
-      this.value?.extra?.thumbnail !==
-        changedProps.get("value")?.extra?.thumbnail
+      this.value?.metadata?.thumbnail !==
+        changedProps.get("value")?.metadata?.thumbnail
     ) {
       if (
-        this.value?.extra?.thumbnail &&
-        this.value.extra.thumbnail.startsWith("/")
+        this.value?.metadata?.thumbnail &&
+        this.value.metadata.thumbnail.startsWith("/")
       ) {
         this._thumbnailUrl = undefined;
         // Thumbnails served by local API require authentication
-        getSignedPath(this.hass, this.value.extra.thumbnail).then(
+        getSignedPath(this.hass, this.value.metadata.thumbnail).then(
           (signedPath) => {
             this._thumbnailUrl = signedPath.path;
           }
         );
       } else {
-        this._thumbnailUrl = this.value?.extra?.thumbnail;
+        this._thumbnailUrl = this.value?.metadata?.thumbnail;
       }
     }
   }
@@ -101,21 +101,21 @@ export class HaMediaSelector extends LitElement {
             <div
               class="thumbnail ${classMap({
                 portrait:
-                  !!this.value?.extra?.media_class &&
+                  !!this.value?.metadata?.media_class &&
                   MediaClassBrowserSettings[
-                    this.value.extra.children_media_class ||
-                      this.value.extra.media_class
+                    this.value.metadata.children_media_class ||
+                      this.value.metadata.media_class
                   ].thumbnail_ratio === "portrait",
               })}"
             >
-              ${this.value?.extra?.thumbnail
+              ${this.value?.metadata?.thumbnail
                 ? html`
                     <div
                       class="${classMap({
                         "centered-image":
-                          !!this.value.extra.media_class &&
+                          !!this.value.metadata.media_class &&
                           ["app", "directory"].includes(
-                            this.value.extra.media_class
+                            this.value.metadata.media_class
                           ),
                       })}
                         image"
@@ -130,12 +130,12 @@ export class HaMediaSelector extends LitElement {
                         class="folder"
                         .path=${!this.value?.media_content_id
                           ? mdiPlus
-                          : this.value?.extra?.media_class
+                          : this.value?.metadata?.media_class
                           ? MediaClassBrowserSettings[
-                              this.value.extra.media_class === "directory"
-                                ? this.value.extra.children_media_class ||
-                                  this.value.extra.media_class
-                                : this.value.extra.media_class
+                              this.value.metadata.media_class === "directory"
+                                ? this.value.metadata.children_media_class ||
+                                  this.value.metadata.media_class
+                                : this.value.metadata.media_class
                             ].icon
                           : mdiPlayBox}
                       ></ha-svg-icon>
@@ -145,7 +145,7 @@ export class HaMediaSelector extends LitElement {
             <div class="title">
               ${!this.value?.media_content_id
                 ? this.hass.localize("ui.components.selectors.media.pick_media")
-                : this.value.extra?.title || this.value.media_content_id}
+                : this.value.metadata?.title || this.value.media_content_id}
             </div>
           </ha-card>`}
       ${supportsBrowse
@@ -177,14 +177,14 @@ export class HaMediaSelector extends LitElement {
     showMediaBrowserDialog(this, {
       action: "pick",
       entityId: this.value!.entity_id!,
-      navigateIds: this.value!.extra?.navigateIds,
+      navigateIds: this.value!.metadata?.navigateIds,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
         fireEvent(this, "value-changed", {
           value: {
             ...this.value,
             media_content_id: pickedMedia.item.media_content_id,
             media_content_type: pickedMedia.item.media_content_type,
-            extra: {
+            metadata: {
               title: pickedMedia.item.title,
               thumbnail: pickedMedia.item.thumbnail,
               media_class: pickedMedia.item.media_class,

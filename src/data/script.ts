@@ -97,7 +97,7 @@ export interface WaitForTriggerAction {
 export interface PlayMediaAction extends ServiceAction {
   alias?: string;
   service: "play_media";
-  extra?: Record<string, any>;
+  metadata: Record<string, any>;
 }
 
 export interface RepeatAction {

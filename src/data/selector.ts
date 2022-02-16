@@ -160,7 +160,7 @@ export interface MediaSelectorValue {
   entity_id?: string;
   media_content_id?: string;
   media_content_type?: string;
-  extra?: {
+  metadata?: {
     title?: string;
     thumbnail?: string | null;
     media_class?: string;
