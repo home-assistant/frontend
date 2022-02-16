@@ -16,8 +16,11 @@ import {
   mdiNumeric4,
   mdiNumeric5,
   mdiNumeric6,
+  mdiNumeric7,
+  mdiNumeric8,
   mdiPound,
   mdiShield,
+  mdiLinkLock,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -84,6 +87,8 @@ const RATING_ICON = {
   4: mdiNumeric4,
   5: mdiNumeric5,
   6: mdiNumeric6,
+  7: mdiNumeric7,
+  8: mdiNumeric8,
 };
 
 @customElement("hassio-addon-info")
@@ -234,8 +239,8 @@ class HassioAddonInfo extends LitElement {
             <ha-chip
               hasIcon
               class=${classMap({
-                green: [5, 6].includes(Number(this.addon.rating)),
-                yellow: [3, 4].includes(Number(this.addon.rating)),
+                green: [6, 7, 8].includes(Number(this.addon.rating)),
+                yellow: [3, 4, 5].includes(Number(this.addon.rating)),
                 red: [1, 2].includes(Number(this.addon.rating)),
               })}
               @click=${this._showMoreInfo}
@@ -360,6 +365,16 @@ class HassioAddonInfo extends LitElement {
                     ></ha-svg-icon>
                     ${this.supervisor.localize(
                       "addon.dashboard.capability.label.ingress"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.signed
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="signed">
+                    <ha-svg-icon slot="icon" .path=${mdiLinkLock}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.signed"
                     )}
                   </ha-chip>
                 `

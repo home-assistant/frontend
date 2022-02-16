@@ -4285,6 +4285,10 @@
             "title": "Ingress",
             "description": "This add-on is using Ingress to embed its interface securely into Home Assistant."
           },
+          "signed": {
+            "title": "Signed",
+            "description": "This add-on signed and verified with Codenotary Community Attestation Service (CAS)."
+          },
           "label": {
             "core": "Core",
             "rating": "rating",
@@ -4295,7 +4299,8 @@
             "host_pid": "host pid",
             "apparmor": "apparmor",
             "auth": "auth",
-            "ingress": "ingress"
+            "ingress": "ingress",
+            "signed": "Signed"
           },
           "stages": {
             "experimental": "Experimental",

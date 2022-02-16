@@ -87,6 +87,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   rating: "1-6";
   schema: HaFormSchema[] | null;
   services_role: string[];
+  signed: boolean;
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
