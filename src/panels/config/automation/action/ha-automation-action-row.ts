@@ -48,7 +48,7 @@ const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("extra" in action && action.service) {
+  if ("metadata" in action && action.service) {
     switch (action.service) {
       case "scene.turn_on":
         // we dont support arrays of entities

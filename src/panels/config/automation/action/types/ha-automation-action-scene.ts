@@ -21,7 +21,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
       target: {
         entity_id: "",
       },
-      extra: {},
+      metadata: {},
     };
   }
 
@@ -53,7 +53,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
         target: {
           entity_id: ev.detail.value,
         },
-        extra: {},
+        metadata: {},
       },
     });
   }

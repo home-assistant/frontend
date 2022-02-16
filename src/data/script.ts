@@ -72,7 +72,7 @@ export interface DelayAction {
 
 export interface ServiceSceneAction extends ServiceAction {
   service: "scene.turn_on";
-  extra?: Record<string, any>;
+  metadata: Record<string, any>;
 }
 export interface LegacySceneAction {
   alias?: string;
