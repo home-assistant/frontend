@@ -568,9 +568,11 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _ttsPicked(ev: CustomEvent): void {
     ev.stopPropagation();
+    const navigateIds = this.navigateIds.slice(0, -1);
+    navigateIds.push(ev.detail.item);
     fireEvent(this, "media-picked", {
       ...ev.detail,
-      navigateIds: this.navigateIds,
+      navigateIds,
     });
   }
 

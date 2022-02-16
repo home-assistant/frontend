@@ -33,7 +33,7 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _cloudTTSInfo?: CloudTTSInfo;
 
-  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
+  @LocalStorage("cloudTtsTryMessage", true, false) private _message!: string;
 
   protected render() {
     return html`<ha-card>
@@ -77,8 +77,11 @@ class BrowseMediaTTS extends LitElement {
   }
 
   private _renderCloudOptions() {
+    if (!this._cloudTTSInfo || !this._cloudOptions) {
+      return "";
+    }
     const languages = this.getLanguages(this._cloudTTSInfo);
-    const selectedVoice = this._cloudOptions!;
+    const selectedVoice = this._cloudOptions;
     const genders = this.getSupportedGenders(
       selectedVoice[0],
       this._cloudTTSInfo,
@@ -123,6 +126,37 @@ class BrowseMediaTTS extends LitElement {
   protected override willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
+    if (changedProps.has("item")) {
+      if (this.item.media_content_id) {
+        const params = new URLSearchParams(
+          this.item.media_content_id.split("?")[1]
+        );
+        const message = params.get("message");
+        const language = params.get("language");
+        const gender = params.get("gender");
+        if (message) {
+          this._message = message;
+        }
+        if (language && gender) {
+          this._cloudOptions = [language, gender];
+        }
+      }
+
+      if (this.isCloudItem && !this._cloudTTSInfo) {
+        getCloudTTSInfo(this.hass).then((info) => {
+          this._cloudTTSInfo = info;
+        });
+        fetchCloudStatus(this.hass).then((status) => {
+          if (status.logged_in) {
+            this._cloudDefaultOptions = status.prefs.tts_default_voice;
+            if (!this._cloudOptions) {
+              this._cloudOptions = { ...this._cloudDefaultOptions };
+            }
+          }
+        });
+      }
+    }
+
     if (changedProps.has("message")) {
       return;
     }
@@ -150,30 +184,12 @@ class BrowseMediaTTS extends LitElement {
     this._cloudOptions = [this._cloudOptions![0], ev.target.value];
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (changedProps.has("item")) {
-      if (this.isCloudItem && !this._cloudTTSInfo) {
-        getCloudTTSInfo(this.hass).then((info) => {
-          this._cloudTTSInfo = info;
-        });
-        fetchCloudStatus(this.hass).then((status) => {
-          if (status.logged_in) {
-            this._cloudDefaultOptions = status.prefs.tts_default_voice;
-            this._cloudOptions = { ...this._cloudDefaultOptions };
-          }
-        });
-      }
-    }
-  }
-
   private getLanguages = memoizeOne(getCloudTtsLanguages);
 
   private getSupportedGenders = memoizeOne(getCloudTtsSupportedGenders);
 
   private get isCloudItem(): boolean {
-    return this.item.media_content_id === "media-source://tts/cloud";
+    return this.item.media_content_id.startsWith("media-source://tts/cloud");
   }
 
   private async _ttsClicked(): Promise<void> {
@@ -186,7 +202,9 @@ class BrowseMediaTTS extends LitElement {
       query.append("language", this._cloudOptions[0]);
       query.append("gender", this._cloudOptions[1]);
     }
-    item.media_content_id += `?${query.toString()}`;
+    item.media_content_id = `${
+      item.media_content_id.split("?")[0]
+    }?${query.toString()}`;
     item.can_play = true;
     fireEvent(this, "media-picked", { item });
   }
