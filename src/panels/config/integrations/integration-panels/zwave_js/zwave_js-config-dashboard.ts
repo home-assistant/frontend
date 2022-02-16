@@ -119,17 +119,23 @@ class ZWaveJSConfigDashboard extends LitElement {
             ? html`
                 <ha-alert alert-type="info">
                   ${this.hass.localize(
-                        `ui.panel.config.zwave_js.common.${this._network.controller.inclusion_state ===
-                  InclusionState.Including
-                    ? "inclusion" : "exclusion"}_in_progress`
-                      )}
+                    `ui.panel.config.zwave_js.common.${
+                      this._network.controller.inclusion_state ===
+                      InclusionState.Including
+                        ? "inclusion"
+                        : "exclusion"
+                    }_in_progress`
+                  )}
                   <mwc-button
                     slot="action"
                     .label=${this.hass.localize(
-                          `ui.panel.config.zwave_js.common.cancel_${this._network.controller.inclusion_state ===
-                  InclusionState.Including
-                    ? "inclusion" : "exclusion"}`
-                        )}
+                      `ui.panel.config.zwave_js.common.cancel_${
+                        this._network.controller.inclusion_state ===
+                        InclusionState.Including
+                          ? "inclusion"
+                          : "exclusion"
+                      }`
+                    )}
                     @click=${this._network?.controller.inclusion_state ===
                     InclusionState.Including
                       ? this._cancelInclusion
@@ -237,17 +243,16 @@ class ZWaveJSConfigDashboard extends LitElement {
                     ${this._network.client.ws_server_url}<br />
                   </div>
                   <div class="card-actions">
-                    ${this._status === "connected" &&
-                    this._network?.controller.inclusion_state ===
-                      InclusionState.Idle
-                      ? html`
-                          <mwc-button @click=${this._removeNodeClicked}>
-                            ${this.hass.localize(
-                              "ui.panel.config.zwave_js.common.remove_node"
-                            )}
-                          </mwc-button>
-                        `
-                      : ""}
+                    <mwc-button
+                      @click=${this._removeNodeClicked}
+                      .disabled=${this._status !== "connected" ||
+                      this._network?.controller.inclusion_state !==
+                        InclusionState.Idle}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.remove_node"
+                      )}
+                    </mwc-button>
                     <mwc-button
                       @click=${this._healNetworkClicked}
                       .disabled=${this._status === "disconnected"}
