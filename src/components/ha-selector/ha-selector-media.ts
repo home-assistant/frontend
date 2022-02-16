@@ -144,7 +144,7 @@ export class HaMediaSelector extends LitElement {
         : ""}`;
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
+  private _computeLabelCallback = (schema: HaFormSchema): string => {
     return this.hass.localize(`ui.components.selectors.media.${schema.name}`);
   }
 
