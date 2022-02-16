@@ -1,6 +1,8 @@
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-icon-overflow-menu";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   mdiCheckboxBlankOutline,
@@ -101,19 +103,6 @@ export class HaWebhookTrigger extends LitElement {
       webhook_id: webhookId,
     } = this.trigger;
 
-    const overflowMenuItems = SUPPORTED_METHODS.map((method) => ({
-      path: this._selectedPath(allowedMethods?.includes(method)),
-      label: method,
-      action: () => this._allowedMethodsChanged(method),
-    }));
-    overflowMenuItems.push({
-      path: this._selectedPath(localOnly),
-      label: this.hass.localize(
-        "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
-      ),
-      action: () => this._localOnlyChanged(),
-    });
-
     return html`
       <div class="flex">
         <ha-textfield
@@ -138,12 +127,35 @@ export class HaWebhookTrigger extends LitElement {
             .path=${mdiContentCopy}
           ></ha-icon-button>
         </ha-textfield>
-        <ha-icon-overflow-menu
-          .hass=${this.hass}
-          .iconPath=${mdiCog}
-          .narrow=${true}
-          .items=${overflowMenuItems}
-        ></ha-icon-overflow-menu>
+        <ha-button-menu multi>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.webhook_settings"
+            )}
+            .path=${mdiCog}
+          ></ha-icon-button>
+          ${SUPPORTED_METHODS.map(
+            (method) => html`
+              <ha-check-list-item
+                left
+                value=${method}
+                @request-selected=${this._allowedMethodsChanged}
+                .selected=${allowedMethods!.includes(method)}
+                >${method}</ha-check-list-item
+              >
+            `
+          )}
+          <ha-check-list-item
+            left
+            @request-selected=${this._localOnlyChanged}
+            .selected=${localOnly!}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
+            )}
+          </ha-check-list-item>
+        </ha-button-menu>
       </div>
     `;
   }
@@ -152,21 +164,28 @@ export class HaWebhookTrigger extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  private _localOnlyChanged(): void {
+  private _localOnlyChanged(ev: CustomEvent<RequestSelectedDetail>): void {
     const newTrigger = {
       ...this.trigger,
-      local_only: !this.trigger.local_only,
+      local_only: ev.detail.selected,
     };
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _allowedMethodsChanged(method: string): void {
+  private _allowedMethodsChanged(ev: CustomEvent<RequestSelectedDetail>): void {
+    const method = (ev.target as any).value;
+    const selected = ev.detail.selected;
     const methods = this.trigger.allowed_methods ?? [];
     const newMethods = [...methods];
-    if (methods.includes(method)) {
-      newMethods.splice(newMethods.indexOf(method), 1);
-    } else {
+
+    if (selected === methods.includes(method)) {
+      return;
+    }
+
+    if (selected) {
       newMethods.push(method);
+    } else {
+      newMethods.splice(newMethods.indexOf(method), 1);
     }
     const newTrigger = { ...this.trigger, allowed_methods: newMethods };
     fireEvent(this, "value-changed", { value: newTrigger });
@@ -200,7 +219,7 @@ export class HaWebhookTrigger extends LitElement {
       --mdc-icon-size: 18px;
     }
 
-    ha-icon-overflow-menu {
+    ha-button-menu {
       padding-top: 4px;
     }
   `;
