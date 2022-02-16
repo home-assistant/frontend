@@ -3009,7 +3009,7 @@
           },
           "add_node": {
             "title": "Add a Z-Wave Device",
-            "searching_device": "Searching for devices...",
+            "searching_device": "Searching for devices…",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "choose_inclusion_strategy": "How do you want to add your device",
             "qr_code": "QR Code",
@@ -3168,7 +3168,7 @@
             "reset_focus": "Reset focus"
           },
           "energy": {
-            "loading": "Loading...",
+            "loading": "Loading…",
             "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
