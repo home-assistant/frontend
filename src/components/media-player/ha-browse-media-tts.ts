@@ -206,6 +206,7 @@ class BrowseMediaTTS extends LitElement {
       item.media_content_id.split("?")[0]
     }?${query.toString()}`;
     item.can_play = true;
+    item.title = message;
     fireEvent(this, "media-picked", { item });
   }
 
