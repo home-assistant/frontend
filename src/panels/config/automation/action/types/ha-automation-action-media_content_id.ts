@@ -26,10 +26,6 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
       ></ha-selector-media>
     `;
   }
-
-  static get styles(): CSSResultGroup {
-    return css``;
-  }
 }
 
 declare global {
