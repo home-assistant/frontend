@@ -11,7 +11,8 @@ import {
   DelayAction,
   EventAction,
   getActionType,
-  SceneAction,
+  LegacySceneAction,
+  ServiceSceneAction,
   VariablesAction,
   WaitForTriggerAction,
 } from "./script";
@@ -102,11 +103,19 @@ export const describeAction = <T extends ActionType>(
     return `Delay ${duration}`;
   }
 
-  if (actionType === "activate_scene") {
-    const config = action as SceneAction;
+  if (actionType === "legacy_activate_scene") {
+    const config = action as LegacySceneAction;
     const sceneStateObj = hass.states[config.scene];
     return `Activate scene ${
       sceneStateObj ? computeStateName(sceneStateObj) : config.scene
+    }`;
+  }
+
+  if (actionType === "activate_scene") {
+    const config = action as ServiceSceneAction;
+    const sceneStateObj = hass.states[config.target!.entity_id as string];
+    return `Activate scene ${
+      sceneStateObj ? computeStateName(sceneStateObj) : config.target!.entity_id
     }`;
   }
 
