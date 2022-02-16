@@ -53,6 +53,7 @@ export interface ServiceAction {
 
 export interface DeviceAction {
   alias?: string;
+  type: string;
   device_id: string;
   domain: string;
   entity_id: string;

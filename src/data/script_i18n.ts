@@ -9,6 +9,7 @@ import {
   ActionType,
   ActionTypes,
   DelayAction,
+  DeviceAction,
   EventAction,
   getActionType,
   LegacySceneAction,
@@ -154,6 +155,14 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "check_condition") {
     return `Test ${describeCondition(action as Condition)}`;
+  }
+
+  if (actionType === "device_action") {
+    const config = action as DeviceAction;
+    const stateObj = hass.states[config.entity_id as string];
+    return `${config.type || "Perform action with"} ${
+      stateObj ? computeStateName(stateObj) : config.entity_id
+    }`;
   }
 
   return actionType;
