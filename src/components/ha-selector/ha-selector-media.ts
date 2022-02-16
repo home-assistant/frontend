@@ -1,5 +1,5 @@
 import { mdiPlayBox, mdiPlus } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,25 +38,23 @@ export class HaMediaSelector extends LitElement {
 
   @state() private _thumbnailUrl?: string | null;
 
-  willUpdate(changedProps) {
-    if (
-      changedProps.has("value") &&
-      this.value?.metadata?.thumbnail !==
-        changedProps.get("value")?.metadata?.thumbnail
-    ) {
-      if (
-        this.value?.metadata?.thumbnail &&
-        this.value.metadata.thumbnail.startsWith("/")
-      ) {
+  willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("value")) {
+      const thumbnail = this.value?.metadata?.thumbnail;
+      const oldThumbnail = (
+        changedProps.get("value") as this["value"] | undefined
+      )?.metadata?.thumbnail;
+      if (thumbnail === oldThumbnail) {
+        return;
+      }
+      if (thumbnail && thumbnail.startsWith("/")) {
         this._thumbnailUrl = undefined;
         // Thumbnails served by local API require authentication
-        getSignedPath(this.hass, this.value.metadata.thumbnail).then(
-          (signedPath) => {
-            this._thumbnailUrl = signedPath.path;
-          }
-        );
+        getSignedPath(this.hass, thumbnail).then((signedPath) => {
+          this._thumbnailUrl = signedPath.path;
+        });
       } else {
-        this._thumbnailUrl = this.value?.metadata?.thumbnail;
+        this._thumbnailUrl = thumbnail;
       }
     }
   }
