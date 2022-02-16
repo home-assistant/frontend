@@ -80,7 +80,7 @@ class HassioHardwareDialog extends LitElement {
           ></ha-icon-button>
           <search-input
             .hass=${this.hass}
-            autofocus
+            dialogInitialFocus
             no-label-float
             .filter=${this._filter}
             @value-changed=${this._handleSearchChange}
