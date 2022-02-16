@@ -70,10 +70,15 @@ export interface DelayAction {
   delay: number | Partial<DelayActionParts> | string;
 }
 
-export interface SceneAction {
+export interface ServiceSceneAction extends ServiceAction {
+  service: "scene.turn_on";
+  extra?: Record<string, any>;
+}
+export interface LegacySceneAction {
   alias?: string;
   scene: string;
 }
+export type SceneAction = ServiceSceneAction | LegacySceneAction;
 
 export interface WaitAction {
   alias?: string;
