@@ -17,6 +17,7 @@ import "../ha-textarea";
 import { buttonLinkStyle } from "../../resources/styles";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { LocalStorage } from "../../common/decorators/local-storage";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
@@ -35,32 +36,44 @@ class BrowseMediaTTS extends LitElement {
   @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
 
   protected render() {
-    return html`
-      <ha-textarea
-        autogrow
-        .label=${this.hass.localize("ui.panel.media-browser.tts.message")}
-        .value=${this._message ||
-        this.hass.localize("ui.panel.media-browser.tts.example_message", {
-          name: this.hass.user?.name || "",
-        })}
-      >
-      </ha-textarea>
-      ${this._cloudDefaultOptions ? this._renderCloudOptions() : ""}
-      <div class="actions">
+    return html`<ha-card>
+      <div class="card-content">
+        <ha-textarea
+          autogrow
+          .label=${this.hass.localize(
+            "ui.components.media-browser.tts.message"
+          )}
+          .value=${this._message ||
+          this.hass.localize(
+            "ui.components.media-browser.tts.example_message",
+            {
+              name: this.hass.user?.name || "",
+            }
+          )}
+        >
+        </ha-textarea>
+        ${this._cloudDefaultOptions ? this._renderCloudOptions() : ""}
+      </div>
+      <div class="card-actions">
         ${this._cloudDefaultOptions &&
         (this._cloudDefaultOptions![0] !== this._cloudOptions![0] ||
           this._cloudDefaultOptions![1] !== this._cloudOptions![1])
           ? html`
               <button class="link" @click=${this._storeDefaults}>
                 ${this.hass.localize(
-                  "ui.panel.media-browser.tts.set_as_default"
+                  "ui.components.media-browser.tts.set_as_default"
                 )}
               </button>
             `
           : html`<span></span>`}
-        <mwc-button raised label="Say" @click=${this._ttsClicked}></mwc-button>
+
+        <mwc-button @click=${this._ttsClicked}>
+          ${this.hass.localize(
+            `ui.components.media-browser.tts.action_${this.action}`
+          )}
+        </mwc-button>
       </div>
-    `;
+    </ha-card> `;
   }
 
   private _renderCloudOptions() {
@@ -77,9 +90,12 @@ class BrowseMediaTTS extends LitElement {
         <mwc-select
           fixedMenuPosition
           naturalMenuWidth
-          .label=${this.hass.localize("ui.panel.media-browser.tts.language")}
+          .label=${this.hass.localize(
+            "ui.components.media-browser.tts.language"
+          )}
           .value=${selectedVoice[0]}
           @selected=${this._handleLanguageChange}
+          @closed=${stopPropagation}
         >
           ${languages.map(
             ([key, label]) =>
@@ -90,9 +106,10 @@ class BrowseMediaTTS extends LitElement {
         <mwc-select
           fixedMenuPosition
           naturalMenuWidth
-          .label=${this.hass.localize("ui.panel.media-browser.tts.gender")}
+          .label=${this.hass.localize("ui.components.media-browser.tts.gender")}
           .value=${selectedVoice[1]}
           @selected=${this._handleGenderChange}
+          @closed=${stopPropagation}
         >
           ${genders.map(
             ([key, label]) =>
@@ -185,7 +202,7 @@ class BrowseMediaTTS extends LitElement {
       this._cloudDefaultOptions = oldDefaults;
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.media-browser.tts.faild_to_store_defaults",
+          "ui.components.media-browser.tts.faild_to_store_defaults",
           { error: err.message || err }
         ),
       });
@@ -210,14 +227,15 @@ class BrowseMediaTTS extends LitElement {
       .cloud-options mwc-select {
         width: 48%;
       }
-
-      .actions {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 16px;
+      ha-textarea {
+        width: 100%;
       }
       button.link {
         color: var(--primary-color);
+      }
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
       }
     `,
   ];

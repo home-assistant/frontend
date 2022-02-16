@@ -260,6 +260,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .item=${currentItem}
                       .hass=${this.hass}
                       .action=${this.action}
+                      @media-picked=${this._ttsPicked}
                     ></ha-browse-media-tts>
                   `
                 : !currentItem.children?.length
@@ -563,6 +564,14 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _runAction(item: MediaPlayerItem): void {
     fireEvent(this, "media-picked", { item, navigateIds: this.navigateIds });
+  }
+
+  private _ttsPicked(ev: CustomEvent): void {
+    ev.stopPropagation();
+    fireEvent(this, "media-picked", {
+      ...ev.detail,
+      navigateIds: this.navigateIds,
+    });
   }
 
   private async _childClicked(ev: MouseEvent): Promise<void> {

@@ -175,7 +175,7 @@ export class HaMediaSelector extends LitElement {
               thumbnail: pickedMedia.item.thumbnail,
               media_class: pickedMedia.item.media_class,
               children_media_class: pickedMedia.item.children_media_class,
-              navigateIds: pickedMedia.navigateIds.map((id) => ({
+              navigateIds: pickedMedia.navigateIds?.map((id) => ({
                 media_content_type: id.media_content_type,
                 media_content_id: id.media_content_id,
               })),
