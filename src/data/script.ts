@@ -239,7 +239,7 @@ export const getActionType = (action: Action): ActionType => {
     return "variables";
   }
   if ("service" in action) {
-    if ("extra" in action) {
+    if ("metadata" in action) {
       if (
         (action as ServiceAction).service === "scene.turn_on" &&
         !Array.isArray((action as ServiceAction)?.target?.entity_id)
