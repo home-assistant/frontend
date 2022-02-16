@@ -16,7 +16,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { Action } from "../../../../data/script";
+import type { Action, ServiceSceneAction } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -44,8 +44,28 @@ const OPTIONS = [
   "device_id",
 ];
 
-const getType = (action: Action | undefined) =>
-  action ? OPTIONS.find((option) => option in action) : undefined;
+const getType = (action: Action | undefined) => {
+  if (!action) {
+    return undefined;
+  }
+  if ("metadata" in action && action.service) {
+    switch (action.service) {
+      case "scene.turn_on":
+        // we dont support arrays of entities
+        if (
+          !Array.isArray(
+            (action as unknown as ServiceSceneAction).target?.entity_id
+          )
+        ) {
+          return "scene";
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  return OPTIONS.find((option) => option in action);
+};
 
 declare global {
   // for fire event

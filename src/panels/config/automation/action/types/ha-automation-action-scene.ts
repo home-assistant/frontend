@@ -16,11 +16,23 @@ export class HaSceneAction extends LitElement implements ActionElement {
   @property() public action!: SceneAction;
 
   public static get defaultConfig(): SceneAction {
-    return { scene: "" };
+    return {
+      service: "scene.turn_on",
+      target: {
+        entity_id: "",
+      },
+      metadata: {},
+    };
   }
 
   protected render() {
-    const { scene } = this.action;
+    let scene;
+
+    if ("scene" in this.action) {
+      scene = this.action.scene;
+    } else {
+      scene = this.action.target?.entity_id;
+    }
 
     return html`
       <ha-entity-picker
@@ -36,7 +48,13 @@ export class HaSceneAction extends LitElement implements ActionElement {
   private _entityPicked(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.action, scene: ev.detail.value },
+      value: {
+        service: "scene.turn_on",
+        target: {
+          entity_id: ev.detail.value,
+        },
+        metadata: {},
+      },
     });
   }
 }

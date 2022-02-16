@@ -70,10 +70,15 @@ export interface DelayAction {
   delay: number | Partial<DelayActionParts> | string;
 }
 
-export interface SceneAction {
+export interface ServiceSceneAction extends ServiceAction {
+  service: "scene.turn_on";
+  metadata: Record<string, any>;
+}
+export interface LegacySceneAction {
   alias?: string;
   scene: string;
 }
+export type SceneAction = ServiceSceneAction | LegacySceneAction;
 
 export interface WaitAction {
   alias?: string;
@@ -153,7 +158,8 @@ export interface ActionTypes {
   check_condition: Condition;
   fire_event: EventAction;
   device_action: DeviceAction;
-  activate_scene: SceneAction;
+  legacy_activate_scene: LegacySceneAction;
+  activate_scene: ServiceSceneAction;
   repeat: RepeatAction;
   choose: ChooseAction;
   wait_for_trigger: WaitForTriggerAction;
@@ -218,7 +224,7 @@ export const getActionType = (action: Action): ActionType => {
     return "device_action";
   }
   if ("scene" in action) {
-    return "activate_scene";
+    return "legacy_activate_scene";
   }
   if ("repeat" in action) {
     return "repeat";
@@ -233,6 +239,14 @@ export const getActionType = (action: Action): ActionType => {
     return "variables";
   }
   if ("service" in action) {
+    if ("metadata" in action) {
+      if (
+        (action as ServiceAction).service === "scene.turn_on" &&
+        !Array.isArray((action as ServiceAction)?.target?.entity_id)
+      ) {
+        return "activate_scene";
+      }
+    }
     return "service";
   }
   return "unknown";
