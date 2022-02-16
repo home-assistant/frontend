@@ -12,6 +12,7 @@ import {
   EventAction,
   getActionType,
   LegacySceneAction,
+  PlayMediaAction,
   ServiceSceneAction,
   VariablesAction,
   WaitForTriggerAction,
@@ -116,6 +117,14 @@ export const describeAction = <T extends ActionType>(
     const sceneStateObj = hass.states[config.target!.entity_id as string];
     return `Activate scene ${
       sceneStateObj ? computeStateName(sceneStateObj) : config.target!.entity_id
+    }`;
+  }
+
+  if (actionType === "play_media") {
+    const config = action as PlayMediaAction;
+    const mediaStateObj = hass.states[config.target?.entity_id as string];
+    return `Play ${config.metadata.title || config.data?.media_content_id} on ${
+      mediaStateObj ? computeStateName(mediaStateObj) : config.target?.entity_id
     }`;
   }
 

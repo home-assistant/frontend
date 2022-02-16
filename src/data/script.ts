@@ -172,6 +172,7 @@ export interface ActionTypes {
   wait_for_trigger: WaitForTriggerAction;
   variables: VariablesAction;
   service: ServiceAction;
+  play_media: PlayMediaAction;
   unknown: UnknownAction;
 }
 
@@ -252,6 +253,12 @@ export const getActionType = (action: Action): ActionType => {
         !Array.isArray((action as ServiceAction)?.target?.entity_id)
       ) {
         return "activate_scene";
+      }
+      if (
+        (action as PlayMediaAction).service === "media_player.play_media" &&
+        !Array.isArray((action as PlayMediaAction)?.target?.entity_id)
+      ) {
+        return "play_media";
       }
     }
     return "service";
