@@ -94,6 +94,7 @@ class HassioDatadiskDialog extends LitElement {
                         "dialog.datadisk_move.select_device"
                       )}
                       @selected=${this._select_device}
+                      dialogInitialFocus
                     >
                       ${this.devices.map(
                         (device) =>
@@ -111,7 +112,11 @@ class HassioDatadiskDialog extends LitElement {
                     "dialog.datadisk_move.no_devices"
                   )}
 
-              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+              <mwc-button
+                slot="secondaryAction"
+                @click=${this.closeDialog}
+                dialogInitialFocus
+              >
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.cancel"
                 )}
