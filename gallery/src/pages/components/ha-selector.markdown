@@ -1,3 +1,3 @@
 ---
-title: Target Selectors
+title: Selectors
 ---
