@@ -133,7 +133,8 @@ export class HaMediaSelector extends LitElement {
         : ""}`;
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => this.hass.localize(`ui.components.selectors.media.${schema.name}`);
+  private _computeLabelCallback = (schema: HaFormSchema): string =>
+    this.hass.localize(`ui.components.selectors.media.${schema.name}`);
 
   private _entityChanged(ev: CustomEvent) {
     ev.stopPropagation();
@@ -210,15 +211,12 @@ export class HaMediaSelector extends LitElement {
         transition: padding-bottom 0.1s ease-out;
         padding-bottom: 100%;
       }
-
       ha-card .thumbnail.portrait {
         padding-bottom: 150%;
       }
-
       ha-card .image {
         border-radius: 3px 3px 0 0;
       }
-
       .title {
         font-size: 16px;
         padding-top: 16px;
@@ -229,7 +227,6 @@ export class HaMediaSelector extends LitElement {
         padding-right: 4px;
         white-space: nowrap;
       }
-
       .image {
         position: absolute;
         top: 0;
@@ -239,6 +236,10 @@ export class HaMediaSelector extends LitElement {
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
+      }
+      .centered-image {
+        margin: 0 8px;
+        background-size: contain;
       }
       .icon-holder {
         display: flex;
