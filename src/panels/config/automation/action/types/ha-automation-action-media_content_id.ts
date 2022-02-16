@@ -1,5 +1,5 @@
 import "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-service-control";
 import { PlayMediaAction } from "../../../../../data/script";
