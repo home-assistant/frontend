@@ -323,7 +323,7 @@
           "browse_not_supported": "This media player does not support browsing media, but you can enter the media ID and type manually.",
           "pick_media": "Pick media",
           "browse_media": "Browse media",
-          "manual": "Enter media ID manual",
+          "manual": "Manually enter Media ID",
           "media_content_id": "Media content ID",
           "media_content_type": "Media content type"
         }
