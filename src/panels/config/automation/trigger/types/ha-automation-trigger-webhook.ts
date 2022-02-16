@@ -22,7 +22,7 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
-const ALLOWED_METHODS = ["GET", "HEAD", "POST", "PUT"];
+const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
 const DEFAULT_METHODS = ["POST", "PUT"];
 const DEFAULT_WEBHOOK_ID = "";
 
@@ -40,9 +40,9 @@ export class HaWebhookTrigger extends LitElement {
 
   public static get defaultConfig() {
     return {
+      allowed_methods: [...DEFAULT_METHODS],
+      local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,
-      allow_internet: false,
-      allow_methods: [...DEFAULT_METHODS],
     };
   }
 
@@ -82,36 +82,36 @@ export class HaWebhookTrigger extends LitElement {
   public willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
+      if (this.trigger.allowed_methods === undefined) {
+        this.trigger.allowed_methods = [...DEFAULT_METHODS];
+      }
+      if (this.trigger.local_only === undefined) {
+        this.trigger.local_only = true;
+      }
       if (this.trigger.webhook_id === DEFAULT_WEBHOOK_ID) {
         this.trigger.webhook_id = this._generateWebhookId();
-      }
-      if (this.trigger.allow_internet === undefined) {
-        this.trigger.allow_internet = false;
-      }
-      if (this.trigger.allow_methods === undefined) {
-        this.trigger.allow_methods = [...DEFAULT_METHODS];
       }
     }
   }
 
   protected render() {
     const {
+      allowed_methods: allowedMethods,
+      local_only: localOnly,
       webhook_id: webhookId,
-      allow_internet: allowInternet,
-      allow_methods: allowMethods,
     } = this.trigger;
 
-    const overflowMenuItems = ALLOWED_METHODS.map((method) => ({
-      path: this._selectedPath(allowMethods?.includes(method)),
+    const overflowMenuItems = SUPPORTED_METHODS.map((method) => ({
+      path: this._selectedPath(allowedMethods?.includes(method)),
       label: method,
-      action: () => this._allowMethodsChanged(method),
+      action: () => this._allowedMethodsChanged(method),
     }));
     overflowMenuItems.push({
-      path: this._selectedPath(allowInternet),
+      path: this._selectedPath(localOnly),
       label: this.hass.localize(
-        "ui.panel.config.automation.editor.triggers.type.webhook.allow_internet"
+        "ui.panel.config.automation.editor.triggers.type.webhook.local_only"
       ),
-      action: () => this._allowInternetChanged(),
+      action: () => this._localOnlyChanged(),
     });
 
     return html`
@@ -152,23 +152,23 @@ export class HaWebhookTrigger extends LitElement {
     handleChangeEvent(this, ev);
   }
 
-  private _allowInternetChanged(): void {
+  private _localOnlyChanged(): void {
     const newTrigger = {
       ...this.trigger,
-      allow_internet: !this.trigger.allow_internet,
+      local_only: !this.trigger.local_only,
     };
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _allowMethodsChanged(method: string): void {
-    const methods = this.trigger.allow_methods ?? [];
+  private _allowedMethodsChanged(method: string): void {
+    const methods = this.trigger.allowed_methods ?? [];
     const newMethods = [...methods];
     if (methods.includes(method)) {
       newMethods.splice(newMethods.indexOf(method), 1);
     } else {
       newMethods.push(method);
     }
-    const newTrigger = { ...this.trigger, allow_methods: newMethods };
+    const newTrigger = { ...this.trigger, allowed_methods: newMethods };
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 

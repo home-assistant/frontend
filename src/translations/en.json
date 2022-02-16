@@ -2257,9 +2257,9 @@
                   "seconds": "Seconds"
                 },
                 "webhook": {
-                  "allow_internet": "Allow access from the internet",
                   "copy_url": "Copy URL to Clipboard",
                   "label": "Webhook",
+                  "local_only": "Only accessible from the local network",
                   "webhook_id": "Webhook ID",
                   "webhook_id_helper": "Treat this ID like a password: keep it secret, and make it hard to guess."
                 },
