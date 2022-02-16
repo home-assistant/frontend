@@ -84,6 +84,7 @@ export class HuiButtonsBase extends LitElement {
           box-sizing: border-box;
           display: flex;
           flex-wrap: wrap;
+          /* justify-content: space-around; */
         }
         state-badge {
           display: inline-flex;
