@@ -192,6 +192,9 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
+        :host ha-card:last-child {
+          margin-bottom: env(safe-area-inset-bottom);
+        }
         :host(:not([narrow])) ha-card:last-child {
           margin-bottom: 24px;
         }
