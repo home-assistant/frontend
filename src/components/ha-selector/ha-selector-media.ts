@@ -41,9 +41,8 @@ export class HaMediaSelector extends LitElement {
   willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("value")) {
       const thumbnail = this.value?.metadata?.thumbnail;
-      const oldThumbnail = (
-        changedProps.get("value") as this["value"] | undefined
-      )?.metadata?.thumbnail;
+      const oldThumbnail = (changedProps.get("value") as this["value"])
+        ?.metadata?.thumbnail;
       if (thumbnail === oldThumbnail) {
         return;
       }
