@@ -17,12 +17,12 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  public static get defaultConfig() {
+  public static get defaultConfig(): PlayMediaAction {
     return {
       service: "media_player.play_media",
       target: { entity_id: "" },
       data: { media_content_id: "", media_content_type: "" },
-      extra: {},
+      metadata: {},
     };
   }
 
@@ -55,8 +55,8 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
           media_content_id: ev.detail.value.media_content_id,
           media_content_type: ev.detail.value.media_content_type,
         },
-        extra: ev.detail.value.extra,
-      },
+        metadata: ev.detail.value.metadata,
+      } as PlayMediaAction,
     });
   }
 }
