@@ -119,7 +119,7 @@ export interface ZWaveJSNetwork {
 }
 
 export interface ZWaveJSClient {
-  state: string;
+  state: "connected" | "disconnected";
   ws_server_url: string;
   server_version: string;
   driver_version: string;

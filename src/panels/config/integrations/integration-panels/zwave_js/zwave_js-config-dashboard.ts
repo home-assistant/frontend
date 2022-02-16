@@ -23,6 +23,7 @@ import {
   setZwaveDataCollectionPreference,
   stopZwaveExclusion,
   stopZwaveInclusion,
+  ZWaveJSClient,
   ZWaveJSNetwork,
   ZWaveJSNodeStatus,
   ZwaveJSProvisioningEntry,
@@ -63,7 +64,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _provisioningEntries?: ZwaveJSProvisioningEntry[];
 
-  @state() private _status = "connected" || "disconnected";
+  @state() private _status?: ZWaveJSClient["state"];
 
   @state() private _icon = mdiCircle;
 
@@ -159,7 +160,7 @@ class ZWaveJSConfigDashboard extends LitElement {
                               <ha-svg-icon
                                 .path=${this._icon}
                                 class="network-status-icon ${classMap({
-                                  [this._status]: true,
+                                  [this._status!]: true,
                                 })}"
                                 slot="item-icon"
                               ></ha-svg-icon>
