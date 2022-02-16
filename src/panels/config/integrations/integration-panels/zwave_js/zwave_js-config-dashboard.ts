@@ -304,6 +304,19 @@ class ZWaveJSConfigDashboard extends LitElement {
               `
             : ``}
         </ha-config-section>
+        <ha-fab
+          slot="fab"
+          .label=${this.hass.localize(
+            "ui.panel.config.zwave_js.common.add_node"
+          )}
+          extended
+          ?rtl=${computeRTL(this.hass)}
+          @click=${this._addNodeClicked}
+          .disabled=${this._status !== "connected" ||
+          this._network?.controller.inclusion_state !== InclusionState.Idle}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
         ${this._status === "connected" &&
         this._network?.controller.inclusion_state === InclusionState.Idle
           ? html`
