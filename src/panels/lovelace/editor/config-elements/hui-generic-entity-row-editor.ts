@@ -107,10 +107,11 @@ export class HuiGenericEntityRowEditor
           .configValue=${"secondary_info"}
           @selected=${this._valueChanged}
           @closed=${stopPropagation}
+          .value=${this._config.secondary_info || "none"}
           naturalMenuWidth
           fixedMenuPosition
         >
-          <mwc-list-item .selected=${!this._config.secondary_info} value=""
+          <mwc-list-item value=""
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
             )}</mwc-list-item
@@ -122,10 +123,7 @@ export class HuiGenericEntityRowEditor
                 SecondaryInfoValues[info].domains!.includes(domain))
             ) {
               return html`
-                <mwc-list-item
-                  .value=${info}
-                  .selected=${this._config!.secondary_info === info}
-                >
+                <mwc-list-item .value=${info}>
                   ${this.hass!.localize(
                     `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
                   )}
