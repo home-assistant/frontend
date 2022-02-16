@@ -85,6 +85,7 @@ export class HaManualAutomationEditor extends LitElement {
               )}
               .value=${this.config.mode ? MODES.indexOf(this.config.mode) : 0}
               @selected=${this._modeChanged}
+              fixedMenuPosition
             >
               ${MODES.map(
                 (mode) => html`
@@ -316,6 +317,9 @@ export class HaManualAutomationEditor extends LitElement {
         }
         ha-entity-toggle {
           margin-right: 8px;
+        }
+        mwc-select {
+          margin-top: 8px;
         }
       `,
     ];
