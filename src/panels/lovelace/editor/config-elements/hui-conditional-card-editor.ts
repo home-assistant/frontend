@@ -160,6 +160,8 @@ export class HuiConditionalCardEditor
                         .configValue=${"invert"}
                         @selected=${this._changeCondition}
                         @closed=${stopPropagation}
+                        naturalMenuWidth
+                        fixedMenuPosition
                       >
                         <mwc-list-item value="false">
                           ${this.hass!.localize(

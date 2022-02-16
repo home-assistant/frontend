@@ -5,6 +5,7 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/ha-formfield";
@@ -103,11 +104,13 @@ export class HuiGenericEntityRowEditor
         </div>
         <mwc-select
           label="Secondary Info"
-          .selected=${this._config.secondary_info || "none"}
           .configValue=${"secondary_info"}
           @selected=${this._valueChanged}
+          @closed=${stopPropagation}
+          naturalMenuWidth
+          fixedMenuPosition
         >
-          <mwc-list-item value=""
+          <mwc-list-item .selected=${!this._config.secondary_info} value=""
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
             )}</mwc-list-item
@@ -119,7 +122,10 @@ export class HuiGenericEntityRowEditor
                 SecondaryInfoValues[info].domains!.includes(domain))
             ) {
               return html`
-                <mwc-list-item .value=${info}>
+                <mwc-list-item
+                  .value=${info}
+                  .selected=${this._config!.secondary_info === info}
+                >
                   ${this.hass!.localize(
                     `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
                   )}
