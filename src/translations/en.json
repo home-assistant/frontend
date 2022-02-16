@@ -1821,7 +1821,7 @@
                 "service": {
                   "label": "Call service"
                 },
-                "media_content_id": {
+                "play_media": {
                   "label": "Play media"
                 },
                 "delay": {

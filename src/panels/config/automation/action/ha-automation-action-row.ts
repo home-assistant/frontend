@@ -16,7 +16,11 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { Action, ServiceSceneAction } from "../../../../data/script";
+import type {
+  Action,
+  PlayMediaAction,
+  ServiceSceneAction,
+} from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -30,13 +34,13 @@ import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import "./types/ha-automation-action-media_content_id";
+import "./types/ha-automation-action-play_media";
 
 const OPTIONS = [
   "condition",
   "delay",
   "event",
-  "media_content_id",
+  "play_media",
   "scene",
   "service",
   "wait_template",
@@ -60,6 +64,16 @@ const getType = (action: Action | undefined) => {
           )
         ) {
           return "scene";
+        }
+        break;
+      case "media_player.play_media":
+        // we dont support arrays of entities
+        if (
+          !Array.isArray(
+            (action as unknown as PlayMediaAction).target?.entity_id
+          )
+        ) {
+          return "play_media";
         }
         break;
       default:

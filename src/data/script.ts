@@ -94,11 +94,9 @@ export interface WaitForTriggerAction {
   continue_on_timeout?: boolean;
 }
 
-export interface PlayMediaAction {
+export interface PlayMediaAction extends ServiceAction {
   alias?: string;
-  entity_id: string;
-  media_content_type: string;
-  media_content_id: string;
+  service: "play_media";
   extra?: Record<string, any>;
 }
 
