@@ -9,8 +9,6 @@ export interface MediaPlayerBrowseDialogParams {
   action: MediaPlayerBrowseAction;
   entityId: string;
   mediaPickedCallback: (pickedMedia: MediaPickedEvent) => void;
-  mediaContentId?: string;
-  mediaContentType?: string;
   navigateIds?: MediaPlayerItemId[];
 }
 

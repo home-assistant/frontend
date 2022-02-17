@@ -1862,7 +1862,7 @@
                     "flash": "Flash"
                   }
                 },
-                "scene": {
+                "activate_scene": {
                   "label": "Activate scene"
                 },
                 "repeat": {

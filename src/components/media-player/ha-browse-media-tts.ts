@@ -11,13 +11,26 @@ import {
   getCloudTtsLanguages,
   getCloudTtsSupportedGenders,
 } from "../../data/cloud/tts";
-import { MediaPlayerBrowseAction } from "../../data/media-player";
+import {
+  MediaPlayerBrowseAction,
+  MediaPlayerItem,
+} from "../../data/media-player";
 import { HomeAssistant } from "../../types";
 import "../ha-textarea";
 import { buttonLinkStyle } from "../../resources/styles";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+
+export interface TtsMediaPickedEvent {
+  item: MediaPlayerItem;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "tts-picked": TtsMediaPickedEvent;
+  }
+}
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
@@ -207,7 +220,7 @@ class BrowseMediaTTS extends LitElement {
     }?${query.toString()}`;
     item.can_play = true;
     item.title = message;
-    fireEvent(this, "media-picked", { item });
+    fireEvent(this, "tts-picked", { item });
   }
 
   private async _storeDefaults() {

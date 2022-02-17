@@ -148,7 +148,7 @@ export const MediaClassBrowserSettings: {
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
-  navigateIds?: MediaPlayerItemId[];
+  navigateIds: MediaPlayerItemId[];
 }
 
 export interface MediaPlayerThumbnail {

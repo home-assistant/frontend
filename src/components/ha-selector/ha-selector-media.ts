@@ -34,8 +34,6 @@ export class HaMediaSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @state() private _manual = false;
-
   @state() private _thumbnailUrl?: string | null;
 
   willUpdate(changedProps: PropertyValues<this>) {
@@ -77,14 +75,12 @@ export class HaMediaSelector extends LitElement {
         allow-custom-entity
         @value-changed=${this._entityChanged}
       ></ha-entity-picker>
-      ${this._manual || !supportsBrowse
-        ? html`${!supportsBrowse
-              ? html`<ha-alert>
-                  ${this.hass.localize(
-                    "ui.components.selectors.media.browse_not_supported"
-                  )}
-                </ha-alert>`
-              : ""}
+      ${!supportsBrowse
+        ? html`<ha-alert>
+              ${this.hass.localize(
+                "ui.components.selectors.media.browse_not_supported"
+              )}
+            </ha-alert>
             <ha-form
               .hass=${this.hass}
               .data=${this.value}
@@ -145,16 +141,7 @@ export class HaMediaSelector extends LitElement {
                 ? this.hass.localize("ui.components.selectors.media.pick_media")
                 : this.value.metadata?.title || this.value.media_content_id}
             </div>
-          </ha-card>`}
-      ${supportsBrowse
-        ? html`<mwc-button @click=${this._switchManual}
-            >${this.hass.localize(
-              `ui.components.selectors.media.${
-                this._manual ? "browse_media" : "manual"
-              }`
-            )}
-          </mwc-button>`
-        : ""}`;
+          </ha-card>`}`;
   }
 
   private _computeLabelCallback = (schema: HaFormSchema): string =>
@@ -198,13 +185,6 @@ export class HaMediaSelector extends LitElement {
     });
   }
 
-  private _switchManual() {
-    this._manual = !this._manual;
-    if (!this._manual) {
-      this._pickMedia();
-    }
-  }
-
   static get styles(): CSSResultGroup {
     return css`
       ha-entity-picker {
@@ -240,6 +220,9 @@ export class HaMediaSelector extends LitElement {
       }
       ha-card .image {
         border-radius: 3px 3px 0 0;
+      }
+      .folder {
+        --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
       }
       .title {
         font-size: 16px;

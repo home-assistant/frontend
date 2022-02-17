@@ -1,8 +1,8 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import "@material/mwc-select";
 import type { Select } from "@material/mwc-select";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -11,37 +11,33 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type {
-  Action,
-  PlayMediaAction,
-  ServiceSceneAction,
-} from "../../../../data/script";
+import { Action, getActionType } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
-import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import "./types/ha-automation-action-play_media";
 
 const OPTIONS = [
   "condition",
   "delay",
   "event",
   "play_media",
-  "scene",
+  "activate_scene",
   "service",
   "wait_template",
   "wait_for_trigger",
@@ -54,31 +50,8 @@ const getType = (action: Action | undefined) => {
   if (!action) {
     return undefined;
   }
-  if ("metadata" in action && action.service) {
-    switch (action.service) {
-      case "scene.turn_on":
-        // we dont support arrays of entities
-        if (
-          !Array.isArray(
-            (action as unknown as ServiceSceneAction).target?.entity_id
-          )
-        ) {
-          return "scene";
-        }
-        break;
-      case "media_player.play_media":
-        // we dont support arrays of entities
-        if (
-          !Array.isArray(
-            (action as unknown as PlayMediaAction).target?.entity_id
-          )
-        ) {
-          return "play_media";
-        }
-        break;
-      default:
-        break;
-    }
+  if ("service" in action || "scene" in action) {
+    return getActionType(action);
   }
   return OPTIONS.find((option) => option in action);
 };
@@ -149,24 +122,30 @@ export default class HaAutomationActionRow extends LitElement {
       ).sort((a, b) => stringCompare(a[1], b[1]))
   );
 
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    this._uiModeAvailable = getType(this.action) !== undefined;
+    if (!this._uiModeAvailable && !this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
     }
-    this._uiModeAvailable = Boolean(getType(this.action));
-    if (!this._uiModeAvailable && !this._yamlMode) {
-      this._yamlMode = true;
-    }
-
-    const yamlEditor = this._yamlEditor;
-    if (this._yamlMode && yamlEditor && yamlEditor.value !== this.action) {
-      yamlEditor.setValue(this.action);
+    if (this._yamlMode) {
+      const yamlEditor = this._yamlEditor;
+      if (yamlEditor && yamlEditor.value !== this.action) {
+        yamlEditor.setValue(this.action);
+      }
     }
   }
 
   protected render() {
     const type = getType(this.action);
-    const selected = type ? OPTIONS.indexOf(type) : -1;
     const yamlMode = this._yamlMode;
 
     return html`
@@ -241,7 +220,7 @@ export default class HaAutomationActionRow extends LitElement {
             : ""}
           ${yamlMode
             ? html`
-                ${selected === -1
+                ${type === undefined
                   ? html`
                       ${this.hass.localize(
                         "ui.panel.config.automation.editor.actions.unsupported_action",
