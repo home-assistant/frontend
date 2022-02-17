@@ -239,9 +239,9 @@ class HassioAddonInfo extends LitElement {
             <ha-chip
               hasIcon
               class=${classMap({
-                green: [6, 7, 8].includes(Number(this.addon.rating)),
+                green: Number(this.addon.rating) >= 6,
                 yellow: [3, 4, 5].includes(Number(this.addon.rating)),
-                red: [1, 2].includes(Number(this.addon.rating)),
+                red: Number(this.addon.rating) >= 2,
               })}
               @click=${this._showMoreInfo}
               id="rating"
