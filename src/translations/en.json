@@ -2956,7 +2956,9 @@
             "add_node": "Add device",
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
-            "heal_network": "Heal Network"
+            "heal_network": "Heal Network",
+            "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
+            "cancel_inclusion_exclusion": "Stop Searching"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
