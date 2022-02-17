@@ -320,7 +320,7 @@
       "selectors": {
         "media": {
           "pick_media_player": "Select media player",
-          "browse_not_supported": "This media player does not support browsing media, but you can enter the media ID and type manually.",
+          "browse_not_supported": "Media player does not support browsing media.",
           "pick_media": "Pick media",
           "browse_media": "Browse media",
           "manual": "Manually enter Media ID",
