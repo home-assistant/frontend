@@ -2924,10 +2924,8 @@
             "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
             "heal_network": "Heal Network",
-            "cancel_inclusion": "Cancel Inclusion",
-            "inclusion_in_progress": "Inclusion in progress",
-            "cancel_exclusion": "Cancel Exclusion",
-            "exclusion_in_progress": "Exclusion in progress"
+            "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
+            "cancel_inclusion_exclusion": "Stop Searching"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",

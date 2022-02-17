@@ -120,22 +120,12 @@ class ZWaveJSConfigDashboard extends LitElement {
             ? html`
                 <ha-alert alert-type="info">
                   ${this.hass.localize(
-                    `ui.panel.config.zwave_js.common.${
-                      this._network.controller.inclusion_state ===
-                      InclusionState.Including
-                        ? "inclusion"
-                        : "exclusion"
-                    }_in_progress`
+                    `ui.panel.config.zwave_js.common.in_progress_inclusion_exclusion`
                   )}
                   <mwc-button
                     slot="action"
                     .label=${this.hass.localize(
-                      `ui.panel.config.zwave_js.common.cancel_${
-                        this._network.controller.inclusion_state ===
-                        InclusionState.Including
-                          ? "inclusion"
-                          : "exclusion"
-                      }`
+                      `ui.panel.config.zwave_js.common.cancel_inclusion_exclusion`
                     )}
                     @click=${this._network?.controller.inclusion_state ===
                     InclusionState.Including
