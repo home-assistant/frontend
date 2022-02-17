@@ -270,16 +270,13 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _renderDeleteButtons() {
-    console.log("Hello!")
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
       return;
     }
 
-  let buttons = this._integrations(device, this.entries).map((entry) => {
-      console.log("Hello!")
-      console.log(entry.supports_remove_device)
+    let buttons = this._integrations(device, this.entries).map((entry) => {
       if (entry.state !== "loaded" || !entry.supports_remove_device) {
         return false;
       }
@@ -296,7 +293,11 @@ export class HaConfigDevicePage extends LitElement {
         buttons as { entry_id: string; domain: string }[]
       ).map(
         (button) => html`
-          <mwc-button class="warning" @click=${this._confirmDeleteEntry}>
+          <mwc-button
+            class="warning"
+            entry_id=${button.entry_id}
+            @click=${this._confirmDeleteEntry}
+          >
             ${buttons.length > 1
               ? this.hass.localize(
                   `ui.panel.config.devices.delete_device_integration`,
@@ -307,16 +308,16 @@ export class HaConfigDevicePage extends LitElement {
                     ),
                   }
                 )
-              : this.hass.localize(
-                  `ui.panel.config.devices.delete_device`
-                )}
+              : this.hass.localize(`ui.panel.config.devices.delete_device`)}
           </mwc-button>
         `
       );
     }
   }
 
-  private async _confirmDeleteEntry(): Promise<void> {
+  private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
+    const entry_id = (e.currentTarget! as HTMLElement).getAttribute("entry_id")
+
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
     });
@@ -325,7 +326,7 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    await removeConfigEntryFromDevice(this.hass!, this.deviceId, "blabla");
+    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entry_id);
   }
 
   protected firstUpdated(changedProps) {
