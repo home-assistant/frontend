@@ -27,6 +27,7 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
+  removeConfigEntryFromDevice,
 } from "../../../data/device_registry";
 import {
   fetchDiagnosticHandler,
@@ -94,6 +95,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _diagnosticDownloadLinks?:
     | number
     | (TemplateResult | string)[];
+
+  @state() private _deleteButtons?: (TemplateResult | string)[];
 
   private _device = memoizeOne(
     (
@@ -186,10 +189,11 @@ export class HaConfigDevicePage extends LitElement {
       changedProps.has("entries")
     ) {
       this._diagnosticDownloadLinks = undefined;
+      this._deleteButtons = undefined;
     }
 
     if (
-      this._diagnosticDownloadLinks ||
+      (this._diagnosticDownloadLinks && this._deleteButtons) ||
       !this.devices ||
       !this.deviceId ||
       !this.entries
@@ -198,7 +202,9 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     this._diagnosticDownloadLinks = Math.random();
+    this._deleteButtons = [".."];
     this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
+    this._renderDeleteButtons();
   }
 
   private async _renderDiagnosticButtons(requestId: number): Promise<void> {
@@ -261,6 +267,65 @@ export class HaConfigDevicePage extends LitElement {
         `
       );
     }
+  }
+
+  private _renderDeleteButtons() {
+    console.log("Hello!")
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+  let buttons = this._integrations(device, this.entries).map((entry) => {
+      console.log("Hello!")
+      console.log(entry.supports_remove_device)
+      if (entry.state !== "loaded" || !entry.supports_remove_device) {
+        return false;
+      }
+      return {
+        entry_id: entry.entry_id,
+        domain: entry.domain,
+      };
+    });
+
+    buttons = buttons.filter(Boolean);
+
+    if (buttons.length > 0) {
+      this._deleteButtons = (
+        buttons as { entry_id: string; domain: string }[]
+      ).map(
+        (button) => html`
+          <mwc-button class="warning" @click=${this._confirmDeleteEntry}>
+            ${buttons.length > 1
+              ? this.hass.localize(
+                  `ui.panel.config.devices.delete_device_integration`,
+                  {
+                    integration: domainToName(
+                      this.hass.localize,
+                      button.domain
+                    ),
+                  }
+                )
+              : this.hass.localize(
+                  `ui.panel.config.devices.delete_device`
+                )}
+          </mwc-button>
+        `
+      );
+    }
+  }
+
+  private async _confirmDeleteEntry(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    await removeConfigEntryFromDevice(this.hass!, this.deviceId, "blabla");
   }
 
   protected firstUpdated(changedProps) {
@@ -374,6 +439,9 @@ export class HaConfigDevicePage extends LitElement {
 
     if (Array.isArray(this._diagnosticDownloadLinks)) {
       deviceActions.push(...this._diagnosticDownloadLinks);
+    }
+    if (Array.isArray(this._deleteButtons)) {
+      deviceActions.push(...this._deleteButtons);
     }
 
     return html`
