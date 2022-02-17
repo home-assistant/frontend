@@ -335,6 +335,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
           );
         }
       } else {
+        this._guiSupported = false;
         this.GUImode = false;
       }
     } catch (err: any) {
