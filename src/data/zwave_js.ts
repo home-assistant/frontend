@@ -2,6 +2,19 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 
+export enum InclusionState {
+  /** The controller isn't doing anything regarding inclusion. */
+  Idle,
+  /** The controller is waiting for a node to be included. */
+  Including,
+  /** The controller is waiting for a node to be excluded. */
+  Excluding,
+  /** The controller is busy including or excluding a node. */
+  Busy,
+  /** The controller listening for SmartStart nodes to announce themselves. */
+  SmartStart,
+}
+
 export const enum InclusionStrategy {
   /**
    * Always uses Security S2 if supported, otherwise uses Security S0 for certain devices which don't work without encryption and uses no encryption otherwise.
@@ -106,16 +119,33 @@ export interface ZWaveJSNetwork {
 }
 
 export interface ZWaveJSClient {
-  state: string;
+  state: "connected" | "disconnected";
   ws_server_url: string;
   server_version: string;
   driver_version: string;
 }
 
 export interface ZWaveJSController {
-  home_id: string;
-  nodes: number[];
+  home_id: number;
+  library_version: string;
+  type: number;
+  own_node_id: number;
+  is_secondary: boolean;
+  is_using_home_id_from_other_network: boolean;
+  is_sis_present: boolean;
+  was_real_primary: boolean;
+  is_static_update_controller: boolean;
+  is_slave: boolean;
+  serial_api_version: string;
+  manufacturer_id: number;
+  product_id: number;
+  product_type: number;
+  supported_function_types: number[];
+  suc_node_id: number;
+  supports_timers: boolean;
   is_heal_network_active: boolean;
+  inclusion_state: InclusionState;
+  nodes: number[];
 }
 
 export interface ZWaveJSNodeStatus {
@@ -306,6 +336,12 @@ export const subscribeAddZwaveNode = (
 export const stopZwaveInclusion = (hass: HomeAssistant, entry_id: string) =>
   hass.callWS({
     type: "zwave_js/stop_inclusion",
+    entry_id,
+  });
+
+export const stopZwaveExclusion = (hass: HomeAssistant, entry_id: string) =>
+  hass.callWS({
+    type: "zwave_js/stop_exclusion",
     entry_id,
   });
 
