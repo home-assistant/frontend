@@ -1,4 +1,3 @@
-import "../../../../src/components/ha-chip-set";
 import "@material/mwc-button";
 import {
   mdiCheckCircle,
@@ -10,6 +9,7 @@ import {
   mdiFlask,
   mdiHomeAssistant,
   mdiKey,
+  mdiLinkLock,
   mdiNetwork,
   mdiNumeric1,
   mdiNumeric2,
@@ -21,7 +21,6 @@ import {
   mdiNumeric8,
   mdiPound,
   mdiShield,
-  mdiLinkLock,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -35,6 +34,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-chip";
+import "../../../../src/components/ha-chip-set";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
