@@ -91,6 +91,8 @@ export class HuiCalendarCardEditor
             .configValue=${"initial_view"}
             @selected=${this._viewChanged}
             @closed=${stopPropagation}
+            naturalMenuWidth
+            fixedMenuPosition
           >
             ${views.map(
               (view) => html`

@@ -28,7 +28,7 @@ export class HuiThemeSelectEditor extends LitElement {
         @selected=${this._changed}
         @closed=${stopPropagation}
         fixedMenuPosition
-        naturalMenuWidt
+        naturalMenuWidth
       >
         <mwc-list-item value="remove"
           >${this.hass!.localize(
