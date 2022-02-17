@@ -1,3 +1,4 @@
+import "../../../../src/components/ha-chip-set";
 import "@material/mwc-button";
 import {
   mdiCheckCircle,
@@ -214,7 +215,7 @@ class HassioAddonInfo extends LitElement {
                 >`}
           </div>
 
-          <div class="capabilities">
+          <ha-chip-set class="capabilities">
             ${this.addon.stage !== "stable"
               ? html` <ha-chip
                   hasIcon
@@ -379,7 +380,7 @@ class HassioAddonInfo extends LitElement {
                   </ha-chip>
                 `
               : ""}
-          </div>
+          </ha-chip-set>
 
           <div class="description light-color">
             ${this.addon.description}.<br />
