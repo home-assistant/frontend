@@ -16,19 +16,18 @@ export class HaNumericStateTrigger extends LitElement {
   @property() public trigger!: NumericStateTrigger;
 
   private _schema = memoizeOne((entityId): HaFormSchema[] => [
-    { name: "entity_id", selector: { entity: {} } },
+    { name: "entity_id", required: true, selector: { entity: {} } },
     {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
     },
-    { name: "above", required: false, selector: { text: {} } },
-    { name: "below", required: false, selector: { text: {} } },
+    { name: "above", selector: { text: {} } },
+    { name: "below", selector: { text: {} } },
     {
       name: "value_template",
-      required: false,
       selector: { text: { multiline: true } },
     },
-    { name: "for", required: false, selector: { duration: {} } },
+    { name: "for", selector: { duration: {} } },
   ]);
 
   public willUpdate(changedProperties: PropertyValues) {

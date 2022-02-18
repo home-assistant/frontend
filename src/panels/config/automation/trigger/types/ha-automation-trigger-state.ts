@@ -43,14 +43,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne((entityId) => [
-    { name: "entity_id", selector: { entity: {} } },
+    { name: "entity_id", required: true, selector: { entity: {} } },
     {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
     },
-    { name: "from", required: false, selector: { text: {} } },
-    { name: "to", required: false, selector: { text: {} } },
-    { name: "for", required: false, selector: { duration: {} } },
+    { name: "from", selector: { text: {} } },
+    { name: "to", selector: { text: {} } },
+    { name: "for", selector: { duration: {} } },
   ]);
 
   public shouldUpdate(changedProperties: PropertyValues) {

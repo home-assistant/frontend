@@ -20,16 +20,15 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   private _schema = memoizeOne((entityId): HaFormSchema[] => [
-    { name: "entity_id", selector: { entity: {} } },
+    { name: "entity_id", required: true, selector: { entity: {} } },
     {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
     },
-    { name: "above", required: false, selector: { text: {} } },
-    { name: "below", required: false, selector: { text: {} } },
+    { name: "above", selector: { text: {} } },
+    { name: "below", selector: { text: {} } },
     {
       name: "value_template",
-      required: false,
       selector: { text: { multiline: true } },
     },
   ]);

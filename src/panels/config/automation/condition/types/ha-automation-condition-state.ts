@@ -29,13 +29,13 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   private _schema = memoizeOne((entityId) => [
-    { name: "entity_id", selector: { entity: {} } },
+    { name: "entity_id", required: true, selector: { entity: {} } },
     {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
     },
-    { name: "state", required: false, selector: { text: {} } },
-    { name: "for", required: false, selector: { duration: {} } },
+    { name: "state", selector: { text: {} } },
+    { name: "for", selector: { duration: {} } },
   ]);
 
   public shouldUpdate(changedProperties: PropertyValues) {
