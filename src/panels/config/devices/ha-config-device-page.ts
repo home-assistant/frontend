@@ -282,24 +282,21 @@ export class HaConfigDevicePage extends LitElement {
         return;
       }
       buttons.push(html`
-          <mwc-button
-            class="warning"
-            .entryId=${entry.entry_id}
-            @click=${this._confirmDeleteEntry}
-          >
-            ${buttons.length > 1
-              ? this.hass.localize(
-                  `ui.panel.config.devices.delete_device_integration`,
-                  {
-                    integration: domainToName(
-                      this.hass.localize,
-                      entry.domain
-                    ),
-                  }
-                )
-              : this.hass.localize(`ui.panel.config.devices.delete_device`)}
-          </mwc-button>
-        `);
+        <mwc-button
+          class="warning"
+          .entryId=${entry.entry_id}
+          @click=${this._confirmDeleteEntry}
+        >
+          ${buttons.length > 1
+            ? this.hass.localize(
+                `ui.panel.config.devices.delete_device_integration`,
+                {
+                  integration: domainToName(this.hass.localize, entry.domain),
+                }
+              )
+            : this.hass.localize(`ui.panel.config.devices.delete_device`)}
+        </mwc-button>
+      `);
     });
 
     if (buttons.length > 0) {
@@ -308,7 +305,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
-    const entryId = (e.currentTarget as any). entryId;
+    const entryId = (e.currentTarget as any).entryId;
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
