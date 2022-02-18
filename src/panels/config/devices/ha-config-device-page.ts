@@ -276,7 +276,8 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    const buttons = this._integrations(device, this.entries).forEach((entry) => {
+    const buttons = [];
+    this._integrations(device, this.entries).forEach((entry) => {
       if (entry.state !== "loaded" || !entry.supports_remove_device) {
         return;
       }
