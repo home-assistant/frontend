@@ -1630,7 +1630,7 @@
                   "label": "Geolocation",
                   "source": "Source",
                   "zone": "Zone",
-                  "event": "Event:",
+                  "event": "Event",
                   "enter": "Enter",
                   "leave": "Leave"
                 },
@@ -1745,8 +1745,8 @@
                 },
                 "sun": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
-                  "before": "Before:",
-                  "after": "After:",
+                  "before": "Before",
+                  "after": "After",
                   "before_offset": "Before offset (optional)",
                   "after_offset": "After offset (optional)",
                   "sunrise": "Sunrise",
