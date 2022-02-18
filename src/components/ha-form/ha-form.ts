@@ -119,8 +119,13 @@ export class HaForm extends LitElement implements HaFormElement {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
+      const newValue =
+        schema.type === "column"
+          ? ev.detail.value
+          : { [schema.name]: ev.detail.value };
+
       fireEvent(this, "value-changed", {
-        value: { ...this.data, [schema.name]: ev.detail.value },
+        value: { ...this.data, newValue },
       });
     });
     return root;
