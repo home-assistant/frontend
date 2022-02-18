@@ -115,6 +115,10 @@ export class HaZoneTrigger extends LitElement {
       display: flex;
       align-items: center;
     }
+    ha-entity-picker {
+      display: block;
+      margin: 8px 0;
+    }
   `;
 }
 

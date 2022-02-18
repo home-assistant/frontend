@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -147,6 +147,13 @@ export class HaDeviceCondition extends LitElement {
         `ui.panel.config.automation.editor.conditions.type.device.extra_fields.${schema.name}`
       ) || schema.name;
   }
+
+  static styles = css`
+    ha-device-picker {
+      display: block;
+      margin-bottom: 8px;
+    }
+  `;
 }
 
 declare global {
