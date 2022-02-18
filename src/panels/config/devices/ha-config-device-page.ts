@@ -202,7 +202,7 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     this._diagnosticDownloadLinks = Math.random();
-    this._deleteButtons = [".."];
+    this._deleteButtons = []; // To prevent re-rendering if no delete buttons
     this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
     this._renderDeleteButtons();
   }
@@ -316,7 +316,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
-    const entry_id = (e.currentTarget! as HTMLElement).getAttribute("entry_id")
+    const entry_id = (e.currentTarget! as HTMLElement).getAttribute("entry_id");
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
@@ -326,7 +326,7 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entry_id);
+    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entry_id!);
   }
 
   protected firstUpdated(changedProps) {
