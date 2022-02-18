@@ -860,17 +860,6 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-actions-ozw>
       `);
     }
-    if (domains.includes("tasmota")) {
-      import(
-        "./device-detail/integration-elements/tasmota/ha-device-actions-tasmota"
-      );
-      deviceActions.push(html`
-        <ha-device-actions-tasmota
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-tasmota>
-      `);
-    }
     if (domains.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
