@@ -1,7 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
