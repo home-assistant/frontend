@@ -104,6 +104,7 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
