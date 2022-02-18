@@ -317,6 +317,17 @@
       "copied_clipboard": "Copied to clipboard"
     },
     "components": {
+      "selectors": {
+        "media": {
+          "pick_media_player": "Select media player",
+          "browse_not_supported": "Media player does not support browsing media.",
+          "pick_media": "Pick media",
+          "browse_media": "Browse media",
+          "manual": "Manually enter Media ID",
+          "media_content_id": "Media content ID",
+          "media_content_type": "Media content type"
+        }
+      },
       "logbook": {
         "entries_not_found": "No logbook events found.",
         "by": "by",
@@ -505,6 +516,18 @@
         "clear": "Clear"
       },
       "media-browser": {
+        "tts": {
+          "message": "Message",
+          "example_message": "Hello {name}, you can play any text on any supported media player!",
+          "language": "Language",
+          "gender": "Gender",
+          "gender_male": "Male",
+          "gender_female": "Female",
+          "action_play": "Say",
+          "action_pick": "Select",
+          "set_as_default": "Set as default options",
+          "faild_to_store_defaults": "Failed to store defaults: {error}"
+        },
         "pick": "Pick",
         "play": "Play",
         "play-media": "Play Media",
@@ -1798,6 +1821,9 @@
                 "service": {
                   "label": "Call service"
                 },
+                "play_media": {
+                  "label": "Play media"
+                },
                 "delay": {
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration"
@@ -1836,7 +1862,7 @@
                     "flash": "Flash"
                   }
                 },
-                "scene": {
+                "activate_scene": {
                   "label": "Activate scene"
                 },
                 "repeat": {
@@ -3699,18 +3725,6 @@
       "media-browser": {
         "error": {
           "player_not_exist": "Media player {name} does not exist"
-        },
-        "tts": {
-          "message": "Message",
-          "example_message": "Hello {name}, you can play any text on any supported media player!",
-          "language": "Language",
-          "gender": "Gender",
-          "gender_male": "Male",
-          "gender_female": "Female",
-          "action_play": "Say",
-          "action_pick": "Select",
-          "set_as_default": "Set as default options",
-          "faild_to_store_defaults": "Failed to store defaults: {error}"
         }
       },
       "map": {

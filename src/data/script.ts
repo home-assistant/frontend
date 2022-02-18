@@ -3,6 +3,17 @@ import {
   HassEntityBase,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
+import {
+  object,
+  optional,
+  string,
+  union,
+  array,
+  assign,
+  literal,
+  is,
+  Describe,
+} from "superstruct";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
@@ -11,6 +22,48 @@ import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"];
+
+export const baseActionStruct = object({
+  alias: optional(string()),
+});
+
+const targetStruct = object({
+  entity_id: optional(union([string(), array(string())])),
+  device_id: optional(union([string(), array(string())])),
+  area_id: optional(union([string(), array(string())])),
+});
+
+export const serviceActionStruct: Describe<ServiceAction> = assign(
+  baseActionStruct,
+  object({
+    service: optional(string()),
+    service_template: optional(string()),
+    entity_id: optional(string()),
+    target: optional(targetStruct),
+    data: optional(object()),
+  })
+);
+
+const playMediaActionStruct: Describe<PlayMediaAction> = assign(
+  baseActionStruct,
+  object({
+    service: literal("media_player.play_media"),
+    target: optional(object({ entity_id: optional(string()) })),
+    entity_id: optional(string()),
+    data: object({ media_content_id: string(), media_content_type: string() }),
+    metadata: object(),
+  })
+);
+
+const activateSceneActionStruct: Describe<ServiceSceneAction> = assign(
+  baseActionStruct,
+  object({
+    service: literal("scene.turn_on"),
+    target: optional(object({ entity_id: optional(string()) })),
+    entity_id: optional(string()),
+    metadata: object(),
+  })
+);
 
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -48,11 +101,12 @@ export interface ServiceAction {
   service_template?: string;
   entity_id?: string;
   target?: HassServiceTarget;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 export interface DeviceAction {
   alias?: string;
+  type: string;
   device_id: string;
   domain: string;
   entity_id: string;
@@ -70,9 +124,12 @@ export interface DelayAction {
   delay: number | Partial<DelayActionParts> | string;
 }
 
-export interface ServiceSceneAction extends ServiceAction {
+export interface ServiceSceneAction {
+  alias?: string;
   service: "scene.turn_on";
-  metadata: Record<string, any>;
+  target?: { entity_id?: string };
+  entity_id?: string;
+  metadata: Record<string, unknown>;
 }
 export interface LegacySceneAction {
   alias?: string;
@@ -92,6 +149,15 @@ export interface WaitForTriggerAction {
   wait_for_trigger: Trigger | Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
+}
+
+export interface PlayMediaAction {
+  alias?: string;
+  service: "media_player.play_media";
+  target?: { entity_id?: string };
+  entity_id?: string;
+  data: { media_content_id: string; media_content_type: string };
+  metadata: Record<string, unknown>;
 }
 
 export interface RepeatAction {
@@ -150,6 +216,7 @@ export type Action =
   | RepeatAction
   | ChooseAction
   | VariablesAction
+  | PlayMediaAction
   | UnknownAction;
 
 export interface ActionTypes {
@@ -158,13 +225,13 @@ export interface ActionTypes {
   check_condition: Condition;
   fire_event: EventAction;
   device_action: DeviceAction;
-  legacy_activate_scene: LegacySceneAction;
-  activate_scene: ServiceSceneAction;
+  activate_scene: SceneAction;
   repeat: RepeatAction;
   choose: ChooseAction;
   wait_for_trigger: WaitForTriggerAction;
   variables: VariablesAction;
   service: ServiceAction;
+  play_media: PlayMediaAction;
   unknown: UnknownAction;
 }
 
@@ -224,7 +291,7 @@ export const getActionType = (action: Action): ActionType => {
     return "device_action";
   }
   if ("scene" in action) {
-    return "legacy_activate_scene";
+    return "activate_scene";
   }
   if ("repeat" in action) {
     return "repeat";
@@ -240,11 +307,11 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("service" in action) {
     if ("metadata" in action) {
-      if (
-        (action as ServiceAction).service === "scene.turn_on" &&
-        !Array.isArray((action as ServiceAction)?.target?.entity_id)
-      ) {
+      if (is(action, activateSceneActionStruct)) {
         return "activate_scene";
+      }
+      if (is(action, playMediaActionStruct)) {
+        return "play_media";
       }
     }
     return "service";

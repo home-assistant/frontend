@@ -13,7 +13,8 @@ export type Selector =
   | StringSelector
   | ObjectSelector
   | SelectSelector
-  | IconSelector;
+  | IconSelector
+  | MediaSelector;
 
 export interface EntitySelector {
   entity: {
@@ -148,4 +149,22 @@ export interface SelectSelector {
 export interface IconSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   icon: {};
+}
+
+export interface MediaSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  media: {};
+}
+
+export interface MediaSelectorValue {
+  entity_id?: string;
+  media_content_id?: string;
+  media_content_type?: string;
+  metadata?: {
+    title?: string;
+    thumbnail?: string | null;
+    media_class?: string;
+    children_media_class?: string | null;
+    navigateIds?: { media_content_type: string; media_content_id: string }[];
+  };
 }

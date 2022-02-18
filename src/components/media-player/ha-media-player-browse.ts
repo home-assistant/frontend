@@ -49,7 +49,7 @@ import "../ha-svg-icon";
 import "../ha-fab";
 import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
-import "./ha-browse-media-tts";
+import { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
@@ -260,6 +260,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .item=${currentItem}
                       .hass=${this.hass}
                       .action=${this.action}
+                      @tts-picked=${this._ttsPicked}
                     ></ha-browse-media-tts>
                   `
                 : !currentItem.children?.length
@@ -562,7 +563,17 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _runAction(item: MediaPlayerItem): void {
-    fireEvent(this, "media-picked", { item });
+    fireEvent(this, "media-picked", { item, navigateIds: this.navigateIds });
+  }
+
+  private _ttsPicked(ev: CustomEvent<TtsMediaPickedEvent>): void {
+    ev.stopPropagation();
+    const navigateIds = this.navigateIds.slice(0, -1);
+    navigateIds.push(ev.detail.item);
+    fireEvent(this, "media-picked", {
+      ...ev.detail,
+      navigateIds,
+    });
   }
 
   private async _childClicked(ev: MouseEvent): Promise<void> {

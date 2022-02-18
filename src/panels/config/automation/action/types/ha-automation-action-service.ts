@@ -30,7 +30,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     return { service: "", data: {} };
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
     }

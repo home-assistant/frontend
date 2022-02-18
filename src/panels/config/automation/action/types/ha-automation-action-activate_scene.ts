@@ -9,7 +9,7 @@ import { ActionElement } from "../ha-automation-action-row";
 
 const includeDomains = ["scene"];
 
-@customElement("ha-automation-action-scene")
+@customElement("ha-automation-action-activate_scene")
 export class HaSceneAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -61,6 +61,6 @@ export class HaSceneAction extends LitElement implements ActionElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-action-scene": HaSceneAction;
+    "ha-automation-action-activate_scene": HaSceneAction;
   }
 }

@@ -28,10 +28,10 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
-    this._navigateIds = [
+    this._navigateIds = params.navigateIds || [
       {
-        media_content_id: this._params.mediaContentId,
-        media_content_type: this._params.mediaContentType,
+        media_content_id: undefined,
+        media_content_type: undefined,
       },
     ];
   }
