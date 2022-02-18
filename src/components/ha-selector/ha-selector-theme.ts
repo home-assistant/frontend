@@ -21,6 +21,7 @@ export class HaThemeSelector extends LitElement {
       <hui-theme-select-editor
         .hass=${this.hass}
         .value=${this.value}
+        .label=${this.label}
       ></hui-theme-select-editor>
     `;
   }
