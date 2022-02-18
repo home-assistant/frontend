@@ -47,6 +47,7 @@ export interface CloudPreferences {
 export interface CloudStatusLoggedIn {
   logged_in: true;
   cloud: "disconnected" | "connecting" | "connected";
+  cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
   google_entities: EntityFilter;

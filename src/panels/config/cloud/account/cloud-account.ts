@@ -10,6 +10,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
 import {
@@ -104,6 +105,17 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                   </div>
                 </paper-item-body>
               </div>
+
+              ${this.cloudStatus.cloud === "connecting" &&
+              this.cloudStatus.cloud_last_disconnect_reason
+                ? html`
+                    <ha-alert
+                      alert-type="warning"
+                      .title=${this.cloudStatus.cloud_last_disconnect_reason
+                        .reason}
+                    ></ha-alert>
+                  `
+                : ""}
 
               <div class="account-row">
                 <paper-item-body>
