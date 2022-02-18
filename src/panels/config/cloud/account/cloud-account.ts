@@ -222,11 +222,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   protected override hassSubscribe() {
     const googleCheck = debounce(
       () => {
-        if (
-          this.cloudStatus &&
-          (!this.cloudStatus.google_registered ||
-            !this.cloudStatus.google_local_connected)
-        ) {
+        if (this.cloudStatus && !this.cloudStatus.google_registered) {
           fireEvent(this, "ha-refresh-cloud-status");
         }
       },
