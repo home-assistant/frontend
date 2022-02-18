@@ -123,7 +123,11 @@ export const computeStateDisplay = (
     domain === "scene" ||
     (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
   ) {
-    return formatDateTime(new Date(compareState), locale);
+    try {
+      return formatDateTime(new Date(compareState), locale);
+    } catch (_err) {
+      return compareState;
+    }
   }
 
   return (
