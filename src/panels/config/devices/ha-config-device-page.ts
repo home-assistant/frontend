@@ -430,7 +430,7 @@ export class HaConfigDevicePage extends LitElement {
     if (Array.isArray(this._diagnosticDownloadLinks)) {
       deviceActions.push(...this._diagnosticDownloadLinks);
     }
-    if (Array.isArray(this._deleteButtons)) {
+    if (this._deleteButtons) {
       deviceActions.push(...this._deleteButtons);
     }
 
