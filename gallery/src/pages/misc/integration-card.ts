@@ -29,6 +29,7 @@ const createConfigEntry = (
   source: "zeroconf",
   state: "loaded",
   supports_options: false,
+  supports_remove_device: false,
   supports_unload: true,
   disabled_by: null,
   pref_disable_new_entities: false,
