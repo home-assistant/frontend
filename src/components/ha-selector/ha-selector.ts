@@ -18,6 +18,7 @@ import "./ha-selector-target";
 import "./ha-selector-text";
 import "./ha-selector-time";
 import "./ha-selector-icon";
+import "./ha-selector-media";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {

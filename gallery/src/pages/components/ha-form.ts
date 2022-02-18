@@ -36,6 +36,8 @@ const SCHEMAS: {
       text_multiline: "Text Multiline",
       object: "Object",
       select: "Select",
+      icon: "Icon",
+      media: "Media",
     },
     schema: [
       { name: "addon", selector: { addon: {} } },
@@ -65,6 +67,12 @@ const SCHEMAS: {
         name: "icon",
         selector: {
           icon: {},
+        },
+      },
+      {
+        name: "media",
+        selector: {
+          media: {},
         },
       },
     ],

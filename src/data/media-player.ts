@@ -28,6 +28,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
@@ -147,6 +148,7 @@ export const MediaClassBrowserSettings: {
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
+  navigateIds: MediaPlayerItemId[];
 }
 
 export interface MediaPlayerThumbnail {

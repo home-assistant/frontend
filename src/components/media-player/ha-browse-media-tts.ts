@@ -11,12 +11,26 @@ import {
   getCloudTtsLanguages,
   getCloudTtsSupportedGenders,
 } from "../../data/cloud/tts";
-import { MediaPlayerBrowseAction } from "../../data/media-player";
+import {
+  MediaPlayerBrowseAction,
+  MediaPlayerItem,
+} from "../../data/media-player";
 import { HomeAssistant } from "../../types";
 import "../ha-textarea";
 import { buttonLinkStyle } from "../../resources/styles";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { LocalStorage } from "../../common/decorators/local-storage";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+
+export interface TtsMediaPickedEvent {
+  item: MediaPlayerItem;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "tts-picked": TtsMediaPickedEvent;
+  }
+}
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
@@ -32,40 +46,55 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _cloudTTSInfo?: CloudTTSInfo;
 
-  @LocalStorage("cloudTtsTryMessage", false, false) private _message!: string;
+  @LocalStorage("cloudTtsTryMessage", true, false) private _message!: string;
 
   protected render() {
-    return html`
-      <ha-textarea
-        autogrow
-        .label=${this.hass.localize("ui.panel.media-browser.tts.message")}
-        .value=${this._message ||
-        this.hass.localize("ui.panel.media-browser.tts.example_message", {
-          name: this.hass.user?.name || "",
-        })}
-      >
-      </ha-textarea>
-      ${this._cloudDefaultOptions ? this._renderCloudOptions() : ""}
-      <div class="actions">
+    return html`<ha-card>
+      <div class="card-content">
+        <ha-textarea
+          autogrow
+          .label=${this.hass.localize(
+            "ui.components.media-browser.tts.message"
+          )}
+          .value=${this._message ||
+          this.hass.localize(
+            "ui.components.media-browser.tts.example_message",
+            {
+              name: this.hass.user?.name || "",
+            }
+          )}
+        >
+        </ha-textarea>
+        ${this._cloudDefaultOptions ? this._renderCloudOptions() : ""}
+      </div>
+      <div class="card-actions">
         ${this._cloudDefaultOptions &&
         (this._cloudDefaultOptions![0] !== this._cloudOptions![0] ||
           this._cloudDefaultOptions![1] !== this._cloudOptions![1])
           ? html`
               <button class="link" @click=${this._storeDefaults}>
                 ${this.hass.localize(
-                  "ui.panel.media-browser.tts.set_as_default"
+                  "ui.components.media-browser.tts.set_as_default"
                 )}
               </button>
             `
           : html`<span></span>`}
-        <mwc-button raised label="Say" @click=${this._ttsClicked}></mwc-button>
+
+        <mwc-button @click=${this._ttsClicked}>
+          ${this.hass.localize(
+            `ui.components.media-browser.tts.action_${this.action}`
+          )}
+        </mwc-button>
       </div>
-    `;
+    </ha-card> `;
   }
 
   private _renderCloudOptions() {
+    if (!this._cloudTTSInfo || !this._cloudOptions) {
+      return "";
+    }
     const languages = this.getLanguages(this._cloudTTSInfo);
-    const selectedVoice = this._cloudOptions!;
+    const selectedVoice = this._cloudOptions;
     const genders = this.getSupportedGenders(
       selectedVoice[0],
       this._cloudTTSInfo,
@@ -77,9 +106,12 @@ class BrowseMediaTTS extends LitElement {
         <mwc-select
           fixedMenuPosition
           naturalMenuWidth
-          .label=${this.hass.localize("ui.panel.media-browser.tts.language")}
+          .label=${this.hass.localize(
+            "ui.components.media-browser.tts.language"
+          )}
           .value=${selectedVoice[0]}
           @selected=${this._handleLanguageChange}
+          @closed=${stopPropagation}
         >
           ${languages.map(
             ([key, label]) =>
@@ -90,9 +122,10 @@ class BrowseMediaTTS extends LitElement {
         <mwc-select
           fixedMenuPosition
           naturalMenuWidth
-          .label=${this.hass.localize("ui.panel.media-browser.tts.gender")}
+          .label=${this.hass.localize("ui.components.media-browser.tts.gender")}
           .value=${selectedVoice[1]}
           @selected=${this._handleGenderChange}
+          @closed=${stopPropagation}
         >
           ${genders.map(
             ([key, label]) =>
@@ -105,6 +138,37 @@ class BrowseMediaTTS extends LitElement {
 
   protected override willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("item")) {
+      if (this.item.media_content_id) {
+        const params = new URLSearchParams(
+          this.item.media_content_id.split("?")[1]
+        );
+        const message = params.get("message");
+        const language = params.get("language");
+        const gender = params.get("gender");
+        if (message) {
+          this._message = message;
+        }
+        if (language && gender) {
+          this._cloudOptions = [language, gender];
+        }
+      }
+
+      if (this.isCloudItem && !this._cloudTTSInfo) {
+        getCloudTTSInfo(this.hass).then((info) => {
+          this._cloudTTSInfo = info;
+        });
+        fetchCloudStatus(this.hass).then((status) => {
+          if (status.logged_in) {
+            this._cloudDefaultOptions = status.prefs.tts_default_voice;
+            if (!this._cloudOptions) {
+              this._cloudOptions = { ...this._cloudDefaultOptions };
+            }
+          }
+        });
+      }
+    }
 
     if (changedProps.has("message")) {
       return;
@@ -133,30 +197,12 @@ class BrowseMediaTTS extends LitElement {
     this._cloudOptions = [this._cloudOptions![0], ev.target.value];
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (changedProps.has("item")) {
-      if (this.isCloudItem && !this._cloudTTSInfo) {
-        getCloudTTSInfo(this.hass).then((info) => {
-          this._cloudTTSInfo = info;
-        });
-        fetchCloudStatus(this.hass).then((status) => {
-          if (status.logged_in) {
-            this._cloudDefaultOptions = status.prefs.tts_default_voice;
-            this._cloudOptions = { ...this._cloudDefaultOptions };
-          }
-        });
-      }
-    }
-  }
-
   private getLanguages = memoizeOne(getCloudTtsLanguages);
 
   private getSupportedGenders = memoizeOne(getCloudTtsSupportedGenders);
 
   private get isCloudItem(): boolean {
-    return this.item.media_content_id === "media-source://tts/cloud";
+    return this.item.media_content_id.startsWith("media-source://tts/cloud");
   }
 
   private async _ttsClicked(): Promise<void> {
@@ -169,9 +215,12 @@ class BrowseMediaTTS extends LitElement {
       query.append("language", this._cloudOptions[0]);
       query.append("gender", this._cloudOptions[1]);
     }
-    item.media_content_id += `?${query.toString()}`;
+    item.media_content_id = `${
+      item.media_content_id.split("?")[0]
+    }?${query.toString()}`;
     item.can_play = true;
-    fireEvent(this, "media-picked", { item });
+    item.title = message;
+    fireEvent(this, "tts-picked", { item });
   }
 
   private async _storeDefaults() {
@@ -185,7 +234,7 @@ class BrowseMediaTTS extends LitElement {
       this._cloudDefaultOptions = oldDefaults;
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.media-browser.tts.faild_to_store_defaults",
+          "ui.components.media-browser.tts.faild_to_store_defaults",
           { error: err.message || err }
         ),
       });
@@ -210,14 +259,15 @@ class BrowseMediaTTS extends LitElement {
       .cloud-options mwc-select {
         width: 48%;
       }
-
-      .actions {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 16px;
+      ha-textarea {
+        width: 100%;
       }
       button.link {
         color: var(--primary-color);
+      }
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
       }
     `,
   ];
