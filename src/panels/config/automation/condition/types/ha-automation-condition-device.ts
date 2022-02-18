@@ -11,7 +11,7 @@ import {
   DeviceCondition,
   fetchDeviceConditionCapabilities,
 } from "../../../../../data/device_automation";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {

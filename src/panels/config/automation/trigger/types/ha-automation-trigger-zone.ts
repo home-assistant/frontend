@@ -1,15 +1,14 @@
+import memoizeOne from "memoize-one";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
-import "../../../../../components/entity/ha-entity-picker";
 import type { ZoneTrigger } from "../../../../../data/automation";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../../components/ha-radio";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
@@ -30,6 +29,31 @@ export class HaZoneTrigger extends LitElement {
       event: "enter" as ZoneTrigger["event"],
     };
   }
+
+  private _schema = memoizeOne((localize: LocalizeFunc) => [
+    { name: "entity_id", selector: { entity: {} } },
+    { name: "entity_id", selector: { entity: { domain: "zone" } } },
+    {
+      name: "event",
+      type: "select",
+      required: true,
+      options: [
+        [
+          "sunrise",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.sun.sunrise"
+          ),
+        ],
+        [
+          "sunset",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.sun.sunset"
+          ),
+        ],
+      ],
+    },
+    { name: "offset", selector: { text: {} } },
+  ]);
 
   protected render() {
     const { entity_id, zone, event } = this.trigger;

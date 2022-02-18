@@ -1,15 +1,15 @@
-import "@polymer/paper-input/paper-textarea";
-import { html, LitElement } from "lit";
+import "../../../../../components/ha-textarea";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { TemplateTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { TemplateTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-template")
 export class HaTemplateTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: TemplateTrigger;
+  @property({ attribute: false }) public trigger!: TemplateTrigger;
 
   public static get defaultConfig() {
     return { value_template: "" };
@@ -18,19 +18,31 @@ export class HaTemplateTrigger extends LitElement {
   protected render() {
     const { value_template } = this.trigger;
     return html`
-      <paper-textarea
+      <ha-textarea
+        name="value_template"
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.template.value_template"
         )}
-        name="value_template"
         .value=${value_template}
-        @value-changed=${this._valueChanged}
+        @input=${this._valueChanged}
         dir="ltr"
-      ></paper-textarea>
+      ></ha-textarea>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  static styles = css`
+    ha-textarea {
+      display: block;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-template": HaTemplateTrigger;
   }
 }
