@@ -51,6 +51,14 @@ export class HuiEntityCardEditor
         schemas: [
           [
             { name: "name", selector: { text: {} } },
+
+            {
+              name: "attribute",
+              selector: { attribute: { entity_id: entity } },
+            },
+            { name: "theme", selector: { theme: {} } },
+          ],
+          [
             {
               name: "icon",
               selector: {
@@ -63,14 +71,7 @@ export class HuiEntityCardEditor
                 },
               },
             },
-            {
-              name: "attribute",
-              selector: { attribute: { entity_id: entity } },
-            },
-          ],
-          [
             { name: "unit", selector: { text: {} } },
-            { name: "theme", selector: { theme: {} } },
             { name: "state_color", selector: { boolean: {} } },
           ],
         ],
