@@ -115,10 +115,16 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
       inputModeBefore
     );
 
+    const data = {
+      mode_before: "value",
+      mode_after: "value",
+      ...this.condition,
+    };
+
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this.condition}
+        .data=${data}
         .schema=${schema}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
@@ -130,8 +136,18 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    this._inputModeAfter = newValue.mode_after.value === "input";
-    this._inputModeBefore = newValue.mode_before.value === "input";
+    const newModeAfter = newValue.mode_after === "input";
+    const newModeBefore = newValue.mode_before === "input";
+
+    if (newModeAfter !== this._inputModeAfter) {
+      this._inputModeAfter = newModeAfter;
+      newValue.after = undefined;
+    }
+
+    if (newModeBefore !== this._inputModeBefore) {
+      this._inputModeBefore = newModeBefore;
+      newValue.before = undefined;
+    }
 
     Object.keys(newValue).forEach((key) =>
       newValue[key] === undefined || newValue[key] === ""

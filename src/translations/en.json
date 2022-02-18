@@ -1761,6 +1761,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",
+                  "weekday": "Weekdays",
                   "weekdays": {
                     "mon": "Monday",
                     "tue": "Tuesday",

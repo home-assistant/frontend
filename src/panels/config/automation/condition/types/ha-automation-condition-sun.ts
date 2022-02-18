@@ -82,7 +82,7 @@ export class HaSunCondition extends LitElement implements ConditionElement {
 
   private _computeLabelCallback = (schema: HaFormSchema): string =>
     this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.sun.${schema.name}`
+      `ui.panel.config.automation.editor.conditions.type.sun.${schema.name}`
     );
 }
 
