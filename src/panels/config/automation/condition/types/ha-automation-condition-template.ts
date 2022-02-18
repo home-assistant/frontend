@@ -26,6 +26,7 @@ export class HaTemplateCondition extends LitElement {
         .value=${value_template}
         @input=${this._valueChanged}
         dir="ltr"
+        autogrow
       ></ha-textarea>
     `;
   }
