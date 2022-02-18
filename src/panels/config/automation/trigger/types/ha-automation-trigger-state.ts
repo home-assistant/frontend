@@ -32,14 +32,6 @@ const stateTriggerStruct = assign(
   })
 );
 
-const SCHEMA = [
-  { name: "entity_id", selector: { entity: {} } },
-  { name: "attribute", selector: { attribute: { entity_id: "" } } },
-  { name: "from", required: false, selector: { text: {} } },
-  { name: "to", required: false, selector: { text: {} } },
-  { name: "for", required: false, selector: { duration: {} } },
-];
-
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -50,14 +42,16 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     return { entity_id: "" };
   }
 
-  private _schema = memoizeOne((entityId) => {
-    const schema = [...SCHEMA];
-    schema[1] = {
+  private _schema = memoizeOne((entityId) => [
+    { name: "entity_id", required: true, selector: { entity: {} } },
+    {
       name: "attribute",
       selector: { attribute: { entity_id: entityId } },
-    };
-    return schema;
-  });
+    },
+    { name: "from", selector: { text: {} } },
+    { name: "to", selector: { text: {} } },
+    { name: "for", selector: { duration: {} } },
+  ]);
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -118,13 +112,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback(schema: HaFormSchema): string {
-    return this.hass.localize(
+  private _computeLabelCallback = (schema: HaFormSchema): string =>
+    this.hass.localize(
       schema.name === "entity_id"
         ? "ui.components.entity.entity-picker.entity"
         : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
     );
-  }
 }
 
 declare global {

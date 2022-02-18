@@ -27,7 +27,7 @@ export const handleChangeEvent = (
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
+  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
 
   if ((element.condition[name] || "") === newVal) {
     return;

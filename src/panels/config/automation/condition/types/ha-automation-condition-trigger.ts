@@ -5,12 +5,12 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../../common/ensure-array";
-import {
+import type {
   AutomationConfig,
   Trigger,
   TriggerCondition,
 } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {

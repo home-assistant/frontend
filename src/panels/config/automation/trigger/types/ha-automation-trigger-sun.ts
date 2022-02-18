@@ -45,9 +45,10 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
+    const schema = this._schema(this.hass.localize);
     return html`
       <ha-form
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${schema}
         .data=${this.trigger}
         .hass=${this.hass}
         .computeLabel=${this._computeLabelCallback}

@@ -1,14 +1,13 @@
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-formfield";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
-import "../../../../../components/entity/ha-entity-picker";
 import type { ZoneTrigger } from "../../../../../data/automation";
 import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../../components/ha-radio";
 
 function zoneAndLocationFilter(stateObj) {
@@ -115,6 +114,10 @@ export class HaZoneTrigger extends LitElement {
     label {
       display: flex;
       align-items: center;
+    }
+    ha-entity-picker {
+      display: block;
+      margin-bottom: 24px;
     }
   `;
 }

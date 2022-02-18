@@ -154,7 +154,7 @@ export class HaDeviceTrigger extends LitElement {
   static styles = css`
     ha-device-picker {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 24px;
     }
   `;
 }
