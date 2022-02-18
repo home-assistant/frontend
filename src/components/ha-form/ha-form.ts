@@ -20,11 +20,11 @@ let selectorImported = false;
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public data!: HaFormDataContainer;
+  @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property() public schema!: HaFormSchema[];
+  @property({ attribute: false }) public schema!: HaFormSchema[];
 
   @property() public error?: Record<string, string>;
 
@@ -101,6 +101,9 @@ export class HaForm extends LitElement implements HaFormElement {
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
                   disabled: this.disabled,
+                  hass: this.hass,
+                  computeLabel: this.computeLabel,
+                  computeHelper: this.computeHelper,
                 })}
           `;
         })}

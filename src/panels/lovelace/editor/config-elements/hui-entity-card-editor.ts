@@ -78,12 +78,22 @@ export class HuiEntityCardEditor
 
   private _schema = memoizeOne((entity: string): HaFormSchema[] => [
     { name: "entity", selector: { entity: {} } },
-    { name: "name", selector: { text: {} } },
-    { name: "icon", selector: { icon: {} } },
-    { name: "attribute", selector: { attribute: { entity_id: entity } } },
-    { name: "unit", selector: { text: {} } },
-    { name: "theme", selector: { theme: {} } },
-    { name: "state_color", selector: { boolean: {} } },
+    {
+      type: "column",
+      name: "",
+      schemas: [
+        [
+          { name: "name", selector: { text: {} } },
+          { name: "icon", selector: { icon: {} } },
+          { name: "attribute", selector: { attribute: { entity_id: entity } } },
+        ],
+        [
+          { name: "unit", selector: { text: {} } },
+          { name: "theme", selector: { theme: {} } },
+          { name: "state_color", selector: { boolean: {} } },
+        ],
+      ],
+    },
   ]);
 
   protected render(): TemplateResult {

@@ -11,7 +11,8 @@ export type HaFormSchema =
   | HaFormSelectSchema
   | HaFormMultiSelectSchema
   | HaFormTimeSchema
-  | HaFormSelector;
+  | HaFormSelector
+  | HaFormColumnSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -23,6 +24,11 @@ export interface HaFormBaseSchema {
     // This value will be set initially when form is loaded
     suggested_value?: HaFormData;
   };
+}
+
+export interface HaFormColumnSchema extends HaFormBaseSchema {
+  type: "column";
+  schemas: Array<HaFormSchema[]>;
 }
 
 export interface HaFormSelector extends HaFormBaseSchema {
