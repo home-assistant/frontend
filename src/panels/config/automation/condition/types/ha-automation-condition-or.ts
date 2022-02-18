@@ -1,5 +1,5 @@
 import { customElement } from "lit/decorators";
-import type { HaLogicalCondition } from "./ha-automation-condition-logical";
+import { HaLogicalCondition } from "./ha-automation-condition-logical";
 
 @customElement("ha-automation-condition-or")
 export class HaOrCondition extends HaLogicalCondition {}
