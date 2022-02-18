@@ -56,7 +56,6 @@ export class HaFormColumn extends LitElement implements HaFormElement {
         padding-right: 8px;
       }
       :host > ha-form:last-child {
-        flex: 1;
         padding-right: 0;
       }
     `;
