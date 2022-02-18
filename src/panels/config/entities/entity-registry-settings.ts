@@ -1,7 +1,7 @@
+import "../../../components/ha-alert";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-select/mwc-select";
-import "@polymer/paper-input/paper-input";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -19,6 +19,7 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
   DeviceRegistryEntry,
@@ -36,7 +37,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
@@ -137,15 +137,18 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </div>
           `
         : ""}
-      ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : ""}
       <div class="form container">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
-          @value-changed=${this._nameChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.name")}
-          .placeholder=${this.entry.original_name}
+          .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
-        ></paper-input>
+          .placeholder=${this.entry.original_name}
+          @input=${this._nameChanged}
+        ></ha-textfield>
         <ha-icon-picker
           .value=${this._icon}
           @value-changed=${this._iconChanged}
@@ -176,16 +179,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               )}
             </mwc-select>`
           : ""}
-        <paper-input
+        <ha-textfield
+          error-message="Domain needs to stay the same"
           .value=${this._entityId}
-          @value-changed=${this._entityIdChanged}
           .label=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.entity_id"
           )}
-          error-message="Domain needs to stay the same"
           .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
-        ></paper-input>
+          @input=${this._entityIdChanged}
+        ></ha-textfield>
         ${!this.entry.device_id
           ? html`<ha-area-picker
               .hass=${this.hass}
@@ -282,19 +285,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>): void {
+  private _nameChanged(ev): void {
     this._error = undefined;
-    this._name = ev.detail.value;
+    this._name = ev.target.value;
   }
 
-  private _iconChanged(ev: PolymerChangedEvent<string>): void {
+  private _iconChanged(ev: CustomEvent): void {
     this._error = undefined;
     this._icon = ev.detail.value;
   }
 
-  private _entityIdChanged(ev: PolymerChangedEvent<string>): void {
+  private _entityIdChanged(ev): void {
     this._error = undefined;
-    this._entityId = ev.detail.value;
+    this._entityId = ev.target.value;
   }
 
   private _deviceClassChanged(ev): void {
@@ -422,6 +425,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         ha-switch {
           margin-right: 16px;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
         .row {
           margin: 8px 0;
