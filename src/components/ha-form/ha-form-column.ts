@@ -28,16 +28,17 @@ export class HaFormColumn extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.schema.schemas.map(
-        (form) =>
+      ${this.schema.schema.map(
+        (field) =>
           html`
             <ha-form
               .hass=${this.hass}
               .data=${this.data}
-              .schema=${form}
+              .schema=${[field]}
               .disabled=${this.disabled}
               .computeLabel=${this.computeLabel}
               .computeHelper=${this.computeHelper}
+              style="width: calc(${100 / (this.schema.columns || 2)}% - 4px)"
             ></ha-form>
           `
       )}
@@ -49,14 +50,12 @@ export class HaFormColumn extends LitElement implements HaFormElement {
       :host {
         display: flex !important;
         align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
       }
       :host > ha-form {
         display: block;
-        flex: 1;
-        padding-right: 8px;
-      }
-      :host > ha-form:last-child {
-        padding-right: 0;
+        margin-bottom: 24px;
       }
     `;
   }

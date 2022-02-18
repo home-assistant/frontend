@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -65,7 +72,7 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       <div class="root">
         ${this.error && this.error.base

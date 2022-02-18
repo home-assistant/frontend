@@ -28,7 +28,8 @@ export interface HaFormBaseSchema {
 
 export interface HaFormColumnSchema extends HaFormBaseSchema {
   type: "column";
-  schemas: Array<HaFormSchema[]>;
+  columns?: number;
+  schema: HaFormSchema[];
 }
 
 export interface HaFormSelector extends HaFormBaseSchema {

@@ -48,32 +48,28 @@ export class HuiEntityCardEditor
       {
         type: "column",
         name: "",
-        schemas: [
-          [
-            { name: "name", selector: { text: {} } },
-
-            {
-              name: "attribute",
-              selector: { attribute: { entity_id: entity } },
-            },
-            { name: "theme", selector: { theme: {} } },
-          ],
-          [
-            {
-              name: "icon",
-              selector: {
-                icon: {
-                  placeholder: icon || entityState?.attributes.icon,
-                  fallbackPath:
-                    !icon && !entityState?.attributes.icon && entityState
-                      ? domainIcon(computeDomain(entity), entityState)
-                      : undefined,
-                },
+        schema: [
+          { name: "name", selector: { text: {} } },
+          {
+            name: "icon",
+            selector: {
+              icon: {
+                placeholder: icon || entityState?.attributes.icon,
+                fallbackPath:
+                  !icon && !entityState?.attributes.icon && entityState
+                    ? domainIcon(computeDomain(entity), entityState)
+                    : undefined,
               },
             },
-            { name: "unit", selector: { text: {} } },
-            { name: "state_color", selector: { boolean: {} } },
-          ],
+          },
+
+          {
+            name: "attribute",
+            selector: { attribute: { entity_id: entity } },
+          },
+          { name: "unit", selector: { text: {} } },
+          { name: "theme", selector: { theme: {} } },
+          { name: "state_color", selector: { boolean: {} } },
         ],
       },
     ]
