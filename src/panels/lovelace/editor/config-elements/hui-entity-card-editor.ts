@@ -1,11 +1,13 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
+import { HaFormSchema } from "../../../../components/ha-form/types";
 import "../../../../components/ha-icon-picker";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
@@ -74,13 +76,29 @@ export class HuiEntityCardEditor
     return this._config!.theme || "";
   }
 
+  private _schema = memoizeOne((entity: string): HaFormSchema[] => [
+    { name: "entity", selector: { entity: {} } },
+    { name: "name", selector: { text: {} } },
+    { name: "icon", selector: { icon: {} } },
+    { name: "attribute", selector: { attribute: { entity_id: entity } } },
+    { name: "unit", selector: { text: {} } },
+    { name: "theme", selector: { theme: {} } },
+    { name: "state_color", selector: { boolean: {} } },
+  ]);
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
-    const entityState = this.hass.states[this._entity];
+
+    const entityState = this.hass.states[this._entity]; // Icon Picker
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${this._schema(this._config.entity)}
+      ></ha-form>
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
