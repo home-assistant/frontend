@@ -49,7 +49,7 @@ export interface HaFormSelectSchema extends HaFormBaseSchema {
 
 export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
   type: "multi_select";
-  options: Record<string, string> | string[];
+  options: Record<string, string> | string[] | Array<[string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {
