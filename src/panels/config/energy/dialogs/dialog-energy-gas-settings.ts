@@ -107,6 +107,7 @@ export class DialogEnergyGasSettings
               : "m³"
           })`}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>

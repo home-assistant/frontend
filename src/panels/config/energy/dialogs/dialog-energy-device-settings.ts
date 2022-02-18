@@ -75,6 +75,7 @@ export class DialogEnergyDeviceSettings
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
