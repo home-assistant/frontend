@@ -5,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-alert";
 import "./ha-form-boolean";
 import "./ha-form-constant";
+import "./ha-form-column";
 import "./ha-form-float";
 import "./ha-form-integer";
 import "./ha-form-multi_select";

@@ -47,14 +47,15 @@ export class HaFormColumn extends LitElement implements HaFormElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        display: flex;
-        align-items: flex-end;
+        display: flex !important;
+        align-items: flex-start;
       }
-      :host > * {
+      :host > ha-form {
+        display: block;
         flex: 1;
         padding-right: 8px;
       }
-      :host > *:last-child {
+      :host > ha-form:last-child {
         flex: 1;
         padding-right: 0;
       }
