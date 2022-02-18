@@ -22,7 +22,8 @@ import "./ha-form-string";
 import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
 import { HomeAssistant } from "../../types";
 
-const getValue = (obj, item) => (obj ? obj[item.name] : null);
+const getValue = (obj, item) =>
+  item.type === "column" ? obj : obj ? obj[item.name] : null;
 
 let selectorImported = false;
 
