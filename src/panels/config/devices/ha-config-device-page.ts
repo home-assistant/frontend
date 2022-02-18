@@ -276,26 +276,14 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    let buttons = this._integrations(device, this.entries).map((entry) => {
+    const buttons = this._integrations(device, this.entries).forEach((entry) => {
       if (entry.state !== "loaded" || !entry.supports_remove_device) {
-        return false;
+        return;
       }
-      return {
-        entry_id: entry.entry_id,
-        domain: entry.domain,
-      };
-    });
-
-    buttons = buttons.filter(Boolean);
-
-    if (buttons.length > 0) {
-      this._deleteButtons = (
-        buttons as { entry_id: string; domain: string }[]
-      ).map(
-        (button) => html`
+      buttons.push(html`
           <mwc-button
             class="warning"
-            entry_id=${button.entry_id}
+            .entryId=${entry.entry_id}
             @click=${this._confirmDeleteEntry}
           >
             ${buttons.length > 1
@@ -304,19 +292,22 @@ export class HaConfigDevicePage extends LitElement {
                   {
                     integration: domainToName(
                       this.hass.localize,
-                      button.domain
+                      entry.domain
                     ),
                   }
                 )
               : this.hass.localize(`ui.panel.config.devices.delete_device`)}
           </mwc-button>
-        `
-      );
+        `);
+    });
+
+    if (buttons.length > 0) {
+      this._deleteButtons = buttons;
     }
   }
 
   private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
-    const entry_id = (e.currentTarget! as HTMLElement).getAttribute("entry_id");
+    const entryId = (e.currentTarget as any). entryId;
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
@@ -326,7 +317,7 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entry_id!);
+    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entryId);
   }
 
   protected firstUpdated(changedProps) {
