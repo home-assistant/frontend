@@ -79,10 +79,15 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
     const schema: HaFormSchema[] = this._schema(this.hass.localize, inputMode);
 
+    const data = {
+      mode: "value",
+      ...this.trigger,
+    };
+
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this.trigger}
+        .data=${data}
         .schema=${schema}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}

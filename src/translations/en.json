@@ -1676,7 +1676,8 @@
                   "type_value": "Fixed time",
                   "type_input": "Value of a date/time helper",
                   "label": "Time",
-                  "at": "At time"
+                  "at": "At time",
+                  "mode": "Mode"
                 },
                 "time_pattern": {
                   "label": "Time Pattern",
@@ -1762,6 +1763,8 @@
                   "after": "After",
                   "before": "Before",
                   "weekday": "Weekdays",
+                  "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
+                  "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
                     "mon": "Monday",
                     "tue": "Tuesday",

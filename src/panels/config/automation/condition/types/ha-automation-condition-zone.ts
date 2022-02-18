@@ -75,7 +75,7 @@ export class HaZoneCondition extends LitElement {
   static styles = css`
     ha-entity-picker {
       display: block;
-      margin: 8px 0;
+      margin-bottom: 24px;
     }
   `;
 }

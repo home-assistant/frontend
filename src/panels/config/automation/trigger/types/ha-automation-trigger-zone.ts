@@ -117,7 +117,7 @@ export class HaZoneTrigger extends LitElement {
     }
     ha-entity-picker {
       display: block;
-      margin: 8px 0;
+      margin-bottom: 24px;
     }
   `;
 }
