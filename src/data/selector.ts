@@ -148,8 +148,10 @@ export interface SelectSelector {
 }
 
 export interface IconSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  icon: {};
+  icon: {
+    placeholder?: string;
+    fallbackPath?: string;
+  };
 }
 
 export interface ThemeSelector {
