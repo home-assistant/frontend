@@ -116,36 +116,35 @@ export class DialogHelperDetail extends LitElement {
               ${Object.keys(HELPERS).map((platform: string) => {
                 const isLoaded = isComponentLoaded(this.hass, platform);
                 return html`
-                  <div class="form">
-                    <paper-icon-item
-                      .disabled=${!isLoaded}
-                      @click=${this._platformPicked}
-                      @keydown=${this._handleEnter}
-                      .platform=${platform}
-                      dialogInitialFocus
-                    >
-                      <ha-svg-icon
-                        slot="item-icon"
-                        .path=${domainIcon(platform)}
-                      ></ha-svg-icon>
-                      <span class="item-text">
-                        ${this.hass.localize(
-                          `ui.panel.config.helpers.types.${platform}`
-                        ) || platform}
-                      </span>
-                    </paper-icon-item>
-                    ${!isLoaded
-                      ? html`
-                          <paper-tooltip animation-delay="0"
-                            >${this.hass.localize(
-                              "ui.dialogs.helper_settings.platform_not_loaded",
-                              "platform",
-                              platform
-                            )}</paper-tooltip
-                          >
-                        `
-                      : ""}
-                  </div>
+                  <mwc-list-item
+                    .disabled=${!isLoaded}
+                    .platform=${platform}
+                    @click=${this._platformPicked}
+                    @keydown=${this._handleEnter}
+                    dialogInitialFocus
+                    graphic="icon"
+                  >
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${domainIcon(platform)}
+                    ></ha-svg-icon>
+                    <span class="item-text">
+                      ${this.hass.localize(
+                        `ui.panel.config.helpers.types.${platform}`
+                      ) || platform}
+                    </span>
+                  </mwc-list-item>
+                  ${!isLoaded
+                    ? html`
+                        <paper-tooltip animation-delay="0"
+                          >${this.hass.localize(
+                            "ui.dialogs.helper_settings.platform_not_loaded",
+                            "platform",
+                            platform
+                          )}</paper-tooltip
+                        >
+                      `
+                    : ""}
                 `;
               })}
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -207,9 +206,6 @@ export class DialogHelperDetail extends LitElement {
       css`
         ha-dialog.button-left {
           --justify-action-buttons: flex-start;
-        }
-        paper-icon-item {
-          cursor: pointer;
         }
       `,
     ];
