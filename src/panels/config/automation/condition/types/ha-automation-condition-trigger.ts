@@ -18,7 +18,7 @@ export class HaTriggerCondition extends LitElement {
 
   @property({ attribute: false }) public condition!: TriggerCondition;
 
-  @state() private _triggers?: Trigger | Trigger[];
+  @state() private _triggers: Trigger[] = [];
 
   private _unsub?: UnsubscribeFunc;
 
@@ -44,7 +44,8 @@ export class HaTriggerCondition extends LitElement {
 
   protected render() {
     const { id } = this.condition;
-    if (!this._triggers) {
+
+    if (!this._triggers.length) {
       return this.hass.localize(
         "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
       );
@@ -56,20 +57,19 @@ export class HaTriggerCondition extends LitElement {
       .value=${id}
       @selected=${this._triggerPicked}
     >
-      ${ensureArray(this._triggers).map((trigger) =>
-        trigger.id
-          ? html`
-              <mwc-list-item .value=${trigger.id}>
-                ${trigger.id}
-              </mwc-list-item>
-            `
-          : ""
+      ${this._triggers.map(
+        (trigger) =>
+          html`
+            <mwc-list-item .value=${trigger.id}> ${trigger.id} </mwc-list-item>
+          `
       )}
     </mwc-select>`;
   }
 
   private _automationUpdated(config?: AutomationConfig) {
-    this._triggers = config?.trigger;
+    this._triggers = config?.trigger
+      ? ensureArray(config.trigger).filter((t) => t.id)
+      : [];
   }
 
   private _triggerPicked(ev) {
