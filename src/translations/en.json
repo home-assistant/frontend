@@ -1799,9 +1799,9 @@
                   }
                 },
                 "trigger": {
-                  "label": "Trigger",
-                  "no_triggers": "No triggers available",
-                  "id": "Trigger ID"
+                  "label": "Triggered by",
+                  "no_triggers": "No triggers have an ID set. You can set an ID using the trigger menu button.",
+                  "id": "Trigger"
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
