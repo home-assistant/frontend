@@ -15,7 +15,7 @@ export class BrowserMediaPlayer {
 
   constructor(
     public hass: HomeAssistant,
-    private item: MediaPlayerItem,
+    public item: MediaPlayerItem,
     private onChange: () => void
   ) {}
 
