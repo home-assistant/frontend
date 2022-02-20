@@ -49,7 +49,8 @@ import "../ha-svg-icon";
 import "../ha-fab";
 import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
-import { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
