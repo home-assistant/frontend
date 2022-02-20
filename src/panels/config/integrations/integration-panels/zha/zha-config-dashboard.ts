@@ -111,6 +111,7 @@ class ZHAConfigDashboard extends LitElement {
               >
                 <div class="card-content">
                   <ha-form
+                    .hass=${this.hass}
                     .schema=${schema}
                     .data=${this._configuration!.data[section]}
                     @value-changed=${this._dataChanged}
