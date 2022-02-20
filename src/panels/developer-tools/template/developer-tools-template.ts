@@ -54,7 +54,7 @@ class HaPanelDevTemplate extends LitElement {
 
   private _context_data = "";
 
-  private _context_variables?: Record<string, any>;
+  private _context_variables?;
 
   private _inited = false;
 
@@ -346,10 +346,7 @@ class HaPanelDevTemplate extends LitElement {
     await this._unsubscribeTemplate();
     try {
       if (this._context_data && !this._context_variables) {
-        this._context_variables = load(this._context_data) as Record<
-          string,
-          any
-        >;
+        this._context_variables = load(this._context_data);
       }
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
