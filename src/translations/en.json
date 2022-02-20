@@ -4093,6 +4093,7 @@
             "no_listeners": "This template does not listen for any events and will not update automatically.",
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
+            "context_data": "Context data for template",
             "domain": "Domain"
           },
           "statistics": {

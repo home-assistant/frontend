@@ -3,6 +3,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { load } from "js-yaml";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
@@ -51,6 +52,10 @@ class HaPanelDevTemplate extends LitElement {
 
   private _template = "";
 
+  private _context_data = "";
+
+  private _context_variables?: Record<string, any>;
+
   private _inited = false;
 
   public connectedCallback() {
@@ -65,8 +70,14 @@ class HaPanelDevTemplate extends LitElement {
   }
 
   protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-template-template"]) {
-      this._template = localStorage["panel-dev-template-template"];
+    if (localStorage) {
+      if (localStorage["panel-dev-template-template"]) {
+        this._template = localStorage["panel-dev-template-template"];
+      }
+      if (localStorage["panel-dev-template-context-data"]) {
+        this._context_data = localStorage["panel-dev-template-context-data"];
+        this._context_variables = undefined;
+      }
     } else {
       this._template = DEMO_TEMPLATE;
     }
@@ -141,6 +152,17 @@ class HaPanelDevTemplate extends LitElement {
               "ui.panel.developer-tools.tabs.templates.reset"
             )}
           </mwc-button>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.context_data"
+            )}
+          </p>
+          <ha-code-editor
+            mode="yaml"
+            .value=${this._context_data}
+            @value-changed=${this._contextDataChanged}
+            dir="ltr"
+          ></ha-code-editor>
         </div>
 
         <div class="render-pane">
@@ -302,6 +324,15 @@ class HaPanelDevTemplate extends LitElement {
     false
   );
 
+  private _contextDataChanged(ev) {
+    this._context_data = ev.detail.value;
+    this._context_variables = undefined;
+    if (this._error) {
+      this._error = undefined;
+    }
+    this._debounceRender();
+  }
+
   private _templateChanged(ev) {
     this._template = ev.detail.value;
     if (this._error) {
@@ -314,6 +345,12 @@ class HaPanelDevTemplate extends LitElement {
     this._rendering = true;
     await this._unsubscribeTemplate();
     try {
+      if (this._context_data && !this._context_variables) {
+        this._context_variables = load(this._context_data) as Record<
+          string,
+          any
+        >;
+      }
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
@@ -322,6 +359,7 @@ class HaPanelDevTemplate extends LitElement {
         },
         {
           template: this._template,
+          variables: this._context_variables,
           timeout: 3,
         }
       );
@@ -360,12 +398,16 @@ class HaPanelDevTemplate extends LitElement {
     if (!this._inited) {
       return;
     }
+    localStorage["panel-dev-template-context-data"] = this._context_data;
     localStorage["panel-dev-template-template"] = this._template;
   }
 
   private _restoreDemo() {
+    this._context_data = "";
+    this._context_variables = undefined;
     this._template = DEMO_TEMPLATE;
     this._subscribeTemplate();
+    delete localStorage["panel-dev-template-context-data"];
     delete localStorage["panel-dev-template-template"];
   }
 }
