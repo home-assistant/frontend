@@ -112,6 +112,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                       )}
                     ></ha-markdown>
                     <ha-form
+                      .hass=${this.hass}
                       .data=${this._stepData}
                       .schema=${this._step.data_schema}
                       .error=${this._step.errors}
