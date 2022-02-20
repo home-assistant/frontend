@@ -291,6 +291,7 @@ class PanelMediaBrowser extends LitElement {
       "change",
       async () => {
         const files = input.files!;
+        document.body.removeChild(input);
         const target = this._currentItem!.media_content_id!;
 
         for (let i = 0; i < files.length; i++) {
@@ -315,6 +316,9 @@ class PanelMediaBrowser extends LitElement {
       },
       { once: true }
     );
+    // https://stackoverflow.com/questions/47664777/javascript-file-input-onchange-not-working-ios-safari-only
+    input.style.display = "none";
+    document.body.append(input);
     input.click();
   }
 
