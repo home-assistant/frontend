@@ -19,6 +19,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -164,7 +165,11 @@ class BarMediaPlayer extends LitElement {
 
     return html`
       <div
-        class="info ${!isBrowser ? "pointer" : ""}"
+        class=${classMap({
+          info: true,
+          pointer: !isBrowser,
+          app: this._browserPlayer?.item.media_class === "app",
+        })}
         @click=${this._openMoreInfo}
       >
         ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
@@ -496,6 +501,11 @@ class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 100px;
+      }
+
+      .app img {
+        max-height: 68px;
+        margin: 16px 0 16px 16px;
       }
 
       ha-button-menu mwc-button {
