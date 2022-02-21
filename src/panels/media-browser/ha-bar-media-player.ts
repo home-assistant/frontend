@@ -20,6 +20,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -27,6 +28,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-button-menu";
+import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 import {
@@ -43,6 +45,7 @@ import {
   SUPPORT_PLAY,
   SUPPORT_STOP,
 } from "../../data/media-player";
+import { ResolvedMediaSource } from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
 import { BrowserMediaPlayer } from "./browser-media-player";
@@ -54,7 +57,7 @@ declare global {
 }
 
 @customElement("ha-bar-media-player")
-class BarMediaPlayer extends LitElement {
+export class BarMediaPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entityId!: string;
@@ -67,6 +70,8 @@ class BarMediaPlayer extends LitElement {
   @query("#CurrentProgress") private _currentProgress?: HTMLElement;
 
   @state() private _marqueeActive = false;
+
+  @state() private _newMediaExpected = false;
 
   @state() private _browserPlayer?: BrowserMediaPlayer;
 
@@ -98,27 +103,42 @@ class BarMediaPlayer extends LitElement {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
-
-    if (this._browserPlayer) {
-      this._browserPlayer.stop();
-      this._browserPlayer = undefined;
-    }
+    this._tearDownBrowserPlayer();
   }
 
-  public async playItem(item: MediaPlayerItem) {
+  public showResolvingNewMediaPicked() {
+    this._tearDownBrowserPlayer();
+    this._newMediaExpected = true;
+  }
+
+  public playItem(item: MediaPlayerItem, resolved: ResolvedMediaSource) {
     if (this.entityId !== BROWSER_PLAYER) {
       throw Error("Only browser supported");
     }
-    if (this._browserPlayer) {
-      this._browserPlayer.stop();
-    }
-    this._browserPlayer = new BrowserMediaPlayer(this.hass, item, () =>
-      this.requestUpdate("_browserPlayer")
+    this._tearDownBrowserPlayer();
+    this._browserPlayer = new BrowserMediaPlayer(
+      this.hass,
+      item,
+      resolved,
+      () => this.requestUpdate("_browserPlayer")
     );
-    await this._browserPlayer.initialize();
+    this._newMediaExpected = false;
   }
 
   protected render(): TemplateResult {
+    if (this._newMediaExpected) {
+      return html`
+        <div class="controls-progress">
+          ${until(
+            // Only show spinner after 500ms
+            new Promise((resolve) => setTimeout(resolve, 500)).then(
+              () => html`<ha-circular-progress active></ha-circular-progress>`
+            )
+          )}
+        </div>
+      `;
+    }
+
     const isBrowser = this.entityId === BROWSER_PLAYER;
     const stateObj = this._stateObj;
     const controls = !stateObj
@@ -274,13 +294,19 @@ class BarMediaPlayer extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (changedProps.has("entityId")) {
+      this._tearDownBrowserPlayer();
+    }
+    if (!changedProps.has("hass") || this.entityId === BROWSER_PLAYER) {
+      return;
+    }
+    // Reset new media expected if media player state changes
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
-      changedProps.has("entityId") &&
-      this.entityId !== BROWSER_PLAYER &&
-      this._browserPlayer
+      !oldHass ||
+      oldHass.states[this.entityId] !== this.hass.states[this.entityId]
     ) {
-      this._browserPlayer?.stop();
-      this._browserPlayer = undefined;
+      this._newMediaExpected = false;
     }
   }
 
@@ -327,6 +353,13 @@ class BarMediaPlayer extends LitElement {
         : BrowserMediaPlayer.idleStateObj();
     }
     return this.hass!.states[this.entityId] as MediaPlayerEntity | undefined;
+  }
+
+  private _tearDownBrowserPlayer() {
+    if (this._browserPlayer) {
+      this._browserPlayer.remove();
+      this._browserPlayer = undefined;
+    }
   }
 
   private _openMoreInfo() {
