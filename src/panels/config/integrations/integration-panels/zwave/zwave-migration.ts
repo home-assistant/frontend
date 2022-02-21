@@ -155,7 +155,7 @@ export class ZwaveMigration extends LitElement {
                         .filter(
                           (entityState) =>
                             computeStateDomain(entityState) === "zwave" &&
-                            entityState.state !== "ready"
+                            !["ready", "sleeping"].includes(entityState.state)
                         )
                         .map(
                           (entityState) =>
