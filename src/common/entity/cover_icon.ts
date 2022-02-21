@@ -132,7 +132,6 @@ export const computeCloseIcon = (stateObj: HassEntity): string => {
     case "awning":
     case "door":
     case "gate":
-      return mdiArrowCollapseHorizontal;
     case "curtain":
       return mdiArrowCollapseHorizontal;
     default:
