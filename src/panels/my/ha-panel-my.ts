@@ -155,6 +155,10 @@ const REDIRECTS: Redirects = {
     component: "history",
     redirect: "/history",
   },
+  media_browser: {
+    component: "media_source",
+    redirect: "/media-browser",
+  },
 };
 
 export type ParamType = "url" | "string";
@@ -178,7 +182,7 @@ class HaPanelMy extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    const path = this.route.path.substr(1);
+    const path = this.route.path.substring(1);
 
     if (path.startsWith("supervisor")) {
       if (!isComponentLoaded(this.hass, "hassio")) {
