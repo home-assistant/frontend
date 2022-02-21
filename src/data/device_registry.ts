@@ -77,6 +77,17 @@ export const updateDeviceRegistryEntry = (
     ...updates,
   });
 
+export const removeConfigEntryFromDevice = (
+  hass: HomeAssistant,
+  deviceId: string,
+  configEntryId: string
+) =>
+  hass.callWS<DeviceRegistryEntry>({
+    type: "config/device_registry/remove_config_entry",
+    device_id: deviceId,
+    config_entry_id: configEntryId,
+  });
+
 export const fetchDeviceRegistry = (conn) =>
   conn.sendMessagePromise({
     type: "config/device_registry/list",
