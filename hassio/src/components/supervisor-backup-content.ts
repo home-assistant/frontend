@@ -179,8 +179,9 @@ export class SupervisorBackupContent extends LitElement {
               .label=${html`<supervisor-formfield-label
                 label="Home Assistant"
                 .iconPath=${mdiHomeAssistant}
-                .version=${this.backup?.homeassistant ||
-                this.hass.config.version}
+                .version=${this.backup
+                  ? this.backup.homeassistant
+                  : this.hass.config.version}
               >
               </supervisor-formfield-label>`}
             >
