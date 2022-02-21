@@ -60,7 +60,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               )}
               name="count"
               .value=${(action as CountRepeat).count || "0"}
-              @hange=${this._countChanged}
+              @change=${this._countChanged}
             ></ha-textfield>
           `
         : ""}

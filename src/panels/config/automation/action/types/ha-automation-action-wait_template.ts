@@ -1,6 +1,5 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { WaitAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
@@ -45,15 +44,9 @@ export class HaWaitAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .data=${this.action}
         .schema=${SCHEMA}
-        @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
     `;
-  }
-
-  private _valueChanged(ev: CustomEvent): void {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema): string =>
