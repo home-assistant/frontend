@@ -430,6 +430,10 @@ export class ZwaveMigration extends LitElement {
     const nodesNotReady = (await Promise.all(nodeStatePromisses)).filter(
       (node) => !node.ready
     );
+
+    // eslint-disable-next-line no-console
+    console.log("waiting for nodes to be ready", nodesNotReady);
+
     this._getMigrationData();
     if (nodesNotReady.length === 0) {
       this._waitingOnDevices = [];
