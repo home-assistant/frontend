@@ -111,6 +111,10 @@ export class BarMediaPlayer extends LitElement {
     this._newMediaExpected = true;
   }
 
+  public hideResolvingNewMediaPicked() {
+    this._newMediaExpected = false;
+  }
+
   public playItem(item: MediaPlayerItem, resolved: ResolvedMediaSource) {
     if (this.entityId !== BROWSER_PLAYER) {
       throw Error("Only browser supported");
@@ -141,9 +145,12 @@ export class BarMediaPlayer extends LitElement {
 
     const isBrowser = this.entityId === BROWSER_PLAYER;
     const stateObj = this._stateObj;
-    const controls = !stateObj
-      ? undefined
-      : !this.narrow
+
+    if (!stateObj) {
+      return this._renderChoosePlayer(stateObj);
+    }
+
+    const controls = !this.narrow
       ? computeMediaControls(stateObj)
       : (stateObj.state === "playing" &&
           (supportsFeature(stateObj, SUPPORT_PAUSE) ||
@@ -172,16 +179,14 @@ export class BarMediaPlayer extends LitElement {
           },
         ]
       : [{}];
-    const mediaDescription = stateObj ? computeMediaDescription(stateObj) : "";
-    const mediaDuration = formatMediaTime(stateObj?.attributes.media_duration);
+    const mediaDescription = computeMediaDescription(stateObj);
+    const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
-      stateObj?.attributes.media_title || ""
+      stateObj.attributes.media_title || ""
     );
-
-    const mediaArt = stateObj
-      ? stateObj.attributes.entity_picture_local ||
-        stateObj.attributes.entity_picture
-      : undefined;
+    const mediaArt =
+      stateObj.attributes.entity_picture_local ||
+      stateObj.attributes.entity_picture;
 
     return html`
       <div
@@ -195,11 +200,12 @@ export class BarMediaPlayer extends LitElement {
         ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
         <div class="media-info">
           <hui-marquee
-            .text=${
-              mediaTitleClean ||
-              mediaDescription ||
-              this.hass.localize(`ui.card.media_player.nothing_playing`)
-            }
+            .text=${mediaTitleClean ||
+            mediaDescription ||
+            cleanupMediaTitle(stateObj.attributes.media_content_id) ||
+            (stateObj.state !== "playing" && stateObj.state !== "on"
+              ? this.hass.localize(`ui.card.media_player.nothing_playing`)
+              : "")}
             .active=${this._marqueeActive}
             @mouseover=${this._marqueeMouseOver}
             @mouseleave=${this._marqueeMouseLeave}
@@ -210,43 +216,47 @@ export class BarMediaPlayer extends LitElement {
         </div>
       </div>
       <div class="controls-progress">
-        ${
-          this._browserPlayer?.buffering
-            ? html` <ha-circular-progress active></ha-circular-progress> `
-            : html`
-                <div class="controls">
-                  ${controls === undefined
-                    ? ""
-                    : controls.map(
-                        (control) => html`
-                          <ha-icon-button
-                            .label=${this.hass.localize(
-                              `ui.card.media_player.${control.action}`
-                            )}
-                            .path=${control.icon}
-                            action=${control.action}
-                            @click=${this._handleClick}
-                          >
-                          </ha-icon-button>
-                        `
-                      )}
-                </div>
-                ${stateObj?.attributes.media_duration === Infinity
-                  ? html``
-                  : this.narrow
-                  ? html`<mwc-linear-progress></mwc-linear-progress>`
-                  : html`
-                      <div class="progress">
-                        <div id="CurrentProgress"></div>
-                        <mwc-linear-progress wide></mwc-linear-progress>
-                        <div>${mediaDuration}</div>
-                      </div>
-                    `}
-              `
-        }
+        ${this._browserPlayer?.buffering
+          ? html` <ha-circular-progress active></ha-circular-progress> `
+          : html`
+              <div class="controls">
+                ${controls === undefined
+                  ? ""
+                  : controls.map(
+                      (control) => html`
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            `ui.card.media_player.${control.action}`
+                          )}
+                          .path=${control.icon}
+                          action=${control.action}
+                          @click=${this._handleClick}
+                        >
+                        </ha-icon-button>
+                      `
+                    )}
+              </div>
+              ${stateObj.attributes.media_duration === Infinity
+                ? html``
+                : this.narrow
+                ? html`<mwc-linear-progress></mwc-linear-progress>`
+                : html`
+                    <div class="progress">
+                      <div id="CurrentProgress"></div>
+                      <mwc-linear-progress wide></mwc-linear-progress>
+                      <div>${mediaDuration}</div>
+                    </div>
+                  `}
+            `}
       </div>
+      ${this._renderChoosePlayer(stateObj)}
+    `;
+  }
 
-        <div class="choose-player ${isBrowser ? "browser" : ""}">
+  private _renderChoosePlayer(stateObj: MediaPlayerEntity | undefined) {
+    const isBrowser = this.entityId === BROWSER_PLAYER;
+    return html`
+    <div class="choose-player ${isBrowser ? "browser" : ""}">
           <ha-button-menu corner="BOTTOM_START">
             ${
               this.narrow
@@ -305,6 +315,7 @@ export class BarMediaPlayer extends LitElement {
           </ha-button-menu>
         </div>
       </div>
+
     `;
   }
 
