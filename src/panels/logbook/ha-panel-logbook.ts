@@ -335,7 +335,7 @@ export class HaPanelLogbook extends LitElement {
         .filters {
           display: flex;
           align-items: flex-end;
-          padding: 0 16px;
+          padding: 8px 16px 0;
         }
 
         :host([narrow]) .filters {

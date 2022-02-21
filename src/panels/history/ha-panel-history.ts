@@ -81,7 +81,7 @@ class HaPanelHistory extends LitElement {
         </app-header>
 
         <div class="flex content">
-          <div class="flex layout horizontal wrap">
+          <div class="filters">
             <ha-date-range-picker
               .hass=${this.hass}
               ?disabled=${this._isLoading}
@@ -245,6 +245,12 @@ class HaPanelHistory extends LitElement {
 
         .progress-wrapper {
           position: relative;
+        }
+
+        .filters {
+          display: flex;
+          align-items: flex-end;
+          padding: 8px 16px 0;
         }
 
         ha-date-range-picker {
