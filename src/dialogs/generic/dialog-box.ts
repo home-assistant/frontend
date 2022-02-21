@@ -1,12 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-switch";
-import { PolymerChangedEvent } from "../../polymer-types";
+import "../../components/ha-textfield";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogBoxParams } from "./show-dialog-box";
@@ -71,18 +70,18 @@ class DialogBox extends LitElement {
             : ""}
           ${this._params.prompt
             ? html`
-                <paper-input
+                <ha-textfield
                   dialogInitialFocus
                   .value=${this._value}
                   @keyup=${this._handleKeyUp}
-                  @value-changed=${this._valueChanged}
+                  @change=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
-                ></paper-input>
+                ></ha-textfield>
               `
             : ""}
         </div>
@@ -107,8 +106,8 @@ class DialogBox extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
-    this._value = ev.detail.value;
+  private _valueChanged(ev) {
+    this._value = ev.target.value;
   }
 
   private _dismiss(): void {
