@@ -1,18 +1,14 @@
-import "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "../../../../components/ha-form/ha-form";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-area-picker";
-import { HomeAssistant } from "../../../../types";
-import { AreaCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type { AreaCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditorTarget } from "../types";
-import { configElementStyle } from "./config-elements-style";
-import "../../../../components/ha-formfield";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -38,21 +34,18 @@ export class HuiAreaCardEditor
     this._config = config;
   }
 
-  get _area(): string {
-    return this._config!.area || "";
-  }
-
-  get _navigation_path(): string {
-    return this._config!.navigation_path || "";
-  }
-
-  get _theme(): string {
-    return this._config!.theme || "";
-  }
-
-  get _show_camera(): boolean {
-    return this._config!.show_camera || false;
-  }
+  private _schema = memoizeOne((): HaFormSchema[] => [
+    { name: "area", selector: { area: {} } },
+    { name: "show_camera", required: false, selector: { boolean: {} } },
+    {
+      name: "",
+      type: "grid",
+      schema: [
+        { name: "navigation_path", required: false, selector: { text: {} } },
+        { name: "theme", required: false, selector: { theme: {} } },
+      ],
+    },
+  ]);
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
@@ -60,78 +53,35 @@ export class HuiAreaCardEditor
     }
 
     return html`
-      <div class="card-config">
-        <ha-area-picker
-          .hass=${this.hass}
-          .value=${this._area}
-          .placeholder=${this._area}
-          .configValue=${"area"}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.area.name"
-          )}
-          @value-changed=${this._valueChanged}
-        ></ha-area-picker>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.area.show_camera"
-          )}
-          .dir=${computeRTLDirection(this.hass)}
-        >
-          <ha-switch
-            .checked=${this._show_camera}
-            .configValue=${"show_camera"}
-            @change=${this._valueChanged}
-          ></ha-switch>
-        </ha-formfield>
-        <paper-input
-          .label=${this.hass!.localize(
-            "ui.panel.lovelace.editor.action-editor.navigation_path"
-          )}
-          .value=${this._navigation_path}
-          .configValue=${"navigation_path"}
-          @value-changed=${this._valueChanged}
-        >
-        </paper-input>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value=${this._theme}
-          .configValue=${"theme"}
-          @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
-      </div>
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${this._schema()}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-    const value =
-      target.checked !== undefined ? target.checked : ev.detail.value;
-
-    if (this[`_${target.configValue}`] === value) {
-      return;
-    }
-
-    let newConfig;
-    if (target.configValue) {
-      if (!value) {
-        newConfig = { ...this._config };
-        delete newConfig[target.configValue!];
-      } else {
-        newConfig = {
-          ...this._config,
-          [target.configValue!]: value,
-        };
-      }
-    }
-    fireEvent(this, "config-changed", { config: newConfig });
+    const config = ev.detail.value;
+    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+    fireEvent(this, "config-changed", { config });
   }
 
-  static get styles(): CSSResultGroup {
-    return configElementStyle;
-  }
+  private _computeLabelCallback = (schema: HaFormSchema) => {
+    switch (schema.name) {
+      case "area":
+        return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
+      case "navigation_path":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.action-editor.navigation_path"
+        );
+    }
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.area.${schema.name}`
+    );
+  };
 }
 
 declare global {
