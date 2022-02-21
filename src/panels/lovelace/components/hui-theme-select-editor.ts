@@ -39,7 +39,7 @@ export class HuiThemeSelectEditor extends LitElement {
           .sort()
           .map(
             (theme) =>
-              html` <mwc-list-item .value=${theme}>${theme}</mwc-list-item> `
+              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
           )}
       </mwc-select>
     `;
@@ -57,7 +57,7 @@ export class HuiThemeSelectEditor extends LitElement {
     if (!this.hass || ev.target.value === "") {
       return;
     }
-    this.value = ev.target.value === "remove" ? "" : ev.target.selected;
+    this.value = ev.target.value === "remove" ? "" : ev.target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

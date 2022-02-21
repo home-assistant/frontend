@@ -22,6 +22,8 @@ export class HaIconSelector extends LitElement {
       <ha-icon-picker
         .label=${this.label}
         .value=${this.value}
+        .fallbackPath=${this.selector.icon.fallbackPath}
+        .placeholder=${this.selector.icon.placeholder}
         @value-changed=${this._valueChanged}
       ></ha-icon-picker>
     `;
