@@ -972,6 +972,13 @@
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss"
     },
+    "newsletter": {
+      "newsletter": "Newsletter",
+      "email": "Email",
+      "validation": "A valid email address is required",
+      "subscribe": "Subscribe",
+      "thanks": "Thanks for subscribing!"
+    },
     "sidebar": {
       "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",

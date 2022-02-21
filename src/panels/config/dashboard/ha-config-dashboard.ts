@@ -1,3 +1,4 @@
+import "../../../components/ha-newsletter";
 import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
@@ -134,6 +135,7 @@ class HaConfigDashboard extends LitElement {
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
                 </ha-card>`}
+          <ha-newsletter .hass=${this.hass}></ha-newsletter>
         </ha-config-section>
       </ha-app-layout>
     `;
