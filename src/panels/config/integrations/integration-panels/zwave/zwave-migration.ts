@@ -446,7 +446,7 @@ export class ZwaveMigration extends LitElement {
       )
     );
     const deviceReg: DeviceRegistryEntry[] = await fetchDeviceRegistry(
-      this.hass
+      this.hass.connection
     );
     this._waitingOnDevices = deviceReg.filter((device) => {
       const identifiers = getZwaveJsIdentifiersFromDevice(device);
