@@ -12,7 +12,7 @@ export type HaFormSchema =
   | HaFormMultiSelectSchema
   | HaFormTimeSchema
   | HaFormSelector
-  | HaFormColumnSchema;
+  | HaFormGridSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -26,9 +26,9 @@ export interface HaFormBaseSchema {
   };
 }
 
-export interface HaFormColumnSchema extends HaFormBaseSchema {
-  type: "column";
-  columns?: number;
+export interface HaFormGridSchema extends HaFormBaseSchema {
+  type: "grid";
+  name: "";
   schema: HaFormSchema[];
 }
 

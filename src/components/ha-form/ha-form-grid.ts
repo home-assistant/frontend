@@ -2,20 +2,20 @@ import "./ha-form";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import type {
-  HaFormColumnSchema,
+  HaFormGridSchema,
   HaFormDataContainer,
   HaFormElement,
   HaFormSchema,
 } from "./types";
 import type { HomeAssistant } from "../../types";
 
-@customElement("ha-form-column")
-export class HaFormColumn extends LitElement implements HaFormElement {
+@customElement("ha-form-grid")
+export class HaFormGrid extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormColumnSchema;
+  @property({ attribute: false }) public schema!: HaFormGridSchema;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -25,6 +25,10 @@ export class HaFormColumn extends LitElement implements HaFormElement {
   ) => string;
 
   @property() public computeHelper?: (schema: HaFormSchema) => string;
+
+  protected firstUpdated() {
+    this.setAttribute("own-margin", "");
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -38,7 +42,6 @@ export class HaFormColumn extends LitElement implements HaFormElement {
               .disabled=${this.disabled}
               .computeLabel=${this.computeLabel}
               .computeHelper=${this.computeHelper}
-              style="width: calc(${100 / (this.schema.columns || 2)}% - 4px)"
             ></ha-form>
           `
       )}
@@ -48,10 +51,12 @@ export class HaFormColumn extends LitElement implements HaFormElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        display: flex !important;
-        align-items: flex-start;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        display: grid !important;
+        grid-template-columns: repeat(
+          var(--form-grid-column-count, auto-fit),
+          minmax(var(--form-grid-min-width, 200px), 1fr)
+        );
+        grid-gap: 8px;
       }
       :host > ha-form {
         display: block;
@@ -63,6 +68,6 @@ export class HaFormColumn extends LitElement implements HaFormElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-form-column": HaFormColumn;
+    "ha-form-grid": HaFormGrid;
   }
 }

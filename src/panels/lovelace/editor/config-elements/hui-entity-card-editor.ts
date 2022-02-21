@@ -46,7 +46,7 @@ export class HuiEntityCardEditor
     (entity: string, icon: string, entityState: HassEntity): HaFormSchema[] => [
       { name: "entity", required: true, selector: { entity: {} } },
       {
-        type: "column",
+        type: "grid",
         name: "",
         schema: [
           { name: "name", selector: { text: {} } },

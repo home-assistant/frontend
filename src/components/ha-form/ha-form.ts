@@ -12,7 +12,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-alert";
 import "./ha-form-boolean";
 import "./ha-form-constant";
-import "./ha-form-column";
+import "./ha-form-grid";
 import "./ha-form-float";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
@@ -128,7 +128,7 @@ export class HaForm extends LitElement implements HaFormElement {
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
       const newValue =
-        schema.type === "column"
+        schema.type === "grid"
           ? ev.detail.value
           : { [schema.name]: ev.detail.value };
 
