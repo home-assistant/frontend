@@ -65,7 +65,6 @@ export class HuiAreaCardEditor
 
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value;
-    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
     fireEvent(this, "config-changed", { config });
   }
 
