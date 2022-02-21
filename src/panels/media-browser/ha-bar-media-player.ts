@@ -205,7 +205,9 @@ class BarMediaPlayer extends LitElement {
                 `
               )}
         </div>
-        ${this.narrow
+        ${stateObj?.attributes.media_duration === Infinity
+          ? html``
+          : this.narrow
           ? html`<mwc-linear-progress></mwc-linear-progress>`
           : html`
               <div class="progress">
