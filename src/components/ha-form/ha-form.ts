@@ -23,7 +23,7 @@ import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
 import { HomeAssistant } from "../../types";
 
 const getValue = (obj, item) =>
-  item.type === "column" ? obj : obj ? obj[item.name] : null;
+  obj ? (!item.name ? obj : obj[item.name]) : null;
 
 let selectorImported = false;
 
@@ -127,10 +127,9 @@ export class HaForm extends LitElement implements HaFormElement {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
-      const newValue =
-        schema.type === "grid"
-          ? ev.detail.value
-          : { [schema.name]: ev.detail.value };
+      const newValue = !schema.name
+        ? ev.detail.value
+        : { [schema.name]: ev.detail.value };
 
       fireEvent(this, "value-changed", {
         value: { ...this.data, ...newValue },

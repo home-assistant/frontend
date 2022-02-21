@@ -33,12 +33,12 @@ export class HaFormGrid extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       ${this.schema.schema.map(
-        (field) =>
+        (item) =>
           html`
             <ha-form
               .hass=${this.hass}
               .data=${this.data}
-              .schema=${[field]}
+              .schema=${[item]}
               .disabled=${this.disabled}
               .computeLabel=${this.computeLabel}
               .computeHelper=${this.computeHelper}

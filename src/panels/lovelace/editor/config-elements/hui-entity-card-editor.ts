@@ -100,7 +100,9 @@ export class HuiEntityCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = ev.detail.value;
+    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
