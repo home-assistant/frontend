@@ -1,6 +1,8 @@
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "../../../../components/ha-form/ha-form";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, boolean, object, optional, string, assign } from "superstruct";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/ha-entity-attribute-picker";
@@ -12,11 +14,10 @@ import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
-import { configElementStyle } from "./config-elements-style";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { UNAVAILABLE } from "../../../../data/entity";
 import { WeatherEntity } from "../../../../data/weather";
+import { HaFormSchema } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -61,6 +62,29 @@ export class HuiWeatherForecastCardEditor
     }
   }
 
+  private _schema = memoizeOne(
+    (entity: string, hasForecast: boolean): HaFormSchema[] => [
+      {
+        name: "entity",
+        required: true,
+        selector: { entity: { domain: "weather" } },
+      },
+      { name: "name", selector: { text: {} } },
+      {
+        type: "grid",
+        name: "",
+        schema: [
+          {
+            name: "attribute",
+            selector: { attribute: { entity_id: entity } },
+          },
+          { name: "theme", selector: { theme: {} } },
+        ],
+      },
+      { name: "Forecast", type: "select", disabled: !hasForecast, options: [] },
+    ]
+  );
+
   get _entity(): string {
     return this._config!.entity || "";
   }
@@ -100,7 +124,21 @@ export class HuiWeatherForecastCardEditor
       return html``;
     }
 
+    const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
+
+    const data = { ...this._config };
+    const schema = this._schema(
+      stateObj?.state !== UNAVAILABLE && !!stateObj.attributes.forecast?.length
+    );
+
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -195,46 +233,40 @@ export class HuiWeatherForecastCardEditor
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.currentTarget! as EditorTarget;
+  private _valueChanged(ev: CustomEvent): void {
+    const config = ev.detail.value;
 
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
+    if (config.forecast === "show_both") {
+      /* delete since true is default */
+      delete config.show_current;
+      delete config.show_forecast;
+    } else if (config.forecast === "show_current") {
+      delete config.show_current;
+      config.show_forecast = false;
+    } else if (config.forecast === "show_forecast") {
+      delete config.show_forecast;
+      config.show_current = false;
     }
-    if (target.configValue) {
-      if (target.configValue.startsWith("show_")) {
-        this._config = { ...this._config };
-        if (target.configValue === "show_both") {
-          /* delete since true is default */
-          delete this._config.show_current;
-          delete this._config.show_forecast;
-        } else if (target.configValue === "show_current") {
-          delete this._config.show_current;
-          this._config.show_forecast = false;
-        } else if (target.configValue === "show_forecast") {
-          delete this._config.show_forecast;
-          this._config.show_current = false;
-        }
-      } else if (target.value === "") {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
-      } else {
-        this._config = {
-          ...this._config,
-          [target.configValue!]:
-            target.checked !== undefined ? target.checked : target.value,
-        };
-      }
-    }
-    fireEvent(this, "config-changed", { config: this._config });
+
+    delete config.forecast;
+
+    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
+    fireEvent(this, "config-changed", { config });
   }
 
-  static get styles(): CSSResultGroup {
-    return configElementStyle;
-  }
+  private _computeLabelCallback = (schema: HaFormSchema) => {
+    if (schema.name === "entity") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.entity"
+      )} (${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.config.required"
+      )})`;
+    }
+
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    );
+  };
 }
 
 declare global {

@@ -109,7 +109,7 @@ export class HaForm extends LitElement implements HaFormElement {
                   schema: item,
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
-                  disabled: this.disabled,
+                  disabled: this.disabled || item.disabled,
                   hass: this.hass,
                   computeLabel: this.computeLabel,
                   computeHelper: this.computeHelper,
