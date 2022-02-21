@@ -111,6 +111,10 @@ export class SupervisorBackupContent extends LitElement {
     }
   }
 
+  public override focus() {
+    this._focusTarget?.focus();
+  }
+
   private _localize = (string: string) =>
     this.supervisor?.localize(`backup.${string}`) ||
     this.localize!(`ui.panel.page-onboarding.restore.${string}`);
@@ -270,10 +274,6 @@ export class SupervisorBackupContent extends LitElement {
           `
         : ""}
     `;
-  }
-
-  public override focus() {
-    this._focusTarget?.focus();
   }
 
   private toggleHomeAssistant() {
