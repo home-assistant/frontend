@@ -664,8 +664,10 @@
           },
           "types": {
             "reload": "Reload",
-            "navigation": "Navigate",
-            "server_control": "Server"
+            "navigation": "Navigation",
+            "server_control": "Server",
+            "entity": "Entity",
+            "suggestion": "Suggestions"
           },
           "navigation": {
             "logs": "[%key:ui::panel::config::logs::caption%]",
