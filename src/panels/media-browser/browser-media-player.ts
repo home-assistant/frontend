@@ -5,61 +5,60 @@ import {
   SUPPORT_PAUSE,
   SUPPORT_PLAY,
 } from "../../data/media-player";
-import { resolveMediaSource } from "../../data/media_source";
+import { ResolvedMediaSource } from "../../data/media_source";
 import { HomeAssistant } from "../../types";
 
 export class BrowserMediaPlayer {
-  private player?: HTMLAudioElement;
+  private player: HTMLAudioElement;
 
-  private stopped = false;
+  // We pretend we're playing while still buffering.
+  private _buffering = true;
+
+  private _removed = false;
 
   constructor(
     public hass: HomeAssistant,
     public item: MediaPlayerItem,
+    public resolved: ResolvedMediaSource,
     private onChange: () => void
-  ) {}
-
-  public async initialize() {
-    const resolvedUrl: any = await resolveMediaSource(
-      this.hass,
-      this.item.media_content_id
-    );
-
-    const player = new Audio(resolvedUrl.url);
+  ) {
+    const player = new Audio(this.resolved.url);
     player.addEventListener("play", this._handleChange);
-    player.addEventListener("playing", this._handleChange);
+    player.addEventListener("playing", () => {
+      this._buffering = false;
+      this._handleChange();
+    });
     player.addEventListener("pause", this._handleChange);
     player.addEventListener("ended", this._handleChange);
     player.addEventListener("canplaythrough", () => {
-      if (this.stopped) {
+      if (this._removed) {
         return;
       }
-      this.player = player;
-      player.play();
+      if (this._buffering) {
+        player.play();
+      }
       this.onChange();
     });
+    this.player = player;
   }
 
   private _handleChange = () => {
-    if (!this.stopped) {
+    if (!this._removed) {
       this.onChange();
     }
   };
 
   public pause() {
-    if (this.player) {
-      this.player.pause();
-    }
+    this._buffering = false;
+    this.player.pause();
   }
 
   public play() {
-    if (this.player) {
-      this.player.play();
-    }
+    this.player.play();
   }
 
-  public stop() {
-    this.stopped = true;
+  public remove() {
+    this._removed = true;
     // @ts-ignore
     this.onChange = undefined;
     if (this.player) {
@@ -68,9 +67,7 @@ export class BrowserMediaPlayer {
   }
 
   public get isPlaying(): boolean {
-    return (
-      this.player !== undefined && !this.player.paused && !this.player.ended
-    );
+    return this._buffering || (!this.player.paused && !this.player.ended);
   }
 
   static idleStateObj(): MediaPlayerEntity {
@@ -88,19 +85,19 @@ export class BrowserMediaPlayer {
   toStateObj(): MediaPlayerEntity {
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
     const base = BrowserMediaPlayer.idleStateObj();
-    if (!this.player) {
-      return base;
-    }
     base.state = this.isPlaying ? "playing" : "paused";
     base.attributes = {
       media_title: this.item.title,
-      media_duration: this.player.duration,
-      media_position: this.player.currentTime,
-      media_position_updated_at: base.last_updated,
       entity_picture: this.item.thumbnail,
       // eslint-disable-next-line no-bitwise
       supported_features: SUPPORT_PLAY | SUPPORT_PAUSE,
     };
+
+    if (this.player.duration) {
+      base.attributes.media_duration = this.player.duration;
+      base.attributes.media_position = this.player.currentTime;
+      base.attributes.media_position_updated_at = base.last_updated;
+    }
     return base;
   }
 }
