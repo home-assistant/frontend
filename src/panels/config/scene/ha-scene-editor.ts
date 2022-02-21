@@ -28,12 +28,13 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-area-picker";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-textfield";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -288,14 +289,14 @@ export class HaSceneEditor extends SubscribeMixin(
                   </div>
                   <ha-card>
                     <div class="card-content">
-                      <paper-input
+                      <ha-textfield
                         .value=${this._config.name}
                         .name=${"name"}
-                        @value-changed=${this._valueChanged}
-                        label=${this.hass.localize(
+                        @change=${this._valueChanged}
+                        .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.name"
                         )}
-                      ></paper-input>
+                      ></ha-textfield>
                       <ha-icon-picker
                         .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.icon"
@@ -701,14 +702,14 @@ export class HaSceneEditor extends SubscribeMixin(
     this._dirty = true;
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: Event) {
     ev.stopPropagation();
     const target = ev.target as any;
     const name = target.name;
     if (!name) {
       return;
     }
-    let newVal = ev.detail.value;
+    let newVal = (ev as CustomEvent).detail?.value ?? target.value;
     if (target.type === "number") {
       newVal = Number(newVal);
     }
@@ -989,6 +990,9 @@ export class HaSceneEditor extends SubscribeMixin(
         ha-entity-picker {
           display: block;
           margin-top: 8px;
+        }
+        ha-textfield {
+          display: block;
         }
       `,
     ];

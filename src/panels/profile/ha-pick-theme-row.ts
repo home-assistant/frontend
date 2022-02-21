@@ -1,5 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-select/mwc-select";
 import {
   css,
   CSSResultGroup,
@@ -14,14 +15,13 @@ import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-settings-row";
+import "../../components/ha-textfield";
 import {
-  DEFAULT_PRIMARY_COLOR,
   DEFAULT_ACCENT_COLOR,
+  DEFAULT_PRIMARY_COLOR,
 } from "../../resources/ha-style";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import "@material/mwc-select/mwc-select";
-import "@material/mwc-list/mwc-list-item";
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends LitElement {
@@ -115,8 +115,8 @@ export class HaPickThemeRow extends LitElement {
               </ha-radio>
             </ha-formfield>
             ${curTheme === "default"
-              ? html` <div class="color-pickers">
-                  <paper-input
+              ? html`<div class="color-pickers">
+                  <ha-textfield
                     .value=${themeSettings?.primaryColor ||
                     DEFAULT_PRIMARY_COLOR}
                     type="color"
@@ -125,8 +125,8 @@ export class HaPickThemeRow extends LitElement {
                     )}
                     .name=${"primaryColor"}
                     @change=${this._handleColorChange}
-                  ></paper-input>
-                  <paper-input
+                  ></ha-textfield>
+                  <ha-textfield
                     .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
                     type="color"
                     .label=${this.hass.localize(
@@ -134,7 +134,7 @@ export class HaPickThemeRow extends LitElement {
                     )}
                     .name=${"accentColor"}
                     @change=${this._handleColorChange}
-                  ></paper-input>
+                  ></ha-textfield>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <mwc-button @click=${this._resetColors}>
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
@@ -228,7 +228,8 @@ export class HaPickThemeRow extends LitElement {
         align-items: center;
         flex-grow: 1;
       }
-      paper-input {
+      ha-textfield {
+        --text-field-padding: 8px;
         min-width: 75px;
         flex-grow: 1;
         margin: 0 4px;
