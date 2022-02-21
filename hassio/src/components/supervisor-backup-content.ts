@@ -1,7 +1,7 @@
 import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
@@ -92,6 +92,8 @@ export class SupervisorBackupContent extends LitElement {
 
   @property() public confirmBackupPassword = "";
 
+  @query("paper-input, ha-radio, ha-checkbox", true) private _focusTarget;
+
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -107,6 +109,10 @@ export class SupervisorBackupContent extends LitElement {
       this.backupName = this.backup?.name || "";
       this.backupHasPassword = this.backup?.protected || false;
     }
+  }
+
+  public override focus() {
+    this._focusTarget?.focus();
   }
 
   private _localize = (string: string) =>
