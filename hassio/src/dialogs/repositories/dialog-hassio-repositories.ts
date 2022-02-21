@@ -139,6 +139,7 @@ class HassioRepositoriesDialog extends LitElement {
                 "dialog.repositories.add"
               )}
               @keydown=${this._handleKeyAdd}
+              dialogInitialFocus
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
               ${this._processing
