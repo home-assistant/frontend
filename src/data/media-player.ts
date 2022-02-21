@@ -33,7 +33,8 @@ import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
-  media_content_type?: any;
+  media_content_id?: string;
+  media_content_type?: string;
   media_artist?: string;
   media_playlist?: string;
   media_series_title?: string;

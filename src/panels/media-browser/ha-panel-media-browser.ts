@@ -37,6 +37,7 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
+import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import {
@@ -78,6 +79,8 @@ class PanelMediaBrowser extends LitElement {
   private _entityId = BROWSER_PLAYER;
 
   @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
+
+  @query("ha-bar-media-player") private _player!: BarMediaPlayer;
 
   protected render(): TemplateResult {
     return html`
@@ -235,15 +238,23 @@ class PanelMediaBrowser extends LitElement {
     ev: HASSDomEvent<MediaPickedEvent>
   ): Promise<void> {
     const item = ev.detail.item;
+
     if (this._entityId !== BROWSER_PLAYER) {
-      this.hass!.callService("media_player", "play_media", {
-        entity_id: this._entityId,
-        media_content_id: item.media_content_id,
-        media_content_type: item.media_content_type,
-      });
+      this._player.showResolvingNewMediaPicked();
+      try {
+        await this.hass!.callService("media_player", "play_media", {
+          entity_id: this._entityId,
+          media_content_id: item.media_content_id,
+          media_content_type: item.media_content_type,
+        });
+      } catch (err) {
+        this._player.hideResolvingNewMediaPicked();
+      }
       return;
     }
 
+    // We won't cancel current media being played if we're going to
+    // open a camera.
     if (isCameraMediaSource(item.media_content_id)) {
       fireEvent(this, "hass-more-info", {
         entityId: getEntityIdFromCameraMediaSource(item.media_content_id),
@@ -251,15 +262,15 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
+    this._player.showResolvingNewMediaPicked();
+
     const resolvedUrl = await resolveMediaSource(
       this.hass,
       item.media_content_id
     );
 
     if (resolvedUrl.mime_type.startsWith("audio/")) {
-      await this.shadowRoot!.querySelector("ha-bar-media-player")!.playItem(
-        item
-      );
+      this._player.playItem(item, resolvedUrl);
       return;
     }
 
