@@ -339,7 +339,7 @@ export const computeMediaControls = (
 };
 
 export const formatMediaTime = (seconds: number | undefined): string => {
-  if (seconds === undefined) {
+  if (seconds === undefined || seconds === Infinity) {
     return "";
   }
 
