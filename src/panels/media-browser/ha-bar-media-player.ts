@@ -195,9 +195,11 @@ export class BarMediaPlayer extends LitElement {
         ${mediaArt ? html`<img src=${this.hass.hassUrl(mediaArt)} />` : ""}
         <div class="media-info">
           <hui-marquee
-            .text=${mediaTitleClean ||
-            mediaDescription ||
-            this.hass.localize(`ui.card.media_player.nothing_playing`)}
+            .text=${
+              mediaTitleClean ||
+              mediaDescription ||
+              this.hass.localize(`ui.card.media_player.nothing_playing`)
+            }
             .active=${this._marqueeActive}
             @mouseover=${this._marqueeMouseOver}
             @mouseleave=${this._marqueeMouseLeave}
@@ -208,86 +210,100 @@ export class BarMediaPlayer extends LitElement {
         </div>
       </div>
       <div class="controls-progress">
-        <div class="controls">
-          ${controls === undefined
-            ? ""
-            : controls.map(
-                (control) => html`
-                  <ha-icon-button
-                    .label=${this.hass.localize(
-                      `ui.card.media_player.${control.action}`
-                    )}
-                    .path=${control.icon}
-                    action=${control.action}
-                    @click=${this._handleClick}
-                  >
-                  </ha-icon-button>
-                `
-              )}
-        </div>
-        ${stateObj?.attributes.media_duration === Infinity
-          ? html``
-          : this.narrow
-          ? html`<mwc-linear-progress></mwc-linear-progress>`
-          : html`
-              <div class="progress">
-                <div id="CurrentProgress"></div>
-                <mwc-linear-progress wide></mwc-linear-progress>
-                <div>${mediaDuration}</div>
-              </div>
-            `}
-      </div>
-      <div class="choose-player ${isBrowser ? "browser" : ""}">
-        <ha-button-menu corner="BOTTOM_START">
-          ${this.narrow
-            ? html`
-                <ha-icon-button
-                  slot="trigger"
-                  .path=${isBrowser
-                    ? mdiMonitor
-                    : domainIcon(computeDomain(this.entityId), stateObj)}
-                ></ha-icon-button>
-              `
+        ${
+          this._browserPlayer?.buffering
+            ? html` <ha-circular-progress active></ha-circular-progress> `
             : html`
-                <mwc-button
-                  slot="trigger"
-                  .label=${this.narrow
+                <div class="controls">
+                  ${controls === undefined
                     ? ""
-                    : `${stateObj ? computeStateName(stateObj) : this.entityId}
+                    : controls.map(
+                        (control) => html`
+                          <ha-icon-button
+                            .label=${this.hass.localize(
+                              `ui.card.media_player.${control.action}`
+                            )}
+                            .path=${control.icon}
+                            action=${control.action}
+                            @click=${this._handleClick}
+                          >
+                          </ha-icon-button>
+                        `
+                      )}
+                </div>
+                ${stateObj?.attributes.media_duration === Infinity
+                  ? html``
+                  : this.narrow
+                  ? html`<mwc-linear-progress></mwc-linear-progress>`
+                  : html`
+                      <div class="progress">
+                        <div id="CurrentProgress"></div>
+                        <mwc-linear-progress wide></mwc-linear-progress>
+                        <div>${mediaDuration}</div>
+                      </div>
+                    `}
+              `
+        }
+      </div>
+
+        <div class="choose-player ${isBrowser ? "browser" : ""}">
+          <ha-button-menu corner="BOTTOM_START">
+            ${
+              this.narrow
+                ? html`
+                    <ha-icon-button
+                      slot="trigger"
+                      .path=${isBrowser
+                        ? mdiMonitor
+                        : domainIcon(computeDomain(this.entityId), stateObj)}
+                    ></ha-icon-button>
+                  `
+                : html`
+                    <mwc-button
+                      slot="trigger"
+                      .label=${this.narrow
+                        ? ""
+                        : `${
+                            stateObj
+                              ? computeStateName(stateObj)
+                              : this.entityId
+                          }
                 `}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${isBrowser
+                          ? mdiMonitor
+                          : domainIcon(computeDomain(this.entityId), stateObj)}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="trailingIcon"
+                        .path=${mdiChevronDown}
+                      ></ha-svg-icon>
+                    </mwc-button>
+                  `
+            }
+            <mwc-list-item
+              .player=${BROWSER_PLAYER}
+              ?selected=${isBrowser}
+              @click=${this._selectPlayer}
+            >
+              ${this.hass.localize("ui.components.media-browser.web-browser")}
+            </mwc-list-item>
+            ${this._mediaPlayerEntities.map(
+              (source) => html`
+                <mwc-list-item
+                  ?selected=${source.entity_id === this.entityId}
+                  .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                  .player=${source.entity_id}
+                  @click=${this._selectPlayer}
                 >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${isBrowser
-                      ? mdiMonitor
-                      : domainIcon(computeDomain(this.entityId), stateObj)}
-                  ></ha-svg-icon>
-                  <ha-svg-icon
-                    slot="trailingIcon"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
-                </mwc-button>
-              `}
-          <mwc-list-item
-            .player=${BROWSER_PLAYER}
-            ?selected=${isBrowser}
-            @click=${this._selectPlayer}
-          >
-            ${this.hass.localize("ui.components.media-browser.web-browser")}
-          </mwc-list-item>
-          ${this._mediaPlayerEntities.map(
-            (source) => html`
-              <mwc-list-item
-                ?selected=${source.entity_id === this.entityId}
-                .disabled=${UNAVAILABLE_STATES.includes(source.state)}
-                .player=${source.entity_id}
-                @click=${this._selectPlayer}
-              >
-                ${computeStateName(source)}
-              </mwc-list-item>
-            `
-          )}
-        </ha-button-menu>
+                  ${computeStateName(source)}
+                </mwc-list-item>
+              `
+            )}
+          </ha-button-menu>
+        </div>
       </div>
     `;
   }

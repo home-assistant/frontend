@@ -12,7 +12,7 @@ export class BrowserMediaPlayer {
   private player: HTMLAudioElement;
 
   // We pretend we're playing while still buffering.
-  private _buffering = true;
+  public buffering = true;
 
   private _removed = false;
 
@@ -25,7 +25,7 @@ export class BrowserMediaPlayer {
     const player = new Audio(this.resolved.url);
     player.addEventListener("play", this._handleChange);
     player.addEventListener("playing", () => {
-      this._buffering = false;
+      this.buffering = false;
       this._handleChange();
     });
     player.addEventListener("pause", this._handleChange);
@@ -34,7 +34,7 @@ export class BrowserMediaPlayer {
       if (this._removed) {
         return;
       }
-      if (this._buffering) {
+      if (this.buffering) {
         player.play();
       }
       this.onChange();
@@ -49,7 +49,7 @@ export class BrowserMediaPlayer {
   };
 
   public pause() {
-    this._buffering = false;
+    this.buffering = false;
     this.player.pause();
   }
 
@@ -67,7 +67,7 @@ export class BrowserMediaPlayer {
   }
 
   public get isPlaying(): boolean {
-    return this._buffering || (!this.player.paused && !this.player.ended);
+    return this.buffering || (!this.player.paused && !this.player.ended);
   }
 
   static idleStateObj(): MediaPlayerEntity {
