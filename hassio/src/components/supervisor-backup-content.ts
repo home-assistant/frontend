@@ -175,24 +175,23 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupType === "partial"
         ? html`<div class="partial-picker">
-            ${this.backup && this.backup.homeassistant
-              ? html`
-                  <ha-formfield
-                    .label=${html`<supervisor-formfield-label
-                      label="Home Assistant"
-                      .iconPath=${mdiHomeAssistant}
-                      .version=${this.backup.homeassistant}
-                    >
-                    </supervisor-formfield-label>`}
-                  >
-                    <ha-checkbox
-                      .checked=${this.homeAssistant}
-                      @click=${this.toggleHomeAssistant}
-                    >
-                    </ha-checkbox>
-                  </ha-formfield>
-                `
-              : ""}
+            <ha-formfield
+              .label=${html`<supervisor-formfield-label
+                label="Home Assistant"
+                .iconPath=${mdiHomeAssistant}
+                .version=${this.backup
+                  ? this.backup.homeassistant
+                  : this.hass.config.version}
+              >
+              </supervisor-formfield-label>`}
+            >
+              <ha-checkbox
+                .checked=${this.homeAssistant}
+                @click=${this.toggleHomeAssistant}
+              >
+              </ha-checkbox>
+            </ha-formfield>
+
             ${foldersSection?.templates.length
               ? html`
                   <ha-formfield
