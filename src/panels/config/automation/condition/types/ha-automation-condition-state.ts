@@ -9,6 +9,7 @@ import type { StateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
+import "../../../../../components/ha-form/ha-form";
 
 const stateConditionStruct = object({
   condition: literal("state"),

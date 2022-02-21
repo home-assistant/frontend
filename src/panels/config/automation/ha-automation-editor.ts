@@ -9,7 +9,6 @@ import {
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-input/paper-textarea";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -201,7 +200,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         ${this._config
           ? html`
               ${this.narrow
-                ? html` <span slot="header">${this._config?.alias}</span> `
+                ? html`<span slot="header">${this._config?.alias}</span>`
                 : ""}
               <div
                 class="content ${classMap({
@@ -210,27 +209,31 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 @subscribe-automation-config=${this._subscribeAutomationConfig}
               >
                 ${this._errors
-                  ? html` <div class="errors">${this._errors}</div> `
+                  ? html`<div class="errors">${this._errors}</div>`
                   : ""}
                 ${this._mode === "gui"
                   ? html`
                       ${"use_blueprint" in this._config
-                        ? html`<blueprint-automation-editor
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
-                            .isWide=${this.isWide}
-                            .stateObj=${stateObj}
-                            .config=${this._config}
-                            @value-changed=${this._valueChanged}
-                          ></blueprint-automation-editor>`
-                        : html`<manual-automation-editor
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
-                            .isWide=${this.isWide}
-                            .stateObj=${stateObj}
-                            .config=${this._config}
-                            @value-changed=${this._valueChanged}
-                          ></manual-automation-editor>`}
+                        ? html`
+                            <blueprint-automation-editor
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .isWide=${this.isWide}
+                              .stateObj=${stateObj}
+                              .config=${this._config}
+                              @value-changed=${this._valueChanged}
+                            ></blueprint-automation-editor>
+                          `
+                        : html`
+                            <manual-automation-editor
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .isWide=${this.isWide}
+                              .stateObj=${stateObj}
+                              .config=${this._config}
+                              @value-changed=${this._valueChanged}
+                            ></manual-automation-editor>
+                          `}
                     `
                   : this._mode === "yaml"
                   ? html`
