@@ -57,7 +57,7 @@ export class HuiThemeSelectEditor extends LitElement {
     if (!this.hass || ev.target.value === "") {
       return;
     }
-    this.value = ev.target.value === "remove" ? "" : ev.target.value;
+    this.value = ev.target.value === "remove" ? undefined : ev.target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }
