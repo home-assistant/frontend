@@ -73,7 +73,7 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
+  const newVal = ev.detail?.value || (ev.target as any).value;
 
   if ((element.action[name] || "") === newVal) {
     return;
@@ -376,7 +376,7 @@ export default class HaAutomationActionRow extends LitElement {
           margin: 4px 0;
         }
         mwc-select {
-          margin-bottom: 16px;
+          margin-bottom: 24px;
         }
       `,
     ];

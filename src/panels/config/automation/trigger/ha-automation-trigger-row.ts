@@ -14,6 +14,7 @@ import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon-button";
 import type { Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -200,14 +201,14 @@ export default class HaAutomationTriggerRow extends LitElement {
 
                 ${showId
                   ? html`
-                      <paper-input
+                      <ha-textfield
                         .label=${this.hass.localize(
                           "ui.panel.config.automation.editor.triggers.id"
                         )}
-                        .value=${this.trigger.id}
-                        @value-changed=${this._idChanged}
+                        .value=${this.trigger.id || ""}
+                        @change=${this._idChanged}
                       >
-                      </paper-input>
+                      </ha-textfield>
                     `
                   : ""}
                 <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
@@ -287,7 +288,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _idChanged(ev: CustomEvent) {
-    const newId = ev.detail.value;
+    const newId = (ev.target as any).value;
     if (newId === (this.trigger.id ?? "")) {
       return;
     }
@@ -333,7 +334,11 @@ export default class HaAutomationTriggerRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         mwc-select {
-          margin-bottom: 16px;
+          margin-bottom: 24px;
+        }
+        ha-textfield {
+          display: block;
+          margin-bottom: 24px;
         }
       `,
     ];

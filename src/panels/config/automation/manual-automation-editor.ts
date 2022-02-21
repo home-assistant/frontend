@@ -1,11 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-textarea";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
+import "../../../components/ha-textarea";
+import "../../../components/ha-textfield";
 import {
   Condition,
   ManualAutomationConfig,
@@ -14,7 +15,7 @@ import {
 } from "../../../data/automation";
 import { Action, MODES, MODES_MAX } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import "./action/ha-automation-action";
@@ -36,7 +37,7 @@ export class HaManualAutomationEditor extends LitElement {
   protected render() {
     return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
-          ? html` <span slot="header">${this.config.alias}</span> `
+          ? html`<span slot="header">${this.config.alias}</span>`
           : ""}
         <span slot="introduction">
           ${this.hass.localize(
@@ -45,16 +46,16 @@ export class HaManualAutomationEditor extends LitElement {
         </span>
         <ha-card>
           <div class="card-content">
-            <paper-input
+            <ha-textfield
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.alias"
               )}
               name="alias"
-              .value=${this.config.alias}
-              @value-changed=${this._valueChanged}
+              .value=${this.config.alias || ""}
+              @change=${this._valueChanged}
             >
-            </paper-input>
-            <paper-textarea
+            </ha-textfield>
+            <ha-textarea
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.description.label"
               )}
@@ -62,9 +63,9 @@ export class HaManualAutomationEditor extends LitElement {
                 "ui.panel.config.automation.editor.description.placeholder"
               )}
               name="description"
-              .value=${this.config.description}
-              @value-changed=${this._valueChanged}
-            ></paper-textarea>
+              .value=${this.config.description || ""}
+              @change=${this._valueChanged}
+            ></ha-textarea>
             <p>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.description",
@@ -98,16 +99,18 @@ export class HaManualAutomationEditor extends LitElement {
               )}
             </mwc-select>
             ${this.config.mode && MODES_MAX.includes(this.config.mode)
-              ? html`<paper-input
-                  .label=${this.hass.localize(
-                    `ui.panel.config.automation.editor.max.${this.config.mode}`
-                  )}
-                  type="number"
-                  name="max"
-                  .value=${this.config.max || "10"}
-                  @value-changed=${this._valueChanged}
-                >
-                </paper-input>`
+              ? html`
+                  <ha-textfield
+                    .label=${this.hass.localize(
+                      `ui.panel.config.automation.editor.max.${this.config.mode}`
+                    )}
+                    type="number"
+                    name="max"
+                    .value=${this.config.max || "10"}
+                    @change=${this._valueChanged}
+                  >
+                  </ha-textfield>
+                `
               : html``}
           </div>
           ${this.stateObj
@@ -243,7 +246,7 @@ export class HaManualAutomationEditor extends LitElement {
     if (!name) {
       return;
     }
-    let newVal = ev.detail.value;
+    let newVal = target.value;
     if (target.type === "number") {
       newVal = Number(newVal);
     }

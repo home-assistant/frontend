@@ -147,7 +147,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     haStyle,
     css`
       mwc-select {
-        margin-bottom: 16px;
+        margin-bottom: 24px;
       }
     `,
   ];
