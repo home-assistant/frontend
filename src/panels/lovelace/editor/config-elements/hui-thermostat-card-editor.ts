@@ -61,9 +61,7 @@ export class HuiThermostatCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
-    Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
