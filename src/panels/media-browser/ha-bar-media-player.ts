@@ -272,10 +272,10 @@ export class BarMediaPlayer extends LitElement {
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
                 <ha-slider
-                  .min=${0}
-                  .max=${100}
+                  min="0"
+                  max="100"
+                  step="1"
                   .value=${stateObj.attributes.volume_level! * 100}
-                  .step=${1}
                   @change=${this._handleVolumeChange}
                 >
                 </ha-slider>
