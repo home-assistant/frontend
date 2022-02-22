@@ -150,7 +150,7 @@ class HaConfigDashboard extends LitElement {
                 "ui.panel.config.tips.join",
                 "forums",
                 html`<a
-                  href=${documentationUrl(this.hass, `/community`)}
+                  href="https://community.home-assistant.io"
                   target="_blank"
                   rel="noreferrer"
                   >Forums</a
