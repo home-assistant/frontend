@@ -3147,6 +3147,10 @@
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
           }
+        },
+        "tips": {
+          "tip": "Tip!",
+          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
         }
       },
       "lovelace": {

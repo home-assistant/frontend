@@ -1,4 +1,10 @@
-import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import {
+  mdiCloudLock,
+  mdiDotsVertical,
+  mdiLightbulbOutline,
+  mdiMagnify,
+  mdiNewBox,
+} from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
@@ -18,6 +24,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-svg-icon";
 import { CloudStatus } from "../../../data/cloud";
 import {
   refreshSupervisorAvailableUpdates,
@@ -34,6 +41,7 @@ import "./ha-config-updates";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -134,6 +142,51 @@ class HaConfigDashboard extends LitElement {
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
                 </ha-card>`}
+          <div class="tips">
+            <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
+            <span class="tip-word">Tip!</span>
+            <span class="text">
+              ${this.hass.localize(
+                "ui.panel.config.tips.join",
+                "forums",
+                html`<a
+                  href="https://community.home-assistant.io"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Forums</a
+                >`,
+                "twitter",
+                html`<a
+                  href=${documentationUrl(this.hass, `/twitter`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  >Twitter</a
+                >`,
+                "discord",
+                html`<a
+                  href=${documentationUrl(this.hass, `/join-chat`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  >Chat</a
+                >`,
+                "blog",
+                html`<a
+                  href=${documentationUrl(this.hass, `/blog`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  >Blog</a
+                >`,
+                "newsletter",
+                html`<a
+                    href=${documentationUrl(this.hass, `/newsletter`)}
+                    target="_blank"
+                    rel="noreferrer"
+                    >Newsletter</a
+                  >
+                  <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon>`
+              )}
+            </span>
+          </div>
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -222,6 +275,22 @@ class HaConfigDashboard extends LitElement {
 
         :host([narrow]) ha-config-section {
           margin-top: -42px;
+        }
+
+        .tips {
+          text-align: center;
+        }
+
+        .tips .text {
+          color: var(--secondary-text-color);
+        }
+
+        .tip-word {
+          font-weight: 500;
+        }
+
+        .new {
+          color: var(--primary-color);
         }
       `,
     ];
