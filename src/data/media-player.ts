@@ -360,3 +360,17 @@ export const cleanupMediaTitle = (title?: string): string | undefined => {
   const index = title.indexOf("?authSig=");
   return index > 0 ? title.slice(0, index) : title;
 };
+
+/**
+ * Set volume of a media player entity.
+ * @param hass Home Assistant object
+ * @param entity_id entity ID of media player
+ * @param volume_level number between 0..1
+ * @returns
+ */
+export const setMediaPlayerVolume = (
+  hass: HomeAssistant,
+  entity_id: string,
+  volume_level: number
+) =>
+  hass.callService("media_player", "volume_set", { entity_id, volume_level });
