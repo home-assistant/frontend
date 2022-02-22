@@ -1,14 +1,13 @@
-import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { AreaCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -19,6 +18,19 @@ const cardConfigStruct = assign(
     show_camera: optional(boolean()),
   })
 );
+
+const SCHEMA: HaFormSchema[] = [
+  { name: "area", selector: { area: {} } },
+  { name: "show_camera", required: false, selector: { boolean: {} } },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "navigation_path", required: false, selector: { text: {} } },
+      { name: "theme", required: false, selector: { theme: {} } },
+    ],
+  },
+];
 
 @customElement("hui-area-card-editor")
 export class HuiAreaCardEditor
@@ -34,19 +46,6 @@ export class HuiAreaCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((): HaFormSchema[] => [
-    { name: "area", selector: { area: {} } },
-    { name: "show_camera", required: false, selector: { boolean: {} } },
-    {
-      name: "",
-      type: "grid",
-      schema: [
-        { name: "navigation_path", required: false, selector: { text: {} } },
-        { name: "theme", required: false, selector: { theme: {} } },
-      ],
-    },
-  ]);
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -56,7 +55,7 @@ export class HuiAreaCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${this._schema()}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
