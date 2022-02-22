@@ -36,6 +36,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { debounce } from "../../../../common/util/debounce";
+import { validateConfig } from "../../../../data/config";
 
 const OPTIONS = [
   "device",
@@ -242,19 +243,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-
-    if (!changedProps.has("trigger")) {
-      return;
-    }
-
-    if (this._triggerUnsub) {
-      this._triggerUnsub.then((unsub) => unsub());
-    }
-
-    const oldTrigger = changedProps.get("trigger") as Trigger | undefined;
-
-    // The first time we change a trigger it's always invalid so we skip subscribing
-    if (oldTrigger?.platform === this.trigger.platform) {
+    if (changedProps.has("trigger")) {
       this._subscribeTrigger();
     }
   }
@@ -275,9 +264,25 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._subscribeTrigger.cancel();
   }
 
-  private _subscribeTrigger = debounce(() => {
+  private _subscribeTrigger = debounce(async () => {
     let untriggerTimeout: number | undefined;
     const showTriggeredTime = 5000;
+    const trigger = this.trigger;
+
+    // Clean up old trigger subscription.
+    if (this._triggerUnsub) {
+      this._triggerUnsub.then((unsub) => unsub());
+      this._triggerUnsub = undefined;
+    }
+
+    const validateResult = await validateConfig(this.hass, {
+      trigger: this.trigger,
+    });
+
+    // Don't do anything if trigger not valid or if trigger changed.
+    if (!validateResult.trigger.valid || this.trigger !== trigger) {
+      return;
+    }
 
     const triggerUnsub = subscribeTrigger(
       this.hass,
@@ -294,10 +299,9 @@ export default class HaAutomationTriggerRow extends LitElement {
           untriggerTimeout = undefined;
         }, showTriggeredTime);
       },
-      this.trigger
+      trigger
     );
     triggerUnsub.catch(() => {
-      triggerUnsub.then((unsub) => unsub());
       if (this._triggerUnsub === triggerUnsub) {
         this._triggerUnsub = undefined;
       }
