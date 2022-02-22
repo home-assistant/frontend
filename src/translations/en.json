@@ -1623,6 +1623,7 @@
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
+              "triggered": "Triggered",
               "add": "Add trigger",
               "id": "Trigger ID",
               "edit_id": "Edit trigger ID",
