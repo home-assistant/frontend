@@ -415,7 +415,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         .triggered {
           position: absolute;
-          top: 2px;
+          top: -1px;
           right: 2px;
           pointer-events: none;
           font-weight: bold;
