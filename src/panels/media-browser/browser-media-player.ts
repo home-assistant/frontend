@@ -4,6 +4,7 @@ import {
   MediaPlayerItem,
   SUPPORT_PAUSE,
   SUPPORT_PLAY,
+  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import { HomeAssistant } from "../../types";
@@ -20,9 +21,11 @@ export class BrowserMediaPlayer {
     public hass: HomeAssistant,
     public item: MediaPlayerItem,
     public resolved: ResolvedMediaSource,
+    volume: number,
     private onChange: () => void
   ) {
     const player = new Audio(this.resolved.url);
+    player.volume = volume;
     player.addEventListener("play", this._handleChange);
     player.addEventListener("playing", () => {
       this.buffering = false;
@@ -57,6 +60,11 @@ export class BrowserMediaPlayer {
     this.player.play();
   }
 
+  public setVolume(volume: number) {
+    this.player.volume = volume;
+    this.onChange();
+  }
+
   public remove() {
     this._removed = true;
     // @ts-ignore
@@ -89,8 +97,9 @@ export class BrowserMediaPlayer {
     base.attributes = {
       media_title: this.item.title,
       entity_picture: this.item.thumbnail,
+      volume_level: this.player.volume,
       // eslint-disable-next-line no-bitwise
-      supported_features: SUPPORT_PLAY | SUPPORT_PAUSE,
+      supported_features: SUPPORT_PLAY | SUPPORT_PAUSE | SUPPORT_VOLUME_SET,
     };
 
     if (this.player.duration) {

@@ -9,6 +9,7 @@ import {
   mdiPlay,
   mdiPlayPause,
   mdiStop,
+  mdiVolumeHigh,
 } from "@mdi/js";
 import {
   css,
@@ -40,10 +41,12 @@ import {
   getCurrentProgress,
   MediaPlayerEntity,
   MediaPlayerItem,
+  setMediaPlayerVolume,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_PAUSE,
   SUPPORT_PLAY,
   SUPPORT_STOP,
+  SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
@@ -76,6 +79,8 @@ export class BarMediaPlayer extends LitElement {
   @state() private _browserPlayer?: BrowserMediaPlayer;
 
   private _progressInterval?: number;
+
+  private _browserPlayerVolume = 0.8;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -124,6 +129,7 @@ export class BarMediaPlayer extends LitElement {
       this.hass,
       item,
       resolved,
+      this._browserPlayerVolume,
       () => this.requestUpdate("_browserPlayer")
     );
     this._newMediaExpected = false;
@@ -230,7 +236,7 @@ export class BarMediaPlayer extends LitElement {
                           )}
                           .path=${control.icon}
                           action=${control.action}
-                          @click=${this._handleClick}
+                          @click=${this._handleControlClick}
                         >
                         </ha-icon-button>
                       `
@@ -257,6 +263,27 @@ export class BarMediaPlayer extends LitElement {
     const isBrowser = this.entityId === BROWSER_PLAYER;
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
+      ${
+        stateObj && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+          ? html`
+              <ha-button-menu corner="BOTTOM_START">
+                <ha-icon-button
+                  slot="trigger"
+                  .path=${mdiVolumeHigh}
+                ></ha-icon-button>
+                <ha-slider
+                  .min=${0}
+                  .max=${100}
+                  .value=${stateObj.attributes.volume_level! * 100}
+                  .step=${1}
+                  @change=${this._handleVolumeChange}
+                >
+                </ha-slider>
+              </ha-button-menu>
+            `
+          : ""
+      }
+
           <ha-button-menu corner="BOTTOM_START">
             ${
               this.narrow
@@ -441,7 +468,7 @@ export class BarMediaPlayer extends LitElement {
     }
   }
 
-  private _handleClick(e: MouseEvent): void {
+  private _handleControlClick(e: MouseEvent): void {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
 
     if (!this._browserPlayer) {
@@ -472,6 +499,17 @@ export class BarMediaPlayer extends LitElement {
   private _selectPlayer(ev: CustomEvent): void {
     const entityId = (ev.currentTarget as any).player;
     fireEvent(this, "player-picked", { entityId });
+  }
+
+  private async _handleVolumeChange(ev) {
+    ev.stopPropagation();
+    const value = Number(ev.target.value) / 100;
+    if (this._browserPlayer) {
+      this._browserPlayerVolume = value;
+      this._browserPlayer.setVolume(value);
+    } else {
+      await setMediaPlayerVolume(this.hass, this.entityId, value);
+    }
   }
 
   static get styles(): CSSResultGroup {
