@@ -3,6 +3,7 @@ import {
   mdiDotsVertical,
   mdiLightbulbOutline,
   mdiMagnify,
+  mdiNewBox,
 } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
@@ -155,7 +156,7 @@ class HaConfigDashboard extends LitElement {
                 >`,
                 "twitter",
                 html`<a
-                  href="https://twitter.com/home_assistant/"
+                  href="https://www.home-assistant.io/twitter/"
                   target="_blank"
                   rel="noreferrer"
                   >Twitter</a
@@ -165,7 +166,7 @@ class HaConfigDashboard extends LitElement {
                   href="https://www.home-assistant.io/join-chat/"
                   target="_blank"
                   rel="noreferrer"
-                  >Discord</a
+                  >Chat</a
                 >`,
                 "blog",
                 html`<a
@@ -175,13 +176,15 @@ class HaConfigDashboard extends LitElement {
                   >Blog</a
                 >`,
                 "newsletter",
-                html`NEW
+                html`
                   <a
-                    href="https://landing.mailerlite.com/webforms/landing/j9n5n6"
+                    href="https://www.home-assistant.io/newsletter/"
                     target="_blank"
                     rel="noreferrer"
                     >Newsletter</a
-                  >`
+                  ></span
+                > 
+                  <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon>`
               )}</span
             >
           </div>
@@ -285,6 +288,10 @@ class HaConfigDashboard extends LitElement {
 
         .tip-word {
           font-weight: 500;
+        }
+
+        .new {
+          color: var(--primary-color);
         }
       `,
     ];
