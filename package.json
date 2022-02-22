@@ -95,6 +95,7 @@
     "@vibrant/core": "^3.2.1-alpha.1",
     "@vibrant/quantizer-mmcq": "^3.2.1-alpha.1",
     "@vue/web-component-wrapper": "^1.2.0",
+    "@webcomponents/scoped-custom-element-registry": "^0.0.5",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "app-datepicker": "^5.0.1",
     "chart.js": "^3.3.2",

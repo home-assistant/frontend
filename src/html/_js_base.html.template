@@ -23,3 +23,4 @@
       }
       var isS11_12 = /(?:.*(?:iPhone|iPad).*OS (?:11|12)_\d)|(?:.*Version\/(?:11|12)(?:\.\d+)*.*Safari\/)/.test(navigator.userAgent);
     </script>
+    <script src="/static/polyfills/scoped-custom-element-registry.min.js"></script>
