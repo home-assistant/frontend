@@ -120,15 +120,6 @@ export default class HaAutomationTriggerRow extends LitElement {
     return html`
       <ha-card>
         <div class="card-content">
-          <span
-            class=${classMap({
-              triggered: true,
-              active: this._triggered,
-              accent: this._triggerColor,
-            })}
-          >
-            TRIGGERED
-          </span>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <ha-icon-button
@@ -236,6 +227,17 @@ export default class HaAutomationTriggerRow extends LitElement {
                   )}
                 </div>
               `}
+        </div>
+        <div
+          class=${classMap({
+            triggered: true,
+            active: this._triggered,
+            accent: this._triggerColor,
+          })}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.triggered"
+          )}
         </div>
       </ha-card>
     `;
@@ -415,20 +417,28 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         .triggered {
           position: absolute;
-          top: -1px;
-          right: 2px;
+          top: 0px;
+          right: 0px;
+          left: 0px;
+          text-transform: uppercase;
           pointer-events: none;
           font-weight: bold;
           font-size: 14px;
-          color: var(--primary-color);
-          opacity: 0;
-          transition: opacity 0.3s;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
+          max-height: 0px;
+          overflow: hidden;
+          transition: max-height 0.3s;
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius, 4px);
+          border-top-left-radius: var(--ha-card-border-radius, 4px);
         }
         .triggered.active {
-          opacity: 1;
+          max-height: 100px;
         }
         .triggered.accent {
-          color: var(--accent-color);
+          background-color: var(--accent-color);
+          color: var(--text-accent-color, var(--text-primary-color));
         }
         .rtl .card-menu {
           float: left;
