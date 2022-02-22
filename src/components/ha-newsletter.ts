@@ -87,6 +87,7 @@ class HaNewsletter extends LitElement {
         setTimeout(this._dismiss, 2000);
       })
       .catch((err) => {
+        // Reset request so user can re-enter email
         this._requestStatus = undefined;
         // eslint-disable-next-line no-console
         console.error(err);
