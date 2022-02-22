@@ -144,8 +144,8 @@ class HaConfigDashboard extends LitElement {
           <div class="tips">
             <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
             <span class="tip-word">Tip!</span>
-            <span class="text"
-              >${this.hass.localize(
+            <span class="text">
+              ${this.hass.localize(
                 "ui.panel.config.tips.join",
                 "forums",
                 html`<a
@@ -176,17 +176,15 @@ class HaConfigDashboard extends LitElement {
                   >Blog</a
                 >`,
                 "newsletter",
-                html`
-                  <a
+                html`<a
                     href="https://www.home-assistant.io/newsletter/"
                     target="_blank"
                     rel="noreferrer"
                     >Newsletter</a
-                  ></span
-                > 
+                  >
                   <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon>`
-              )}</span
-            >
+              )}
+            </span>
           </div>
         </ha-config-section>
       </ha-app-layout>
