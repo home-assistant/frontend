@@ -97,7 +97,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _triggerColor = false;
 
-  private _triggerUnsub?: Promise<() => void>;
+  private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string][] =>
@@ -229,11 +229,10 @@ export default class HaAutomationTriggerRow extends LitElement {
               `}
         </div>
         <div
-          class=${classMap({
-            triggered: true,
+          class="triggered ${classMap({
             active: this._triggered,
             accent: this._triggerColor,
-          })}
+          })}"
         >
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
@@ -252,7 +251,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this.trigger) {
+    if (this.hasUpdated && this.trigger) {
       this._subscribeTrigger();
     }
   }
