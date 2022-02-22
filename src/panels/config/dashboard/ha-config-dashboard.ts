@@ -41,6 +41,7 @@ import "./ha-config-updates";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -149,35 +150,35 @@ class HaConfigDashboard extends LitElement {
                 "ui.panel.config.tips.join",
                 "forums",
                 html`<a
-                  href="https://community.home-assistant.io/"
+                  href=${documentationUrl(this.hass, `/community`)}
                   target="_blank"
                   rel="noreferrer"
                   >Forums</a
                 >`,
                 "twitter",
                 html`<a
-                  href="https://www.home-assistant.io/twitter/"
+                  href=${documentationUrl(this.hass, `/twitter`)}
                   target="_blank"
                   rel="noreferrer"
                   >Twitter</a
                 >`,
                 "discord",
                 html`<a
-                  href="https://www.home-assistant.io/join-chat/"
+                  href=${documentationUrl(this.hass, `/join-chat`)}
                   target="_blank"
                   rel="noreferrer"
                   >Chat</a
                 >`,
                 "blog",
                 html`<a
-                  href="https://www.home-assistant.io/blog/"
+                  href=${documentationUrl(this.hass, `/blog`)}
                   target="_blank"
                   rel="noreferrer"
                   >Blog</a
                 >`,
                 "newsletter",
                 html`<a
-                    href="https://www.home-assistant.io/newsletter/"
+                    href=${documentationUrl(this.hass, `/newsletter`)}
                     target="_blank"
                     rel="noreferrer"
                     >Newsletter</a
