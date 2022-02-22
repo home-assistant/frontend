@@ -8,10 +8,9 @@ import {
   nothing,
   TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import {
-  Adapter,
   IPv4ConfiguredAddress,
   IPv6ConfiguredAddress,
   NetworkConfig,
