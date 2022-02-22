@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -34,6 +34,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
+  @state() private _showDescription = false;
+
   protected render() {
     return html`<ha-config-section vertical .isWide=${this.isWide}>
         ${!this.narrow
@@ -55,17 +57,30 @@ export class HaManualAutomationEditor extends LitElement {
               @change=${this._valueChanged}
             >
             </ha-textfield>
-            <ha-textarea
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.label"
-              )}
-              .placeholder=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.placeholder"
-              )}
-              name="description"
-              .value=${this.config.description || ""}
-              @change=${this._valueChanged}
-            ></ha-textarea>
+            ${this._showDescription
+              ? html`
+                  <ha-textarea
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.description.label"
+                    )}
+                    .placeholder=${this.hass.localize(
+                      "ui.panel.config.automation.editor.description.placeholder"
+                    )}
+                    name="description"
+                    autogrow
+                    .value=${this.config.description || ""}
+                    @change=${this._valueChanged}
+                  ></ha-textarea>
+                `
+              : html`
+                  <div class="link-button-row">
+                    <button class="link" @click=${this._addDescription}>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.description.add"
+                      )}
+                    </button>
+                  </div>
+                `}
             <p>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.description",
@@ -235,6 +250,17 @@ export class HaManualAutomationEditor extends LitElement {
       </ha-config-section>`;
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      !this._showDescription &&
+      changedProps.has("config") &&
+      this.config.description
+    ) {
+      this._showDescription = true;
+    }
+  }
+
   private _runActions(ev: Event) {
     triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
@@ -305,12 +331,22 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
+  private _addDescription() {
+    this._showDescription = true;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
         ha-card {
           overflow: hidden;
+        }
+        .link-button-row {
+          padding: 14px;
+        }
+        ha-textarea {
+          display: block;
         }
         span[slot="introduction"] a {
           color: var(--primary-color);

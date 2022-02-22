@@ -1593,7 +1593,8 @@
             "move_down": "Move down",
             "description": {
               "label": "Description",
-              "placeholder": "Optional description"
+              "placeholder": "Optional description",
+              "add": "Add description"
             },
             "blueprint": {
               "header": "Blueprint",
