@@ -4785,6 +4785,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webcomponents/scoped-custom-element-registry@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.5"
+  checksum: eb422f63f042f9e525d89491267073a1c822d60d44b91fed5178d5dc2092e95f180e45e3eb50d214a35ea16580277461c15cade6f4ca1e7694e8a7a451355d31
+  languageName: node
+  linkType: hard
+
 "@webcomponents/shadycss@npm:^1.9.1":
   version: 1.10.2
   resolution: "@webcomponents/shadycss@npm:1.10.2"
@@ -9194,6 +9201,7 @@ fsevents@^1.2.7:
     "@vue/web-component-wrapper": ^1.2.0
     "@web/dev-server": ^0.0.24
     "@web/dev-server-rollup": ^0.2.11
+    "@webcomponents/scoped-custom-element-registry": ^0.0.5
     "@webcomponents/webcomponentsjs": ^2.2.10
     app-datepicker: ^5.0.1
     babel-loader: ^8.2.2
