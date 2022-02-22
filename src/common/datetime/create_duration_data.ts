@@ -3,9 +3,9 @@ import type { ForDict } from "../../data/automation";
 
 export const createDurationData = (
   duration: string | number | ForDict | undefined
-): HaDurationData => {
+): HaDurationData | undefined => {
   if (duration === undefined) {
-    return {};
+    return undefined;
   }
   if (typeof duration !== "object") {
     if (typeof duration === "string" || isNaN(duration)) {
