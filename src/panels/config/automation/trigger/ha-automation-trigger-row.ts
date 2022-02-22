@@ -1,3 +1,4 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
