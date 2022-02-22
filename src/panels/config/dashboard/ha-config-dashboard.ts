@@ -175,12 +175,13 @@ class HaConfigDashboard extends LitElement {
                   >Blog</a
                 >`,
                 "newsletter",
-                html`<a
-                  href="https://landing.mailerlite.com/webforms/landing/j9n5n6"
-                  target="_blank"
-                  rel="noreferrer"
-                  >NEW Newsletter</a
-                >`
+                html`NEW
+                  <a
+                    href="https://landing.mailerlite.com/webforms/landing/j9n5n6"
+                    target="_blank"
+                    rel="noreferrer"
+                    >Newsletter</a
+                  >`
               )}</span
             >
           </div>
