@@ -73,13 +73,11 @@ export class HuiAlarmPanelCardEditor
       return html``;
     }
 
-    const schema = this._schema(this.hass.localize);
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${schema}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
