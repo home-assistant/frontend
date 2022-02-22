@@ -3,9 +3,10 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import "@material/mwc-select";
 import type { Select } from "@material/mwc-select";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
@@ -16,7 +17,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon-button";
-import type { Trigger } from "../../../../data/automation";
+import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -34,6 +35,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { debounce } from "../../../../common/util/debounce";
 
 const OPTIONS = [
   "device",
@@ -90,6 +92,12 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _requestShowId = false;
 
+  @state() private _triggered = false;
+
+  @state() private _triggerColor = false;
+
+  private _triggerUnsub?: Promise<() => void>;
+
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string][] =>
       OPTIONS.map(
@@ -111,6 +119,15 @@ export default class HaAutomationTriggerRow extends LitElement {
     return html`
       <ha-card>
         <div class="card-content">
+          <span
+            class=${classMap({
+              triggered: true,
+              active: this._triggered,
+              accent: this._triggerColor,
+            })}
+          >
+            TRIGGERED
+          </span>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <ha-icon-button
@@ -223,6 +240,71 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
+  protected override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (!changedProps.has("trigger")) {
+      return;
+    }
+
+    if (this._triggerUnsub) {
+      this._triggerUnsub.then((unsub) => unsub());
+    }
+
+    const oldTrigger = changedProps.get("trigger") as Trigger | undefined;
+
+    // The first time we change a trigger it's always invalid so we skip subscribing
+    if (oldTrigger?.platform === this.trigger.platform) {
+      this._subscribeTrigger();
+    }
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.trigger) {
+      this._subscribeTrigger();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._triggerUnsub) {
+      this._triggerUnsub.then((unsub) => unsub());
+      this._triggerUnsub = undefined;
+    }
+    this._subscribeTrigger.cancel();
+  }
+
+  private _subscribeTrigger = debounce(() => {
+    let untriggerTimeout: number | undefined;
+    const showTriggeredTime = 5000;
+
+    const triggerUnsub = subscribeTrigger(
+      this.hass,
+      () => {
+        if (untriggerTimeout !== undefined) {
+          clearTimeout(untriggerTimeout);
+          this._triggerColor = !this._triggerColor;
+        } else {
+          this._triggerColor = false;
+        }
+        this._triggered = true;
+        untriggerTimeout = window.setTimeout(() => {
+          this._triggered = false;
+          untriggerTimeout = undefined;
+        }, showTriggeredTime);
+      },
+      this.trigger
+    );
+    triggerUnsub.catch(() => {
+      triggerUnsub.then((unsub) => unsub());
+      if (this._triggerUnsub === triggerUnsub) {
+        this._triggerUnsub = undefined;
+      }
+    });
+    this._triggerUnsub = triggerUnsub;
+  }, 5000);
+
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
@@ -326,6 +408,23 @@ export default class HaAutomationTriggerRow extends LitElement {
           float: right;
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+        .triggered {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          pointer-events: none;
+          font-weight: bold;
+          font-size: 14px;
+          color: var(--primary-color);
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+        .triggered.active {
+          opacity: 1;
+        }
+        .triggered.accent {
+          color: var(--accent-color);
         }
         .rtl .card-menu {
           float: left;
