@@ -1,11 +1,14 @@
+import "./ha-icon-button";
 import "./ha-circular-progress";
 import "@material/mwc-button/mwc-button";
 import "./ha-card";
 import "./ha-textfield";
 import { LitElement, TemplateResult, html, CSSResultGroup, css } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { mdiClose } from "@mdi/js";
 import type { HaTextField } from "./ha-textfield";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
+import { LocalStorage } from "../common/decorators/local-storage";
 
 @customElement("ha-newsletter")
 class HaNewsletter extends LitElement {
@@ -14,11 +17,26 @@ class HaNewsletter extends LitElement {
   @query("ha-textfield")
   private _emailField?: HaTextField;
 
+  @LocalStorage("dismissNewsletter", true)
+  private _dismissNewsletter = false;
+
   private _requestStatus?: "inprogress" | "complete";
 
   protected render(): TemplateResult {
+    if (this._dismissNewsletter) {
+      return html``;
+    }
+
     return html`
-      <ha-card .header=${this.hass.localize("ui.newsletter.newsletter")}>
+      <ha-card>
+        <div class="header">
+          ${this.hass.localize("ui.newsletter.newsletter")}
+          <ha-icon-button
+            .path=${mdiClose}
+            label="Dismiss"
+            @click=${this._dismiss}
+          ></ha-icon-button>
+        </div>
         <div class="newsletter">
           ${this._requestStatus === "complete"
             ? html`<span>${this.hass.localize("ui.newsletter.thanks")}</span>`
@@ -66,12 +84,17 @@ class HaNewsletter extends LitElement {
     )
       .then(() => {
         this._requestStatus = "complete";
+        setTimeout(this._dismiss, 2000);
       })
       .catch((err) => {
         this._requestStatus = undefined;
         // eslint-disable-next-line no-console
         console.error(err);
       });
+  }
+
+  private _dismiss(): void {
+    this._dismissNewsletter = true;
   }
 
   static get styles(): CSSResultGroup {
@@ -82,6 +105,21 @@ class HaNewsletter extends LitElement {
         padding: 0 16px 16px;
       }
 
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
+        letter-spacing: -0.012em;
+        line-height: 48px;
+        padding: 12px 16px 16px;
+        margin-block-start: 0px;
+        margin-block-end: 0px;
+        font-weight: normal;
+      }
+
       ha-textfield {
         flex: 1;
         display: block;
@@ -90,6 +128,10 @@ class HaNewsletter extends LitElement {
 
       mwc-button {
         padding-top: 12px;
+      }
+
+      ha-icon-button {
+        cursor: pointer;
       }
     `;
   }
