@@ -32,8 +32,8 @@ class HaNewsletter extends LitElement {
         <div class="header">
           ${this.hass.localize("ui.newsletter.newsletter")}
           <ha-icon-button
-            .path=${mdiClose}
             label="Dismiss"
+            .path=${mdiClose}
             @click=${this._dismiss}
           ></ha-icon-button>
         </div>
@@ -42,9 +42,9 @@ class HaNewsletter extends LitElement {
             ? html`<span>${this.hass.localize("ui.newsletter.thanks")}</span>`
             : html`
                 <ha-textfield
-                  .label=${this.hass.localize("ui.newsletter.email")}
-                  type="email"
                   required
+                  type="email"
+                  .label=${this.hass.localize("ui.newsletter.email")}
                   .validationMessage=${this.hass.localize(
                     "ui.newsletter.validation"
                   )}
@@ -69,7 +69,7 @@ class HaNewsletter extends LitElement {
     `;
   }
 
-  private async _subscribe() {
+  private _subscribe(): void {
     if (!this._emailField?.reportValidity()) {
       this._emailField!.focus();
       return;
@@ -77,7 +77,7 @@ class HaNewsletter extends LitElement {
 
     this._requestStatus = "inprogress";
 
-    await fetch(
+    fetch(
       `https://newsletter.home-assistant.io/subscribe?email=${
         this._emailField!.value
       }`
