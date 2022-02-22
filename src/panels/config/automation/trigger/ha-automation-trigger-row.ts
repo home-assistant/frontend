@@ -263,10 +263,20 @@ export default class HaAutomationTriggerRow extends LitElement {
       this._triggerUnsub.then((unsub) => unsub());
       this._triggerUnsub = undefined;
     }
-    this._subscribeTrigger.cancel();
+    this._doSubscribeTrigger.cancel();
   }
 
-  private _subscribeTrigger = debounce(async () => {
+  private _subscribeTrigger() {
+    // Clean up old trigger subscription.
+    if (this._triggerUnsub) {
+      this._triggerUnsub.then((unsub) => unsub());
+      this._triggerUnsub = undefined;
+    }
+
+    this._doSubscribeTrigger();
+  }
+
+  private _doSubscribeTrigger = debounce(async () => {
     let untriggerTimeout: number | undefined;
     const showTriggeredTime = 5000;
     const trigger = this.trigger;
