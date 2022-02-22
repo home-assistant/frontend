@@ -64,7 +64,7 @@ export class HuiAlarmPanelCardEditor
       options: states.map((s) => [
         s,
         localize(`ui.card.alarm_control_panel.${s}`),
-      ]),
+      ]) as [string, string][],
     },
   ]);
 
@@ -87,15 +87,7 @@ export class HuiAlarmPanelCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
-
-    Object.keys(config).forEach(
-      (k) =>
-        (config[k] === "" ||
-          (Array.isArray(config[k]) && config[k].length === 0)) &&
-        delete config[k]
-    );
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
