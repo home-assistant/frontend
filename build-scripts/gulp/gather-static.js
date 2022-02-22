@@ -59,19 +59,6 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
-
-  copyFileDir(
-    npmPath(
-      "@webcomponents/scoped-custom-element-registry/scoped-custom-element-registry.min.js"
-    ),
-    staticPath("polyfills/")
-  );
-  copyFileDir(
-    npmPath(
-      "@webcomponents/scoped-custom-element-registry/scoped-custom-element-registry.min.js.map"
-    ),
-    staticPath("polyfills/")
-  );
 }
 
 function copyLoaderJS(staticDir) {
