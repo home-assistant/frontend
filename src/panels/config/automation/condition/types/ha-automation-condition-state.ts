@@ -53,7 +53,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   protected render() {
     const trgFor = createDurationData(this.condition.for);
-    const data = { ...this.condition, ...{ for: trgFor } };
+    const data = { ...this.condition, for: trgFor };
     const schema = this._schema(this.condition.entity_id);
 
     return html`
