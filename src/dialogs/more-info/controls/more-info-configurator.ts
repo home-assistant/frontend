@@ -18,7 +18,7 @@ export class MoreInfoConfigurator extends LitElement {
 
   private _fieldInput = {};
 
-  render() {
+  protected render(): TemplateResult {
     if (this.stateObj?.state !== "configure") {
       return html``;
     }
