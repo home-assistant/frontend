@@ -6,7 +6,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-textfield";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-configurator")
 export class MoreInfoConfigurator extends LitElement {
