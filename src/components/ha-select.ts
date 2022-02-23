@@ -2,6 +2,7 @@ import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
 import { html, nothing } from "lit";
 import { customElement } from "lit/decorators";
+import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
 
 @customElement("ha-select")
@@ -28,10 +29,10 @@ export class HaSelect extends SelectBase {
     window.removeEventListener("translations-updated", this._resourcesUpdated);
   }
 
-  private _resourcesUpdated = async () => {
+  private _resourcesUpdated = debounce(async () => {
     await nextRender();
     this.layoutOptions();
-  };
+  }, 500);
 }
 declare global {
   interface HTMLElementTagNameMap {
