@@ -3,7 +3,7 @@
 const gulp = require("gulp");
 const fs = require("fs");
 const path = require("path");
-const marked = require("marked");
+const { marked } = require("marked");
 const glob = require("glob");
 const yaml = require("js-yaml");
 
