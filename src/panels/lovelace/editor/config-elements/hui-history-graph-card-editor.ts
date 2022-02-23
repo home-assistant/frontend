@@ -37,8 +37,11 @@ const SCHEMA: HaFormSchema[] = [
     name: "",
     type: "grid",
     schema: [
-      { name: "hours_to_show", selector: { number: { min: 1 } } },
-      { name: "refresh_interval", selector: { number: { min: 1 } } },
+      { name: "hours_to_show", selector: { number: { min: 1, mode: "box" } } },
+      {
+        name: "refresh_interval",
+        selector: { number: { min: 1, mode: "box" } },
+      },
     ],
   },
 ];
