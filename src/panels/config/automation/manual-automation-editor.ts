@@ -99,7 +99,7 @@ export class HaManualAutomationEditor extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
               )}
-              .value=${this.config.mode ? MODES.indexOf(this.config.mode) : 0}
+              .value=${this.config.mode}
               @selected=${this._modeChanged}
               fixedMenuPosition
             >
@@ -115,7 +115,7 @@ export class HaManualAutomationEditor extends LitElement {
             </mwc-select>
             ${this.config.mode && MODES_MAX.includes(this.config.mode)
               ? html`
-                  <ha-textfield
+                  <br /><ha-textfield
                     .label=${this.hass.localize(
                       `ui.panel.config.automation.editor.max.${this.config.mode}`
                     )}
@@ -123,6 +123,7 @@ export class HaManualAutomationEditor extends LitElement {
                     name="max"
                     .value=${this.config.max || "10"}
                     @change=${this._valueChanged}
+                    class="max"
                   >
                   </ha-textfield>
                 `
@@ -357,8 +358,10 @@ export class HaManualAutomationEditor extends LitElement {
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-select {
+        mwc-select,
+        .max {
           margin-top: 8px;
+          width: 200px;
         }
       `,
     ];
