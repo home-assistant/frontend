@@ -1,11 +1,11 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../components/ha-attributes";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
