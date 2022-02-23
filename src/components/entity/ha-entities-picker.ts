@@ -148,6 +148,7 @@ class HaEntitiesPickerLight extends LitElement {
 
   static override styles = css`
     ha-entity-picker {
+      display: block;
       margin-top: 8px;
     }
   `;
