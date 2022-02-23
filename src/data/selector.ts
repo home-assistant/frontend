@@ -87,8 +87,8 @@ export interface TargetSelector {
 
 export interface NumberSelector {
   number: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
     step?: number;
     mode?: "box" | "slider";
     unit_of_measurement?: string;
