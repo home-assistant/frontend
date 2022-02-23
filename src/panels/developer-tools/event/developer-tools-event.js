@@ -1,11 +1,11 @@
 import "@material/mwc-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { load } from "js-yaml";
 import "../../../components/ha-code-editor";
+import "../../../components/ha-textfield";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -46,6 +46,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           margin-top: 8px;
         }
 
+        ha-textfield {
+          display: block;
+        }
+
         .code-editor {
           margin-right: 16px;
         }
@@ -78,14 +82,15 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </a>
           </p>
           <div class="inputs">
-            <paper-input
+            <ha-textfield
               label="[[localize(
                 'ui.panel.developer-tools.tabs.events.type'
               )]]"
               autofocus
               required
-              value="{{eventType}}"
-            ></paper-input>
+              value="[[eventType]]"
+              on-change="eventTypeChanged"
+            ></ha-textfield>
             <p>[[localize( 'ui.panel.developer-tools.tabs.events.data' )]]</p>
           </div>
           <div class="code-editor">
@@ -148,6 +153,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   eventSelected(ev) {
     this.eventType = ev.detail.eventType;
+  }
+
+  eventTypeChanged(ev) {
+    this.eventType = ev.target.value;
   }
 
   _computeParsedEventData(eventData) {

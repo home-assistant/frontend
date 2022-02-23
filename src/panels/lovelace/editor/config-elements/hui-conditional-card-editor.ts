@@ -333,7 +333,7 @@ export class HuiConditionalCardEditor
         .condition .state mwc-select {
           margin-right: 16px;
         }
-        .condition .state paper-input {
+        .condition .state ha-textfield {
           flex-grow: 1;
         }
 
