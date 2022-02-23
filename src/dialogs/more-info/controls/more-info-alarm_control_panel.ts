@@ -23,14 +23,14 @@ export class MoreInfoAlarmControlPanel extends LitElement {
 
   @query("#alarmCode") private _input?: HaTextField;
 
-  render() {
+  protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
     }
 
     return html`
       ${!this.stateObj.attributes.code_format
-        ? html``
+        ? ""
         : html`
             <div class="center">
               <ha-textfield
@@ -45,7 +45,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
             </div>
           `}
       ${this.stateObj.attributes.code_format !== FORMAT_NUMBER
-        ? html``
+        ? ""
         : html`
             <div id="keypad">
               ${BUTTONS.map((value) =>
