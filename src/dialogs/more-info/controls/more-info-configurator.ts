@@ -24,7 +24,7 @@ export class MoreInfoConfigurator extends LitElement {
     }
 
     return html`
-      <div class="layout vertical">
+      <div class="container">
         <ha-markdown
           breaks
           .content=${this.stateObj.attributes.description}
@@ -88,6 +88,10 @@ export class MoreInfoConfigurator extends LitElement {
   }
 
   static styles = css`
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
     p {
       margin: 8px 0;
     }
