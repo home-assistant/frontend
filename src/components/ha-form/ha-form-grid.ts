@@ -33,7 +33,8 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   @property() public computeHelper?: (schema: HaFormSchema) => string;
 
-  protected firstUpdated() {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     this.setAttribute("own-margin", "");
   }
 
