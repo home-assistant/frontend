@@ -28,8 +28,8 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   protected firstUpdated() {
     this.setAttribute("own-margin", "");
-    if (this.schema.columns) {
-      this.style.cssText = `--form-grid-column-count: ${this.schema.columns}`;
+    if (this.schema.min_width) {
+      this.style.cssText = `--form-grid-min-width: ${this.schema.min_width}`;
     }
   }
 
@@ -64,12 +64,6 @@ export class HaFormGrid extends LitElement implements HaFormElement {
       :host > ha-form {
         display: block;
         margin-bottom: 24px;
-      }
-
-      @media only screen and (max-width: 800px) {
-        :host {
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        }
       }
     `;
   }

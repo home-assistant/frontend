@@ -49,7 +49,7 @@ const SCHEMA: HaFormSchema[] = [
   {
     name: "",
     type: "grid",
-    columns: 3,
+    min_width: "100px",
     schema: [
       { name: "show_name", selector: { boolean: {} } },
       { name: "show_icon", selector: { boolean: {} } },
@@ -117,14 +117,11 @@ export class HuiGlanceCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.glance.${schema.name}`
-      ) ||
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      )
-    );
+  private _computeLabelCallback = (schema: HaFormSchema) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.glance.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
 
   static styles = css`
     ha-form {
