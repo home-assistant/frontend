@@ -1,12 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
+import { mdiAlertOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
+import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
-import { PolymerChangedEvent } from "../../polymer-types";
+import "../../components/ha-textfield";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogBoxParams } from "./show-dialog-box";
@@ -51,38 +51,40 @@ class DialogBox extends LitElement {
         ?escapeKeyAction=${confirmPrompt}
         @closed=${this._dialogClosed}
         defaultAction="ignore"
-        .heading=${this._params.title
+        .heading=${html`${this._params.warning
+          ? html`<ha-svg-icon
+              .path=${mdiAlertOutline}
+              style="color: var(--warning-color)"
+            ></ha-svg-icon> `
+          : ""}${this._params.title
           ? this._params.title
           : this._params.confirmation &&
-            this.hass.localize("ui.dialogs.generic.default_confirmation_title")}
+            this.hass.localize(
+              "ui.dialogs.generic.default_confirmation_title"
+            )}`}
       >
         <div>
           ${this._params.text
             ? html`
-                <p
-                  class=${classMap({
-                    "no-bottom-padding": Boolean(this._params.prompt),
-                    warning: Boolean(this._params.warning),
-                  })}
-                >
+                <p class=${this._params.prompt ? "no-bottom-padding" : ""}>
                   ${this._params.text}
                 </p>
               `
             : ""}
           ${this._params.prompt
             ? html`
-                <paper-input
+                <ha-textfield
                   dialogInitialFocus
-                  .value=${this._value}
+                  .value=${this._value || ""}
                   @keyup=${this._handleKeyUp}
-                  @value-changed=${this._valueChanged}
+                  @change=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
                   .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
-                ></paper-input>
+                ></ha-textfield>
               `
             : ""}
         </div>
@@ -107,8 +109,8 @@ class DialogBox extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
-    this._value = ev.detail.value;
+  private _valueChanged(ev) {
+    this._value = ev.target.value;
   }
 
   private _dismiss(): void {
@@ -172,9 +174,6 @@ class DialogBox extends LitElement {
         ha-dialog {
           /* Place above other dialogs */
           --dialog-z-index: 104;
-        }
-        .warning {
-          color: var(--warning-color);
         }
       `,
     ];

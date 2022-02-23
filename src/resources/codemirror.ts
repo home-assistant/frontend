@@ -13,6 +13,7 @@ export { history, historyKeymap } from "@codemirror/history";
 export { rectangularSelection } from "@codemirror/rectangular-selection";
 export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 export { EditorState, Prec } from "@codemirror/state";
+export { autocompletion } from "@codemirror/autocomplete";
 export {
   drawSelection,
   EditorView,
@@ -40,14 +41,16 @@ export const theme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
-      "var(--code-editor-background-color, var(--card-background-color))",
+      "var(--code-editor-background-color, var(--mdc-text-field-fill-color, whitesmoke))",
     "& ::selection": { backgroundColor: "rgba(var(--rgb-primary-color), 0.3)" },
+    borderRadius:
+      "var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0px 0px",
     caretColor: "var(--secondary-text-color)",
     height: "var(--code-mirror-height, auto)",
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
-  "&.cm-focused": { outline: "none" },
+  "&.cm-editor.cm-focused": { outline: "none" },
 
   "&.cm-focused .cm-cursor": {
     borderLeftColor: "var(--secondary-text-color)",
@@ -63,7 +66,10 @@ export const theme = EditorView.theme({
 
   ".cm-scroller": { outline: "none" },
 
-  ".cm-content": { caretColor: "var(--secondary-text-color)" },
+  ".cm-content": {
+    caretColor: "var(--secondary-text-color)",
+    paddingTop: "16px",
+  },
 
   ".cm-panels": {
     backgroundColor: "var(--primary-background-color)",
@@ -109,6 +115,47 @@ export const theme = EditorView.theme({
     },
   },
 
+  ".cm-tooltip": {
+    color: "var(--primary-text-color)",
+    backgroundColor:
+      "var(--code-editor-background-color, var(--card-background-color))",
+    border: "1px solid var(--divider-color)",
+    borderRadius: "var(--mdc-shape-medium, 4px)",
+    boxShadow:
+      "0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)",
+  },
+
+  "& .cm-tooltip.cm-tooltip-autocomplete > ul > li": {
+    padding: "4px 8px",
+  },
+
+  "& .cm-tooltip-autocomplete ul li[aria-selected]": {
+    background: "var(--primary-color)",
+    color: "var(--text-primary-color)",
+  },
+
+  ".cm-completionIcon": {
+    display: "none",
+  },
+
+  ".cm-completionDetail": {
+    fontFamily: "Roboto",
+    color: "var(--secondary-text-color)",
+  },
+
+  "li[aria-selected] .cm-completionDetail": {
+    color: "var(--text-primary-color)",
+  },
+
+  "& .cm-completionInfo.cm-completionInfo-right": {
+    left: "calc(100% + 4px)",
+  },
+
+  "& .cm-tooltip.cm-completionInfo": {
+    padding: "4px 8px",
+    marginTop: "-5px",
+  },
+
   ".cm-selectionMatch": {
     backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
   },
@@ -124,14 +171,14 @@ export const theme = EditorView.theme({
 
   ".cm-gutters": {
     backgroundColor:
-      "var(--paper-dialog-background-color, var(--primary-background-color))",
+      "var(--code-editor-gutter-color, var(--mdc-text-field-fill-color, whitesmoke))",
     color: "var(--paper-dialog-color, var(--secondary-text-color))",
     border: "none",
     borderRight:
       "1px solid var(--paper-input-container-color, var(--secondary-text-color))",
     paddingRight: "1px",
   },
-  "&.cm-focused cm-gutters": {
+  "&.cm-focused .cm-gutters": {
     borderRight:
       "2px solid var(--paper-input-container-focus-color, var(--primary-color))",
     paddingRight: "0",

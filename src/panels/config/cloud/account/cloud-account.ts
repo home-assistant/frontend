@@ -10,8 +10,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
+import { debounce } from "../../../../common/util/debounce";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
@@ -104,6 +106,17 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                   </div>
                 </paper-item-body>
               </div>
+
+              ${this.cloudStatus.cloud === "connecting" &&
+              this.cloudStatus.cloud_last_disconnect_reason
+                ? html`
+                    <ha-alert
+                      alert-type="warning"
+                      .title=${this.cloudStatus.cloud_last_disconnect_reason
+                        .reason}
+                    ></ha-alert>
+                  `
+                : ""}
 
               <div class="account-row">
                 <paper-item-body>
@@ -219,11 +232,15 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   }
 
   protected override hassSubscribe() {
-    const googleCheck = () => {
-      if (!this.cloudStatus?.google_registered) {
-        fireEvent(this, "ha-refresh-cloud-status");
-      }
-    };
+    const googleCheck = debounce(
+      () => {
+        if (this.cloudStatus && !this.cloudStatus.google_registered) {
+          fireEvent(this, "ha-refresh-cloud-status");
+        }
+      },
+      10000,
+      true
+    );
     return [
       this.hass.connection.subscribeEvents(() => {
         if (!this.cloudStatus?.alexa_registered) {

@@ -53,7 +53,11 @@ export class HuiDialogDeleteCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button slot="primaryAction" class="warning" @click=${this._delete}>

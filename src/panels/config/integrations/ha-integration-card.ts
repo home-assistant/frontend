@@ -369,7 +369,7 @@ export class HaIntegrationCard extends LitElement {
               </a>`
             : ""}
           ${!item.disabled_by &&
-          item.state === "loaded" &&
+          (item.state === "loaded" || item.state === "setup_retry") &&
           item.supports_unload &&
           item.source !== "system"
             ? html`<mwc-list-item @request-selected=${this._handleReload}>

@@ -47,6 +47,7 @@ class StepFlowForm extends LitElement {
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
           : ""}
         <ha-form
+          .hass=${this.hass}
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
@@ -103,12 +104,13 @@ class StepFlowForm extends LitElement {
     const allRequiredInfoFilledIn =
       stepData === undefined
         ? // If no data filled in, just check that any field is required
-          this.step.data_schema.find((field) => !field.optional) === undefined
+          this.step.data_schema.find((field) => field.required) === undefined
         : // If data is filled in, make sure all required fields are
           stepData &&
           this.step.data_schema.every(
             (field) =>
-              field.optional || !["", undefined].includes(stepData![field.name])
+              !field.required ||
+              !["", undefined].includes(stepData![field.name])
           );
 
     if (!allRequiredInfoFilledIn) {

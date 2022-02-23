@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -6,6 +5,7 @@ import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
+import "../../../components/ha-textfield";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 
@@ -101,15 +101,14 @@ export class HaBlueprintScriptEditor extends LitElement {
                               value?.default}
                               @value-changed=${this._inputChanged}
                             ></ha-selector>`
-                          : html`<paper-input
+                          : html`<ha-textfield
                               .key=${key}
                               required
                               .value=${(this.config.use_blueprint.input &&
                                 this.config.use_blueprint.input[key]) ??
                               value?.default}
-                              @value-changed=${this._inputChanged}
-                              no-label-float
-                            ></paper-input>`}
+                              @change=${this._inputChanged}
+                            ></ha-textfield>`}
                       </ha-settings-row>`
                   )
                 : html`<p class="padding">
@@ -145,7 +144,7 @@ export class HaBlueprintScriptEditor extends LitElement {
     ev.stopPropagation();
     const target = ev.target as any;
     const key = target.key;
-    const value = ev.detail.value;
+    const value = ev.detail?.value ?? target.value;
     if (
       (this.config.use_blueprint.input &&
         this.config.use_blueprint.input[key] === value) ||

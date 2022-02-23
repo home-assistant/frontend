@@ -3,7 +3,7 @@ import "@polymer/paper-slider";
 const PaperSliderClass = customElements.get("paper-slider");
 let subTemplate;
 
-class HaSlider extends PaperSliderClass {
+export class HaSlider extends PaperSliderClass {
   static get template() {
     if (!subTemplate) {
       subTemplate = PaperSliderClass.template.cloneNode(true);

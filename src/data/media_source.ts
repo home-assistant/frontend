@@ -23,3 +23,38 @@ export const browseLocalMediaPlayer = (
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
+
+export const isLocalMediaSourceContentId = (mediaId: string) =>
+  mediaId.startsWith("media-source://media_source");
+
+export const uploadLocalMedia = async (
+  hass: HomeAssistant,
+  media_content_id: string,
+  file: File
+) => {
+  const fd = new FormData();
+  fd.append("media_content_id", media_content_id);
+  fd.append("file", file);
+  const resp = await hass.fetchWithAuth(
+    "/api/media_source/local_source/upload",
+    {
+      method: "POST",
+      body: fd,
+    }
+  );
+  if (resp.status === 413) {
+    throw new Error("Uploaded image is too large");
+  } else if (resp.status !== 200) {
+    throw new Error("Unknown error");
+  }
+  return resp.json();
+};
+
+export const removeLocalMedia = async (
+  hass: HomeAssistant,
+  media_content_id: string
+) =>
+  hass.callWS({
+    type: "media_source/local_source/remove",
+    media_content_id,
+  });

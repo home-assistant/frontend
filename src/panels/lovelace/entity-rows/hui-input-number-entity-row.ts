@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -12,6 +11,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
+import "../../../components/ha-textfield";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
@@ -90,11 +90,10 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
-                  .value=${Number(stateObj.state)}
+                  .value=${stateObj.state}
                   pin
                   @change=${this._selectedValueChanged}
                   ignore-bar-touch
-                  id="input"
                 ></ha-slider>
                 <span class="state">
                   ${computeStateDisplay(
@@ -108,23 +107,18 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <div class="flex state">
-                <paper-input
-                  no-label-float
-                  auto-validate
+                <ha-textfield
                   .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
-                  .value=${Number(stateObj.state)}
+                  .value=${stateObj.state}
+                  .suffix=${stateObj.attributes.unit_of_measurement}
                   type="number"
                   @change=${this._selectedValueChanged}
-                  id="input"
                 >
-                  <span slot="suffix">
-                    ${stateObj.attributes.unit_of_measurement}
-                  </span>
-                </paper-input>
+                </ha-textfield>
               </div>
             `}
       </hui-generic-entity-row>
@@ -146,7 +140,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
         min-width: 45px;
         text-align: end;
       }
-      paper-input {
+      ha-textfield {
         text-align: end;
       }
       ha-slider {
@@ -185,19 +179,11 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private get _inputElement(): { value: string } {
-    // linter recommended the following syntax
-    return this.shadowRoot!.getElementById("input") as unknown as {
-      value: string;
-    };
-  }
-
-  private _selectedValueChanged(): void {
-    const element = this._inputElement;
+  private _selectedValueChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    if (element.value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, element.value!);
+    if (ev.target.value !== stateObj.state) {
+      setValue(this.hass!, stateObj.entity_id, ev.target.value);
     }
   }
 }

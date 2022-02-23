@@ -47,6 +47,7 @@ export interface CloudPreferences {
 export interface CloudStatusLoggedIn {
   logged_in: true;
   cloud: "disconnected" | "connecting" | "connected";
+  cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
   google_entities: EntityFilter;
@@ -186,10 +187,3 @@ export const updateCloudAlexaEntityConfig = (
     entity_id: entityId,
     ...values,
   });
-
-export interface CloudTTSInfo {
-  languages: Array<[string, string]>;
-}
-
-export const getCloudTTSInfo = (hass: HomeAssistant) =>
-  hass.callWS<CloudTTSInfo>({ type: "cloud/tts/info" });

@@ -18,10 +18,18 @@ import { onboardUserStep } from "../data/onboarding";
 import { PolymerChangedEvent } from "../polymer-types";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
-  { type: "string", name: "name", required: true },
-  { type: "string", name: "username", required: true },
-  { type: "string", name: "password", required: true },
-  { type: "string", name: "password_confirm", required: true },
+  { name: "name", required: true, selector: { text: {} } },
+  { name: "username", required: true, selector: { text: {} } },
+  {
+    name: "password",
+    required: true,
+    selector: { text: { type: "password" } },
+  },
+  {
+    name: "password_confirm",
+    required: true,
+    selector: { text: { type: "password" } },
+  },
 ];
 
 @customElement("onboarding-create-user")

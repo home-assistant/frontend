@@ -1,12 +1,16 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { TimePatternTrigger } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
-import {
-  handleChangeEvent,
-  TriggerElement,
-} from "../ha-automation-trigger-row";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { TimePatternTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+
+const SCHEMA: HaFormSchema[] = [
+  { name: "hours", selector: { text: {} } },
+  { name: "minutes", selector: { text: {} } },
+  { name: "seconds", selector: { text: {} } },
+];
 
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {
@@ -19,38 +23,27 @@ export class HaTimePatternTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
-    const { hours, minutes, seconds } = this.trigger;
     return html`
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.time_pattern.hours"
-        )}
-        name="hours"
-        .value=${hours}
+      <ha-form
+        .hass=${this.hass}
+        .schema=${SCHEMA}
+        .data=${this.trigger}
+        .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.time_pattern.minutes"
-        )}
-        name="minutes"
-        .value=${minutes}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.time_pattern.seconds"
-        )}
-        name="seconds"
-        .value=${seconds}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newTrigger = ev.detail.value;
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
+
+  private _computeLabelCallback = (schema: HaFormSchema): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.triggers.type.time_pattern.${schema.name}`
+    );
 }
 
 declare global {

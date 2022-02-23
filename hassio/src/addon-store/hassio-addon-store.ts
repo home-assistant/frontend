@@ -221,13 +221,14 @@ class HassioAddonStore extends LitElement {
         margin-top: 24px;
       }
       .search {
-        padding: 0 16px;
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
-      .search search-input {
-        position: relative;
-        top: 2px;
+      search-input {
+        display: block;
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
       }
       .advanced {
         padding: 12px;

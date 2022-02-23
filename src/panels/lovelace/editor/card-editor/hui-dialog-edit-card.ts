@@ -207,6 +207,7 @@ export class HuiDialogEditCard
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
+              dialogInitialFocus
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
@@ -242,7 +243,7 @@ export class HuiDialogEditCard
             `
           : ""}
         <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._cancel}>
+          <mwc-button @click=${this._cancel} dialogInitialFocus>
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
           ${this._cardConfig !== undefined && this._dirty

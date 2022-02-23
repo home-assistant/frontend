@@ -1,8 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -13,6 +10,7 @@ import {
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
@@ -95,22 +93,24 @@ export class ZHAGroupBindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.group_picker_label"
               )}
               class="menu"
+              .value=${String(this._bindTargetIndex)}
+              @selected=${this._bindTargetIndexChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._bindTargetIndex}
-                @iron-select=${this._bindTargetIndexChanged}
-              >
-                ${this.groups.map(
-                  (group) => html` <paper-item>${group.name}</paper-item> `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+              ${this.groups.map(
+                (group, idx) =>
+                  html`<mwc-list-item .value=${String(idx)}
+                    >${group.name}</mwc-list-item
+                  > `
+              )}
+            </ha-select>
           </div>
           ${this._showHelp
             ? html`
@@ -179,7 +179,7 @@ export class ZHAGroupBindingControl extends LitElement {
   }
 
   private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = event.target!.selected;
+    this._bindTargetIndex = Number(event.target!.value);
     this._groupToBind =
       this._bindTargetIndex === -1
         ? undefined

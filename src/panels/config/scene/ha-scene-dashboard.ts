@@ -67,6 +67,9 @@ class HaSceneDashboard extends LitElement {
     (_language): DataTableColumnContainer => ({
       activate: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.scene.picker.headers.activate"
+        ),
         type: "icon-button",
         template: (_toggle, scene) =>
           html`
@@ -82,6 +85,7 @@ class HaSceneDashboard extends LitElement {
       },
       icon: {
         title: "",
+        label: this.hass.localize("ui.panel.config.scene.picker.headers.state"),
         type: "icon",
         template: (_, scene) =>
           html` <ha-state-icon .state=${scene}></ha-state-icon> `,
@@ -95,6 +99,9 @@ class HaSceneDashboard extends LitElement {
       },
       info: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.scene.picker.headers.show_info"
+        ),
         type: "icon-button",
         template: (_info, scene) => html`
           <ha-icon-button
@@ -109,6 +116,7 @@ class HaSceneDashboard extends LitElement {
       },
       edit: {
         title: "",
+        label: this.hass.localize("ui.panel.config.scene.picker.headers.edit"),
         type: "icon-button",
         template: (_info, scene: any) => html`
           <a

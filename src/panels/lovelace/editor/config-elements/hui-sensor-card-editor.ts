@@ -1,7 +1,5 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -15,11 +13,13 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
@@ -142,22 +142,24 @@ export class HuiSensorCardEditor
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
-          <paper-dropdown-menu
+          <ha-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue=${"graph"}
-            @value-changed=${this._valueChanged}
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._graph}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${graphs.indexOf(this._graph)}
-            >
-              ${graphs.map((graph) => html`<paper-item>${graph}</paper-item>`)}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${graphs.map(
+              (graph) =>
+                html`<mwc-list-item .value=${graph}>${graph}</mwc-list-item>`
+            )}
+          </ha-select>
         </div>
         <div class="side-by-side">
           <paper-input

@@ -9,6 +9,7 @@ import {
   mdiFlask,
   mdiHomeAssistant,
   mdiKey,
+  mdiLinkLock,
   mdiNetwork,
   mdiNumeric1,
   mdiNumeric2,
@@ -16,6 +17,8 @@ import {
   mdiNumeric4,
   mdiNumeric5,
   mdiNumeric6,
+  mdiNumeric7,
+  mdiNumeric8,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
@@ -31,6 +34,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-chip";
+import "../../../../src/components/ha-chip-set";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
@@ -84,6 +88,8 @@ const RATING_ICON = {
   4: mdiNumeric4,
   5: mdiNumeric5,
   6: mdiNumeric6,
+  7: mdiNumeric7,
+  8: mdiNumeric8,
 };
 
 @customElement("hassio-addon-info")
@@ -209,7 +215,7 @@ class HassioAddonInfo extends LitElement {
                 >`}
           </div>
 
-          <div class="capabilities">
+          <ha-chip-set class="capabilities">
             ${this.addon.stage !== "stable"
               ? html` <ha-chip
                   hasIcon
@@ -234,9 +240,9 @@ class HassioAddonInfo extends LitElement {
             <ha-chip
               hasIcon
               class=${classMap({
-                green: [5, 6].includes(Number(this.addon.rating)),
-                yellow: [3, 4].includes(Number(this.addon.rating)),
-                red: [1, 2].includes(Number(this.addon.rating)),
+                green: Number(this.addon.rating) >= 6,
+                yellow: [3, 4, 5].includes(Number(this.addon.rating)),
+                red: Number(this.addon.rating) >= 2,
               })}
               @click=${this._showMoreInfo}
               id="rating"
@@ -364,7 +370,17 @@ class HassioAddonInfo extends LitElement {
                   </ha-chip>
                 `
               : ""}
-          </div>
+            ${this.addon.signed
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="signed">
+                    <ha-svg-icon slot="icon" .path=${mdiLinkLock}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.signed"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+          </ha-chip-set>
 
           <div class="description light-color">
             ${this.addon.description}.<br />

@@ -1,33 +1,35 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
+  assign,
   literal,
   number,
   object,
   optional,
   string,
   union,
-  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/entity/ha-statistics-picker";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
+import "../../../../components/ha-select";
+import { StatisticType } from "../../../../data/history";
 import { HomeAssistant } from "../../../../types";
 import { StatisticsGraphCardConfig } from "../../cards/types";
+import { processConfigEntities } from "../../common/process-config-entities";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "../../../../components/entity/ha-statistics-picker";
-import { processConfigEntities } from "../../common/process-config-entities";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-checkbox";
-import { StatisticType } from "../../../../data/history";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -118,30 +120,28 @@ export class HuiStatisticsGraphCardEditor
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
-          <paper-dropdown-menu
+          <ha-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.statistics-graph.period"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue=${"period"}
-            @iron-select=${this._periodSelected}
+            @selected=${this._periodSelected}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._period}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="period"
-              .selected=${this._period}
-            >
-              ${periods.map(
-                (period) =>
-                  html`<paper-item .period=${period}>
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                    )}
-                  </paper-item>`
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${periods.map(
+              (period) =>
+                html`<mwc-list-item .value=${period}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                  )}
+                </mwc-list-item>`
+            )}
+          </ha-select>
           <paper-input
             type="number"
             .label="${this.hass.localize(
@@ -242,8 +242,8 @@ export class HuiStatisticsGraphCardEditor
     });
   }
 
-  private _periodSelected(ev: CustomEvent) {
-    const newPeriod = ev.detail.item
+  private _periodSelected(ev) {
+    const newPeriod = ev.target.value
       .period as StatisticsGraphCardConfig["period"];
     if (newPeriod === this._period) {
       return;
@@ -284,7 +284,14 @@ export class HuiStatisticsGraphCardEditor
   }
 
   static get styles(): CSSResultGroup {
-    return configElementStyle;
+    return [
+      configElementStyle,
+      css`
+        ha-statistics-picker {
+          width: 100%;
+        }
+      `,
+    ];
   }
 }
 

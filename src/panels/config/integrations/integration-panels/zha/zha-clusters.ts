@@ -1,7 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
 import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -12,9 +10,11 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-service-description";
 import {
   Cluster,
@@ -25,7 +25,6 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import { computeClusterKey } from "./functions";
-import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event
@@ -79,24 +78,25 @@ export class ZHAClusters extends LitElement {
 
         <ha-card class="content">
           <div class="node-picker">
-            <paper-dropdown-menu
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.common.clusters"
               )}
               class="menu"
+              .value=${String(this._selectedClusterIndex)}
+              @selected=${this._selectedClusterChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._selectedClusterIndex}
-                @iron-select=${this._selectedClusterChanged}
-              >
-                ${this._clusters.map(
-                  (entry) => html`
-                    <paper-item>${computeClusterKey(entry)}</paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+              ${this._clusters.map(
+                (entry, idx) => html`
+                  <mwc-list-item .value=${String(idx)}
+                    >${computeClusterKey(entry)}</mwc-list-item
+                  >
+                `
+              )}
+            </ha-select>
           </div>
           ${this.showHelp
             ? html`
@@ -122,8 +122,8 @@ export class ZHAClusters extends LitElement {
     }
   }
 
-  private _selectedClusterChanged(event: ItemSelectedEvent): void {
-    this._selectedClusterIndex = event.target!.selected;
+  private _selectedClusterChanged(event): void {
+    this._selectedClusterIndex = Number(event.target!.value);
     fireEvent(this, "zha-cluster-selected", {
       cluster: this._clusters[this._selectedClusterIndex],
     });
@@ -137,6 +137,9 @@ export class ZHAClusters extends LitElement {
     return [
       haStyle,
       css`
+        ha-select {
+          margin-top: 16px;
+        }
         .menu {
           width: 100%;
         }

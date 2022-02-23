@@ -1,7 +1,6 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -24,11 +23,11 @@ export const handleChangeEvent = (
   ev: CustomEvent
 ) => {
   ev.stopPropagation();
-  const name = (ev.target as any)?.name;
+  const name = (ev.currentTarget as any)?.name;
   if (!name) {
     return;
   }
-  const newVal = ev.detail.value;
+  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
 
   if ((element.condition[name] || "") === newVal) {
     return;

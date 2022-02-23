@@ -37,7 +37,10 @@ class HassioMarkdownDialog extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(this.hass, this.title)}
       >
-        <ha-markdown .content=${this.content || ""}></ha-markdown>
+        <ha-markdown
+          .content=${this.content || ""}
+          dialogInitialFocus
+        ></ha-markdown>
       </ha-dialog>
     `;
   }

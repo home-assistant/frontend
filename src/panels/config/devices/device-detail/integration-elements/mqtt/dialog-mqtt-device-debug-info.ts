@@ -71,6 +71,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             <ha-switch
               .checked=${this._showDeserialized}
               @change=${this._showDeserializedChanged}
+              dialogInitialFocus
             >
             </ha-switch>
           </ha-formfield>
@@ -164,6 +165,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                     <code>${topic.topic}</code>
                     <mqtt-messages
                       .hass=${this.hass}
+                      direction="Received"
                       .messages=${topic.messages}
                       .showDeserialized=${this._showDeserialized}
                       .showAsYaml=${this._showAsYaml}
@@ -174,7 +176,31 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                         topic.messages.length
                       )}
                     >
-                    </mqtt-messages>
+                    </mqtt-rx-messages>
+                  </li>
+                `
+              )}
+            </ul>
+            Transmitted messages:
+            <ul>
+              ${entity.transmitted.map(
+                (topic) => html`
+                  <li>
+                    <code>${topic.topic}</code>
+                    <mqtt-messages
+                      .hass=${this.hass}
+                      direction="Transmitted"
+                      .messages=${topic.messages}
+                      .showDeserialized=${this._showDeserialized}
+                      .showAsYaml=${this._showAsYaml}
+                      .subscribedTopic=${topic.topic}
+                      .summary=${this.hass!.localize(
+                        "ui.dialogs.mqtt_device_debug_info.recent_tx_messages",
+                        "n",
+                        topic.messages.length
+                      )}
+                    >
+                    </mqtt-tx-messages>
                   </li>
                 `
               )}

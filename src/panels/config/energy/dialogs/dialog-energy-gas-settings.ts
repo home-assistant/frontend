@@ -107,6 +107,7 @@ export class DialogEnergyGasSettings
               : "m³"
           })`}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
@@ -293,6 +294,9 @@ export class DialogEnergyGasSettings
         }
         ha-formfield {
           display: block;
+        }
+        ha-statistic-picker {
+          width: 100%;
         }
         .price-options {
           display: block;

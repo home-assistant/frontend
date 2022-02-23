@@ -30,7 +30,7 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
-const HIDDEN_DOMAINS = new Set(["met", "rpi_power", "hassio"]);
+const HIDDEN_DOMAINS = new Set(["hassio", "met", "radio_browser", "rpi_power"]);
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
@@ -140,8 +140,6 @@ class OnboardingIntegrations extends LitElement {
     this._scanUSBDevices();
     loadConfigFlowDialog();
     this._loadConfigEntries();
-    /* polyfill for paper-dropdown */
-    import("web-animations-js/web-animations-next-lite.min");
   }
 
   private _createFlow() {

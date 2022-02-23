@@ -1,11 +1,17 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
 import { LitElement, TemplateResult, html } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-form/ha-form";
 import "../../components/demo-black-white-row";
+import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { HomeAssistant } from "../../../../src/types";
 
 const SCHEMAS: {
   title: string;
@@ -14,6 +20,63 @@ const SCHEMAS: {
   schema: HaFormSchema[];
   data?: Record<string, any>;
 }[] = [
+  {
+    title: "Selectors",
+    translations: {
+      addon: "Addon",
+      entity: "Entity",
+      device: "Device",
+      area: "Area",
+      target: "Target",
+      number: "Number",
+      boolean: "Boolean",
+      time: "Time",
+      action: "Action",
+      text: "Text",
+      text_multiline: "Text Multiline",
+      object: "Object",
+      select: "Select",
+      icon: "Icon",
+      media: "Media",
+    },
+    schema: [
+      { name: "addon", selector: { addon: {} } },
+      { name: "entity", selector: { entity: {} } },
+      {
+        name: "Attribute",
+        selector: { attribute: { entity_id: "" } },
+      },
+      { name: "Device", selector: { device: {} } },
+      { name: "Duration", selector: { duration: {} } },
+      { name: "area", selector: { area: {} } },
+      { name: "target", selector: { target: {} } },
+      { name: "number", selector: { number: { min: 0, max: 10 } } },
+      { name: "boolean", selector: { boolean: {} } },
+      { name: "time", selector: { time: {} } },
+      { name: "action", selector: { action: {} } },
+      { name: "text", selector: { text: { multiline: false } } },
+      { name: "text_multiline", selector: { text: { multiline: true } } },
+      { name: "object", selector: { object: {} } },
+      {
+        name: "select",
+        selector: {
+          select: { options: ["Everyone Home", "Some Home", "All gone"] },
+        },
+      },
+      {
+        name: "icon",
+        selector: {
+          icon: {},
+        },
+      },
+      {
+        name: "media",
+        selector: {
+          media: {},
+        },
+      },
+    ],
+  },
   {
     title: "Authentication",
     translations: {
@@ -50,13 +113,11 @@ const SCHEMAS: {
       {
         type: "boolean",
         name: "bool",
-        optional: true,
         default: false,
       },
       {
         type: "integer",
         name: "int",
-        optional: true,
         default: 10,
       },
       {
@@ -67,7 +128,6 @@ const SCHEMAS: {
       {
         type: "string",
         name: "string",
-        optional: true,
         default: "Default",
       },
       {
@@ -77,7 +137,6 @@ const SCHEMAS: {
           ["other", "other"],
         ],
         name: "select",
-        optional: true,
         default: "default",
       },
       {
@@ -87,7 +146,6 @@ const SCHEMAS: {
           other: "Other",
         },
         name: "multi",
-        optional: true,
         default: ["default"],
       },
       {
@@ -108,7 +166,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int with default",
-        optional: true,
         default: 10,
       },
       {
@@ -122,7 +179,6 @@ const SCHEMAS: {
       {
         type: "integer",
         name: "int range optional",
-        optional: true,
         valueMin: 0,
         valueMax: 10,
       },
@@ -148,7 +204,6 @@ const SCHEMAS: {
           ["other", "Other"],
         ],
         name: "select optional",
-        optional: true,
       },
       {
         type: "select",
@@ -161,7 +216,6 @@ const SCHEMAS: {
           ["option", "1000"],
         ],
         name: "select many otions",
-        optional: true,
         default: "default",
       },
     ],
@@ -190,7 +244,6 @@ const SCHEMAS: {
           option: "1000",
         },
         name: "multi many otions",
-        optional: true,
         default: ["default"],
       },
     ],
@@ -239,22 +292,34 @@ const SCHEMAS: {
         valueMin: 1,
         valueMax: 65535,
         name: "port",
-        optional: true,
         default: 80,
       },
-      { type: "string", name: "path", optional: true, default: "/" },
-      { type: "boolean", name: "ssl", optional: true, default: false },
+      { type: "string", name: "path", default: "/" },
+      { type: "boolean", name: "ssl", default: false },
     ],
   },
 ];
 
 @customElement("demo-components-ha-form")
 class DemoHaForm extends LitElement {
+  @state() private hass!: HomeAssistant;
+
   private data = SCHEMAS.map(
     ({ schema, data }) => data || computeInitialHaFormData(schema)
   );
 
   private disabled = SCHEMAS.map(() => false);
+
+  constructor() {
+    super();
+    const hass = provideHass(this);
+    hass.updateTranslations(null, "en");
+    hass.updateTranslations("config", "en");
+    mockEntityRegistry(hass);
+    mockDeviceRegistry(hass);
+    mockAreaRegistry(hass);
+    mockHassioSupervisor(hass);
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -278,6 +343,7 @@ class DemoHaForm extends LitElement {
               (slot) => html`
                 <ha-form
                   slot=${slot}
+                  .hass=${this.hass}
                   .data=${this.data[idx]}
                   .schema=${info.schema}
                   .error=${info.error}

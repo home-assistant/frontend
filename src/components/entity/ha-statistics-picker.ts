@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PolymerChangedEvent } from "../../polymer-types";
@@ -102,6 +102,20 @@ class HaStatisticsPicker extends LitElement {
     }
 
     this._updateStatistics([...currentEntities, toAdd]);
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      :host {
+        width: 200px;
+        display: block;
+      }
+      ha-statistic-picker {
+        display: block;
+        width: 100%;
+        margin-top: 8px;
+      }
+    `;
   }
 }
 

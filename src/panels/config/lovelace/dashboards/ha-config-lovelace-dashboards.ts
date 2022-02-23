@@ -53,6 +53,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
+          label: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.picker.headers.icon"
+          ),
           type: "icon",
           template: (icon, dashboard) =>
             icon
@@ -161,6 +164,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
       columns.url_path = {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.url"
+        ),
         filterable: true,
         width: "100px",
         template: (urlPath) =>

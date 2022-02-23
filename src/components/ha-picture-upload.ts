@@ -1,5 +1,4 @@
 import { mdiImagePlus } from "@mdi/js";
-import "@polymer/paper-input/paper-input-container";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";

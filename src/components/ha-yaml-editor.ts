@@ -2,6 +2,7 @@ import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HomeAssistant } from "../types";
 import "./ha-code-editor";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
@@ -18,6 +19,8 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public value?: any;
 
   @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
@@ -56,8 +59,10 @@ export class HaYamlEditor extends LitElement {
     return html`
       ${this.label ? html`<p>${this.label}</p>` : ""}
       <ha-code-editor
+        .hass=${this.hass}
         .value=${this._yaml}
         mode="yaml"
+        autocomplete-entities
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
         dir="ltr"

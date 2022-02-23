@@ -160,9 +160,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        role="button"
+        aria-label=${this._config.name ||
+        (stateObj ? computeStateName(stateObj) : "")}
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
+        @keydown=${this._handleKeyDown}
       >
         ${this._config.show_icon
           ? html`
@@ -230,6 +234,12 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return this._ripple;
   });
 
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      handleAction(this, this.hass!, this._config!, "tap");
+    }
+  }
+
   @eventOptions({ passive: true })
   private handleRippleActivate(evt?: Event) {
     this._rippleHandlers.startPress(evt);
@@ -263,6 +273,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           box-sizing: border-box;
           justify-content: center;
           position: relative;
+          overflow: hidden;
         }
 
         ha-card:focus {

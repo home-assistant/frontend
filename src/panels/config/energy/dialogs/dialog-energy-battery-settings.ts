@@ -74,6 +74,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.energy_into_battery"
           )}
           @value-changed=${this._statisticToChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
@@ -126,6 +127,9 @@ export class DialogEnergyBatterySettings
       css`
         ha-dialog {
           --mdc-dialog-max-width: 430px;
+        }
+        ha-statistic-picker {
+          width: 100%;
         }
       `,
     ];

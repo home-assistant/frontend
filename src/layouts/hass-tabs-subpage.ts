@@ -272,6 +272,7 @@ class HassTabsSubpage extends LitElement {
       ha-menu-button,
       ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
+        display: flex;
         flex-shrink: 0;
         pointer-events: auto;
         color: var(--sidebar-icon-color);

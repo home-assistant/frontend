@@ -54,6 +54,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
+                .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .value=${`${stateObj.attributes.year}-${stateObj.attributes.month}-${stateObj.attributes.day}`}
                 @value-changed=${this._dateChanged}
@@ -71,7 +72,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                   : stateObj.state}
                 .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                hide-label
                 @value-changed=${this._timeChanged}
                 @click=${this._stopEventPropagation}
               ></ha-time-input>

@@ -1,4 +1,5 @@
 import type { LitElement } from "lit";
+import { Selector } from "../../data/selector";
 import type { HaDurationData } from "../ha-duration-input";
 
 export type HaFormSchema =
@@ -9,14 +10,32 @@ export type HaFormSchema =
   | HaFormBooleanSchema
   | HaFormSelectSchema
   | HaFormMultiSelectSchema
-  | HaFormTimeSchema;
+  | HaFormTimeSchema
+  | HaFormSelector
+  | HaFormGridSchema;
 
 export interface HaFormBaseSchema {
   name: string;
+  // This value is applied if no data is submitted for this field
   default?: HaFormData;
   required?: boolean;
-  optional?: boolean;
-  description?: { suffix?: string; suggested_value?: HaFormData };
+  description?: {
+    suffix?: string;
+    // This value will be set initially when form is loaded
+    suggested_value?: HaFormData;
+  };
+}
+
+export interface HaFormGridSchema extends HaFormBaseSchema {
+  type: "grid";
+  name: "";
+  column_min_width?: string;
+  schema: HaFormSchema[];
+}
+
+export interface HaFormSelector extends HaFormBaseSchema {
+  type?: never;
+  selector: Selector;
 }
 
 export interface HaFormConstantSchema extends HaFormBaseSchema {
@@ -38,7 +57,7 @@ export interface HaFormSelectSchema extends HaFormBaseSchema {
 
 export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
   type: "multi_select";
-  options: Record<string, string> | string[];
+  options: Record<string, string> | string[] | Array<[string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {

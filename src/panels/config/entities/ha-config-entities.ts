@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
@@ -10,9 +9,6 @@ import {
   mdiRestoreAlert,
   mdiUndo,
 } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -24,7 +20,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
@@ -35,6 +30,7 @@ import type {
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-check-list-item";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -109,7 +105,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _showReadOnly = true;
 
-  @state() private _filter = "";
+  @state() private _filter: string = history.state?.filter || "";
 
   @state() private _numHiddenEntities = 0;
 
@@ -168,6 +164,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.state_icon"
+        ),
         type: "icon",
         template: (_, entry: EntityRow) => html`
           <ha-state-icon
@@ -586,45 +585,35 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
                 .path=${mdiFilterVariant}
               ></ha-icon-button>
-              <mwc-list-item
+              <ha-check-list-item
                 @request-selected=${this._showDisabledChanged}
-                graphic="control"
                 .selected=${this._showDisabled}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showDisabled}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_disabled"
                 )}
-              </mwc-list-item>
-              <mwc-list-item
+              </ha-check-list-item>
+              <ha-check-list-item
                 @request-selected=${this._showRestoredChanged}
                 graphic="control"
                 .selected=${this._showUnavailable}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showUnavailable}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_unavailable"
                 )}
-              </mwc-list-item>
-              <mwc-list-item
+              </ha-check-list-item>
+              <ha-check-list-item
                 @request-selected=${this._showReadOnlyChanged}
                 graphic="control"
                 .selected=${this._showReadOnly}
+                left
               >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showReadOnly}
-                ></ha-checkbox>
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_readonly"
                 )}
-              </mwc-list-item>
+              </ha-check-list-item>
             </ha-button-menu>`}
         ${includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">
@@ -711,6 +700,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(
@@ -872,8 +862,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 58px;
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          height: 56px;
+          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          border-bottom: 1px solid
+            var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+          box-sizing: border-box;
         }
         .header-toolbar {
           display: flex;
@@ -901,7 +894,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           margin: 8px;
         }
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
         }
       `,
     ];

@@ -35,9 +35,12 @@ export class HaBooleanSelector extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        height: 56px;
+        display: flex;
+      }
       ha-formfield {
         width: 100%;
-        margin: 16px 0;
         --mdc-typography-body2-font-size: 1em;
       }
     `;

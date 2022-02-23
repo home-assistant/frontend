@@ -120,6 +120,9 @@ export class HaConfigUsers extends LitElement {
         },
         icons: {
           title: "",
+          label: this.hass.localize(
+            "ui.panel.config.users.picker.headers.icon"
+          ),
           type: "icon",
           sortable: false,
           filterable: false,

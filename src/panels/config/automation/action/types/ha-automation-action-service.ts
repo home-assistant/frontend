@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { any, assert, object, optional, string } from "superstruct";
@@ -31,7 +30,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     return { service: "", data: {} };
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
     }

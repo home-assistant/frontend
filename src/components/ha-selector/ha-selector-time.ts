@@ -22,7 +22,7 @@ export class HaTimeSelector extends LitElement {
         .value=${this.value}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
-        hide-label
+        .label=${this.label}
         enable-second
       ></ha-time-input>
     `;
