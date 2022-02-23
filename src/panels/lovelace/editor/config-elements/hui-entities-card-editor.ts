@@ -435,6 +435,11 @@ export class HuiEntitiesCardEditor
         hui-header-footer-editor {
           padding-top: 4px;
         }
+
+        ha-textfield {
+          display: block;
+          margin-bottom: 16px;
+        }
       `,
     ];
   }
