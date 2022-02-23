@@ -1,7 +1,7 @@
 import "../ha-header-bar";
 import { mdiArrowLeft, mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import type {
@@ -13,7 +13,11 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "./ha-media-player-browse";
-import type { MediaPlayerItemId } from "./ha-media-player-browse";
+import "./ha-media-upload-button";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "./ha-media-player-browse";
 import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 
 @customElement("dialog-media-player-browse")
@@ -25,6 +29,8 @@ class DialogMediaPlayerBrowse extends LitElement {
   @state() private _navigateIds?: MediaPlayerItemId[];
 
   @state() private _params?: MediaPlayerBrowseDialogParams;
+
+  @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
@@ -80,6 +86,12 @@ class DialogMediaPlayerBrowse extends LitElement {
               : this._currentItem.title}
           </span>
 
+          <ha-media-upload-button
+            .hass=${this.hass}
+            .currentItem=${this._currentItem}
+            @media-refresh=${this._refreshMedia}
+            slot="actionItems"
+          ></ha-media-upload-button>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
@@ -124,6 +136,10 @@ class DialogMediaPlayerBrowse extends LitElement {
     return this._params!.action || "play";
   }
 
+  private _refreshMedia() {
+    this._browser.refresh();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
@@ -156,6 +172,10 @@ class DialogMediaPlayerBrowse extends LitElement {
           --mdc-theme-primary: var(--mdc-theme-surface);
           flex-shrink: 0;
           border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
+        }
+
+        ha-media-upload-button {
+          --mdc-theme-primary: var(--mdc-theme-on-primary);
         }
       `,
     ];

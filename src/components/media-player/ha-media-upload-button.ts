@@ -80,6 +80,7 @@ class MediaUploadButton extends LitElement {
 
         for (let i = 0; i < files.length; i++) {
           this._uploading = files.length - i;
+
           try {
             // eslint-disable-next-line no-await-in-loop
             await uploadLocalMedia(this.hass, target, files[i]);
@@ -108,9 +109,8 @@ class MediaUploadButton extends LitElement {
 
   static styles = css`
     mwc-button {
-      --mdc-theme-primary: var(--app-header-text-color);
       /* We use icon + text to show disabled state */
-      --mdc-button-disabled-ink-color: var(--app-header-text-color);
+      --mdc-button-disabled-ink-color: --mdc-theme-primary;
     }
 
     ha-svg-icon[slot="icon"],

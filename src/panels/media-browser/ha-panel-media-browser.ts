@@ -259,10 +259,8 @@ class PanelMediaBrowser extends LitElement {
     return [
       haStyle,
       css`
-        app-toolbar mwc-button {
+        app-toolbar {
           --mdc-theme-primary: var(--app-header-text-color);
-          /* We use icon + text to show disabled state */
-          --mdc-button-disabled-ink-color: var(--app-header-text-color);
         }
 
         ha-media-player-browse {
