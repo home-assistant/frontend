@@ -131,6 +131,11 @@ export class HaMediaPlayerBrowse extends LitElement {
         currentId.media_content_id,
         currentId.media_content_type
       );
+      // Update the parent with latest item.
+      fireEvent(this, "media-browsed", {
+        ids: this.navigateIds,
+        current: this._currentItem,
+      });
     } catch (err) {
       this._setError(err);
     }

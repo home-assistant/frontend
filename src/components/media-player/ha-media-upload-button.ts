@@ -15,6 +15,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 
 declare global {
   interface HASSDomEvents {
+    uploading: unknown;
     "media-refresh": unknown;
   }
 }
@@ -74,6 +75,7 @@ class MediaUploadButton extends LitElement {
     input.addEventListener(
       "change",
       async () => {
+        fireEvent(this, "uploading");
         const files = input.files!;
         document.body.removeChild(input);
         const target = this.currentItem!.media_content_id!;

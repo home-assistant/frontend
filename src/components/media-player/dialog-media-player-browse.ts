@@ -13,7 +13,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "./ha-media-player-browse";
-import "./ha-media-upload-button";
+import "./ha-media-manage-button";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
@@ -86,12 +86,12 @@ class DialogMediaPlayerBrowse extends LitElement {
               : this._currentItem.title}
           </span>
 
-          <ha-media-upload-button
+          <ha-media-manage-button
+            slot="actionItems"
             .hass=${this.hass}
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
-            slot="actionItems"
-          ></ha-media-upload-button>
+          ></ha-media-manage-button>
           <ha-icon-button
             .label=${this.hass.localize("ui.dialogs.generic.close")}
             .path=${mdiClose}
@@ -174,7 +174,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           border-bottom: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
         }
 
-        ha-media-upload-button {
+        ha-media-manage-button {
           --mdc-theme-primary: var(--mdc-theme-on-primary);
         }
       `,

@@ -548,10 +548,15 @@
         "no_media_folder": "It looks like you have not yet created a media directory.",
         "setup_local_help": "Check the {documentation} on how to setup local media.",
         "file_management": {
+          "title": "Media Management",
+          "manage": "Manage",
           "highlight_button": "Click here to upload your first media",
           "upload_failed": "Upload failed: {reason}",
           "add_media": "Add Media",
-          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}"
+          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
+          "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
+          "delete": "Delete {count}",
+          "deleting": "Deleting {count}"
         },
         "class": {
           "album": "Album",

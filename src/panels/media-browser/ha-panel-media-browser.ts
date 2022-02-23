@@ -17,7 +17,7 @@ import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
 import "../../components/media-player/ha-media-player-browse";
-import "../../components/media-player/ha-media-upload-button";
+import "../../components/media-player/ha-media-manage-button";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
@@ -100,11 +100,11 @@ class PanelMediaBrowser extends LitElement {
                   )
                 : this._currentItem.title}
             </div>
-            <ha-media-upload-button
+            <ha-media-manage-button
               .hass=${this.hass}
               .currentItem=${this._currentItem}
               @media-refresh=${this._refreshMedia}
-            ></ha-media-upload-button>
+            ></ha-media-manage-button>
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
