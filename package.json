@@ -255,5 +255,6 @@
   "prettier": {
     "trailingComma": "es5",
     "arrowParens": "always"
-  }
+  },
+  "packageManager": "yarn@3.2.0"
 }
