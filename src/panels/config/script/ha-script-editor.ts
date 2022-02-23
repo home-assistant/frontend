@@ -136,10 +136,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       if (currentMode && MODES_MAX.includes(currentMode)) {
         schema.push({
           name: "max",
+          required: true,
           selector: {
-            text: {
-              type: "number",
-            },
+            number: { mode: "box", min: 1, max: Infinity },
           },
         });
       }
@@ -161,11 +160,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
     const data = {
       mode: MODES[0],
+      icon: undefined,
       max:
         this._config.mode && MODES_MAX.includes(this._config.mode)
           ? 10
           : undefined,
-      icon: undefined,
       ...this._config,
       id: this._entityId,
     };
