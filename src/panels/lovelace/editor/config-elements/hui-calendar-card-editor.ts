@@ -1,5 +1,6 @@
+import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-form/ha-form";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -69,12 +70,6 @@ export class HuiCalendarCardEditor
       ],
     },
     { name: "theme", required: false, selector: { theme: {} } },
-    {
-      name: "entities",
-      selector: {
-        entity: { domain: "calendar" },
-      },
-    },
   ]);
 
   protected render(): TemplateResult {
@@ -83,25 +78,41 @@ export class HuiCalendarCardEditor
     }
 
     const schema = this._schema(this.hass.localize);
+    const data = { initial_view: "dayGridMonth", ...this._config };
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      <h3>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.card.calendar.calendar_entities"
+        ) +
+        " (" +
+        this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
+        ")"}
+      </h3>
+      <ha-entities-picker
+        .hass=${this.hass!}
+        .value=${this._config.entities}
+        .includeDomains=${["calendar"]}
+        @value-changed=${this._entitiesChanged}
+      >
+      </ha-entities-picker>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value;
+    fireEvent(this, "config-changed", { config });
+  }
 
-    if (!config.entities) {
-      config.entities = [];
-    }
-
+  private _entitiesChanged(ev): void {
+    const config = { ...this._config!, entities: ev.detail.value };
     fireEvent(this, "config-changed", { config });
   }
 
@@ -114,6 +125,13 @@ export class HuiCalendarCardEditor
       `ui.panel.lovelace.editor.card.calendar.${schema.name}`
     );
   };
+
+  static styles = css`
+    ha-form {
+      display: block;
+      overflow: auto;
+    }
+  `;
 }
 
 declare global {
