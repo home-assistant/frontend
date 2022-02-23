@@ -213,11 +213,11 @@ export class HaIntegrationCard extends LitElement {
       } else {
         stateTextExtra = html`
           <br />
-          <a href="/config/logs"
-            >${this.hass.localize(
+          <a href=${`/config/logs/?filter=${item.domain}`}>
+            ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.check_the_logs"
-            )}</a
-          >
+            )}
+          </a>
         `;
       }
     }
