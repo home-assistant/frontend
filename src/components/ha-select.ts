@@ -21,15 +21,18 @@ export class HaSelect extends SelectBase {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("translations-updated", this._resourcesUpdated);
+    window.addEventListener("translations-updated", this._translationsUpdated);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("translations-updated", this._resourcesUpdated);
+    window.removeEventListener(
+      "translations-updated",
+      this._translationsUpdated
+    );
   }
 
-  private _resourcesUpdated = debounce(async () => {
+  private _translationsUpdated = debounce(async () => {
     await nextRender();
     this.layoutOptions();
   }, 500);
