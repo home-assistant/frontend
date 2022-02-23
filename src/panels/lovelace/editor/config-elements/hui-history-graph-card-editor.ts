@@ -85,14 +85,7 @@ export class HuiHistoryGraphCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    let config = ev.detail.value || this._config!;
-
-    if (ev.detail && ev.detail.entities) {
-      config = { ...config, entities: ev.detail.entities };
-      this._configEntities = processEditorEntities(config.entities);
-    }
-
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
