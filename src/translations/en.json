@@ -3449,7 +3449,7 @@
             "calendar": {
               "name": "Calendar",
               "description": "The Calendar card displays a calendar including day, week and list views",
-              "inital_view": "Initial View",
+              "initial_view": "Initial View",
               "calendar_entities": "Calendar Entities",
               "views": {
                 "dayGridMonth": "Month",
