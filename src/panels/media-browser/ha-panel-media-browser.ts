@@ -241,6 +241,7 @@ class PanelMediaBrowser extends LitElement {
       title: item.title,
       can_play: item.can_play,
     });
+    this._player.hideResolvingNewMediaPicked();
   }
 
   private _playerPicked(ev) {
