@@ -1,17 +1,17 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import { Tag, UpdateTagParams } from "../../../data/tag";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { TagDetailDialogParams } from "./show-dialog-tag-detail";
-import "../../../components/ha-alert";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 

@@ -1,11 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
 import { computeDeviceName } from "../../../../data/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
