@@ -601,6 +601,7 @@ export class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 100px;
+        max-width: 100px;
       }
 
       .app img {
@@ -636,11 +637,11 @@ export class BarMediaPlayer extends LitElement {
 
       :host([narrow]) .choose-player.browser {
         justify-content: flex-end;
-        width: 100%;
       }
 
       :host([narrow]) img {
         max-height: 80px;
+        max-width: 80px;
       }
 
       :host([narrow]) .blank-image {
