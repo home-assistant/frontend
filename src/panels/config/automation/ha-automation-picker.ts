@@ -7,7 +7,6 @@ import {
   mdiPlayCircleOutline,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -81,6 +80,9 @@ class HaAutomationPicker extends LitElement {
       const columns: DataTableColumnContainer = {
         toggle: {
           title: "",
+          label: this.hass.localize(
+            "ui.panel.config.automation.picker.headers.toggle"
+          ),
           type: "icon",
           template: (_toggle, automation: any) =>
             html`
@@ -127,6 +129,9 @@ class HaAutomationPicker extends LitElement {
           `,
         };
         columns.trigger = {
+          label: this.hass.localize(
+            "ui.panel.config.automation.picker.headers.trigger"
+          ),
           title: html`
             <mwc-button style="visibility: hidden">
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -146,6 +151,9 @@ class HaAutomationPicker extends LitElement {
       }
       columns.actions = {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.automation.picker.headers.actions"
+        ),
         type: "overflow-menu",
         template: (_info, automation: any) => html`
           <ha-icon-overflow-menu

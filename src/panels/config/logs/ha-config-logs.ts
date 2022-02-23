@@ -98,18 +98,19 @@ export class HaConfigLogs extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
         }
-
         .search {
-          padding: 0 16px;
-          background: var(--sidebar-background-color);
-          border-bottom: 1px solid var(--divider-color);
+          position: sticky;
+          top: 0;
+          z-index: 2;
         }
-
-        .search search-input {
-          position: relative;
-          top: 2px;
+        search-input {
+          display: block;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: var(--divider-color);
         }
-
+        search-input.header {
+          --mdc-ripple-color: transparant;
+        }
         .content {
           direction: ltr;
         }

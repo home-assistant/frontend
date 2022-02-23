@@ -1,7 +1,4 @@
 import { mdiPencilOff, mdiPlus } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
@@ -9,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
-import "../../../common/search/search-input";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -41,6 +37,9 @@ export class HaConfigHelpers extends LitElement {
     const columns: DataTableColumnContainer = {
       icon: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.icon"
+        ),
         type: "icon",
         template: (icon, helper: any) =>
           icon
@@ -88,6 +87,9 @@ export class HaConfigHelpers extends LitElement {
     };
     columns.editable = {
       title: "",
+      label: this.hass.localize(
+        "ui.panel.config.helpers.picker.headers.editable"
+      ),
       type: "icon",
       template: (editable) => html`
         ${!editable

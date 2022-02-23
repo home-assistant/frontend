@@ -128,9 +128,11 @@ class HaPanelDevTemplate extends LitElement {
           </p>
           <ha-code-editor
             mode="jinja2"
+            .hass=${this.hass}
             .value=${this._template}
             .error=${this._error}
             autofocus
+            autocomplete-entities
             @value-changed=${this._templateChanged}
             dir="ltr"
           ></ha-code-editor>

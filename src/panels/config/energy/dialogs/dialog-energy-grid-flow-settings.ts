@@ -104,6 +104,7 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
@@ -300,6 +301,9 @@ export class DialogEnergyGridFlowSettings
         }
         ha-formfield {
           display: block;
+        }
+        ha-statistic-picker {
+          width: 100%;
         }
         .price-options {
           display: block;

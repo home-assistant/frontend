@@ -75,7 +75,7 @@ class HaUsersPickerLight extends LitElement {
         )
       )}
       <ha-user-picker
-        .noUserLabel=${this.pickUserLabel ||
+        .label=${this.pickUserLabel ||
         this.hass!.localize("ui.components.user-picker.add_user")}
         .hass=${this.hass}
         .users=${notSelectedUsers}

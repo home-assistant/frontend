@@ -15,7 +15,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @property() public action!: DelayAction;
 
-  @property() public _timeData!: HaDurationData;
+  @property() public _timeData?: HaDurationData;
 
   public static get defaultConfig() {
     return { delay: "" };

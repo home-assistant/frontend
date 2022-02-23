@@ -5,9 +5,11 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon";
@@ -19,29 +21,27 @@ import {
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
 import {
-  migrateZwave,
-  ZWaveJsMigrationData,
-  fetchZwaveNetworkStatus as fetchZwaveJsNetworkStatus,
-  fetchZwaveNodeStatus,
-  getZwaveJsIdentifiersFromDevice,
-  subscribeZwaveNodeReady,
-} from "../../../../../data/zwave_js";
-import {
   fetchMigrationConfig,
+  fetchNetworkStatus,
   startZwaveJsConfigFlow,
   ZWaveMigrationConfig,
   ZWaveNetworkStatus,
   ZWAVE_NETWORK_STATE_STOPPED,
-  fetchNetworkStatus,
 } from "../../../../../data/zwave";
+import {
+  fetchZwaveNetworkStatus as fetchZwaveJsNetworkStatus,
+  fetchZwaveNodeStatus,
+  getZwaveJsIdentifiersFromDevice,
+  migrateZwave,
+  subscribeZwaveNodeReady,
+  ZWaveJsMigrationData,
+} from "../../../../../data/zwave_js";
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
-import "../../../../../components/ha-alert";
 
 @customElement("zwave-migration")
 export class ZwaveMigration extends LitElement {
@@ -155,7 +155,7 @@ export class ZwaveMigration extends LitElement {
                         .filter(
                           (entityState) =>
                             computeStateDomain(entityState) === "zwave" &&
-                            entityState.state !== "ready"
+                            !["ready", "sleeping"].includes(entityState.state)
                         )
                         .map(
                           (entityState) =>
@@ -430,6 +430,10 @@ export class ZwaveMigration extends LitElement {
     const nodesNotReady = (await Promise.all(nodeStatePromisses)).filter(
       (node) => !node.ready
     );
+
+    // eslint-disable-next-line no-console
+    console.log("waiting for nodes to be ready", nodesNotReady);
+
     this._getMigrationData();
     if (nodesNotReady.length === 0) {
       this._waitingOnDevices = [];
@@ -445,10 +449,19 @@ export class ZwaveMigration extends LitElement {
         }
       )
     );
-    const deviceReg = await fetchDeviceRegistry(this.hass);
-    this._waitingOnDevices = deviceReg
-      .map((device) => getZwaveJsIdentifiersFromDevice(device))
-      .filter(Boolean);
+    const deviceReg: DeviceRegistryEntry[] = await fetchDeviceRegistry(
+      this.hass.connection
+    );
+    this._waitingOnDevices = deviceReg.filter((device) => {
+      const identifiers = getZwaveJsIdentifiersFromDevice(device);
+      if (
+        !identifiers ||
+        Number(identifiers.home_id) !== networkStatus.controller.home_id
+      ) {
+        return false;
+      }
+      return nodesNotReady.some((node) => identifiers.node_id === node.node_id);
+    });
   }
 
   private async _getMigrationData() {

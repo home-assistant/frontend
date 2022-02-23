@@ -7,6 +7,9 @@ import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
 import "./hc-launch-screen";
 
+(window as any).loadCardHelpers = () =>
+  import("../../../../src/panels/lovelace/custom-card-helpers");
+
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

@@ -1,9 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { SelectSelector } from "../../data/selector";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import { SelectOption, SelectSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
-import "../ha-paper-dropdown-menu";
+import "../ha-select";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -15,49 +17,44 @@ export class HaSelectSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html`<ha-paper-dropdown-menu
-      .disabled=${this.disabled}
+    return html`<ha-select
+      fixedMenuPosition
+      naturalMenuWidth
       .label=${this.label}
+      .value=${this.value}
+      .helper=${this.helper}
+      .disabled=${this.disabled}
+      @closed=${stopPropagation}
+      @selected=${this._valueChanged}
     >
-      <paper-listbox
-        slot="dropdown-content"
-        attr-for-selected="item-value"
-        .selected=${this.value}
-        @selected-item-changed=${this._valueChanged}
-      >
-        ${this.selector.select.options.map(
-          (item: string) => html`
-            <paper-item .itemValue=${item}> ${item} </paper-item>
-          `
-        )}
-      </paper-listbox>
-    </ha-paper-dropdown-menu>`;
+      ${this.selector.select.options.map((item: string | SelectOption) => {
+        const value = typeof item === "object" ? item.value : item;
+        const label = typeof item === "object" ? item.label : item;
+
+        return html`<mwc-list-item .value=${value}>${label}</mwc-list-item>`;
+      })}
+    </ha-select>`;
   }
 
   private _valueChanged(ev) {
-    if (this.disabled || !ev.detail.value) {
+    ev.stopPropagation();
+    if (this.disabled || !ev.target.value) {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.detail.value.itemValue,
+      value: ev.target.value,
     });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-paper-dropdown-menu {
+      ha-select {
         width: 100%;
-        min-width: 200px;
-        display: block;
-      }
-      paper-listbox {
-        min-width: 200px;
-      }
-      paper-item {
-        cursor: pointer;
       }
     `;
   }

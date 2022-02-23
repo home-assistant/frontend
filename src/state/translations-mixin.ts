@@ -19,6 +19,7 @@ import {
   getUserLocale,
 } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   // for fire event
@@ -32,6 +33,7 @@ declare global {
     "hass-time-format-select": {
       time_format: TimeFormat;
     };
+    "translations-updated": undefined;
   }
 }
 
@@ -352,6 +354,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           localize,
         });
       }
+      fireEvent(this, "translations-updated");
     }
 
     private _refetchCachedHassTranslations(

@@ -14,7 +14,7 @@ import { HaDelayAction } from "../../../../src/panels/config/automation/action/t
 import { HaDeviceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-device_id";
 import { HaEventAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-event";
 import { HaRepeatAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-repeat";
-import { HaSceneAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-scene";
+import { HaSceneAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-activate_scene";
 import { HaServiceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-service";
 import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_for_trigger";
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";

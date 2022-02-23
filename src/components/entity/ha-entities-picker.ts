@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
@@ -114,7 +114,7 @@ class HaEntitiesPickerLight extends LitElement {
     const newValue = event.detail.value;
     if (
       newValue === curValue ||
-      (newValue !== "" && !isValidEntityId(newValue))
+      (newValue !== undefined && !isValidEntityId(newValue))
     ) {
       return;
     }
@@ -145,6 +145,12 @@ class HaEntitiesPickerLight extends LitElement {
 
     this._updateEntities([...currentEntities, toAdd]);
   }
+
+  static override styles = css`
+    div {
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

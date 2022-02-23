@@ -1,13 +1,11 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiCheckCircle,
   mdiCircle,
   mdiCloseCircle,
   mdiProgressClock,
 } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -23,6 +21,7 @@ import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
@@ -287,26 +286,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return html`
         ${labelAndDescription}
         <div class="flex">
-          <paper-dropdown-menu
-            dynamic-align
+          <ha-select
             .disabled=${!item.metadata.writeable}
+            .value=${item.value}
+            .key=${id}
+            .property=${item.property}
+            .propertyKey=${item.property_key}
+            @selected=${this._dropdownSelected}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${item.value}
-              attr-for-selected="value"
-              .key=${id}
-              .property=${item.property}
-              .propertyKey=${item.property_key}
-              @iron-select=${this._dropdownSelected}
-            >
-              ${Object.entries(item.metadata.states).map(
-                ([key, entityState]) => html`
-                  <paper-item .value=${key}>${entityState}</paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${Object.entries(item.metadata.states).map(
+              ([key, entityState]) => html`
+                <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+              `
+            )}
+          </ha-select>
         </div>
       `;
     }
@@ -351,12 +344,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value === ev.target.selected) {
+    if (this._config![ev.target.key].value === ev.target.value) {
       return;
     }
     this.setResult(ev.target.key, undefined);
 
-    this._updateConfigParameter(ev.target, Number(ev.target.selected));
+    this._updateConfigParameter(ev.target, Number(ev.target.value));
   }
 
   private debouncedUpdate = debounce((target, value) => {
@@ -462,7 +455,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         }
 
         .flex .config-label,
-        .flex paper-dropdown-menu {
+        .flex ha-select {
           flex: 1;
         }
 

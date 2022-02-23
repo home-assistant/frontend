@@ -60,18 +60,18 @@ export class DialogDeviceAutomation extends LitElement {
       return;
     }
 
-    const { deviceId, script } = this._params;
+    const { device, script } = this._params;
 
-    fetchDeviceActions(this.hass, deviceId).then((actions) => {
+    fetchDeviceActions(this.hass, device.id).then((actions) => {
       this._actions = actions;
     });
     if (script) {
       return;
     }
-    fetchDeviceTriggers(this.hass, deviceId).then((triggers) => {
+    fetchDeviceTriggers(this.hass, device.id).then((triggers) => {
       this._triggers = triggers;
     });
-    fetchDeviceConditions(this.hass, deviceId).then((conditions) => {
+    fetchDeviceConditions(this.hass, device.id).then((conditions) => {
       this._conditions = conditions;
     });
   }
@@ -88,7 +88,14 @@ export class DialogDeviceAutomation extends LitElement {
         .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
-          }.create`
+          }.create`,
+          {
+            type: this.hass.localize(
+              `ui.panel.config.devices.type.${
+                this._params.device.entry_type || "device"
+              }`
+            ),
+          }
         )}
       >
         <div @entry-selected=${this.closeDialog}>

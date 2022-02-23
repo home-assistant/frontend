@@ -94,10 +94,10 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         mwc-list-item.blueprint {
-          height: 92px;
+          height: 110px;
         }
         ha-blueprint-picker {
-          margin-top: -16px;
+          margin-top: 8px;
         }
         ha-dialog {
           --dialog-content-padding: 0;

@@ -1,23 +1,27 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import Fuse from "fuse.js";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
+import { getConfigEntries } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
+import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
@@ -26,6 +30,7 @@ import { configFlowContentStyles } from "./styles";
 interface HandlerObj {
   name: string;
   slug: string;
+  is_add?: boolean;
 }
 
 declare global {
@@ -77,6 +82,17 @@ class StepFlowPickHandler extends LitElement {
   protected render(): TemplateResult {
     const handlers = this._getHandlers();
 
+    const addDeviceRows: HandlerObj[] = ["zha", "zwave_js"]
+      .filter((domain) => isComponentLoaded(this.hass, domain))
+      .map((domain) => ({
+        name: this.hass.localize(
+          `ui.panel.config.integrations.add_${domain}_device`
+        ),
+        slug: domain,
+        is_add: true,
+      }))
+      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
@@ -87,37 +103,20 @@ class StepFlowPickHandler extends LitElement {
         .label=${this.hass.localize("ui.panel.config.integrations.search")}
         @keypress=${this._maybeSubmit}
       ></search-input>
-      <div
+      <mwc-list
         style=${styleMap({
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
       >
+        ${addDeviceRows.length
+          ? html`
+              ${addDeviceRows.map((handler) => this._renderRow(handler))}
+              <li divider padded class="divider" role="separator"></li>
+            `
+          : ""}
         ${handlers.length
-          ? handlers.map(
-              (handler: HandlerObj) =>
-                html`
-                  <paper-icon-item
-                    @click=${this._handlerPicked}
-                    .handler=${handler}
-                  >
-                    <img
-                      slot="item-icon"
-                      loading="lazy"
-                      src=${brandsUrl({
-                        domain: handler.slug,
-                        type: "icon",
-                        useFallback: true,
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      referrerpolicy="no-referrer"
-                    />
-
-                    <paper-item-body> ${handler.name} </paper-item-body>
-                    <ha-icon-next></ha-icon-next>
-                  </paper-icon-item>
-                `
-            )
+          ? handlers.map((handler) => this._renderRow(handler))
           : html`
               <p>
                 ${this.hass.localize(
@@ -140,15 +139,56 @@ class StepFlowPickHandler extends LitElement {
                 >.
               </p>
             `}
-      </div>
+      </mwc-list>
+    `;
+  }
+
+  private _renderRow(handler: HandlerObj) {
+    return html`
+      <mwc-list-item
+        graphic="medium"
+        .hasMeta=${!handler.is_add}
+        .handler=${handler}
+        @click=${this._handlerPicked}
+      >
+        <img
+          slot="graphic"
+          loading="lazy"
+          src=${brandsUrl({
+            domain: handler.slug,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+          referrerpolicy="no-referrer"
+        />
+        <span>${handler.name}</span>
+        ${handler.is_add ? "" : html`<ha-icon-next slot="meta"></ha-icon-next>`}
+      </mwc-list-item>
     `;
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (this._filter === undefined && this.initialFilter !== undefined) {
       this._filter = this.initialFilter;
     }
-    super.willUpdate(changedProps);
+    if (this.initialFilter !== undefined && this._filter === "") {
+      this.initialFilter = undefined;
+      this._filter = "";
+      this._width = undefined;
+      this._height = undefined;
+    } else if (
+      this.hasUpdated &&
+      changedProps.has("_filter") &&
+      (!this._width || !this._height)
+    ) {
+      // Store the width and height so that when we search, box doesn't jump
+      const boundingRect =
+        this.shadowRoot!.querySelector("mwc-list")!.getBoundingClientRect();
+      this._width = boundingRect.width;
+      this._height = boundingRect.height;
+    }
   }
 
   protected firstUpdated(changedProps) {
@@ -157,24 +197,6 @@ class StepFlowPickHandler extends LitElement {
       () => this.shadowRoot!.querySelector("search-input")!.focus(),
       0
     );
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    // Store the width and height so that when we search, box doesn't jump
-    const div = this.shadowRoot!.querySelector("div")!;
-    if (!this._width) {
-      const width = div.clientWidth;
-      if (width) {
-        this._width = width;
-      }
-    }
-    if (!this._height) {
-      const height = div.clientHeight;
-      if (height) {
-        this._height = height;
-      }
-    }
   }
 
   private _getHandlers() {
@@ -190,8 +212,31 @@ class StepFlowPickHandler extends LitElement {
   }
 
   private async _handlerPicked(ev) {
+    const handler: HandlerObj = ev.currentTarget.handler;
+
+    if (handler.is_add) {
+      if (handler.slug === "zwave_js") {
+        const entries = await getConfigEntries(this.hass);
+        const entry = entries.find((ent) => ent.domain === "zwave_js");
+
+        if (!entry) {
+          return;
+        }
+
+        showZWaveJSAddNodeDialog(this, {
+          entry_id: entry.entry_id,
+        });
+      } else if (handler.slug === "zha") {
+        navigate("/config/zha/add");
+      }
+
+      // This closes dialog.
+      fireEvent(this, "flow-update");
+      return;
+    }
+
     fireEvent(this, "handler-picked", {
-      handler: ev.currentTarget.handler.slug,
+      handler: handler.slug,
     });
   }
 
@@ -219,26 +264,25 @@ class StepFlowPickHandler extends LitElement {
         }
         search-input {
           display: block;
-          margin: -12px 16px 0;
+          margin: 16px 16px 0;
         }
         ha-icon-next {
           margin-right: 8px;
         }
-        div {
+        mwc-list {
           overflow: auto;
           max-height: 600px;
+        }
+        .divider {
+          border-bottom-color: var(--divider-color);
         }
         h2 {
           padding-right: 66px;
         }
         @media all and (max-height: 900px) {
-          div {
+          mwc-list {
             max-height: calc(100vh - 134px);
           }
-        }
-        paper-icon-item {
-          cursor: pointer;
-          margin-bottom: 4px;
         }
         p {
           text-align: center;

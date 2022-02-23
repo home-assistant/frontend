@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import "../../../components/ha-help-tooltip";
 import "../../../components/ha-chip-set";
 import "../../../components/ha-chip";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-textfield";
 import "../../../components/ha-switch";
 import { adminChangePassword } from "../../../data/auth";
 import {
@@ -92,12 +92,13 @@ class DialogUserDetail extends LitElement {
                 </ha-chip-set>
               `}
           <div class="form">
-            <paper-input
+            <ha-textfield
+              dialogInitialFocus
               .value=${this._name}
               .disabled=${user.system_generated}
-              @value-changed=${this._nameChanged}
-              label=${this.hass!.localize("ui.panel.config.users.editor.name")}
-            ></paper-input>
+              @input=${this._nameChanged}
+              .label=${this.hass!.localize("ui.panel.config.users.editor.name")}
+            ></ha-textfield>
             <div class="row">
               <ha-formfield
                 .label=${this.hass.localize(
@@ -321,7 +322,8 @@ class DialogUserDetail extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-chip-set {
+        ha-chip-set,
+        ha-textfield {
           display: block;
         }
         .state {

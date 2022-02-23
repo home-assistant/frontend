@@ -1,10 +1,13 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -121,26 +124,24 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <paper-dropdown-menu
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.edit_view.type"
           )}
+          .value=${this._type}
+          @selected=${this._typeChanged}
+          @closed=${stopPropagation}
+          fixedMenuPosition
+          naturalMenuWidth
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected=${this._type}
-            attr-for-selected="type"
-            @iron-select=${this._typeChanged}
-          >
-            ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
-              (type) => html`<paper-item .type=${type}>
-                ${this.hass.localize(
-                  `ui.panel.lovelace.editor.edit_view.types.${type}`
-                )}
-              </paper-item>`
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
+            (type) => html`<mwc-list-item .value=${type}>
+              ${this.hass.localize(
+                `ui.panel.lovelace.editor.edit_view.types.${type}`
+              )}
+            </mwc-list-item>`
+          )}
+        </ha-select>
       </div>
     `;
   }
@@ -166,7 +167,7 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _typeChanged(ev): void {
-    const selected = ev.target.selected;
+    const selected = ev.target.value;
     if (selected === "") {
       return;
     }

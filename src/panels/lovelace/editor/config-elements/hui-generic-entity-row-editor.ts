@@ -1,12 +1,15 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";
@@ -99,37 +102,37 @@ export class HuiGenericEntityRowEditor
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
         </div>
-        <paper-dropdown-menu .label=${"Secondary Info"}>
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="value"
-            .selected=${this._config.secondary_info || "none"}
-            .configValue=${"secondary_info"}
-            @iron-select=${this._valueChanged}
+        <ha-select
+          label="Secondary Info"
+          .configValue=${"secondary_info"}
+          @selected=${this._valueChanged}
+          @closed=${stopPropagation}
+          .value=${this._config.secondary_info || "none"}
+          naturalMenuWidth
+          fixedMenuPosition
+        >
+          <mwc-list-item value=""
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
+            )}</mwc-list-item
           >
-            <paper-item value=""
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.card.entities.secondary_info_values.none"
-              )}</paper-item
-            >
-            ${Object.keys(SecondaryInfoValues).map((info) => {
-              if (
-                !("domains" in SecondaryInfoValues[info]) ||
-                ("domains" in SecondaryInfoValues[info] &&
-                  SecondaryInfoValues[info].domains!.includes(domain))
-              ) {
-                return html`
-                  <paper-item .value=${info}
-                    >${this.hass!.localize(
-                      `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
-                    )}</paper-item
-                  >
-                `;
-              }
-              return "";
-            })}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          ${Object.keys(SecondaryInfoValues).map((info) => {
+            if (
+              !("domains" in SecondaryInfoValues[info]) ||
+              ("domains" in SecondaryInfoValues[info] &&
+                SecondaryInfoValues[info].domains!.includes(domain))
+            ) {
+              return html`
+                <mwc-list-item .value=${info}>
+                  ${this.hass!.localize(
+                    `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
+                  )}
+                </mwc-list-item>
+              `;
+            }
+            return "";
+          })}
+        </ha-select>
       </div>
     `;
   }

@@ -1,10 +1,10 @@
 import "@material/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import "../../../components/ha-select";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-theme-select-editor")
@@ -17,53 +17,47 @@ export class HuiThemeSelectEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-dropdown-menu
+      <ha-select
         .label=${this.label ||
         `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.theme"
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`}
-        dynamic-align
+        .value=${this.value}
+        @selected=${this._changed}
+        @closed=${stopPropagation}
+        fixedMenuPosition
+        naturalMenuWidth
       >
-        <paper-listbox
-          slot="dropdown-content"
-          .selected=${this.value}
-          attr-for-selected="theme"
-          @iron-select=${this._changed}
+        <mwc-list-item value="remove"
+          >${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.no_theme"
+          )}</mwc-list-item
         >
-          <paper-item theme="remove"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.card.generic.no_theme"
-            )}</paper-item
-          >
-          ${Object.keys(this.hass!.themes.themes)
-            .sort()
-            .map(
-              (theme) =>
-                html` <paper-item theme=${theme}>${theme}</paper-item> `
-            )}
-        </paper-listbox>
-      </paper-dropdown-menu>
+        ${Object.keys(this.hass!.themes.themes)
+          .sort()
+          .map(
+            (theme) =>
+              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
+          )}
+      </ha-select>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-dropdown-menu {
+      ha-select {
         width: 100%;
-      }
-      paper-item {
-        cursor: pointer;
       }
     `;
   }
 
   private _changed(ev): void {
-    if (!this.hass || ev.target.selected === "") {
+    if (!this.hass || ev.target.value === "") {
       return;
     }
-    this.value = ev.target.selected === "remove" ? "" : ev.target.selected;
+    this.value = ev.target.value === "remove" ? undefined : ev.target.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

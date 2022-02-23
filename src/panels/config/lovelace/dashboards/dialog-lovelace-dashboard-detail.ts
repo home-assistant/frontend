@@ -207,6 +207,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           slot="primaryAction"
           @click=${this._updateDashboard}
           .disabled=${urlInvalid || titleInvalid || this._submitting}
+          dialogInitialFocus
         >
           ${this._params.urlPath
             ? this._params.dashboard?.id

@@ -1,19 +1,15 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string, union } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/entity/ha-entity-attribute-picker";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-duration-input";
-import { StateCondition } from "../../../../../data/automation";
-import { HomeAssistant } from "../../../../../types";
+import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { StateCondition } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
-import {
-  ConditionElement,
-  handleChangeEvent,
-} from "../ha-automation-condition-row";
+import type { ConditionElement } from "../ha-automation-condition-row";
+import "../../../../../components/ha-form/ha-form";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -27,11 +23,21 @@ const stateConditionStruct = object({
 export class HaStateCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: StateCondition;
+  @property({ attribute: false }) public condition!: StateCondition;
 
   public static get defaultConfig() {
     return { entity_id: "", state: "" };
   }
+
+  private _schema = memoizeOne((entityId) => [
+    { name: "entity_id", required: true, selector: { entity: {} } },
+    {
+      name: "attribute",
+      selector: { attribute: { entity_id: entityId } },
+    },
+    { name: "state", selector: { text: {} } },
+    { name: "for", selector: { duration: {} } },
+  ]);
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("condition")) {
@@ -46,50 +52,52 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   protected render() {
-    const { entity_id, attribute, state } = this.condition;
-    const forTime = createDurationData(this.condition.for);
+    const trgFor = createDurationData(this.condition.for);
+    const data = { ...this.condition, for: trgFor };
+    const schema = this._schema(this.condition.entity_id);
 
     return html`
-      <ha-entity-picker
-        .value=${entity_id}
-        .name=${"entity_id"}
-        @value-changed=${this._valueChanged}
+      <ha-form
         .hass=${this.hass}
-        allow-custom-entity
-      ></ha-entity-picker>
-      <ha-entity-attribute-picker
-        .hass=${this.hass}
-        .entityId=${entity_id}
-        .value=${attribute}
-        .name=${"attribute"}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.attribute"
-        )}
+        .data=${data}
+        .schema=${schema}
         @value-changed=${this._valueChanged}
-        allow-custom-value
-      ></ha-entity-attribute-picker>
-      <paper-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.state.state"
-        )}
-        .name=${"state"}
-        .value=${state}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <ha-duration-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.for"
-        )}
-        .name=${"for"}
-        .data=${forTime}
-        @value-changed=${this._valueChanged}
-      ></ha-duration-input>
+        .computeLabel=${this._computeLabelCallback}
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newTrigger = ev.detail.value;
+
+    Object.keys(newTrigger).forEach((key) =>
+      newTrigger[key] === undefined || newTrigger[key] === ""
+        ? delete newTrigger[key]
+        : {}
+    );
+
+    fireEvent(this, "value-changed", { value: newTrigger });
   }
+
+  private _computeLabelCallback = (schema: HaFormSchema): string => {
+    switch (schema.name) {
+      case "entity_id":
+        return this.hass.localize("ui.components.entity.entity-picker.entity");
+      case "attribute":
+        return this.hass.localize(
+          "ui.components.entity.entity-attribute-picker.attribute"
+        );
+      case "for":
+        return this.hass.localize(
+          `ui.panel.config.automation.editor.triggers.type.state.for`
+        );
+      default:
+        return this.hass.localize(
+          `ui.panel.config.automation.editor.conditions.type.state.${schema.name}`
+        );
+    }
+  };
 }
 
 declare global {

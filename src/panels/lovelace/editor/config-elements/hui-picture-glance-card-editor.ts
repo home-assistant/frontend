@@ -1,12 +1,12 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, object, optional, string, assign } from "superstruct";
+import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-select";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureGlanceCardConfig } from "../../cards/types";
@@ -17,10 +17,10 @@ import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -146,22 +146,24 @@ export class HuiPictureGlanceCardEditor
           .includeDomains=${includeDomains}
         ></ha-entity-picker>
         <div class="side-by-side">
-          <paper-dropdown-menu
+          <ha-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.camera_view"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue=${"camera_view"}
-            @value-changed=${this._valueChanged}
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+            fixedMenuPosition
+            naturalMenuWidth
+            .value=${this._camera_view}
           >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${views.indexOf(this._camera_view)}
-            >
-              ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
-            </paper-listbox>
-          </paper-dropdown-menu>
+            ${views.map(
+              (view) =>
+                html`<mwc-list-item .value=${view}>${view}</mwc-list-item> `
+            )}
+          </ha-select>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.aspect_ratio"

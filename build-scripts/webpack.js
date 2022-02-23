@@ -30,6 +30,7 @@ const createWebpackConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
+  isHassioBuild,
   dontHash,
 }) => {
   if (!dontHash) {
@@ -117,7 +118,9 @@ const createWebpackConfig = ({
         },
       }),
       new webpack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
+        new RegExp(
+          bundle.emptyPackages({ latestBuild, isHassioBuild }).join("|")
+        ),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),

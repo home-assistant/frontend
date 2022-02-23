@@ -2,7 +2,7 @@
 
 This is the repository for the official [Home Assistant](https://home-assistant.io) frontend.
 
-[![Screenshot of the frontend](https://raw.githubusercontent.com/home-assistant/home-assistant-polymer/master/docs/screenshot.png)](https://demo.home-assistant.io/)
+[![Screenshot of the frontend](https://raw.githubusercontent.com/home-assistant/frontend/master/docs/screenshot.png)](https://demo.home-assistant.io/)
 
 - [View demo of Home Assistant](https://demo.home-assistant.io/)
 - [More information about Home Assistant](https://home-assistant.io)
