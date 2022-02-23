@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-circular-progress";
