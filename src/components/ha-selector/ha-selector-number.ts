@@ -22,19 +22,18 @@ export class HaNumberSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html`${this.label}
-      ${this.selector.number.mode !== "box"
-        ? html`<ha-slider
-            .min=${this.selector.number.min}
-            .max=${this.selector.number.max}
-            .value=${this._value}
-            .step=${this.selector.number.step ?? 1}
-            .disabled=${this.disabled}
-            pin
-            ignore-bar-touch
-            @change=${this._handleSliderChange}
-          >
-          </ha-slider>`
+    return html`${this.selector.number.mode !== "box"
+        ? html`${this.label}<ha-slider
+              .min=${this.selector.number.min}
+              .max=${this.selector.number.max}
+              .value=${this._value}
+              .step=${this.selector.number.step ?? 1}
+              .disabled=${this.disabled}
+              pin
+              ignore-bar-touch
+              @change=${this._handleSliderChange}
+            >
+            </ha-slider>`
         : ""}
       <ha-textfield
         inputMode="numeric"
