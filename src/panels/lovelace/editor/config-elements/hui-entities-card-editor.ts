@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -27,6 +26,7 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
@@ -255,7 +255,7 @@ export class HuiEntitiesCardEditor
 
     return html`
       <div class="card-config">
-        <paper-input
+        <ha-textfield
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
           )} (${this.hass.localize(
@@ -263,8 +263,8 @@ export class HuiEntitiesCardEditor
           )})"
           .value=${this._title}
           .configValue=${"title"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
+          @input=${this._valueChanged}
+        ></ha-textfield>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value=${this._theme}
