@@ -16,8 +16,13 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { validateConfig } from "../../../../data/config";
 import { Action, getActionType } from "../../../../data/script";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { callExecuteScript } from "../../../../data/service";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-action-activate_scene";
@@ -180,6 +185,11 @@ export default class HaAutomationActionRow extends LitElement {
                 .label=${this.hass.localize("ui.common.menu")}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
+              <mwc-list-item>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.run_action"
+                )}
+              </mwc-list-item>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
                   ? this.hass.localize(
@@ -290,14 +300,46 @@ export default class HaAutomationActionRow extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._switchYamlMode();
+        this._runAction();
         break;
       case 1:
-        fireEvent(this, "duplicate");
+        this._switchYamlMode();
         break;
       case 2:
+        fireEvent(this, "duplicate");
+        break;
+      case 3:
         this._onDelete();
         break;
+    }
+  }
+
+  private async _runAction() {
+    const validated = await validateConfig(this.hass, {
+      action: this.action,
+    });
+
+    if (!validated.action.valid) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.actions.invalid_action"
+        ),
+        text: validated.action.error,
+        warning: true,
+      });
+      return;
+    }
+
+    try {
+      await callExecuteScript(this.hass, this.action);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.automation.editor.actions.run_action_error"
+        ),
+        text: err.message || err,
+        warning: true,
+      });
     }
   }
 
