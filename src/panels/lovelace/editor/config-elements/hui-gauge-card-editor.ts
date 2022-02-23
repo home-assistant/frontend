@@ -69,8 +69,8 @@ export class HuiGaugeCardEditor
         name: "",
         type: "grid",
         schema: [
-          { name: "min", selector: { text: { type: "number" } } },
-          { name: "max", selector: { text: { type: "number" } } },
+          { name: "min", selector: { number: { min: 1, mode: "box" } } },
+          { name: "max", selector: { number: { min: 1, mode: "box" } } },
         ],
       },
       {
@@ -88,9 +88,9 @@ export class HuiGaugeCardEditor
         name: "",
         type: "grid",
         schema: [
-          { name: "green", selector: { text: { type: "number" } } },
-          { name: "yellow", selector: { text: { type: "number" } } },
-          { name: "red", selector: { text: { type: "number" } } },
+          { name: "green", selector: { number: { min: 0, mode: "box" } } },
+          { name: "yellow", selector: { number: { min: 0, mode: "box" } } },
+          { name: "red", selector: { number: { min: 0, mode: "box" } } },
         ],
       });
     }
