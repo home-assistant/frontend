@@ -1,8 +1,8 @@
 {
-  "description": "A frontend for Home Assistant using the Polymer framework",
+  "description": "A frontend for Home Assistant",
   "repository": {
     "type": "git",
-    "url": "https://github.com/home-assistant/home-assistant-polymer"
+    "url": "https://github.com/home-assistant/frontend"
   },
   "name": "home-assistant-frontend",
   "version": "1.0.0",
