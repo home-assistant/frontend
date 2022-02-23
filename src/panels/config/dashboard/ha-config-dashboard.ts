@@ -279,7 +279,7 @@ class HaConfigDashboard extends LitElement {
 
         .tips {
           text-align: center;
-          margin-bottom: max(env(safe-area-inset-bottom), 8px);;
+          margin-bottom: max(env(safe-area-inset-bottom), 8px);
         }
 
         .tips .text {
