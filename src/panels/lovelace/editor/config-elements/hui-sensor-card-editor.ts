@@ -119,8 +119,7 @@ export class HuiSensorCardEditor
     const schema = this._schema(
       this._config.entity,
       this._config.icon,
-      entityState,
-      this.hass.localize
+      entityState
     );
 
     const data = {
