@@ -20,7 +20,7 @@ export type Selector =
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string;
+    domain?: string | string[];
     device_class?: string;
   };
 }

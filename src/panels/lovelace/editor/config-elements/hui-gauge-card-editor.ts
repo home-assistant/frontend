@@ -1,3 +1,4 @@
+import "../../../../components/ha-form/ha-form";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,6 +13,7 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { HaFormSchema } from "../../../../components/ha-form/types";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
@@ -38,6 +40,51 @@ const cardConfigStruct = assign(
 );
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
+
+const SCHEMA: HaFormSchema[] = [
+  {
+    name: "entity",
+    selector: {
+      entity: {
+        domain: ["counter", "input_number", "number", "sensor"],
+      },
+    },
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "name", selector: { text: {} } },
+      { name: "unit", selector: { text: {} } },
+    ],
+  },
+  { name: "theme", selector: { theme: {} } },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "min", selector: { text: { type: "number" } } },
+      { name: "max", selector: { text: { type: "number" } } },
+    ],
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "needle", selector: { boolean: {} } },
+      { name: "severity", selector: { boolean: {} } },
+    ],
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "green", selector: { text: { type: "number" } } },
+      { name: "yellow", selector: { text: { type: "number" } } },
+      { name: "red", selector: { text: { type: "number" } } },
+    ],
+  },
+];
 
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor
@@ -87,6 +134,13 @@ export class HuiGaugeCardEditor
     }
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -311,6 +365,20 @@ export class HuiGaugeCardEditor
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
+
+  private _computeLabelCallback = (schema: HaFormSchema) => {
+    switch (schema.name) {
+      case "area":
+        return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
+      case "navigation_path":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.action-editor.navigation_path"
+        );
+    }
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.area.${schema.name}`
+    );
+  };
 }
 
 declare global {
