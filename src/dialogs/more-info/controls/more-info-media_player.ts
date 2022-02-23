@@ -135,12 +135,9 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.source_list?.length
         ? html`
             <div class="source-input">
-              <ha-svg-icon
-                class="source-input"
-                .path=${mdiLoginVariant}
-              ></ha-svg-icon>
               <ha-select
                 .label=${this.hass.localize("ui.card.media_player.source")}
+                .icon=${true}
                 .value=${stateObj.attributes.source!}
                 @selected=${this._handleSourceChanged}
                 fixedMenuPosition
@@ -153,6 +150,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       <mwc-list-item .value=${source}>${source}</mwc-list-item>
                     `
                 )}
+                <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
               </ha-select>
             </div>
           `
@@ -161,10 +159,10 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">
-              <ha-svg-icon .path=${mdiMusicNote}></ha-svg-icon>
               <ha-select
                 .label=${this.hass.localize("ui.card.media_player.sound_mode")}
                 .value=${stateObj.attributes.sound_mode!}
+                .icon=${true}
                 fixedMenuPosition
                 naturalMenuWidth
                 @selected=${this._handleSoundModeChanged}
@@ -175,6 +173,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
                   `
                 )}
+                <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>
               </ha-select>
             </div>
           `
@@ -214,12 +213,6 @@ class MoreInfoMediaPlayer extends LitElement {
         display: flex;
         align-items: center;
         justify-content: space-between;
-      }
-
-      .source-input ha-svg-icon,
-      .sound-input ha-svg-icon {
-        padding: 7px;
-        margin-top: 24px;
       }
 
       .source-input ha-select,
