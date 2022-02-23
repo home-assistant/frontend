@@ -86,7 +86,6 @@ class DialogAreaDetail extends LitElement {
             <ha-textfield
               .value=${this._name}
               @input=${this._nameChanged}
-              @keyup=${this._handleKeyup}
               .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
               .errorMessage=${this.hass.localize(
                 "ui.panel.config.areas.editor.name_required"
