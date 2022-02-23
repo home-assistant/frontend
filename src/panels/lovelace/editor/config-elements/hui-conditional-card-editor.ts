@@ -17,17 +17,21 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
-import { HomeAssistant } from "../../../../types";
-import { ConditionalCardConfig } from "../../cards/types";
-import { LovelaceCardEditor } from "../../types";
+import "../../../../components/ha-textfield";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
+import type { HomeAssistant } from "../../../../types";
+import type { ConditionalCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { GUIModeChangedEvent } from "../types";
+import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
@@ -174,7 +178,7 @@ export class HuiConditionalCardEditor
                           )}
                         </mwc-list-item>
                       </mwc-select>
-                      <paper-input
+                      <ha-textfield
                         .label="${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
@@ -185,8 +189,8 @@ export class HuiConditionalCardEditor
                           : cond.state}
                         .idx=${idx}
                         .configValue=${"state"}
-                        @value-changed=${this._changeCondition}
-                      ></paper-input>
+                        @input=${this._changeCondition}
+                      ></ha-textfield>
                     </div>
                   </div>
                 `
