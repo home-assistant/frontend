@@ -19,6 +19,8 @@ export class HaNumberSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public required = true;
+
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
@@ -29,6 +31,7 @@ export class HaNumberSelector extends LitElement {
               .value=${this._value}
               .step=${this.selector.number.step ?? 1}
               .disabled=${this.disabled}
+              .required=${this.required}
               pin
               ignore-bar-touch
               @change=${this._handleSliderChange}
@@ -43,9 +46,10 @@ export class HaNumberSelector extends LitElement {
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
-        .value=${this.value}
+        .value=${this.value || ""}
         .step=${this.selector.number.step ?? 1}
         .disabled=${this.disabled}
+        .required=${this.required}
         .suffix=${this.selector.number.unit_of_measurement}
         type="number"
         autoValidate
@@ -56,14 +60,16 @@ export class HaNumberSelector extends LitElement {
   }
 
   private get _value() {
-    return this.value ?? 0;
+    return this.value ?? (this.selector.number.min || 0);
   }
 
   private _handleInputChange(ev) {
     ev.stopPropagation();
     const value =
       ev.target.value === "" || isNaN(ev.target.value)
-        ? undefined
+        ? this.required
+          ? this.selector.number.min || 0
+          : undefined
         : Number(ev.target.value);
     if (this.value === value) {
       return;

@@ -1,12 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 
 @customElement("ha-config-name-form")
 class ConfigNameForm extends LitElement {
@@ -34,16 +33,15 @@ class ConfigNameForm extends LitElement {
                 </p>
               `
             : ""}
-          <paper-input
+          <ha-textfield
             class="flex"
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.location_name"
             )}
-            name="name"
             .disabled=${disabled}
             .value=${this._nameValue}
-            @value-changed=${this._handleChange}
-          ></paper-input>
+            @changed=${this._handleChange}
+          ></ha-textfield>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${disabled}>
@@ -62,9 +60,9 @@ class ConfigNameForm extends LitElement {
       : this.hass.config.location_name;
   }
 
-  private _handleChange(ev: PolymerChangedEvent<string>) {
-    const target = ev.currentTarget as PaperInputElement;
-    this[`_${target.name}`] = target.value;
+  private _handleChange(ev) {
+    const target = ev.currentTarget as HaTextField;
+    this._name = target.value;
   }
 
   private async _save() {
@@ -84,6 +82,9 @@ class ConfigNameForm extends LitElement {
     return css`
       .card-actions {
         text-align: right;
+      }
+      ha-textfield {
+        display: block;
       }
     `;
   }
