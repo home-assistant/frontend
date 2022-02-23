@@ -1,12 +1,15 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
 import { html, nothing } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
 
 @customElement("ha-select")
 export class HaSelect extends SelectBase {
+  // @ts-ignore
+  @property({ type: Boolean }) public icon?: boolean;
+
   protected override renderLeadingIcon() {
     if (!this.icon) {
       return nothing;

@@ -137,7 +137,7 @@ class MoreInfoMediaPlayer extends LitElement {
             <div class="source-input">
               <ha-select
                 .label=${this.hass.localize("ui.card.media_player.source")}
-                .icon=${true}
+                icon
                 .value=${stateObj.attributes.source!}
                 @selected=${this._handleSourceChanged}
                 fixedMenuPosition
@@ -162,7 +162,7 @@ class MoreInfoMediaPlayer extends LitElement {
               <ha-select
                 .label=${this.hass.localize("ui.card.media_player.sound_mode")}
                 .value=${stateObj.attributes.sound_mode!}
-                .icon=${true}
+                icon
                 fixedMenuPosition
                 naturalMenuWidth
                 @selected=${this._handleSoundModeChanged}
