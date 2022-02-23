@@ -126,7 +126,7 @@ export class HuiSensorCardEditor
       hours_to_show: 24,
       graph: "none",
       ...this._config,
-      detail: this._config!.detail === 2 ? true : false,
+      detail: this._config!.detail === 2,
     };
 
     return html`
