@@ -1,4 +1,4 @@
-import { mdiArrowLeft, mdiUpload } from "@mdi/js";
+import { mdiArrowLeft } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
@@ -15,10 +15,9 @@ import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
-import "../../components/ha-svg-icon";
 import "../../components/media-player/ha-media-player-browse";
+import "../../components/media-player/ha-media-upload-button";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
@@ -28,11 +27,7 @@ import {
   MediaPickedEvent,
   MediaPlayerItem,
 } from "../../data/media-player";
-import {
-  isLocalMediaSourceContentId,
-  resolveMediaSource,
-  uploadLocalMedia,
-} from "../../data/media_source";
+import { resolveMediaSource } from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -65,8 +60,6 @@ class PanelMediaBrowser extends LitElement {
   @property() public route!: Route;
 
   @state() _currentItem?: MediaPlayerItem;
-
-  @state() _uploading = 0;
 
   private _navigateIds: MediaPlayerItemId[] = [
     {
@@ -107,43 +100,11 @@ class PanelMediaBrowser extends LitElement {
                   )
                 : this._currentItem.title}
             </div>
-            ${this._currentItem &&
-            isLocalMediaSourceContentId(
-              this._currentItem.media_content_id || ""
-            )
-              ? html`
-                  <mwc-button
-                    .label=${this._uploading > 0
-                      ? this.hass.localize(
-                          "ui.components.media-browser.file_management.uploading",
-                          {
-                            count: this._uploading,
-                          }
-                        )
-                      : this.hass.localize(
-                          "ui.components.media-browser.file_management.add_media"
-                        )}
-                    .disabled=${this._uploading > 0}
-                    @click=${this._startUpload}
-                  >
-                    ${this._uploading > 0
-                      ? html`
-                          <ha-circular-progress
-                            size="tiny"
-                            active
-                            alt=""
-                            slot="icon"
-                          ></ha-circular-progress>
-                        `
-                      : html`
-                          <ha-svg-icon
-                            .path=${mdiUpload}
-                            slot="icon"
-                          ></ha-svg-icon>
-                        `}
-                  </mwc-button>
-                `
-              : ""}
+            <ha-media-upload-button
+              .hass=${this.hass}
+              .currentItem=${this._currentItem}
+              @media-refresh=${this._refreshMedia}
+            ></ha-media-upload-button>
           </app-toolbar>
         </app-header>
         <ha-media-player-browse
@@ -290,47 +251,8 @@ class PanelMediaBrowser extends LitElement {
     navigate(createMediaPanelUrl(entityId, this._navigateIds));
   }
 
-  private async _startUpload() {
-    if (this._uploading > 0) {
-      return;
-    }
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "audio/*,video/*,image/*";
-    input.multiple = true;
-    input.addEventListener(
-      "change",
-      async () => {
-        const files = input.files!;
-        document.body.removeChild(input);
-        const target = this._currentItem!.media_content_id!;
-
-        for (let i = 0; i < files.length; i++) {
-          this._uploading = files.length - i;
-          try {
-            // eslint-disable-next-line no-await-in-loop
-            await uploadLocalMedia(this.hass, target, files[i]);
-          } catch (err: any) {
-            showAlertDialog(this, {
-              text: this.hass.localize(
-                "ui.components.media-browser.file_management.upload_failed",
-                {
-                  reason: err.message || err,
-                }
-              ),
-            });
-            break;
-          }
-        }
-        this._uploading = 0;
-        await this._browser.refresh();
-      },
-      { once: true }
-    );
-    // https://stackoverflow.com/questions/47664777/javascript-file-input-onchange-not-working-ios-safari-only
-    input.style.display = "none";
-    document.body.append(input);
-    input.click();
+  private _refreshMedia() {
+    this._browser.refresh();
   }
 
   static get styles(): CSSResultGroup {
@@ -356,11 +278,6 @@ class PanelMediaBrowser extends LitElement {
           bottom: 0;
           left: 0;
           right: 0;
-        }
-
-        ha-svg-icon[slot="icon"],
-        ha-circular-progress[slot="icon"] {
-          vertical-align: middle;
         }
       `,
     ];
