@@ -79,7 +79,7 @@ export class HuiHistoryGraphCardEditor
       <hui-entity-editor
         .hass=${this.hass}
         .entities=${this._configEntities}
-        @entities-changed=${this._valueChanged}
+        @entities-changed=${this._entitiesChanged}
       ></hui-entity-editor>
     `;
   }
@@ -91,6 +91,15 @@ export class HuiHistoryGraphCardEditor
       config = { ...config, entities: ev.detail.entities };
       this._configEntities = processEditorEntities(config.entities);
     }
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _entitiesChanged(ev: CustomEvent): void {
+    let config = this._config!;
+
+    config = { ...config, entities: ev.detail.entities };
+    this._configEntities = processEditorEntities(config.entities);
 
     fireEvent(this, "config-changed", { config });
   }
