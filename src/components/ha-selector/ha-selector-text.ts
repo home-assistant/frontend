@@ -75,7 +75,10 @@ export class HaTextSelector extends LitElement {
     }
     if (value === "" && !this.required) {
       value = undefined;
+    } else if (this.selector.text.type === "number") {
+      value = Number(value);
     }
+
     fireEvent(this, "value-changed", { value });
   }
 
