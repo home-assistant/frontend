@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -9,7 +9,7 @@ import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 const ARM_ACTIONS = ["arm_away", "arm_home"];
