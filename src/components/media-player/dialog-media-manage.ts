@@ -1,22 +1,12 @@
 import { animate } from "@lit-labs/motion";
-import "@material/mwc-list/mwc-check-list-item";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-list";
-import { repeat } from "lit/directives/repeat";
+import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiDelete } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../ha-header-bar";
-import "../ha-dialog";
-import "../ha-svg-icon";
-import "../ha-circular-progress";
-import "./ha-media-player-browse";
-import "./ha-media-upload-button";
-import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 import {
   MediaClassBrowserSettings,
   MediaPlayerItem,
@@ -26,6 +16,16 @@ import {
   removeLocalMedia,
 } from "../../data/media_source";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import "../ha-circular-progress";
+import "../ha-dialog";
+import "../ha-header-bar";
+import "../ha-svg-icon";
+import "../ha-check-list-item";
+import "./ha-media-player-browse";
+import "./ha-media-upload-button";
+import type { MediaManageDialogParams } from "./show-media-manage-dialog";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -180,7 +180,7 @@ class DialogMediaManage extends LitElement {
                       ></ha-svg-icon>
                     `;
                     return html`
-                      <mwc-check-list-item
+                      <ha-check-list-item
                         ${animate({
                           id: item.media_content_id,
                           skipInitial: true,
@@ -191,7 +191,7 @@ class DialogMediaManage extends LitElement {
                         .item=${item}
                       >
                         ${icon} ${item.title}
-                      </mwc-check-list-item>
+                      </ha-check-list-item>
                     `;
                   }
                 )}
