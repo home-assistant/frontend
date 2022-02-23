@@ -29,6 +29,7 @@ export interface HaFormBaseSchema {
 export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
   name: "";
+  columns?: number;
   schema: HaFormSchema[];
 }
 
