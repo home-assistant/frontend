@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
+  version: 6
   cacheKey: 8
 
 "@babel/code-frame@npm:7.12.11":
@@ -30,7 +30,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:7.15.5, @babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3, @babel/core@npm:^7.15.5":
+"@babel/core@npm:^7.11.1, @babel/core@npm:^7.12.3, @babel/core@npm:^7.15.5":
   version: 7.15.5
   resolution: "@babel/core@npm:7.15.5"
   dependencies:
@@ -1982,12 +1982,12 @@ __metadata:
 
 "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 0.7.0-pre.2
-  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=cef165&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch::version=0.7.0-pre.2&hash=b7346d&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     event-target-shim: ^5.0.1
     lit: ^2.0.0
     tslib: ^1.10.0
-  checksum: ea8bdd610530fc9b50dd327cc3b8c70d4e45300636d731969af7b9475047c91066fe7973e04ac91f80111c116c80a989f1507da7fbfc526f7c0dff3a54719a4d
+  checksum: b879a6f571d25c28092c516e0dc648128457a8fa57558733de8f2ba15de88b426106f88bc06543b99a2e13ccc0d1cabb4d1f65a2f51de00c912b0f3d997df61a
   languageName: node
   linkType: hard
 
@@ -2457,12 +2457,12 @@ __metadata:
 
 "@material/mwc-icon-button@patch:@material/mwc-icon-button@0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 0.25.3
-  resolution: "@material/mwc-icon-button@patch:@material/mwc-icon-button@npm%3A0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch::version=0.25.3&hash=ea8b08&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@material/mwc-icon-button@patch:@material/mwc-icon-button@npm%3A0.25.3#./.yarn/patches/@material/mwc-icon-button/remove-icon.patch::version=0.25.3&hash=3f41c5&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@material/mwc-ripple": ^0.25.3
     lit: ^2.0.0
     tslib: ^2.0.1
-  checksum: 44cb1ec3a54988d101002aad70143f0701b050c6c08d88035e43b78e725f02e4b33064022cdcd801f0bff84ae6fbd0cd6eecd93f9f5fb9e3dda75bbec6e7456e
+  checksum: 56372d03512f9e627d3d605f2ad696fcbcfa6e0aaf922b0fb0904f653eade798cdd949984b325d3c7598bf6ebf922daf4bcaddec192b9eae23a41ac7f9f7b563
   languageName: node
   linkType: hard
 
@@ -3541,10 +3541,10 @@ __metadata:
 
 "@polymer/polymer@patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 3.4.1
-  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=c93e9b&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=1ca270&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
-  checksum: 3c04d877ffec4bb65da38c9b8c4beb64c9c53c2598bf11e2fe5adf1cfde68e6a37b287df3b49ce0fcfd57e3c9c1aeb03868002b244172ab24c9e7375356c6d16
+  checksum: 3d8ffd3a55808269016785db20758e71e32d17bee45a8055720cefbbef2c24d86939ef743e1416276facab6ef1748b819f9af617a89550293397a27977e7a6d4
   languageName: node
   linkType: hard
 
@@ -4919,6 +4919,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 0a8fd264349285aa36194b26a5a9d70c3641e78ad459ec44b9a9a5738e0ce6d86ec120ca2c0f04477165cee912fdeb158f62d6582697185c82278bdbf71187f8
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.5.0":
+  version: 8.7.0
+  resolution: "acorn@npm:8.7.0"
+  bin:
+    acorn: bin/acorn
+  checksum: e0f79409d68923fbf1aa6d4166f3eedc47955320d25c89a20cc822e6ba7c48c5963d5bc657bc242d68f7a4ac9faf96eef033e8f73656da6c640d4219935fdfd0
   languageName: node
   linkType: hard
 
@@ -8484,25 +8493,26 @@ fsevents@^1.2.7:
     nan: ^2.12.1
     node-pre-gyp: ^0.12.0
   checksum: a00be937d11f59936eaa7bc296a2635d4f14d79fa9015acdb0b4ae439da37dbe7e8cc857616655f860c747d3fb988e2ecd913f6cafcd5488fa241f42e237b5ba
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.9
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.9#~builtin<compat/fsevents>::version=1.2.9&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.9#~builtin<compat/fsevents>::version=1.2.9&hash=18f3a7"
   dependencies:
     nan: ^2.12.1
     node-pre-gyp: ^0.12.0
-  checksum: 8a3f26aba0d53bba34f3820a1fdf455e72bef46f3e85cf5af9ca63f08f744e34f1957b0e061509b77529288205979069e4b371c7412f71e003f296e46a5f19a9
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@~2.3.1#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=1cc4b2"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
-  checksum: 78db9daf1f6526a49cefee3917cc988f62dc7f25b5dd80ad6de4ffc4af7f0cab7491ac737626ff53e482a111bc53aac9e411fe3602458eca36f6a003ecf69c16
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -8512,6 +8522,7 @@ fsevents@^1.2.7:
   dependencies:
     node-gyp: latest
   checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -13740,11 +13751,11 @@ fsevents@^1.2.7:
 
 "resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: bed00be983cd20a8af0e7840664f655c4b269786dbd9595c5f156cd9d8a0050e65cdbbbdafc30ee9b6245b230c78a2c8ab6447a52545b582f476c29adb188cc5
+  checksum: a0dd7d16a8e47af23afa9386df2dff10e3e0debb2c7299a42e581d9d9b04d7ad5d2c53f24f1e043f7b3c250cbdc71150063e53d0b6559683d37f790b7c8c3cd5
   languageName: node
   linkType: hard
 
@@ -15421,21 +15432,21 @@ typescript@^4.4.3:
 
 "typescript@patch:typescript@^3.8.3#~builtin<compat/typescript>":
   version: 3.8.3
-  resolution: "typescript@patch:typescript@npm%3A3.8.3#~builtin<compat/typescript>::version=3.8.3&hash=32657b"
+  resolution: "typescript@patch:typescript@npm%3A3.8.3#~builtin<compat/typescript>::version=3.8.3&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 225f11e8f4c2f02619af395af9d71fee8ce775d548df8a84647f8a9629905b743949f64f61c12a21fd69f66fa71483fb1e41049e9cadaf92d438ea61e40a1f44
+  checksum: fba33b9756bbffcbdc87254af0f491852bac475c1302b570b9c656c10fad9dbe7113975a64beb6035979db555b0fc87fa168734f10bf556f173213c13d371e4e
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
   version: 4.4.3
-  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"
+  resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 28ab98313afab46788ff41014fdb5932430ada6e03cf9e92ac47f406526a2cac1ae2894834e7da61e46b7429318e9c47f45ba8de323332f0cb9af99b72ebae74
+  checksum: 33a916819907e819430802c50405f18c187448d678696a81545f494a7ec16207f8c15340c945df62109bd1d951091a9f15f3d2eb931a3c889f962c8509017697
   languageName: node
   linkType: hard
 
