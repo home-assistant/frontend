@@ -360,7 +360,7 @@ export class HaManualAutomationEditor extends LitElement {
         }
         mwc-select,
         .max {
-          margin-top: 8px;
+          margin-top: 16px;
           width: 200px;
         }
       `,
