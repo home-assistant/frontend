@@ -1,7 +1,5 @@
-import "../../../components/ha-alert";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -15,12 +13,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-select";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -161,7 +161,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ></ha-icon-picker>
         ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
         (domain === "cover" && this.entry.original_device_class === null)
-          ? html`<mwc-select
+          ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
               )}
@@ -177,7 +177,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   </mwc-list-item>
                 `
               )}
-            </mwc-select>`
+            </ha-select>`
           : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
@@ -420,7 +420,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
-        mwc-select {
+        ha-select {
           width: 100%;
         }
         ha-switch {

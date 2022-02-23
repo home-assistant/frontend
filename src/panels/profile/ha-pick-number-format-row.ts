@@ -1,10 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { formatNumber } from "../../common/number/format_number";
 import "../../components/ha-card";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { NumberFormat } from "../../data/translation";
 import { HomeAssistant } from "../../types";
@@ -24,7 +24,7 @@ class NumberFormatRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.number_format.description")}
         </span>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.profile.number_format.dropdown_label"
           )}
@@ -50,7 +50,7 @@ class NumberFormatRow extends LitElement {
               </mwc-list-item>
             `;
           })}
-        </mwc-select>
+        </ha-select>
       </ha-settings-row>
     `;
   }

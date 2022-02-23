@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -9,9 +10,11 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-climate-control";
+import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
@@ -26,9 +29,6 @@ import {
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { HomeAssistant } from "../../../types";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -168,7 +168,7 @@ class MoreInfoClimate extends LitElement {
 
         <div class="container-hvac_modes">
           <div class="controls">
-            <mwc-select
+            <ha-select
               .label=${hass.localize("ui.card.climate.operation")}
               .value=${stateObj.state}
               fixedMenuPosition
@@ -186,14 +186,14 @@ class MoreInfoClimate extends LitElement {
                     </mwc-list-item>
                   `
                 )}
-            </mwc-select>
+            </ha-select>
           </div>
         </div>
 
         ${supportPresetMode && stateObj.attributes.preset_modes
           ? html`
               <div class="container-preset_modes">
-                <mwc-select
+                <ha-select
                   .label=${hass.localize("ui.card.climate.preset_mode")}
                   .value=${stateObj.attributes.preset_mode}
                   fixedMenuPosition
@@ -210,14 +210,14 @@ class MoreInfoClimate extends LitElement {
                       </mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
               </div>
             `
           : ""}
         ${supportFanMode && stateObj.attributes.fan_modes
           ? html`
               <div class="container-fan_list">
-                <mwc-select
+                <ha-select
                   .label=${hass.localize("ui.card.climate.fan_mode")}
                   .value=${stateObj.attributes.fan_mode}
                   fixedMenuPosition
@@ -234,14 +234,14 @@ class MoreInfoClimate extends LitElement {
                       </mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
               </div>
             `
           : ""}
         ${supportSwingMode && stateObj.attributes.swing_modes
           ? html`
               <div class="container-swing_list">
-                <mwc-select
+                <ha-select
                   .label=${hass.localize("ui.card.climate.swing_mode")}
                   .value=${stateObj.attributes.swing_mode}
                   fixedMenuPosition
@@ -254,7 +254,7 @@ class MoreInfoClimate extends LitElement {
                       <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
               </div>
             `
           : ""}
@@ -427,7 +427,7 @@ class MoreInfoClimate extends LitElement {
         color: var(--primary-text-color);
       }
 
-      mwc-select {
+      ha-select {
         width: 100%;
         margin-top: 8px;
       }

@@ -1,13 +1,13 @@
+import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
 import { HomeAssistant } from "../../types";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 
 @customElement("ha-pick-time-format-row")
 class TimeFormatRow extends LitElement {
@@ -25,7 +25,7 @@ class TimeFormatRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.time_format.description")}
         </span>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.profile.time_format.dropdown_label"
           )}
@@ -46,7 +46,7 @@ class TimeFormatRow extends LitElement {
               <span slot="secondary">${formattedTime}</span>
             </mwc-list-item>`;
           })}
-        </mwc-select>
+        </ha-select>
       </ha-settings-row>
     `;
   }

@@ -1,11 +1,11 @@
 import "@material/mwc-button";
-import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
@@ -54,7 +54,7 @@ export class CloudTTSPref extends LitElement {
           )}
           <br /><br />
 
-          <mwc-select
+          <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.default_language"
             )}
@@ -66,9 +66,9 @@ export class CloudTTSPref extends LitElement {
               ([key, label]) =>
                 html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
             )}
-          </mwc-select>
+          </ha-select>
 
-          <mwc-select
+          <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.default_gender"
             )}
@@ -80,7 +80,7 @@ export class CloudTTSPref extends LitElement {
               ([key, label]) =>
                 html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
             )}
-          </mwc-select>
+          </ha-select>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._openTryDialog}>

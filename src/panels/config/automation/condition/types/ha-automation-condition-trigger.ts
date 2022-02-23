@@ -1,10 +1,10 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../../common/ensure-array";
+import "../../../../../components/ha-select";
 import type {
   AutomationConfig,
   Trigger,
@@ -50,7 +50,7 @@ export class HaTriggerCondition extends LitElement {
         "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
       );
     }
-    return html`<mwc-select
+    return html`<ha-select
       .label=${this.hass.localize(
         "ui.panel.config.automation.editor.conditions.type.trigger.id"
       )}
@@ -63,7 +63,7 @@ export class HaTriggerCondition extends LitElement {
             <mwc-list-item .value=${trigger.id}> ${trigger.id} </mwc-list-item>
           `
       )}
-    </mwc-select>`;
+    </ha-select>`;
   }
 
   private _automationUpdated(config?: AutomationConfig) {

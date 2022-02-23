@@ -95,7 +95,7 @@ export class HaManualAutomationEditor extends LitElement {
                 >`
               )}
             </p>
-            <mwc-select
+            <ha-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
               )}
@@ -112,7 +112,7 @@ export class HaManualAutomationEditor extends LitElement {
                   </mwc-list-item>
                 `
               )}
-            </mwc-select>
+            </ha-select>
             ${this.config.mode && MODES_MAX.includes(this.config.mode)
               ? html`
                   <br /><ha-textfield
@@ -358,7 +358,7 @@ export class HaManualAutomationEditor extends LitElement {
         ha-entity-toggle {
           margin-right: 8px;
         }
-        mwc-select,
+        ha-select,
         .max {
           margin-top: 16px;
           width: 200px;
