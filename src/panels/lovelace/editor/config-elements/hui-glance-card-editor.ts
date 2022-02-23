@@ -49,7 +49,7 @@ const SCHEMA: HaFormSchema[] = [
   {
     name: "",
     type: "grid",
-    min_width: "100px",
+    column_min_width: "100px",
     schema: [
       { name: "show_name", selector: { boolean: {} } },
       { name: "show_icon", selector: { boolean: {} } },
