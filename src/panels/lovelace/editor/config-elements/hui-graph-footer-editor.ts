@@ -1,10 +1,10 @@
-import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-textfield";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
@@ -73,7 +73,7 @@ export class HuiGraphFooterEditor
               @change=${this._change}
             ></ha-switch>
           </ha-formfield>
-          <paper-input
+          <ha-textfield
             type="number"
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.hours_to_show"
@@ -83,8 +83,8 @@ export class HuiGraphFooterEditor
             .value=${this._hours_to_show}
             min="1"
             .configValue=${"hours_to_show"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
+            @input=${this._valueChanged}
+          ></ha-textfield>
         </div>
       </div>
     `;
