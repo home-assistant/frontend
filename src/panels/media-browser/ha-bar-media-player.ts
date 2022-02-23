@@ -266,7 +266,7 @@ export class BarMediaPlayer extends LitElement {
       ${
         stateObj && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
           ? html`
-              <ha-button-menu corner="BOTTOM_START">
+              <ha-button-menu corner="BOTTOM_START" y="0" x="76">
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
