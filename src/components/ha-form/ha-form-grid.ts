@@ -39,12 +39,15 @@ export class HaFormGrid extends LitElement implements HaFormElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (changedProps.has("schema")) {
       if (this.schema.column_min_width) {
         this.style.setProperty(
           "--form-grid-min-width",
           this.schema.column_min_width
         );
+      } else {
+        this.style.setProperty("--form-grid-min-width", "");
       }
     }
   }

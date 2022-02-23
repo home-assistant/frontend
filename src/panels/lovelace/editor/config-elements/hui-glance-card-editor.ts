@@ -1,5 +1,5 @@
 import "../../../../components/ha-form/ha-form";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
@@ -122,12 +122,6 @@ export class HuiGlanceCardEditor
       `ui.panel.lovelace.editor.card.glance.${schema.name}`
     ) ||
     this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
-
-  static styles = css`
-    ha-form {
-      --form-grid-min-width: 150px;
-    }
-  `;
 }
 
 declare global {
