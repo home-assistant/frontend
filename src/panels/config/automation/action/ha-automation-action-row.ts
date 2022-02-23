@@ -25,6 +25,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
@@ -340,7 +341,14 @@ export default class HaAutomationActionRow extends LitElement {
         text: err.message || err,
         warning: true,
       });
+      return;
     }
+
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.run_action_success"
+      ),
+    });
   }
 
   private _onDelete() {

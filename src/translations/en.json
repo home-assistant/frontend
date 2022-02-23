@@ -1829,6 +1829,7 @@
               "invalid_action": "Invalid action",
               "run_action": "Run action",
               "run_action_error": "Error running action",
+              "run_action_success": "Action run successfully",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
