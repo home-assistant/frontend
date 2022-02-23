@@ -174,10 +174,6 @@ class MoreInfoHumidifier extends LitElement {
         width: 100%;
       }
 
-      ha-slider {
-        width: 100%;
-      }
-
       .container-humidity .single-row {
         display: flex;
         height: 50px;
