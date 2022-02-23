@@ -50,7 +50,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
             <div id="keypad">
               ${BUTTONS.map((value) =>
                 value === ""
-                  ? html` <mwc-button disabled></mwc-button> `
+                  ? html`<mwc-button disabled></mwc-button>`
                   : html`
                       <mwc-button
                         .value=${value}
@@ -70,7 +70,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
               )}
             </div>
           `}
-      <div id="armActions" class="actions">
+      <div class="actions">
         ${(this.stateObj.state === "disarmed"
           ? ARM_ACTIONS
           : DISARM_ACTIONS
