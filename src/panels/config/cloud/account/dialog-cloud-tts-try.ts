@@ -1,9 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -11,8 +10,9 @@ import { computeStateDomain } from "../../../../common/entity/compute_state_doma
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import type { HaTextArea } from "../../../../components/ha-textarea";
+import "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
+import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
 import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
@@ -74,7 +74,7 @@ export class DialogTryTts extends LitElement {
           >
           </ha-textarea>
 
-          <mwc-select
+          <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.target"
             )}
@@ -103,7 +103,7 @@ export class DialogTryTts extends LitElement {
                   </mwc-list-item>
                 `
               )}
-          </mwc-select>
+          </ha-select>
         </div>
         <mwc-button
           slot="primaryAction"
@@ -215,10 +215,10 @@ export class DialogTryTts extends LitElement {
           --mdc-dialog-max-width: 500px;
         }
         ha-textarea,
-        mwc-select {
+        ha-select {
           width: 100%;
         }
-        mwc-select {
+        ha-select {
           margin-top: 8px;
         }
       `,

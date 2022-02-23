@@ -1,5 +1,3 @@
-import "@material/mwc-select";
-import type { Select } from "@material/mwc-select";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,6 +6,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-card";
+import "../../../../components/ha-select";
+import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
@@ -86,7 +86,7 @@ export default class HaAutomationConditionEditor extends LitElement {
             ></ha-yaml-editor>
           `
         : html`
-            <mwc-select
+            <ha-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
@@ -99,7 +99,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   <mwc-list-item .value=${opt}>${label}</mwc-list-item>
                 `
               )}
-            </mwc-select>
+            </ha-select>
 
             <div>
               ${dynamicElement(
@@ -112,7 +112,7 @@ export default class HaAutomationConditionEditor extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as Select).value;
+    const type = (ev.target as HaSelect).value;
 
     if (!type) {
       return;
@@ -146,7 +146,7 @@ export default class HaAutomationConditionEditor extends LitElement {
   static styles = [
     haStyle,
     css`
-      mwc-select {
+      ha-select {
         margin-bottom: 24px;
       }
     `,

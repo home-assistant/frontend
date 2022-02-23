@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-select";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -70,7 +71,7 @@ class HassioSupervisorLog extends LitElement {
           : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
-              <mwc-select
+              <ha-select
                 .label=${this.supervisor.localize("system.log.log_provider")}
                 @selected=${this._setLogProvider}
                 .value=${this._selectedLogProvider}
@@ -82,7 +83,7 @@ class HassioSupervisorLog extends LitElement {
                     </mwc-list-item>
                   `
                 )}
-              </mwc-select>
+              </ha-select>
             `
           : ""}
 
@@ -145,7 +146,7 @@ class HassioSupervisorLog extends LitElement {
         pre {
           white-space: pre-wrap;
         }
-        mwc-select {
+        ha-select {
           width: 100%;
           margin-bottom: 4px;
         }

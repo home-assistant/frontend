@@ -1,14 +1,13 @@
-import "@material/mwc-select";
-import type { Select } from "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-radio";
-import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./types";
-
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../ha-radio";
 import type { HaRadio } from "../ha-radio";
+import "../ha-select";
+import type { HaSelect } from "../ha-select";
+import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./types";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -20,7 +19,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("mwc-select", true) private _input?: HTMLElement;
+  @query("ha-select", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -50,7 +49,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     }
 
     return html`
-      <mwc-select
+      <ha-select
         fixedMenuPosition
         naturalMenuWidth
         .label=${this.label}
@@ -67,13 +66,13 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             <mwc-list-item .value=${value}>${label}</mwc-list-item>
           `
         )}
-      </mwc-select>
+      </ha-select>
     `;
   }
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    let value: string | undefined = (ev.target as Select | HaRadio).value;
+    let value: string | undefined = (ev.target as HaSelect | HaRadio).value;
 
     if (value === this.data) {
       return;
@@ -90,7 +89,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      mwc-select,
+      ha-select,
       mwc-formfield {
         display: block;
       }

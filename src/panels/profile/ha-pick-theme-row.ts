@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import {
   css,
   CSSResultGroup,
@@ -14,6 +13,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
@@ -62,7 +62,7 @@ export class HaPickThemeRow extends LitElement {
             ${this.hass.localize("ui.panel.profile.themes.link_promo")}
           </a>
         </span>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize("ui.panel.profile.themes.dropdown_label")}
           .disabled=${!hasThemes}
           .value=${this.hass.selectedTheme?.theme || "Backend-selected"}
@@ -72,7 +72,7 @@ export class HaPickThemeRow extends LitElement {
             (theme) =>
               html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
           )}
-        </mwc-select>
+        </ha-select>
       </ha-settings-row>
       ${curTheme === "default" || this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">

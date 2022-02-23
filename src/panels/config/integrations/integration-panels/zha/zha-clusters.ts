@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
 import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
@@ -15,6 +14,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-service-description";
 import {
   Cluster,
@@ -78,7 +78,7 @@ export class ZHAClusters extends LitElement {
 
         <ha-card class="content">
           <div class="node-picker">
-            <mwc-select
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.common.clusters"
               )}
@@ -96,7 +96,7 @@ export class ZHAClusters extends LitElement {
                   >
                 `
               )}
-            </mwc-select>
+            </ha-select>
           </div>
           ${this.showHelp
             ? html`
@@ -137,7 +137,7 @@ export class ZHAClusters extends LitElement {
     return [
       haStyle,
       css`
-        mwc-select {
+        ha-select {
           margin-top: 16px;
         }
         .menu {

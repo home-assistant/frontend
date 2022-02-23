@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
@@ -6,12 +7,11 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { featureClassNames } from "../../../common/entity/feature_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import "../../../components/ha-water_heater-control";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 
 /*
  * @appliesMixin EventsMixin
@@ -26,7 +26,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--primary-text-color);
         }
 
-        mwc-select {
+        ha-select {
           width: 100%;
         }
 
@@ -70,7 +70,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
           <div class="container-operation_list">
             <div class="controls">
-              <mwc-select
+              <ha-select
                 label="[[localize('ui.card.water_heater.operation')]]"
                 value="[[stateObj.attributes.operation_mode]]"
                 on-selected="handleOperationmodeChanged"
@@ -86,7 +86,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     [[_localizeOperationMode(localize, item)]]
                   </mwc-list-item>
                 </template>
-              </mwc-select>
+              </ha-select>
             </div>
           </div>
         </template>

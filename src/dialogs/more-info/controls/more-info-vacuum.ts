@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiFan,
   mdiHomeMapMarker,
@@ -15,6 +16,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   VacuumEntity,
@@ -29,8 +31,6 @@ import {
   VACUUM_SUPPORT_STOP,
 } from "../../../data/vacuum";
 import { HomeAssistant } from "../../../types";
-import "@material/mwc-select/mwc-select";
-import "@material/mwc-list/mwc-list-item";
 
 interface VacuumCommand {
   translationKey: string;
@@ -173,7 +173,7 @@ class MoreInfoVacuum extends LitElement {
         ? html`
             <div>
               <div class="flex-horizontal">
-                <mwc-select
+                <ha-select
                   .label=${this.hass!.localize(
                     "ui.dialogs.more_info_control.vacuum.fan_speed"
                   )}
@@ -189,7 +189,7 @@ class MoreInfoVacuum extends LitElement {
                       <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
                 <div
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
                 >

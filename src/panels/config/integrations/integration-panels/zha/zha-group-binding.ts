@@ -93,7 +93,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <mwc-select
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.group_picker_label"
               )}
@@ -110,7 +110,7 @@ export class ZHAGroupBindingControl extends LitElement {
                     >${group.name}</mwc-list-item
                   > `
               )}
-            </mwc-select>
+            </ha-select>
           </div>
           ${this._showHelp
             ? html`

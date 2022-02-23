@@ -1,24 +1,26 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import "@material/mwc-select";
-import type { Select } from "@material/mwc-select";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { LocalizeFunc } from "../../../../common/translations/localize";
+import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-select";
+import type { HaSelect } from "../../../../components/ha-select";
+import "../../../../components/ha-textfield";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
+import { validateConfig } from "../../../../data/config";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -36,8 +38,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { debounce } from "../../../../common/util/debounce";
-import { validateConfig } from "../../../../data/config";
 
 const OPTIONS = [
   "device",
@@ -194,7 +194,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 ></ha-yaml-editor>
               `
             : html`
-                <mwc-select
+                <ha-select
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.triggers.type_select"
                   )}
@@ -207,7 +207,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                       <mwc-list-item .value=${opt}>${label}</mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
 
                 ${showId
                   ? html`
@@ -359,7 +359,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as Select).value;
+    const type = (ev.target as HaSelect).value;
 
     if (!type) {
       return;
@@ -456,7 +456,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
-        mwc-select {
+        ha-select {
           margin-bottom: 24px;
         }
         ha-textfield {

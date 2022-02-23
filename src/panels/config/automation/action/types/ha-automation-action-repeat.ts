@@ -35,7 +35,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const type = getType(action);
 
     return html`
-      <mwc-select
+      <ha-select
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type_select"
         )}
@@ -51,7 +51,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
             </mwc-list-item>
           `
         )}
-      </mwc-select>
+      </ha-select>
       ${type === "count"
         ? html`
             <ha-textfield
@@ -162,7 +162,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     return [
       haStyle,
       css`
-        mwc-select {
+        ha-select {
           margin-top: 8px;
         }
       `,

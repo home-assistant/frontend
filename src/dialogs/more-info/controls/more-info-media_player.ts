@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -17,6 +16,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -135,12 +135,9 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.source_list?.length
         ? html`
             <div class="source-input">
-              <ha-svg-icon
-                class="source-input"
-                .path=${mdiLoginVariant}
-              ></ha-svg-icon>
-              <mwc-select
+              <ha-select
                 .label=${this.hass.localize("ui.card.media_player.source")}
+                icon
                 .value=${stateObj.attributes.source!}
                 @selected=${this._handleSourceChanged}
                 fixedMenuPosition
@@ -153,7 +150,8 @@ class MoreInfoMediaPlayer extends LitElement {
                       <mwc-list-item .value=${source}>${source}</mwc-list-item>
                     `
                 )}
-              </mwc-select>
+                <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
+              </ha-select>
             </div>
           `
         : ""}
@@ -161,10 +159,10 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">
-              <ha-svg-icon .path=${mdiMusicNote}></ha-svg-icon>
-              <mwc-select
+              <ha-select
                 .label=${this.hass.localize("ui.card.media_player.sound_mode")}
                 .value=${stateObj.attributes.sound_mode!}
+                icon
                 fixedMenuPosition
                 naturalMenuWidth
                 @selected=${this._handleSoundModeChanged}
@@ -175,7 +173,8 @@ class MoreInfoMediaPlayer extends LitElement {
                     <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
                   `
                 )}
-              </mwc-select>
+                <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>
+              </ha-select>
             </div>
           `
         : ""}
@@ -216,14 +215,8 @@ class MoreInfoMediaPlayer extends LitElement {
         justify-content: space-between;
       }
 
-      .source-input ha-svg-icon,
-      .sound-input ha-svg-icon {
-        padding: 7px;
-        margin-top: 24px;
-      }
-
-      .source-input mwc-select,
-      .sound-input mwc-select {
+      .source-input ha-select,
+      .sound-input ha-select {
         margin-left: 10px;
         flex-grow: 1;
       }

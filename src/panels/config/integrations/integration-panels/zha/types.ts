@@ -1,8 +1,8 @@
-import { Select } from "@material/mwc-select";
+import { HaSelect } from "../../../../../components/ha-select";
 import { Cluster, ZHADevice } from "../../../../../data/zha";
 
 export interface ItemSelectedEvent {
-  target?: Select;
+  target?: HaSelect;
 }
 
 export interface ZHADeviceRemovedEvent {
