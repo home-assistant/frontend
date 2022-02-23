@@ -1960,6 +1960,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lit-labs/motion@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@lit-labs/motion@npm:1.0.2"
+  dependencies:
+    lit: ^2.0.0
+  checksum: 598e0be22a3f931ec971fa001e863c5a4dd82f572d8d0214211bde1d6403b00e3c8fafa92f30b0c02b7272bc12510ec40060bf2c8ab18151bdb264cf32f0ef71
+  languageName: node
+  linkType: hard
+
 "@lit-labs/virtualizer@0.7.0-pre.2":
   version: 0.7.0-pre.2
   resolution: "@lit-labs/virtualizer@npm:0.7.0-pre.2"
@@ -9131,6 +9140,7 @@ fsevents@^1.2.7:
     "@fullcalendar/interaction": 5.9.0
     "@fullcalendar/list": 5.9.0
     "@koa/cors": ^3.1.0
+    "@lit-labs/motion": ^1.0.2
     "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch"
     "@material/chips": 14.0.0-canary.261f2db59.0
     "@material/data-table": 14.0.0-canary.261f2db59.0
