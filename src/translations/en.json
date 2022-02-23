@@ -550,6 +550,8 @@
         "file_management": {
           "title": "Media Management",
           "manage": "Manage",
+          "no_items": "No media items found",
+          "folders_not_supported": "Folders can not be managed via the UI.",
           "highlight_button": "Click here to upload your first media",
           "upload_failed": "Upload failed: {reason}",
           "add_media": "Add Media",

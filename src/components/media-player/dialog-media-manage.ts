@@ -65,7 +65,8 @@ class DialogMediaManage extends LitElement {
       return html``;
     }
 
-    const children = this._currentItem?.children || [];
+    const children =
+      this._currentItem?.children?.filter((child) => !child.can_expand) || [];
 
     let fileIndex = 0;
 
@@ -147,6 +148,21 @@ class DialogMediaManage extends LitElement {
                 <ha-circular-progress active></ha-circular-progress>
               </div>
             `
+          : !children.length
+          ? html`<div class="no-items">
+              <p>
+                ${this.hass.localize(
+                  "ui.components.media-browser.file_management.no_items"
+                )}
+              </p>
+              ${this._currentItem?.children?.length
+                ? html`<span class="folders"
+                    >${this.hass.localize(
+                      "ui.components.media-browser.file_management.folders_not_supported"
+                    )}</span
+                  >`
+                : ""}
+            </div>`
           : html`
               <mwc-list multi @selected=${this._handleSelected}>
                 ${repeat(
@@ -163,33 +179,20 @@ class DialogMediaManage extends LitElement {
                         ].icon}
                       ></ha-svg-icon>
                     `;
-                    return item.can_expand
-                      ? html`
-                          <mwc-list-item
-                            noninteractive
-                            graphic="icon"
-                            ${animate({
-                              id: item.media_content_id,
-                              skipInitial: true,
-                            })}
-                          >
-                            ${icon} ${item.title}
-                          </mwc-list-item>
-                        `
-                      : html`
-                          <mwc-check-list-item
-                            ${animate({
-                              id: item.media_content_id,
-                              skipInitial: true,
-                            })}
-                            graphic="icon"
-                            .disabled=${this._uploading || this._deleting}
-                            .selected=${this._selected.has(fileIndex++)}
-                            .item=${item}
-                          >
-                            ${icon} ${item.title}
-                          </mwc-check-list-item>
-                        `;
+                    return html`
+                      <mwc-check-list-item
+                        ${animate({
+                          id: item.media_content_id,
+                          skipInitial: true,
+                        })}
+                        graphic="icon"
+                        .disabled=${this._uploading || this._deleting}
+                        .selected=${this._selected.has(fileIndex++)}
+                        .item=${item}
+                      >
+                        ${icon} ${item.title}
+                      </mwc-check-list-item>
+                    `;
                   }
                 )}
               </mwc-list>
@@ -312,6 +315,15 @@ class DialogMediaManage extends LitElement {
           height: 200px;
           justify-content: center;
           align-items: center;
+        }
+
+        .no-items {
+          text-align: center;
+          padding: 16px;
+        }
+        .folders {
+          color: var(--secondary-text-color);
+          font-style: italic;
         }
       `,
     ];
