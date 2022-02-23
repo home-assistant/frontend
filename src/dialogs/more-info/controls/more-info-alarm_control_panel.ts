@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-textfield";
