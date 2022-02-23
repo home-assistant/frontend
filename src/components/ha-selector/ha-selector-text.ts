@@ -76,6 +76,7 @@ export class HaTextSelector extends LitElement {
     if (value === "" && !this.required) {
       value = undefined;
     }
+
     fireEvent(this, "value-changed", { value });
   }
 
