@@ -1,11 +1,17 @@
 import "@material/mwc-menu";
-import type { Corner, Menu } from "@material/mwc-menu";
+import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
   @property() public corner: Corner = "TOP_START";
+
+  @property() public menuCorner: MenuCorner = "START";
+
+  @property({ type: Number }) public x?: number;
+
+  @property({ type: Number }) public y?: number;
 
   @property({ type: Boolean }) public multi = false;
 
@@ -32,9 +38,12 @@ export class HaButtonMenu extends LitElement {
       </div>
       <mwc-menu
         .corner=${this.corner}
+        .menuCorner=${this.menuCorner}
         .fixed=${this.fixed}
         .multi=${this.multi}
         .activatable=${this.activatable}
+        .y=${this.y}
+        .x=${this.x}
       >
         <slot></slot>
       </mwc-menu>
