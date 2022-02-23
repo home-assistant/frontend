@@ -70,7 +70,7 @@ class HassioSupervisorLog extends LitElement {
           : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
-              <mwc-select
+              <ha-select
                 .label=${this.supervisor.localize("system.log.log_provider")}
                 @selected=${this._setLogProvider}
                 .value=${this._selectedLogProvider}
@@ -82,7 +82,7 @@ class HassioSupervisorLog extends LitElement {
                     </mwc-list-item>
                   `
                 )}
-              </mwc-select>
+              </ha-select>
             `
           : ""}
 
@@ -145,7 +145,7 @@ class HassioSupervisorLog extends LitElement {
         pre {
           white-space: pre-wrap;
         }
-        mwc-select {
+        ha-select {
           width: 100%;
           margin-bottom: 4px;
         }

@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,6 +7,7 @@ import {
   deviceAutomationsEqual,
 } from "../../data/device_automation";
 import { HomeAssistant } from "../../types";
+import "../ha-select";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
@@ -90,7 +90,7 @@ export abstract class HaDeviceAutomationPicker<
     }
     const value = this._value;
     return html`
-      <mwc-select
+      <ha-select
         .label=${this.label}
         .value=${value}
         @selected=${this._automationChanged}
@@ -113,7 +113,7 @@ export abstract class HaDeviceAutomationPicker<
             </mwc-list-item>
           `
         )}
-      </mwc-select>
+      </ha-select>
     `;
   }
 
@@ -167,7 +167,7 @@ export abstract class HaDeviceAutomationPicker<
 
   static get styles(): CSSResultGroup {
     return css`
-      mwc-select {
+      ha-select {
         width: 100%;
         margin-top: 4px;
       }

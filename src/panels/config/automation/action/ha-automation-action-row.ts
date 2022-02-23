@@ -1,7 +1,5 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
-import type { Select } from "@material/mwc-select";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -15,6 +13,8 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-select";
+import type { HaSelect } from "../../../../components/ha-select";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { Action, getActionType } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -241,7 +241,7 @@ export default class HaAutomationActionRow extends LitElement {
                 ></ha-yaml-editor>
               `
             : html`
-                <mwc-select
+                <ha-select
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.type_select"
                   )}
@@ -254,7 +254,7 @@ export default class HaAutomationActionRow extends LitElement {
                       <mwc-list-item .value=${opt}>${label}</mwc-list-item>
                     `
                   )}
-                </mwc-select>
+                </ha-select>
 
                 <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(`ha-automation-action-${type}`, {
@@ -315,7 +315,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as Select).value;
+    const type = (ev.target as HaSelect).value;
 
     if (!type) {
       return;
@@ -375,7 +375,7 @@ export default class HaAutomationActionRow extends LitElement {
         .warning ul {
           margin: 4px 0;
         }
-        mwc-select {
+        ha-select {
           margin-bottom: 24px;
         }
       `,

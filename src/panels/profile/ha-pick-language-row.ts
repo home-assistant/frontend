@@ -1,10 +1,10 @@
+import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { HomeAssistant, Translation } from "../../types";
-import "@material/mwc-select/mwc-select";
-import "@material/mwc-list/mwc-list-item";
 
 @customElement("ha-pick-language-row")
 export class HaPickLanguageRow extends LitElement {
@@ -33,7 +33,7 @@ export class HaPickLanguageRow extends LitElement {
             >${this.hass.localize("ui.panel.profile.language.link_promo")}</a
           >
         </span>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.profile.language.dropdown_label"
           )}
@@ -48,7 +48,7 @@ export class HaPickLanguageRow extends LitElement {
               ${language.nativeName}
             </mwc-list-item>`
           )}
-        </mwc-select>
+        </ha-select>
       </ha-settings-row>
     `;
   }

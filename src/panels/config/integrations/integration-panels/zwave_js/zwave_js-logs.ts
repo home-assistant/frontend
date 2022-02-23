@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { mdiDownload } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
@@ -77,7 +77,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
             <div class="card-content">
               ${this._logConfig
                 ? html`
-                    <mwc-select
+                    <ha-select
                       .label=${this.hass.localize(
                         "ui.panel.config.zwave_js.logs.log_level"
                       )}
@@ -90,7 +90,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                       <mwc-list-item value="verbose">Verbose</mwc-list-item>
                       <mwc-list-item value="debug">Debug</mwc-list-item>
                       <mwc-list-item value="silly">Silly</mwc-list-item>
-                    </mwc-select>
+                    </ha-select>
                   `
                 : ""}
             </div>

@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
@@ -17,6 +16,7 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
 import type {
   LovelaceCardConfig,
@@ -156,7 +156,7 @@ export class HuiConditionalCardEditor
                       ></ha-entity-picker>
                     </div>
                     <div class="state">
-                      <mwc-select
+                      <ha-select
                         .value=${cond.state_not !== undefined
                           ? "true"
                           : "false"}
@@ -177,7 +177,7 @@ export class HuiConditionalCardEditor
                             "ui.panel.lovelace.editor.card.conditional.state_not_equal"
                           )}
                         </mwc-list-item>
-                      </mwc-select>
+                      </ha-select>
                       <ha-textfield
                         .label="${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.generic.state"
@@ -330,7 +330,7 @@ export class HuiConditionalCardEditor
           display: flex;
           align-items: flex-end;
         }
-        .condition .state mwc-select {
+        .condition .state ha-select {
           margin-right: 16px;
         }
         .condition .state ha-textfield {

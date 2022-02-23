@@ -1,8 +1,11 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-select";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
@@ -11,9 +14,6 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 
 const detectResourceType = (url: string) => {
   const ext = url.split(".").pop() || "";
@@ -102,7 +102,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
               dialogInitialFocus
             ></paper-input>
             <br />
-            <mwc-select
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.lovelace.resources.detail.type"
               )}
@@ -139,7 +139,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                     </mwc-list-item>
                   `
                 : ""}
-            </mwc-select>
+            </ha-select>
           </div>
         </div>
         ${this._params.resource

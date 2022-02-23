@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -17,6 +16,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -139,7 +139,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 class="source-input"
                 .path=${mdiLoginVariant}
               ></ha-svg-icon>
-              <mwc-select
+              <ha-select
                 .label=${this.hass.localize("ui.card.media_player.source")}
                 .value=${stateObj.attributes.source!}
                 @selected=${this._handleSourceChanged}
@@ -153,7 +153,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       <mwc-list-item .value=${source}>${source}</mwc-list-item>
                     `
                 )}
-              </mwc-select>
+              </ha-select>
             </div>
           `
         : ""}
@@ -162,7 +162,7 @@ class MoreInfoMediaPlayer extends LitElement {
         ? html`
             <div class="sound-input">
               <ha-svg-icon .path=${mdiMusicNote}></ha-svg-icon>
-              <mwc-select
+              <ha-select
                 .label=${this.hass.localize("ui.card.media_player.sound_mode")}
                 .value=${stateObj.attributes.sound_mode!}
                 fixedMenuPosition
@@ -175,7 +175,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
                   `
                 )}
-              </mwc-select>
+              </ha-select>
             </div>
           `
         : ""}
@@ -222,8 +222,8 @@ class MoreInfoMediaPlayer extends LitElement {
         margin-top: 24px;
       }
 
-      .source-input mwc-select,
-      .sound-input mwc-select {
+      .source-input ha-select,
+      .sound-input ha-select {
         margin-left: 10px;
         flex-grow: 1;
       }

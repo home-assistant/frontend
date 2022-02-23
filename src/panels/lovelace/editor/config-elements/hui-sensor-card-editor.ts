@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -20,6 +19,7 @@ import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
@@ -142,7 +142,7 @@ export class HuiSensorCardEditor
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
-          <mwc-select
+          <ha-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"
             )} (${this.hass.localize(
@@ -159,7 +159,7 @@ export class HuiSensorCardEditor
               (graph) =>
                 html`<mwc-list-item .value=${graph}>${graph}</mwc-list-item>`
             )}
-          </mwc-select>
+          </ha-select>
         </div>
         <div class="side-by-side">
           <paper-input

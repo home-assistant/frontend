@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
+import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -11,16 +10,17 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-service-description";
 import { bindDevices, unbindDevices, ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import { ItemSelectedEvent } from "./types";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
@@ -62,7 +62,7 @@ export class ZHADeviceBindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <mwc-select
+            <ha-select
               label="Bindable Devices"
               class="menu"
               .value=${String(this._bindTargetIndex)}
@@ -80,7 +80,7 @@ export class ZHADeviceBindingControl extends LitElement {
                   </mwc-list-item>
                 `
               )}
-            </mwc-select>
+            </ha-select>
           </div>
           ${this._showHelp
             ? html`

@@ -170,7 +170,7 @@ class MoreInfoHumidifier extends LitElement {
         color: var(--primary-text-color);
       }
 
-      mwc-select {
+      ha-select {
         width: 100%;
       }
 

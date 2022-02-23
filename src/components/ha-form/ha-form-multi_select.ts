@@ -1,4 +1,3 @@
-import "@material/mwc-select/mwc-select";
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import {
   css,
@@ -18,6 +17,7 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-formfield";
 import "../ha-svg-icon";
 import "../ha-textfield";
+import "../ha-select";
 import {
   HaFormElement,
   HaFormMultiSelectData,

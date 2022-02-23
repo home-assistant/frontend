@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +9,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";
@@ -102,7 +102,7 @@ export class HuiGenericEntityRowEditor
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
         </div>
-        <mwc-select
+        <ha-select
           label="Secondary Info"
           .configValue=${"secondary_info"}
           @selected=${this._valueChanged}
@@ -132,7 +132,7 @@ export class HuiGenericEntityRowEditor
             }
             return "";
           })}
-        </mwc-select>
+        </ha-select>
       </div>
     `;
   }

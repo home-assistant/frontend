@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -155,7 +155,7 @@ export class HuiPictureEntityCardEditor
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
-          <mwc-select
+          <ha-select
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.camera_view"
             )} (${this.hass.localize(
@@ -172,7 +172,7 @@ export class HuiPictureEntityCardEditor
               (view) =>
                 html`<mwc-list-item .value=${view}>${view}</mwc-list-item> `
             )}
-          </mwc-select>
+          </ha-select>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.aspect_ratio"

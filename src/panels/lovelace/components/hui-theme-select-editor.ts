@@ -1,11 +1,11 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
-import "@material/mwc-select/mwc-select";
-import "@material/mwc-list/mwc-list-item";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import "../../../components/ha-select";
+import { HomeAssistant } from "../../../types";
 
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {
@@ -17,7 +17,7 @@ export class HuiThemeSelectEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-select
+      <ha-select
         .label=${this.label ||
         `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.theme"
@@ -41,13 +41,13 @@ export class HuiThemeSelectEditor extends LitElement {
             (theme) =>
               html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
           )}
-      </mwc-select>
+      </ha-select>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      mwc-select {
+      ha-select {
         width: 100%;
       }
     `;

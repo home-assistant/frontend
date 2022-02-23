@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -22,6 +21,7 @@ import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
@@ -286,7 +286,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return html`
         ${labelAndDescription}
         <div class="flex">
-          <mwc-select
+          <ha-select
             .disabled=${!item.metadata.writeable}
             .value=${item.value}
             .key=${id}
@@ -299,7 +299,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
               `
             )}
-          </mwc-select>
+          </ha-select>
         </div>
       `;
     }
@@ -455,7 +455,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         }
 
         .flex .config-label,
-        .flex mwc-select {
+        .flex ha-select {
           flex: 1;
         }
 

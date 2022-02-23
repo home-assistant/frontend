@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-select";
 import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -124,7 +124,7 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.edit_view.type"
           )}
@@ -141,7 +141,7 @@ export class HuiViewEditor extends LitElement {
               )}
             </mwc-list-item>`
           )}
-        </mwc-select>
+        </ha-select>
       </div>
     `;
   }

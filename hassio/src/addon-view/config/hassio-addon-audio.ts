@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
@@ -14,6 +13,7 @@ import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-select";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -57,7 +57,7 @@ class HassioAddonAudio extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           ${this._inputDevices &&
-          html`<mwc-select
+          html`<ha-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.input"
             )}
@@ -74,9 +74,9 @@ class HassioAddonAudio extends LitElement {
                 </mwc-list-item>
               `
             )}
-          </mwc-select>`}
+          </ha-select>`}
           ${this._outputDevices &&
-          html`<mwc-select
+          html`<ha-select
             .label=${this.supervisor.localize(
               "addon.configuration.audio.output"
             )}
@@ -93,7 +93,7 @@ class HassioAddonAudio extends LitElement {
                 >
               `
             )}
-          </mwc-select>`}
+          </ha-select>`}
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._saveSettings}>
@@ -119,10 +119,10 @@ class HassioAddonAudio extends LitElement {
         .card-actions {
           text-align: right;
         }
-        mwc-select {
+        ha-select {
           width: 100%;
         }
-        mwc-select:last-child {
+        ha-select:last-child {
           margin-top: 8px;
         }
       `,

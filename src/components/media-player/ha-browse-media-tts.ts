@@ -1,9 +1,10 @@
-import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { fetchCloudStatus, updateCloudPref } from "../../data/cloud";
 import {
   CloudTTSInfo,
@@ -15,12 +16,11 @@ import {
   MediaPlayerBrowseAction,
   MediaPlayerItem,
 } from "../../data/media-player";
-import { HomeAssistant } from "../../types";
-import "../ha-textarea";
-import { buttonLinkStyle } from "../../resources/styles";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { LocalStorage } from "../../common/decorators/local-storage";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+import { buttonLinkStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import "../ha-select";
+import "../ha-textarea";
 
 export interface TtsMediaPickedEvent {
   item: MediaPlayerItem;
@@ -103,7 +103,7 @@ class BrowseMediaTTS extends LitElement {
 
     return html`
       <div class="cloud-options">
-        <mwc-select
+        <ha-select
           fixedMenuPosition
           naturalMenuWidth
           .label=${this.hass.localize(
@@ -117,9 +117,9 @@ class BrowseMediaTTS extends LitElement {
             ([key, label]) =>
               html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
           )}
-        </mwc-select>
+        </ha-select>
 
-        <mwc-select
+        <ha-select
           fixedMenuPosition
           naturalMenuWidth
           .label=${this.hass.localize("ui.components.media-browser.tts.gender")}
@@ -131,7 +131,7 @@ class BrowseMediaTTS extends LitElement {
             ([key, label]) =>
               html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
           )}
-        </mwc-select>
+        </ha-select>
       </div>
     `;
   }
@@ -256,7 +256,7 @@ class BrowseMediaTTS extends LitElement {
         display: flex;
         justify-content: space-between;
       }
-      .cloud-options mwc-select {
+      .cloud-options ha-select {
         width: 48%;
       }
       ha-textarea {
