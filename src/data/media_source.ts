@@ -49,3 +49,12 @@ export const uploadLocalMedia = async (
   }
   return resp.json();
 };
+
+export const removeLocalMedia = async (
+  hass: HomeAssistant,
+  media_content_id: string
+) =>
+  hass.callWS({
+    type: "media_source/local_source/remove",
+    media_content_id,
+  });
