@@ -533,6 +533,7 @@
         "play-media": "Play Media",
         "pick-media": "Pick Media",
         "no_items": "No items",
+        "not_shown": "{count} incompatible {count, plural,\n  one {item}\n  other {items}\n} hidden",
         "choose_player": "Choose Player",
         "media-player-browser": "Media",
         "web-browser": "Web Browser",
