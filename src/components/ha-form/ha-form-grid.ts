@@ -1,5 +1,12 @@
 import "./ha-form";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import type {
   HaFormGridSchema,
@@ -28,8 +35,13 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   protected firstUpdated() {
     this.setAttribute("own-margin", "");
-    if (this.schema.min_width) {
-      this.style.cssText = `--form-grid-min-width: ${this.schema.min_width}`;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      if (this.schema.min_width) {
+        this.style.cssText = `--form-grid-min-width: ${this.schema.min_width}`;
+      }
     }
   }
 
