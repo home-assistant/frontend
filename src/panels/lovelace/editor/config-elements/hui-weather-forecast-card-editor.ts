@@ -72,7 +72,11 @@ export class HuiWeatherForecastCardEditor
       hasForecast?: boolean
     ): HaFormSchema[] => {
       const schema: HaFormSchema[] = [
-        { name: "entity", selector: { entity: { domain: "weather" } } },
+        {
+          name: "entity",
+          required: true,
+          selector: { entity: { domain: "weather" } },
+        },
         { name: "name", selector: { text: {} } },
         {
           name: "",
