@@ -1,5 +1,5 @@
 import "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -63,7 +63,7 @@ export class HuiPictureCardEditor
 
     return html`
       <div class="card-config">
-        <paper-input
+        <ha-textfield
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.image"
           )} (${this.hass.localize(
@@ -71,8 +71,8 @@ export class HuiPictureCardEditor
           )})"
           .value=${this._image}
           .configValue=${"image"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
+          @input=${this._valueChanged}
+        ></ha-textfield>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value=${this._theme}
@@ -134,7 +134,15 @@ export class HuiPictureCardEditor
   }
 
   static get styles(): CSSResultGroup {
-    return configElementStyle;
+    return [
+      configElementStyle,
+      css`
+        ha-textfield {
+          display: block;
+          margin-bottom: 8px;
+        }
+      `,
+    ];
   }
 }
 
