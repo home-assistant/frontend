@@ -50,42 +50,38 @@ class MoreInfoMediaPlayer extends LitElement {
     const controls = computeMediaControls(stateObj);
 
     return html`
-      ${!controls
-        ? ""
-        : html`
-            <div class="controls">
-              <div class="basic-controls">
-                ${controls!.map(
-                  (control) => html`
-                    <ha-icon-button
-                      action=${control.action}
-                      @click=${this._handleClick}
-                      .path=${control.icon}
-                      .label=${this.hass.localize(
-                        `ui.card.media_player.${control.action}`
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
+      <div class="controls">
+        <div class="basic-controls">
+          ${controls!.map(
+            (control) => html`
+              <ha-icon-button
+                action=${control.action}
+                @click=${this._handleClick}
+                .path=${control.icon}
+                .label=${this.hass.localize(
+                  `ui.card.media_player.${control.action}`
                 )}
-              </div>
-              ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
-                ? html`
-                    <mwc-button
-                      .label=${this.hass.localize(
-                        "ui.card.media_player.browse_media"
-                      )}
-                      @click=${this._showBrowseMedia}
-                    >
-                      <ha-svg-icon
-                        .path=${mdiPlayBoxMultiple}
-                        slot="icon"
-                      ></ha-svg-icon>
-                    </mwc-button>
-                  `
-                : ""}
-            </div>
-          `}
+              >
+              </ha-icon-button>
+            `
+          )}
+        </div>
+        ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+          ? html`
+              <mwc-button
+                .label=${this.hass.localize(
+                  "ui.card.media_player.browse_media"
+                )}
+                @click=${this._showBrowseMedia}
+              >
+                <ha-svg-icon
+                  .path=${mdiPlayBoxMultiple}
+                  slot="icon"
+                ></ha-svg-icon>
+              </mwc-button>
+            `
+          : ""}
+      </div>
       ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
         supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
       ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
