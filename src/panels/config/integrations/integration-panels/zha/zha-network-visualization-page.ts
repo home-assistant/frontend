@@ -8,7 +8,7 @@ import {
   Node,
 } from "vis-network/peer/esm/vis-network";
 import { navigate } from "../../../../../common/navigate";
-import "../../../../../common/search/search-input";
+import "../../../../../components/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";

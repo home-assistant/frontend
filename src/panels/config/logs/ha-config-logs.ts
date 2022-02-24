@@ -4,7 +4,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import "../../../common/search/search-input";
+import "../../../components/search-input";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "./error-log-card";
 import "./system-log-card";
