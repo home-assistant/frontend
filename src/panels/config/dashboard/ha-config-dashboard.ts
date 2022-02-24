@@ -177,13 +177,15 @@ class HaConfigDashboard extends LitElement {
                   >Blog</a
                 >`,
                 "newsletter",
-                html`<a
+                html`<span class="keep-together"
+                  ><a
                     href=${documentationUrl(this.hass, `/newsletter`)}
                     target="_blank"
                     rel="noreferrer"
                     >Newsletter</a
                   >
-                  <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon>`
+                  <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon
+                ></span>`
               )}
             </span>
           </div>
@@ -292,6 +294,10 @@ class HaConfigDashboard extends LitElement {
 
         .new {
           color: var(--primary-color);
+        }
+
+        .keep-together {
+          display: inline-block;
         }
       `,
     ];
