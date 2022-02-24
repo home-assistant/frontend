@@ -3,7 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/common/search/search-input";
+import "../../../../src/components/search-input";
 import { stringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
