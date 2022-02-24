@@ -96,14 +96,11 @@ export class HuiLogbookCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      ) ||
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.logbook.${schema.name}`
-      )
-    );
+  private _computeLabelCallback = (schema: HaFormSchema) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.card.logbook.${schema.name}`);
 }
 
 declare global {
