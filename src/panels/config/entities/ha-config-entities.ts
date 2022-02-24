@@ -585,6 +585,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
                 .path=${mdiFilterVariant}
               ></ha-icon-button>
+              ${this.narrow && activeFilters?.length
+                ? html`<mwc-list-item @click=${this._clearFilter}
+                    >${this.hass.localize(
+                      "ui.components.data-table.filtering_by"
+                    )}
+                    ${activeFilters.join(", ")}
+                    <span class="clear">Clear</span></mwc-list-item
+                  >`
+                : ""}
               <ha-check-list-item
                 @request-selected=${this._showDisabledChanged}
                 .selected=${this._showDisabled}
@@ -895,6 +904,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         ha-button-menu {
           margin-left: 8px;
+        }
+        .clear {
+          color: var(--primary-color);
+          padding-left: 8px;
+          text-transform: uppercase;
         }
       `,
     ];
