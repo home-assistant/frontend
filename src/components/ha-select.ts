@@ -1,6 +1,6 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
-import { html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
@@ -20,8 +20,6 @@ export class HaSelect extends SelectBase {
     ></span>`;
   }
 
-  static override styles = [styles];
-
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("translations-updated", this._translationsUpdated);
@@ -39,6 +37,15 @@ export class HaSelect extends SelectBase {
     await nextRender();
     this.layoutOptions();
   }, 500);
+
+  static override styles = [
+    styles,
+    css`
+      .mdc-select:not(.mdc-select--disabled) .mdc-select__icon {
+        color: var(--secondary-text-color);
+      }
+    `,
+  ];
 }
 declare global {
   interface HTMLElementTagNameMap {
