@@ -1,8 +1,13 @@
 import { HomeAssistant } from "../types";
 
-interface ValidationResult {
-  valid: boolean;
-  error: string | null;
+interface ValidConfig {
+  valid: true;
+  error: null;
+}
+
+interface InvalidConfig {
+  valid: false;
+  error: string;
 }
 
 type ValidKeys = "trigger" | "action" | "condition";
@@ -12,7 +17,7 @@ export const validateConfig = <
 >(
   hass: HomeAssistant,
   config: T
-): Promise<Record<keyof T, ValidationResult>> =>
+): Promise<Record<keyof T, ValidConfig | InvalidConfig>> =>
   hass.callWS({
     type: "validate_config",
     ...config,
