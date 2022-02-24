@@ -70,11 +70,9 @@ export class HuiHumidifierCardEditor
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
     if (schema.name === "entity") {
-      return `${this.hass!.localize(
+      return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.required"
-      )})`;
+      );
     }
 
     return this.hass!.localize(
