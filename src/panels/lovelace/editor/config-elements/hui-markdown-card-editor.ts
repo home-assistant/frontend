@@ -20,7 +20,7 @@ const cardConfigStruct = assign(
 
 const SCHEMA: HaFormSchema[] = [
   { name: "title", selector: { text: {} } },
-  { name: "content", selector: { text: { multiline: true } } },
+  { name: "content", required: true, selector: { text: { multiline: true } } },
   { name: "theme", selector: { theme: {} } },
 ];
 

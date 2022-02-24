@@ -24,7 +24,7 @@ const SCHEMA: HaFormSchema[] = [
     name: "",
     type: "grid",
     schema: [
-      { name: "url", selector: { text: {} } },
+      { name: "url", required: true, selector: { text: {} } },
       { name: "aspect_ratio", selector: { text: {} } },
     ],
   },

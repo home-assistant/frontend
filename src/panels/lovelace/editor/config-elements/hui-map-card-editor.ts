@@ -151,8 +151,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) =>
