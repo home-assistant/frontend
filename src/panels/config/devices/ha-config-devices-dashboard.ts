@@ -438,6 +438,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             )}
             .path=${mdiFilterVariant}
           ></ha-icon-button>
+          ${this.narrow && activeFilters?.length
+            ? html`<mwc-list-item @click=${this._clearFilter}
+                >${this.hass.localize("ui.components.data-table.filtering_by")}
+                ${activeFilters.join(", ")}
+                <span class="clear">Clear</span></mwc-list-item
+              >`
+            : ""}
           <ha-check-list-item
             left
             @request-selected=${this._showDisabledChanged}
@@ -522,6 +529,11 @@ export class HaConfigDeviceDashboard extends LitElement {
       css`
         ha-button-menu {
           margin-left: 8px;
+        }
+        .clear {
+          color: var(--primary-color);
+          padding-left: 8px;
+          text-transform: uppercase;
         }
       `,
       haStyle,
