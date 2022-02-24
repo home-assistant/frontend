@@ -326,7 +326,6 @@ export default class HaAutomationActionRow extends LitElement {
           "ui.panel.config.automation.editor.actions.invalid_action"
         ),
         text: validated.action.error,
-        warning: true,
       });
       return;
     }
@@ -339,7 +338,6 @@ export default class HaAutomationActionRow extends LitElement {
           "ui.panel.config.automation.editor.actions.run_action_error"
         ),
         text: err.message || err,
-        warning: true,
       });
       return;
     }
