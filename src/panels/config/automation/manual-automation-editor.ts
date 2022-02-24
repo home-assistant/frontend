@@ -346,7 +346,8 @@ export class HaManualAutomationEditor extends LitElement {
         .link-button-row {
           padding: 14px;
         }
-        ha-textarea {
+        ha-textarea,
+        ha-textfield {
           display: block;
         }
         span[slot="introduction"] a {
