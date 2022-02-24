@@ -257,7 +257,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_entities')]]"
                 value="[[_entityFilter]]"
-                on-input="_entityFilterChanged"
+                on-value-changed="_entityFilterChanged"
               ></search-input>
             </th>
             <th>
@@ -265,7 +265,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_states')]]"
                 type="search"
                 value="[[_stateFilter]]"
-                on-input="_stateFilterChanged"
+                on-value-changed="_stateFilterChanged"
               ></search-input>
             </th>
             <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
@@ -273,7 +273,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_attributes')]]"
                 type="search"
                 value="[[_attributeFilter]]"
-                on-input="_attributeFilterChanged"
+                on-value-changed="_attributeFilterChanged"
               ></search-input>
             </th>
           </tr>
@@ -441,15 +441,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _entityFilterChanged(ev) {
-    this._entityFilter = ev.target.value;
+    this._entityFilter = ev.detail.value;
   }
 
   _stateFilterChanged(ev) {
-    this._stateFilter = ev.target.value;
+    this._stateFilter = ev.detail.value;
   }
 
   _attributeFilterChanged(ev) {
-    this._attributeFilter = ev.target.value;
+    this._attributeFilter = ev.detail.value;
   }
 
   _getHistoryURL(entityId, inputDate) {
