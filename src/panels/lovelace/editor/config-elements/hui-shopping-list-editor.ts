@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-input";
+import "../../../../components/ha-textfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
@@ -57,7 +57,7 @@ export class HuiShoppingListEditor
               </div>
             `
           : ""}
-        <paper-input
+        <ha-textfield
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
           )} (${this.hass.localize(
@@ -65,8 +65,8 @@ export class HuiShoppingListEditor
           )})"
           .value=${this._title}
           .configValue=${"title"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
+          @input=${this._valueChanged}
+        ></ha-textfield>
         <hui-theme-select-editor
           .hass=${this.hass}
           .value=${this._theme}
