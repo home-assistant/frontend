@@ -1,12 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -87,17 +80,15 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hui-generic-entity-row {
-        display: flex;
-        align-items: center;
-      }
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    hui-generic-entity-row {
+      display: flex;
+      align-items: center;
+    }
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _selectedChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
