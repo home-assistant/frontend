@@ -264,7 +264,9 @@ export class BarMediaPlayer extends LitElement {
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
       ${
-        stateObj && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+        !this.narrow &&
+        stateObj &&
+        supportsFeature(stateObj, SUPPORT_VOLUME_SET)
           ? html`
               <ha-button-menu corner="BOTTOM_START" y="0" x="76">
                 <ha-icon-button
@@ -614,13 +616,17 @@ export class BarMediaPlayer extends LitElement {
       }
 
       :host([narrow]) {
-        min-height: 80px;
-        max-height: 80px;
+        min-height: 56px;
+        max-height: 56px;
       }
 
       :host([narrow]) .controls-progress {
         flex: unset;
         min-width: 48px;
+      }
+
+      :host([narrow]) .media-info {
+        padding-left: 8px;
       }
 
       :host([narrow]) .controls {
@@ -640,13 +646,14 @@ export class BarMediaPlayer extends LitElement {
       }
 
       :host([narrow]) img {
-        max-height: 80px;
-        max-width: 80px;
+        max-height: 56px;
+        max-width: 56px;
+        padding-left: 2px;
       }
 
       :host([narrow]) .blank-image {
-        height: 80px;
-        width: 80px;
+        height: 56px;
+        width: 56px;
       }
 
       :host([narrow]) mwc-linear-progress {
