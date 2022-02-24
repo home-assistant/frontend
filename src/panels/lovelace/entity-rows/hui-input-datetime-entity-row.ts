@@ -16,6 +16,7 @@ import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
 import "../../../components/ha-time-input";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -50,7 +51,11 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        hideName
+      >
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
@@ -77,6 +82,9 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
               ></ha-time-input>
             `
           : ``}
+        <div class="name">
+          ${this._config.name || computeStateName(stateObj)}
+        </div>
       </hui-generic-entity-row>
     `;
   }
@@ -113,6 +121,19 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     return css`
       ha-date-input + ha-time-input {
         margin-left: 4px;
+      }
+      .name {
+        position: absolute;
+        top: 0;
+        left: 40px;
+        right: 0;
+        padding-left: 16px;
+        color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+        pointer-events: none;
+        font-size: 0.75em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     `;
   }
