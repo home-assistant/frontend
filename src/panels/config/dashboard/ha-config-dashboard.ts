@@ -94,7 +94,7 @@ const randomTip = (hass: HomeAssistant) => {
   ];
 
   tips.forEach((tip) => {
-    for (const _ of Array(tip.weight)) {
+    for (let i = 0; i < tip.weight; i++) {
       weighted.push(tip.content);
     }
   });
