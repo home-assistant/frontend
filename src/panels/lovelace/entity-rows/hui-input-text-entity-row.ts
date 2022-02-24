@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
@@ -8,6 +8,7 @@ import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
 import "../../../components/ha-textfield";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
@@ -42,8 +43,13 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+      <hui-generic-entity-row
+        .hass=${this.hass}
+        .config=${this._config}
+        hideName
+      >
         <ha-textfield
+          .label=${this._config.name || computeStateName(stateObj)}
           .disabled=${stateObj.state === UNAVAILABLE}
           .value=${stateObj.state}
           .minlength=${stateObj.attributes.min}
@@ -75,6 +81,16 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
 
     ev.target.blur();
   }
+
+  static styles = css`
+    hui-generic-entity-row {
+      display: flex;
+      align-items: center;
+    }
+    ha-textfield {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {
