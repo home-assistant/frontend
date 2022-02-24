@@ -40,7 +40,7 @@ class ConfigNameForm extends LitElement {
             )}
             .disabled=${disabled}
             .value=${this._nameValue}
-            @input=${this._handleChange}
+            @change=${this._handleChange}
           ></ha-textfield>
         </div>
         <div class="card-actions">
