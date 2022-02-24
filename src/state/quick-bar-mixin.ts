@@ -58,7 +58,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return false;
       }
 
-      if (el.parentElement.tagName === "ha-select") {
+      if (el.parentElement.tagName === "HA-SELECT") {
         return false;
       }
 
