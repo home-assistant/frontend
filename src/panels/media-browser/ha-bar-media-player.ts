@@ -636,6 +636,7 @@ export class BarMediaPlayer extends LitElement {
 
       :host([narrow]) .choose-player {
         padding-left: 0;
+        padding-right: 8px;
         min-width: 48px;
         flex: unset;
         justify-content: center;
@@ -648,7 +649,6 @@ export class BarMediaPlayer extends LitElement {
       :host([narrow]) img {
         max-height: 56px;
         max-width: 56px;
-        padding-left: 2px;
       }
 
       :host([narrow]) .blank-image {
