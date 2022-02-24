@@ -50,15 +50,19 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const name = this._config.name || computeStateName(stateObj);
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        hideName
+        .hideName=${stateObj.attributes.has_date &&
+        stateObj.attributes.has_time}
       >
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
+                .label=${stateObj.attributes.has_time ? name : undefined}
                 .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .value=${`${stateObj.attributes.year}-${stateObj.attributes.month}-${stateObj.attributes.day}`}
@@ -82,9 +86,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
               ></ha-time-input>
             `
           : ``}
-        <div class="name">
-          ${this._config.name || computeStateName(stateObj)}
-        </div>
       </hui-generic-entity-row>
     `;
   }
@@ -121,19 +122,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     return css`
       ha-date-input + ha-time-input {
         margin-left: 4px;
-      }
-      .name {
-        position: absolute;
-        top: 0;
-        left: 40px;
-        right: 0;
-        padding-left: 16px;
-        color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-        pointer-events: none;
-        font-size: 0.75em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
     `;
   }
