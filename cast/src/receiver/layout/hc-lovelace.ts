@@ -116,6 +116,9 @@ class HcLovelace extends LitElement {
       :host > * {
         flex: 1;
       }
+      hui-view {
+        background: var(--lovelace-background, var(--primary-background-color));
+      }
     `;
   }
 }
