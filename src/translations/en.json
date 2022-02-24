@@ -3520,6 +3520,9 @@
               "name": "Entity Filter",
               "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
             },
+            "entity-row": {
+              "secondary_info": "Secondary Information"
+            },
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge?",
