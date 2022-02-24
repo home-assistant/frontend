@@ -19,7 +19,11 @@ const cardConfigStruct = assign(
 );
 
 const SCHEMA: HaFormSchema[] = [
-  { name: "entity", selector: { entity: { domain: "humidifer" } } },
+  {
+    name: "entity",
+    required: true,
+    selector: { entity: { domain: "humidifer" } },
+  },
   {
     type: "grid",
     name: "",
