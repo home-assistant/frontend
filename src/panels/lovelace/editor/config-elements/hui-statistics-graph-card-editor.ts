@@ -79,6 +79,7 @@ export class HuiStatisticsGraphCardEditor
       schema: [
         {
           name: "period",
+          required: true,
           selector: {
             select: {
               options: periods.map((period) => ({
@@ -90,9 +91,14 @@ export class HuiStatisticsGraphCardEditor
             },
           },
         },
-        { name: "days_to_show", selector: { number: { min: 1, mode: "box" } } },
+        {
+          name: "days_to_show",
+          required: true,
+          selector: { number: { min: 1, mode: "box" } },
+        },
         {
           name: "stat_types",
+          required: true,
           type: "multi_select",
           options: [
             ["mean", "Mean"],
@@ -103,6 +109,7 @@ export class HuiStatisticsGraphCardEditor
         },
         {
           name: "chart_type",
+          required: true,
           type: "select",
           options: [
             ["line", "Line"],
