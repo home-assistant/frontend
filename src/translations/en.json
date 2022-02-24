@@ -2144,7 +2144,7 @@
             "connection_status": "Cloud connection status",
             "manage_account": "Manage Account",
             "sign_out": "Sign out",
-            "sign_out_confirm": "Are your sure you want to log out from cloud?",
+            "sign_out_confirm": "Are you sure you want to log out from the Home Assistant Cloud?",
             "integrations": "Integrations",
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
