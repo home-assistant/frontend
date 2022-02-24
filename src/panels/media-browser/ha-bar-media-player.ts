@@ -632,6 +632,7 @@ export class BarMediaPlayer extends LitElement {
       :host([narrow]) .controls {
         display: flex;
         padding-bottom: 0;
+        --mdc-icon-size: 30px;
       }
 
       :host([narrow]) .choose-player {
