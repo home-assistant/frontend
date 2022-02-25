@@ -50,7 +50,7 @@ export class HaEventAction extends LitElement implements ActionElement {
       <ha-yaml-editor
         .hass=${this.hass}
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.event.service_data"
+          "ui.panel.config.automation.editor.actions.type.event.event_data"
         )}
         .name=${"event_data"}
         .defaultValue=${event_data}
