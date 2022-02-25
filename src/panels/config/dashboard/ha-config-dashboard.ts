@@ -17,7 +17,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -118,6 +118,8 @@ class HaConfigDashboard extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
+  @state() private _tip?: string;
+
   private _notifyUpdates = false;
 
   protected render(): TemplateResult {
@@ -204,7 +206,7 @@ class HaConfigDashboard extends LitElement {
           <div class="tips">
             <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
             <span class="tip-word">Tip!</span>
-            <span class="text">${randomTip(this.hass)}</span>
+            <span class="text">${this._tip}</span>
           </div>
         </ha-config-section>
       </ha-app-layout>
@@ -213,6 +215,10 @@ class HaConfigDashboard extends LitElement {
 
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    if (!this._tip && changedProps.has("hass")) {
+      this._tip = randomTip(this.hass);
+    }
 
     if (!changedProps.has("supervisorUpdates") || !this._notifyUpdates) {
       return;
