@@ -15,7 +15,7 @@ import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../common/search/search-input";
+import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
 import type {

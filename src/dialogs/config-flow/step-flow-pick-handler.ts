@@ -15,7 +15,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
-import "../../common/search/search-input";
+import "../../components/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";

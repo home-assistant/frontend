@@ -16,7 +16,7 @@ export class HuiDialogEditLovelace extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceConfig;
 
   private _saving = false;
 

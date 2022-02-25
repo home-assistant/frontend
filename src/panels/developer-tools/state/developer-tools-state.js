@@ -18,6 +18,7 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -85,7 +86,8 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 0;
         }
 
-        .filters ha-textfield {
+        .filters search-input {
+          display: block;
           --mdc-text-field-fill-color: transparent;
         }
 
@@ -252,28 +254,27 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </tr>
           <tr class="filters">
             <th>
-              <ha-textfield
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_entities')]]"
-                type="search"
                 value="[[_entityFilter]]"
-                on-input="_entityFilterChanged"
-              ></ha-textfield>
+                on-value-changed="_entityFilterChanged"
+              ></search-input>
             </th>
             <th>
-              <ha-textfield
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_states')]]"
                 type="search"
                 value="[[_stateFilter]]"
-                on-input="_stateFilterChanged"
-              ></ha-textfield>
+                on-value-changed="_stateFilterChanged"
+              ></search-input>
             </th>
             <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
-              <ha-textfield
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_attributes')]]"
                 type="search"
                 value="[[_attributeFilter]]"
-                on-input="_attributeFilterChanged"
-              ></ha-textfield>
+                on-value-changed="_attributeFilterChanged"
+              ></search-input>
             </th>
           </tr>
           <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
@@ -440,15 +441,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _entityFilterChanged(ev) {
-    this._entityFilter = ev.target.value;
+    this._entityFilter = ev.detail.value;
   }
 
   _stateFilterChanged(ev) {
-    this._stateFilter = ev.target.value;
+    this._stateFilter = ev.detail.value;
   }
 
   _attributeFilterChanged(ev) {
-    this._attributeFilter = ev.target.value;
+    this._attributeFilter = ev.detail.value;
   }
 
   _getHistoryURL(entityId, inputDate) {
