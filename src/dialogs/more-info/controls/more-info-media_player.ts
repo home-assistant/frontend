@@ -52,19 +52,21 @@ class MoreInfoMediaPlayer extends LitElement {
     return html`
       <div class="controls">
         <div class="basic-controls">
-          ${controls!.map(
-            (control) => html`
-              <ha-icon-button
-                action=${control.action}
-                @click=${this._handleClick}
-                .path=${control.icon}
-                .label=${this.hass.localize(
-                  `ui.card.media_player.${control.action}`
-                )}
-              >
-              </ha-icon-button>
-            `
-          )}
+          ${!controls
+            ? ""
+            : controls.map(
+                (control) => html`
+                  <ha-icon-button
+                    action=${control.action}
+                    @click=${this._handleClick}
+                    .path=${control.icon}
+                    .label=${this.hass.localize(
+                      `ui.card.media_player.${control.action}`
+                    )}
+                  >
+                  </ha-icon-button>
+                `
+              )}
         </div>
         ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
           ? html`
