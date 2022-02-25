@@ -14,7 +14,7 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
-import "../../../src/common/search/search-input";
+import "../../../src/components/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";

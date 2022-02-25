@@ -53,6 +53,10 @@ export class HaTextField extends TextFieldBase {
         padding-right: var(--text-field-suffix-padding-right, 0px);
       }
 
+      .mdc-text-field__icon {
+        color: var(--secondary-text-color);
+      }
+
       input {
         text-align: var(--text-field-text-align);
       }

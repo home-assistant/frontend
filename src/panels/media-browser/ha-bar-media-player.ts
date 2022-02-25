@@ -264,7 +264,9 @@ export class BarMediaPlayer extends LitElement {
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
       ${
-        stateObj && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+        !this.narrow &&
+        stateObj &&
+        supportsFeature(stateObj, SUPPORT_VOLUME_SET)
           ? html`
               <ha-button-menu corner="BOTTOM_START" y="0" x="76">
                 <ha-icon-button
@@ -601,6 +603,7 @@ export class BarMediaPlayer extends LitElement {
 
       img {
         max-height: 100px;
+        max-width: 100px;
       }
 
       .app img {
@@ -613,8 +616,8 @@ export class BarMediaPlayer extends LitElement {
       }
 
       :host([narrow]) {
-        min-height: 80px;
-        max-height: 80px;
+        min-height: 56px;
+        max-height: 56px;
       }
 
       :host([narrow]) .controls-progress {
@@ -622,13 +625,19 @@ export class BarMediaPlayer extends LitElement {
         min-width: 48px;
       }
 
+      :host([narrow]) .media-info {
+        padding-left: 8px;
+      }
+
       :host([narrow]) .controls {
         display: flex;
         padding-bottom: 0;
+        --mdc-icon-size: 30px;
       }
 
       :host([narrow]) .choose-player {
         padding-left: 0;
+        padding-right: 8px;
         min-width: 48px;
         flex: unset;
         justify-content: center;
@@ -636,16 +645,16 @@ export class BarMediaPlayer extends LitElement {
 
       :host([narrow]) .choose-player.browser {
         justify-content: flex-end;
-        width: 100%;
       }
 
       :host([narrow]) img {
-        max-height: 80px;
+        max-height: 56px;
+        max-width: 56px;
       }
 
       :host([narrow]) .blank-image {
-        height: 80px;
-        width: 80px;
+        height: 56px;
+        width: 56px;
       }
 
       :host([narrow]) mwc-linear-progress {

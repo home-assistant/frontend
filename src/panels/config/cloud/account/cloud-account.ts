@@ -29,6 +29,7 @@ import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -276,9 +277,20 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await cloudLogout(this.hass);
-        fireEvent(this, "ha-refresh-cloud-status");
+        showConfirmationDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.cloud.account.sign_out_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.yes"),
+          dismissText: this.hass!.localize("ui.common.no"),
+          confirm: () => this._logoutFromCloud(),
+        });
     }
+  }
+
+  private async _logoutFromCloud() {
+    await cloudLogout(this.hass);
+    fireEvent(this, "ha-refresh-cloud-status");
   }
 
   _computeRTLDirection(hass) {

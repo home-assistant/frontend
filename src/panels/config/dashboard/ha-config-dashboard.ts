@@ -43,6 +43,65 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
 import { documentationUrl } from "../../../util/documentation-url";
 
+const randomTip = (hass: HomeAssistant) => {
+  const weighted: string[] = [];
+  const tips = [
+    {
+      content: hass.localize(
+        "ui.panel.config.tips.join",
+        "forums",
+        html`<a
+          href="https://community.home-assistant.io"
+          target="_blank"
+          rel="noreferrer"
+          >Forums</a
+        >`,
+        "twitter",
+        html`<a
+          href=${documentationUrl(hass, `/twitter`)}
+          target="_blank"
+          rel="noreferrer"
+          >Twitter</a
+        >`,
+        "discord",
+        html`<a
+          href=${documentationUrl(hass, `/join-chat`)}
+          target="_blank"
+          rel="noreferrer"
+          >Chat</a
+        >`,
+        "blog",
+        html`<a
+          href=${documentationUrl(hass, `/blog`)}
+          target="_blank"
+          rel="noreferrer"
+          >Blog</a
+        >`,
+        "newsletter",
+        html`<span class="keep-together"
+          ><a
+            href=${documentationUrl(hass, `/newsletter`)}
+            target="_blank"
+            rel="noreferrer"
+            >Newsletter</a
+          >
+          <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon
+        ></span>`
+      ),
+      weight: 2,
+    },
+    { content: hass.localize("ui.dialogs.quick-bar.key_c_hint"), weight: 1 },
+  ];
+
+  tips.forEach((tip) => {
+    for (let i = 0; i < tip.weight; i++) {
+      weighted.push(tip.content);
+    }
+  });
+
+  return weighted[Math.floor(Math.random() * weighted.length)];
+};
+
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -145,47 +204,7 @@ class HaConfigDashboard extends LitElement {
           <div class="tips">
             <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
             <span class="tip-word">Tip!</span>
-            <span class="text">
-              ${this.hass.localize(
-                "ui.panel.config.tips.join",
-                "forums",
-                html`<a
-                  href="https://community.home-assistant.io"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Forums</a
-                >`,
-                "twitter",
-                html`<a
-                  href=${documentationUrl(this.hass, `/twitter`)}
-                  target="_blank"
-                  rel="noreferrer"
-                  >Twitter</a
-                >`,
-                "discord",
-                html`<a
-                  href=${documentationUrl(this.hass, `/join-chat`)}
-                  target="_blank"
-                  rel="noreferrer"
-                  >Chat</a
-                >`,
-                "blog",
-                html`<a
-                  href=${documentationUrl(this.hass, `/blog`)}
-                  target="_blank"
-                  rel="noreferrer"
-                  >Blog</a
-                >`,
-                "newsletter",
-                html`<a
-                    href=${documentationUrl(this.hass, `/newsletter`)}
-                    target="_blank"
-                    rel="noreferrer"
-                    >Newsletter</a
-                  >
-                  <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon>`
-              )}
-            </span>
+            <span class="text">${randomTip(this.hass)}</span>
           </div>
         </ha-config-section>
       </ha-app-layout>
@@ -292,6 +311,10 @@ class HaConfigDashboard extends LitElement {
 
         .new {
           color: var(--primary-color);
+        }
+
+        .keep-together {
+          display: inline-block;
         }
       `,
     ];
