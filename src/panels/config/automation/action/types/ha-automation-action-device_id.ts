@@ -145,7 +145,7 @@ export class HaDeviceAction extends LitElement {
   static styles = css`
     ha-device-picker {
       display: block;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
     ha-device-action-picker {
       display: block;

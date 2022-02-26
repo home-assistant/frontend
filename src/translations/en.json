@@ -1863,7 +1863,7 @@
                 "event": {
                   "label": "Fire event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
-                  "service_data": "[%key:ui::components::service-control::service_data%]"
+                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
                 },
                 "device_id": {
                   "label": "Device",
