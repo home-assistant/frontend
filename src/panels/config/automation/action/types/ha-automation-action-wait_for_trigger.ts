@@ -33,7 +33,6 @@ export class HaWaitForTriggerAction
         .value=${timeout || ""}
         @change=${this._valueChanged}
       ></ha-textfield>
-      <br />
       <ha-formfield
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"

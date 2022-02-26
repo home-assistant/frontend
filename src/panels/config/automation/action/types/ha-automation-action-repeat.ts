@@ -162,8 +162,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     return [
       haStyle,
       css`
-        ha-select {
-          margin-top: 8px;
+        ha-textfield {
+          margin-top: 16px;
         }
       `,
     ];
