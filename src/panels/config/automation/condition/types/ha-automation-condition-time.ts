@@ -148,8 +148,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
       this._inputModeBefore = newModeBefore;
     }
 
-    delete newValue.before;
-    delete newValue.after;
+    delete newValue.mode_after;
+    delete newValue.mode_before;
 
     Object.keys(newValue).forEach((key) =>
       newValue[key] === undefined || newValue[key] === ""
