@@ -117,7 +117,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     );
 
     const data = {
-      mode_before: inputModeAfter ? "input" : "value",
+      mode_before: inputModeBefore ? "input" : "value",
       mode_after: inputModeAfter ? "input" : "value",
       ...this.condition,
     };
