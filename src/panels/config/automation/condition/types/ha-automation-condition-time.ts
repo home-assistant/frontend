@@ -137,16 +137,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    const newModeAfter = newValue.mode_after === "input";
-    const newModeBefore = newValue.mode_before === "input";
-
-    if (newModeAfter !== this._inputModeAfter) {
-      this._inputModeAfter = newModeAfter;
-    }
-
-    if (newModeBefore !== this._inputModeBefore) {
-      this._inputModeBefore = newModeBefore;
-    }
+    this._inputModeAfter = newValue.mode_after === "input";
+    this._inputModeBefore = newValue.mode_before === "input";
 
     delete newValue.mode_after;
     delete newValue.mode_before;
