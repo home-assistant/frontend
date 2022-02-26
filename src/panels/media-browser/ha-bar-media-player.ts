@@ -529,7 +529,7 @@ export class BarMediaPlayer extends LitElement {
       mwc-linear-progress {
         width: 100%;
         padding: 0 4px;
-        --mdc-theme-primary: var(--secondary-text-color);
+        --mdc-theme-primary: var(--primary-color);
       }
 
       mwc-button[slot="trigger"] {
