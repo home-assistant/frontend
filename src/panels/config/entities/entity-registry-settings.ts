@@ -42,7 +42,7 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 const OVERRIDE_DEVICE_CLASSES = {
-  cover: ["window", "door", "garage", "gate"],
+  cover: ["window", "door", "garage", "gate", "shade"],
   binary_sensor: ["window", "door", "garage_door", "opening"],
 };
 
