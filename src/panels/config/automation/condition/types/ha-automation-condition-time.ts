@@ -117,8 +117,8 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     );
 
     const data = {
-      mode_before: "value",
-      mode_after: "value",
+      mode_before: inputModeBefore ? "input" : "value",
+      mode_after: inputModeAfter ? "input" : "value",
       ...this.condition,
     };
 
@@ -137,18 +137,11 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
-    const newModeAfter = newValue.mode_after === "input";
-    const newModeBefore = newValue.mode_before === "input";
+    this._inputModeAfter = newValue.mode_after === "input";
+    this._inputModeBefore = newValue.mode_before === "input";
 
-    if (newModeAfter !== this._inputModeAfter) {
-      this._inputModeAfter = newModeAfter;
-      newValue.after = undefined;
-    }
-
-    if (newModeBefore !== this._inputModeBefore) {
-      this._inputModeBefore = newModeBefore;
-      newValue.before = undefined;
-    }
+    delete newValue.mode_after;
+    delete newValue.mode_before;
 
     Object.keys(newValue).forEach((key) =>
       newValue[key] === undefined || newValue[key] === ""
