@@ -24,7 +24,11 @@ class MoreInfoInputDatetime extends LitElement {
             ? html`
                 <ha-date-input
                   .locale=${this.hass.locale}
-                  .value=${`${this.stateObj.attributes.year}-${this.stateObj.attributes.month}-${this.stateObj.attributes.day}`}
+                  .value=${`${this.stateObj.attributes.year}-${String(
+                    this.stateObj.attributes.month
+                  ).padStart(2, "0")}-${String(
+                    this.stateObj.attributes.day
+                  ).padStart(2, "0")}T00:00:00`}
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
                   @value-changed=${this._dateChanged}
                 >
