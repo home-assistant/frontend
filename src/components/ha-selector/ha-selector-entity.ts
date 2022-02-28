@@ -51,10 +51,11 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
   private _filterEntities = (entity: HassEntity): boolean => {
     if (this.selector.entity?.domain) {
       const filterDomain = this.selector.entity.domain;
+      const filterDomainIsArray = Array.isArray(filterDomain);
       const entityDomain = computeStateDomain(entity);
       if (
-        (Array.isArray(filterDomain) && !filterDomain.includes(entityDomain)) ||
-        (!Array.isArray(filterDomain) && entityDomain !== filterDomain)
+        (filterDomainIsArray && !filterDomain.includes(entityDomain)) ||
+        (!filterDomainIsArray && entityDomain !== filterDomain)
       ) {
         return false;
       }
