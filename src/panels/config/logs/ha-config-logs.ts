@@ -55,7 +55,6 @@ export class HaConfigLogs extends LitElement {
       : html`
           <div class="search">
             <search-input
-              autofocus
               no-label-float
               no-underline
               @value-changed=${this._filterChanged}
