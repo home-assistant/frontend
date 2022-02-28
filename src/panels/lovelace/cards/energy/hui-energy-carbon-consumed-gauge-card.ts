@@ -32,6 +32,8 @@ class HuiEnergyCarbonGaugeCard
 
   @state() private _data?: EnergyData;
 
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
   public getCardSize(): number {
     return 4;
   }
