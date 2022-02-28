@@ -9,7 +9,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
-import { setInputDateTimeValue } from "../../../data/input_datetime";
+import {
+  setInputDateTimeValue,
+  stateToIsoDateString,
+} from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -65,12 +68,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 .label=${stateObj.attributes.has_time ? name : undefined}
                 .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .value=${`${stateObj.attributes.year}-${String(
-                  stateObj.attributes.month
-                ).padStart(2, "0")}-${String(stateObj.attributes.day).padStart(
-                  2,
-                  "0"
-                )}T00:00:00`}
+                .value=${stateToIsoDateString(stateObj)}
                 @value-changed=${this._dateChanged}
               >
               </ha-date-input>
