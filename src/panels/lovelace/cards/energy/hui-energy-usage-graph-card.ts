@@ -50,6 +50,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _end = endOfToday();
 
+  protected hassSubscribeNeedsProperties = ["_config"];
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {

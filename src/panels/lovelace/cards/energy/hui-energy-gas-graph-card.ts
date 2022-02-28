@@ -62,6 +62,8 @@ export class HuiEnergyGasGraphCard
 
   @state() private _unit?: string;
 
+  protected hassSubscribeNeedsProperties = ["_config"];
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {
