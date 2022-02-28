@@ -110,8 +110,6 @@ class HassioAddonStore extends LitElement {
               <div class="search">
                 <search-input
                   .hass=${this.hass}
-                  no-label-float
-                  no-underline
                   .filter=${this._filter}
                   @value-changed=${this._filterChanged}
                 ></search-input>
