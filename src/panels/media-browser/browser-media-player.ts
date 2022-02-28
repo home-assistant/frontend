@@ -9,6 +9,8 @@ import {
 import { ResolvedMediaSource } from "../../data/media_source";
 import { HomeAssistant } from "../../types";
 
+export const ERR_UNSUPPORTED_MEDIA = "Unsupported Media";
+
 export class BrowserMediaPlayer {
   private player: HTMLAudioElement;
 
@@ -25,6 +27,9 @@ export class BrowserMediaPlayer {
     private onChange: () => void
   ) {
     const player = new Audio(this.resolved.url);
+    if (player.canPlayType(resolved.mime_type) === "") {
+      throw new Error(ERR_UNSUPPORTED_MEDIA);
+    }
     player.autoplay = true;
     player.volume = volume;
     player.addEventListener("play", this._handleChange);

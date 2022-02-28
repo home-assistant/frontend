@@ -27,7 +27,10 @@ import {
   MediaPickedEvent,
   MediaPlayerItem,
 } from "../../data/media-player";
-import { resolveMediaSource } from "../../data/media_source";
+import {
+  ResolvedMediaSource,
+  resolveMediaSource,
+} from "../../data/media_source";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -224,11 +227,19 @@ class PanelMediaBrowser extends LitElement {
     }
 
     this._player.showResolvingNewMediaPicked();
-
-    const resolvedUrl = await resolveMediaSource(
-      this.hass,
-      item.media_content_id
-    );
+    let resolvedUrl: ResolvedMediaSource;
+    try {
+      resolvedUrl = await resolveMediaSource(this.hass, item.media_content_id);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.components.media-browser.media_browsing_error"
+        ),
+        text: err.message,
+      });
+      this._player.hideResolvingNewMediaPicked();
+      return;
+    }
 
     if (resolvedUrl.mime_type.startsWith("audio/")) {
       this._player.playItem(item, resolvedUrl);
