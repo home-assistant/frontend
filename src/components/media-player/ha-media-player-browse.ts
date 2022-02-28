@@ -34,23 +34,24 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import { browseLocalMediaPlayer } from "../../data/media_source";
+import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl, extractDomainFromUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
 import "../ha-card";
 import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
+import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
-import "../ha-fab";
-import { browseLocalMediaPlayer } from "../../data/media_source";
-import { isTTSMediaSource } from "../../data/tts";
-import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import "./ha-browse-media-tts";
+import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
@@ -681,6 +682,17 @@ export class HaMediaPlayerBrowse extends LitElement {
                 // Thumbnails served by local API require authentication
                 const signedPath = await getSignedPath(this.hass, thumbnailUrl);
                 thumbnailUrl = signedPath.path;
+              } else if (
+                thumbnailUrl.startsWith("https://brands.home-assistant.io")
+              ) {
+                // The backend is not aware of the theme used by the users,
+                // so we rewrite the URL to show a proper icon
+                thumbnailUrl = brandsUrl({
+                  domain: extractDomainFromUrl(thumbnailUrl),
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                });
               }
               thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
               observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
