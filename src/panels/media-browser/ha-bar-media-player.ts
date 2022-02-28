@@ -49,9 +49,13 @@ import {
   SUPPORT_VOLUME_SET,
 } from "../../data/media-player";
 import { ResolvedMediaSource } from "../../data/media_source";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
-import { BrowserMediaPlayer } from "./browser-media-player";
+import {
+  BrowserMediaPlayer,
+  ERR_UNSUPPORTED_MEDIA,
+} from "./browser-media-player";
 
 declare global {
   interface HASSDomEvents {
@@ -125,13 +129,25 @@ export class BarMediaPlayer extends LitElement {
       throw Error("Only browser supported");
     }
     this._tearDownBrowserPlayer();
-    this._browserPlayer = new BrowserMediaPlayer(
-      this.hass,
-      item,
-      resolved,
-      this._browserPlayerVolume,
-      () => this.requestUpdate("_browserPlayer")
-    );
+    try {
+      this._browserPlayer = new BrowserMediaPlayer(
+        this.hass,
+        item,
+        resolved,
+        this._browserPlayerVolume,
+        () => this.requestUpdate("_browserPlayer")
+      );
+    } catch (err: any) {
+      if (err.message === ERR_UNSUPPORTED_MEDIA) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.components.media-browser.media_not_supported"
+          ),
+        });
+      } else {
+        throw err;
+      }
+    }
     this._newMediaExpected = false;
   }
 
