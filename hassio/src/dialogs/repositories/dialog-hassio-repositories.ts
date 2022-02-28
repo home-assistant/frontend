@@ -106,6 +106,9 @@ class HassioRepositoriesDialog extends LitElement {
                     </paper-item-body>
                     <div class="delete">
                       <ha-icon-button
+                        .label=${this._dialogParams!.supervisor.localize(
+                          "dialog.repositories.remove"
+                        )}
                         .disabled=${usedRepositories.includes(repo.slug)}
                         .slug=${repo.slug}
                         .path=${usedRepositories.includes(repo.slug)
