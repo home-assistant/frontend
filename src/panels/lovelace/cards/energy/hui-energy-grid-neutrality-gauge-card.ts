@@ -35,7 +35,7 @@ class HuiEnergyGridGaugeCard
 
   @state() private _data?: EnergyData;
 
-  protected hassSubscribeNeedsProperties = ["_config"];
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [

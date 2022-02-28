@@ -49,7 +49,7 @@ export class HuiEnergyDevicesGraphCard
 
   @query("ha-chart-base") private _chart?: HaChartBase;
 
-  protected hassSubscribeNeedsProperties = ["_config"];
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [

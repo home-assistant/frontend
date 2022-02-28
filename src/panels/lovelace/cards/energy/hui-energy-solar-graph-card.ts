@@ -61,7 +61,7 @@ export class HuiEnergySolarGraphCard
 
   @state() private _end = endOfToday();
 
-  protected hassSubscribeNeedsProperties = ["_config"];
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [

@@ -62,7 +62,7 @@ export class HuiEnergyGasGraphCard
 
   @state() private _unit?: string;
 
-  protected hassSubscribeNeedsProperties = ["_config"];
+  protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
