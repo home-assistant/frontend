@@ -1,4 +1,5 @@
 import "@lit-labs/virtualizer";
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
@@ -28,6 +29,7 @@ import {
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
+import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
@@ -98,6 +100,8 @@ export class QuickBar extends LitElement {
 
   @query("ha-textfield", false) private _filterInputField?: HTMLElement;
 
+  @query("lit-virtualizer", false) private _virtualizer?: LitVirtualizer;
+
   private _focusSet = false;
 
   private _focusListElement?: ListItem | null;
@@ -119,6 +123,19 @@ export class QuickBar extends LitElement {
     this._filter = "";
     this._search = "";
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected updated() {
+    const virtualizer = this._virtualizer;
+    if (!virtualizer) {
+      return;
+    }
+    virtualizer.updateComplete.then(() => {
+      afterNextRender(() => {
+        virtualizer.scrollToIndex(9999999);
+        virtualizer.scrollToIndex(0);
+      });
+    });
   }
 
   private _getItems = memoizeOne(
