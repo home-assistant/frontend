@@ -261,7 +261,6 @@ export class QuickBar extends LitElement {
     if (this._focusSet) {
       return;
     }
-
     if (e.firstVisible > -1) {
       this._focusSet = true;
       await this.updateComplete;
