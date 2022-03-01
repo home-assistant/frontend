@@ -86,6 +86,7 @@ export class EnergyDeviceSettings extends LitElement {
                     : device.stat_consumption}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize("ui.common.delete")}
                   @click=${this._deleteDevice}
                   .device=${device}
                   .path=${mdiDelete}

@@ -13,6 +13,9 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
   class SubscribeClass extends superClass {
     @property({ attribute: false }) public hass?: HomeAssistant;
 
+    // we wait with subscribing till these properties are set on the host element
+    protected hassSubscribeRequiredHostProps?: string[];
+
     private __unsubs?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
 
     public connectedCallback() {
@@ -39,6 +42,16 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       super.updated(changedProps);
       if (changedProps.has("hass")) {
         this.__checkSubscribed();
+        return;
+      }
+      if (!this.hassSubscribeRequiredHostProps) {
+        return;
+      }
+      for (const key of changedProps.keys()) {
+        if (this.hassSubscribeRequiredHostProps.includes(key as string)) {
+          this.__checkSubscribed();
+          return;
+        }
       }
     }
 
@@ -52,7 +65,10 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
       if (
         this.__unsubs !== undefined ||
         !(this as unknown as Element).isConnected ||
-        this.hass === undefined
+        this.hass === undefined ||
+        this.hassSubscribeRequiredHostProps?.some(
+          (prop) => this[prop] === undefined
+        )
       ) {
         return;
       }
