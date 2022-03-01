@@ -133,6 +133,7 @@ class HaConfigDashboard extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.config")}</div>
             <ha-icon-button
+              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
               .path=${mdiMagnify}
               @click=${this._showQuickBar}
             ></ha-icon-button>

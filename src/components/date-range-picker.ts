@@ -116,6 +116,9 @@ class DateRangePickerElement extends WrappedElement {
             min-width: initial !important;
           }
           .daterangepicker:after {
+            display: none;
+          }
+          .daterangepicker:after {
             border-bottom: 6px solid var(--card-background-color);
           }
           .daterangepicker .calendar-table {

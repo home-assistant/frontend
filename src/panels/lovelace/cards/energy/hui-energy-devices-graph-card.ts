@@ -49,6 +49,8 @@ export class HuiEnergyDevicesGraphCard
 
   @query("ha-chart-base") private _chart?: HaChartBase;
 
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {

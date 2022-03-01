@@ -80,8 +80,6 @@ class HassioHardwareDialog extends LitElement {
           ></ha-icon-button>
           <search-input
             .hass=${this.hass}
-            dialogInitialFocus
-            no-label-float
             .filter=${this._filter}
             @value-changed=${this._handleSearchChange}
             .label=${this._dialogParams.supervisor.localize(
