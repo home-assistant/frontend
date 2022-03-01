@@ -40,7 +40,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { brandsUrl, extractDomainFromUrl } from "../../util/brands-url";
+import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
@@ -688,7 +688,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 // The backend is not aware of the theme used by the users,
                 // so we rewrite the URL to show a proper icon
                 thumbnailUrl = brandsUrl({
-                  domain: extractDomainFromUrl(thumbnailUrl),
+                  domain: extractDomainFromBrandUrl(thumbnailUrl),
                   type: "icon",
                   useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,

@@ -10,4 +10,4 @@ export const brandsUrl = (options: BrandsOptions): string =>
     options.domain
   }/${options.darkOptimized ? "dark_" : ""}${options.type}.png`;
 
-export const extractDomainFromUrl = (url: string) => url.split("/")[4];
+export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
