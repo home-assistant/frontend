@@ -1,9 +1,9 @@
-import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
+import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import {
   css,
   CSSResultGroup,
@@ -599,42 +599,6 @@ export class HaMediaPlayerBrowse extends LitElement {
         </ha-card>
       </div>
     `;
-
-  private _renderListItem = (
-    child: MediaPlayerItem
-  ): TemplateResult => html` <mwc-list-item
-      @click=${this._childClicked}
-      .item=${child}
-      .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
-      dir=${computeRTLDirection(this.hass)}
-    >
-      <div
-        class=${classMap({
-          graphic: true,
-          lazythumbnail: mediaClass.show_list_images === true,
-        })}
-        data-src=${ifDefined(
-          mediaClass.show_list_images && child.thumbnail
-            ? child.thumbnail
-            : undefined
-        )}
-        slot="graphic"
-      >
-        <ha-icon-button
-          class="play ${classMap({
-            show: !mediaClass.show_list_images || !child.thumbnail,
-          })}"
-          .item=${child}
-          .label=${this.hass.localize(
-            `ui.components.media-browser.${this.action}-media`
-          )}
-          .path=${this.action === "play" ? mdiPlay : mdiPlus}
-          @click=${this._actionClicked}
-        ></ha-icon-button>
-      </div>
-      <span class="title">${child.title}</span>
-    </mwc-list-item>
-    <li divider role="separator"></li>`;
 
   private _actionClicked(ev: MouseEvent): void {
     ev.stopPropagation();
