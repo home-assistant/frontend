@@ -28,11 +28,13 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
-  media_content_type?: any;
+  media_content_id?: string;
+  media_content_type?: string;
   media_artist?: string;
   media_playlist?: string;
   media_series_title?: string;
@@ -147,6 +149,7 @@ export const MediaClassBrowserSettings: {
 
 export interface MediaPickedEvent {
   item: MediaPlayerItem;
+  navigateIds: MediaPlayerItemId[];
 }
 
 export interface MediaPlayerThumbnail {
@@ -165,11 +168,12 @@ export interface MediaPlayerItem {
   media_content_type: string;
   media_content_id: string;
   media_class: string;
-  children_media_class: string;
+  children_media_class?: string;
   can_play: boolean;
   can_expand: boolean;
   thumbnail?: string;
   children?: MediaPlayerItem[];
+  not_shown?: number;
 }
 
 export const browseMediaPlayer = (
@@ -337,7 +341,7 @@ export const computeMediaControls = (
 };
 
 export const formatMediaTime = (seconds: number | undefined): string => {
-  if (seconds === undefined) {
+  if (seconds === undefined || seconds === Infinity) {
     return "";
   }
 
@@ -357,3 +361,17 @@ export const cleanupMediaTitle = (title?: string): string | undefined => {
   const index = title.indexOf("?authSig=");
   return index > 0 ? title.slice(0, index) : title;
 };
+
+/**
+ * Set volume of a media player entity.
+ * @param hass Home Assistant object
+ * @param entity_id entity ID of media player
+ * @param volume_level number between 0..1
+ * @returns
+ */
+export const setMediaPlayerVolume = (
+  hass: HomeAssistant,
+  entity_id: string,
+  volume_level: number
+) =>
+  hass.callService("media_player", "volume_set", { entity_id, volume_level });

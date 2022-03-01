@@ -86,6 +86,7 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <h3>

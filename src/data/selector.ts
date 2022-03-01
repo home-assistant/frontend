@@ -12,12 +12,15 @@ export type Selector =
   | ActionSelector
   | StringSelector
   | ObjectSelector
-  | SelectSelector;
+  | SelectSelector
+  | IconSelector
+  | MediaSelector
+  | ThemeSelector;
 
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string;
+    domain?: string | string[];
     device_class?: string;
   };
 }
@@ -84,8 +87,8 @@ export interface TargetSelector {
 
 export interface NumberSelector {
   number: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
     step?: number;
     mode?: "box" | "slider";
     unit_of_measurement?: string;
@@ -133,8 +136,43 @@ export interface ObjectSelector {
   object: {};
 }
 
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
 export interface SelectSelector {
   select: {
-    options: string[];
+    options: string[] | SelectOption[];
+  };
+}
+
+export interface IconSelector {
+  icon: {
+    placeholder?: string;
+    fallbackPath?: string;
+  };
+}
+
+export interface ThemeSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  theme: {};
+}
+
+export interface MediaSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  media: {};
+}
+
+export interface MediaSelectorValue {
+  entity_id?: string;
+  media_content_id?: string;
+  media_content_type?: string;
+  metadata?: {
+    title?: string;
+    thumbnail?: string | null;
+    media_class?: string;
+    children_media_class?: string | null;
+    navigateIds?: { media_content_type: string; media_content_id: string }[];
   };
 }

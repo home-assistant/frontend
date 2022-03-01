@@ -1,8 +1,8 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { Selector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { Selector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "./ha-selector-action";
 import "./ha-selector-addon";
 import "./ha-selector-area";
@@ -17,6 +17,9 @@ import "./ha-selector-select";
 import "./ha-selector-target";
 import "./ha-selector-text";
 import "./ha-selector-time";
+import "./ha-selector-icon";
+import "./ha-selector-media";
+import "./ha-selector-theme";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
@@ -27,6 +30,8 @@ export class HaSelector extends LitElement {
   @property() public value?: any;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   @property() public placeholder?: any;
 
@@ -52,6 +57,7 @@ export class HaSelector extends LitElement {
         placeholder: this.placeholder,
         disabled: this.disabled,
         required: this.required,
+        helper: this.helper,
         id: "selector",
       })}
     `;

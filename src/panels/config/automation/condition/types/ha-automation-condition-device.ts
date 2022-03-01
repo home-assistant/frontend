@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -11,7 +11,7 @@ import {
   DeviceCondition,
   fetchDeviceConditionCapabilities,
 } from "../../../../../data/device_automation";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {
@@ -69,6 +69,7 @@ export class HaDeviceCondition extends LitElement {
       ${this._capabilities?.extra_fields
         ? html`
             <ha-form
+              .hass=${this.hass}
               .data=${this._extraFieldsData(this.condition, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
@@ -147,6 +148,13 @@ export class HaDeviceCondition extends LitElement {
         `ui.panel.config.automation.editor.conditions.type.device.extra_fields.${schema.name}`
       ) || schema.name;
   }
+
+  static styles = css`
+    ha-device-picker {
+      display: block;
+      margin-bottom: 24px;
+    }
+  `;
 }
 
 declare global {

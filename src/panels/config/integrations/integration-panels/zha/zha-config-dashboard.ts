@@ -1,7 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResultGroup,
@@ -113,6 +111,7 @@ class ZHAConfigDashboard extends LitElement {
               >
                 <div class="card-content">
                   <ha-form
+                    .hass=${this.hass}
                     .schema=${schema}
                     .data=${this._configuration!.data[section]}
                     @value-changed=${this._dataChanged}

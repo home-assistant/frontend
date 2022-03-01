@@ -1,22 +1,21 @@
 import "@material/mwc-button";
-import "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
+import "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import {
-  CloudStatusLoggedIn,
   CloudTTSInfo,
   getCloudTTSInfo,
-  updateCloudPref,
-} from "../../../../data/cloud";
+  getCloudTtsLanguages,
+  getCloudTtsSupportedGenders,
+} from "../../../../data/cloud/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { translationMetadata } from "../../../../resources/translations-metadata";
 import type { HomeAssistant } from "../../../../types";
 import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 
@@ -37,7 +36,11 @@ export class CloudTTSPref extends LitElement {
 
     const languages = this.getLanguages(this.ttsInfo);
     const defaultVoice = this.cloudStatus.prefs.tts_default_voice;
-    const genders = this.getSupportedGenders(defaultVoice[0], this.ttsInfo);
+    const genders = this.getSupportedGenders(
+      defaultVoice[0],
+      this.ttsInfo,
+      this.hass.localize
+    );
 
     return html`
       <ha-card
@@ -51,7 +54,7 @@ export class CloudTTSPref extends LitElement {
           )}
           <br /><br />
 
-          <mwc-select
+          <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.default_language"
             )}
@@ -63,9 +66,9 @@ export class CloudTTSPref extends LitElement {
               ([key, label]) =>
                 html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
             )}
-          </mwc-select>
+          </ha-select>
 
-          <mwc-select
+          <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.default_gender"
             )}
@@ -77,7 +80,7 @@ export class CloudTTSPref extends LitElement {
               ([key, label]) =>
                 html`<mwc-list-item .value=${key}>${label}</mwc-list-item>`
             )}
-          </mwc-select>
+          </ha-select>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._openTryDialog}>
@@ -100,61 +103,9 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  private getLanguages = memoizeOne((info?: CloudTTSInfo) => {
-    const languages: Array<[string, string]> = [];
+  private getLanguages = memoizeOne(getCloudTtsLanguages);
 
-    if (!info) {
-      return languages;
-    }
-
-    const seen = new Set<string>();
-    for (const [lang] of info.languages) {
-      if (seen.has(lang)) {
-        continue;
-      }
-      seen.add(lang);
-
-      let label = lang;
-
-      if (lang in translationMetadata.translations) {
-        label = translationMetadata.translations[lang].nativeName;
-      } else {
-        const [langFamily, dialect] = lang.split("-");
-        if (langFamily in translationMetadata.translations) {
-          label = `${translationMetadata.translations[langFamily].nativeName}`;
-
-          if (langFamily.toLowerCase() !== dialect.toLowerCase()) {
-            label += ` (${dialect})`;
-          }
-        }
-      }
-
-      languages.push([lang, label]);
-    }
-    return languages.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
-  });
-
-  private getSupportedGenders = memoizeOne(
-    (language: string, info?: CloudTTSInfo) => {
-      const genders: Array<[string, string]> = [];
-
-      if (!info) {
-        return genders;
-      }
-
-      for (const [curLang, gender] of info.languages) {
-        if (curLang === language) {
-          genders.push([
-            gender,
-            this.hass.localize(`ui.panel.config.cloud.account.tts.${gender}`) ||
-              gender,
-          ]);
-        }
-      }
-
-      return genders.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
-    }
-  );
+  private getSupportedGenders = memoizeOne(getCloudTtsSupportedGenders);
 
   private _openTryDialog() {
     showTryTtsDialog(this, {
@@ -170,7 +121,11 @@ export class CloudTTSPref extends LitElement {
     const language = ev.target.value;
 
     const curGender = this.cloudStatus!.prefs.tts_default_voice[1];
-    const genders = this.getSupportedGenders(language, this.ttsInfo);
+    const genders = this.getSupportedGenders(
+      language,
+      this.ttsInfo,
+      this.hass.localize
+    );
     const newGender = genders.find((item) => item[0] === curGender)
       ? curGender
       : genders[0][0];

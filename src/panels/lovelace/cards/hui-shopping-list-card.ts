@@ -1,5 +1,4 @@
 import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -17,6 +16,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-textfield";
 import {
   addItem,
   clearItems,
@@ -29,6 +29,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
+import type { HaTextField } from "../../../components/ha-textfield";
 
 let Sortable;
 
@@ -123,14 +124,13 @@ class HuiShoppingListCard
             @click=${this._addItem}
           >
           </ha-svg-icon>
-          <paper-input
-            no-label-float
+          <ha-textfield
             class="addBox"
-            placeholder=${this.hass!.localize(
+            .placeholder=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}
             @keydown=${this._addKeyPress}
-          ></paper-input>
+          ></ha-textfield>
           <ha-svg-icon
             class="reorderButton"
             .path=${mdiSort}
@@ -184,12 +184,12 @@ class HuiShoppingListCard
                         .itemId=${item.id}
                         @change=${this._completeItem}
                       ></ha-checkbox>
-                      <paper-input
-                        no-label-float
+                      <ha-textfield
+                        class="item"
                         .value=${item.name}
                         .itemId=${item.id}
                         @change=${this._saveEdit}
-                      ></paper-input>
+                      ></ha-textfield>
                     </div>
                   `
               )}
@@ -213,12 +213,12 @@ class HuiShoppingListCard
                 .itemId=${item.id}
                 @change=${this._completeItem}
               ></ha-checkbox>
-              <paper-input
-                no-label-float
+              <ha-textfield
+                class="item"
                 .value=${item.name}
                 .itemId=${item.id}
                 @change=${this._saveEdit}
-              ></paper-input>
+              ></ha-textfield>
               ${this._reordering
                 ? html`
                     <ha-svg-icon
@@ -275,8 +275,8 @@ class HuiShoppingListCard
     }
   }
 
-  private get _newItem(): PaperInputElement {
-    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
+  private get _newItem(): HaTextField {
+    return this.shadowRoot!.querySelector(".addBox") as HaTextField;
   }
 
   private _addItem(ev): void {
@@ -366,6 +366,10 @@ class HuiShoppingListCard
         align-items: center;
       }
 
+      .item {
+        margin-top: 8px;
+      }
+
       .addButton {
         padding-right: 16px;
         cursor: pointer;
@@ -380,7 +384,7 @@ class HuiShoppingListCard
         margin-left: -12px;
       }
 
-      paper-input {
+      ha-textfield {
         flex-grow: 1;
       }
 

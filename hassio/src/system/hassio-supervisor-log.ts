@@ -1,12 +1,10 @@
 import "@material/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-select";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -73,24 +71,19 @@ class HassioSupervisorLog extends LitElement {
           : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
-              <paper-dropdown-menu
+              <ha-select
                 .label=${this.supervisor.localize("system.log.log_provider")}
-                @iron-select=${this._setLogProvider}
+                @selected=${this._setLogProvider}
+                .value=${this._selectedLogProvider}
               >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="provider"
-                  .selected=${this._selectedLogProvider}
-                >
-                  ${logProviders.map(
-                    (provider) => html`
-                      <paper-item provider=${provider.key}>
-                        ${provider.name}
-                      </paper-item>
-                    `
-                  )}
-                </paper-listbox>
-              </paper-dropdown-menu>
+                ${logProviders.map(
+                  (provider) => html`
+                    <mwc-list-item .value=${provider.key}>
+                      ${provider.name}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-select>
             `
           : ""}
 
@@ -110,7 +103,7 @@ class HassioSupervisorLog extends LitElement {
   }
 
   private async _setLogProvider(ev): Promise<void> {
-    const provider = ev.detail.item.getAttribute("provider");
+    const provider = ev.target.value;
     this._selectedLogProvider = provider;
     this._loadData();
   }
@@ -153,9 +146,9 @@ class HassioSupervisorLog extends LitElement {
         pre {
           white-space: pre-wrap;
         }
-        paper-dropdown-menu {
-          padding: 0 2%;
-          width: 96%;
+        ha-select {
+          width: 100%;
+          margin-bottom: 4px;
         }
       `,
     ];

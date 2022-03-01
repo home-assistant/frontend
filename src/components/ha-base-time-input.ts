@@ -1,6 +1,6 @@
 import { LitElement, html, TemplateResult, css } from "lit";
 import { customElement, property } from "lit/decorators";
-import "@material/mwc-select/mwc-select";
+import "./ha-select";
 import "@material/mwc-list/mwc-list-item";
 import "./ha-textfield";
 import { fireEvent } from "../common/dom/fire_event";
@@ -193,7 +193,7 @@ export class HaBaseTimeInput extends LitElement {
           : ""}
         ${this.format === 24
           ? ""
-          : html`<mwc-select
+          : html`<ha-select
               .required=${this.required}
               .value=${this.amPm}
               .disabled=${this.disabled}
@@ -205,7 +205,7 @@ export class HaBaseTimeInput extends LitElement {
             >
               <mwc-list-item value="AM">AM</mwc-list-item>
               <mwc-list-item value="PM">PM</mwc-list-item>
-            </mwc-select>`}
+            </ha-select>`}
       </div>
     `;
   }
@@ -280,7 +280,7 @@ export class HaBaseTimeInput extends LitElement {
     ha-textfield:last-child {
       --text-field-border-top-right-radius: var(--mdc-shape-medium);
     }
-    mwc-select {
+    ha-select {
       --mdc-shape-small: 0;
       width: 85px;
     }

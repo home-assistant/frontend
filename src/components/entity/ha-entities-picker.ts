@@ -114,7 +114,7 @@ class HaEntitiesPickerLight extends LitElement {
     const newValue = event.detail.value;
     if (
       newValue === curValue ||
-      (newValue !== "" && !isValidEntityId(newValue))
+      (newValue !== undefined && !isValidEntityId(newValue))
     ) {
       return;
     }
@@ -147,7 +147,7 @@ class HaEntitiesPickerLight extends LitElement {
   }
 
   static override styles = css`
-    ha-entity-picker {
+    div {
       margin-top: 8px;
     }
   `;

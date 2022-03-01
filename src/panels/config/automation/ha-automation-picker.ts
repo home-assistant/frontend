@@ -7,7 +7,6 @@ import {
   mdiPlayCircleOutline,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";

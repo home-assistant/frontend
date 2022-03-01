@@ -165,7 +165,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       const stateObj = this.hass.states[entry.entity_id];
       const name = stripPrefixFromEntityName(
         computeStateName(stateObj),
-        `${this.deviceName} `.toLowerCase()
+        this.deviceName.toLowerCase()
       );
       if (name) {
         config.name = name;
@@ -198,7 +198,7 @@ export class HaDeviceEntitiesCard extends LitElement {
             ${name
               ? stripPrefixFromEntityName(
                   name,
-                  `${this.deviceName} `.toLowerCase()
+                  this.deviceName.toLowerCase()
                 ) || name
               : entry.entity_id}
           </div>

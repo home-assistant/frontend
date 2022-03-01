@@ -9,8 +9,10 @@ import {
   ActionType,
   ActionTypes,
   DelayAction,
+  DeviceAction,
   EventAction,
   getActionType,
+  PlayMediaAction,
   SceneAction,
   VariablesAction,
   WaitForTriggerAction,
@@ -104,9 +106,30 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "activate_scene") {
     const config = action as SceneAction;
-    const sceneStateObj = hass.states[config.scene];
+    let entityId: string | undefined;
+    if ("scene" in config) {
+      entityId = config.scene;
+    } else {
+      entityId = config.target?.entity_id || config.entity_id;
+    }
+    const sceneStateObj = entityId ? hass.states[entityId] : undefined;
     return `Activate scene ${
-      sceneStateObj ? computeStateName(sceneStateObj) : config.scene
+      sceneStateObj
+        ? computeStateName(sceneStateObj)
+        : "scene" in config
+        ? config.scene
+        : config.target?.entity_id || config.entity_id
+    }`;
+  }
+
+  if (actionType === "play_media") {
+    const config = action as PlayMediaAction;
+    const entityId = config.target?.entity_id || config.entity_id;
+    const mediaStateObj = entityId ? hass.states[entityId] : undefined;
+    return `Play ${config.metadata.title || config.data.media_content_id} on ${
+      mediaStateObj
+        ? computeStateName(mediaStateObj)
+        : config.target?.entity_id || config.entity_id
     }`;
   }
 
@@ -136,6 +159,14 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "check_condition") {
     return `Test ${describeCondition(action as Condition)}`;
+  }
+
+  if (actionType === "device_action") {
+    const config = action as DeviceAction;
+    const stateObj = hass.states[config.entity_id as string];
+    return `${config.type || "Perform action with"} ${
+      stateObj ? computeStateName(stateObj) : config.entity_id
+    }`;
   }
 
   return actionType;

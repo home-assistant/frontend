@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import {
   css,
   CSSResultGroup,
@@ -11,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import { SelectEntity, setSelectOption } from "../../../data/select";
@@ -62,7 +62,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hideName
       >
-        <mwc-select
+        <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
           .disabled=${stateObj.state === UNAVAILABLE}
@@ -88,7 +88,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
                   `
               )
             : ""}
-        </mwc-select>
+        </ha-select>
       </hui-generic-entity-row>
     `;
   }
@@ -99,7 +99,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         display: flex;
         align-items: center;
       }
-      mwc-select {
+      ha-select {
         width: 100%;
       }
     `;

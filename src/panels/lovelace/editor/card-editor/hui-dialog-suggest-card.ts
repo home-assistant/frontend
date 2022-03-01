@@ -92,7 +92,11 @@ export class HuiDialogSuggestCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this._params.yaml
             ? this.hass!.localize("ui.common.close")
             : this.hass!.localize("ui.common.cancel")}

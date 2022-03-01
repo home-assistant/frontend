@@ -1,5 +1,3 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";

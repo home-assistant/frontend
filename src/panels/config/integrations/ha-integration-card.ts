@@ -213,11 +213,11 @@ export class HaIntegrationCard extends LitElement {
       } else {
         stateTextExtra = html`
           <br />
-          <a href="/config/logs"
-            >${this.hass.localize(
+          <a href=${`/config/logs/?filter=${item.domain}`}>
+            ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.check_the_logs"
-            )}</a
-          >
+            )}
+          </a>
         `;
       }
     }
@@ -369,7 +369,7 @@ export class HaIntegrationCard extends LitElement {
               </a>`
             : ""}
           ${!item.disabled_by &&
-          item.state === "loaded" &&
+          (item.state === "loaded" || item.state === "setup_retry") &&
           item.supports_unload &&
           item.source !== "system"
             ? html`<mwc-list-item @request-selected=${this._handleReload}>

@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperItemElement } from "@polymer/paper-item/paper-item";
+import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,12 +13,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-textfield";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -36,7 +37,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
@@ -137,15 +137,18 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </div>
           `
         : ""}
-      ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : ""}
       <div class="form container">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
-          @value-changed=${this._nameChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.name")}
-          .placeholder=${this.entry.original_name}
+          .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
-        ></paper-input>
+          .placeholder=${this.entry.original_name}
+          @input=${this._nameChanged}
+        ></ha-textfield>
         <ha-icon-picker
           .value=${this._icon}
           @value-changed=${this._iconChanged}
@@ -158,39 +161,34 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ></ha-icon-picker>
         ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
         (domain === "cover" && this.entry.original_device_class === null)
-          ? html`<ha-paper-dropdown-menu
+          ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
               )}
+              .value=${this._deviceClass}
+              @selected=${this._deviceClassChanged}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                attr-for-selected="item-value"
-                .selected=${this._deviceClass}
-                @selected-item-changed=${this._deviceClassChanged}
-              >
-                ${OVERRIDE_DEVICE_CLASSES[domain].map(
-                  (deviceClass: string) => html`
-                    <paper-item .itemValue=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
-                    </paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>`
+              ${OVERRIDE_DEVICE_CLASSES[domain].map(
+                (deviceClass: string) => html`
+                  <mwc-list-item .value=${deviceClass}>
+                    ${this.hass.localize(
+                      `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                    )}
+                  </mwc-list-item>
+                `
+              )}
+            </ha-select>`
           : ""}
-        <paper-input
+        <ha-textfield
+          error-message="Domain needs to stay the same"
           .value=${this._entityId}
-          @value-changed=${this._entityIdChanged}
           .label=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.entity_id"
           )}
-          error-message="Domain needs to stay the same"
           .invalid=${invalidDomainUpdate}
           .disabled=${this._submitting}
-        ></paper-input>
+          @input=${this._entityIdChanged}
+        ></ha-textfield>
         ${!this.entry.device_id
           ? html`<ha-area-picker
               .hass=${this.hass}
@@ -287,27 +285,24 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>): void {
+  private _nameChanged(ev): void {
     this._error = undefined;
-    this._name = ev.detail.value;
+    this._name = ev.target.value;
   }
 
-  private _iconChanged(ev: PolymerChangedEvent<string>): void {
+  private _iconChanged(ev: CustomEvent): void {
     this._error = undefined;
     this._icon = ev.detail.value;
   }
 
-  private _entityIdChanged(ev: PolymerChangedEvent<string>): void {
+  private _entityIdChanged(ev): void {
     this._error = undefined;
-    this._entityId = ev.detail.value;
+    this._entityId = ev.target.value;
   }
 
-  private _deviceClassChanged(ev: PolymerChangedEvent<PaperItemElement>): void {
+  private _deviceClassChanged(ev): void {
     this._error = undefined;
-    if (ev.detail.value === null) {
-      return;
-    }
-    this._deviceClass = (ev.detail.value as any).itemValue;
+    this._deviceClass = ev.target.value;
   }
 
   private _areaPicked(ev: CustomEvent) {
@@ -425,11 +420,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
-        ha-paper-dropdown-menu {
+        ha-select {
           width: 100%;
         }
         ha-switch {
           margin-right: 16px;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
         .row {
           margin: 8px 0;

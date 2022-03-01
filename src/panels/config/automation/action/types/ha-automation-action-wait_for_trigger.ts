@@ -1,6 +1,5 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
-import { html, LitElement } from "lit";
+import "../../../../../components/ha-textfield";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-formfield";
@@ -26,15 +25,14 @@ export class HaWaitForTriggerAction
     const { wait_for_trigger, continue_on_timeout, timeout } = this.action;
 
     return html`
-      <paper-input
+      <ha-textfield
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
         )}
         .name=${"timeout"}
-        .value=${timeout}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <br />
+        .value=${timeout || ""}
+        @change=${this._valueChanged}
+      ></ha-textfield>
       <ha-formfield
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
@@ -62,6 +60,15 @@ export class HaWaitForTriggerAction
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-textfield {
+        display: block;
+        margin-bottom: 24px;
+      }
+    `;
   }
 }
 

@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
@@ -71,6 +71,13 @@ export class HaZoneCondition extends LitElement {
       value: { ...this.condition, zone: ev.detail.value },
     });
   }
+
+  static styles = css`
+    ha-entity-picker {
+      display: block;
+      margin-bottom: 24px;
+    }
+  `;
 }
 
 declare global {

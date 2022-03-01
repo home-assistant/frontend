@@ -13,6 +13,7 @@ export interface ConfigEntry {
     | "not_loaded"
     | "failed_unload";
   supports_options: boolean;
+  supports_remove_device: boolean;
   supports_unload: boolean;
   pref_disable_new_entities: boolean;
   pref_disable_polling: boolean;

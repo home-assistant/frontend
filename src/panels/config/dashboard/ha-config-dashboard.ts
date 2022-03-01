@@ -1,4 +1,10 @@
-import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
+import {
+  mdiCloudLock,
+  mdiDotsVertical,
+  mdiLightbulbOutline,
+  mdiMagnify,
+  mdiNewBox,
+} from "@mdi/js";
 import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
 import "@polymer/app-layout/app-header/app-header";
@@ -11,13 +17,14 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-svg-icon";
 import { CloudStatus } from "../../../data/cloud";
 import {
   refreshSupervisorAvailableUpdates,
@@ -34,6 +41,66 @@ import "./ha-config-updates";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
+import { documentationUrl } from "../../../util/documentation-url";
+
+const randomTip = (hass: HomeAssistant) => {
+  const weighted: string[] = [];
+  const tips = [
+    {
+      content: hass.localize(
+        "ui.panel.config.tips.join",
+        "forums",
+        html`<a
+          href="https://community.home-assistant.io"
+          target="_blank"
+          rel="noreferrer"
+          >Forums</a
+        >`,
+        "twitter",
+        html`<a
+          href=${documentationUrl(hass, `/twitter`)}
+          target="_blank"
+          rel="noreferrer"
+          >Twitter</a
+        >`,
+        "discord",
+        html`<a
+          href=${documentationUrl(hass, `/join-chat`)}
+          target="_blank"
+          rel="noreferrer"
+          >Chat</a
+        >`,
+        "blog",
+        html`<a
+          href=${documentationUrl(hass, `/blog`)}
+          target="_blank"
+          rel="noreferrer"
+          >Blog</a
+        >`,
+        "newsletter",
+        html`<span class="keep-together"
+          ><a
+            href=${documentationUrl(hass, `/newsletter`)}
+            target="_blank"
+            rel="noreferrer"
+            >Newsletter</a
+          >
+          <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon
+        ></span>`
+      ),
+      weight: 2,
+    },
+    { content: hass.localize("ui.dialogs.quick-bar.key_c_hint"), weight: 1 },
+  ];
+
+  tips.forEach((tip) => {
+    for (let i = 0; i < tip.weight; i++) {
+      weighted.push(tip.content);
+    }
+  });
+
+  return weighted[Math.floor(Math.random() * weighted.length)];
+};
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -51,6 +118,8 @@ class HaConfigDashboard extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
+  @state() private _tip?: string;
+
   private _notifyUpdates = false;
 
   protected render(): TemplateResult {
@@ -64,6 +133,7 @@ class HaConfigDashboard extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.config")}</div>
             <ha-icon-button
+              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
               .path=${mdiMagnify}
               @click=${this._showQuickBar}
             ></ha-icon-button>
@@ -134,6 +204,11 @@ class HaConfigDashboard extends LitElement {
                     .pages=${configSections.dashboard}
                   ></ha-config-navigation>
                 </ha-card>`}
+          <div class="tips">
+            <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
+            <span class="tip-word">Tip!</span>
+            <span class="text">${this._tip}</span>
+          </div>
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -141,6 +216,10 @@ class HaConfigDashboard extends LitElement {
 
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    if (!this._tip && changedProps.has("hass")) {
+      this._tip = randomTip(this.hass);
+    }
 
     if (!changedProps.has("supervisorUpdates") || !this._notifyUpdates) {
       return;
@@ -192,8 +271,11 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
+        ha-card:last-child {
+          margin-bottom: env(safe-area-inset-bottom);
+        }
         :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: 24px;
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
         }
         ha-config-section {
           margin: auto;
@@ -219,6 +301,27 @@ class HaConfigDashboard extends LitElement {
 
         :host([narrow]) ha-config-section {
           margin-top: -42px;
+        }
+
+        .tips {
+          text-align: center;
+          margin-bottom: max(env(safe-area-inset-bottom), 8px);
+        }
+
+        .tips .text {
+          color: var(--secondary-text-color);
+        }
+
+        .tip-word {
+          font-weight: 500;
+        }
+
+        .new {
+          color: var(--primary-color);
+        }
+
+        .keep-together {
+          display: inline-block;
         }
       `,
     ];

@@ -61,6 +61,7 @@ class HassioCreateBackupDialog extends LitElement {
           : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
+              dialogInitialFocus
             >
             </supervisor-backup-content>`}
         ${this._error

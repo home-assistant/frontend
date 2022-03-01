@@ -1,7 +1,7 @@
 import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
@@ -92,6 +92,8 @@ export class SupervisorBackupContent extends LitElement {
 
   @property() public confirmBackupPassword = "";
 
+  @query("paper-input, ha-radio, ha-checkbox", true) private _focusTarget;
+
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -107,6 +109,10 @@ export class SupervisorBackupContent extends LitElement {
       this.backupName = this.backup?.name || "";
       this.backupHasPassword = this.backup?.protected || false;
     }
+  }
+
+  public override focus() {
+    this._focusTarget?.focus();
   }
 
   private _localize = (string: string) =>
@@ -169,24 +175,23 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupType === "partial"
         ? html`<div class="partial-picker">
-            ${this.backup && this.backup.homeassistant
-              ? html`
-                  <ha-formfield
-                    .label=${html`<supervisor-formfield-label
-                      label="Home Assistant"
-                      .iconPath=${mdiHomeAssistant}
-                      .version=${this.backup.homeassistant}
-                    >
-                    </supervisor-formfield-label>`}
-                  >
-                    <ha-checkbox
-                      .checked=${this.homeAssistant}
-                      @click=${this.toggleHomeAssistant}
-                    >
-                    </ha-checkbox>
-                  </ha-formfield>
-                `
-              : ""}
+            <ha-formfield
+              .label=${html`<supervisor-formfield-label
+                label="Home Assistant"
+                .iconPath=${mdiHomeAssistant}
+                .version=${this.backup
+                  ? this.backup.homeassistant
+                  : this.hass.config.version}
+              >
+              </supervisor-formfield-label>`}
+            >
+              <ha-checkbox
+                .checked=${this.homeAssistant}
+                @click=${this.toggleHomeAssistant}
+              >
+              </ha-checkbox>
+            </ha-formfield>
+
             ${foldersSection?.templates.length
               ? html`
                   <ha-formfield

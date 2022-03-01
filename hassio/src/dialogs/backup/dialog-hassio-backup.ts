@@ -92,6 +92,7 @@ class HassioBackupDialog
               .backup=${this._backup}
               .onboarding=${this._dialogParams.onboarding || false}
               .localize=${this._dialogParams.localize}
+              dialogInitialFocus
             >
             </supervisor-backup-content>`}
         ${this._error

@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { mdiPalette } from "@mdi/js";
 import {
   css,
@@ -18,6 +17,7 @@ import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
+import "../../../components/ha-select";
 import {
   getLightCurrentModeRgbColor,
   LightColorModes,
@@ -208,7 +208,7 @@ class MoreInfoLight extends LitElement {
               this.stateObj!.attributes.effect_list?.length
                 ? html`
                     <hr />
-                    <mwc-select
+                    <ha-select
                       .label=${this.hass.localize("ui.card.light.effect")}
                       .value=${this.stateObj.attributes.effect || ""}
                       fixedMenuPosition
@@ -223,7 +223,7 @@ class MoreInfoLight extends LitElement {
                           </mwc-list-item>
                         `
                       )}
-                    </mwc-select>
+                    </ha-select>
                   `
                 : ""}
             `
@@ -613,10 +613,6 @@ class MoreInfoLight extends LitElement {
         top: 5%;
         left: 0;
         color: var(--secondary-text-color);
-      }
-
-      paper-item {
-        cursor: pointer;
       }
 
       hr {

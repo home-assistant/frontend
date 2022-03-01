@@ -3,6 +3,7 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
+import { fireEvent } from "../common/dom/fire_event";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
 import { NumberFormat, TimeFormat } from "../data/translation";
@@ -85,6 +86,7 @@ export const provideHass = (
     hass().updateHass({
       localize: await computeLocalize(elements[0], lang, hass().resources),
     });
+    fireEvent(window, "translations-updated");
   }
 
   function updateStates(newStates: HassEntities) {

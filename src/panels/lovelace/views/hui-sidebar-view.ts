@@ -69,7 +69,10 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       this._createCards();
     }
 
-    if (!changedProperties.has("lovelace")) {
+    if (
+      !changedProperties.has("lovelace") &&
+      !changedProperties.has("_config")
+    ) {
       return;
     }
 
