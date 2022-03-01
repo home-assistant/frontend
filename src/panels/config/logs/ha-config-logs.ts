@@ -43,8 +43,6 @@ export class HaConfigLogs extends LitElement {
           <div slot="header">
             <search-input
               class="header"
-              no-label-float
-              no-underline
               @value-changed=${this._filterChanged}
               .hass=${this.hass}
               .filter=${this._filter}
@@ -55,8 +53,6 @@ export class HaConfigLogs extends LitElement {
       : html`
           <div class="search">
             <search-input
-              no-label-float
-              no-underline
               @value-changed=${this._filterChanged}
               .hass=${this.hass}
               .filter=${this._filter}
