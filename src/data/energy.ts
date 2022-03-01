@@ -12,7 +12,12 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
-import { fetchStatistics, Statistics } from "./history";
+import {
+  fetchStatistics,
+  Statistics,
+  StatisticsMetaData,
+  getStatisticIds,
+} from "./history";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -62,6 +67,7 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   entity_energy_from: null,
   entity_energy_price: null,
   number_energy_price: null,
+  unit_of_measurement: null,
 });
 
 interface EnergySolarForecast {
@@ -136,6 +142,7 @@ export interface GasSourceTypeEnergyPreference {
   entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
+  unit_of_measurement: string | null;
 }
 
 type EnergySource =
@@ -271,6 +278,9 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   const statIDs: string[] = [];
+  const statisticIdsWithMeta: StatisticsMetaData[] = await getStatisticIds(
+    hass
+  );
 
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
@@ -280,6 +290,20 @@ const getEnergyData = async (
 
     if (source.type === "gas") {
       statIDs.push(source.stat_energy_from);
+      const entity = hass.states[source.stat_energy_from];
+      if (!entity) {
+        for (const statisticIdWithMeta of statisticIdsWithMeta) {
+          if (
+            statisticIdWithMeta?.statistic_id === source.stat_energy_from &&
+            statisticIdWithMeta?.unit_of_measurement
+          ) {
+            source.unit_of_measurement =
+              statisticIdWithMeta?.unit_of_measurement === "Wh"
+                ? "kWh"
+                : statisticIdWithMeta?.unit_of_measurement;
+          }
+        }
+      }
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
       }
@@ -558,6 +582,9 @@ export const getEnergyGasUnit = (
       return entity.attributes.unit_of_measurement === "Wh"
         ? "kWh"
         : entity.attributes.unit_of_measurement;
+    }
+    if (source.unit_of_measurement) {
+      return source.unit_of_measurement;
     }
   }
   return undefined;
