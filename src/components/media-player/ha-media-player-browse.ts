@@ -505,7 +505,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
     const url = this._getSignedThumbnail(child.thumbnail).then(
-      (value) => value
+      (value) => `url(${value})`
     );
 
     return html`
@@ -518,7 +518,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
                       : ""} image"
-                    style="background-image: url(${until(url, "")})"
+                    style="background-image: ${until(url, "")}"
                   ></div>
                 `
               : html`
@@ -564,6 +564,13 @@ export class HaMediaPlayerBrowse extends LitElement {
     const currentItem = this._currentItem;
     const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
 
+    const backgroundImage =
+      mediaClass.show_list_images && child.thumbnail
+        ? this._getSignedThumbnail(child.thumbnail).then(
+            (value) => `url(${value})`
+          )
+        : "none";
+
     return html`
       <mwc-list-item
         @click=${this._childClicked}
@@ -576,12 +583,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             graphic: true,
             thumbnail: mediaClass.show_list_images === true,
           })}
-          style=${styleMap({
-            "background-image":
-              mediaClass.show_list_images && child.thumbnail
-                ? child.thumbnail
-                : undefined,
-          })}
+          style="background-image: ${until(backgroundImage, "")}"
           slot="graphic"
         >
           <ha-icon-button
