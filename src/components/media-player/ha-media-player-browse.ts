@@ -18,7 +18,6 @@ import {
   eventOptions,
   property,
   query,
-  queryAll,
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -45,7 +44,6 @@ import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
 import "../ha-card";
-import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
 import "../ha-icon-button";
@@ -53,6 +51,7 @@ import "../ha-svg-icon";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import { getSignedPath } from "../../data/auth";
+import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 
 declare global {
   interface HASSDomEvents {
@@ -101,8 +100,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
-
-  @queryAll(".lazythumbnail") private _thumbnails?: HaCard[];
 
   private _headerOffsetHeight = 0;
 
@@ -605,10 +602,20 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!thumbnailUrl) {
       return Promise.resolve("");
     }
+
     if (thumbnailUrl.startsWith("/")) {
       // Thumbnails served by local API require authentication
       const signedPath = await getSignedPath(this.hass, thumbnailUrl);
       thumbnailUrl = signedPath.path;
+    } else if (thumbnailUrl.startsWith("https://brands.home-assistant.io")) {
+      // The backend is not aware of the theme used by the users,
+      // so we rewrite the URL to show a proper icon
+      thumbnailUrl = brandsUrl({
+        domain: extractDomainFromBrandUrl(thumbnailUrl),
+        type: "icon",
+        useFallback: true,
+        darkOptimized: this.hass.themes?.darkMode,
+      });
     }
 
     return Promise.resolve(thumbnailUrl);
