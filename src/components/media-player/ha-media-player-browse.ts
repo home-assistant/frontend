@@ -4,6 +4,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
+import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -51,7 +52,7 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
-import "@lit-labs/virtualizer";
+import { getSignedPath } from "../../data/auth";
 
 declare global {
   interface HASSDomEvents {
@@ -557,7 +558,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       : ""} image lazythumbnail"
                     style=${styleMap({
                       backgroundImage: child.thumbnail
-                        ? `url(${child.thumbnail})`
+                        ? `url(${this._getSignedThumbnail(child.thumbnail)})`
                         : "none",
                     })}
                   ></div>
@@ -600,12 +601,25 @@ export class HaMediaPlayerBrowse extends LitElement {
       </div>
     `;
 
-  private _actionClicked(ev: MouseEvent): void {
+  private async _getSignedThumbnail(thumbnailUrl: string): Promise<string> {
+    if (!thumbnailUrl) {
+      return Promise.resolve("");
+    }
+    if (thumbnailUrl.startsWith("/")) {
+      // Thumbnails served by local API require authentication
+      const signedPath = await getSignedPath(this.hass, thumbnailUrl);
+      thumbnailUrl = signedPath.path;
+    }
+
+    return Promise.resolve(thumbnailUrl);
+  }
+
+  private _actionClicked = (ev: MouseEvent): void => {
     ev.stopPropagation();
     const item = (ev.currentTarget as any).item;
 
     this._runAction(item);
-  }
+  };
 
   private _runAction(item: MediaPlayerItem): void {
     fireEvent(this, "media-picked", { item, navigateIds: this.navigateIds });
