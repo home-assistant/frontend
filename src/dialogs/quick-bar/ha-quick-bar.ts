@@ -86,11 +86,11 @@ export class QuickBar extends LitElement {
 
   @state() private _search = "";
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _commandMode = false;
 
-  @state() private _done = false;
+  @state() private _opened = false;
 
   @state() private _narrow = false;
 
@@ -109,12 +109,12 @@ export class QuickBar extends LitElement {
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
     this._initializeItemsIfNeeded();
-    this._opened = true;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
     this._opened = false;
-    this._done = false;
     this._focusSet = false;
     this._filter = "";
     this._search = "";
@@ -133,7 +133,7 @@ export class QuickBar extends LitElement {
   );
 
   protected render() {
-    if (!this._opened) {
+    if (!this._open) {
       return html``;
     }
 
@@ -218,24 +218,26 @@ export class QuickBar extends LitElement {
             `
           : html`
               <mwc-list>
-                <lit-virtualizer
-                  scroller
-                  @keydown=${this._handleListItemKeyDown}
-                  @rangechange=${this._handleRangeChanged}
-                  @click=${this._handleItemClick}
-                  class="ha-scrollbar"
-                  style=${styleMap({
-                    height: this._narrow
-                      ? "calc(100vh - 56px)"
-                      : `${Math.min(
-                          items.length * (this._commandMode ? 56 : 72) + 26,
-                          this._done ? 500 : 0
-                        )}px`,
-                  })}
-                  .items=${items}
-                  .renderItem=${this._renderItem}
-                >
-                </lit-virtualizer>
+                ${this._opened
+                  ? html`<lit-virtualizer
+                      scroller
+                      @keydown=${this._handleListItemKeyDown}
+                      @rangechange=${this._handleRangeChanged}
+                      @click=${this._handleItemClick}
+                      class="ha-scrollbar"
+                      style=${styleMap({
+                        height: this._narrow
+                          ? "calc(100vh - 56px)"
+                          : `${Math.min(
+                              items.length * (this._commandMode ? 56 : 72) + 26,
+                              500
+                            )}px`,
+                      })}
+                      .items=${items}
+                      .renderItem=${this._renderItem}
+                    >
+                    </lit-virtualizer>`
+                  : ""}
               </mwc-list>
             `}
         ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
@@ -252,9 +254,7 @@ export class QuickBar extends LitElement {
   }
 
   private _handleOpened() {
-    this.updateComplete.then(() => {
-      this._done = true;
-    });
+    this._opened = true;
   }
 
   private async _handleRangeChanged(e) {
@@ -454,9 +454,10 @@ export class QuickBar extends LitElement {
   }
 
   private _handleItemClick(ev) {
+    const listItem = ev.target.closest("mwc-list-item");
     this.processItemAndCloseDialog(
-      (ev.target as any).item,
-      Number((ev.target as HTMLElement).getAttribute("index"))
+      listItem.item,
+      Number(listItem.getAttribute("index"))
     );
   }
 
