@@ -1,18 +1,12 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
-import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import { HaFormSchema } from "../../../components/ha-form/types";
-import "../../../components/ha-formfield";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-switch";
-import "../../../components/map/ha-locations-editor";
 import { getZoneEditorInitData, ZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";

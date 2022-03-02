@@ -8,7 +8,8 @@ import type {
 } from "../../data/selector";
 import "../../panels/lovelace/components/hui-theme-select-editor";
 import type { HomeAssistant } from "../../types";
-import { MarkerLocation } from "../map/ha-locations-editor";
+import type { MarkerLocation } from "../map/ha-locations-editor";
+import "../map/ha-locations-editor";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {
