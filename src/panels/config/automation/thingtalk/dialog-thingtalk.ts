@@ -58,7 +58,7 @@ class DialogThingtalk extends LitElement {
     this._placeholders = undefined;
     this._params = undefined;
     if (this._input) {
-      this._input.value = null;
+      this._input.value = "";
     }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
