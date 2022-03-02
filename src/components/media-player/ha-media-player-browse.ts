@@ -21,7 +21,6 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
@@ -306,6 +305,12 @@ export class HaMediaPlayerBrowse extends LitElement {
       ? MediaClassBrowserSettings[currentItem.children_media_class]
       : MediaClassBrowserSettings.directory;
 
+    const backgroundImage = currentItem.thumbnail
+      ? this._getSignedThumbnail(currentItem.thumbnail).then(
+          (value) => `url(${value})`
+        )
+      : "none";
+
     return html`
               ${
                 currentItem.can_play
@@ -322,11 +327,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                             ? html`
                                 <div
                                   class="img"
-                                  style=${styleMap({
-                                    backgroundImage: currentItem.thumbnail
-                                      ? `url(${currentItem.thumbnail})`
-                                      : "none",
-                                  })}
+                                  style="background-image: ${until(
+                                    backgroundImage,
+                                    ""
+                                  )}"
                                 >
                                   ${this._narrow && currentItem?.can_play
                                     ? html`
@@ -504,9 +508,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
-    const url = this._getSignedThumbnail(child.thumbnail).then(
-      (value) => `url(${value})`
-    );
+    const backgroundImage = child.thumbnail
+      ? this._getSignedThumbnail(child.thumbnail).then(
+          (value) => `url(${value})`
+        )
+      : "none";
 
     return html`
       <div class="child" .item=${child} @click=${this._childClicked}>
@@ -518,7 +524,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
                       : ""} image"
-                    style="background-image: ${until(url, "")}"
+                    style="background-image: ${until(backgroundImage, "")}"
                   ></div>
                 `
               : html`
