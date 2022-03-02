@@ -470,50 +470,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                   `
                 : html`
                     <mwc-list>
-                      ${children.map(
-                        (child) => html`
-                          <mwc-list-item
-                            @click=${this._childClicked}
-                            .item=${child}
-                            .graphic=${mediaClass.show_list_images
-                              ? "medium"
-                              : "avatar"}
-                            dir=${computeRTLDirection(this.hass)}
-                          >
-                            <div
-                              class=${classMap({
-                                graphic: true,
-                                thumbnail: mediaClass.show_list_images === true,
-                              })}
-                              style=${styleMap({
-                                "background-image":
-                                  mediaClass.show_list_images && child.thumbnail
-                                    ? child.thumbnail
-                                    : undefined,
-                              })}
-                              slot="graphic"
-                            >
-                              <ha-icon-button
-                                class="play ${classMap({
-                                  show:
-                                    !mediaClass.show_list_images ||
-                                    !child.thumbnail,
-                                })}"
-                                .item=${child}
-                                .label=${this.hass.localize(
-                                  `ui.components.media-browser.${this.action}-media`
-                                )}
-                                .path=${this.action === "play"
-                                  ? mdiPlay
-                                  : mdiPlus}
-                                @click=${this._actionClicked}
-                              ></ha-icon-button>
-                            </div>
-                            <span class="title">${child.title}</span>
-                          </mwc-list-item>
-                          <li divider role="separator"></li>
-                        `
-                      )}
+                      <lit-virtualizer
+                        scroller
+                        .items=${children}
+                        .renderItem=${this._renderListItem}
+                      ></lit-virtualizer>
                       ${currentItem.not_shown
                         ? html`
                             <mwc-list-item
@@ -596,6 +557,48 @@ export class HaMediaPlayerBrowse extends LitElement {
           </div>
         </ha-card>
       </div>
+    `;
+  };
+
+  private _renderListItem = (child: MediaPlayerItem): TemplateResult => {
+    const currentItem = this._currentItem;
+    const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
+
+    return html`
+      <mwc-list-item
+        @click=${this._childClicked}
+        .item=${child}
+        .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
+        dir=${computeRTLDirection(this.hass)}
+      >
+        <div
+          class=${classMap({
+            graphic: true,
+            thumbnail: mediaClass.show_list_images === true,
+          })}
+          style=${styleMap({
+            "background-image":
+              mediaClass.show_list_images && child.thumbnail
+                ? child.thumbnail
+                : undefined,
+          })}
+          slot="graphic"
+        >
+          <ha-icon-button
+            class="play ${classMap({
+              show: !mediaClass.show_list_images || !child.thumbnail,
+            })}"
+            .item=${child}
+            .label=${this.hass.localize(
+              `ui.components.media-browser.${this.action}-media`
+            )}
+            .path=${this.action === "play" ? mdiPlay : mdiPlus}
+            @click=${this._actionClicked}
+          ></ha-icon-button>
+        </div>
+        <span class="title">${child.title}</span>
+      </mwc-list-item>
+      <li divider role="separator"></li>
     `;
   };
 
@@ -933,6 +936,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         mwc-list li[divider] {
           border-bottom-color: var(--divider-color);
+        }
+
+        mwc-list-item {
+          width: 100%;
         }
 
         div.children {
