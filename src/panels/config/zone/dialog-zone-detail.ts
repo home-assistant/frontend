@@ -166,6 +166,7 @@ class DialogZoneDetail extends LitElement {
         },
       ],
     },
+    { name: "passive_note", type: "constant" },
     { name: "passive", selector: { boolean: {} } },
     {
       name: "radius",
