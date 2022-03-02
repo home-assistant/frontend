@@ -20,6 +20,7 @@ import "./ha-selector-time";
 import "./ha-selector-icon";
 import "./ha-selector-media";
 import "./ha-selector-theme";
+import "./ha-selector-location";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
