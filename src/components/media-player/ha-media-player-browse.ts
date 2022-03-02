@@ -21,8 +21,8 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
@@ -483,14 +483,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                             <div
                               class=${classMap({
                                 graphic: true,
-                                lazythumbnail:
-                                  mediaClass.show_list_images === true,
+                                thumbnail: mediaClass.show_list_images === true,
                               })}
-                              data-src=${ifDefined(
-                                mediaClass.show_list_images && child.thumbnail
-                                  ? child.thumbnail
-                                  : undefined
-                              )}
+                              style=${styleMap({
+                                "background-image":
+                                  mediaClass.show_list_images && child.thumbnail
+                                    ? child.thumbnail
+                                    : undefined,
+                              })}
                               slot="graphic"
                             >
                               <ha-icon-button
@@ -542,8 +542,12 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   }
 
-  private _renderGridItem = (child: MediaPlayerItem): TemplateResult =>
-    html`
+  private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
+    const url = this._getSignedThumbnail(child.thumbnail).then(
+      (value) => value
+    );
+
+    return html`
       <div class="child" .item=${child} @click=${this._childClicked}>
         <ha-card outlined>
           <div class="thumbnail">
@@ -552,12 +556,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                   <div
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
-                      : ""} image lazythumbnail"
-                    style=${styleMap({
-                      backgroundImage: child.thumbnail
-                        ? `url(${this._getSignedThumbnail(child.thumbnail)})`
-                        : "none",
-                    })}
+                      : ""} image"
+                    style="background-image: url(${until(url, "")})"
                   ></div>
                 `
               : html`
@@ -597,17 +597,21 @@ export class HaMediaPlayerBrowse extends LitElement {
         </ha-card>
       </div>
     `;
+  };
 
-  private async _getSignedThumbnail(thumbnailUrl: string): Promise<string> {
+  private async _getSignedThumbnail(
+    thumbnailUrl: string | undefined
+  ): Promise<string> {
     if (!thumbnailUrl) {
-      return Promise.resolve("");
+      return "";
     }
 
     if (thumbnailUrl.startsWith("/")) {
       // Thumbnails served by local API require authentication
-      const signedPath = await getSignedPath(this.hass, thumbnailUrl);
-      thumbnailUrl = signedPath.path;
-    } else if (thumbnailUrl.startsWith("https://brands.home-assistant.io")) {
+      return (await getSignedPath(this.hass, thumbnailUrl)).path;
+    }
+
+    if (thumbnailUrl.startsWith("https://brands.home-assistant.io")) {
       // The backend is not aware of the theme used by the users,
       // so we rewrite the URL to show a proper icon
       thumbnailUrl = brandsUrl({
@@ -618,7 +622,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
-    return Promise.resolve(thumbnailUrl);
+    return thumbnailUrl;
   }
 
   private _actionClicked = (ev: MouseEvent): void => {
@@ -1040,10 +1044,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .child .play:hover {
           color: var(--primary-color);
-        }
-
-        ha-card:hover .lazythumbnail {
-          opacity: 0.5;
         }
 
         .child .title {
