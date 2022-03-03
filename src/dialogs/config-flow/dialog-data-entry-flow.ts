@@ -117,13 +117,17 @@ class DataEntryFlowDialog extends LitElement {
         );
       } catch (err: any) {
         this.closeDialog();
+        let message = err.message || err.body || "Unknown error";
+        if (typeof message !== "string") {
+          message = JSON.stringify(message);
+        }
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
           text: `${this.hass.localize(
             "ui.panel.config.integrations.config_flow.could_not_load"
-          )}: ${err.message || err.body}`,
+          )}: ${message}`,
         });
         return;
       }
