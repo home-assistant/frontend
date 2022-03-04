@@ -463,6 +463,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         .triggered.active {
           max-height: 100px;
         }
+        .triggered:hover {
+          opacity: 0.8;
+        }
         .triggered.accent {
           background-color: var(--accent-color);
           color: var(--text-accent-color, var(--text-primary-color));
