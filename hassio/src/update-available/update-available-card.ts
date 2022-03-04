@@ -45,7 +45,6 @@ import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
-import { SUPERVISOR_UPDATE_NAMES } from "../../../src/panels/config/dashboard/ha-config-updates";
 import { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
@@ -56,6 +55,12 @@ declare global {
 }
 
 type updateType = "os" | "supervisor" | "core" | "addon";
+
+const SUPERVISOR_UPDATE_NAMES = {
+  core: "Home Assistant Core",
+  os: "Home Assistant Operating System",
+  supervisor: "Home Assistant Supervisor",
+};
 
 const changelogUrl = (
   entry: updateType,

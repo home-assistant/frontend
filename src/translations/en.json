@@ -1047,18 +1047,27 @@
           "learn_more": "Learn more"
         },
         "updates": {
-          "check_unavailable": {
+          "update_not_loaded": {
             "title": "Unable to check for updates",
-            "description": "You need to run the Home Assistant operating system to be able to check and install updates from the Home Assistant user interface."
+            "description": "You need to enable the update integrtion to be able to check and install updates from the Home Assistant user interface."
           },
           "check_updates": "Check for updates",
+          "checking_updates": "Checking for available updates",
           "no_new_updates": "No new updates found",
           "updates_refreshed": "Updates refreshed",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
           "more_updates": "+{count} updates",
-          "show": "show"
+          "show": "show",
+          "dialog": {
+            "title": "[%key:supervisor::update_available::update_name%]",
+            "create_backup": "[%key:supervisor::update_available::create_backup%]",
+            "open_changelog": "Open changelog",
+            "updating": "[%key:supervisor::update_available::updating%]",
+            "update": "[%key:supervisor::common::update%]",
+            "description": "[%key:supervisor::update_available::description%]"
+          }
         },
         "areas": {
           "caption": "Areas",

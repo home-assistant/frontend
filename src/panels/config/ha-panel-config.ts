@@ -27,20 +27,18 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
-import {
-  fetchSupervisorAvailableUpdates,
-  SupervisorAvailableUpdates,
-} from "../../data/supervisor/root";
+import { fetchUpdateInfo, UpdateDescription } from "../../data/update";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../types";
+import { showToast } from "../../util/toast";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
-    "ha-refresh-supervisor": undefined;
+    "ha-refresh-updates": undefined;
   }
 }
 
@@ -407,7 +405,7 @@ class HaPanelConfig extends HassRouterPage {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+  @state() private _updates?: UpdateDescription[] | null;
 
   private _listeners: Array<() => void> = [];
 
@@ -443,18 +441,18 @@ class HaPanelConfig extends HassRouterPage {
         }
       });
     }
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._loadSupervisorUpdates();
-      this.addEventListener("ha-refresh-supervisor", () => {
-        this._loadSupervisorUpdates();
+    if (isComponentLoaded(this.hass, "update")) {
+      this._loadUpdates();
+      this.addEventListener("ha-refresh-updates", () => {
+        this._loadUpdates();
       });
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {
-          this._loadSupervisorUpdates();
+          this._loadUpdates();
         }
       });
     } else {
-      this._supervisorUpdates = null;
+      this._updates = null;
     }
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
@@ -486,7 +484,7 @@ class HaPanelConfig extends HassRouterPage {
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
-        supervisorUpdates: this._supervisorUpdates,
+        updates: this._updates,
       });
     } else {
       el.route = this.routeTail;
@@ -495,7 +493,7 @@ class HaPanelConfig extends HassRouterPage {
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
-      el.supervisorUpdates = this._supervisorUpdates;
+      el.updates = this._updates;
     }
   }
 
@@ -514,13 +512,33 @@ class HaPanelConfig extends HassRouterPage {
     }
   }
 
-  private async _loadSupervisorUpdates(): Promise<void> {
+  private async _loadUpdates(): Promise<void> {
+    const _showToast = this._updates !== undefined;
+
+    if (_showToast) {
+      showToast(this, {
+        message: this.hass.localize("ui.panel.config.updates.checking_updates"),
+      });
+    }
+
     try {
-      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
-        this.hass
-      );
+      this._updates = await fetchUpdateInfo(this.hass);
     } catch (err) {
-      this._supervisorUpdates = null;
+      this._updates = null;
+    }
+
+    if (_showToast) {
+      if (this._updates?.length) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.config.updates.updates_refreshed"
+          ),
+        });
+      } else {
+        showToast(this, {
+          message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
+        });
+      }
     }
   }
 }

@@ -26,10 +26,6 @@ import "../../../components/ha-menu-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
 import { CloudStatus } from "../../../data/cloud";
-import {
-  refreshSupervisorAvailableUpdates,
-  SupervisorAvailableUpdates,
-} from "../../../data/supervisor/root";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
@@ -38,10 +34,11 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { showToast } from "../../../util/toast";
 import { documentationUrl } from "../../../util/documentation-url";
+import { UpdateDescription } from "../../../data/update";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 const randomTip = (hass: HomeAssistant) => {
   const weighted: string[] = [];
@@ -114,13 +111,11 @@ class HaConfigDashboard extends LitElement {
   @property() public cloudStatus?: CloudStatus;
 
   // null means not available
-  @property() public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+  @property() public updates?: UpdateDescription[] | null;
 
   @property() public showAdvanced!: boolean;
 
   @state() private _tip?: string;
-
-  private _notifyUpdates = false;
 
   protected render(): TemplateResult {
     return html`
@@ -160,50 +155,53 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${this.supervisorUpdates === undefined
-            ? // Hide everything until updates loaded
-              html``
-            : html`${this.supervisorUpdates?.length
-                  ? html`<ha-card>
-                      <ha-config-updates
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .supervisorUpdates=${this.supervisorUpdates}
-                      ></ha-config-updates>
-                    </ha-card>`
-                  : ""}
-                <ha-card>
-                  ${this.narrow && this.supervisorUpdates?.length
-                    ? html`<div class="title">
-                        ${this.hass.localize("panel.config")}
-                      </div>`
-                    : ""}
-                  ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
-                    ? html`
-                        <ha-config-navigation
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .showAdvanced=${this.showAdvanced}
-                          .pages=${[
-                            {
-                              component: "cloud",
-                              path: "/config/cloud",
-                              name: "Home Assistant Cloud",
-                              info: this.cloudStatus,
-                              iconPath: mdiCloudLock,
-                              iconColor: "#3B808E",
-                            },
-                          ]}
-                        ></ha-config-navigation>
-                      `
-                    : ""}
+          ${this.updates === undefined
+            ? html`<ha-alert .rtl=${computeRTL(this.hass)}>
+                ${this.hass.localize(
+                  "ui.panel.config.updates.checking_updates"
+                )}
+              </ha-alert>`
+            : this.updates?.length
+            ? html`<ha-card>
+                <ha-config-updates
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .updates=${this.updates}
+                ></ha-config-updates>
+              </ha-card>`
+            : ""}
+          <ha-card>
+            ${this.narrow && this.updates?.length
+              ? html`<div class="title">
+                  ${this.hass.localize("panel.config")}
+                </div>`
+              : ""}
+            ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
+              ? html`
                   <ha-config-navigation
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                     .showAdvanced=${this.showAdvanced}
-                    .pages=${configSections.dashboard}
+                    .pages=${[
+                      {
+                        component: "cloud",
+                        path: "/config/cloud",
+                        name: "Home Assistant Cloud",
+                        info: this.cloudStatus,
+                        iconPath: mdiCloudLock,
+                        iconColor: "#3B808E",
+                      },
+                    ]}
                   ></ha-config-navigation>
-                </ha-card>`}
+                `
+              : ""}
+            <ha-config-navigation
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .showAdvanced=${this.showAdvanced}
+              .pages=${configSections.dashboard}
+            ></ha-config-navigation>
+          </ha-card>
           <div class="tips">
             <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
             <span class="tip-word">Tip!</span>
@@ -220,22 +218,6 @@ class HaConfigDashboard extends LitElement {
     if (!this._tip && changedProps.has("hass")) {
       this._tip = randomTip(this.hass);
     }
-
-    if (!changedProps.has("supervisorUpdates") || !this._notifyUpdates) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (this.supervisorUpdates?.length) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
-    }
   }
 
   private _showQuickBar(): void {
@@ -248,18 +230,16 @@ class HaConfigDashboard extends LitElement {
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        if (isComponentLoaded(this.hass, "hassio")) {
-          this._notifyUpdates = true;
-          await refreshSupervisorAvailableUpdates(this.hass);
-          fireEvent(this, "ha-refresh-supervisor");
+        if (isComponentLoaded(this.hass, "update")) {
+          fireEvent(this, "ha-refresh-updates");
           return;
         }
         showAlertDialog(this, {
           title: this.hass.localize(
-            "ui.panel.config.updates.check_unavailable.title"
+            "ui.panel.config.updates.update_not_loaded.title"
           ),
           text: this.hass.localize(
-            "ui.panel.config.updates.check_unavailable.description"
+            "ui.panel.config.updates.update_not_loaded.description"
           ),
           warning: true,
         });

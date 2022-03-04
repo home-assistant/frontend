@@ -1,21 +1,48 @@
 import "@material/mwc-button/mwc-button";
-import { mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-logo-svg";
 import "../../../components/ha-svg-icon";
-import { SupervisorAvailableUpdates } from "../../../data/supervisor/root";
+import { UpdateDescription } from "../../../data/update";
+import { showUpdateDialog } from "../../../dialogs/update-dialog/show-ha-update-dialog";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-icon-next";
+import { brandsUrl } from "../../../util/brands-url";
 
-export const SUPERVISOR_UPDATE_NAMES = {
-  core: "Home Assistant Core",
-  os: "Home Assistant Operating System",
-  supervisor: "Home Assistant Supervisor",
-};
+const sortUpdates = memoizeOne((a: UpdateDescription, b: UpdateDescription) => {
+  if (a.domain === "hassio" && b.domain === "hassio") {
+    if (a.identifier === "core") {
+      return -1;
+    }
+    if (b.identifier === "core") {
+      return 1;
+    }
+    if (a.identifier === "supervisor") {
+      return -1;
+    }
+    if (b.identifier === "supervisor") {
+      return 1;
+    }
+    if (a.identifier === "os") {
+      return -1;
+    }
+    if (b.identifier === "os") {
+      return 1;
+    }
+  }
+  if (a.domain === "hassio") {
+    return -1;
+  }
+  if (b.domain === "hassio") {
+    return 1;
+  }
+  return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
+});
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -24,62 +51,62 @@ class HaConfigUpdates extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false })
-  public supervisorUpdates?: SupervisorAvailableUpdates[] | null;
+  public updates?: UpdateDescription[] | null;
 
   @state() private _showAll = false;
 
   protected render(): TemplateResult {
-    if (!this.supervisorUpdates?.length) {
+    if (!this.updates?.length) {
       return html``;
     }
 
+    // Make sure the first updates shown are for the Supervisor
+    const sortedUpdates = this.updates.sort((a, b) => sortUpdates(a, b));
+
     const updates =
-      this._showAll || this.supervisorUpdates.length <= 3
-        ? this.supervisorUpdates
-        : this.supervisorUpdates.slice(0, 2);
+      this._showAll || sortedUpdates.length <= 3
+        ? sortedUpdates
+        : sortedUpdates.slice(0, 2);
 
     return html`
       <div class="title">
         ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.supervisorUpdates.length,
+          count: sortedUpdates.length,
         })}
       </div>
       ${updates.map(
         (update) => html`
-          <a href="/hassio${update.panel_path}">
-            <paper-icon-item>
-              <span slot="item-icon" class="icon">
-                ${update.update_type === "addon"
-                  ? update.icon
-                    ? html`<img src="/api/hassio${update.icon}" />`
-                    : html`<ha-svg-icon
-                        .path=${mdiPackageVariant}
-                      ></ha-svg-icon>`
-                  : html`<ha-logo-svg></ha-logo-svg>`}
-              </span>
-              <paper-item-body two-line>
-                ${update.update_type === "addon"
-                  ? update.name
-                  : SUPERVISOR_UPDATE_NAMES[update.update_type!]}
-                <div secondary>
-                  ${this.hass.localize(
-                    "ui.panel.config.updates.version_available",
-                    {
-                      version_available: update.version_latest,
-                    }
-                  )}
-                </div>
-              </paper-item-body>
-              ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
-            </paper-icon-item>
-          </a>
+          <paper-icon-item @click=${this._showUpdate} .update=${update}>
+            <span slot="item-icon" class="icon">
+              <img
+                src=${update.icon_url ||
+                brandsUrl({
+                  domain: update.domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+              />
+            </span>
+            <paper-item-body two-line>
+              ${update.name}
+              <div secondary>
+                ${this.hass.localize(
+                  "ui.panel.config.updates.version_available",
+                  {
+                    version_available: update.available_version,
+                  }
+                )}
+              </div>
+            </paper-item-body>
+          </paper-icon-item>
         `
       )}
-      ${!this._showAll && this.supervisorUpdates.length >= 4
+      ${!this._showAll && this.updates.length >= 4
         ? html`
             <button class="show-more" @click=${this._showAllClicked}>
               ${this.hass.localize("ui.panel.config.updates.more_updates", {
-                count: this.supervisorUpdates!.length - updates.length,
+                count: this.updates!.length - updates.length,
               })}
             </button>
           `
@@ -89,6 +116,14 @@ class HaConfigUpdates extends LitElement {
 
   private _showAllClicked() {
     this._showAll = true;
+  }
+
+  private _showUpdate(ev) {
+    const update = ev.currentTarget.update as UpdateDescription;
+    showUpdateDialog(this, {
+      update,
+      refreshCallback: () => fireEvent(this, "ha-refresh-updates"),
+    });
   }
 
   static get styles(): CSSResultGroup[] {
@@ -138,6 +173,9 @@ class HaConfigUpdates extends LitElement {
         button.show-more:focus {
           outline: none;
           text-decoration: underline;
+        }
+        paper-icon-item {
+          cursor: pointer;
         }
       `,
     ];
