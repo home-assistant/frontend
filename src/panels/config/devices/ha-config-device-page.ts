@@ -902,22 +902,6 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-actions-mqtt>
       `);
     }
-    if (domains.includes("ozw")) {
-      import("./device-detail/integration-elements/ozw/ha-device-actions-ozw");
-      import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
-      deviceInfo.push(html`
-        <ha-device-info-ozw
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-info-ozw>
-      `);
-      deviceActions.push(html`
-        <ha-device-actions-ozw
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-ozw>
-      `);
-    }
     if (domains.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
