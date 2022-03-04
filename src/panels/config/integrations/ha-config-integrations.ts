@@ -30,6 +30,7 @@ import "../../../components/ha-check-list-item";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
+  getConfigFlowHandlers,
   getConfigFlowInProgressCollection,
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
@@ -51,7 +52,10 @@ import {
 } from "../../../data/integration";
 import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -650,6 +654,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const domain = extractSearchParam("domain");
     navigate("/config/integrations", { replace: true });
     if (!domain) {
+      return;
+    }
+    const handlers = await getConfigFlowHandlers(this.hass);
+
+    if (!handlers.includes(domain)) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.no_config_flow"
+        ),
+      });
       return;
     }
     const localize = await localizePromise;
