@@ -558,6 +558,7 @@ export class BarMediaPlayer extends LitElement {
         display: flex;
         align-items: center;
         width: 100%;
+        margin-left: 12px;
         margin-right: 16px;
         text-overflow: ellipsis;
         white-space: nowrap;
