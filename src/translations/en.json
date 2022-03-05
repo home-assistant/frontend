@@ -840,7 +840,9 @@
           "step": "Step size"
         },
         "timer": {
-          "duration": "Duration"
+          "duration": "Duration",
+          "restore": "Restore?",
+          "restore_grace_period": "Restore grace period"
         }
       },
       "options_flow": {
