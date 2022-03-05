@@ -21,16 +21,24 @@ class HaTimerForm extends LitElement {
 
   @state() private _duration!: string | number | DurationDict;
 
+  @state() private _restore!: boolean;
+
+  @state() private _restore_grace_period!: string | number | DurationDict;
+
   set item(item: Timer) {
     this._item = item;
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
       this._duration = item.duration || "00:00:00";
+      this._restore = item.restore || false;
+      this._restore_grace_period = item.restore_grace_period || "00:00:00";
     } else {
       this._name = "";
       this._icon = "";
       this._duration = "00:00:00";
+      this._restore = false;
+      this._restore_grace_period = "00:00:00";
     }
   }
 
@@ -79,6 +87,28 @@ class HaTimerForm extends LitElement {
             "ui.dialogs.helper_settings.timer.duration"
           )}
         ></ha-textfield>
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.dialogs.helper_settings.timer.restore"
+          )}
+        >
+          <ha-checkbox
+            .configValue=${"restore"}
+            .checked=${this._restore}
+            @click=${this._toggleRestore}
+          >
+          </ha-checkbox>
+        </ha-formfield>
+        ${this._restore
+          ? html`<ha-textfield
+              .configValue=${"restore_grace_period"}
+              .value=${this._restore_grace_period}
+              @input=${this._valueChanged}
+              .label=${this.hass.localize(
+                "ui.dialogs.helper_settings.timer.restore_grace_period"
+              )}
+            ></ha-textfield>`
+          : ""}
       </div>
     `;
   }
@@ -101,6 +131,13 @@ class HaTimerForm extends LitElement {
     }
     fireEvent(this, "value-changed", {
       value: newValue,
+    });
+  }
+
+  private _toggleRestore() {
+    this._restore = !this._restore;
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, restore: this._restore },
     });
   }
 
