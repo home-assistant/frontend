@@ -16,12 +16,16 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-device";
@@ -94,7 +98,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _requestShowId = false;
 
-  @state() private _triggered = false;
+  @state() private _triggered?: Record<string, unknown>;
 
   @state() private _triggerColor = false;
 
@@ -231,9 +235,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         </div>
         <div
           class="triggered ${classMap({
-            active: this._triggered,
+            active: this._triggered !== undefined,
             accent: this._triggerColor,
           })}"
+          @click=${this._showTriggeredInfo}
         >
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
@@ -298,16 +303,16 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     const triggerUnsub = subscribeTrigger(
       this.hass,
-      () => {
+      (result) => {
         if (untriggerTimeout !== undefined) {
           clearTimeout(untriggerTimeout);
           this._triggerColor = !this._triggerColor;
         } else {
           this._triggerColor = false;
         }
-        this._triggered = true;
+        this._triggered = result;
         untriggerTimeout = window.setTimeout(() => {
-          this._triggered = false;
+          this._triggered = undefined;
           untriggerTimeout = undefined;
         }, showTriggeredTime);
       },
@@ -416,6 +421,18 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
+  private _showTriggeredInfo() {
+    showAlertDialog(this, {
+      text: html`
+        <ha-yaml-editor
+          readOnly
+          .hass=${this.hass}
+          .defaultValue=${this._triggered}
+        ></ha-yaml-editor>
+      `,
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -426,12 +443,12 @@ export default class HaAutomationTriggerRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
         .triggered {
+          cursor: pointer;
           position: absolute;
           top: 0px;
           right: 0px;
           left: 0px;
           text-transform: uppercase;
-          pointer-events: none;
           font-weight: bold;
           font-size: 14px;
           background-color: var(--primary-color);
@@ -445,6 +462,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         .triggered.active {
           max-height: 100px;
+        }
+        .triggered:hover {
+          opacity: 0.8;
         }
         .triggered.accent {
           background-color: var(--accent-color);
