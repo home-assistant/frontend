@@ -31,6 +31,8 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public readOnly = false;
+
   @state() private _yaml = "";
 
   public setValue(value): void {
@@ -61,6 +63,7 @@ export class HaYamlEditor extends LitElement {
       <ha-code-editor
         .hass=${this.hass}
         .value=${this._yaml}
+        .readOnly=${this.readOnly}
         mode="yaml"
         autocomplete-entities
         .error=${this.isValid === false}
