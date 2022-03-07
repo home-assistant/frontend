@@ -164,7 +164,9 @@ export class HuiStatisticsGraphCardEditor
   }
 
   private _entitiesChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: { ...this._config!, entities: ev.detail.value } });
+    fireEvent(this, "config-changed", {
+      config: { ...this._config!, entities: ev.detail.value },
+    });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) =>
