@@ -153,7 +153,7 @@ export class HuiStatisticsGraphCardEditor
           .pickedStatisticLabel=${`Statistic`}
           .value=${this._configEntities}
           .configValue=${"entities"}
-          @value-changed=${this._valueChanged}
+          @value-changed=${this._entitiesChanged}
         ></ha-statistics-picker>
       </div>
     `;
@@ -161,6 +161,12 @@ export class HuiStatisticsGraphCardEditor
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _entitiesChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", {
+      config: { ...this._config!, entities: ev.detail.value },
+    });
   }
 
   private _computeLabelCallback = (schema: HaFormSchema) =>
