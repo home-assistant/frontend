@@ -9,7 +9,6 @@ import {
   mdiCast,
   mdiCastConnected,
   mdiClock,
-  mdiEmoticonDead,
   mdiFlash,
   mdiGestureTapButton,
   mdiLanConnect,
@@ -22,14 +21,11 @@ import {
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiSleep,
-  mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
   mdiWeatherNight,
-  mdiZWave,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 /**
@@ -113,18 +109,6 @@ export const domainIcon = (
           return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
         default:
           return mdiFlash;
-      }
-
-    case "zwave":
-      switch (compareState) {
-        case "dead":
-          return mdiEmoticonDead;
-        case "sleeping":
-          return mdiSleep;
-        case "initializing":
-          return mdiTimerSand;
-        default:
-          return mdiZWave;
       }
 
     case "sensor": {
