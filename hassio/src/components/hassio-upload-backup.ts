@@ -1,5 +1,4 @@
 import { mdiFolderUpload } from "@mdi/js";
-import "@polymer/paper-input/paper-input-container";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";

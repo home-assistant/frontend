@@ -162,7 +162,7 @@ export class QuickBar extends LitElement {
               "ui.dialogs.quick-bar.filter_placeholder"
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
-            .icon=${true}
+            icon
             .iconTrailing=${this._search !== undefined || this._narrow}
             @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
