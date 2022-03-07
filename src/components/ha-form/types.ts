@@ -40,7 +40,7 @@ export interface HaFormSelector extends HaFormBaseSchema {
 
 export interface HaFormConstantSchema extends HaFormBaseSchema {
   type: "constant";
-  value: string;
+  value?: string;
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {
