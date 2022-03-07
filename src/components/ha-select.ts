@@ -44,6 +44,9 @@ export class HaSelect extends SelectBase {
       .mdc-select:not(.mdc-select--disabled) .mdc-select__icon {
         color: var(--secondary-text-color);
       }
+      .mdc-select__anchor {
+        width: var(--ha-select-min-width, 200px);
+      }
     `,
   ];
 }
