@@ -186,9 +186,7 @@ export class HaBlueprintScriptEditor extends LitElement {
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
         }
-        :host(:not([narrow])) ha-settings-row paper-input {
-          width: 60%;
-        }
+        :host(:not([narrow])) ha-settings-row ha-textfield,
         :host(:not([narrow])) ha-settings-row ha-selector {
           width: 60%;
         }
