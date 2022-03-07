@@ -464,6 +464,9 @@ class DialogPersonDetail extends LitElement {
         ha-textfield {
           display: block;
         }
+        ha-picture-upload {
+          margin-top: 16px;
+        }
         ha-formfield {
           display: block;
           padding: 16px 0;
