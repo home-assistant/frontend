@@ -25,6 +25,8 @@ import { HomeAssistant } from "../../types";
 const getValue = (obj, item) =>
   obj ? (!item.name ? obj : obj[item.name]) : null;
 
+const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
+
 let selectorImported = false;
 
 @customElement("ha-form")
@@ -84,7 +86,7 @@ export class HaForm extends LitElement implements HaFormElement {
             `
           : ""}
         ${this.schema.map((item) => {
-          const error = getValue(this.error, item);
+          const error = getError(this.error, item);
 
           return html`
             ${error

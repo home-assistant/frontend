@@ -168,6 +168,11 @@ const SCHEMAS: {
       },
       icon: { name: "Icon", selector: { icon: {} } },
       media: { name: "Media", selector: { media: {} } },
+      location: { name: "Location", selector: { location: {} } },
+      location_radius: {
+        name: "Location with radius",
+        selector: { location: { radius: true, icon: "mdi:home" } },
+      },
     },
   },
 ];
