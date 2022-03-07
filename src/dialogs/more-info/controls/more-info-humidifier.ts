@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -12,6 +13,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
@@ -19,8 +21,6 @@ import {
   HUMIDIFIER_SUPPORT_MODES,
 } from "../../../data/humidifier";
 import { HomeAssistant } from "../../../types";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 
 class MoreInfoHumidifier extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -67,26 +67,24 @@ class MoreInfoHumidifier extends LitElement {
 
         ${supportModes
           ? html`
-              <div class="container-modes">
-                <mwc-list
-                  .label=${hass.localize("ui.card.humidifier.mode")}
-                  .value=${stateObj.attributes.mode}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleModeChanged}
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.available_modes!.map(
-                    (mode) => html`
-                      <mwc-list-item .value=${mode}>
-                        ${hass.localize(
-                          `state_attributes.humidifier.mode.${mode}`
-                        ) || mode}
-                      </mwc-list-item>
-                    `
-                  )}
-                </mwc-list>
-              </div>
+              <ha-select
+                .label=${hass.localize("ui.card.humidifier.mode")}
+                .value=${stateObj.attributes.mode}
+                fixedMenuPosition
+                naturalMenuWidth
+                @selected=${this._handleModeChanged}
+                @closed=${stopPropagation}
+              >
+                ${stateObj.attributes.available_modes!.map(
+                  (mode) => html`
+                    <mwc-list-item .value=${mode}>
+                      ${hass.localize(
+                        `state_attributes.humidifier.mode.${mode}`
+                      ) || mode}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-select>
             `
           : ""}
       </div>
