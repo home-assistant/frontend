@@ -25,6 +25,7 @@ import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-textfield";
 import {
   computeDeviceName,
   DeviceRegistryEntry,

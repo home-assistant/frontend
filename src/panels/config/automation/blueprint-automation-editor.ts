@@ -10,6 +10,7 @@ import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-textfield";
 import {
   BlueprintAutomationConfig,
   triggerAutomationActions,
