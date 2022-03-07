@@ -1,5 +1,12 @@
 import { mdiChevronDown } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -50,6 +57,12 @@ class HaExpansionPanel extends LitElement {
         ${this._showContent ? html`<slot></slot>` : ""}
       </div>
     `;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("expanded") && this.expanded) {
+      this._showContent = this.expanded;
+    }
   }
 
   private _handleTransitionEnd() {
