@@ -38,6 +38,7 @@ const SCHEMAS: {
       select: "Select",
       icon: "Icon",
       media: "Media",
+      location: "Location",
     },
     schema: [
       { name: "addon", selector: { addon: {} } },
@@ -74,6 +75,10 @@ const SCHEMAS: {
         selector: {
           media: {},
         },
+      },
+      {
+        name: "location",
+        selector: { location: { radius: true, icon: "mdi:home" } },
       },
     ],
   },
