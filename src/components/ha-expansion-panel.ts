@@ -52,6 +52,7 @@ class HaExpansionPanel extends LitElement {
         @transitionend=${this._handleTransitionEnd}
         role="region"
         aria-labelledby="summary"
+        aria-hidden=${!this.expanded}
         tabindex="-1"
       >
         ${this._showContent ? html`<slot></slot>` : ""}
