@@ -41,7 +41,7 @@ export class HaDateInput extends LitElement {
     return html`<ha-textfield
       .label=${this.label}
       .disabled=${this.disabled}
-      iconTrailing="calendar"
+      iconTrailing
       @click=${this._openDialog}
       .value=${this.value
         ? formatDateNumeric(new Date(this.value), this.locale)
