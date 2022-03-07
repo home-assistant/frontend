@@ -88,7 +88,7 @@ export class HaWebhookTrigger extends LitElement {
         .helper=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
         )}
-        .iconTrailing=${true}
+        iconTrailing
         .value=${webhookId || ""}
         @input=${this._valueChanged}
       >
