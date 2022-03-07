@@ -1,6 +1,7 @@
 import "@material/mwc-icon-button";
+import type { IconButton } from "@material/mwc-icon-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import "./ha-svg-icon";
 
 @customElement("ha-icon-button")
@@ -14,6 +15,12 @@ export class HaIconButton extends LitElement {
   @property({ type: String }) label = "";
 
   @property({ type: Boolean }) hideTitle = false;
+
+  @query("mwc-icon-button", true) private _button?: IconButton;
+
+  public override focus() {
+    this._button?.focus();
+  }
 
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
