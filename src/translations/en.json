@@ -4323,7 +4323,8 @@
           "privileged": "Supervisor is not privileged",
           "software": "Unsupported software detected",
           "source_mods": "Source modifications",
-          "systemd": "Systemd"
+          "systemd": "Systemd",
+          "systemd_resolved": "Systemd-Resolved"
         },
         "unhealthy_reason": {
           "privileged": "Supervisor is not privileged",
