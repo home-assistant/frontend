@@ -117,13 +117,17 @@ class DataEntryFlowDialog extends LitElement {
         );
       } catch (err: any) {
         this.closeDialog();
+        let message = err.message || err.body || "Unknown error";
+        if (typeof message !== "string") {
+          message = JSON.stringify(message);
+        }
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
           text: `${this.hass.localize(
             "ui.panel.config.integrations.config_flow.could_not_load"
-          )}: ${err.message || err.body}`,
+          )}: ${message}`,
         });
         return;
       }
@@ -373,13 +377,20 @@ class DataEntryFlowDialog extends LitElement {
         step = await this._params!.flowConfig.createFlow(this.hass, handler);
       } catch (err: any) {
         this.closeDialog();
+        const message =
+          err?.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.integrations.config_flow.no_config_flow"
+              )
+            : `${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.could_not_load"
+              )}: ${err?.body?.message || err?.message}`;
+
         showAlertDialog(this, {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
-          text: `${this.hass.localize(
-            "ui.panel.config.integrations.config_flow.could_not_load"
-          )}: ${err.message || err.body}`,
+          text: message,
         });
         return;
       } finally {

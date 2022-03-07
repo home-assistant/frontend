@@ -35,7 +35,7 @@ class SearchInput extends LitElement {
         .autofocus=${this.autofocus}
         .label=${this.label || "Search"}
         .value=${this.filter || ""}
-        .icon=${true}
+        icon
         .iconTrailing=${this.filter || this.suffix}
         @input=${this._filterInputChanged}
       >
