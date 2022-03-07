@@ -841,8 +841,7 @@
         },
         "timer": {
           "duration": "Duration",
-          "restore": "Restore?",
-          "restore_grace_period": "Restore grace period"
+          "restore": "Restore?"
         }
       },
       "options_flow": {

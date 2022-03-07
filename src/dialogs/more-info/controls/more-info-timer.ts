@@ -46,7 +46,7 @@ class MoreInfoTimer extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        extra-filters="remaining,restore,restore_grace_period"
+        extra-filters="remaining,restore"
       ></ha-attributes>
     `;
   }
