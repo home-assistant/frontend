@@ -1,5 +1,4 @@
 import "../../../../components/ha-form/ha-form";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -24,7 +23,7 @@ import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HaFormSchema } from "../../../../components/ha-form/types";
@@ -125,10 +124,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   private _geoSourcesChanged(ev: PolymerChangedEvent<any>): void {
     if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-    if (!target.configValue) {
       return;
     }
 

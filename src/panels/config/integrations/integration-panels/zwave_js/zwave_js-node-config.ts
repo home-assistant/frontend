@@ -25,6 +25,7 @@ import "../../../../../components/ha-select";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-textfield";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -265,7 +266,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
     if (item.configuration_value_type === "manual_entry") {
       return html`${labelAndDescription}
-        <paper-input
+        <ha-textfield
           type="number"
           .value=${item.value}
           .min=${item.metadata.min}
@@ -274,12 +275,12 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           .propertyKey=${item.property_key}
           .key=${id}
           .disabled=${!item.metadata.writeable}
-          @value-changed=${this._numericInputChanged}
+          @input=${this._numericInputChanged}
         >
           ${item.metadata.unit
             ? html`<span slot="suffix">${item.metadata.unit}</span>`
             : ""}
-        </paper-input> `;
+        </ha-textfield>`;
     }
 
     if (item.configuration_value_type === "enumerated") {
@@ -492,7 +493,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           font-size: 1.3em;
         }
 
-        :host(:not([narrow])) ha-settings-row paper-input {
+        :host(:not([narrow])) ha-settings-row ha-textfield {
           width: 30%;
           text-align: right;
         }

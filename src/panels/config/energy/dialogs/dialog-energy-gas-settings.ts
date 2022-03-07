@@ -19,6 +19,7 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-textfield";
 import type { HaRadio } from "../../../../components/ha-radio";
 
 @customElement("dialog-energy-gas-settings")
@@ -188,20 +189,19 @@ export class DialogEnergyGasSettings
           ></ha-radio>
         </ha-formfield>
         ${this._costs === "number"
-          ? html`<paper-input
+          ? html`<ha-textfield
               .label=${this.hass.localize(
                 `ui.panel.config.energy.gas.dialog.cost_number_input`,
                 { unit }
               )}
-              no-label-float
               class="price-options"
               step=".01"
               type="number"
               .value=${this._source.number_energy_price}
-              @value-changed=${this._numberPriceChanged}
+              @change=${this._numberPriceChanged}
+              .suffix=${`${this.hass.config.currency}/${unit}`}
             >
-              <span slot="suffix">${this.hass.config.currency}/${unit}</span>
-            </paper-input>`
+            </ha-textfield>`
           : ""}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
@@ -223,10 +223,10 @@ export class DialogEnergyGasSettings
     this._costs = input.value as any;
   }
 
-  private _numberPriceChanged(ev: CustomEvent) {
+  private _numberPriceChanged(ev) {
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.detail.value),
+      number_energy_price: Number(ev.target.value),
       entity_energy_price: null,
       stat_cost: null,
     };
@@ -295,13 +295,10 @@ export class DialogEnergyGasSettings
         ha-formfield {
           display: block;
         }
-        ha-statistic-picker {
-          width: 100%;
-        }
         .price-options {
           display: block;
           padding-left: 52px;
-          margin-top: -16px;
+          margin-top: -8px;
         }
       `,
     ];

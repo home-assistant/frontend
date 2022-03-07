@@ -1,11 +1,12 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { state } from "lit/decorators";
+import { query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-textfield";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
@@ -16,6 +17,8 @@ export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
 
   @state() private _params?: WebhookDialogParams;
+
+  @query("ha-textfield") _input!: HaTextField;
 
   public showDialog(params: WebhookDialogParams) {
     this._params = params;
@@ -53,12 +56,12 @@ export class DialogManageCloudhook extends LitElement {
               "ui.panel.config.cloud.dialog_cloudhook.available_at"
             )}
           </p>
-          <paper-input
-            label=${inputLabel}
-            value=${cloudhook.cloudhook_url}
+          <ha-textfield
+            .label=${inputLabel}
+            .value=${cloudhook.cloudhook_url}
             @click=${this._copyClipboard}
             @blur=${this._restoreLabel}
-          ></paper-input>
+          ></ha-textfield>
           <p>
             ${cloudhook.managed
               ? html`
@@ -98,10 +101,6 @@ export class DialogManageCloudhook extends LitElement {
     `;
   }
 
-  private get _paperInput(): PaperInputElement {
-    return this.shadowRoot!.querySelector("paper-input")!;
-  }
-
   private async _disableWebhook() {
     showConfirmationDialog(this, {
       text: this.hass!.localize(
@@ -117,14 +116,10 @@ export class DialogManageCloudhook extends LitElement {
   }
 
   private _copyClipboard(ev: FocusEvent) {
-    // paper-input -> iron-input -> input
-    const paperInput = ev.currentTarget as PaperInputElement;
-    const input = (paperInput.inputElement as any)
-      .inputElement as HTMLInputElement;
-    input.setSelectionRange(0, input.value.length);
+    const textField = ev.currentTarget as HaTextField;
     try {
-      document.execCommand("copy");
-      paperInput.label = this.hass!.localize(
+      copyToClipboard(textField.value);
+      textField.label = this.hass!.localize(
         "ui.panel.config.cloud.dialog_cloudhook.copied_to_clipboard"
       );
     } catch (err: any) {
@@ -133,18 +128,19 @@ export class DialogManageCloudhook extends LitElement {
   }
 
   private _restoreLabel() {
-    this._paperInput.label = inputLabel;
+    this._input.label = inputLabel;
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleDialog,
       css`
         ha-dialog {
           width: 650px;
         }
-        paper-input {
-          margin-top: -8px;
+        ha-textfield {
+          display: block;
         }
         button.link {
           color: var(--primary-color);
