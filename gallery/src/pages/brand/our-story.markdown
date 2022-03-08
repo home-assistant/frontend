@@ -28,7 +28,7 @@ Choice for the Open Home means that devices need to make the gathered data avail
 
 ## Durability
 
-If there is one thing that technology firms are very good at, it is launching new products. However, maintaining the products and making sure they keep working is an afterthought for most. The result is that vendors can decide to no longer support your device, crippling it’s features or even prevent it from working at all. As we install more and more devices in our home, durability is becoming more and more important. We shouldn’t have to buy everything new every couple of years because the manufacturer decided to move on.
+If there is one thing that technology firms are very good at, it is launching new products. However, maintaining the products and making sure they keep working is an afterthought for most. The result is that vendors can decide to no longer support your device, crippling its features or even preventing it from working at all. As we install more and more devices in our home, durability is becoming more and more important. We shouldn’t have to buy everything new every couple of years because the manufacturer decided to move on.
 
 Durability for the Open Home means that devices are designed and built to keep working. Not just this year, but for the next decade.
 
