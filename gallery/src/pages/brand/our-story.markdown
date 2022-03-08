@@ -4,7 +4,7 @@ title: "Our story"
 
 ## Open source home automation that puts local control and privacy first
 
-Home Assistant is a free and open-source software for home automation that is designed to be the central control system for smart home devices with focus on local control and privacy. It can be accessed via a web-based user interface, via apps for Android and iOS, or using voice commands via a supported virtual assistant like Google Assistant and Amazon Alexa.
+Home Assistant is a free and open-source software for home automation that is designed to be the central control system for smart home devices with a focus on local control and privacy. It can be accessed via a web-based user interface, via apps for Android and iOS, or using voice commands via a supported virtual assistant like Google Assistant and Amazon Alexa.
 
 IoT devices and services are supported by modular support for controlling proprietary ecosystems if they provide public access via an Open API for third-party integrations and protocols like Bluetooth, MQTT, Zigbee and Z-Wave, After the Home Assistant software application is installed as a computer appliance it will act as a central control system for home automation. Information from all entities it sees can be used and controlled from within scripts trigger automations using scheduling and "blueprint" subroutines, e.g. for controlling lighting, climate, entertainment systems and appliances.
 
