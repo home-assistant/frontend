@@ -9,7 +9,6 @@ import {
   mdiCast,
   mdiCastConnected,
   mdiClock,
-  mdiFlash,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -23,6 +22,7 @@ import {
   mdiRestart,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiToggleSwitchOutline,
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
   mdiWeatherNight,
@@ -108,7 +108,7 @@ export const domainIcon = (
         case "switch":
           return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
         default:
-          return mdiFlash;
+          return mdiToggleSwitchOutline;
       }
 
     case "sensor": {
