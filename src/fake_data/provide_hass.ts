@@ -300,7 +300,9 @@ export const provideHass = (
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme!.theme
+        selectedTheme!.theme,
+        undefined,
+        true
       );
     },
 
