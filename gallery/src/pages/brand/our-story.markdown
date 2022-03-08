@@ -22,7 +22,7 @@ It is okay for a product to offer a cloud connection, but it should be extra and
 
 ## Choice
 
-Devices in your home gather data about itself and their surroundings. Your data. Vendors shouldn’t be able to limit your access to your data or limit the interoperability of your devices with the rest of your smart home.
+Devices in your home gather data about themselves and their surroundings. Your data. Vendors shouldn’t be able to limit your access to your data or limit the interoperability of your devices with the rest of your smart home.
 
 Choice for the Open Home means that devices need to make the gathered data available through local APIs. This avoids vendor lock-in and allows users to create their own smart home with devices from different manufacturers.
 
