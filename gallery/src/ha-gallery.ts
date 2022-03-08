@@ -236,7 +236,7 @@ class HaGallery extends LitElement {
         margin: 16px;
         padding: 16px;
         border-radius: 12px;
-        background-color: var(--secondary-background-color);
+        background-color: var(--primary-background-color);
       }
 
       .page-footer div {
