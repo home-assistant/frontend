@@ -23,6 +23,7 @@ export interface EntitySelector {
     integration?: string;
     domain?: string | string[];
     device_class?: string;
+    multiple?: boolean;
   };
 }
 

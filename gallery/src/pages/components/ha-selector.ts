@@ -175,6 +175,12 @@ const SCHEMAS: {
       },
     },
   },
+  {
+    name: "Multiples",
+    input: {
+      entity: { name: "Entity", selector: { entity: { multiple: true } } },
+    },
+  },
 ];
 
 @customElement("demo-components-ha-selector")
