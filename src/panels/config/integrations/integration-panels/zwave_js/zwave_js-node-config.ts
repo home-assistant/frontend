@@ -289,7 +289,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         <div class="flex">
           <ha-select
             .disabled=${!item.metadata.writeable}
-            .value=${item.value.toString()}
+            .value=${item.value?.toString()}
             .key=${id}
             .property=${item.property}
             .propertyKey=${item.property_key}
@@ -346,7 +346,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
     if (
-      this._config![ev.target.key].value.toString() ===
+      this._config![ev.target.key].value?.toString() ===
       ev.target.value.toString()
     ) {
       return;
