@@ -37,6 +37,10 @@ module.exports = [
     header: "Miscelaneous",
   },
   {
+    category: "brand",
+    header: "Brand",
+  },
+  {
     category: "user-test",
     header: "User Tests",
   },
