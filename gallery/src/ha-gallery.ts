@@ -220,7 +220,7 @@ class HaGallery extends LitElement {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        background: white;
+        background: var(--primary-background-color);
       }
 
       .content {
@@ -236,7 +236,7 @@ class HaGallery extends LitElement {
         margin: 16px;
         padding: 16px;
         border-radius: 12px;
-        background-color: #fafafa;
+        background-color: var(--secondary-background-color);
       }
 
       .page-footer div {
