@@ -38,4 +38,4 @@ The project was started as a Python application by Paulus Schoutsen in September
 
 An optional subscription service was introduced in December 2017 for $5/month to solve the complexities associated with secured remote access, as well as linking to Amazon Alexa and Google Assistant. Nabu Casa, Inc. was formed in September 2018 to take over the subscription service. The company's funding is based solely on revenue from the subscription service. It is used to finance the project's infrastructure and to pay for full-time employees contributing to the project.
 
-In January 2020, branding was adjusted to make it easier referring to different parts of the project. The main piece of software was renamed to Home Assistant Core, while the full suite of software with embedded operating system and bundled "supervisor" management system was renamed to Home Assistant.
+In January 2020, branding was adjusted to make it easier to refer to different parts of the project. The main piece of software was renamed to Home Assistant Core, while the full suite of software with the embedded operating system and bundled "supervisor" management system was renamed to Home Assistant.
