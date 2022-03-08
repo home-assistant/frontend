@@ -12,7 +12,7 @@ IoT devices and services are supported by modular support for controlling propri
 
 The Open Home is our vision for the smart home. It defines the values that we put at the heart of every decision we make at Home Assistant. It’s woven into our architecture, licensing, community, and everything else.
 
-The Open Home is about privacy, choice and durability.
+The Open Home is about privacy, choice, and durability.
 
 ## Privacy
 
