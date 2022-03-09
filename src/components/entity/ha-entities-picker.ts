@@ -51,6 +51,8 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
+  @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -94,7 +96,9 @@ class HaEntitiesPickerLight extends LitElement {
 
   private _entityFilter: HaEntityPickerEntityFilterFunc = (
     stateObj: HassEntity
-  ) => !this.value || !this.value.includes(stateObj.entity_id);
+  ) =>
+    (!this.value || !this.value.includes(stateObj.entity_id)) &&
+    (!this.entityFilter || this.entityFilter(stateObj));
 
   private get _currentEntities() {
     return this.value || [];

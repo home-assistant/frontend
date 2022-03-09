@@ -1,14 +1,13 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { EntitySelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
 import "../entity/ha-entity-picker";
+import "../entity/ha-entities-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends SubscribeMixin(LitElement) {
@@ -36,33 +35,13 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
       ></ha-entity-picker>`;
     }
 
-    // For multiple, the value is a list.
-    const value = this._normalizedValue as string[];
-
     return html`
-      ${this.label ? html`<div>${this.label}</div>` : ""}
-      ${repeat(
-        value,
-        (val) => val,
-        (entityId, index) => html`
-          <ha-entity-picker
-            .hass=${this.hass}
-            .value=${entityId}
-            .entityFilter=${this._filterEntities}
-            .disabled=${this.disabled}
-            .index=${index}
-            allow-custom-entity
-            @value-changed=${this._valueChanged}
-          ></ha-entity-picker>
-        `
-      )}
-      <ha-entity-picker
+      ${this.label ? html`<label>${this.label}</label>` : ""}
+      <ha-entities-picker
         .hass=${this.hass}
+        .value=${this.value}
         .entityFilter=${this._filterEntities}
-        .disabled=${this.disabled}
-        allow-custom-entity
-        @value-changed=${this._valueChanged}
-      ></ha-entity-picker>
+      ></ha-entities-picker>
     `;
   }
 
@@ -79,17 +58,6 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         this._entityPlaformLookup = entityLookup;
       }),
     ];
-  }
-
-  private get _normalizedValue() {
-    if (!this.selector.entity.multiple) {
-      return this.value;
-    }
-
-    if (!this.value) {
-      return [];
-    }
-    return Array.isArray(this.value) ? this.value : [this.value];
   }
 
   private _filterEntities = (entity: HassEntity): boolean => {
@@ -123,43 +91,6 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
     }
     return true;
   };
-
-  // this method is only used when multiple: true
-  private _valueChanged(ev: any) {
-    ev.stopPropagation();
-
-    // undefined = new value
-    const index = ev.target.index as number | undefined;
-    // undefined = remove
-    const newValue = ev.detail.value as string | undefined;
-
-    let updatedValue: string[] | undefined;
-
-    if (index === undefined) {
-      if (newValue) {
-        updatedValue = [...this._normalizedValue, newValue];
-      }
-      ev.target.value = "";
-    } else if (newValue) {
-      updatedValue = [...this._normalizedValue];
-      updatedValue[index] = newValue;
-    } else {
-      updatedValue = this._normalizedValue.filter((_, i) => i !== index);
-    }
-
-    if (updatedValue) {
-      fireEvent(this, "value-changed", {
-        value: updatedValue,
-      });
-    }
-  }
-
-  static styles = css`
-    ha-entity-picker + ha-entity-picker {
-      display: block;
-      margin-top: 16px;
-    }
-  `;
 }
 
 declare global {
