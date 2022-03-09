@@ -347,7 +347,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     }
     if (
       this._config![ev.target.key].value?.toString() ===
-      ev.target.value.toString()
+      ev.target.value
     ) {
       return;
     }
