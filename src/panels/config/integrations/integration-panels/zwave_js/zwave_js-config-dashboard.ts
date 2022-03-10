@@ -113,9 +113,10 @@ class ZWaveJSConfigDashboard extends LitElement {
           </div>
           ${this._network &&
           this._status === "connected" &&
-          [InclusionState.Including, InclusionState.Excluding].includes(
-            this._network?.controller.inclusion_state
-          )
+          (this._network?.controller.inclusion_state ===
+            InclusionState.Including ||
+            this._network?.controller.inclusion_state ===
+              InclusionState.Excluding)
             ? html`
                 <ha-alert alert-type="info">
                   ${this.hass.localize(
