@@ -11,6 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-alert";
@@ -166,7 +167,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 "ui.dialogs.entity_registry.editor.device_class"
               )}
               .value=${this._deviceClass}
+              naturalMenuWidth
+              fixedMenuPosition
               @selected=${this._deviceClassChanged}
+              @closed=${stopPropagation}
             >
               ${OVERRIDE_DEVICE_CLASSES[domain].map(
                 (deviceClass: string) => html`
@@ -422,6 +426,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         ha-select {
           width: 100%;
+          margin: 8px 0;
         }
         ha-switch {
           margin-right: 16px;
