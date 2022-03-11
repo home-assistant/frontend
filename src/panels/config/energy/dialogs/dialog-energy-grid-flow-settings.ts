@@ -240,7 +240,7 @@ export class DialogEnergyGridFlowSettings
     this._costStat = null;
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.detail.value),
+      number_energy_price: Number((ev.target as any).value),
       entity_energy_price: null,
     };
   }
