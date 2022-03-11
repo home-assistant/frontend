@@ -11,6 +11,7 @@ import { CoreFrontendUserData } from "../../../../data/frontend";
 import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace";
 import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -40,7 +41,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     } else {
       this._data = {
         show_in_sidebar: true,
-        icon: "",
+        icon: undefined,
         title: "",
         require_admin: false,
         mode: "storage",
@@ -264,7 +265,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._submitting = true;
     try {
       if (this._params!.dashboard) {
-        await this._params!.updateDashboard(this._data as LovelaceDashboard);
+        const values: Partial<LovelaceDashboardMutableParams> = {
+          require_admin: this._data!.require_admin,
+          show_in_sidebar: this._data!.show_in_sidebar,
+          icon: this._data!.icon || undefined,
+          title: this._data!.title,
+        };
+        await this._params!.updateDashboard(values);
       } else {
         await this._params!.createDashboard(
           this._data as LovelaceDashboardCreateParams
