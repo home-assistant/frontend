@@ -38,7 +38,6 @@ export class HaColorRGBSelector extends LitElement {
       <ha-icon-button
         .path=${mdiPalette}
         @click=${this._segmentClick}
-        class="segmentationButton"
       ></ha-icon-button>
     `;
   }
@@ -75,7 +74,7 @@ export class HaColorRGBSelector extends LitElement {
       --ha-color-picker-marker-bordercolor: white;
     }
 
-    .segmentationButton {
+    ha-icon-button {
       position: absolute;
       top: 5%;
       left: 0;
