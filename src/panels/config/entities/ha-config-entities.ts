@@ -101,6 +101,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _showDisabled = false;
 
+  @state() private _showHidden = false;
+
   @state() private _showUnavailable = true;
 
   @state() private _showReadOnly = true;
@@ -301,6 +303,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean,
+      showHidden: boolean,
       entries?: ConfigEntry[]
     ) => {
       const result: EntityRow[] = [];
@@ -359,6 +362,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       if (!showDisabled) {
         filteredEntities = filteredEntities.filter(
           (entity) => !entity.disabled_by
+        );
+      }
+
+      if (!showHidden) {
+        filteredEntities = filteredEntities.filter(
+          (entity) => !entity.hidden_by
         );
       }
 
@@ -465,6 +474,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._showDisabled,
         this._showUnavailable,
         this._showReadOnly,
+        this._showHidden,
         this._entries
       );
 
@@ -604,6 +614,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
               </ha-check-list-item>
               <ha-check-list-item
+                @request-selected=${this._showHiddenChanged}
+                .selected=${this._showHidden}
+                left
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.entities.picker.filter.show_hidden"
+                )}
+              </ha-check-list-item>
+              <ha-check-list-item
                 @request-selected=${this._showRestoredChanged}
                 graphic="control"
                 .selected=${this._showUnavailable}
@@ -671,6 +690,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           entity_id: entityId,
           platform: computeDomain(entityId),
           disabled_by: null,
+          hidden_by: null,
           area_id: null,
           config_entry_id: null,
           device_id: null,
@@ -691,6 +711,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       return;
     }
     this._showDisabled = ev.detail.selected;
+  }
+
+  private _showHiddenChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showHidden = ev.detail.selected;
   }
 
   private _showRestoredChanged(ev: CustomEvent<RequestSelectedDetail>) {

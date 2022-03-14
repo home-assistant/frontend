@@ -102,6 +102,12 @@
       "integration": "Integration",
       "config_entry": "Config entry",
       "device": "Device"
+    },
+    "hidden_by": {
+      "user": "User",
+      "integration": "Integration",
+      "config_entry": "Config entry",
+      "device": "Device"
     }
   },
   "ui": {
@@ -785,11 +791,14 @@
           "unavailable": "This entity is unavailable.",
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
+          "hidden_label": "Hide entity",
+          "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "open_device_settings": "Open device settings",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
+          "hidden_description": "Hidden entities will not be shown in Home Assistant UI.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -2364,8 +2373,8 @@
             "config": "Configuration",
             "add_entities_lovelace": "Add to Lovelace",
             "none": "This device has no entities",
-            "hide_disabled": "Hide disabled",
-            "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
+            "hide_disabled": "Hide hidden",
+            "disabled_entities": "+{count} {count, plural,\n  one {hidden entity}\n  other {hidden entities}\n}"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
@@ -2405,6 +2414,7 @@
             "search": "Search entities",
             "filter": {
               "filter": "Filter",
+              "show_hidden": "Show hidden entities",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
               "show_readonly": "Show read-only entities",
