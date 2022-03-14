@@ -7,7 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-color-picker";
 import "../ha-icon-button";
 
-@customElement("ha-selector-color-rgb")
+@customElement("ha-selector-color_rgb")
 export class HaColorRGBSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -84,6 +84,6 @@ export class HaColorRGBSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-color-rgb": HaColorRGBSelector;
+    "ha-selector-color_rgb": HaColorRGBSelector;
   }
 }

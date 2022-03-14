@@ -177,7 +177,7 @@ const SCHEMAS: {
         name: "Color Temperature",
         selector: { color_temp: {} },
       },
-      color_rgb: { name: "Color", selector: { "color-rgb": {} } },
+      color_rgb: { name: "Color", selector: { color_rgb: {} } },
     },
   },
   {
