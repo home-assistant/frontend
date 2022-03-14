@@ -185,6 +185,12 @@ const SCHEMAS: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
     },
   },
+  {
+    name: "RGB Color",
+    input: {
+      color_rgb: { name: "Color", selector: { "color-rgb": {} } },
+    },
+  },
 ];
 
 @customElement("demo-components-ha-selector")
