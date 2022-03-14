@@ -3089,7 +3089,7 @@
           "no_data": "No unused entities found"
         },
         "add_entities": {
-          "yaml_unsupported": "You cannot use this function when using dashboard in YAML mode.",
+          "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of the dashboard.",
           "saving_failed": "Saving dashboard configuration failed."
         },
