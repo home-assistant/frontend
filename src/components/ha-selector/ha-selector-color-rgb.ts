@@ -25,23 +25,21 @@ export class HaColorRGBSelector extends LitElement {
 
   protected render() {
     return html`
-      <div class="segmentationContainer">
-        <ha-color-picker
-          class="color"
-          throttle="500"
-          .label=${this.label}
-          .desiredRgbColor=${this.value}
-          .hueSegments=${this._hueSegments}
-          .saturationSegments=${this._saturationSegments}
-          @colorselected=${this._valueChanged}
-        >
-        </ha-color-picker>
-        <ha-icon-button
-          .path=${mdiPalette}
-          @click=${this._segmentClick}
-          class="segmentationButton"
-        ></ha-icon-button>
-      </div>
+      <ha-color-picker
+        class="color"
+        throttle="500"
+        .label=${this.label}
+        .desiredRgbColor=${this.value}
+        .hueSegments=${this._hueSegments}
+        .saturationSegments=${this._saturationSegments}
+        @colorselected=${this._valueChanged}
+      >
+      </ha-color-picker>
+      <ha-icon-button
+        .path=${mdiPalette}
+        @click=${this._segmentClick}
+        class="segmentationButton"
+      ></ha-icon-button>
     `;
   }
 
@@ -62,7 +60,7 @@ export class HaColorRGBSelector extends LitElement {
   }
 
   static styles = css`
-    .segmentationContainer {
+    :host {
       position: relative;
       max-height: 500px;
       display: flex;
