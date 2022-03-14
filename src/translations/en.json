@@ -773,7 +773,8 @@
               "door": "Door",
               "garage": "Garage door",
               "gate": "Gate",
-              "window": "Window"
+              "window": "Window",
+              "shade": "Shade"
             }
           },
           "unavailable": "This entity is unavailable.",
