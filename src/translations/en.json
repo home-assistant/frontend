@@ -3131,7 +3131,7 @@
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "reload": "Reload",
-            "lovelace_changed": "The dashboard config was updated, do you want to load the updated config in the editor and lose your current changes?",
+            "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
             "confirm_remove_config_title": "Are you sure you want to remove your dashboard configuration?",
             "confirm_remove_config_text": "We will automatically generate your dashboard views with your areas and devices if you remove your dashboard configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
