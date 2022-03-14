@@ -113,9 +113,9 @@ export class HuiPictureCardEditor
       return;
     }
     const target = ev.target! as EditorTarget;
-    const value = ev.detail.value;
+    const value = ev.detail?.value ?? target.value;
 
-    if (this[`_${target.configValue}`] === target.value) {
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {

@@ -278,7 +278,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     if (!name) {
       return;
     }
-    const newVal = ev.detail.value;
+    const newVal = target.value;
     if ((this.config![name] || "") === newVal) {
       return;
     }
