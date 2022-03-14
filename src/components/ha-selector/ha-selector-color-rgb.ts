@@ -26,7 +26,6 @@ export class HaColorRGBSelector extends LitElement {
   protected render() {
     return html`
       <ha-color-picker
-        class="color"
         throttle="500"
         .label=${this.label}
         .desiredRgbColor=${this.value}
