@@ -2,7 +2,7 @@ import { mdiPalette } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../types";
-import { IconSelector } from "../../data/selector";
+import { ColorRGBSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-color-picker";
 import "../ha-icon-button";
