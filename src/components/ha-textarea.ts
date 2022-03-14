@@ -20,7 +20,8 @@ export class HaTextArea extends TextAreaBase {
     textareaStyles,
     css`
       :host([autogrow]) {
-        max-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
       }
       :host([autogrow]) .mdc-text-field {
         position: relative;
