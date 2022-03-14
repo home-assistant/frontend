@@ -173,6 +173,10 @@ const SCHEMAS: {
         name: "Location with radius",
         selector: { location: { radius: true, icon: "mdi:home" } },
       },
+      "color-temp": {
+        name: "Color Temperature",
+        selector: { color_temp: {} },
+      },
     },
   },
   {
