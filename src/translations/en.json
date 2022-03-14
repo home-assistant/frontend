@@ -3525,7 +3525,7 @@
           "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {
-          "message": "The dashboard configuration for this dashboard was updated. Refresh to see changes?"
+          "message": "Your dashboard was updated. Refresh to see changes?"
         },
         "components": {
           "timestamp-display": {
