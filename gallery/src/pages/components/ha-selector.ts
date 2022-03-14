@@ -175,7 +175,7 @@ const SCHEMAS: {
       },
       "color-temp": {
         name: "Color Temperature",
-        selector: { "color-temp": {} },
+        selector: { color_temp: {} },
       },
     },
   },

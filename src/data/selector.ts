@@ -99,7 +99,7 @@ export interface NumberSelector {
 }
 
 export interface ColorTempSelector {
-  "color-temp": {
+  color_temp: {
     min_mireds?: number;
     max_mireds?: number;
   };

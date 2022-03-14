@@ -5,7 +5,7 @@ import type { ColorTempSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-labeled-slider";
 
-@customElement("ha-selector-color-temp")
+@customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -53,6 +53,6 @@ export class HaColorTempSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-color-temp": HaColorTempSelector;
+    "ha-selector-color_temp": HaColorTempSelector;
   }
 }
