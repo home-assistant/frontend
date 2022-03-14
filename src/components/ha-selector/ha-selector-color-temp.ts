@@ -23,8 +23,8 @@ export class HaColorTempSelector extends LitElement {
         pin
         .caption=${this.label}
         icon="hass:thermometer"
-        .min=${this.selector["color-temp"].min_mireds ?? 153}
-        .max=${this.selector["color-temp"].max_mireds ?? 500}
+        .min=${this.selector.color_temp.min_mireds ?? 153}
+        .max=${this.selector.color_temp.max_mireds ?? 500}
         .value=${this.value}
         @change=${this._valueChanged}
       ></ha-labeled-slider>
