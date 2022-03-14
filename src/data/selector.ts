@@ -16,7 +16,8 @@ export type Selector =
   | IconSelector
   | MediaSelector
   | ThemeSelector
-  | LocationSelector;
+  | LocationSelector
+  | ColorTempSelector;
 
 export interface EntitySelector {
   entity: {
@@ -94,6 +95,13 @@ export interface NumberSelector {
     step?: number;
     mode?: "box" | "slider";
     unit_of_measurement?: string;
+  };
+}
+
+export interface ColorTempSelector {
+  "color-temp": {
+    min_mireds?: number;
+    max_mireds?: number;
   };
 }
 

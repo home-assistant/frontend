@@ -21,6 +21,7 @@ import "./ha-selector-icon";
 import "./ha-selector-media";
 import "./ha-selector-theme";
 import "./ha-selector-location";
+import "./ha-selector-color-temp";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
