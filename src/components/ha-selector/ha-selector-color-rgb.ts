@@ -11,7 +11,7 @@ import "../ha-icon-button";
 export class HaColorRGBSelector extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public selector!: IconSelector;
+  @property() public selector!: ColorRGBSelector;
 
   @property() public value?: string;
 
