@@ -53,7 +53,12 @@ export class HaDeviceSelector extends LitElement {
       <ha-devices-picker
         .hass=${this.hass}
         .value=${this.value}
-        .entityFilter=${this._filterDevices}
+        .includeDeviceClasses=${this.selector.device.entity?.device_class
+          ? [this.selector.device.entity.device_class]
+          : undefined}
+        .includeDomains=${this.selector.device.entity?.domain
+          ? [this.selector.device.entity.domain]
+          : undefined}
       ></ha-devices-picker>
     `;
   }
