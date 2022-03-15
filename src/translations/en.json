@@ -297,6 +297,7 @@
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
+      "hide": "Hide",
       "close": "Close",
       "clear": "Clear",
       "leave": "Leave",
@@ -2455,6 +2456,11 @@
               "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
               "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
               "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+            },
+            "hide_selected": {
+              "button": "Hide selected",
+              "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
             }
           }
         },

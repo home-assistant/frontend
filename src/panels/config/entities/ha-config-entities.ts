@@ -3,6 +3,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiDelete,
+  mdiEyeOff,
   mdiFilterVariant,
   mdiPencilOff,
   mdiPlus,
@@ -251,7 +252,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "68px",
         template: (_status, entity: EntityRow) =>
-          entity.unavailable || entity.disabled_by || entity.readonly
+          entity.unavailable ||
+          entity.disabled_by ||
+          entity.hidden_by ||
+          entity.readonly
             ? html`
                 <div
                   tabindex="0"
@@ -267,6 +271,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       ? mdiAlertCircle
                       : entity.disabled_by
                       ? mdiCancel
+                      : entity.hidden_by
+                      ? mdiEyeOff
                       : mdiPencilOff}
                   ></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
@@ -281,6 +287,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       : entity.disabled_by
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.disabled"
+                        )
+                      : entity.hidden_by
+                      ? this.hass.localize(
+                          "ui.panel.config.entities.picker.status.hidden"
                         )
                       : this.hass.localize(
                           "ui.panel.config.entities.picker.status.readonly"
@@ -543,6 +553,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.entities.picker.disable_selected.button"
                         )}</mwc-button
                       >
+                      <mwc-button @click=${this._hideSelected}
+                        >${this.hass.localize(
+                          "ui.panel.config.entities.picker.hide_selected.button"
+                        )}</mwc-button
+                      >
                       <mwc-button @click=${this._removeSelected} class="warning"
                         >${this.hass.localize(
                           "ui.panel.config.entities.picker.remove_selected.button"
@@ -570,6 +585,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       <paper-tooltip animation-delay="0" for="disable-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.disable_selected.button"
+                        )}
+                      </paper-tooltip>
+                      <ha-icon-button
+                        id="hide-btn"
+                        @click=${this._hideSelected}
+                        .path=${mdiCancel}
+                        .label=${this.hass.localize("ui.common.hide")}
+                      ></ha-icon-button>
+                      <paper-tooltip animation-delay="0" for="hide-btn">
+                        ${this.hass.localize(
+                          "ui.panel.config.entities.picker.hide_selected.button"
                         )}
                       </paper-tooltip>
                       <ha-icon-button
@@ -811,6 +837,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             disabled_by: "user",
+          })
+        );
+        this._clearSelection();
+      },
+    });
+  }
+
+  private _hideSelected() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_title",
+        "number",
+        this._selectedEntities.length
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.hide"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: () => {
+        this._selectedEntities.forEach((entity) =>
+          updateEntityRegistryEntry(this.hass, entity, {
+            hidden_by: "user",
           })
         );
         this._clearSelection();
