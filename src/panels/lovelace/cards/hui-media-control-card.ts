@@ -505,9 +505,28 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _handleClick(e: MouseEvent): void {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-    this.hass!.callService("media_player", action, {
-      entity_id: this._config!.entity,
-    });
+    this.hass!.callService(
+      "media_player",
+      action,
+      action === "shuffle_set"
+        ? {
+            entity_id: this._config!.entity,
+            shuffle: !this._stateObj!.attributes.shuffle,
+          }
+        : action === "repeat_set"
+        ? {
+            entity_id: this._config!.entity,
+            repeat:
+              this._stateObj!.attributes.repeat === "all"
+                ? "one"
+                : this._stateObj!.attributes.repeat === "off"
+                ? "all"
+                : "off",
+          }
+        : {
+            entity_id: this._config!.entity,
+          }
+    );
   }
 
   private _updateProgressBar(): void {

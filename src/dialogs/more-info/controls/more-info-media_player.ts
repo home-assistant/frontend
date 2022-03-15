@@ -202,6 +202,7 @@ class MoreInfoMediaPlayer extends LitElement {
       }
 
       .basic-controls {
+        display: inline-flex;
         flex-grow: 1;
       }
 
@@ -231,12 +232,28 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _handleClick(e: MouseEvent): void {
+    const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
     this.hass!.callService(
       "media_player",
-      (e.currentTarget! as HTMLElement).getAttribute("action")!,
-      {
-        entity_id: this.stateObj!.entity_id,
-      }
+      action,
+      action === "shuffle_set"
+        ? {
+            entity_id: this.stateObj!.entity_id,
+            shuffle: !this.stateObj!.attributes.shuffle,
+          }
+        : action === "repeat_set"
+        ? {
+            entity_id: this.stateObj!.entity_id,
+            repeat:
+              this.stateObj!.attributes.repeat === "all"
+                ? "one"
+                : this.stateObj!.attributes.repeat === "off"
+                ? "all"
+                : "off",
+          }
+        : {
+            entity_id: this.stateObj!.entity_id,
+          }
     );
   }
 

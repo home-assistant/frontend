@@ -490,9 +490,28 @@ export class BarMediaPlayer extends LitElement {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
 
     if (!this._browserPlayer) {
-      this.hass!.callService("media_player", action, {
-        entity_id: this.entityId,
-      });
+      this.hass!.callService(
+        "media_player",
+        action,
+        action === "shuffle_set"
+          ? {
+              entity_id: this._stateObj!.entity_id,
+              shuffle: !this._stateObj!.attributes.shuffle,
+            }
+          : action === "repeat_set"
+          ? {
+              entity_id: this._stateObj!.entity_id,
+              repeat:
+                this._stateObj!.attributes.repeat === "all"
+                  ? "one"
+                  : this._stateObj!.attributes.repeat === "off"
+                  ? "all"
+                  : "off",
+            }
+          : {
+              entity_id: this._stateObj!.entity_id,
+            }
+      );
       return;
     }
     if (action === "media_pause") {
