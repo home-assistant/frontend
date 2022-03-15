@@ -62,9 +62,11 @@ export class HaDeviceEntitiesCard extends LitElement {
   protected render(): TemplateResult {
     if (!this.entities.length) {
       return html`
-        <div class="empty card-content">
-          ${this.hass.localize("ui.panel.config.devices.entities.none")}
-        </div>
+        <ha-card .header=${this.header}>
+          <div class="empty card-content">
+            ${this.hass.localize("ui.panel.config.devices.entities.none")}
+          </div>
+        </ha-card>
       `;
     }
 
