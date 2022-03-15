@@ -17,7 +17,8 @@ export type Selector =
   | MediaSelector
   | ThemeSelector
   | LocationSelector
-  | ColorTempSelector;
+  | ColorTempSelector
+  | ColorRGBSelector;
 
 export interface EntitySelector {
   entity: {
@@ -32,6 +33,11 @@ export interface AttributeSelector {
   attribute: {
     entity_id: string;
   };
+}
+
+export interface ColorRGBSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  color_rgb: {};
 }
 
 export interface DeviceSelector {
