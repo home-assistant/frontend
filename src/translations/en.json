@@ -106,7 +106,6 @@
     "hidden_by": {
       "user": "User",
       "integration": "Integration",
-      "config_entry": "Config entry",
       "device": "Device"
     }
   },

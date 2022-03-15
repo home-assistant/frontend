@@ -285,13 +285,39 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             </mwc-formfield>
           </div>
 
+          ${this._disabledBy !== null
+            ? html`
+                <div class="secondary">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.enabled_description"
+                  )}
+                </div>
+              `
+            : this._hiddenBy !== null
+            ? html`
+                <div class="secondary">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.hidden_description"
+                  )}
+                </div>
+              `
+            : ""}
           ${this.entry.device_id
             ? html`
-                <p>
+                <ha-area-picker
+                  .hass=${this.hass}
+                  .value=${this._areaId}
+                  .placeholder=${this._device?.area_id}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.area"
+                  )}
+                  @value-changed=${this._areaPicked}
+                ></ha-area-picker>
+                <div class="secondary">
                   ${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.area_note"
                   )}
-                </p>
+                </div>
                 ${this._areaId
                   ? html`<mwc-button @click=${this._clearArea}
                       >${this.hass.localize(
@@ -305,15 +331,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       )}</mwc-button
                     >`
                   : ""}
-                <ha-area-picker
-                  .hass=${this.hass}
-                  .value=${this._areaId}
-                  .placeholder=${this._device?.area_id}
-                  .label=${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.area"
-                  )}
-                  @value-changed=${this._areaPicked}
-                ></ha-area-picker>
               `
             : ""}
         </ha-expansion-panel>
@@ -515,7 +532,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .label {
           margin-top: 8px;
         }
-        p {
+        .secondary {
           margin: 8px 0;
           width: 340px;
         }
