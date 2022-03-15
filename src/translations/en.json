@@ -792,7 +792,7 @@
           "view_status": "Entity view status",
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
-          "enabled_cause": "Disabled by {cause}.",
+          "enabled_cause": "Cannot change view status. Disabled by {cause}.",
           "hidden_label": "Hidden",
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
