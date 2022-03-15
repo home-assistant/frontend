@@ -227,7 +227,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             )}:
           </div>
           <div class="secondary">
-            ${(this._disabledBy && this._disabledBy !== "user") || 1
+            ${this._disabledBy && this._disabledBy !== "user"
               ? this.hass.localize(
                   "ui.dialogs.entity_registry.editor.enabled_cause",
                   "cause",
