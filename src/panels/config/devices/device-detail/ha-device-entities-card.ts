@@ -102,7 +102,7 @@ export class HaDeviceEntitiesCard extends LitElement {
             ? html`
                 <button class="show-more" @click=${this._toggleShowHidden}>
                   ${this.hass.localize(
-                    "ui.panel.config.devices.entities.disabled_entities",
+                    "ui.panel.config.devices.entities.hidden_entities",
                     "count",
                     hiddenEntities.length
                   )}
