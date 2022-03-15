@@ -1,17 +1,16 @@
-import { mdiPalette } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { HomeAssistant } from "../../types";
-import { ColorRGBSelector } from "../../data/selector";
+import { customElement, property } from "lit/decorators";
+import type { HomeAssistant } from "../../types";
+import type { ColorRGBSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-color-picker";
-import "../ha-icon-button";
+import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
+import "../ha-textfield";
 
 @customElement("ha-selector-color_rgb")
 export class HaColorRGBSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: ColorRGBSelector;
+  @property({ attribute: false }) public selector!: ColorRGBSelector;
 
   @property() public value?: string;
 
@@ -19,65 +18,35 @@ export class HaColorRGBSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @state() private _saturationSegments = 8;
-
-  @state() private _hueSegments = 24;
-
   protected render() {
     return html`
-      <ha-color-picker
-        throttle="500"
-        .label=${this.label}
-        .desiredRgbColor=${this.value}
-        .hueSegments=${this._hueSegments}
-        .saturationSegments=${this._saturationSegments}
-        @colorselected=${this._valueChanged}
-      >
-      </ha-color-picker>
-      <ha-icon-button
-        .path=${mdiPalette}
-        @click=${this._segmentClick}
-      ></ha-icon-button>
+      <ha-textfield
+        type="color"
+        .value=${this.value ? rgb2hex(this.value as any) : ""}
+        .label=${this.label || ""}
+        @change=${this._valueChanged}
+      ></ha-textfield>
     `;
   }
 
   private _valueChanged(ev: CustomEvent) {
+    const value = (ev.target as any).value;
     fireEvent(this, "value-changed", {
-      value: [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
+      value: hex2rgb(value),
     });
-  }
-
-  private _segmentClick() {
-    if (this._hueSegments === 24 && this._saturationSegments === 8) {
-      this._hueSegments = 0;
-      this._saturationSegments = 0;
-    } else {
-      this._hueSegments = 24;
-      this._saturationSegments = 8;
-    }
   }
 
   static styles = css`
     :host {
-      position: relative;
-      max-height: 500px;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
+      align-items: center;
     }
-
-    ha-color-picker {
-      --ha-color-picker-wheel-borderwidth: 5;
-      --ha-color-picker-wheel-bordercolor: white;
-      --ha-color-picker-wheel-shadow: none;
-      --ha-color-picker-marker-borderwidth: 2;
-      --ha-color-picker-marker-bordercolor: white;
-    }
-
-    ha-icon-button {
-      position: absolute;
-      top: 5%;
-      left: 0;
-      color: var(--secondary-text-color);
+    ha-textfield {
+      --text-field-padding: 8px;
+      min-width: 75px;
+      flex-grow: 1;
+      margin: 0 4px;
     }
   `;
 }
