@@ -226,6 +226,17 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               "ui.dialogs.entity_registry.editor.view_status"
             )}:
           </div>
+          <div class="secondary">
+            ${(this._disabledBy && this._disabledBy !== "user") || 1
+              ? this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.enabled_cause",
+                  "cause",
+                  this.hass.localize(
+                    `config_entry.disabled_by.${this._disabledBy}`
+                  )
+                )
+              : ""}
+          </div>
           <div class="row">
             <mwc-formfield
               .label=${this.hass.localize(
