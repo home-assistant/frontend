@@ -43,6 +43,7 @@ export interface DeviceSelector {
       domain?: EntitySelector["entity"]["domain"];
       device_class?: EntitySelector["entity"]["device_class"];
     };
+    multiple?: boolean;
   };
 }
 
