@@ -1,3 +1,5 @@
+import "@material/mwc-formfield/mwc-formfield";
+import "../../../components/ha-radio";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -20,7 +22,6 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
   DeviceRegistryEntry,
@@ -214,79 +215,67 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
           : ""}
-        <div class="row">
-          <ha-switch
-            .checked=${!this._disabledBy}
-            .disabled=${this._device?.disabled_by}
-            @change=${this._disabledByChanged}
-          >
-          </ha-switch>
-          <div>
-            <div>
-              ${this.hass.localize(
+        <ha-expansion-panel
+          .header=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.advanced"
+          )}
+          outlined
+        >
+          <div class="label">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.view_status"
+            )}:
+          </div>
+          <div class="row">
+            <mwc-formfield
+              .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.enabled_label"
               )}
-            </div>
-            <div class="secondary">
-              ${this._disabledBy && this._disabledBy !== "user"
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.enabled_cause",
-                    "cause",
-                    this.hass.localize(
-                      `config_entry.disabled_by.${this._disabledBy}`
-                    )
-                  )
-                : ""}
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_description"
-              )}
-              <br />${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.note"
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <ha-switch
-            .checked=${this._hiddenBy !== null}
-            .disabled=${this._hiddenBy && this._hiddenBy !== "user"}
-            @change=${this._hiddenByChanged}
-          >
-          </ha-switch>
-          <div>
-            <div>
-              ${this.hass.localize(
+            >
+              <ha-radio
+                name="hiddendisabled"
+                value="enabled"
+                .checked=${!this._hiddenBy && !this._disabledBy}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                this._device?.disabled_by ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
+            <mwc-formfield
+              .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.hidden_label"
               )}
-            </div>
-            <div class="secondary">
-              ${this._hiddenBy && this._hiddenBy !== "user"
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.hidden_cause",
-                    "cause",
-                    this.hass.localize(
-                      `config_entry.hidden_by.${this._hiddenBy}`
-                    )
-                  )
-                : ""}
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.hidden_description"
+            >
+              <ha-radio
+                name="hiddendisabled"
+                value="hidden"
+                .checked=${this._hiddenBy !== null}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                Boolean(this._device?.disabled_by) ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
+            <mwc-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.disabled_label"
               )}
-              <br />${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.note"
-              )}
-            </div>
+            >
+              <ha-radio
+                name="hiddendisabled"
+                value="disabled"
+                .checked=${this._disabledBy !== null}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                Boolean(this._device?.disabled_by) ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
           </div>
-        </div>
-        ${this.entry.device_id
-          ? html`
-              <ha-expansion-panel
-                .header=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.advanced"
-                )}
-                outlined
-              >
+
+          ${this.entry.device_id
+            ? html`
                 <p>
                   ${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.area_note"
@@ -314,9 +303,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   )}
                   @value-changed=${this._areaPicked}
                 ></ha-area-picker>
-              </ha-expansion-panel>
-            `
-          : ""}
+              `
+            : ""}
+        </ha-expansion-panel>
       </div>
       <div class="buttons">
         <mwc-button
@@ -360,6 +349,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
+  }
+
+  private _viewStatusChanged(ev: CustomEvent): void {
+    switch ((ev.target as any).value) {
+      case "enabled":
+        this._disabledBy = null;
+        this._hiddenBy = null;
+        break;
+      case "disabled":
+        this._disabledBy = "user";
+        this._hiddenBy = null;
+        break;
+      case "hidden":
+        this._hiddenBy = "user";
+        this._disabledBy = null;
+        break;
+    }
   }
 
   private _clearArea() {
@@ -448,14 +454,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _disabledByChanged(ev: Event): void {
-    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
-  }
-
-  private _hiddenByChanged(ev: Event): void {
-    this._hiddenBy = (ev.target as HaSwitch).checked ? "user" : null;
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -493,14 +491,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           display: block;
           margin: 8px 0;
         }
+        ha-area-picker {
+          margin: 8px 0;
+          display: block;
+        }
         .row {
           margin: 8px 0;
           color: var(--primary-text-color);
           display: flex;
           align-items: center;
         }
+        .label {
+          margin-top: 8px;
+        }
         p {
           margin: 8px 0;
+          width: 340px;
         }
       `,
     ];
