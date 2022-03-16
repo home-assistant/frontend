@@ -31,7 +31,7 @@ export interface EntitySelector {
 
 export interface AttributeSelector {
   attribute: {
-    entity_id: string;
+    entity_id?: string;
   };
 }
 

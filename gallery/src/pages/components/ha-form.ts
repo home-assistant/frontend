@@ -139,6 +139,7 @@ const SCHEMAS: {
       {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },
+        context: { filter_entity: "entity" },
       },
       { name: "Device", selector: { device: {} } },
       { name: "Duration", selector: { duration: {} } },

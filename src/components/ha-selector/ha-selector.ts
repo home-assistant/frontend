@@ -42,6 +42,8 @@ export class HaSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property() public context?: Record<string, any>;
+
   public focus() {
     this.shadowRoot?.getElementById("selector")?.focus();
   }
@@ -61,6 +63,7 @@ export class HaSelector extends LitElement {
         disabled: this.disabled,
         required: this.required,
         helper: this.helper,
+        context: this.context,
         id: "selector",
       })}
     `;
