@@ -8,7 +8,6 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import "../../../components/ha-radio";
-import type { HaSwitch } from "../../../components/ha-switch";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -248,10 +247,6 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   private _entityIdChanged(ev): void {
     this._entityId = ev.target.value;
-  }
-
-  private _disabledByChanged(ev: Event): void {
-    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
 
   private _viewStatusChanged(ev: CustomEvent): void {

@@ -801,7 +801,7 @@
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
-          "hidden_description": "Hidden entities will not be shown in Home Assistant UI.",
+          "hidden_description": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",

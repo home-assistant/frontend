@@ -397,11 +397,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _clearArea() {
-    this._error = undefined;
-    this._areaId = null;
-  }
-
   private _openDeviceSettings() {
     showDeviceRegistryDetailDialog(this, {
       device: this._device!,
