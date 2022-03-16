@@ -223,6 +223,10 @@
       "service": {
         "run": "Run"
       },
+      "update": {
+        "updating": "Updating",
+        "up_to_date": "Up-to-date"
+      },
       "timer": {
         "actions": {
           "start": "start",
@@ -712,6 +716,15 @@
           "elevation": "Elevation",
           "rising": "Rising",
           "setting": "Setting"
+        },
+        "update": {
+          "current_version": "Current version",
+          "latest_version": "Latest version",
+          "full_changelog": "Full changelog",
+          "summary": "Summary",
+          "skip": "Skip",
+          "install": "Install",
+          "create_backup": "Create backup before updating"
         },
         "updater": {
           "title": "Update Instructions"

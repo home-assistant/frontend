@@ -26,6 +26,7 @@ import {
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
   mdiWeatherNight,
+  mdiPackage,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 /**
@@ -133,6 +134,9 @@ export const domainIcon = (
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
         : mdiWeatherNight;
+
+    case "update":
+      return compareState === "on" ? mdiPackageUp : mdiPackage;
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

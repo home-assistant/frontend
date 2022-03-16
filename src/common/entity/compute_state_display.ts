@@ -1,6 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { FrontendLocaleData } from "../../data/translation";
+import { isUpdating } from "../../data/update";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
@@ -128,6 +129,17 @@ export const computeStateDisplay = (
     } catch (_err) {
       return compareState;
     }
+  }
+
+  if (domain === "update") {
+    // When updating, show "Updating"
+    // When update available, show the version
+    // When update is not available, show "Up-to-date"
+    return compareState === "on"
+      ? isUpdating(stateObj)
+        ? localize("ui.card.update.updating")
+        : stateObj.attributes.latest_version
+      : localize("ui.card.update.up_to_date");
   }
 
   return (
