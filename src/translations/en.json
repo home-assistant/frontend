@@ -1355,12 +1355,25 @@
                 "metric_example": "Celsius, kilograms",
                 "find_currency_value": "Find your value",
                 "save_button": "Save",
-                "external_url": "External URL",
-                "internal_url": "Internal URL",
+                "external_url": "Internet",
+                "internal_url": "Local network",
                 "currency": "Currency"
               }
             }
           }
+        },
+        "url": {
+          "caption": "Home Assistant URL",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (eg. to play text-to-speech or other hosted media).",
+          "internal_url_label": "Local Network",
+          "external_url_label": "Internet",
+          "external_use_ha_cloud": "Use Home Assistant Cloud",
+          "external_get_ha_cloud": "Access from anywhere using Home Assistant Cloud",
+          "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
+          "enable_remote": "[%key:ui::common::enable%]",
+          "internal_url_automatic": "Automatic",
+          "internal_url_https_error_title": "Invalid local network URL",
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
         },
         "info": {
           "caption": "Info",
