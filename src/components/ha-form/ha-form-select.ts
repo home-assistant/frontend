@@ -42,6 +42,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         .value=${this.data}
         .label=${this.label}
         .disabled=${this.disabled}
+        .required=${this.schema.required}
         .selector=${this._selectSchema(this.schema.options)}
         @value-changed=${this._valueChanged}
       ></ha-selector-select>
@@ -50,7 +51,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    let value: string | undefined = (ev.target as any).value;
+    let value: string | undefined = ev.detail.value;
 
     if (value === this.data) {
       return;
