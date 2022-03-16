@@ -67,11 +67,23 @@ const ENTITIES = [
   }),
   getEntity("update", "update9", "on", {
     ...base_attributes,
+    in_progress: 25,
+    supported_features: UPDATE_SUPPORT_PROGRESS,
+    friendly_name: "With 25 in_progress",
+  }),
+  getEntity("update", "update10", "on", {
+    ...base_attributes,
     in_progress: 50,
     supported_features: UPDATE_SUPPORT_PROGRESS,
     friendly_name: "With 50 in_progress",
   }),
-  getEntity("update", "update10", "unavailable", {
+  getEntity("update", "update11", "on", {
+    ...base_attributes,
+    in_progress: 75,
+    supported_features: UPDATE_SUPPORT_PROGRESS,
+    friendly_name: "With 75 in_progress",
+  }),
+  getEntity("update", "update12", "unavailable", {
     ...base_attributes,
     in_progress: 50,
     friendly_name: "Unavailable",

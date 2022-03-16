@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -11,6 +12,7 @@ import {
   isUpdating,
   UpdateEntity,
   UPDATE_SUPPORT_BACKUP,
+  UPDATE_SUPPORT_PROGRESS,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 
@@ -34,6 +36,15 @@ class MoreInfoUpdate extends LitElement {
       this.stateObj.attributes.latest_version;
 
     return html`
+      ${this.stateObj.attributes.in_progress
+        ? supportsFeature(this.stateObj, UPDATE_SUPPORT_PROGRESS) &&
+          typeof this.stateObj.attributes.in_progress === "number"
+          ? html`<mwc-linear-progress
+              .progress=${this.stateObj.attributes.in_progress / 100}
+              buffer=""
+            ></mwc-linear-progress>`
+          : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+        : ""}
       <h3>${this.stateObj.attributes.title}</h3>
       <div class="row">
         <div class="key">
