@@ -557,7 +557,7 @@ export class HaConfigDevicePage extends LitElement {
                       )}
                       .deviceName=${deviceName}
                       .entities=${entitiesByCategory[category]}
-                      .showDisabled=${device.disabled_by !== null}
+                      .showHidden=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
                   `
