@@ -102,6 +102,11 @@
       "integration": "Integration",
       "config_entry": "Config entry",
       "device": "Device"
+    },
+    "hidden_by": {
+      "user": "User",
+      "integration": "Integration",
+      "device": "Device"
     }
   },
   "ui": {
@@ -292,6 +297,7 @@
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
+      "hide": "Hide",
       "close": "Close",
       "clear": "Clear",
       "leave": "Leave",
@@ -783,13 +789,19 @@
             }
           },
           "unavailable": "This entity is unavailable.",
-          "enabled_label": "Enable entity",
-          "enabled_cause": "Disabled by {cause}.",
+          "entity_status": "Entity status",
+          "change_area": "Change Area",
+          "enabled_label": "Enabled",
+          "disabled_label": "Disabled",
+          "enabled_cause": "Cannot change status. Disabled by {cause}.",
+          "hidden_label": "Hidden",
+          "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "open_device_settings": "Open device settings",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
+          "hidden_description": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -2378,8 +2390,8 @@
             "config": "Configuration",
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
-            "hide_disabled": "Hide disabled",
-            "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
+            "show_less": "Show less",
+            "hidden_entities": "+{count} {count, plural,\n  one {hidden entity}\n  other {hidden entities}\n}"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
@@ -2419,6 +2431,7 @@
             "search": "Search entities",
             "filter": {
               "filter": "Filter",
+              "show_hidden": "Show hidden entities",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
               "show_readonly": "Show read-only entities",
@@ -2430,6 +2443,7 @@
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
+              "hidden": "Hidden",
               "ok": "Ok"
             },
             "headers": {
@@ -2458,6 +2472,11 @@
               "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
               "confirm_text": "You should remove them from your dashboard config and automations if they contain these entities.",
               "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+            },
+            "hide_selected": {
+              "button": "Hide selected",
+              "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
             }
           }
         },
