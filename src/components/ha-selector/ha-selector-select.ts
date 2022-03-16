@@ -1,13 +1,13 @@
 import "@material/mwc-formfield/mwc-formfield";
-import "../ha-radio";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { SelectOption, SelectSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { SelectOption, SelectSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-select";
+import "../ha-radio";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
