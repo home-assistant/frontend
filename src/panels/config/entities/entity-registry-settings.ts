@@ -223,7 +223,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         >
           <div class="label">
             ${this.hass.localize(
-              "ui.dialogs.entity_registry.editor.view_status"
+              "ui.dialogs.entity_registry.editor.entity_status"
             )}:
           </div>
           <div class="secondary">
