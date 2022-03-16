@@ -49,6 +49,7 @@ class ConfigUrlForm extends LitElement {
       return html``;
     }
 
+    const internalUrl = this._internalUrlValue;
     const externalUrl = this._externalUrlValue;
     let hasCloud: boolean;
     let remoteEnabled: boolean;
@@ -179,7 +180,7 @@ class ConfigUrlForm extends LitElement {
               )}
             >
               <ha-switch
-                .checked=${this._internalUrlValue === null}
+                .checked=${internalUrlValue === null}
                 @change=${this._toggleInternalAutomatic}
               ></ha-switch>
             </ha-formfield>
@@ -196,7 +197,7 @@ class ConfigUrlForm extends LitElement {
                     type="url"
                     placeholder="http://<some IP address>:8123"
                     .disabled=${disabled}
-                    .value=${this._internalUrlValue || ""}
+                    .value=${internalUrlValue || ""}
                     @change=${this._handleChange}
                   >
                   </ha-textfield>
@@ -205,11 +206,11 @@ class ConfigUrlForm extends LitElement {
           ${
             // If the user has configured a cert, show an error if
             httpUseHttps && // there is no internal url configured
-            (!this._internalUrlValue ||
+            (!internalUrlValue ||
               // the internal url does not start with https
-              !this._internalUrlValue.startsWith("https://") ||
+              !internalUrlValue.startsWith("https://") ||
               // the internal url points at an IP address
-              isIPAddress(new URL(this._internalUrlValue).hostname))
+              isIPAddress(new URL(internalUrlValue).hostname))
               ? html`
                   <ha-alert
                     .alertType=${this._showCustomInternalUrl
