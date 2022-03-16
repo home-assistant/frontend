@@ -29,6 +29,10 @@ class MoreInfoUpdate extends LitElement {
       return html``;
     }
 
+    const skippedVersion =
+      this.stateObj.attributes.skipped_version ===
+      this.stateObj.attributes.latest_version;
+
     return html`
       <h3>${this.stateObj.attributes.title}</h3>
       <div class="row">
@@ -77,7 +81,7 @@ class MoreInfoUpdate extends LitElement {
             </ha-expansion-panel>
           `
         : html`<hr />`}
-      ${!supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
+      ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
         ? html`
             <ha-formfield
               .label=${this.hass.localize(
@@ -91,19 +95,21 @@ class MoreInfoUpdate extends LitElement {
             </ha-formfield>
           `
         : ""}
-
+      ${skippedVersion || !this.stateObj.state ? html`` : ""}
       <div class="actions">
         <mwc-button
           @click=${this._handleSkip}
-          .disabled=${this.stateObj.attributes.latest_version ===
-            this.stateObj.attributes.skipped_version ||
+          .disabled=${skippedVersion ||
+          this.stateObj.state === "off" ||
           isUpdating(this.stateObj)}
         >
           ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
         </mwc-button>
         <mwc-button
           @click=${this._handleInstall}
-          .disabled=${isUpdating(this.stateObj)}
+          .disabled=${skippedVersion ||
+          this.stateObj.state === "off" ||
+          isUpdating(this.stateObj)}
         >
           ${this.hass.localize("ui.dialogs.more_info_control.update.install")}
         </mwc-button>
