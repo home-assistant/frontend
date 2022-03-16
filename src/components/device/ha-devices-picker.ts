@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -116,6 +116,12 @@ class HaDevicesPicker extends LitElement {
 
     this._updateDevices([...currentDevices, toAdd]);
   }
+
+  static override styles = css`
+    div {
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {
