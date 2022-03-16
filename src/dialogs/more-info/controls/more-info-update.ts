@@ -12,7 +12,7 @@ import {
   UpdateEntity,
   UPDATE_SUPPORT_BACKUP,
 } from "../../../data/update";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -49,7 +49,7 @@ class MoreInfoUpdate extends LitElement {
       </div>
 
       ${this.stateObj.attributes.release_url
-        ? html` <div class="row">
+        ? html`<div class="row">
             <div class="key">
               <a
                 href=${this.stateObj.attributes.release_url}
