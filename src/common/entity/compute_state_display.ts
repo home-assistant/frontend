@@ -136,6 +136,7 @@ export const computeStateDisplay = (
     // When updating, and entity does not support % show "Updating"
     // When updating, and entity does support % show "Updating (xx%)"
     // When update available, show the version
+    // When the latest version is skipped, show the latest version
     // When update is not available, show "Up-to-date"
     return compareState === "on"
       ? isUpdating(stateObj)
@@ -145,6 +146,9 @@ export const computeStateDisplay = (
             })
           : localize("ui.card.update.updating")
         : stateObj.attributes.latest_version
+      : stateObj.attributes.skipped_version ===
+        stateObj.attributes.latest_version
+      ? stateObj.attributes.latest_version
       : localize("ui.card.update.up_to_date");
   }
 

@@ -95,7 +95,6 @@ class MoreInfoUpdate extends LitElement {
             </ha-formfield>
           `
         : ""}
-      ${skippedVersion || !this.stateObj.state ? html`` : ""}
       <div class="actions">
         <mwc-button
           @click=${this._handleSkip}
@@ -107,8 +106,7 @@ class MoreInfoUpdate extends LitElement {
         </mwc-button>
         <mwc-button
           @click=${this._handleInstall}
-          .disabled=${skippedVersion ||
-          this.stateObj.state === "off" ||
+          .disabled=${(this.stateObj.state === "off" && !skippedVersion) ||
           isUpdating(this.stateObj)}
         >
           ${this.hass.localize("ui.dialogs.more_info_control.update.install")}

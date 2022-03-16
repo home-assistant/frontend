@@ -50,7 +50,7 @@ const ENTITIES = [
     current_version: "1.2.3",
     friendly_name: "No update",
   }),
-  getEntity("update", "update6", "on", {
+  getEntity("update", "update6", "off", {
     ...base_attributes,
     skipped_version: "1.2.3",
     friendly_name: "Skipped version",
