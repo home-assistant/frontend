@@ -241,7 +241,7 @@ export const computeMediaDescription = (
   return secondaryTitle;
 };
 
-export const computeMediaControls = (
+export const computeEssentialMediaControls = (
   stateObj: MediaPlayerEntity
 ): ControlButton[] | undefined => {
   if (!stateObj) {
@@ -249,7 +249,6 @@ export const computeMediaControls = (
   }
 
   const state = stateObj.state;
-  const stateAttr = stateObj.attributes;
 
   if (UNAVAILABLE_STATES.includes(state)) {
     return undefined;
@@ -276,16 +275,6 @@ export const computeMediaControls = (
   }
 
   const assumedState = stateObj.attributes.assumed_state === true;
-
-  if (
-    (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET)
-  ) {
-    buttons.push({
-      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
-      action: "shuffle_set",
-    });
-  }
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
@@ -354,6 +343,37 @@ export const computeMediaControls = (
     buttons.push({
       icon: mdiSkipNext,
       action: "media_next_track",
+    });
+  }
+
+  return buttons.length > 0 ? buttons : undefined;
+};
+
+export const computeMediaControls = (
+  stateObj: MediaPlayerEntity
+): ControlButton[] | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+
+  const state = stateObj.state;
+  const shortButtons = computeEssentialMediaControls(stateObj);
+
+  if (shortButtons === undefined) {
+    return undefined;
+  }
+
+  const buttons: ControlButton[] = shortButtons.concat();
+  const stateAttr = stateObj.attributes;
+  const assumedState = stateAttr.assumed_state === true;
+
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET)
+  ) {
+    buttons.unshift({
+      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
+      action: "shuffle_set",
     });
   }
 
