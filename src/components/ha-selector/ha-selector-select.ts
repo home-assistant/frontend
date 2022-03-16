@@ -11,9 +11,9 @@ import "../ha-radio";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: SelectSelector;
+  @property({ attribute: false }) public selector!: SelectSelector;
 
   @property() public value?: string;
 
