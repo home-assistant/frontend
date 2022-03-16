@@ -158,7 +158,7 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       >
         <div class="label">
           ${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.view_status"
+            "ui.dialogs.entity_registry.editor.entity_status"
           )}:
         </div>
         <div class="secondary">
@@ -286,6 +286,9 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       }
       ha-expansion-panel {
         margin-top: 8px;
+      }
+      .label {
+        margin-top: 16px;
       }
     `;
   }
