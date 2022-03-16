@@ -2,7 +2,6 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
 import type { DateSelector } from "../../data/selector";
-import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-date-input";
 
 @customElement("ha-selector-date")
@@ -24,14 +23,9 @@ export class HaDateSelector extends LitElement {
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .value=${this.value}
-        @value-changed=${this._valueChanged}
       >
       </ha-date-input>
     `;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 }
 
