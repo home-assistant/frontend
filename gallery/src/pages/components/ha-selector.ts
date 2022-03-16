@@ -162,9 +162,24 @@ const SCHEMAS: {
         },
       },
       object: { name: "Object", selector: { object: {} } },
+      select_radio: {
+        name: "Select (Radio)",
+        selector: { select: { options: ["Option 1", "Option 2"] } },
+      },
       select: {
         name: "Select",
-        selector: { select: { options: ["Option 1", "Option 2"] } },
+        selector: {
+          select: {
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
       },
       icon: { name: "Icon", selector: { icon: {} } },
       media: { name: "Media", selector: { media: {} } },

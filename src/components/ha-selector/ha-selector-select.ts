@@ -1,3 +1,5 @@
+import "@material/mwc-formfield/mwc-formfield";
+import "../ha-radio";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -21,24 +23,51 @@ export class HaSelectSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected render() {
-    return html`<ha-select
-      fixedMenuPosition
-      naturalMenuWidth
-      .label=${this.label}
-      .value=${this.value}
-      .helper=${this.helper}
-      .disabled=${this.disabled}
-      @closed=${stopPropagation}
-      @selected=${this._valueChanged}
-    >
-      ${this.selector.select.options.map((item: string | SelectOption) => {
-        const value = typeof item === "object" ? item.value : item;
-        const label = typeof item === "object" ? item.label : item;
+  @property({ type: Boolean }) public required = true;
 
-        return html`<mwc-list-item .value=${value}>${label}</mwc-list-item>`;
-      })}
-    </ha-select>`;
+  protected render() {
+    if (this.required && this.selector.select.options!.length < 6) {
+      return html`
+        <div>
+          ${this.label}
+          ${this.selector.select.options.map((item: string | SelectOption) => {
+            const value = typeof item === "object" ? item.value : item;
+            const label = typeof item === "object" ? item.label : item;
+
+            return html`
+              <mwc-formfield .label=${label}>
+                <ha-radio
+                  .checked=${value === this.value}
+                  .value=${value}
+                  .disabled=${this.disabled}
+                  @change=${this._valueChanged}
+                ></ha-radio>
+              </mwc-formfield>
+            `;
+          })}
+        </div>
+      `;
+    }
+
+    return html`
+      <ha-select
+        fixedMenuPosition
+        naturalMenuWidth
+        .label=${this.label}
+        .value=${this.value}
+        .helper=${this.helper}
+        .disabled=${this.disabled}
+        @closed=${stopPropagation}
+        @selected=${this._valueChanged}
+      >
+        ${this.selector.select.options.map((item: string | SelectOption) => {
+          const value = typeof item === "object" ? item.value : item;
+          const label = typeof item === "object" ? item.label : item;
+
+          return html`<mwc-list-item .value=${value}>${label}</mwc-list-item>`;
+        })}
+      </ha-select>
+    `;
   }
 
   private _valueChanged(ev) {
@@ -55,6 +84,9 @@ export class HaSelectSelector extends LitElement {
     return css`
       ha-select {
         width: 100%;
+      }
+      mwc-formfield {
+        display: block;
       }
     `;
   }
