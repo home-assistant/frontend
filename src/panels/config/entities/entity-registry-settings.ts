@@ -304,6 +304,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : ""}
           ${this.entry.device_id
             ? html`
+                <div class="label">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.change_area"
+                  )}:
+                </div>
                 <ha-area-picker
                   .hass=${this.hass}
                   .value=${this._areaId}
@@ -317,20 +322,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   ${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.area_note"
                   )}
+                  ${this._device
+                    ? html`
+                        <button class="link" @click=${this._openDeviceSettings}>
+                          ${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.change_device_area"
+                          )}
+                        </button>
+                      `
+                    : ""}
                 </div>
-                ${this._areaId
-                  ? html`<mwc-button @click=${this._clearArea}
-                      >${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.follow_device_area"
-                      )}</mwc-button
-                    >`
-                  : this._device
-                  ? html`<mwc-button @click=${this._openDeviceSettings}
-                      >${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.change_device_area"
-                      )}</mwc-button
-                    >`
-                  : ""}
               `
             : ""}
         </ha-expansion-panel>
@@ -530,7 +531,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           align-items: center;
         }
         .label {
-          margin-top: 8px;
+          margin-top: 16px;
         }
         .secondary {
           margin: 8px 0;

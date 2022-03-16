@@ -790,6 +790,7 @@
           },
           "unavailable": "This entity is unavailable.",
           "view_status": "Entity view status",
+          "change_area": "Change Area",
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change view status. Disabled by {cause}.",
