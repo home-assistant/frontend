@@ -105,7 +105,7 @@ class ConfigUrlForm extends LitElement {
                   >
                     <ha-switch
                       .disabled=${disabled}
-                      .checked=${hasCloud && externalUrl === null}
+                      .checked=${externalUrl === null}
                       @change=${this._toggleCloud}
                     ></ha-switch>
                   </ha-formfield>
@@ -173,7 +173,11 @@ class ConfigUrlForm extends LitElement {
               ${this.hass.localize("ui.panel.config.url.internal_url_label")}
             </div>
 
-            <ha-formfield label="Automatic">
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.panel.config.url.internal_url_automatic"
+              )}
+            >
               <ha-switch
                 .checked=${this._internalUrlValue === null}
                 @change=${this._toggleInternalAutomatic}
