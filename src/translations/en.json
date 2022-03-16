@@ -225,6 +225,7 @@
       },
       "update": {
         "updating": "Updating",
+        "updating_with_progress": "Updating ({progress}%)",
         "up_to_date": "Up-to-date"
       },
       "timer": {

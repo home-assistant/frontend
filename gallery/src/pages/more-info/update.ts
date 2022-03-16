@@ -1,7 +1,10 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../../../src/components/ha-card";
-import { UPDATE_SUPPORT_BACKUP } from "../../../../src/data/update";
+import {
+  UPDATE_SUPPORT_BACKUP,
+  UPDATE_SUPPORT_PROGRESS,
+} from "../../../../src/data/update";
 import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
 import {
@@ -65,6 +68,7 @@ const ENTITIES = [
   getEntity("update", "update9", "on", {
     ...base_attributes,
     in_progress: 50,
+    supported_features: UPDATE_SUPPORT_PROGRESS,
     friendly_name: "With 50 in_progress",
   }),
   getEntity("update", "update10", "unavailable", {

@@ -1,13 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { FrontendLocaleData } from "../../data/translation";
-import { isUpdating } from "../../data/update";
+import { isUpdating, UPDATE_SUPPORT_PROGRESS } from "../../data/update";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
+import { supportsFeature } from "./supports-feature";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -132,12 +133,17 @@ export const computeStateDisplay = (
   }
 
   if (domain === "update") {
-    // When updating, show "Updating"
+    // When updating, and entity does not support % show "Updating"
+    // When updating, and entity does support % show "Updating (xx%)"
     // When update available, show the version
     // When update is not available, show "Up-to-date"
     return compareState === "on"
       ? isUpdating(stateObj)
-        ? localize("ui.card.update.updating")
+        ? supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS)
+          ? localize("ui.card.update.updating_with_progress", {
+              progress: stateObj.attributes.in_progress,
+            })
+          : localize("ui.card.update.updating")
         : stateObj.attributes.latest_version
       : localize("ui.card.update.up_to_date");
   }
