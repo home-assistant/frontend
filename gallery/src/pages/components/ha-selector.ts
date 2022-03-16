@@ -146,6 +146,7 @@ const SCHEMAS: {
       },
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
+      date: { name: "Date", selector: { date: {} } },
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
