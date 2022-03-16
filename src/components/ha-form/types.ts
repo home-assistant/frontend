@@ -24,6 +24,7 @@ export interface HaFormBaseSchema {
     // This value will be set initially when form is loaded
     suggested_value?: HaFormData;
   };
+  context?: Record<string, string>;
 }
 
 export interface HaFormGridSchema extends HaFormBaseSchema {
