@@ -180,7 +180,7 @@ class ConfigUrlForm extends LitElement {
               )}
             >
               <ha-switch
-                .checked=${internalUrlValue === null}
+                .checked=${internalUrl === null}
                 @change=${this._toggleInternalAutomatic}
               ></ha-switch>
             </ha-formfield>
@@ -197,7 +197,7 @@ class ConfigUrlForm extends LitElement {
                     type="url"
                     placeholder="http://<some IP address>:8123"
                     .disabled=${disabled}
-                    .value=${internalUrlValue || ""}
+                    .value=${internalUrl || ""}
                     @change=${this._handleChange}
                   >
                   </ha-textfield>
@@ -206,11 +206,11 @@ class ConfigUrlForm extends LitElement {
           ${
             // If the user has configured a cert, show an error if
             httpUseHttps && // there is no internal url configured
-            (!internalUrlValue ||
+            (!internalUrl ||
               // the internal url does not start with https
-              !internalUrlValue.startsWith("https://") ||
+              !internalUrl.startsWith("https://") ||
               // the internal url points at an IP address
-              isIPAddress(new URL(internalUrlValue).hostname))
+              isIPAddress(new URL(internalUrl).hostname))
               ? html`
                   <ha-alert
                     .alertType=${this._showCustomInternalUrl
