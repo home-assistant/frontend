@@ -46,6 +46,7 @@ import "./step-flow-loading";
 import "./step-flow-pick-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-progress";
+import "./step-flow-menu";
 
 let instance = 0;
 
@@ -292,6 +293,14 @@ class DataEntryFlowDialog extends LitElement {
                         .hass=${this.hass}
                       ></step-flow-progress>
                     `
+                  : this._step.type === "menu"
+                  ? html`
+                      <step-flow-menu
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                      ></step-flow-menu>
+                    `
                   : this._devices === undefined || this._areas === undefined
                   ? // When it's a create entry result, we will fetch device & area registry
                     html`
@@ -421,7 +430,7 @@ class DataEntryFlowDialog extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.integrations.config_flow.error"
           ),
-          text: err.message || err.body,
+          text: err?.body?.message,
         });
         return;
       } finally {

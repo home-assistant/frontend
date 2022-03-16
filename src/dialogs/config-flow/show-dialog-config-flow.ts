@@ -181,6 +181,21 @@ export const showConfigFlowDialog = (
         : "";
     },
 
+    renderMenuHeader(hass, step) {
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) || hass.localize(`component.${step.handler}.title`)
+      );
+    },
+
+    renderMenuOption(hass, step, option) {
+      return hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.menu_options.${option}`,
+        step.description_placeholders
+      );
+    },
+
     renderLoadingDescription(hass, reason, handler, step) {
       if (!["loading_flow", "loading_step"].includes(reason)) {
         return "";
