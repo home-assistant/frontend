@@ -184,6 +184,7 @@ const SCHEMAS: {
     name: "Multiples",
     input: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
+      device: { name: "Device", selector: { device: { multiple: true } } },
     },
   },
 ];
