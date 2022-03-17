@@ -1,13 +1,13 @@
 import type {
-  HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 
-export const UPDATE_SUPPORT_SPECIFIC_VERSION = 1;
-export const UPDATE_SUPPORT_PROGRESS = 2;
-export const UPDATE_SUPPORT_BACKUP = 4;
+export const UPDATE_SUPPORT_INSTALL = 1;
+export const UPDATE_SUPPORT_SPECIFIC_VERSION = 2;
+export const UPDATE_SUPPORT_PROGRESS = 4;
+export const UPDATE_SUPPORT_BACKUP = 8;
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   current_version: string | null;
@@ -23,9 +23,14 @@ export interface UpdateEntity extends HassEntityBase {
   attributes: UpdateEntityAttributes;
 }
 
-export const isUpdating = (entity: HassEntity | UpdateEntity): boolean =>
-  !supportsFeature(entity, UPDATE_SUPPORT_PROGRESS)
-    ? entity.attributes.in_progress ?? false
-    : typeof entity.attributes.in_progress === "number"
-    ? true
-    : entity.attributes.in_progress ?? false;
+export const usesProgress = (entity: UpdateEntity): boolean =>
+  supportsFeature(entity, UPDATE_SUPPORT_PROGRESS) &&
+  typeof entity.attributes.in_progress === "number";
+
+export const canInstallUpdate = (entity: UpdateEntity): boolean =>
+  supportsFeature(entity, UPDATE_SUPPORT_INSTALL) &&
+  entity.attributes.latest_version !== entity.attributes.current_version &&
+  entity.attributes.latest_version !== entity.attributes.skipped_version;
+
+export const updateIsInstalling = (entity: UpdateEntity): boolean =>
+  usesProgress(entity) ? true : (entity.attributes.in_progress as boolean);

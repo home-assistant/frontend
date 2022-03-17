@@ -4,14 +4,14 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
-  isUpdating,
+  updateIsInstalling,
   UpdateEntity,
   UPDATE_SUPPORT_BACKUP,
+  UPDATE_SUPPORT_INSTALL,
   UPDATE_SUPPORT_PROGRESS,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
@@ -79,21 +79,13 @@ class MoreInfoUpdate extends LitElement {
           </div>`
         : ""}
       ${this.stateObj.attributes.release_summary
-        ? html`
-            <ha-expansion-panel
-              outlined
-              .header=${this.hass.localize(
-                "ui.dialogs.more_info_control.update.summary"
-              )}
-            >
-              <ha-markdown
-                .content=${this.stateObj.attributes.release_summary}
-              ></ha-markdown>
-            </ha-expansion-panel>
-          `
-        : html`<hr />`}
+        ? html`<hr />
+            <ha-markdown
+              .content=${this.stateObj.attributes.release_summary}
+            ></ha-markdown> `
+        : ""}
       ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
-        ? html`
+        ? html`<hr />
             <ha-formfield
               .label=${this.hass.localize(
                 "ui.dialogs.more_info_control.update.create_backup"
@@ -101,28 +93,35 @@ class MoreInfoUpdate extends LitElement {
             >
               <ha-checkbox
                 checked
-                .disabled=${isUpdating(this.stateObj)}
+                .disabled=${updateIsInstalling(this.stateObj)}
               ></ha-checkbox>
-            </ha-formfield>
-          `
+            </ha-formfield> `
         : ""}
-      <div class="actions">
-        <mwc-button
-          @click=${this._handleSkip}
-          .disabled=${skippedVersion ||
-          this.stateObj.state === "off" ||
-          isUpdating(this.stateObj)}
-        >
-          ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
-        </mwc-button>
-        <mwc-button
-          @click=${this._handleInstall}
-          .disabled=${(this.stateObj.state === "off" && !skippedVersion) ||
-          isUpdating(this.stateObj)}
-        >
-          ${this.hass.localize("ui.dialogs.more_info_control.update.install")}
-        </mwc-button>
-      </div>
+      ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
+        ? html`<hr />
+            <div class="actions">
+              <mwc-button
+                @click=${this._handleSkip}
+                .disabled=${skippedVersion ||
+                this.stateObj.state === "off" ||
+                updateIsInstalling(this.stateObj)}
+              >
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.skip"
+                )}
+              </mwc-button>
+              <mwc-button
+                @click=${this._handleInstall}
+                .disabled=${(this.stateObj.state === "off" &&
+                  !skippedVersion) ||
+                updateIsInstalling(this.stateObj)}
+              >
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.install"
+                )}
+              </mwc-button>
+            </div>`
+        : ""}
     `;
   }
 

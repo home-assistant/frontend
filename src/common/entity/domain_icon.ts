@@ -27,8 +27,10 @@ import {
   mdiCloseCircleOutline,
   mdiWeatherNight,
   mdiPackage,
+  mdiPackageDown,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
+import { updateIsInstalling, UpdateEntity } from "../../data/update";
 /**
  * Return the icon to be used for a domain.
  *
@@ -136,7 +138,11 @@ export const domainIcon = (
         : mdiWeatherNight;
 
     case "update":
-      return compareState === "on" ? mdiPackageUp : mdiPackage;
+      return compareState === "on"
+        ? updateIsInstalling(stateObj as UpdateEntity)
+          ? mdiPackageDown
+          : mdiPackageUp
+        : mdiPackage;
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

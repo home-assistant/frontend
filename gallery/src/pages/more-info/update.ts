@@ -4,6 +4,7 @@ import "../../../../src/components/ha-card";
 import {
   UPDATE_SUPPORT_BACKUP,
   UPDATE_SUPPORT_PROGRESS,
+  UPDATE_SUPPORT_INSTALL,
 } from "../../../../src/data/update";
 import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
@@ -18,7 +19,7 @@ const base_attributes = {
   current_version: "1.2.2",
   latest_version: "1.2.3",
   release_url: "https://home-assistant.io",
-  supported_features: 0,
+  supported_features: UPDATE_SUPPORT_INSTALL,
   skipped_version: null,
   in_progress: false,
   release_summary:
@@ -57,7 +58,8 @@ const ENTITIES = [
   }),
   getEntity("update", "update7", "on", {
     ...base_attributes,
-    supported_features: UPDATE_SUPPORT_BACKUP,
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_BACKUP,
     friendly_name: "With backup support",
   }),
   getEntity("update", "update8", "on", {
@@ -68,25 +70,33 @@ const ENTITIES = [
   getEntity("update", "update9", "on", {
     ...base_attributes,
     in_progress: 25,
-    supported_features: UPDATE_SUPPORT_PROGRESS,
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_PROGRESS,
     friendly_name: "With 25 in_progress",
   }),
   getEntity("update", "update10", "on", {
     ...base_attributes,
     in_progress: 50,
-    supported_features: UPDATE_SUPPORT_PROGRESS,
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_PROGRESS,
     friendly_name: "With 50 in_progress",
   }),
   getEntity("update", "update11", "on", {
     ...base_attributes,
     in_progress: 75,
-    supported_features: UPDATE_SUPPORT_PROGRESS,
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_PROGRESS,
     friendly_name: "With 75 in_progress",
   }),
   getEntity("update", "update12", "unavailable", {
     ...base_attributes,
     in_progress: 50,
     friendly_name: "Unavailable",
+  }),
+  getEntity("update", "update13", "on", {
+    ...base_attributes,
+    supported_features: 0,
+    friendly_name: "No install support",
   }),
 ];
 

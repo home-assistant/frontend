@@ -722,7 +722,6 @@
           "current_version": "Current version",
           "latest_version": "Latest version",
           "full_changelog": "Full changelog",
-          "summary": "Summary",
           "skip": "Skip",
           "install": "Install",
           "create_backup": "Create backup before updating"
