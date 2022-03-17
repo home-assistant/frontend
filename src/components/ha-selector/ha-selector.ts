@@ -10,6 +10,7 @@ import "./ha-selector-attribute";
 import "./ha-selector-boolean";
 import "./ha-selector-color-rgb";
 import "./ha-selector-date";
+import "./ha-selector-datetime";
 import "./ha-selector-device";
 import "./ha-selector-duration";
 import "./ha-selector-entity";
