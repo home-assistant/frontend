@@ -33,6 +33,7 @@ import {
   fetchDiagnosticHandler,
   getDeviceDiagnosticsDownloadUrl,
   getConfigEntryDiagnosticsDownloadUrl,
+  DiagnosticInfo,
 } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -219,22 +220,32 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     let links = await Promise.all(
-      this._integrations(device, this.entries).map(async (entry) => {
-        if (entry.state !== "loaded") {
-          return false;
-        }
-        const info = await fetchDiagnosticHandler(this.hass, entry.domain);
+      this._integrations(device, this.entries).map(
+        async (entry): Promise<boolean | { link: string; domain: string }> => {
+          if (entry.state !== "loaded") {
+            return false;
+          }
+          let info: DiagnosticInfo;
+          try {
+            info = await fetchDiagnosticHandler(this.hass, entry.domain);
+          } catch (err: any) {
+            if (err.code === "not_found") {
+              return false;
+            }
+            throw err;
+          }
 
-        if (!info.handlers.device && !info.handlers.config_entry) {
-          return false;
+          if (!info.handlers.device && !info.handlers.config_entry) {
+            return false;
+          }
+          return {
+            link: info.handlers.device
+              ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
+              : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
+            domain: entry.domain,
+          };
         }
-        return {
-          link: info.handlers.device
-            ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
-            : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
-          domain: entry.domain,
-        };
-      })
+      )
     );
 
     links = links.filter(Boolean);
