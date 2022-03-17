@@ -73,7 +73,7 @@ class MoreInfoUpdate extends LitElement {
                 rel="noreferrer"
               >
                 ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.full_changelog"
+                  "ui.dialogs.more_info_control.update.release_announcement"
                 )}
               </a>
             </div>
@@ -178,6 +178,9 @@ class MoreInfoUpdate extends LitElement {
 
       .actions mwc-button {
         margin: 0 4px 4px;
+      }
+      a {
+        color: var(--primary-color);
       }
     `;
   }

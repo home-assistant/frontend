@@ -721,7 +721,7 @@
         "update": {
           "current_version": "Current version",
           "latest_version": "Latest version",
-          "full_changelog": "Full changelog",
+          "release_announcement": "Read release announcement",
           "skip": "Skip",
           "install": "Install",
           "create_backup": "Create backup before updating"
