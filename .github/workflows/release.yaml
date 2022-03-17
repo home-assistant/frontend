@@ -50,9 +50,11 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v0.1.14
         with:
-          files: dist/*
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
 
   wheels-init:
     name: Init wheels build
