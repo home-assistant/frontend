@@ -3,6 +3,7 @@ export type Selector =
   | AttributeSelector
   | EntitySelector
   | DateSelector
+  | DateTimeSelector
   | DeviceSelector
   | DurationSelector
   | AreaSelector
@@ -44,6 +45,11 @@ export interface ColorRGBSelector {
 export interface DateSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   date: {};
+}
+
+export interface DateTimeSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  datetime: {};
 }
 
 export interface DeviceSelector {
