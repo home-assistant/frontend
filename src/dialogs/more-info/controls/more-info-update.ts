@@ -13,6 +13,7 @@ import {
   UPDATE_SUPPORT_BACKUP,
   UPDATE_SUPPORT_INSTALL,
   UPDATE_SUPPORT_PROGRESS,
+  UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 
@@ -140,6 +141,9 @@ class MoreInfoUpdate extends LitElement {
     this.hass.callService("update", "install", {
       entity_id: this.stateObj!.entity_id,
       backup: this._shouldCreateBackup,
+      version: supportsFeature(this.stateObj!, UPDATE_SUPPORT_SPECIFIC_VERSION)
+        ? this.stateObj!.attributes.latest_version
+        : null,
     });
   }
 
