@@ -97,19 +97,18 @@ class MoreInfoUpdate extends LitElement {
               ></ha-checkbox>
             </ha-formfield> `
         : ""}
-      ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
-        ? html`<hr />
-            <div class="actions">
-              <mwc-button
-                @click=${this._handleSkip}
-                .disabled=${skippedVersion ||
-                this.stateObj.state === "off" ||
-                updateIsInstalling(this.stateObj)}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.update.skip"
-                )}
-              </mwc-button>
+      <hr />
+      <div class="actions">
+        <mwc-button
+          @click=${this._handleSkip}
+          .disabled=${skippedVersion ||
+          this.stateObj.state === "off" ||
+          updateIsInstalling(this.stateObj)}
+        >
+          ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
+        </mwc-button>
+        ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
+          ? html`
               <mwc-button
                 @click=${this._handleInstall}
                 .disabled=${(this.stateObj.state === "off" &&
@@ -120,8 +119,9 @@ class MoreInfoUpdate extends LitElement {
                   "ui.dialogs.more_info_control.update.install"
                 )}
               </mwc-button>
-            </div>`
-        : ""}
+            `
+          : ""}
+      </div>
     `;
   }
 
