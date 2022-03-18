@@ -86,7 +86,7 @@ export class HaEntityPicker extends LitElement {
   public includeEntities?: string[];
 
   /**
-   * Show only these entities
+   * Show no entities in this list
    * @type {Array}
    * @attr exclude-entities
    */
