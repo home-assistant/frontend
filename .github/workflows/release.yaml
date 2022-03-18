@@ -10,6 +10,12 @@ env:
   NODE_VERSION: 14
   NODE_OPTIONS: --max_old_space_size=6144
 
+# Set default workflow permissions
+# All scopes not mentioned here are set to no access
+# https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+permissions:
+  actions: none
+
 jobs:
   release:
     name: Release
