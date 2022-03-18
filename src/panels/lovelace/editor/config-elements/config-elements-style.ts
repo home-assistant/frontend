@@ -25,5 +25,6 @@ export const configElementStyle = css`
   ha-textfield,
   ha-icon-picker {
     margin-top: 8px;
+    display: block;
   }
 `;
