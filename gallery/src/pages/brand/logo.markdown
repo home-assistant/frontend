@@ -6,7 +6,7 @@ title: "Logo"
 
 # Using our logo
 
-As a community we are proud of our logo. Follow these guidelines to ensure it always looks its best. Our logo follows Googles material design spec and uses the blue interface color.
+As a community, we are proud of our logo. Follow these guidelines to ensure it always looks its best. Our logo follows Google's material design spec and uses the blue interface color.
 
 [Download Logo](https://github.com/home-assistant/assets/tree/master/logo)
 
