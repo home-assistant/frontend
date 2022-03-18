@@ -77,6 +77,22 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Array, attribute: "include-unit-of-measurement" })
   public includeUnitOfMeasurement?: string[];
 
+  /**
+   * Show only these entities
+   * @type {Array}
+   * @attr include-entities
+   */
+  @property({ type: Array, attribute: "include-entities" })
+  public includeEntities?: string[];
+
+  /**
+   * Show only these entities
+   * @type {Array}
+   * @attr exclude-entities
+   */
+  @property({ type: Array, attribute: "exclude-entities" })
+  public excludeEntities?: string[];
+
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean }) public hideClearIcon = false;
@@ -109,7 +125,9 @@ export class HaEntityPicker extends LitElement {
       excludeDomains: this["excludeDomains"],
       entityFilter: this["entityFilter"],
       includeDeviceClasses: this["includeDeviceClasses"],
-      includeUnitOfMeasurement: this["includeUnitOfMeasurement"]
+      includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
+      includeEntities: this["includeEntities"],
+      excludeEntities: this["excludeEntities"]
     ): HassEntityWithCachedName[] => {
       let states: HassEntityWithCachedName[] = [];
 
@@ -137,6 +155,23 @@ export class HaEntityPicker extends LitElement {
             },
           },
         ];
+      }
+
+      if (includeEntities) {
+        entityIds = entityIds.filter((entityId) =>
+          this.includeEntities!.includes(entityId)
+        );
+
+        return entityIds.sort().map((key) => ({
+          ...hass!.states[key],
+          friendly_name: computeStateName(hass!.states[key]) || key,
+        }));
+      }
+
+      if (excludeEntities) {
+        entityIds = entityIds.filter(
+          (entityId) => !excludeEntities!.includes(entityId)
+        );
       }
 
       if (includeDomains) {
@@ -231,7 +266,9 @@ export class HaEntityPicker extends LitElement {
         this.excludeDomains,
         this.entityFilter,
         this.includeDeviceClasses,
-        this.includeUnitOfMeasurement
+        this.includeUnitOfMeasurement,
+        this.includeEntities,
+        this.excludeEntities
       );
       if (this._initedStates) {
         (this.comboBox as any).filteredItems = this._states;
