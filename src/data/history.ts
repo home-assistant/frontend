@@ -345,6 +345,17 @@ export const getStatisticIds = (
     statistic_type,
   });
 
+export const getStatisticMetadata = (
+  hass: HomeAssistant,
+  statistic_ids?: string[],
+  statistic_type?: "mean" | "sum"
+) =>
+  hass.callWS<StatisticsMetaData[]>({
+    type: "recorder/get_statistics_metadata",
+    statistic_ids,
+    statistic_type,
+  });
+
 export const fetchStatistics = (
   hass: HomeAssistant,
   startTime: Date,

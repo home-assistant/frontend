@@ -16,7 +16,7 @@ import {
   fetchStatistics,
   Statistics,
   StatisticsMetaData,
-  getStatisticIds,
+  getStatisticMetadata,
 } from "./history";
 
 const energyCollectionKeys: (string | undefined)[] = [];
@@ -67,7 +67,6 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   entity_energy_from: null,
   entity_energy_price: null,
   number_energy_price: null,
-  unit_of_measurement: null,
 });
 
 interface EnergySolarForecast {
@@ -142,7 +141,7 @@ export interface GasSourceTypeEnergyPreference {
   entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
-  unit_of_measurement: string | null;
+  unit_of_measurement?: string | null;
 }
 
 type EnergySource =
@@ -278,9 +277,15 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   const statIDs: string[] = [];
-  const statisticIdsWithMeta: StatisticsMetaData[] = await getStatisticIds(
-    hass
-  );
+  const gasSources: GasSourceTypeEnergyPreference[] =
+    prefs.energy_sources.filter(
+      (source) => source.type === "gas"
+    ) as GasSourceTypeEnergyPreference[];
+  const gasStatisticIdsWithMeta: StatisticsMetaData[] =
+    await getStatisticMetadata(
+      hass,
+      gasSources.map((source) => source.stat_energy_from)
+    );
 
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
@@ -292,7 +297,7 @@ const getEnergyData = async (
       statIDs.push(source.stat_energy_from);
       const entity = hass.states[source.stat_energy_from];
       if (!entity) {
-        for (const statisticIdWithMeta of statisticIdsWithMeta) {
+        for (const statisticIdWithMeta of gasStatisticIdsWithMeta) {
           if (
             statisticIdWithMeta?.statistic_id === source.stat_energy_from &&
             statisticIdWithMeta?.unit_of_measurement
