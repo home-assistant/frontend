@@ -43,6 +43,8 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .value=${this.value}
         .entityFilter=${this._filterEntities}
+        .includeEntities=${this.selector.entity.includeEntities}
+        .excludeEntities=${this.selector.entity.excludeEntities}
       ></ha-entities-picker>
     `;
   }
