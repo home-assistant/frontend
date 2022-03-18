@@ -21,7 +21,7 @@ Our icon is a shorter and most used version of our logo. The icon can exist with
 
 ## Using the right variant
 
-The pretty blue logo with a background shadow, pictured top left, is our primary logo. It should only be used with black, white, and non-duotoned photography.
+The pretty blue logo with a background shadow, pictured top left, is our primary logo. It should only be used with black, white, and non-duotone photography.
 
 When needed you can use our logo without a shadow, as seen as the second variant. 
 
