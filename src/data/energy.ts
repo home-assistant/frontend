@@ -241,14 +241,14 @@ const getEnergyData = async (
   end?: Date
 ): Promise<EnergyData> => {
   const [configEntries, entityRegistryEntries, info] = await Promise.all([
-    getConfigEntries(hass),
+    getConfigEntries(hass, { domain: "co2signal" }),
     subscribeOne(hass.connection, subscribeEntityRegistry),
     getEnergyInfo(hass),
   ]);
 
-  const co2SignalConfigEntry = configEntries.find(
-    (entry) => entry.domain === "co2signal"
-  );
+  const co2SignalConfigEntry = configEntries.length
+    ? configEntries[0]
+    : undefined;
 
   let co2SignalEntity: string | undefined;
 
