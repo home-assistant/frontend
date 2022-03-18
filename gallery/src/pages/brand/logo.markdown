@@ -29,6 +29,6 @@ The outlined logo should only be used on packaging.
 
 ## Exclusion zone
 
-The logo needs some personal space. TIt's exclusion zone is equal to a quarter the height of the icon.
+The logo needs some personal space. It's exclusion zone is equal to a quarter the height of the icon.
 
 ![Clearspace](/images/clearspace.png)
