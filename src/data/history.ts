@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -6,7 +7,11 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { FrontendLocaleData } from "./translation";
 
-const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
+export const DOMAINS_USE_LAST_UPDATED = [
+  "climate",
+  "humidifier",
+  "water_heater",
+];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
   "current_temperature",
@@ -131,6 +136,13 @@ export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
 
+export const entityIdHistoryNeedsAttributes = (
+  hass: HomeAssistant,
+  entityId: string
+) =>
+  !hass.states[entityId] ||
+  DOMAINS_USE_LAST_UPDATED.includes(computeDomain(entityId));
+
 export const fetchRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -138,7 +150,8 @@ export const fetchRecent = (
   endTime: Date,
   skipInitialState = false,
   significantChangesOnly?: boolean,
-  minimalResponse = true
+  minimalResponse = true,
+  noAttributes?: boolean
 ): Promise<HassEntity[][]> => {
   let url = "history/period";
   if (startTime) {
@@ -157,7 +170,9 @@ export const fetchRecent = (
   if (minimalResponse) {
     url += "&minimal_response";
   }
-
+  if (noAttributes) {
+    url += "&no_attributes";
+  }
   return hass.callApi("GET", url);
 };
 
@@ -171,6 +186,10 @@ export const fetchDate = (
     "GET",
     `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
       entityId ? `&filter_entity_id=${entityId}` : ``
+    }${
+      entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
+        ? `&no_attributes`
+        : ``
     }`
   );
 
@@ -278,6 +297,10 @@ const processLineChartEntities = (
   };
 };
 
+const stateUsesUnits = (state: HassEntity) =>
+  "unit_of_measurement" in state.attributes ||
+  "state_class" in state.attributes;
+
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HassEntity[][],
@@ -294,16 +317,18 @@ export const computeHistory = (
       return;
     }
 
-    const stateWithUnitorStateClass = stateInfo.find(
-      (state) =>
-        state.attributes &&
-        ("unit_of_measurement" in state.attributes ||
-          "state_class" in state.attributes)
-    );
+    const entityId = stateInfo[0].entity_id;
+    const currentState =
+      entityId in hass.states ? hass.states[entityId] : undefined;
+    const stateWithUnitorStateClass =
+      !currentState &&
+      stateInfo.find((state) => state.attributes && stateUsesUnits(state));
 
     let unit: string | undefined;
 
-    if (stateWithUnitorStateClass) {
+    if (currentState && stateUsesUnits(currentState)) {
+      unit = currentState.attributes.unit_of_measurement || " ";
+    } else if (stateWithUnitorStateClass) {
       unit = stateWithUnitorStateClass.attributes.unit_of_measurement || " ";
     } else {
       unit = {
@@ -313,7 +338,7 @@ export const computeHistory = (
         input_number: "#",
         number: "#",
         water_heater: hass.config.unit_system.temperature,
-      }[computeStateDomain(stateInfo[0])];
+      }[computeDomain(entityId)];
     }
 
     if (!unit) {
