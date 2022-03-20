@@ -7,9 +7,12 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { FrontendLocaleData } from "./translation";
 
-export const DOMAINS_USE_LAST_UPDATED = [
+const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
+const NEED_ATTRIBUTE_DOMAINS = [
   "climate",
   "humidifier",
+  "input_datetime",
+  "thermostat",
   "water_heater",
 ];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -141,7 +144,7 @@ export const entityIdHistoryNeedsAttributes = (
   entityId: string
 ) =>
   !hass.states[entityId] ||
-  DOMAINS_USE_LAST_UPDATED.includes(computeDomain(entityId));
+  NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
 
 export const fetchRecent = (
   hass: HomeAssistant,
