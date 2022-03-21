@@ -14,4 +14,4 @@ Technoid users in home networking and development that know how to code.
 
 # Questioner
 
-Users who want a more advanced home automation, but need support to make it work.
+Users who want more advanced home automation, but need support to make it work.
