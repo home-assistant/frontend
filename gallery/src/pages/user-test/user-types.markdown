@@ -10,7 +10,7 @@ Users that outgrow big tech smart home solutions. It just needs to work with eas
 
 # Tinkerers
 
-Technoid users in home networking and development that knows how to code.
+Technoid users in home networking and development that know how to code.
 
 # Questioner
 
