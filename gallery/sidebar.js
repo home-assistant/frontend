@@ -42,10 +42,10 @@ module.exports = [
   },
   {
     category: "user-test",
-    header: "User Tests",
+    header: "Users",
   },
   {
     category: "design.home-assistant.io",
-    header: "Design Documentation",
+    header: "About",
   },
 ];
