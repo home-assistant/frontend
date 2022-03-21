@@ -6,7 +6,7 @@ We have defined three user types for Home Assistant. They are a lean segmentatio
 
 # Outgrowers
 
-Users that outgrow big tech smart home sollutions. It just needs to work with easy setup via an app.
+Users that outgrow big tech smart home solutions. It just needs to work with easy setup via an app.
 
 # Tinkerers
 
