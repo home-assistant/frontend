@@ -46,6 +46,7 @@ module.exports = [
     pages: [
       "user-types.markdown",
       "configuration-menu.markdown",
+    ],
   },
   {
     category: "design.home-assistant.io",
