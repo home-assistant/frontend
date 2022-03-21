@@ -84,9 +84,11 @@ class HaWebRtcPlayer extends LitElement {
     this._error = undefined;
 
     const peerConnection = new RTCPeerConnection({
-      iceServers: [{
-        urls: ["stun:stun.l.google.com:19302"]
-      }]
+      iceServers: [
+        {
+          urls: ["stun:stun.l.google.com:19302"],
+        },
+      ],
     });
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
