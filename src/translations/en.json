@@ -224,8 +224,8 @@
         "run": "Run"
       },
       "update": {
-        "updating": "Updating",
-        "updating_with_progress": "Updating ({progress}%)",
+        "installing": "Installing",
+        "installing_with_progress": "Installing ({progress}%)",
         "up_to_date": "Up-to-date"
       },
       "timer": {

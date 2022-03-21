@@ -137,18 +137,18 @@ export const computeStateDisplay = (
   }
 
   if (domain === "update") {
-    // When updating, and entity does not support % show "Updating"
-    // When updating, and entity does support % show "Updating (xx%)"
+    // When updating, and entity does not support % show "Installing"
+    // When updating, and entity does support % show "Installing (xx%)"
     // When update available, show the version
     // When the latest version is skipped, show the latest version
     // When update is not available, show "Up-to-date"
     return compareState === "on"
       ? updateIsInstalling(stateObj as UpdateEntity)
         ? supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS)
-          ? localize("ui.card.update.updating_with_progress", {
+          ? localize("ui.card.update.installing_with_progress", {
               progress: stateObj.attributes.in_progress,
             })
-          : localize("ui.card.update.updating")
+          : localize("ui.card.update.installing")
         : stateObj.attributes.latest_version
       : stateObj.attributes.skipped_version ===
         stateObj.attributes.latest_version
