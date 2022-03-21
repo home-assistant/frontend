@@ -7,6 +7,7 @@ import {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
+  entityIdHistoryNeedsAttributes,
 } from "./history";
 
 export interface CacheConfig {
@@ -53,7 +54,17 @@ export const getRecent = (
     return cache.data;
   }
 
-  const prom = fetchRecent(hass, entityId, startTime, endTime).then(
+  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
+  const prom = fetchRecent(
+    hass,
+    entityId,
+    startTime,
+    endTime,
+    false,
+    undefined,
+    true,
+    noAttributes
+  ).then(
     (stateHistory) => computeHistory(hass, stateHistory, localize),
     (err) => {
       delete RECENT_CACHE[entityId];
@@ -120,6 +131,7 @@ export const getRecentWithCache = (
   }
 
   const curCacheProm = cache.prom;
+  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
 
   const genProm = async () => {
     let fetchedHistory: HassEntity[][];
@@ -132,7 +144,10 @@ export const getRecentWithCache = (
           entityId,
           toFetchStartTime,
           endTime,
-          appendingToCache
+          appendingToCache,
+          undefined,
+          true,
+          noAttributes
         ),
       ]);
       fetchedHistory = results[1];
