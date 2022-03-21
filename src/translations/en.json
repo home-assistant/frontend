@@ -1334,8 +1334,12 @@
               "name": "Name",
               "entity_id": "Entity ID",
               "type": "Type",
-              "editable": "Editable"
+              "editable": "Editable",
+              "actions": "[%key:ui::panel::config::automation::picker::headers::actions%]"
             },
+            "edit_helper": "Edit helper",
+            "delete_helper": "Delete helper",
+            "delete_confirm": "Are you sure you want to delete this helper?",
             "add_helper": "Add helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
           },

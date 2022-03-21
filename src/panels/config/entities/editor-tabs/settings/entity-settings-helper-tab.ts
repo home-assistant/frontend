@@ -11,49 +11,10 @@ import { isComponentLoaded } from "../../../../../common/config/is_component_loa
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
-  deleteCounter,
-  fetchCounter,
-  updateCounter,
-} from "../../../../../data/counter";
-import {
   ExtEntityRegistryEntry,
   removeEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import {
-  deleteInputBoolean,
-  fetchInputBoolean,
-  updateInputBoolean,
-} from "../../../../../data/input_boolean";
-import {
-  deleteInputButton,
-  fetchInputButton,
-  updateInputButton,
-} from "../../../../../data/input_button";
-import {
-  deleteInputDateTime,
-  fetchInputDateTime,
-  updateInputDateTime,
-} from "../../../../../data/input_datetime";
-import {
-  deleteInputNumber,
-  fetchInputNumber,
-  updateInputNumber,
-} from "../../../../../data/input_number";
-import {
-  deleteInputSelect,
-  fetchInputSelect,
-  updateInputSelect,
-} from "../../../../../data/input_select";
-import {
-  deleteInputText,
-  fetchInputText,
-  updateInputText,
-} from "../../../../../data/input_text";
-import {
-  deleteTimer,
-  fetchTimer,
-  updateTimer,
-} from "../../../../../data/timer";
+import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -68,49 +29,6 @@ import "../../../helpers/forms/ha-input_text-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../entity-registry-basic-editor";
 import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
-
-const HELPERS = {
-  input_boolean: {
-    fetch: fetchInputBoolean,
-    update: updateInputBoolean,
-    delete: deleteInputBoolean,
-  },
-  input_button: {
-    fetch: fetchInputButton,
-    update: updateInputButton,
-    delete: deleteInputButton,
-  },
-  input_text: {
-    fetch: fetchInputText,
-    update: updateInputText,
-    delete: deleteInputText,
-  },
-  input_number: {
-    fetch: fetchInputNumber,
-    update: updateInputNumber,
-    delete: deleteInputNumber,
-  },
-  input_datetime: {
-    fetch: fetchInputDateTime,
-    update: updateInputDateTime,
-    delete: deleteInputDateTime,
-  },
-  input_select: {
-    fetch: fetchInputSelect,
-    update: updateInputSelect,
-    delete: deleteInputSelect,
-  },
-  counter: {
-    fetch: fetchCounter,
-    update: updateCounter,
-    delete: deleteCounter,
-  },
-  timer: {
-    fetch: fetchTimer,
-    update: updateTimer,
-    delete: deleteTimer,
-  },
-};
 
 @customElement("entity-settings-helper-tab")
 export class EntityRegistrySettingsHelper extends LitElement {
@@ -198,7 +116,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
   }
 
   private async _getItem() {
-    const items = await HELPERS[this.entry.platform].fetch(this.hass!);
+    const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
     this._item = items.find((item) => item.id === this.entry.unique_id) || null;
   }
 
@@ -206,7 +124,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     this._submitting = true;
     try {
       if (this._componentLoaded && this._item) {
-        await HELPERS[this.entry.platform].update(
+        await HELPERS_CRUD[this.entry.platform].update(
           this.hass!,
           this._item.id,
           this._item
@@ -236,7 +154,10 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
     try {
       if (this._componentLoaded && this._item) {
-        await HELPERS[this.entry.platform].delete(this.hass!, this._item.id);
+        await HELPERS_CRUD[this.entry.platform].delete(
+          this.hass!,
+          this._item.id
+        );
       } else {
         const stateObj = this.hass.states[this.entry.entity_id];
         if (!stateObj?.attributes.restored) {
