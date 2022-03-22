@@ -1,10 +1,12 @@
 import "@material/mwc-button/mwc-button";
+import { mdiSlopeUphill } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
@@ -24,6 +26,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
+import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
 const FIX_ISSUES_ORDER = {
   no_state: 0,
@@ -110,6 +113,30 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
               </mwc-button>`
             : ""}`,
         width: "113px",
+      },
+      actions: {
+        title: "",
+        type: "overflow-menu",
+        template: (
+          _info,
+          statistic: StatisticsMetaData
+        ) => html`<ha-icon-overflow-menu
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .items=${[
+            {
+              path: mdiSlopeUphill,
+              label: localize(
+                "ui.panel.developer-tools.tabs.statistics.adjust_sum"
+              ),
+              action: () =>
+                showStatisticsAdjustSumDialog(this, {
+                  statistic: statistic,
+                }),
+            },
+          ]}
+          style="color: var(--secondary-text-color)"
+        ></ha-icon-overflow-menu>`,
       },
     })
   );
