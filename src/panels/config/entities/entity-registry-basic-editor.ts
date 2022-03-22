@@ -1,13 +1,13 @@
-import "../../../components/ha-expansion-panel";
 import "@material/mwc-formfield/mwc-formfield";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-area-picker";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-radio";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import "../../../components/ha-radio";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -182,9 +182,12 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="enabled"
               .checked=${!this._hiddenBy && !this._disabledBy}
-              .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
-              this._device?.disabled_by ||
-              (this._disabledBy && this._disabledBy !== "user")}
+              .disabled=${this._device?.disabled_by ||
+              (this._disabledBy &&
+                !(
+                  this._disabledBy === "user" ||
+                  this._disabledBy === "integration"
+                ))}
               @change=${this._viewStatusChanged}
             ></ha-radio>
           </mwc-formfield>
@@ -197,9 +200,12 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="hidden"
               .checked=${this._hiddenBy !== null}
-              .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
-              Boolean(this._device?.disabled_by) ||
-              (this._disabledBy && this._disabledBy !== "user")}
+              .disabled=${this._device?.disabled_by ||
+              (this._disabledBy &&
+                !(
+                  this._disabledBy === "user" ||
+                  this._disabledBy === "integration"
+                ))}
               @change=${this._viewStatusChanged}
             ></ha-radio>
           </mwc-formfield>
@@ -212,9 +218,12 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="disabled"
               .checked=${this._disabledBy !== null}
-              .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
-              Boolean(this._device?.disabled_by) ||
-              (this._disabledBy && this._disabledBy !== "user")}
+              .disabled=${this._device?.disabled_by ||
+              (this._disabledBy &&
+                !(
+                  this._disabledBy === "user" ||
+                  this._disabledBy === "integration"
+                ))}
               @change=${this._viewStatusChanged}
             ></ha-radio>
           </mwc-formfield>
