@@ -27,10 +27,6 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
-import {
-  fetchSupervisorAvailableUpdates,
-  SupervisorAvailableUpdates,
-} from "../../data/supervisor/root";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -397,8 +393,6 @@ class HaPanelConfig extends HassRouterPage {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[] | null;
-
   private _listeners: Array<() => void> = [];
 
   public connectedCallback() {
@@ -433,19 +427,7 @@ class HaPanelConfig extends HassRouterPage {
         }
       });
     }
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._loadSupervisorUpdates();
-      this.addEventListener("ha-refresh-supervisor", () => {
-        this._loadSupervisorUpdates();
-      });
-      this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
-          this._loadSupervisorUpdates();
-        }
-      });
-    } else {
-      this._supervisorUpdates = null;
-    }
+
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
     );
@@ -476,7 +458,6 @@ class HaPanelConfig extends HassRouterPage {
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
-        supervisorUpdates: this._supervisorUpdates,
       });
     } else {
       el.route = this.routeTail;
@@ -485,7 +466,6 @@ class HaPanelConfig extends HassRouterPage {
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
-      el.supervisorUpdates = this._supervisorUpdates;
     }
   }
 
@@ -501,16 +481,6 @@ class HaPanelConfig extends HassRouterPage {
         !this._cloudStatus.remote_connected)
     ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
-    }
-  }
-
-  private async _loadSupervisorUpdates(): Promise<void> {
-    try {
-      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
-        this.hass
-      );
-    } catch (err) {
-      this._supervisorUpdates = null;
     }
   }
 }
