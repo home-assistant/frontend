@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
@@ -7,23 +7,20 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
-import {
-  ConfigEntry,
-  deleteConfigEntry,
-  getConfigEntries,
-} from "../../../data/config_entries";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   EntityRegistryEntry,
-  getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -32,9 +29,6 @@ import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { HELPERS_CRUD } from "../../../data/helpers_crud";
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -126,36 +120,26 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       };
       columns.editable = {
         title: "",
-        label: localize("ui.panel.config.helpers.picker.headers.actions"),
-        type: "overflow-menu",
-        template: (editable, item) => html`
-          <ha-icon-overflow-menu
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .items=${[
-              editable
-                ? {
-                    path: mdiPencil,
-                    label: localize(
-                      "ui.panel.config.helpers.picker.edit_helper"
-                    ),
-                    action: () => this._openEditDialog(item.entity_id),
-                  }
-                : {
-                    path: mdiPencilOff,
-                    disabled: true,
-                    tooltip: localize(
+        label: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.editable"
+        ),
+        type: "icon",
+        template: (editable) => html`
+          ${!editable
+            ? html`
+                <div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
+                  <paper-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize(
                       "ui.panel.config.entities.picker.status.readonly"
-                    ),
-                  },
-              {
-                path: mdiDelete,
-                label: localize("ui.panel.config.helpers.picker.delete_helper"),
-                action: () => this._handleRemove(item.entity_id),
-              },
-            ]}
-            style="color: var(--secondary-text-color)"
-          ></ha-icon-overflow-menu>
+                    )}
+                  </paper-tooltip>
+                </div>
+              `
+            : ""}
         `,
       };
       return columns;
@@ -213,7 +197,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this._entityEntries,
           this._configEntries
         )}
+        @row-click=${this._openEditDialog}
         hasFab
+        clickable
         .noDataText=${this.hass.localize(
           "ui.panel.config.helpers.picker.no_helpers"
         )}
@@ -297,54 +283,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _openEditDialog(entityId: string): Promise<void> {
-    const configEntry = getConfigEntry(
-      this._entityEntries!,
-      this._configEntries!,
-      entityId
-    );
-
-    if (!configEntry) {
-      showEntityEditorDialog(this, {
-        entity_id: entityId,
-      });
-      return;
-    }
-
-    showOptionsFlowDialog(this, configEntry);
-  }
-
-  private async _handleRemove(entityId: string): Promise<void> {
-    const configEntry = getConfigEntry(
-      this._entityEntries!,
-      this._configEntries!,
-      entityId
-    );
-
-    if (
-      !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.helpers.picker.delete_confirm"
-        ),
-        confirmText: this.hass!.localize("ui.common.delete"),
-        dismissText: this.hass!.localize("ui.common.cancel"),
-      }))
-    ) {
-      return;
-    }
-
-    if (configEntry) {
-      await deleteConfigEntry(this.hass, configEntry.entry_id);
-      this._getConfigEntries();
-      return;
-    }
-
-    const domain = computeDomain(entityId);
-    const entityEntry = await getExtendedEntityRegistryEntry(
-      this.hass,
-      entityId
-    );
-    await HELPERS_CRUD[domain].delete(this.hass, entityEntry.unique_id);
+  private async _openEditDialog(ev: CustomEvent): Promise<void> {
+    const entityId = (ev.detail as RowClickedEvent).id;
+    showEntityEditorDialog(this, {
+      entity_id: entityId,
+    });
   }
 
   private _createHelpler() {
