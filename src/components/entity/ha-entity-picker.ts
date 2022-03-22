@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { stringCompare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
@@ -169,7 +169,10 @@ export class HaEntityPicker extends LitElement {
             friendly_name: computeStateName(hass!.states[key]) || key,
           }))
           .sort((entityA, entityB) =>
-            stringCompare(entityA.friendly_name, entityB.friendly_name)
+            caseInsensitiveStringCompare(
+              entityA.friendly_name,
+              entityB.friendly_name
+            )
           );
       }
 
@@ -197,7 +200,10 @@ export class HaEntityPicker extends LitElement {
           friendly_name: computeStateName(hass!.states[key]) || key,
         }))
         .sort((entityA, entityB) =>
-          stringCompare(entityA.friendly_name, entityB.friendly_name)
+          caseInsensitiveStringCompare(
+            entityA.friendly_name,
+            entityB.friendly_name
+          )
         );
 
       if (includeDeviceClasses) {
