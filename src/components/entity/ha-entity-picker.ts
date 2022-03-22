@@ -78,7 +78,7 @@ export class HaEntityPicker extends LitElement {
   public includeUnitOfMeasurement?: string[];
 
   /**
-   * Show only these entities
+   * List of allowed entities to show. Will ignore all other filters.
    * @type {Array}
    * @attr include-entities
    */
