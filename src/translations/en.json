@@ -2405,7 +2405,7 @@
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
             "show_less": "Show less",
-            "hidden_entities": "+{count} {count, plural,\n  one {hidden entity}\n  other {hidden entities}\n}"
+            "hidden_entities": "+{count} {count, plural,\n  one {entity}\n  other {entities}\n} not shown"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
@@ -2430,7 +2430,7 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled devices",
-              "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+              "hidden_devices": "{number} {number, plural,\n  one {device}\n  other {devices}\n} not shown",
               "show_all": "Show all"
             }
           }
@@ -2449,7 +2449,7 @@
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
               "show_readonly": "Show read-only entities",
-              "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+              "hidden_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} not shown",
               "show_all": "Show all"
             },
             "status": {
