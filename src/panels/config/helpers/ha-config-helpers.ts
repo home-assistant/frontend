@@ -65,8 +65,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _entityEntries?: Record<string, EntityRegistryEntry>;
 
-  // @state() private _entitiesConfigEntryLookup?: Record<string, string>;
-
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
   private _columns = memoizeOne(

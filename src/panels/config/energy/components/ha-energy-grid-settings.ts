@@ -196,7 +196,7 @@ export class EnergyGridSettings extends LitElement {
             )}
           </h3>
           ${this._co2ConfigEntry
-            ? html` <div class="row" .entry=${this._co2ConfigEntry}>
+            ? html`<div class="row" .entry=${this._co2ConfigEntry}>
                 <img
                   referrerpolicy="no-referrer"
                   src=${brandsUrl({
