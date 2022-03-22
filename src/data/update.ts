@@ -23,14 +23,14 @@ export interface UpdateEntity extends HassEntityBase {
   attributes: UpdateEntityAttributes;
 }
 
-export const usesProgress = (entity: UpdateEntity): boolean =>
+export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UPDATE_SUPPORT_PROGRESS) &&
   typeof entity.attributes.in_progress === "number";
 
-export const canInstallUpdate = (entity: UpdateEntity): boolean =>
+export const updateCanInstall = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UPDATE_SUPPORT_INSTALL) &&
   entity.attributes.latest_version !== entity.attributes.current_version &&
   entity.attributes.latest_version !== entity.attributes.skipped_version;
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
-  usesProgress(entity) ? true : (entity.attributes.in_progress as boolean);
+  updateUsesProgress(entity) || !!entity.attributes.in_progress;

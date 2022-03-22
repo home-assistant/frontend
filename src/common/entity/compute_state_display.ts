@@ -142,6 +142,7 @@ export const computeStateDisplay = (
     // When update available, show the version
     // When the latest version is skipped, show the latest version
     // When update is not available, show "Up-to-date"
+    // When update is not available and there is no latest_version show "Unknown"
     return compareState === "on"
       ? updateIsInstalling(stateObj as UpdateEntity)
         ? supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS)
@@ -152,7 +153,7 @@ export const computeStateDisplay = (
         : stateObj.attributes.latest_version
       : stateObj.attributes.skipped_version ===
         stateObj.attributes.latest_version
-      ? stateObj.attributes.latest_version
+      ? stateObj.attributes.latest_version ?? localize("state.default.unknown")
       : localize("ui.card.update.up_to_date");
   }
 

@@ -33,8 +33,9 @@ class MoreInfoUpdate extends LitElement {
     }
 
     const skippedVersion =
+      this.stateObj.attributes.latest_version &&
       this.stateObj.attributes.skipped_version ===
-      this.stateObj.attributes.latest_version;
+        this.stateObj.attributes.latest_version;
 
     return html`
       ${this.stateObj.attributes.in_progress
@@ -46,14 +47,20 @@ class MoreInfoUpdate extends LitElement {
             ></mwc-linear-progress>`
           : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
         : ""}
-      <h3>${this.stateObj.attributes.title}</h3>
+      ${this.stateObj.attributes.title
+        ? html`<h3>${this.stateObj.attributes.title}</h3>`
+        : ""}
+
       <div class="row">
         <div class="key">
           ${this.hass.localize(
             "ui.dialogs.more_info_control.update.current_version"
           )}
         </div>
-        <div class="value">${this.stateObj.attributes.current_version}</div>
+        <div class="value">
+          ${this.stateObj.attributes.current_version ??
+          this.hass.localize("state.default.unknown")}
+        </div>
       </div>
       <div class="row">
         <div class="key">
@@ -61,7 +68,10 @@ class MoreInfoUpdate extends LitElement {
             "ui.dialogs.more_info_control.update.latest_version"
           )}
         </div>
-        <div class="value">${this.stateObj.attributes.latest_version}</div>
+        <div class="value">
+          ${this.stateObj.attributes.latest_version ??
+          this.hass.localize("state.default.unknown")}
+        </div>
       </div>
 
       ${this.stateObj.attributes.release_url
@@ -138,13 +148,22 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleInstall(): void {
-    this.hass.callService("update", "install", {
+    const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
-      backup: this._shouldCreateBackup,
-      version: supportsFeature(this.stateObj!, UPDATE_SUPPORT_SPECIFIC_VERSION)
-        ? this.stateObj!.attributes.latest_version
-        : null,
-    });
+    };
+
+    if (this._shouldCreateBackup) {
+      installData.backup = true;
+    }
+
+    if (
+      supportsFeature(this.stateObj!, UPDATE_SUPPORT_SPECIFIC_VERSION) &&
+      this.stateObj!.attributes.latest_version
+    ) {
+      installData.version = this.stateObj!.attributes.latest_version;
+    }
+
+    this.hass.callService("update", "install", installData);
   }
 
   private _handleSkip(): void {

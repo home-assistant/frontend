@@ -98,6 +98,16 @@ const ENTITIES = [
     supported_features: 0,
     friendly_name: "No install support",
   }),
+  getEntity("update", "update14", "off", {
+    ...base_attributes,
+    current_version: null,
+    friendly_name: "Update without current_version",
+  }),
+  getEntity("update", "update15", "off", {
+    ...base_attributes,
+    latest_version: null,
+    friendly_name: "Update without latest_version",
+  }),
 ];
 
 @customElement("demo-more-info-update")
