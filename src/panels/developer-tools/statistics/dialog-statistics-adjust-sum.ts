@@ -36,8 +36,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   public showDialog(params: DialogStatisticsAdjustSumParams): void {
     this._params = params;
     this._busy = false;
+    const now = new Date();
     this._data = {
-      moment: lastMoment || new Date().toISOString(),
+      moment:
+        lastMoment ||
+        `${now.getFullYear()}-${
+          now.getMonth() + 1
+        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
       amount: 0,
     };
   }

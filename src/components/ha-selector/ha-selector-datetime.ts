@@ -25,31 +25,20 @@ export class HaDateTimeSelector extends LitElement {
   @query("ha-time-input") private _timeInput!: HaTimeInput;
 
   protected render() {
-    let p: Date | undefined;
-    if (this.value) {
-      p = new Date(this.value);
-      if (isNaN(p.getTime())) {
-        p = undefined;
-      }
-    }
-    if (!p) {
-      p = new Date();
-    }
-    const date = `${p.getFullYear()}-${p.getMonth() + 1}-${p.getDate()}`;
-    const time = `${p.getHours()}:${p.getMinutes()}:${p.getSeconds()}`;
+    const values = this.value?.split(" ");
 
     return html`
       <ha-date-input
         .label=${this.label}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
-        .value=${date}
+        .value=${values?.[0]}
         @value-changed=${this._valueChanged}
       >
       </ha-date-input>
       <ha-time-input
         enable-second
-        .value=${time}
+        .value=${values?.[1] || "0:00:00"}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
@@ -59,10 +48,8 @@ export class HaDateTimeSelector extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const date = (this._dateInput.value || "").split("T")[0];
-    const time = this._timeInput.value || "";
     fireEvent(this, "value-changed", {
-      value: date && time ? `${date}T${time}` : undefined,
+      value: `${this._dateInput.value} ${this._timeInput.value}`,
     });
   }
 
