@@ -1,8 +1,8 @@
-import "../ha-duration-input";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { DurationSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { DurationSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+import "../ha-duration-input";
 
 @customElement("ha-selector-duration")
 export class HaTimeDuration extends LitElement {
