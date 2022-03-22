@@ -521,24 +521,26 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _loadConfigEntries() {
-    getConfigEntries(this.hass).then((configEntries) => {
-      this._configEntries = configEntries
-        .map(
-          (entry: ConfigEntry): ConfigEntryExtended => ({
-            ...entry,
-            localized_domain_name: domainToName(
-              this.hass.localize,
-              entry.domain
-            ),
-          })
-        )
-        .sort((conf1, conf2) =>
-          caseInsensitiveStringCompare(
-            conf1.localized_domain_name + conf1.title,
-            conf2.localized_domain_name + conf2.title
+    getConfigEntries(this.hass, { type: "integration" }).then(
+      (configEntries) => {
+        this._configEntries = configEntries
+          .map(
+            (entry: ConfigEntry): ConfigEntryExtended => ({
+              ...entry,
+              localized_domain_name: domainToName(
+                this.hass.localize,
+                entry.domain
+              ),
+            })
           )
-        );
-    });
+          .sort((conf1, conf2) =>
+            caseInsensitiveStringCompare(
+              conf1.localized_domain_name + conf1.title,
+              conf2.localized_domain_name + conf2.title
+            )
+          );
+      }
+    );
   }
 
   private async _scanUSBDevices() {
@@ -656,7 +658,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
-    const handlers = await getConfigFlowHandlers(this.hass);
+    const handlers = await getConfigFlowHandlers(this.hass, "integration");
 
     if (!handlers.includes(domain)) {
       showAlertDialog(this, {
