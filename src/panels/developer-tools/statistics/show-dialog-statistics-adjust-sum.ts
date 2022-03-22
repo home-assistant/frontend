@@ -1,6 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { StatisticsMetaData } from "../../../data/history";
-// import { StatisticsValidationResultUnitsChanged } from "../../../data/history";
 
 export const loadAdjustSumDialog = () =>
   import("./dialog-statistics-adjust-sum");
