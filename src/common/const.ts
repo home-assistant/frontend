@@ -187,6 +187,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "scene",
   "sun",
   "timer",
+  "update",
   "vacuum",
   "water_heater",
   "weather",
@@ -200,6 +201,7 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "input_text",
   "number",
   "scene",
+  "update",
   "select",
 ];
 
