@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { stringCompare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
@@ -162,10 +163,14 @@ export class HaEntityPicker extends LitElement {
           this.includeEntities!.includes(entityId)
         );
 
-        return entityIds.sort().map((key) => ({
-          ...hass!.states[key],
-          friendly_name: computeStateName(hass!.states[key]) || key,
-        }));
+        return entityIds
+          .map((key) => ({
+            ...hass!.states[key],
+            friendly_name: computeStateName(hass!.states[key]) || key,
+          }))
+          .sort((entityA, entityB) =>
+            stringCompare(entityA.friendly_name, entityB.friendly_name)
+          );
       }
 
       if (excludeEntities) {
@@ -186,10 +191,14 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
-      states = entityIds.sort().map((key) => ({
-        ...hass!.states[key],
-        friendly_name: computeStateName(hass!.states[key]) || key,
-      }));
+      states = entityIds
+        .map((key) => ({
+          ...hass!.states[key],
+          friendly_name: computeStateName(hass!.states[key]) || key,
+        }))
+        .sort((entityA, entityB) =>
+          stringCompare(entityA.friendly_name, entityB.friendly_name)
+        );
 
       if (includeDeviceClasses) {
         states = states.filter(
