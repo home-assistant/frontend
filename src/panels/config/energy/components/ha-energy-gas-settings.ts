@@ -121,6 +121,7 @@ export class EnergyGasSettings extends LitElement {
     showEnergySettingsGasDialog(this, {
       unit: getEnergyGasUnitCategory(this.hass, this.preferences),
       saveCallback: async (source) => {
+        delete source.unit_of_measurement;
         await this._savePreferences({
           ...this.preferences,
           energy_sources: this.preferences.energy_sources.concat(source),
