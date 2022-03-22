@@ -243,7 +243,7 @@ class DataEntryFlowDialog extends LitElement {
                           target="_blank"
                           rel="noreferrer noopener"
                           ><ha-icon-button
-                            .label=${"Help"}
+                            .label=${this.hass.localize("ui.common.help")}
                             .path=${mdiHelpCircle}
                             ?rtl=${computeRTL(this.hass)}
                           ></ha-icon-button
