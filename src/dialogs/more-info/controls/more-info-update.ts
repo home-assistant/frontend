@@ -59,7 +59,7 @@ class MoreInfoUpdate extends LitElement {
         </div>
         <div class="value">
           ${this.stateObj.attributes.current_version ??
-          this.hass.localize("state.default.unknown")}
+          this.hass.localize("state.default.unavailable")}
         </div>
       </div>
       <div class="row">
@@ -70,7 +70,7 @@ class MoreInfoUpdate extends LitElement {
         </div>
         <div class="value">
           ${this.stateObj.attributes.latest_version ??
-          this.hass.localize("state.default.unknown")}
+          this.hass.localize("state.default.unavailable")}
         </div>
       </div>
 
