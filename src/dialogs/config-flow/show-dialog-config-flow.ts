@@ -24,7 +24,7 @@ export const showConfigFlowDialog = (
     loadDevicesAndAreas: true,
     getFlowHandlers: async (hass) => {
       const [handlers] = await Promise.all([
-        getConfigFlowHandlers(hass),
+        getConfigFlowHandlers(hass, "integration"),
         hass.loadBackendTranslation("title", undefined, true),
       ]);
 
