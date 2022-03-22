@@ -1,11 +1,16 @@
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../ha-chip";
+import "../ha-chip-set";
+import "../ha-combo-box";
 import "../ha-radio";
 import "../ha-select";
 
@@ -15,7 +20,7 @@ export class HaSelectSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: SelectSelector;
 
-  @property() public value?: string;
+  @property() public value?: string | string[];
 
   @property() public label?: string;
 
@@ -26,48 +31,81 @@ export class HaSelectSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   protected render() {
-    if (this.required && this.selector.select.options!.length < 6) {
+    const options = this.selector.select.options.map((option) =>
+      typeof option === "object" ? option : { value: option, label: option }
+    );
+
+    if (this.required && options!.length < 6) {
       return html`
         <div>
           ${this.label}
-          ${this.selector.select.options.map((item: string | SelectOption) => {
-            const value = typeof item === "object" ? item.value : item;
-            const label = typeof item === "object" ? item.label : item;
-
-            return html`
-              <mwc-formfield .label=${label}>
+          ${options.map(
+            (item: SelectOption) => html`
+              <mwc-formfield .label=${item.label}>
                 <ha-radio
                   .checked=${value === this.value}
-                  .value=${value}
+                  .value=${item.value}
                   .disabled=${this.disabled}
                   @change=${this._valueChanged}
                 ></ha-radio>
               </mwc-formfield>
-            `;
-          })}
+            `
+          )}
         </div>
       `;
     }
 
-    return html`
-      <ha-select
-        fixedMenuPosition
-        naturalMenuWidth
-        .label=${this.label}
-        .value=${this.value}
-        .helper=${this.helper}
-        .disabled=${this.disabled}
-        .required=${this.required}
-        @closed=${stopPropagation}
-        @selected=${this._valueChanged}
-      >
-        ${this.selector.select.options.map((item: string | SelectOption) => {
-          const value = typeof item === "object" ? item.value : item;
-          const label = typeof item === "object" ? item.label : item;
+    if (!this.selector.select.multiple) {
+      return html`
+        <ha-select
+          fixedMenuPosition
+          naturalMenuWidth
+          .label=${this.label}
+          .value=${this.value}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          @closed=${stopPropagation}
+          @selected=${this._valueChanged}
+        >
+          ${options.map(
+            (item: SelectOption) => html`
+              <mwc-list-item .value=${item.value}>${item.label}</mwc-list-item>
+            `
+          )}
+        </ha-select>
+      `;
+    }
 
-          return html`<mwc-list-item .value=${value}>${label}</mwc-list-item>`;
-        })}
-      </ha-select>
+    const value =
+      !this.value || this.value === "" ? [] : (this.value as string[]);
+
+    return html`
+      <ha-chip-set>
+        ${value?.map(
+          (item, idx) =>
+            html`
+              <ha-chip hasTrailingIcon>
+                ${options.find((option) => option.value === item)?.label ||
+                item}
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${mdiClose}
+                  .idx=${idx}
+                  @click=${this._removeItem}
+                ></ha-svg-icon>
+              </ha-chip>
+            `
+        )}
+      </ha-chip-set>
+      <ha-combo-box
+        allowCustomValue=${ifDefined(this.selector.select.custom_value)}
+        item-value-path="value"
+        item-label-path="label"
+        .hass=${this.hass}
+        .label=${this.label}
+        .filteredItems=${options}
+        @value-changed=${this._comboBoxValueChanged}
+      ></ha-combo-box>
     `;
   }
 
@@ -81,16 +119,39 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-      mwc-formfield {
-        display: block;
-      }
-    `;
+  private _removeItem(ev): void {
+    (this.value as string[])!.splice(ev.target.idx, 1);
+
+    fireEvent(this, "value-changed", {
+      value: this.value,
+    });
+    this.requestUpdate();
   }
+
+  private _comboBoxValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+
+    if (this.disabled || newValue === "") {
+      return;
+    }
+
+    const currentValue =
+      !this.value || this.value === "" ? [] : (this.value as string[]);
+
+    fireEvent(this, "value-changed", {
+      value: [...currentValue, newValue],
+    });
+  }
+
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+    mwc-formfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {

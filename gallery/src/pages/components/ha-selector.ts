@@ -203,6 +203,12 @@ const SCHEMAS: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
       device: { name: "Device", selector: { device: { multiple: true } } },
       area: { name: "Area", selector: { area: { multiple: true } } },
+      select: {
+        name: "Select Multiple",
+        selector: {
+          select: { multiple: true, options: ["Option 1", "Option 2"] },
+        },
+      },
     },
   },
 ];
