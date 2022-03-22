@@ -465,3 +465,16 @@ export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
 ) => stats.some((stat) => stat[type] !== null);
+
+export const adjustStatisticsSum = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  start_time: string,
+  adjustment: number
+): Promise<void> =>
+  hass.callWS({
+    type: "recorder/adjust_sum_statistics",
+    statistic_id,
+    start_time,
+    adjustment,
+  });

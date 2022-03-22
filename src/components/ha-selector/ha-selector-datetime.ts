@@ -26,6 +26,7 @@ export class HaDateTimeSelector extends LitElement {
 
   protected render() {
     const values = this.value?.split(" ");
+
     return html`
       <ha-date-input
         .label=${this.label}
@@ -37,7 +38,7 @@ export class HaDateTimeSelector extends LitElement {
       </ha-date-input>
       <ha-time-input
         enable-second
-        .value=${values?.[1] || "00:00:00"}
+        .value=${values?.[1] || "0:00:00"}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}

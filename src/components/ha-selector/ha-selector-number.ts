@@ -46,7 +46,7 @@ export class HaNumberSelector extends LitElement {
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
-        .value=${this.value || ""}
+        .value=${this.value ?? ""}
         .step=${this.selector.number.step ?? 1}
         .disabled=${this.disabled}
         .required=${this.required}
