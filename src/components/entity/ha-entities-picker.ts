@@ -55,7 +55,7 @@ class HaEntitiesPickerLight extends LitElement {
   public includeEntities?: string[];
 
   /**
-   * Show no entities in this list
+   * List of entities to be excluded.
    * @type {Array}
    * @attr exclude-entities
    */
