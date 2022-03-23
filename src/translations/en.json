@@ -1081,7 +1081,7 @@
         "updates": {
           "no_update_entities": {
             "title": "Unable to check for updates",
-            "description": "You need do not have any integrations that provide update entities."
+            "description": "You do not have any integrations that provide updates."
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
