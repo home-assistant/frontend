@@ -72,6 +72,9 @@ class StepFlowMenu extends LitElement {
         margin-top: 20px;
         margin-bottom: 8px;
       }
+      mwc-list-item {
+        --mdc-list-side-padding: 24px;
+      }
     `,
   ];
 }
