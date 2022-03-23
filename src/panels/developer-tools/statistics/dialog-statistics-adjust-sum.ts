@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { LitElement, TemplateResult, html, CSSResultGroup } from "lit";
+import { LitElement, TemplateResult, html, CSSResultGroup, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-dialog";
@@ -42,7 +42,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         lastMoment ||
         `${now.getFullYear()}-${
           now.getMonth() + 1
-        }-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
+        }-${now.getDate()} ${now.getHours()}:00:00`,
       amount: 0,
     };
   }
@@ -63,6 +63,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @closed=${this.closeDialog}
         heading="Adjust sum for a specific time."
       >
+        <div class="card-content">
+          Adjust statistics if it incorrectly counted values that were already
+          counted. When adjusted, all subsequent values will be re-calculted
+          from the new value. This feature is limited to hourly statistics.
+        </div>
         <ha-form
           .hass=${this.hass}
           .schema=${this._getSchema(this._params.statistic)}
@@ -128,7 +133,16 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   private _valueChanged(ev) {
-    this._data = ev.detail.value;
+    const newData = ev.detail.value;
+
+    // If we change the amount, let's truncate the moment to the whole
+    // hour as that's how statistics adjustment works.
+    if (this._data && this._data.amount !== newData.amount && newData.moment) {
+      const parts = newData.moment.split(" ");
+      const timeParts = parts[1].split(":");
+      newData.moment = `${parts[0]} ${timeParts[0]}:00:00`;
+    }
+    this._data = newData;
   }
 
   private async _fixIssue(): Promise<void> {
@@ -155,7 +169,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, haStyleDialog];
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        div {
+          margin-bottom: 16px;
+        }
+      `,
+    ];
   }
 }
 
