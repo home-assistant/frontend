@@ -28,7 +28,11 @@ export class HaAreaSelector extends LitElement {
         oldSelector !== this.selector &&
         this.selector.area.device?.integration
       ) {
-        this._loadConfigEntries();
+        getConfigEntries(this.hass, {
+          domain: this.selector.area.device.integration,
+        }).then((entries) => {
+          this._configEntries = entries;
+        });
       }
     }
   }
@@ -85,12 +89,6 @@ export class HaAreaSelector extends LitElement {
     }
     return true;
   };
-
-  private async _loadConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === this.selector.area.device?.integration
-    );
-  }
 }
 
 declare global {

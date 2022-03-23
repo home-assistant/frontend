@@ -42,6 +42,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import {
+  ConfigEntry,
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -83,6 +89,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _device?: DeviceRegistryEntry;
 
+  @state() private _helperConfigEntry?: ConfigEntry;
+
   @state() private _error?: string;
 
   @state() private _submitting?: boolean;
@@ -101,6 +109,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
       }),
     ];
+  }
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    if (this.entry.config_entry_id) {
+      getConfigEntries(this.hass, {
+        type: "helper",
+        domain: this.entry.platform,
+      }).then((entries) => {
+        this._helperConfigEntry = entries.find(
+          (ent) => ent.entry_id === this.entry.config_entry_id
+        );
+      });
+    }
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -215,6 +237,21 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
           : ""}
+        ${this._helperConfigEntry
+          ? html`
+              <div class="row">
+                <mwc-button
+                  @click=${this._showOptionsFlow}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.configure_state"
+                  )}
+                </mwc-button>
+              </div>
+            `
+          : ""}
+
         <ha-expansion-panel
           .header=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.advanced"
@@ -341,7 +378,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           class="warning"
           @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
-          !(stateObj && stateObj.attributes.restored)}
+          (!this._helperConfigEntry && !stateObj.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
@@ -471,11 +508,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._submitting = true;
 
     try {
-      await removeEntityRegistryEntry(this.hass!, this._origEntityId);
+      if (this._helperConfigEntry) {
+        await deleteConfigEntry(this.hass, this._helperConfigEntry.entry_id);
+      } else {
+        await removeEntityRegistryEntry(this.hass!, this._origEntityId);
+      }
       fireEvent(this, "close-dialog");
     } finally {
       this._submitting = false;
     }
+  }
+
+  private async _showOptionsFlow() {
+    showOptionsFlowDialog(this, this._helperConfigEntry!);
   }
 
   static get styles(): CSSResultGroup {

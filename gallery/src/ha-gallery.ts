@@ -45,6 +45,10 @@ class HaGallery extends LitElement {
       for (const page of group.pages!) {
         const key = `${group.category}/${page}`;
         const active = this._page === key;
+        if (!(key in PAGES)) {
+          console.error("Undefined page referenced in sidebar.js:", key);
+          continue;
+        }
         const title = PAGES[key].metadata.title || page;
         links.push(html`
           <a ?active=${active} href=${`#${group.category}/${page}`}>${title}</a>

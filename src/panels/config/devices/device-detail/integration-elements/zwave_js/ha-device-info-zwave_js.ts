@@ -58,12 +58,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       return;
     }
 
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
     let zwaveJsConfEntries = 0;
     for (const entry of configEntries) {
-      if (entry.domain !== "zwave_js") {
-        continue;
-      }
       if (zwaveJsConfEntries) {
         this._multipleConfigEntries = true;
       }
