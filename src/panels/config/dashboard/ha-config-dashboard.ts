@@ -211,6 +211,30 @@ class HaConfigDashboard extends LitElement {
     `;
   }
 
+  protected override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (!this._tip && changedProps.has("hass")) {
+      this._tip = randomTip(this.hass);
+    }
+
+    if (!changedProps.has("hass") || !this._notifyUpdates) {
+      return;
+    }
+    this._notifyUpdates = false;
+    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.updates.updates_refreshed"
+        ),
+      });
+    } else {
+      showToast(this, {
+        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
+      });
+    }
+  }
+
   private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
     (
       Object.values(entities).filter(
@@ -248,30 +272,6 @@ class HaConfigDashboard extends LitElement {
         updateCanInstall(entity)
       )
   );
-
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (!this._tip && changedProps.has("hass")) {
-      this._tip = randomTip(this.hass);
-    }
-
-    if (!changedProps.has("hass") || !this._notifyUpdates) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
-    }
-  }
 
   private _showQuickBar(): void {
     showQuickBar(this, {
