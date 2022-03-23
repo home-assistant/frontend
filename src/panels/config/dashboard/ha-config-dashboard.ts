@@ -22,6 +22,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -41,13 +42,6 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-
-const updateEntities = memoizeOne(
-  (entities: HassEntities) =>
-    Object.values(entities).filter(
-      (entity) => computeStateDomain(entity) === "update"
-    ) as UpdateEntity[]
-);
 
 const randomTip = (hass: HomeAssistant) => {
   const weighted: string[] = [];
@@ -126,8 +120,8 @@ class HaConfigDashboard extends LitElement {
   private _notifyUpdates = false;
 
   protected render(): TemplateResult {
-    const canInstallUpdates = updateEntities(this.hass.states).filter(
-      (entity) => updateCanInstall(entity)
+    const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
+      this.hass.states
     );
     return html`
       <ha-app-layout>
@@ -217,6 +211,44 @@ class HaConfigDashboard extends LitElement {
     `;
   }
 
+  private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
+    (
+      Object.values(entities).filter(
+        (entity) => computeStateDomain(entity) === "update"
+      ) as UpdateEntity[]
+    ).sort((a, b) => {
+      if (a.attributes.title === "Home Assistant Core") {
+        return -3;
+      }
+      if (b.attributes.title === "Home Assistant Core") {
+        return 3;
+      }
+      if (a.attributes.title === "Home Assistant Operating System") {
+        return -2;
+      }
+      if (b.attributes.title === "Home Assistant Operating System") {
+        return 2;
+      }
+      if (a.attributes.title === "Home Assistant Supervisor") {
+        return -1;
+      }
+      if (b.attributes.title === "Home Assistant Supervisor") {
+        return 1;
+      }
+      return caseInsensitiveStringCompare(
+        a.attributes.title || a.attributes.friendly_name || "",
+        b.attributes.title || b.attributes.friendly_name || ""
+      );
+    })
+  );
+
+  private _filterUpdateEntitiesWithInstall = memoizeOne(
+    (entities: HassEntities) =>
+      this._filterUpdateEntities(entities).filter((entity) =>
+        updateCanInstall(entity)
+      )
+  );
+
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -228,11 +260,7 @@ class HaConfigDashboard extends LitElement {
       return;
     }
     this._notifyUpdates = false;
-    if (
-      updateEntities(this.hass.states).filter((entity) =>
-        updateCanInstall(entity)
-      ).length
-    ) {
+    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
       showToast(this, {
         message: this.hass.localize(
           "ui.panel.config.updates.updates_refreshed"
@@ -253,14 +281,14 @@ class HaConfigDashboard extends LitElement {
   }
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    const _entities = updateEntities(this.hass.states).map(
+    const _entities = this._filterUpdateEntities(this.hass.states).map(
       (entity) => entity.entity_id
     );
     switch (ev.detail.index) {
       case 0:
         if (_entities.length) {
           this._notifyUpdates = true;
-          this.hass.callService("homeassistant", "update_entity", {
+          await this.hass.callService("homeassistant", "update_entity", {
             entity_id: _entities,
           });
           return;
