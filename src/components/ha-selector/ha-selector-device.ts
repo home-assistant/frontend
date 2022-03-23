@@ -25,7 +25,11 @@ export class HaDeviceSelector extends LitElement {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
       if (oldSelector !== this.selector && this.selector.device?.integration) {
-        this._loadConfigEntries();
+        getConfigEntries(this.hass, {
+          domain: this.selector.device.integration,
+        }).then((entries) => {
+          this._configEntries = entries;
+        });
       }
     }
   }
@@ -88,12 +92,6 @@ export class HaDeviceSelector extends LitElement {
     }
     return true;
   };
-
-  private async _loadConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === this.selector.device.integration
-    );
-  }
 }
 
 declare global {

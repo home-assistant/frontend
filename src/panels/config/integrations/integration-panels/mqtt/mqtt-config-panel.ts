@@ -111,7 +111,9 @@ class HaPanelDevMqtt extends LitElement {
       return;
     }
     const configEntryId = searchParams.get("config_entry") as string;
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "mqtt",
+    });
     const configEntry = configEntries.find(
       (entry) => entry.entry_id === configEntryId
     );

@@ -216,15 +216,16 @@ class StepFlowPickHandler extends LitElement {
 
     if (handler.is_add) {
       if (handler.slug === "zwave_js") {
-        const entries = await getConfigEntries(this.hass);
-        const entry = entries.find((ent) => ent.domain === "zwave_js");
+        const entries = await getConfigEntries(this.hass, {
+          domain: "zwave_js",
+        });
 
-        if (!entry) {
+        if (!entries.length) {
           return;
         }
 
         showZWaveJSAddNodeDialog(this, {
-          entry_id: entry.entry_id,
+          entry_id: entries[0].entry_id,
         });
       } else if (handler.slug === "zha") {
         navigate("/config/zha/add");

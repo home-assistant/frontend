@@ -176,9 +176,17 @@ export class DialogEnergySolarSettings
 
   private async _fetchSolarForecastConfigEntries() {
     const domains = this._params!.info.solar_forecast_domains;
-    this._configEntries = (await getConfigEntries(this.hass)).filter((entry) =>
-      domains.includes(entry.domain)
-    );
+    this._configEntries =
+      domains.length === 0
+        ? []
+        : domains.length === 1
+        ? await getConfigEntries(this.hass, {
+            type: "integration",
+            domain: domains[0],
+          })
+        : (await getConfigEntries(this.hass, { type: "integration" })).filter(
+            (entry) => domains.includes(entry.domain)
+          );
   }
 
   private _handleForecastChanged(ev: CustomEvent) {

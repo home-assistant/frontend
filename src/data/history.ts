@@ -373,6 +373,15 @@ export const getStatisticIds = (
     statistic_type,
   });
 
+export const getStatisticMetadata = (
+  hass: HomeAssistant,
+  statistic_ids?: string[]
+) =>
+  hass.callWS<StatisticsMetaData[]>({
+    type: "recorder/get_statistics_metadata",
+    statistic_ids,
+  });
+
 export const fetchStatistics = (
   hass: HomeAssistant,
   startTime: Date,
@@ -456,3 +465,16 @@ export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
 ) => stats.some((stat) => stat[type] !== null);
+
+export const adjustStatisticsSum = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  start_time: string,
+  adjustment: number
+): Promise<void> =>
+  hass.callWS({
+    type: "recorder/adjust_sum_statistics",
+    statistic_id,
+    start_time,
+    adjustment,
+  });

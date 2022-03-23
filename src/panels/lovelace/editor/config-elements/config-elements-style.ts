@@ -1,6 +1,10 @@
 import { css } from "lit";
 
 export const configElementStyle = css`
+  .card-config {
+    /* Cancels overlapping Margins for HAForm + Card Config options */
+    overflow: auto;
+  }
   ha-switch {
     padding: 16px 6px;
   }
@@ -25,5 +29,6 @@ export const configElementStyle = css`
   ha-textfield,
   ha-icon-picker {
     margin-top: 8px;
+    display: block;
   }
 `;

@@ -25,6 +25,7 @@ const LAZY_LOADED_MORE_INFO_CONTROL = {
   script: () => import("./controls/more-info-script"),
   sun: () => import("./controls/more-info-sun"),
   timer: () => import("./controls/more-info-timer"),
+  update: () => import("./controls/more-info-update"),
   vacuum: () => import("./controls/more-info-vacuum"),
   water_heater: () => import("./controls/more-info-water_heater"),
   weather: () => import("./controls/more-info-weather"),
