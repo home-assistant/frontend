@@ -37,6 +37,9 @@ class StepFlowMenu extends LitElement {
 
     return html`
       <h2>${this.flowConfig.renderMenuHeader(this.hass, this.step)}</h2>
+      <div class="content">
+        ${this.flowConfig.renderMenuDescription(this.hass, this.step)}
+      </div>
       <div class="options">
         ${options.map(
           (option) => html`

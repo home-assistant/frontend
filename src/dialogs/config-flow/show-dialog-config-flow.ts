@@ -189,6 +189,18 @@ export const showConfigFlowDialog = (
       );
     },
 
+    renderMenuDescription(hass, step) {
+      const description = hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.description`,
+        step.description_placeholders
+      );
+      return description
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
+        : "";
+    },
+
     renderMenuOption(hass, step, option) {
       return hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.menu_options.${option}`,

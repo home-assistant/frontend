@@ -83,6 +83,11 @@ export interface FlowConfig {
 
   renderMenuHeader(hass: HomeAssistant, step: DataEntryFlowStepMenu): string;
 
+  renderMenuDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu
+  ): TemplateResult | "";
+
   renderMenuOption(
     hass: HomeAssistant,
     step: DataEntryFlowStepMenu,
