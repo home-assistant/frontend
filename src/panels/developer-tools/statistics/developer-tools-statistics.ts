@@ -212,6 +212,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
+          has_sum: false,
+          has_mean: false,
         });
       }
     });
