@@ -35,8 +35,14 @@ class StepFlowMenu extends LitElement {
       translations = this.step.menu_options;
     }
 
+    const description = this.flowConfig.renderMenuDescription(
+      this.hass,
+      this.step
+    );
+
     return html`
       <h2>${this.flowConfig.renderMenuHeader(this.hass, this.step)}</h2>
+      ${description ? html`<div class="content">${description}</div>` : ""}
       <div class="options">
         ${options.map(
           (option) => html`
@@ -68,6 +74,16 @@ class StepFlowMenu extends LitElement {
       .options {
         margin-top: 20px;
         margin-bottom: 8px;
+      }
+      .content {
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .content + .options {
+        margin-top: 8px;
+      }
+      mwc-list-item {
+        --mdc-list-side-padding: 24px;
       }
     `,
   ];
