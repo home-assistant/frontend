@@ -238,12 +238,14 @@ class DataEntryFlowDialog extends LitElement {
               ""
             : html`
                 <div class="dialog-actions">
-                  ${this._step
+                  ${["form", "menu", "external"].includes(
+                    this._step?.type as any
+                  )
                     ? html`
                         <a
                           href=${documentationUrl(
                             this.hass,
-                            `/integrations/${this._step.handler}`
+                            `/integrations/${this._step!.handler}`
                           )}
                           target="_blank"
                           rel="noreferrer noopener"
