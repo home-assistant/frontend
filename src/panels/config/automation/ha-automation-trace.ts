@@ -350,11 +350,7 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(
-      this.hass,
-      "automation",
-      decodeURIComponent(this.automationId)
-    );
+    this._traces = await loadTraces(this.hass, "automation", this.automationId);
     // Newest will be on top.
     this._traces.reverse();
 
@@ -396,7 +392,7 @@ export class HaAutomationTrace extends LitElement {
     const trace = await loadTrace(
       this.hass,
       "automation",
-      decodeURIComponent(this.automationId),
+      this.automationId,
       this._runId!
     );
     this._logbookEntries = isComponentLoaded(this.hass, "logbook")

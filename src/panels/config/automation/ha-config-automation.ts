@@ -87,7 +87,7 @@ class HaConfigAutomation extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage !== "dashboard"
     ) {
-      const automationId = this.routeTail.path.substr(1);
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
       pageEl.automationId = automationId === "new" ? null : automationId;
     }
   }
