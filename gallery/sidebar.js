@@ -43,10 +43,7 @@ module.exports = [
   {
     category: "user-test",
     header: "Users",
-    pages: [
-      "user-types.markdown",
-      "configuration-menu.markdown",
-    ],
+    pages: ["user-types", "configuration-menu"],
   },
   {
     category: "design.home-assistant.io",
