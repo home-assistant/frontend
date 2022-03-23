@@ -7,13 +7,20 @@ class HaInitPage extends LitElement {
 
   @state() showProgressIndicator = false;
 
+  @state() retryInSeconds = 60;
+
   private _showProgressIndicatorTimeout;
+
+  private _retryInterval;
 
   protected render() {
     return this.error
       ? html`
           <p>Unable to connect to Home Assistant.</p>
-          <mwc-button @click=${this._retry}>Retry</mwc-button>
+          <p class="retry-text">
+            Retrying in ${this.retryInSeconds} seconds...
+          </p>
+          <mwc-button @click=${this._retry}>Retry now</mwc-button>
           ${location.host.includes("ui.nabu.casa")
             ? html`
                 <p>
@@ -40,6 +47,7 @@ class HaInitPage extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     clearTimeout(this._showProgressIndicatorTimeout);
+    clearInterval(this._retryInterval);
   }
 
   protected firstUpdated() {
@@ -47,6 +55,13 @@ class HaInitPage extends LitElement {
       await import("../components/ha-circular-progress");
       this.showProgressIndicator = true;
     }, 5000);
+
+    this._retryInterval = setInterval(() => {
+      const remainingSeconds = this.retryInSeconds--;
+      if (remainingSeconds <= 0) {
+        this._retry();
+      }
+    }, 1000);
   }
 
   private _retry() {
@@ -69,6 +84,9 @@ class HaInitPage extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .retry-text {
+        margin-top: 0;
       }
       p,
       #loading-text {
