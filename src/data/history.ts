@@ -84,6 +84,8 @@ export interface StatisticsMetaData {
   statistic_id: string;
   source: string;
   name?: string | null;
+  has_sum: boolean;
+  has_mean: boolean;
 }
 
 export type StatisticsValidationResult =
