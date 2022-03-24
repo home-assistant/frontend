@@ -18,6 +18,8 @@ export class HaTextSelector extends LitElement {
 
   @property() public placeholder?: string;
 
+  @property() public helper?: string;
+
   @property() public selector!: StringSelector;
 
   @property({ type: Boolean }) public disabled = false;
@@ -32,6 +34,7 @@ export class HaTextSelector extends LitElement {
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
@@ -44,6 +47,7 @@ export class HaTextSelector extends LitElement {
     return html`<ha-textfield
         .value=${this.value || ""}
         .placeholder=${this.placeholder || ""}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         .type=${this._unmaskedPassword ? "text" : this.selector.text?.type}
         @input=${this._handleChange}

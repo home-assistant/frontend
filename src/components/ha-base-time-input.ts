@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult, css } from "lit";
+import { LitElement, html, TemplateResult, css, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-select";
 import "@material/mwc-list/mwc-list-item";
@@ -20,6 +20,11 @@ export class HaBaseTimeInput extends LitElement {
    * Label for the input
    */
   @property() label?: string;
+
+  /**
+   * Helper for the input
+   */
+  @property() helper?: string;
 
   /**
    * auto validate time inputs
@@ -207,7 +212,14 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
       </div>
+      ${this.helper ? html`<div class="helper">${this.helper}</div>` : ""}
     `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("focus", () => this.toggleAttribute("focused", true));
+    this.addEventListener("blur", () => this.toggleAttribute("focused", false));
   }
 
   private _valueChanged(ev) {
@@ -302,6 +314,17 @@ export class HaBaseTimeInput extends LitElement {
       text-transform: var(--mdc-typography-body2-text-transform, inherit);
       color: var(--mdc-theme-text-primary-on-background, rgba(0, 0, 0, 0.87));
       padding-left: 4px;
+    }
+
+    .helper {
+      color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+      opacity: 0;
+      font-size: 0.75rem;
+      will-change: opacity;
+      transition: opacity 150ms 0ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    :host([focused]) .helper {
+      opacity: 1;
     }
   `;
 }
