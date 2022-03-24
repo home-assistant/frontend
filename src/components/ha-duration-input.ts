@@ -5,6 +5,7 @@ import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
 
 export interface HaDurationData {
+  days?: number;
   hours?: number;
   minutes?: number;
   seconds?: number;
@@ -20,6 +21,8 @@ class HaDurationInput extends LitElement {
   @property({ type: Boolean }) public required?: boolean;
 
   @property({ type: Boolean }) public enableMillisecond?: boolean;
+
+  @property({ type: Boolean }) public enableDay?: boolean;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -41,19 +44,26 @@ class HaDurationInput extends LitElement {
         errorMessage="Required"
         enableSecond
         .enableMillisecond=${this.enableMillisecond}
+        .enableDay=${this.enableDay}
         format="24"
+        .days=${this._days}
         .hours=${this._hours}
         .minutes=${this._minutes}
         .seconds=${this._seconds}
         .milliseconds=${this._milliseconds}
         @value-changed=${this._durationChanged}
         noHoursLimit
+        dayLabel="dd"
         hourLabel="hh"
         minLabel="mm"
         secLabel="ss"
         millisecLabel="ms"
       ></ha-base-time-input>
     `;
+  }
+
+  private get _days() {
+    return this.data?.days ? Number(this.data.days) : 0;
   }
 
   private get _hours() {
@@ -92,6 +102,11 @@ class HaDurationInput extends LitElement {
     if (value.minutes > 59) {
       value.hours += Math.floor(value.minutes / 60);
       value.minutes %= 60;
+    }
+
+    if (this.enableDay && value.hours > 24) {
+      value.days = (value.days ?? 0) + Math.floor(value.hours / 24);
+      value.hours %= 24;
     }
 
     fireEvent(this, "value-changed", {
