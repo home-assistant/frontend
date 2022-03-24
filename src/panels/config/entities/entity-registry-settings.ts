@@ -51,7 +51,6 @@ import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detai
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
-    "",
     "awning",
     "blind",
     "curtain",
@@ -64,7 +63,6 @@ const OVERRIDE_DEVICE_CLASSES = {
     "window",
   ],
   binary_sensor: [
-    "",
     "battery",
     "battery_charging",
     "carbon_monoxide",
