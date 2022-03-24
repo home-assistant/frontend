@@ -18,6 +18,7 @@ import "./state-badge";
 
 interface HassEntityWithCachedName extends HassEntity {
   friendly_name: string;
+  id: string;
 }
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
@@ -96,6 +97,9 @@ export class HaEntityPicker extends LitElement {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ attribute: "item-value-path" }) public itemValuePath =
+    "entity_id";
+
   @property({ type: Boolean }) public hideClearIcon = false;
 
   @state() private _opened = false;
@@ -144,6 +148,7 @@ export class HaEntityPicker extends LitElement {
             state: "",
             last_changed: "",
             last_updated: "",
+            id: "",
             context: { id: "", user_id: null, parent_id: null },
             friendly_name: this.hass!.localize(
               "ui.components.entity.entity-picker.no_entities"
@@ -164,10 +169,15 @@ export class HaEntityPicker extends LitElement {
         );
 
         return entityIds
-          .map((key) => ({
-            ...hass!.states[key],
-            friendly_name: computeStateName(hass!.states[key]) || key,
-          }))
+          .map((key) => {
+            const stateObj = hass!.states[key];
+
+            return {
+              ...stateObj,
+              friendly_name: computeStateName(stateObj) || key,
+              id: stateObj.context.id,
+            };
+          })
           .sort((entityA, entityB) =>
             caseInsensitiveStringCompare(
               entityA.friendly_name,
@@ -195,10 +205,15 @@ export class HaEntityPicker extends LitElement {
       }
 
       states = entityIds
-        .map((key) => ({
-          ...hass!.states[key],
-          friendly_name: computeStateName(hass!.states[key]) || key,
-        }))
+        .map((key) => {
+          const stateObj = hass!.states[key];
+
+          return {
+            ...stateObj,
+            friendly_name: computeStateName(stateObj) || key,
+            id: stateObj.context?.id,
+          };
+        })
         .sort((entityA, entityB) =>
           caseInsensitiveStringCompare(
             entityA.friendly_name,
@@ -243,6 +258,7 @@ export class HaEntityPicker extends LitElement {
             state: "",
             last_changed: "",
             last_updated: "",
+            id: "",
             context: { id: "", user_id: null, parent_id: null },
             friendly_name: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
@@ -295,8 +311,8 @@ export class HaEntityPicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-combo-box
-        item-value-path="entity_id"
         item-label-path="friendly_name"
+        .itemValuePath=${this.itemValuePath}
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined

@@ -33,6 +33,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .excludeEntities=${this.selector.entity.exclude_entities}
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
+        .itemValuePath=${!this.selector.entity.use_uuid ? "entity_id" : "id"}
         allow-custom-entity
       ></ha-entity-picker>`;
     }

@@ -106,6 +106,7 @@ export interface EntitySelector {
     domain?: string | string[];
     device_class?: string;
     multiple?: boolean;
+    use_uuid?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
   };
