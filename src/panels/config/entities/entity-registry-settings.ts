@@ -264,7 +264,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             )}:
           </div>
           <div class="secondary">
-            ${this._disabledBy && this._disabledBy !== "user"
+            ${this._disabledBy &&
+            this._disabledBy !== "user" &&
+            this._disabledBy !== "integration"
               ? this.hass.localize(
                   "ui.dialogs.entity_registry.editor.enabled_cause",
                   "cause",
@@ -286,7 +288,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .checked=${!this._hiddenBy && !this._disabledBy}
                 .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
                 this._device?.disabled_by ||
-                (this._disabledBy && this._disabledBy !== "user")}
+                (this._disabledBy &&
+                  this._disabledBy !== "user" &&
+                  this._disabledBy !== "integration")}
                 @change=${this._viewStatusChanged}
               ></ha-radio>
             </mwc-formfield>
@@ -301,7 +305,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .checked=${this._hiddenBy !== null}
                 .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
                 Boolean(this._device?.disabled_by) ||
-                (this._disabledBy && this._disabledBy !== "user")}
+                (this._disabledBy &&
+                  this._disabledBy !== "user" &&
+                  this._disabledBy !== "integration")}
                 @change=${this._viewStatusChanged}
               ></ha-radio>
             </mwc-formfield>
@@ -316,7 +322,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .checked=${this._disabledBy !== null}
                 .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
                 Boolean(this._device?.disabled_by) ||
-                (this._disabledBy && this._disabledBy !== "user")}
+                (this._disabledBy &&
+                  this._disabledBy !== "user" &&
+                  this._disabledBy !== "integration")}
                 @change=${this._viewStatusChanged}
               ></ha-radio>
             </mwc-formfield>
