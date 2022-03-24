@@ -35,6 +35,7 @@ export class HaTextSelector extends LitElement {
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
         .helper=${this.helper}
+        helperPersistent
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
@@ -48,6 +49,7 @@ export class HaTextSelector extends LitElement {
         .value=${this.value || ""}
         .placeholder=${this.placeholder || ""}
         .helper=${this.helper}
+        helperPersistent
         .disabled=${this.disabled}
         .type=${this._unmaskedPassword ? "text" : this.selector.text?.type}
         @input=${this._handleChange}

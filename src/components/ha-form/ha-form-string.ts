@@ -56,6 +56,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         .label=${this.label}
         .value=${this.data || ""}
         .helper=${this.helper}
+        helperPersistent
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}

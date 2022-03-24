@@ -318,13 +318,9 @@ export class HaBaseTimeInput extends LitElement {
 
     .helper {
       color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-      opacity: 0;
       font-size: 0.75rem;
-      will-change: opacity;
-      transition: opacity 150ms 0ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    :host([focused]) .helper {
-      opacity: 1;
+      padding-left: 16px;
+      padding-right: 16px;
     }
   `;
 }

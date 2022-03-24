@@ -50,6 +50,7 @@ export class HaNumberSelector extends LitElement {
         .max=${this.selector.number.max}
         .value=${this.value ?? ""}
         .step=${this.selector.number.step ?? 1}
+        helperPersistent
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
