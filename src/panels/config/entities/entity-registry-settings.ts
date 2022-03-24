@@ -1,6 +1,5 @@
-import "@material/mwc-formfield/mwc-formfield";
-import "../../../components/ha-radio";
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -20,9 +19,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import {
+  ConfigEntry,
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -34,6 +39,7 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -42,15 +48,10 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import {
-  ConfigEntry,
-  deleteConfigEntry,
-  getConfigEntries,
-} from "../../../data/config_entries";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
+    "",
     "awning",
     "blind",
     "curtain",
@@ -62,7 +63,37 @@ const OVERRIDE_DEVICE_CLASSES = {
     "shutter",
     "window",
   ],
-  binary_sensor: ["window", "door", "garage_door", "opening"],
+  binary_sensor: [
+    "",
+    "battery",
+    "battery_charging",
+    "carbon_monoxide",
+    "cold",
+    "connectivity",
+    "door",
+    "garage_door",
+    "gas",
+    "heat",
+    "light",
+    "lock",
+    "moisture",
+    "motion",
+    "moving",
+    "occupancy",
+    "opening",
+    "plug",
+    "power",
+    "presence",
+    "problem",
+    "running",
+    "safety",
+    "smoke",
+    "sound",
+    "tamper",
+    "update",
+    "vibration",
+    "window",
+  ],
 };
 
 @customElement("entity-registry-settings")
@@ -197,8 +228,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
-        ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
-        (domain === "cover" && this.entry.original_device_class === null)
+        ${OVERRIDE_DEVICE_CLASSES[domain] &&
+        (OVERRIDE_DEVICE_CLASSES[domain].includes(this._deviceClass) ||
+          this.entry.original_device_class === null)
           ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
