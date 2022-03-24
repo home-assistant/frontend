@@ -386,8 +386,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           class="warning"
           @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
-          (!this._helperConfigEntry &&
-            !(stateObj?.attributes.restored))}
+          (!this._helperConfigEntry && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
