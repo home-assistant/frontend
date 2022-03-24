@@ -206,7 +206,11 @@ const SCHEMAS: {
       select: {
         name: "Select Multiple",
         selector: {
-          select: { multiple: true, options: ["Option 1", "Option 2"] },
+          select: {
+            multiple: true,
+            custom_value: true,
+            options: ["Option 1", "Option 2"],
+          },
         },
       },
     },

@@ -2,15 +2,14 @@ import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-chip";
 import "../ha-chip-set";
-import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 import "../ha-radio";
 import "../ha-select";
 
@@ -29,6 +28,10 @@ export class HaSelectSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @query("ha-combo-box", true) private comboBox!: HaComboBox;
+
+  private _filter = "";
 
   protected render() {
     const options = this.selector.select.options.map((option) =>
@@ -58,12 +61,14 @@ export class HaSelectSelector extends LitElement {
           )}
         </ha-chip-set>
         <ha-combo-box
-          allowCustomValue=${ifDefined(this.selector.select.custom_value)}
           item-value-path="value"
           item-label-path="label"
           .hass=${this.hass}
           .label=${this.label}
-          .filteredItems=${options}
+          .disabled=${this.disabled}
+          .value=${this._filter}
+          .items=${options}
+          @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
         ></ha-combo-box>
       `;
@@ -136,12 +141,32 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
+    // Trying to reset the value... Not working currently
+    this._filter = "";
+    this.comboBox.value = "";
+    this.requestUpdate();
+
     const currentValue =
       !this.value || this.value === "" ? [] : (this.value as string[]);
 
     fireEvent(this, "value-changed", {
       value: [...currentValue, newValue],
     });
+  }
+
+  private _filterChanged(ev: CustomEvent): void {
+    this._filter = ev.detail.value;
+
+    const filteredItems = this.comboBox.items?.filter((item) => {
+      const label = item.label || item.value;
+      return label.toLowerCase().includes(this._filter?.toLowerCase());
+    });
+
+    if (this._filter !== "" && this.selector.select.custom_value) {
+      filteredItems?.unshift({ label: this._filter, value: this._filter });
+    }
+
+    this.comboBox.filteredItems = filteredItems;
   }
 
   static styles = css`
