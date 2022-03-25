@@ -19,6 +19,8 @@ export class HaNumberSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public required = true;
 
   @property({ type: Boolean }) public disabled = false;
@@ -48,6 +50,8 @@ export class HaNumberSelector extends LitElement {
         .max=${this.selector.number.max}
         .value=${this.value ?? ""}
         .step=${this.selector.number.step ?? 1}
+        helperPersistent
+        .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
         .suffix=${this.selector.number.unit_of_measurement}

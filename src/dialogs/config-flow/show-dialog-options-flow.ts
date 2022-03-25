@@ -89,6 +89,12 @@ export const showOptionsFlowDialog = (
         );
       },
 
+      renderShowFormStepFieldHelper(hass, step, field) {
+        return hass.localize(
+          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`
+        );
+      },
+
       renderShowFormStepFieldError(hass, step, error) {
         return hass.localize(
           `component.${configEntry.domain}.options.error.${error}`,
