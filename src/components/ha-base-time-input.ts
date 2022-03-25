@@ -1,12 +1,13 @@
-import { LitElement, html, TemplateResult, css } from "lit";
-import { customElement, property } from "lit/decorators";
-import "./ha-select";
 import "@material/mwc-list/mwc-list-item";
-import "./ha-textfield";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-select";
+import "./ha-textfield";
 
 export interface TimeChangedEvent {
+  days?: number;
   hours: number;
   minutes: number;
   seconds: number;
@@ -47,6 +48,11 @@ export class HaBaseTimeInput extends LitElement {
   @property({ type: Boolean }) disabled = false;
 
   /**
+   * day
+   */
+  @property({ type: Number }) days = 0;
+
+  /**
    * hour
    */
   @property({ type: Number }) hours = 0;
@@ -65,6 +71,11 @@ export class HaBaseTimeInput extends LitElement {
    * milli second
    */
   @property({ type: Number }) milliseconds = 0;
+
+  /**
+   * Label for the day input
+   */
+  @property() dayLabel = "";
 
   /**
    * Label for the hour input
@@ -97,6 +108,11 @@ export class HaBaseTimeInput extends LitElement {
   @property({ type: Boolean }) enableMillisecond = false;
 
   /**
+   * show the day field
+   */
+  @property({ type: Boolean }) enableDay = false;
+
+  /**
    * limit hours input
    */
   @property({ type: Boolean }) noHoursLimit = false;
@@ -115,6 +131,29 @@ export class HaBaseTimeInput extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : ""}
       <div class="time-input-wrap">
+        ${this.enableDay
+          ? html`
+              <ha-textfield
+                id="day"
+                type="number"
+                inputmode="numeric"
+                .value=${this.days}
+                .label=${this.dayLabel}
+                name="days"
+                @input=${this._valueChanged}
+                @focus=${this._onFocus}
+                no-spinner
+                .required=${this.required}
+                .autoValidate=${this.autoValidate}
+                min="0"
+                .disabled=${this.disabled}
+                suffix=":"
+                class="hasSuffix"
+              >
+              </ha-textfield>
+            `
+          : ""}
+
         <ha-textfield
           id="hour"
           type="number"
