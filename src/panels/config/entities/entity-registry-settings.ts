@@ -65,12 +65,12 @@ const OVERRIDE_DEVICE_CLASSES = {
     ],
   ],
   binary_sensor: [
-    ["connectivity", "light", "lock", "update"], // Other
+    ["connectivity", "lock", "update"], // Other
     ["window", "door", "garage_door", "opening"], // Door
     ["battery", "battery_charging"], // Battery
     ["cold", "gas", "heat"], // Climate
     ["running", "motion", "moving", "occupancy", "presence", "vibration"], // Presence
-    ["power", "plug"], // Power
+    ["power", "plug", "light"], // Power
     [
       "smoke",
       "safety",
