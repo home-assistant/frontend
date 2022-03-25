@@ -96,8 +96,9 @@ export interface DeviceSelector {
 }
 
 export interface DurationSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  duration: {};
+  duration: {
+    enable_day?: boolean;
+  };
 }
 
 export interface EntitySelector {
