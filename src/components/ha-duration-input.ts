@@ -17,6 +17,8 @@ class HaDurationInput extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public required?: boolean;
 
   @property({ type: Boolean }) public enableMillisecond?: boolean;
@@ -35,6 +37,7 @@ class HaDurationInput extends LitElement {
     return html`
       <ha-base-time-input
         .label=${this.label}
+        .helper=${this.helper}
         .required=${this.required}
         .autoValidate=${this.required}
         .disabled=${this.disabled}

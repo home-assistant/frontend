@@ -14,9 +14,7 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
-import "../../components/ha-form/ha-form";
 import "../../components/ha-icon-button";
-import "../../components/ha-markdown";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,

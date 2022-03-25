@@ -22,6 +22,11 @@ export class HaBaseTimeInput extends LitElement {
   @property() label?: string;
 
   /**
+   * Helper for the input
+   */
+  @property() helper?: string;
+
+  /**
    * auto validate time inputs
    */
   @property({ type: Boolean }) autoValidate = false;
@@ -207,6 +212,7 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
       </div>
+      ${this.helper ? html`<div class="helper">${this.helper}</div>` : ""}
     `;
   }
 
@@ -302,6 +308,13 @@ export class HaBaseTimeInput extends LitElement {
       text-transform: var(--mdc-typography-body2-text-transform, inherit);
       color: var(--mdc-theme-text-primary-on-background, rgba(0, 0, 0, 0.87));
       padding-left: 4px;
+    }
+
+    .helper {
+      color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+      font-size: 0.75rem;
+      padding-left: 16px;
+      padding-right: 16px;
     }
   `;
 }

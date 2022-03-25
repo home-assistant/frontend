@@ -50,6 +50,12 @@ export interface FlowConfig {
     field: HaFormSchema
   ): string;
 
+  renderShowFormStepFieldHelper(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    field: HaFormSchema
+  ): string;
+
   renderShowFormStepFieldError(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
