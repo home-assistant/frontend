@@ -216,12 +216,6 @@ export class HaBaseTimeInput extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("focus", () => this.toggleAttribute("focused", true));
-    this.addEventListener("blur", () => this.toggleAttribute("focused", false));
-  }
-
   private _valueChanged(ev) {
     this[ev.target.name] =
       ev.target.name === "amPm" ? ev.target.value : Number(ev.target.value);
