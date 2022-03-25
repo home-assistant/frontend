@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult, css, PropertyValues } from "lit";
+import { LitElement, html, TemplateResult, css } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-select";
 import "@material/mwc-list/mwc-list-item";
