@@ -170,6 +170,9 @@ export interface SelectOption {
 
 export interface SelectSelector {
   select: {
+    multiple?: boolean;
+    custom_value?: boolean;
+    mode?: "list" | "dropdown";
     options: string[] | SelectOption[];
   };
 }
@@ -209,6 +212,7 @@ export interface TargetSelector {
     };
   };
 }
+
 export interface ThemeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   theme: {};
