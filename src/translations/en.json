@@ -786,7 +786,7 @@
               "door": "Door",
               "garage_door": "Garage door",
               "window": "Window",
-              "opening": "Other",
+              "opening": "Opening",
               "battery": "Battery",
               "battery_charging": "Battery charging",
               "carbon_monoxide": "Carbon monoxide",

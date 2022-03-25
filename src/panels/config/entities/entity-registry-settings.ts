@@ -51,46 +51,35 @@ import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detai
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
-    "awning",
-    "blind",
-    "curtain",
-    "damper",
-    "door",
-    "garage",
-    "gate",
-    "shade",
-    "shutter",
-    "window",
+    [
+      "awning",
+      "blind",
+      "curtain",
+      "damper",
+      "door",
+      "garage",
+      "gate",
+      "shade",
+      "shutter",
+      "window",
+    ],
   ],
   binary_sensor: [
-    "battery",
-    "battery_charging",
-    "carbon_monoxide",
-    "cold",
-    "connectivity",
-    "door",
-    "garage_door",
-    "gas",
-    "heat",
-    "light",
-    "lock",
-    "moisture",
-    "motion",
-    "moving",
-    "occupancy",
-    "opening",
-    "plug",
-    "power",
-    "presence",
-    "problem",
-    "running",
-    "safety",
-    "smoke",
-    "sound",
-    "tamper",
-    "update",
-    "vibration",
-    "window",
+    ["connectivity", "light", "lock", "update"], // Other
+    ["window", "door", "garage_door", "opening"], // Door
+    ["battery", "battery_charging"], // Battery
+    ["cold", "gas", "heat"], // Climate
+    ["running", "motion", "moving", "occupancy", "presence", "vibration"], // Presence
+    ["power", "plug"], // Power
+    [
+      "smoke",
+      "safety",
+      "sound",
+      "problem",
+      "tamper",
+      "carbon_monoxide",
+      "moisture",
+    ], // Alarm
   ],
 };
 
@@ -114,8 +103,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _hiddenBy!: string | null;
 
-  private _deviceLookup?: Record<string, DeviceRegistryEntry>;
-
   @state() private _device?: DeviceRegistryEntry;
 
   @state() private _helperConfigEntry?: ConfigEntry;
@@ -125,6 +112,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   private _origEntityId!: string;
+
+  private _deviceLookup?: Record<string, DeviceRegistryEntry>;
+
+  private _deviceClassOptions?: string[];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -156,21 +147,42 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    if (changedProperties.has("entry")) {
-      this._error = undefined;
-      this._name = this.entry.name || "";
-      this._icon = this.entry.icon || "";
-      this._deviceClass =
-        this.entry.device_class || this.entry.original_device_class;
-      this._origEntityId = this.entry.entity_id;
-      this._areaId = this.entry.area_id;
-      this._entityId = this.entry.entity_id;
-      this._disabledBy = this.entry.disabled_by;
-      this._hiddenBy = this.entry.hidden_by;
-      this._device =
-        this.entry.device_id && this._deviceLookup
-          ? this._deviceLookup[this.entry.device_id]
-          : undefined;
+    if (!changedProperties.has("entry")) {
+      return;
+    }
+
+    this._error = undefined;
+    this._name = this.entry.name || "";
+    this._icon = this.entry.icon || "";
+    this._deviceClass =
+      this.entry.device_class || this.entry.original_device_class;
+    this._origEntityId = this.entry.entity_id;
+    this._areaId = this.entry.area_id;
+    this._entityId = this.entry.entity_id;
+    this._disabledBy = this.entry.disabled_by;
+    this._hiddenBy = this.entry.hidden_by;
+    this._device =
+      this.entry.device_id && this._deviceLookup
+        ? this._deviceLookup[this.entry.device_id]
+        : undefined;
+
+    const domain = computeDomain(this.entry.entity_id);
+    const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
+    if (deviceClasses) {
+      if (
+        this.entry.original_device_class === null ||
+        this.hass.userData?.showAdvanced
+      ) {
+        this._deviceClassOptions = ([] as string[]).concat(...deviceClasses);
+        return;
+      }
+
+      for (const deviceClass of deviceClasses) {
+        if (deviceClass.includes(this.entry.original_device_class!)) {
+          this._deviceClassOptions = deviceClass;
+          break;
+        }
+      }
     }
   }
 
@@ -226,9 +238,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
-        ${OVERRIDE_DEVICE_CLASSES[domain] &&
-        (OVERRIDE_DEVICE_CLASSES[domain].includes(this._deviceClass) ||
-          this.entry.original_device_class === null)
+        ${this._deviceClassOptions
           ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
@@ -239,9 +249,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @selected=${this._deviceClassChanged}
               @closed=${stopPropagation}
             >
-              ${OVERRIDE_DEVICE_CLASSES[domain].map(
+              ${this._deviceClassOptions.map(
                 (deviceClass: string) => html`
-                  <mwc-list-item .value=${deviceClass}>
+                  <mwc-list-item .value=${deviceClass} test=${deviceClass}>
                     ${this.hass.localize(
                       `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                     )}
