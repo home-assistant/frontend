@@ -10,8 +10,6 @@ import {
   mdiFormatListBulletedType,
   mdiHammer,
   mdiLightningBolt,
-  mdiMenu,
-  mdiMenuOpen,
   mdiPlayBoxMultiple,
   mdiPlus,
   mdiTooltipAccount,
@@ -44,7 +42,6 @@ import {
   PersistentNotification,
   subscribeNotifications,
 } from "../data/persistent_notification";
-import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
@@ -218,6 +215,17 @@ class HaSidebar extends LitElement {
     }
 
     // prettier-ignore
+    // MYFIX{
+    if( !this.hass.user.is_admin ){
+      return html`
+        ${this._renderHeader()}
+        ${this._renderAllPanels()}
+        ${this._renderNotifications()}
+        <div disabled class="bottom-spacer"></div>
+        <div class="tooltip"></div>
+        `;
+    }
+    
     return html`
       ${this._renderHeader()}
       ${this._renderAllPanels()}
@@ -227,6 +235,8 @@ class HaSidebar extends LitElement {
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
+
+    // }MYFIX
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -302,6 +312,25 @@ class HaSidebar extends LitElement {
     }
   }
 
+
+  // MYFIX
+  /*
+   html`
+            <ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${mdiMenu}
+            ></ha-icon-button>
+     333     `
+  ${!this.narrow
+        ? html`<ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${this.hass.dockedSidebar === "docked"
+                ? mdiMenuOpen
+                : mdiMenu}
+              @action=${this._toggleSidebar}
+            ></ha-icon-button>`
+        : ""} */
+        /*
   private _renderHeader() {
     return html`<div
       class="menu"
@@ -311,24 +340,67 @@ class HaSidebar extends LitElement {
         disabled: this.editMode,
       })}
     >
-      ${!this.narrow
-        ? html`
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              .path=${this.hass.dockedSidebar === "docked"
-                ? mdiMenuOpen
-                : mdiMenu}
-              @action=${this._toggleSidebar}
-            ></ha-icon-button>
-          `
-        : ""}
+      <a
+      class=${classMap({
+        profile: true,
+        // Mimick behavior that paper-listbox provides
+        "iron-selected": this.hass.panelUrl === "profile",
+      })}
+      href="/profile"
+      data-panel="panel"
+      tabindex="-1"
+      role="option"
+      aria-label=${this.hass.localize("panel.profile")}
+      @mouseenter=${this._itemMouseEnter}
+      @mouseleave=${this._itemMouseLeave}
+    >
+      <paper-icon-item>
+        <ha-user-badge
+          slot="item-icon"
+          .user=${this.hass.user}
+          .hass=${this.hass}
+        ></ha-user-badge>
+
+        <span class="item-text">
+          ${this.hass.user ? this.hass.user.name : ""}
+        </span>
+      </paper-icon-item>
+    </a>
       ${this.editMode
         ? html`<mwc-button outlined @click=${this._closeEditMode}>
             ${this.hass.localize("ui.sidebar.done")}
           </mwc-button>`
-        : html`<div class="title">Home Assistant</div>`}
+          : html`<div class="title">{Своё}Пространство</div>`}                     
     </div>`;
-  }
+  } */
+  private _renderHeader() {
+    return html`<a
+        class=${classMap({
+          profile: true,
+          // Mimick behavior that paper-listbox provides
+          "iron-selected": this.hass.panelUrl === "profile",
+        })}
+        href="/profile"
+        data-panel="panel"
+        tabindex="-1"
+        role="option"
+        aria-label=${this.hass.localize("panel.profile")}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
+        <paper-icon-item>
+          <ha-user-badge
+            slot="item-icon"
+            .user=${this.hass.user}
+            .hass=${this.hass}
+          ></ha-user-badge>
+
+          <span class="item-text">
+            ${this.hass.user ? this.hass.user.name : ""}
+          </span>
+        </paper-icon-item>
+      </a>`;
+    }
 
   private _renderAllPanels() {
     const [beforeSpacer, afterSpacer] = computePanels(
@@ -381,12 +453,18 @@ class HaSidebar extends LitElement {
     );
   }
 
+  // MYFIX 
   private _renderPanel(
     urlPath: string,
     title: string | null,
     icon?: string | null,
     iconPath?: string | null
   ) {
+    if( urlPath !== "lovelace") {
+      if( !this.hass.user.is_admin ){
+        return html``;
+      } 
+    }
     return html`
       <a
         role="option"
@@ -403,7 +481,7 @@ class HaSidebar extends LitElement {
                 .path=${iconPath}
               ></ha-svg-icon>`
             : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
-          <span class="item-text">${title}</span>
+          <span class="item-text">${title} ${urlPath}</span>                                   
         </paper-icon-item>
         ${this.editMode
           ? html`<ha-icon-button
