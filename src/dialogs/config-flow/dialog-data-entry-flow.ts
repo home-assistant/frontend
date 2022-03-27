@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,9 +14,7 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
-import "../../components/ha-form/ha-form";
 import "../../components/ha-icon-button";
-import "../../components/ha-markdown";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -33,6 +31,7 @@ import {
 } from "../../data/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import {
   DataEntryFlowDialogParams,
@@ -236,14 +235,35 @@ class DataEntryFlowDialog extends LitElement {
               // to reset the element.
               ""
             : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.dismiss"
-                  )}
-                  .path=${mdiClose}
-                  dialogAction="close"
-                  ?rtl=${computeRTL(this.hass)}
-                ></ha-icon-button>
+                <div class="dialog-actions">
+                  ${["form", "menu", "external"].includes(
+                    this._step?.type as any
+                  )
+                    ? html`
+                        <a
+                          href=${documentationUrl(
+                            this.hass,
+                            `/integrations/${this._step!.handler}`
+                          )}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          ><ha-icon-button
+                            .label=${this.hass.localize("ui.common.help")}
+                            .path=${mdiHelpCircle}
+                            ?rtl=${computeRTL(this.hass)}
+                          ></ha-icon-button
+                        ></a>
+                      `
+                    : ""}
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.config_flow.dismiss"
+                    )}
+                    .path=${mdiClose}
+                    dialogAction="close"
+                    ?rtl=${computeRTL(this.hass)}
+                  ></ha-icon-button>
+                </div>
                 ${this._step === null
                   ? this._handler
                     ? html`<step-flow-pick-flow
@@ -472,15 +492,18 @@ class DataEntryFlowDialog extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        ha-icon-button {
+        .dialog-actions {
           padding: 16px;
           position: absolute;
           top: 0;
           right: 0;
         }
-        ha-icon-button[rtl] {
+        .dialog-actions[rtl] {
           right: auto;
           left: 0;
+        }
+        .dialog-actions > * {
+          color: var(--secondary-text-color);
         }
       `,
     ];

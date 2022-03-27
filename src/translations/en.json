@@ -228,6 +228,11 @@
       "service": {
         "run": "Run"
       },
+      "update": {
+        "installing": "Installing",
+        "installing_with_progress": "Installing ({progress}%)",
+        "up_to_date": "Up-to-date"
+      },
       "timer": {
         "actions": {
           "start": "start",
@@ -719,6 +724,14 @@
           "rising": "Rising",
           "setting": "Setting"
         },
+        "update": {
+          "current_version": "Current version",
+          "latest_version": "Latest version",
+          "release_announcement": "Read release announcement",
+          "skip": "Skip",
+          "install": "Install",
+          "create_backup": "Create backup before updating"
+        },
         "updater": {
           "title": "Update Instructions"
         },
@@ -810,7 +823,8 @@
           "area": "Set entity area only",
           "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
           "follow_device_area": "Follow device area",
-          "change_device_area": "Change device area"
+          "change_device_area": "Change device area",
+          "configure_state": "Configure State"
         }
       },
       "helper_settings": {
@@ -1065,9 +1079,9 @@
           "learn_more": "Learn more"
         },
         "updates": {
-          "check_unavailable": {
+          "no_update_entities": {
             "title": "Unable to check for updates",
-            "description": "You need to run the Home Assistant operating system to be able to check and install updates from the Home Assistant user interface."
+            "description": "You do not have any integrations that provide updates."
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
@@ -2391,7 +2405,7 @@
             "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
             "show_less": "Show less",
-            "hidden_entities": "+{count} {count, plural,\n  one {hidden entity}\n  other {hidden entities}\n}"
+            "hidden_entities": "+{count} {count, plural,\n  one {entity}\n  other {entities}\n} not shown"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
@@ -2416,7 +2430,7 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled devices",
-              "hidden_devices": "{number} hidden {number, plural,\n  one {device}\n  other {devices}\n}",
+              "hidden_devices": "{number} {number, plural,\n  one {device}\n  other {devices}\n} not shown",
               "show_all": "Show all"
             }
           }
@@ -2435,7 +2449,7 @@
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
               "show_readonly": "Show read-only entities",
-              "hidden_entities": "{number} hidden {number, plural,\n  one {entity}\n  other {entities}\n}",
+              "hidden_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} not shown",
               "show_all": "Show all"
             },
             "status": {

@@ -59,7 +59,9 @@ class HaConfigAutomation extends HassRouterPage {
   private _getAutomations = memoizeOne(
     (states: HassEntities): AutomationEntity[] =>
       Object.values(states).filter(
-        (entity) => computeStateDomain(entity) === "automation"
+        (entity) =>
+          computeStateDomain(entity) === "automation" &&
+          !entity.attributes.restored
       ) as AutomationEntity[]
   );
 
@@ -87,7 +89,7 @@ class HaConfigAutomation extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage !== "dashboard"
     ) {
-      const automationId = this.routeTail.path.substr(1);
+      const automationId = decodeURIComponent(this.routeTail.path.substr(1));
       pageEl.automationId = automationId === "new" ? null : automationId;
     }
   }

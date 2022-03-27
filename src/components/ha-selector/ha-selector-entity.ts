@@ -6,8 +6,8 @@ import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { EntitySelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
-import "../entity/ha-entity-picker";
 import "../entity/ha-entities-picker";
+import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends SubscribeMixin(LitElement) {
@@ -29,6 +29,8 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .includeEntities=${this.selector.entity.include_entities}
+        .excludeEntities=${this.selector.entity.exclude_entities}
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
         allow-custom-entity
@@ -41,6 +43,8 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .value=${this.value}
         .entityFilter=${this._filterEntities}
+        .includeEntities=${this.selector.entity.include_entities}
+        .excludeEntities=${this.selector.entity.exclude_entities}
       ></ha-entities-picker>
     `;
   }

@@ -1,22 +1,22 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
-import type { HassEntity } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { ActionConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { ButtonCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
-import "../../../../components/ha-form/ha-form";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { domainIcon } from "../../../../common/entity/domain_icon";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -149,38 +149,36 @@ export class HuiButtonCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <div class="card-config">
-        <div class="side-by-side">
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.tap_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._tap_action}
-            .actions=${actions}
-            .configValue=${"tap_action"}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @value-changed=${this._actionChanged}
-          ></hui-action-editor>
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hold_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._hold_action}
-            .actions=${actions}
-            .configValue=${"hold_action"}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @value-changed=${this._actionChanged}
-          ></hui-action-editor>
-        </div>
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.tap_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._tap_action}
+          .actions=${actions}
+          .configValue=${"tap_action"}
+          .tooltipText=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.button.default_action_help"
+          )}
+          @value-changed=${this._actionChanged}
+        ></hui-action-editor>
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.hold_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._hold_action}
+          .actions=${actions}
+          .configValue=${"hold_action"}
+          .tooltipText=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.button.default_action_help"
+          )}
+          @value-changed=${this._actionChanged}
+        ></hui-action-editor>
       </div>
     `;
   }

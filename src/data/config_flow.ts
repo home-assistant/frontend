@@ -65,8 +65,14 @@ export const ignoreConfigFlow = (
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
 
-export const getConfigFlowHandlers = (hass: HomeAssistant) =>
-  hass.callApi<string[]>("GET", "config/config_entries/flow_handlers");
+export const getConfigFlowHandlers = (
+  hass: HomeAssistant,
+  type?: "helper" | "integration"
+) =>
+  hass.callApi<string[]>(
+    "GET",
+    `config/config_entries/flow_handlers${type ? `?type=${type}` : ""}`
+  );
 
 export const fetchConfigFlowInProgress = (
   conn: Connection

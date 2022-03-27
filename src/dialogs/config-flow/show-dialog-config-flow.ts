@@ -24,7 +24,7 @@ export const showConfigFlowDialog = (
     loadDevicesAndAreas: true,
     getFlowHandlers: async (hass) => {
       const [handlers] = await Promise.all([
-        getConfigFlowHandlers(hass),
+        getConfigFlowHandlers(hass, "integration"),
         hass.loadBackendTranslation("title", undefined, true),
       ]);
 
@@ -88,6 +88,12 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field) {
       return hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.data.${field.name}`
+      );
+    },
+
+    renderShowFormStepFieldHelper(hass, step, field) {
+      return hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.data_description.${field.name}`
       );
     },
 
@@ -187,6 +193,18 @@ export const showConfigFlowDialog = (
           `component.${step.handler}.config.step.${step.step_id}.title`
         ) || hass.localize(`component.${step.handler}.title`)
       );
+    },
+
+    renderMenuDescription(hass, step) {
+      const description = hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.description`,
+        step.description_placeholders
+      );
+      return description
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
+        : "";
     },
 
     renderMenuOption(hass, step, option) {
