@@ -7,6 +7,7 @@ import { EntitySelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
 import "../entity/ha-entity-picker";
+import "../entity/ha-entities-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends SubscribeMixin(LitElement) {
@@ -23,14 +24,25 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html`<ha-entity-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      .entityFilter=${this._filterEntities}
-      .disabled=${this.disabled}
-      allow-custom-entity
-    ></ha-entity-picker>`;
+    if (!this.selector.entity.multiple) {
+      return html`<ha-entity-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .label=${this.label}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
+        allow-custom-entity
+      ></ha-entity-picker>`;
+    }
+
+    return html`
+      ${this.label ? html`<label>${this.label}</label>` : ""}
+      <ha-entities-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .entityFilter=${this._filterEntities}
+      ></ha-entities-picker>
+    `;
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -50,7 +62,13 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   private _filterEntities = (entity: HassEntity): boolean => {
     if (this.selector.entity?.domain) {
-      if (computeStateDomain(entity) !== this.selector.entity.domain) {
+      const filterDomain = this.selector.entity.domain;
+      const filterDomainIsArray = Array.isArray(filterDomain);
+      const entityDomain = computeStateDomain(entity);
+      if (
+        (filterDomainIsArray && !filterDomain.includes(entityDomain)) ||
+        (!filterDomainIsArray && entityDomain !== filterDomain)
+      ) {
         return false;
       }
     }

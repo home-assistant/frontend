@@ -2,6 +2,8 @@ export type Selector =
   | AddonSelector
   | AttributeSelector
   | EntitySelector
+  | DateSelector
+  | DateTimeSelector
   | DeviceSelector
   | DurationSelector
   | AreaSelector
@@ -14,20 +16,40 @@ export type Selector =
   | ObjectSelector
   | SelectSelector
   | IconSelector
-  | MediaSelector;
+  | MediaSelector
+  | ThemeSelector
+  | LocationSelector
+  | ColorTempSelector
+  | ColorRGBSelector;
 
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string;
+    domain?: string | string[];
     device_class?: string;
+    multiple?: boolean;
   };
 }
 
 export interface AttributeSelector {
   attribute: {
-    entity_id: string;
+    entity_id?: string;
   };
+}
+
+export interface ColorRGBSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  color_rgb: {};
+}
+
+export interface DateSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  date: {};
+}
+
+export interface DateTimeSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  datetime: {};
 }
 
 export interface DeviceSelector {
@@ -39,6 +61,7 @@ export interface DeviceSelector {
       domain?: EntitySelector["entity"]["domain"];
       device_class?: EntitySelector["entity"]["device_class"];
     };
+    multiple?: boolean;
   };
 }
 
@@ -86,11 +109,18 @@ export interface TargetSelector {
 
 export interface NumberSelector {
   number: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
     step?: number;
     mode?: "box" | "slider";
     unit_of_measurement?: string;
+  };
+}
+
+export interface ColorTempSelector {
+  color_temp: {
+    min_mireds?: number;
+    max_mireds?: number;
   };
 }
 
@@ -147,13 +177,30 @@ export interface SelectSelector {
 }
 
 export interface IconSelector {
+  icon: {
+    placeholder?: string;
+    fallbackPath?: string;
+  };
+}
+
+export interface ThemeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
-  icon: {};
+  theme: {};
 }
 
 export interface MediaSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   media: {};
+}
+
+export interface LocationSelector {
+  location: { radius?: boolean; icon?: string };
+}
+
+export interface LocationSelectorValue {
+  latitude: number;
+  longitude: number;
+  radius?: number;
 }
 
 export interface MediaSelectorValue {

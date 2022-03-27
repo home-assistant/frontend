@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-form/ha-form";
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {

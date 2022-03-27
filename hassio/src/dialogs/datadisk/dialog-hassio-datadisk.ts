@@ -1,11 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-select";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -89,11 +89,12 @@ class HassioDatadiskDialog extends LitElement {
                     )}
                     <br /><br />
 
-                    <mwc-select
+                    <ha-select
                       .label=${this.dialogParams.supervisor.localize(
                         "dialog.datadisk_move.select_device"
                       )}
                       @selected=${this._select_device}
+                      dialogInitialFocus
                     >
                       ${this.devices.map(
                         (device) =>
@@ -101,7 +102,7 @@ class HassioDatadiskDialog extends LitElement {
                             >${device}</mwc-list-item
                           >`
                       )}
-                    </mwc-select>
+                    </ha-select>
                   `
                 : this.devices === undefined
                 ? this.dialogParams.supervisor.localize(
@@ -111,7 +112,11 @@ class HassioDatadiskDialog extends LitElement {
                     "dialog.datadisk_move.no_devices"
                   )}
 
-              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+              <mwc-button
+                slot="secondaryAction"
+                @click=${this.closeDialog}
+                dialogInitialFocus
+              >
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.cancel"
                 )}
@@ -156,7 +161,7 @@ class HassioDatadiskDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        mwc-select {
+        ha-select {
           width: 100%;
         }
         ha-circular-progress {

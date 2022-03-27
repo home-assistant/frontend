@@ -27,7 +27,7 @@ import { HomeAssistant } from "../../../../../../types";
 export class HaDeviceInfoZWaveJS extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device!: DeviceRegistryEntry;
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @state() private _entryId?: string;
 
@@ -171,5 +171,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-zwave_js": HaDeviceInfoZWaveJS;
   }
 }

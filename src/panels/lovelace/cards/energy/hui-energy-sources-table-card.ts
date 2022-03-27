@@ -45,6 +45,8 @@ export class HuiEnergySourcesTableCard
 
   @state() private _data?: EnergyData;
 
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {

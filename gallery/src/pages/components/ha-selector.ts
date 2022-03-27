@@ -146,6 +146,8 @@ const SCHEMAS: {
       },
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
+      date: { name: "Date", selector: { date: {} } },
+      datetime: { name: "Date Time", selector: { datetime: {} } },
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
@@ -162,12 +164,44 @@ const SCHEMAS: {
         },
       },
       object: { name: "Object", selector: { object: {} } },
+      select_radio: {
+        name: "Select (Radio)",
+        selector: { select: { options: ["Option 1", "Option 2"] } },
+      },
       select: {
         name: "Select",
-        selector: { select: { options: ["Option 1", "Option 2"] } },
+        selector: {
+          select: {
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
       },
       icon: { name: "Icon", selector: { icon: {} } },
       media: { name: "Media", selector: { media: {} } },
+      location: { name: "Location", selector: { location: {} } },
+      location_radius: {
+        name: "Location with radius",
+        selector: { location: { radius: true, icon: "mdi:home" } },
+      },
+      color_temp: {
+        name: "Color Temperature",
+        selector: { color_temp: {} },
+      },
+      color_rgb: { name: "Color", selector: { color_rgb: {} } },
+    },
+  },
+  {
+    name: "Multiples",
+    input: {
+      entity: { name: "Entity", selector: { entity: { multiple: true } } },
+      device: { name: "Device", selector: { device: { multiple: true } } },
     },
   },
 ];
@@ -279,7 +313,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           can_play: true,
           can_expand: false,
           children_media_class: null,
-          thumbnail: null,
+          thumbnail: "https://brands.home-assistant.io/_/image/logo.png",
         },
         {
           title: "movie.mp4",

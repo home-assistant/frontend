@@ -1,13 +1,13 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
+import "../../../components/ha-textfield";
+import type { HaTextField } from "../../../components/ha-textfield";
 import {
   BlueprintImportResult,
   importBlueprint,
@@ -32,7 +32,7 @@ class DialogImportBlueprint extends LitElement {
 
   @state() private _url?: string;
 
-  @query("#input") private _input?: PaperInputElement;
+  @query("#input") private _input?: HaTextField;
 
   public showDialog(params): void {
     this._params = params;
@@ -90,13 +90,13 @@ class DialogImportBlueprint extends LitElement {
                       </ul>
                     `
                   : html`
-                      <paper-input
+                      <ha-textfield
                         id="input"
-                        .value=${this._result.suggested_filename}
+                        .value=${this._result.suggested_filename || ""}
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
-                      ></paper-input>
+                      ></ha-textfield>
                     `}
                 <ha-expansion-panel
                   .header=${this.hass.localize(
@@ -116,14 +116,14 @@ class DialogImportBlueprint extends LitElement {
                       "ui.panel.config.blueprint.add.community_forums"
                     )}</a
                   >`
-                )}<paper-input
+                )}<ha-textfield
                   id="input"
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
-                  .value=${this._url}
+                  .value=${this._url || ""}
                   dialogInitialFocus
-                ></paper-input>`}
+                ></ha-textfield>`}
         </div>
         ${!this._result
           ? html`<mwc-button
@@ -212,9 +212,15 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return haStyleDialog;
-  }
+  static styles = [
+    haStyleDialog,
+    css`
+      ha-textfield {
+        display: block;
+        margin-top: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {

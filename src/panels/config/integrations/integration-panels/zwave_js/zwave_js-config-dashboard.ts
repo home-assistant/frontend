@@ -237,8 +237,10 @@ class ZWaveJSConfigDashboard extends LitElement {
                     <mwc-button
                       @click=${this._removeNodeClicked}
                       .disabled=${this._status !== "connected" ||
-                      this._network?.controller.inclusion_state !==
-                        InclusionState.Idle}
+                      (this._network?.controller.inclusion_state !==
+                        InclusionState.Idle &&
+                        this._network?.controller.inclusion_state !==
+                          InclusionState.SmartStart)}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.remove_node"
@@ -304,7 +306,9 @@ class ZWaveJSConfigDashboard extends LitElement {
           ?rtl=${computeRTL(this.hass)}
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
-          this._network?.controller.inclusion_state !== InclusionState.Idle}
+          (this._network?.controller.inclusion_state !== InclusionState.Idle &&
+            this._network?.controller.inclusion_state !==
+              InclusionState.SmartStart)}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
@@ -347,7 +351,7 @@ class ZWaveJSConfigDashboard extends LitElement {
       } else {
         stateTextExtra = html`
           <br />
-          <a href="/config/logs"
+          <a href="/config/logs?filter=zwave_js"
             >${this.hass.localize(
               "ui.panel.config.integrations.config_entry.check_the_logs"
             )}</a

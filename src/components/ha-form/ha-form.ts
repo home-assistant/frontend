@@ -1,10 +1,18 @@
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-alert";
 import "./ha-form-boolean";
 import "./ha-form-constant";
+import "./ha-form-grid";
 import "./ha-form-float";
 import "./ha-form-integer";
 import "./ha-form-multi_select";
@@ -14,17 +22,20 @@ import "./ha-form-string";
 import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
 import { HomeAssistant } from "../../types";
 
-const getValue = (obj, item) => (obj ? obj[item.name] : null);
+const getValue = (obj, item) =>
+  obj ? (!item.name ? obj : obj[item.name]) : null;
+
+const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
 let selectorImported = false;
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public data!: HaFormDataContainer;
+  @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property() public schema!: HaFormSchema[];
+  @property({ attribute: false }) public schema!: HaFormSchema[];
 
   @property() public error?: Record<string, string>;
 
@@ -64,7 +75,7 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       <div class="root">
         ${this.error && this.error.base
@@ -75,7 +86,7 @@ export class HaForm extends LitElement implements HaFormElement {
             `
           : ""}
         ${this.schema.map((item) => {
-          const error = getValue(this.error, item);
+          const error = getError(this.error, item);
 
           return html`
             ${error
@@ -95,17 +106,36 @@ export class HaForm extends LitElement implements HaFormElement {
                   .disabled=${this.disabled}
                   .helper=${this._computeHelper(item)}
                   .required=${item.required || false}
+                  .context=${this._generateContext(item)}
                 ></ha-selector>`
               : dynamicElement(`ha-form-${item.type}`, {
                   schema: item,
                   data: getValue(this.data, item),
                   label: this._computeLabel(item, this.data),
                   disabled: this.disabled,
+                  hass: this.hass,
+                  computeLabel: this.computeLabel,
+                  computeHelper: this.computeHelper,
+                  context: this._generateContext(item),
                 })}
           `;
         })}
       </div>
     `;
+  }
+
+  private _generateContext(
+    schema: HaFormSchema
+  ): Record<string, any> | undefined {
+    if (!schema.context) {
+      return undefined;
+    }
+
+    const context = {};
+    for (const [context_key, data_key] of Object.entries(schema.context)) {
+      context[context_key] = this.data[data_key];
+    }
+    return context;
   }
 
   protected createRenderRoot() {
@@ -115,8 +145,12 @@ export class HaForm extends LitElement implements HaFormElement {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
+      const newValue = !schema.name
+        ? ev.detail.value
+        : { [schema.name]: ev.detail.value };
+
       fireEvent(this, "value-changed", {
-        value: { ...this.data, [schema.name]: ev.detail.value },
+        value: { ...this.data, ...newValue },
       });
     });
     return root;

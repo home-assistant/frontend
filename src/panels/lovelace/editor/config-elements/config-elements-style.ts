@@ -21,7 +21,7 @@ export const configElementStyle = css`
   }
   hui-theme-select-editor,
   hui-action-editor,
-  mwc-select,
+  ha-select,
   ha-textfield,
   ha-icon-picker {
     margin-top: 8px;

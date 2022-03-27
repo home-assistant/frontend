@@ -1,10 +1,11 @@
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
-import { DeviceRegistryEntry } from "../../data/device_registry";
-import { DeviceSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
+import type { DeviceSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
+import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
@@ -30,20 +31,36 @@ export class HaDeviceSelector extends LitElement {
   }
 
   protected render() {
-    return html`<ha-device-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      .deviceFilter=${this._filterDevices}
-      .includeDeviceClasses=${this.selector.device.entity?.device_class
-        ? [this.selector.device.entity.device_class]
-        : undefined}
-      .includeDomains=${this.selector.device.entity?.domain
-        ? [this.selector.device.entity.domain]
-        : undefined}
-      .disabled=${this.disabled}
-      allow-custom-entity
-    ></ha-device-picker>`;
+    if (!this.selector.device.multiple) {
+      return html`<ha-device-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .label=${this.label}
+        .deviceFilter=${this._filterDevices}
+        .includeDeviceClasses=${this.selector.device.entity?.device_class
+          ? [this.selector.device.entity.device_class]
+          : undefined}
+        .includeDomains=${this.selector.device.entity?.domain
+          ? [this.selector.device.entity.domain]
+          : undefined}
+        .disabled=${this.disabled}
+        allow-custom-entity
+      ></ha-device-picker> `;
+    }
+
+    return html`
+      ${this.label ? html`<label>${this.label}</label>` : ""}
+      <ha-devices-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .includeDeviceClasses=${this.selector.device.entity?.device_class
+          ? [this.selector.device.entity.device_class]
+          : undefined}
+        .includeDomains=${this.selector.device.entity?.domain
+          ? [this.selector.device.entity.domain]
+          : undefined}
+      ></ha-devices-picker>
+    `;
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {

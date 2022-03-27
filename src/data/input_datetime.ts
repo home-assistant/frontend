@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
 export interface InputDateTime {
@@ -16,6 +17,19 @@ export interface InputDateTimeMutableParams {
   has_time: boolean;
   has_date: boolean;
 }
+
+export const stateToIsoDateString = (entityState: HassEntity) =>
+  `${entityState.attributes.year || "1970"}-${String(
+    entityState.attributes.month || "01"
+  ).padStart(2, "0")}-${String(entityState.attributes.day || "01").padStart(
+    2,
+    "0"
+  )}T${String(entityState.attributes.hour || "00").padStart(2, "0")}:${String(
+    entityState.attributes.minute || "00"
+  ).padStart(2, "0")}:${String(entityState.attributes.second || "00").padStart(
+    2,
+    "0"
+  )}`;
 
 export const setInputDateTimeValue = (
   hass: HomeAssistant,

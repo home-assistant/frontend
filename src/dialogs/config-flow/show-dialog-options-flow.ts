@@ -134,6 +134,21 @@ export const showOptionsFlowDialog = (
           : "";
       },
 
+      renderMenuHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${step.handler}.option.step.${step.step_id}.title`
+          ) || hass.localize(`component.${step.handler}.title`)
+        );
+      },
+
+      renderMenuOption(hass, step, option) {
+        return hass.localize(
+          `component.${step.handler}.options.step.${step.step_id}.menu_options.${option}`,
+          step.description_placeholders
+        );
+      },
+
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(`component.${configEntry.domain}.options.loading`) ||

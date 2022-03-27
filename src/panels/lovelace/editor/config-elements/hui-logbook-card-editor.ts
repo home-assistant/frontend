@@ -1,5 +1,5 @@
-import "@polymer/paper-input/paper-input";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "../../../../components/ha-form/ha-form";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   array,
@@ -12,15 +12,11 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entities-picker";
-import "../../../../components/entity/ha-entity-picker";
-import { HomeAssistant } from "../../../../types";
-import { LogbookCardConfig } from "../../cards/types";
-import "../../components/hui-entity-editor";
-import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LogbookCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { EditorTarget } from "../types";
-import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -32,6 +28,18 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA: HaFormSchema[] = [
+  { name: "title", selector: { text: {} } },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      { name: "theme", selector: { theme: {} } },
+      { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
+    ],
+  },
+];
+
 @customElement("hui-logbook-card-editor")
 export class HuiLogbookCardEditor
   extends LitElement
@@ -41,28 +49,13 @@ export class HuiLogbookCardEditor
 
   @state() private _config?: LogbookCardConfig;
 
-  @state() private _configEntities?: string[];
-
   public setConfig(config: LogbookCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
-    this._configEntities = config.entities;
-  }
-
-  get _title(): string {
-    return this._config!.title || "";
   }
 
   get _entities(): string[] {
     return this._config!.entities || [];
-  }
-
-  get _hours_to_show(): number {
-    return this._config!.hours_to_show || 24;
-  }
-
-  get _theme(): string {
-    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
@@ -71,88 +64,43 @@ export class HuiLogbookCardEditor
     }
 
     return html`
-      <div class="card-config">
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._title}
-          .configValue=${"title"}
-          @value-changed=${this._valueChanged}
-        ></paper-input>
-        <div class="side-by-side">
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value=${this._theme}
-            .configValue=${"theme"}
-            @value-changed=${this._valueChanged}
-          ></hui-theme-select-editor>
-          <paper-input
-            type="number"
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hours_to_show"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._hours_to_show}
-            min="1"
-            .configValue=${"hours_to_show"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
-        </div>
-        <h3>
-          ${`${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.entities"
-          )} (${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})`}
-        </h3>
-        <ha-entities-picker
-          .hass=${this.hass}
-          .value=${this._configEntities}
-          @value-changed=${this._valueChanged}
-        >
-        </ha-entities-picker>
-      </div>
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+      <h3>
+        ${`${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.entities"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.required"
+        )})`}
+      </h3>
+      <ha-entities-picker
+        .hass=${this.hass}
+        .value=${this._entities}
+        @value-changed=${this._entitiesChanged}
+      >
+      </ha-entities-picker>
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
-    if (ev.detail && ev.detail.value && Array.isArray(ev.detail.value)) {
-      this._config = { ...this._config, entities: ev.detail.value };
-    } else if (target.configValue) {
-      if (target.value === "") {
-        this._config = { ...this._config };
-        delete this._config[target.configValue!];
-      } else {
-        let value: any = target.value;
-
-        if (target.type === "number") {
-          value = Number(value);
-        }
-
-        this._config = {
-          ...this._config,
-          [target.configValue!]: value,
-        };
-      }
-    }
+  private _entitiesChanged(ev: CustomEvent): void {
+    this._config = { ...this._config!, entities: ev.detail.value };
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResultGroup {
-    return configElementStyle;
+  private _valueChanged(ev: CustomEvent): void {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
+
+  private _computeLabelCallback = (schema: HaFormSchema) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    ) ||
+    this.hass!.localize(`ui.panel.lovelace.editor.card.logbook.${schema.name}`);
 }
 
 declare global {

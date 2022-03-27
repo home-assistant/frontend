@@ -5,7 +5,6 @@ import {
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -19,6 +18,7 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -40,6 +40,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
+        }
+
+        ha-textfield {
+          display: block;
+        }
+
+        .state-input {
+          margin-top: 16px;
         }
 
         ha-expansion-panel {
@@ -72,6 +80,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           font-size: var(
             --paper-input-container-shared-input-style_-_font-size
           );
+        }
+
+        .filters th {
+          padding: 0;
+        }
+
+        .filters search-input {
+          display: block;
+          --mdc-text-field-fill-color: transparent;
         }
 
         th.attributes {
@@ -164,16 +181,17 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               on-change="entityIdChanged"
               allow-custom-entity
             ></ha-entity-picker>
-            <paper-input
+            <ha-textfield
               label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
               required
               autocapitalize="none"
               autocomplete="off"
               autocorrect="off"
               spellcheck="false"
-              value="{{_state}}"
+              value="[[_state]]"
+              on-change="stateChanged"
               class="state-input"
-            ></paper-input>
+            ></ha-textfield>
             <p>
               [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
             </p>
@@ -234,27 +252,29 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               ></ha-checkbox>
             </th>
           </tr>
-          <tr>
+          <tr class="filters">
             <th>
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_entities')]]"
-                type="search"
-                value="{{_entityFilter}}"
-              ></paper-input>
+                value="[[_entityFilter]]"
+                on-value-changed="_entityFilterChanged"
+              ></search-input>
             </th>
             <th>
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_states')]]"
                 type="search"
-                value="{{_stateFilter}}"
-              ></paper-input>
+                value="[[_stateFilter]]"
+                on-value-changed="_stateFilterChanged"
+              ></search-input>
             </th>
             <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
-              <paper-input
+              <search-input
                 label="[[localize('ui.panel.developer-tools.tabs.states.filter_attributes')]]"
                 type="search"
-                value="{{_attributeFilter}}"
-              ></paper-input>
+                value="[[_attributeFilter]]"
+                on-value-changed="_attributeFilterChanged"
+              ></search-input>
             </th>
           </tr>
           <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
@@ -414,6 +434,22 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._state = state.state;
     this._stateAttributes = dump(state.attributes);
     this._expanded = true;
+  }
+
+  stateChanged(ev) {
+    this._state = ev.target.value;
+  }
+
+  _entityFilterChanged(ev) {
+    this._entityFilter = ev.detail.value;
+  }
+
+  _stateFilterChanged(ev) {
+    this._stateFilter = ev.detail.value;
+  }
+
+  _attributeFilterChanged(ev) {
+    this._attributeFilter = ev.detail.value;
   }
 
   _getHistoryURL(entityId, inputDate) {

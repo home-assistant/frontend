@@ -136,10 +136,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       if (currentMode && MODES_MAX.includes(currentMode)) {
         schema.push({
           name: "max",
+          required: true,
           selector: {
-            text: {
-              type: "number",
-            },
+            number: { mode: "box", min: 1, max: Infinity },
           },
         });
       }
@@ -161,11 +160,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
     const data = {
       mode: MODES[0],
+      icon: undefined,
       max:
         this._config.mode && MODES_MAX.includes(this._config.mode)
           ? 10
           : undefined,
-      icon: undefined,
       ...this._config,
       id: this._entityId,
     };
@@ -570,9 +569,13 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _aliasChanged(alias: string) {
-    if (this.scriptEntityId || this._entityId) {
+    if (
+      this.scriptEntityId ||
+      (this._entityId && this._entityId !== slugify(this._config!.alias))
+    ) {
       return;
     }
+
     const aliasSlugify = slugify(alias);
     let id = aliasSlugify;
     let i = 2;
@@ -596,6 +599,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const values = ev.detail.value as any;
+    const currentId = this._entityId;
 
     for (const key of Object.keys(values)) {
       if (key === "sequence") {
@@ -604,7 +608,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
       const value = values[key];
 
-      if (value === this._config![key]) {
+      if (
+        value === this._config![key] ||
+        (key === "id" && currentId === value)
+      ) {
         continue;
       }
 

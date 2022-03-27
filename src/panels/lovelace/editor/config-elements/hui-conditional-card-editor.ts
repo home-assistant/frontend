@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
@@ -17,17 +16,22 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
-import { HomeAssistant } from "../../../../types";
-import { ConditionalCardConfig } from "../../cards/types";
-import { LovelaceCardEditor } from "../../types";
+import "../../../../components/ha-select";
+import "../../../../components/ha-textfield";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
+import type { HomeAssistant } from "../../../../types";
+import type { ConditionalCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../hui-element-editor";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { GUIModeChangedEvent } from "../types";
+import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
@@ -152,7 +156,7 @@ export class HuiConditionalCardEditor
                       ></ha-entity-picker>
                     </div>
                     <div class="state">
-                      <mwc-select
+                      <ha-select
                         .value=${cond.state_not !== undefined
                           ? "true"
                           : "false"}
@@ -173,8 +177,8 @@ export class HuiConditionalCardEditor
                             "ui.panel.lovelace.editor.card.conditional.state_not_equal"
                           )}
                         </mwc-list-item>
-                      </mwc-select>
-                      <paper-input
+                      </ha-select>
+                      <ha-textfield
                         .label="${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
@@ -185,8 +189,8 @@ export class HuiConditionalCardEditor
                           : cond.state}
                         .idx=${idx}
                         .configValue=${"state"}
-                        @value-changed=${this._changeCondition}
-                      ></paper-input>
+                        @input=${this._changeCondition}
+                      ></ha-textfield>
                     </div>
                   </div>
                 `
@@ -326,10 +330,10 @@ export class HuiConditionalCardEditor
           display: flex;
           align-items: flex-end;
         }
-        .condition .state mwc-select {
+        .condition .state ha-select {
           margin-right: 16px;
         }
-        .condition .state paper-input {
+        .condition .state ha-textfield {
           flex-grow: 1;
         }
 

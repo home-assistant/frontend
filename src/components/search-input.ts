@@ -1,12 +1,12 @@
 import { mdiClose, mdiMagnify } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "../../components/ha-icon-button";
-import "../../components/ha-svg-icon";
-import "../../components/ha-textfield";
-import type { HaTextField } from "../../components/ha-textfield";
-import { HomeAssistant } from "../../types";
-import { fireEvent } from "../dom/fire_event";
+import "./ha-icon-button";
+import "./ha-svg-icon";
+import "./ha-textfield";
+import type { HaTextField } from "./ha-textfield";
+import { HomeAssistant } from "../types";
+import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
@@ -35,7 +35,7 @@ class SearchInput extends LitElement {
         .autofocus=${this.autofocus}
         .label=${this.label || "Search"}
         .value=${this.filter || ""}
-        .icon=${true}
+        icon
         .iconTrailing=${this.filter || this.suffix}
         @input=${this._filterInputChanged}
       >

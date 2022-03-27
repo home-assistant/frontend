@@ -43,9 +43,18 @@ export const uploadLocalMedia = async (
     }
   );
   if (resp.status === 413) {
-    throw new Error("Uploaded image is too large");
+    throw new Error(`Uploaded file is too large (${file.name})`);
   } else if (resp.status !== 200) {
     throw new Error("Unknown error");
   }
   return resp.json();
 };
+
+export const removeLocalMedia = async (
+  hass: HomeAssistant,
+  media_content_id: string
+) =>
+  hass.callWS({
+    type: "media_source/local_source/remove",
+    media_content_id,
+  });

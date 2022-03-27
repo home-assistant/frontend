@@ -1,4 +1,3 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";

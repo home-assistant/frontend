@@ -3,6 +3,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiDelete,
+  mdiEyeOff,
   mdiFilterVariant,
   mdiPencilOff,
   mdiPlus,
@@ -100,6 +101,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public _entries?: ConfigEntry[];
 
   @state() private _showDisabled = false;
+
+  @state() private _showHidden = false;
 
   @state() private _showUnavailable = true;
 
@@ -249,7 +252,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "68px",
         template: (_status, entity: EntityRow) =>
-          entity.unavailable || entity.disabled_by || entity.readonly
+          entity.unavailable ||
+          entity.disabled_by ||
+          entity.hidden_by ||
+          entity.readonly
             ? html`
                 <div
                   tabindex="0"
@@ -265,6 +271,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       ? mdiAlertCircle
                       : entity.disabled_by
                       ? mdiCancel
+                      : entity.hidden_by
+                      ? mdiEyeOff
                       : mdiPencilOff}
                   ></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
@@ -279,6 +287,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       : entity.disabled_by
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.disabled"
+                        )
+                      : entity.hidden_by
+                      ? this.hass.localize(
+                          "ui.panel.config.entities.picker.status.hidden"
                         )
                       : this.hass.localize(
                           "ui.panel.config.entities.picker.status.readonly"
@@ -301,6 +313,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean,
+      showHidden: boolean,
       entries?: ConfigEntry[]
     ) => {
       const result: EntityRow[] = [];
@@ -359,6 +372,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       if (!showDisabled) {
         filteredEntities = filteredEntities.filter(
           (entity) => !entity.disabled_by
+        );
+      }
+
+      if (!showHidden) {
+        filteredEntities = filteredEntities.filter(
+          (entity) => !entity.hidden_by
         );
       }
 
@@ -465,6 +484,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._showDisabled,
         this._showUnavailable,
         this._showReadOnly,
+        this._showHidden,
         this._entries
       );
 
@@ -533,6 +553,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                           "ui.panel.config.entities.picker.disable_selected.button"
                         )}</mwc-button
                       >
+                      <mwc-button @click=${this._hideSelected}
+                        >${this.hass.localize(
+                          "ui.panel.config.entities.picker.hide_selected.button"
+                        )}</mwc-button
+                      >
                       <mwc-button @click=${this._removeSelected} class="warning"
                         >${this.hass.localize(
                           "ui.panel.config.entities.picker.remove_selected.button"
@@ -563,6 +588,17 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         )}
                       </paper-tooltip>
                       <ha-icon-button
+                        id="hide-btn"
+                        @click=${this._hideSelected}
+                        .path=${mdiCancel}
+                        .label=${this.hass.localize("ui.common.hide")}
+                      ></ha-icon-button>
+                      <paper-tooltip animation-delay="0" for="hide-btn">
+                        ${this.hass.localize(
+                          "ui.panel.config.entities.picker.hide_selected.button"
+                        )}
+                      </paper-tooltip>
+                      <ha-icon-button
                         class="warning"
                         id="remove-btn"
                         @click=${this._removeSelected}
@@ -585,6 +621,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
                 .path=${mdiFilterVariant}
               ></ha-icon-button>
+              ${this.narrow && activeFilters?.length
+                ? html`<mwc-list-item @click=${this._clearFilter}
+                    >${this.hass.localize(
+                      "ui.components.data-table.filtering_by"
+                    )}
+                    ${activeFilters.join(", ")}
+                    <span class="clear">Clear</span></mwc-list-item
+                  >`
+                : ""}
               <ha-check-list-item
                 @request-selected=${this._showDisabledChanged}
                 .selected=${this._showDisabled}
@@ -592,6 +637,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               >
                 ${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.show_disabled"
+                )}
+              </ha-check-list-item>
+              <ha-check-list-item
+                @request-selected=${this._showHiddenChanged}
+                .selected=${this._showHidden}
+                left
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.entities.picker.filter.show_hidden"
                 )}
               </ha-check-list-item>
               <ha-check-list-item
@@ -662,6 +716,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           entity_id: entityId,
           platform: computeDomain(entityId),
           disabled_by: null,
+          hidden_by: null,
           area_id: null,
           config_entry_id: null,
           device_id: null,
@@ -682,6 +737,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       return;
     }
     this._showDisabled = ev.detail.selected;
+  }
+
+  private _showHiddenChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showHidden = ev.detail.selected;
   }
 
   private _showRestoredChanged(ev: CustomEvent<RequestSelectedDetail>) {
@@ -775,6 +837,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             disabled_by: "user",
+          })
+        );
+        this._clearSelection();
+      },
+    });
+  }
+
+  private _hideSelected() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_title",
+        "number",
+        this._selectedEntities.length
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.hide"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: () => {
+        this._selectedEntities.forEach((entity) =>
+          updateEntityRegistryEntry(this.hass, entity, {
+            hidden_by: "user",
           })
         );
         this._clearSelection();
@@ -895,6 +980,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         ha-button-menu {
           margin-left: 8px;
+        }
+        .clear {
+          color: var(--primary-color);
+          padding-left: 8px;
+          text-transform: uppercase;
         }
       `,
     ];

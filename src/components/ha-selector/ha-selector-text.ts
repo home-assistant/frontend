@@ -69,10 +69,14 @@ export class HaTextSelector extends LitElement {
   }
 
   private _handleChange(ev) {
-    const value = ev.target.value;
+    let value = ev.target.value;
     if (this.value === value) {
       return;
     }
+    if (value === "" && !this.required) {
+      value = undefined;
+    }
+
     fireEvent(this, "value-changed", { value });
   }
 

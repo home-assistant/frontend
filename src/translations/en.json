@@ -102,6 +102,11 @@
       "integration": "Integration",
       "config_entry": "Config entry",
       "device": "Device"
+    },
+    "hidden_by": {
+      "user": "User",
+      "integration": "Integration",
+      "device": "Device"
     }
   },
   "ui": {
@@ -292,6 +297,7 @@
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
+      "hide": "Hide",
       "close": "Close",
       "clear": "Clear",
       "leave": "Leave",
@@ -533,6 +539,7 @@
         "play-media": "Play Media",
         "pick-media": "Pick Media",
         "no_items": "No items",
+        "not_shown": "{count} incompatible {count, plural,\n  one {item}\n  other {items}\n} hidden",
         "choose_player": "Choose Player",
         "media-player-browser": "Media",
         "web-browser": "Web Browser",
@@ -548,10 +555,17 @@
         "no_media_folder": "It looks like you have not yet created a media directory.",
         "setup_local_help": "Check the {documentation} on how to setup local media.",
         "file_management": {
+          "title": "Media Management",
+          "manage": "Manage",
+          "no_items": "No media items found",
+          "folders_not_supported": "Folders can not be managed via the UI.",
           "highlight_button": "Click here to upload your first media",
           "upload_failed": "Upload failed: {reason}",
           "add_media": "Add Media",
-          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}"
+          "uploading": "Uploading {count} {count, plural,\n  one {file}\n  other {files}\n}",
+          "confirm_delete": "Do you want to delete {count} {count, plural,\n  one {file}\n  other {files}\n}?",
+          "delete": "Delete {count}",
+          "deleting": "Deleting {count}"
         },
         "class": {
           "album": "Album",
@@ -765,17 +779,29 @@
               "door": "Door",
               "garage": "Garage door",
               "gate": "Gate",
-              "window": "Window"
+              "window": "Window",
+              "shade": "Shade",
+              "awning": "Awning",
+              "blind": "Blind",
+              "curtain": "Curtain",
+              "damper": "Damper",
+              "shutter": "Shutter"
             }
           },
           "unavailable": "This entity is unavailable.",
-          "enabled_label": "Enable entity",
-          "enabled_cause": "Disabled by {cause}.",
+          "entity_status": "Entity status",
+          "change_area": "Change Area",
+          "enabled_label": "Enabled",
+          "disabled_label": "Disabled",
+          "enabled_cause": "Cannot change status. Disabled by {cause}.",
+          "hidden_label": "Hidden",
+          "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "open_device_settings": "Open device settings",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",
+          "hidden_description": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services.",
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entity?",
           "update": "Update",
@@ -1341,12 +1367,23 @@
                 "metric_example": "Celsius, kilograms",
                 "find_currency_value": "Find your value",
                 "save_button": "Save",
-                "external_url": "External URL",
-                "internal_url": "Internal URL",
                 "currency": "Currency"
               }
             }
           }
+        },
+        "url": {
+          "caption": "Home Assistant URL",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (eg. to play text-to-speech or other hosted media).",
+          "internal_url_label": "Local Network",
+          "external_url_label": "Internet",
+          "external_use_ha_cloud": "Use Home Assistant Cloud",
+          "external_get_ha_cloud": "Access from anywhere using Home Assistant Cloud",
+          "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
+          "enable_remote": "[%key:ui::common::enable%]",
+          "internal_url_automatic": "Automatic",
+          "internal_url_https_error_title": "Invalid local network URL",
+          "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
         },
         "info": {
           "caption": "Info",
@@ -1400,7 +1437,7 @@
           "error_from_custom_integration": "This error originated from a custom integration."
         },
         "lovelace": {
-          "caption": "Lovelace Dashboards",
+          "caption": "Dashboards",
           "description": "Create customized sets of cards to control your home",
           "dashboards": {
             "default_dashboard": "This is the default dashboard",
@@ -1426,7 +1463,7 @@
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "Your dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
-            "cant_edit_default": "The default Lovelace dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+            "cant_edit_default": "The default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
@@ -1464,7 +1501,7 @@
             "confirm_delete": "Are you sure you want to delete this resource?",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
-            "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
+            "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
               "dismiss": "Close",
@@ -1593,7 +1630,8 @@
             "move_down": "Move down",
             "description": {
               "label": "Description",
-              "placeholder": "Optional description"
+              "placeholder": "Optional description",
+              "add": "Add description"
             },
             "blueprint": {
               "header": "Blueprint",
@@ -1622,6 +1660,7 @@
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
+              "triggered": "Triggered",
               "add": "Add trigger",
               "id": "Trigger ID",
               "edit_id": "Edit trigger ID",
@@ -1730,6 +1769,9 @@
               "introduction": "Conditions are optional and will prevent the automation from running unless all conditions are satisfied.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "test": "Test",
+              "invalid_condition": "Invalid condition configuration",
+              "test_failed": "Error occurred while testing condition",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
@@ -1816,6 +1858,10 @@
               "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "invalid_action": "Invalid action",
+              "run_action": "Run action",
+              "run_action_error": "Error running action",
+              "run_action_success": "Action run successfully",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
@@ -1849,7 +1895,7 @@
                 "event": {
                   "label": "Fire event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
-                  "service_data": "[%key:ui::components::service-control::service_data%]"
+                  "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
                 },
                 "device_id": {
                   "label": "Device",
@@ -2130,6 +2176,7 @@
             "connection_status": "Cloud connection status",
             "manage_account": "Manage Account",
             "sign_out": "Sign out",
+            "sign_out_confirm": "Are you sure you want to sign out?",
             "integrations": "Integrations",
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
@@ -2287,6 +2334,8 @@
           "open_configuration_url_service": "Visit service",
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
+          "delete_device": "Delete device",
+          "delete_device_integration": "Remove {integration} from device",
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -2339,10 +2388,10 @@
             "sensor": "Sensors",
             "diagnostic": "Diagnostic",
             "config": "Configuration",
-            "add_entities_lovelace": "Add to Lovelace",
+            "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
-            "hide_disabled": "Hide disabled",
-            "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
+            "show_less": "Show less",
+            "hidden_entities": "+{count} {count, plural,\n  one {hidden entity}\n  other {hidden entities}\n}"
           },
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
@@ -2382,6 +2431,7 @@
             "search": "Search entities",
             "filter": {
               "filter": "Filter",
+              "show_hidden": "Show hidden entities",
               "show_disabled": "Show disabled entities",
               "show_unavailable": "Show unavailable entities",
               "show_readonly": "Show read-only entities",
@@ -2393,6 +2443,7 @@
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
+              "hidden": "Hidden",
               "ok": "Ok"
             },
             "headers": {
@@ -2419,8 +2470,13 @@
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_partly_title": "Only {number} {number, plural,\n  one {selected entity}\n  other {selected entities}\n} can be removed.",
-              "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
+              "confirm_text": "You should remove them from your dashboard config and automations if they contain these entities.",
               "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
+            },
+            "hide_selected": {
+              "button": "Hide selected",
+              "confirm_title": "Do you want to hide {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
+              "confirm_text": "Hidden entities will not be shown on your dashboard. Their history is still tracked and you can still interact with them with services."
             }
           }
         },
@@ -2588,6 +2644,7 @@
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
+            "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
             "created_config": "Created configuration for {name}.",
@@ -2674,120 +2731,6 @@
           "start_listening": "Start listening",
           "stop_listening": "Stop listening",
           "message_received": "Message {id} received on {topic} at {time}:"
-        },
-        "ozw": {
-          "common": {
-            "zwave": "Z-Wave",
-            "node_id": "Node ID",
-            "ozw_instance": "OpenZWave Instance",
-            "instance": "Instance",
-            "controller": "Controller",
-            "network": "Network",
-            "wakeup_instructions": "Wake-up Instructions",
-            "query_stage": "Query Stage"
-          },
-          "device_info": {
-            "zwave_info": "Z-Wave Info",
-            "stage": "Stage",
-            "node_failed": "Node Failed"
-          },
-          "node_query_stages": {
-            "protocolinfo": "Obtaining basic Z-Wave capabilities of this node from the controller",
-            "probe": "Checking if the node is awake/alive",
-            "wakeup": "Setting up support for wake-up queues and messages",
-            "manufacturerspecific1": "Obtaining manufacturer and product ID codes from the node",
-            "nodeinfo": "Obtaining supported command classes from the node",
-            "nodeplusinfo": "Obtaining Z-Wave+ information from the node",
-            "manufacturerspecific2": "Obtaining additional manufacturer and product ID codes from the node",
-            "versions": "Obtaining information about firmware and command class versions",
-            "instances": "Obtaining details about what instances or channels a device supports",
-            "static": "Obtaining static values from the device",
-            "cacheload": "Loading information from the OpenZWave cache file. Battery nodes will stay at this stage until the node wakes up.",
-            "associations": "Refreshing association groups and memberships",
-            "neighbors": "Obtaining a list of the node's neighbors",
-            "session": "Obtaining infrequently changing values from the node",
-            "dynamic": "Obtaining frequently changing values from the node",
-            "configuration": "Obtaining configuration values from the node",
-            "complete": "Interview process is complete"
-          },
-          "refresh_node": {
-            "button": "Refresh Node",
-            "title": "Refresh Node Information",
-            "complete": "Node Refresh Complete",
-            "description": "This will tell OpenZWave to re-interview a node and update the node's command classes, capabilities, and values.",
-            "battery_note": "If the node is battery powered, be sure to wake it before proceeding",
-            "wakeup_header": "Wake-up Instructions for",
-            "wakeup_instructions_source": "Wake-up instructions are sourced from the OpenZWave community device database.",
-            "start_refresh_button": "Start Refresh",
-            "refreshing_description": "Refreshing node information…",
-            "node_status": "Node Status",
-            "step": "Step"
-          },
-          "network_status": {
-            "online": "Online",
-            "offline": "Offline",
-            "starting": "Starting",
-            "unknown": "Unknown",
-            "details": {
-              "driverallnodesqueried": "All nodes have been queried",
-              "driverallnodesqueriedsomedead": "All nodes have been queried. Some nodes were found dead",
-              "driverawakenodesqueries": "All awake nodes have been queried",
-              "driverremoved": "The driver has been removed",
-              "driverreset": "The driver has been reset",
-              "driverfailed": "Failed to connect to Z-Wave controller",
-              "driverready": "Initializing the Z-Wave controller",
-              "ready": "Ready to connect",
-              "stopped": "OpenZWave stopped",
-              "started": "Connected to MQTT",
-              "starting": "Connecting to MQTT",
-              "offline": "OZWDaemon offline"
-            }
-          },
-          "navigation": {
-            "select_instance": "Select Instance",
-            "network": "Network",
-            "nodes": "Nodes",
-            "node": {
-              "dashboard": "Dashboard",
-              "config": "Config"
-            }
-          },
-          "select_instance": {
-            "header": "Select an OpenZWave Instance",
-            "introduction": "You have more than one OpenZWave instance running. Which instance would you like to manage?",
-            "none_found": "We couldn't find an OpenZWave instance. If you believe this is incorrect, check your OpenZWave and MQTT setups and ensure that Home Assistant can communicate with your MQTT broker."
-          },
-          "network": {
-            "header": "Network Management",
-            "introduction": "Manage network-wide functions.",
-            "node_count": "{count} nodes"
-          },
-          "nodes_table": {
-            "id": "ID",
-            "manufacturer": "Manufacturer",
-            "model": "Model",
-            "query_stage": "Query Stage",
-            "zwave_plus": "Z-Wave Plus",
-            "failed": "Failed"
-          },
-          "node": {
-            "button": "Node Details",
-            "not_found": "Node not found"
-          },
-          "node_config": {
-            "header": "Node Configuration",
-            "introduction": "Manage the different configuration parameters for a Z-Wave node.",
-            "help_source": "Config parameter descriptions and help text are provided by the OpenZWave project.",
-            "wakeup_help": "Battery powered nodes must be awake to change their configuration. If the node is not awake, OpenZWave will attempt to update the node's configuration the next time it wakes up, which could be multiple hours (or days) later. Follow these steps to wake up your device:"
-          },
-          "node_metadata": {
-            "product_manual": "Product Manual"
-          },
-          "services": {
-            "add_node": "Add Node",
-            "remove_node": "Remove Node",
-            "cancel_command": "Cancel Command"
-          }
         },
         "zha": {
           "common": {
@@ -2880,96 +2823,6 @@
             "unbind_button_label": "Unbind Group",
             "bind_button_help": "Bind the selected group to the selected device clusters.",
             "unbind_button_help": "Unbind the selected group from the selected device clusters."
-          }
-        },
-        "zwave": {
-          "description": "Manage your Z-Wave network",
-          "learn_more": "Learn more about Z-Wave",
-          "common": {
-            "value": "Value",
-            "instance": "Instance",
-            "index": "Index",
-            "unknown": "unknown",
-            "wakeup_interval": "Wake-up Interval"
-          },
-          "migration": {
-            "zwave_js": {
-              "header": "Migrate to Z-Wave JS",
-              "introduction": "This integration is no longer maintained, and we advise you to move to the new Z-Wave JS integration. This wizard will help you migrate from the legacy Z-Wave integration to the new Z-Wave JS integration."
-            }
-          },
-          "network_management": {
-            "header": "Z-Wave Network Management",
-            "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
-          },
-          "node_management": {
-            "header": "Z-Wave Node Management",
-            "introduction": "Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.",
-            "nodes": "Nodes",
-            "nodes_hint": "Select node to view per-node options",
-            "entities": "Entities of this node",
-            "entity_info": "Entity Information",
-            "exclude_entity": "Exclude this entity from Home Assistant",
-            "pooling_intensity": "Polling intensity",
-            "node_protection": "Node protection",
-            "protection": "Protection",
-            "set_protection": "Set Protection",
-            "node_group_associations": "Node group associations",
-            "group": "Group",
-            "node_to_control": "Node to control",
-            "nodes_in_group": "Other nodes in this group:",
-            "max_associations": "Max Associations:",
-            "add_to_group": "Add to Group",
-            "remove_from_group": "Remove from Group",
-            "remove_broadcast": "Remove Broadcast"
-          },
-          "ozw_log": {
-            "header": "OZW Log",
-            "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log.",
-            "last_log_lines": "Number of last log lines",
-            "load": "Load",
-            "tail": "Tail"
-          },
-          "network_status": {
-            "network_stopped": "Z-Wave Network Stopped",
-            "network_starting": "Starting Z-Wave Network…",
-            "network_starting_note": "This may take a while depending on the size of your network.",
-            "network_started": "Z-Wave Network Started",
-            "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
-            "network_started_note_all_queried": "All nodes have been queried."
-          },
-          "node_config": {
-            "header": "Node Configuration Options",
-            "seconds": "seconds",
-            "set_wakeup": "Set Wake-up Interval",
-            "config_parameter": "Configuration Parameter",
-            "config_value": "Configuration Value",
-            "true": "True",
-            "false": "False",
-            "set_config_parameter": "Set Configuration Parameter"
-          },
-          "values": {
-            "header": "Node Values"
-          },
-          "services": {
-            "start_network": "Start Network",
-            "stop_network": "Stop Network",
-            "heal_network": "Heal Network",
-            "test_network": "Test Network",
-            "soft_reset": "Soft Reset",
-            "save_config": "Save Configuration",
-            "add_node_secure": "Add Node Secure",
-            "add_node": "Add Node",
-            "remove_node": "Remove Node",
-            "cancel_command": "Cancel Command",
-            "refresh_node": "Refresh Node",
-            "remove_failed_node": "Remove Failed Node",
-            "replace_failed_node": "Replace Failed Node",
-            "print_node": "Print Node",
-            "heal_node": "Heal Node",
-            "test_node": "Test Node",
-            "node_info": "Node Information",
-            "refresh_entity": "Refresh Entity"
           }
         },
         "zwave_js": {
@@ -3143,6 +2996,10 @@
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
           }
+        },
+        "tips": {
+          "tip": "Tip!",
+          "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
         }
       },
       "lovelace": {
@@ -3259,7 +3116,7 @@
         },
         "unused_entities": {
           "title": "Unused entities",
-          "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
+          "available_entities": "These are the entities that you have available, but are not in your dashboard yet.",
           "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
           "state_icon": "State",
           "entity": "Entity",
@@ -3270,9 +3127,9 @@
           "no_data": "No unused entities found"
         },
         "add_entities": {
-          "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode.",
-          "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
-          "saving_failed": "Saving Lovelace UI configuration failed."
+          "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
+          "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
+          "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
           "confirm_delete": "Delete view?",
@@ -3295,7 +3152,7 @@
         "editor": {
           "header": "Edit UI",
           "menu": {
-            "open": "Open Lovelace UI menu",
+            "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
             "manage_dashboards": "Manage dashboards",
             "manage_resources": "Manage resources"
@@ -3312,20 +3169,20 @@
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "reload": "Reload",
-            "lovelace_changed": "The Lovelace config was updated, do you want to load the updated config in the editor and lose your current changes?",
-            "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration?",
-            "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
+            "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
+            "confirm_remove_config_title": "Are you sure you want to remove your dashboard configuration?",
+            "confirm_remove_config_text": "We will automatically generate your dashboard views with your areas and devices if you remove your dashboard configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "error_remove": "Unable to remove configuration: {error}",
-            "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel."
+            "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."
           },
           "edit_lovelace": {
-            "header": "Title of your Lovelace UI",
-            "explanation": "This title is shown above all your views in the Lovelace UI.",
+            "header": "Title of your dashboard",
+            "explanation": "This title is shown above all your views in the dashboard.",
             "edit_title": "Edit title",
             "title": "Title"
           },
@@ -3387,13 +3244,13 @@
           "suggest_card": {
             "header": "We created a suggestion for you",
             "create_own": "Pick different card",
-            "add": "Add to Lovelace UI"
+            "add": "Add to dashboard"
           },
           "save_config": {
-            "header": "Take control of your Lovelace UI",
-            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or Lovelace UI components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in configuration to play around with.",
+            "header": "Take control of your dashboard",
+            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or dashboard components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in configuration to play around with.",
             "para_sure": "Are you sure you want to take control of your user interface?",
-            "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your Lovelace config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'.",
+            "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your dashboard config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your dashboard configuration in 'configuration.yaml.'.",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
             "empty_config": "Start with an empty dashboard",
@@ -3433,7 +3290,7 @@
             "calendar": {
               "name": "Calendar",
               "description": "The Calendar card displays a calendar including day, week and list views",
-              "inital_view": "Initial View",
+              "initial_view": "Initial View",
               "calendar_entities": "Calendar Entities",
               "views": {
                 "dayGridMonth": "Month",
@@ -3499,6 +3356,9 @@
               "name": "Entity Filter",
               "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
             },
+            "entity-row": {
+              "secondary_info": "Secondary Information"
+            },
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge?",
@@ -3533,6 +3393,8 @@
               "name": "Statistics Graph",
               "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
+              "stat_types": "Show stat types",
+              "chart_type": "Chart type",
               "periods": {
                 "hour": "Hour",
                 "day": "Day",
@@ -3701,7 +3563,7 @@
           "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {
-          "message": "The Lovelace UI configuration for this dashboard was updated. Refresh to see changes?"
+          "message": "Your dashboard was updated. Refresh to see changes?"
         },
         "components": {
           "timestamp-display": {
@@ -4500,7 +4362,8 @@
           "privileged": "Supervisor is not privileged",
           "software": "Unsupported software detected",
           "source_mods": "Source modifications",
-          "systemd": "Systemd"
+          "systemd": "Systemd",
+          "systemd_resolved": "Systemd-Resolved"
         },
         "unhealthy_reason": {
           "privileged": "Supervisor is not privileged",

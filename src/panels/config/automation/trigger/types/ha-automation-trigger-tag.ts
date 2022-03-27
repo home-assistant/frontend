@@ -1,9 +1,9 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
+import "../../../../../components/ha-select";
 import { TagTrigger } from "../../../../../data/automation";
 import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
@@ -29,7 +29,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
   protected render() {
     const { tag_id } = this.trigger;
     return html`
-      <mwc-select
+      <ha-select
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.tag.label"
         )}
@@ -44,7 +44,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
             </mwc-list-item>
           `
         )}
-      </mwc-select>
+      </ha-select>
     `;
   }
 

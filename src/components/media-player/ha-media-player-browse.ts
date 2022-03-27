@@ -34,22 +34,24 @@ import {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
 } from "../../data/media-player";
+import { browseLocalMediaPlayer } from "../../data/media_source";
+import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
 import "../ha-card";
 import type { HaCard } from "../ha-card";
 import "../ha-circular-progress";
+import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
-import "../ha-fab";
-import { browseLocalMediaPlayer } from "../../data/media_source";
-import { isTTSMediaSource } from "../../data/tts";
-import { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import "./ha-browse-media-tts";
+import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 
 declare global {
   interface HASSDomEvents {
@@ -130,6 +132,11 @@ export class HaMediaPlayerBrowse extends LitElement {
         currentId.media_content_id,
         currentId.media_content_type
       );
+      // Update the parent with latest item.
+      fireEvent(this, "media-browsed", {
+        ids: this.navigateIds,
+        current: this._currentItem,
+      });
     } catch (err) {
       this._setError(err);
     }
@@ -157,10 +164,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     const subtitle = this.hass.localize(
       `ui.components.media-browser.class.${currentItem.media_class}`
     );
-
+    const children = currentItem.children || [];
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
-    const childrenMediaClass =
-      MediaClassBrowserSettings[currentItem.children_media_class];
+    const childrenMediaClass = currentItem.children_media_class
+      ? MediaClassBrowserSettings[currentItem.children_media_class]
+      : MediaClassBrowserSettings.directory;
 
     return html`
               ${
@@ -263,7 +271,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                       @tts-picked=${this._ttsPicked}
                     ></ha-browse-media-tts>
                   `
-                : !currentItem.children?.length
+                : !children.length && !currentItem.not_shown
                 ? html`
                     <div class="container no-items">
                       ${currentItem.media_content_id ===
@@ -295,7 +303,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           childrenMediaClass.thumbnail_ratio === "portrait",
                       })}"
                     >
-                      ${currentItem.children.map(
+                      ${children.map(
                         (child) => html`
                           <div
                             class="child"
@@ -359,11 +367,23 @@ export class HaMediaPlayerBrowse extends LitElement {
                           </div>
                         `
                       )}
+                      ${currentItem.not_shown
+                        ? html`
+                            <div class="grid not-shown">
+                              <div class="title">
+                                ${this.hass.localize(
+                                  "ui.components.media-browser.not_shown",
+                                  { count: currentItem.not_shown }
+                                )}
+                              </div>
+                            </div>
+                          `
+                        : ""}
                     </div>
                   `
                 : html`
                     <mwc-list>
-                      ${currentItem.children.map(
+                      ${children.map(
                         (child) => html`
                           <mwc-list-item
                             @click=${this._childClicked}
@@ -407,6 +427,25 @@ export class HaMediaPlayerBrowse extends LitElement {
                           <li divider role="separator"></li>
                         `
                       )}
+                      ${currentItem.not_shown
+                        ? html`
+                            <mwc-list-item
+                              noninteractive
+                              class="not-shown"
+                              .graphic=${mediaClass.show_list_images
+                                ? "medium"
+                                : "avatar"}
+                              dir=${computeRTLDirection(this.hass)}
+                            >
+                              <span class="title">
+                                ${this.hass.localize(
+                                  "ui.components.media-browser.not_shown",
+                                  { count: currentItem.not_shown }
+                                )}
+                              </span>
+                            </mwc-list-item>
+                          `
+                        : ""}
                     </mwc-list>
                   `
             }
@@ -643,6 +682,17 @@ export class HaMediaPlayerBrowse extends LitElement {
                 // Thumbnails served by local API require authentication
                 const signedPath = await getSignedPath(this.hass, thumbnailUrl);
                 thumbnailUrl = signedPath.path;
+              } else if (
+                thumbnailUrl.startsWith("https://brands.home-assistant.io")
+              ) {
+                // The backend is not aware of the theme used by the users,
+                // so we rewrite the URL to show a proper icon
+                thumbnailUrl = brandsUrl({
+                  domain: extractDomainFromBrandUrl(thumbnailUrl),
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                });
               }
               thumbnailCard.style.backgroundImage = `url(${thumbnailUrl})`;
               observer.unobserve(thumbnailCard); // loaded, so no need to observe anymore
@@ -871,6 +921,17 @@ export class HaMediaPlayerBrowse extends LitElement {
           text-overflow: ellipsis;
           margin-bottom: 0;
           transition: height 0.5s, margin 0.5s;
+        }
+
+        .not-shown {
+          font-style: italic;
+          color: var(--secondary-text-color);
+        }
+
+        .grid.not-shown {
+          display: flex;
+          align-items: center;
+          text-align: center;
         }
 
         /* ============= CHILDREN ============= */

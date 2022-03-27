@@ -1,7 +1,7 @@
-import "../../../components/ha-alert";
+import "@material/mwc-formfield/mwc-formfield";
+import "../../../components/ha-radio";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -13,14 +13,16 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import type { HaSwitch } from "../../../components/ha-switch";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -42,7 +44,18 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
 const OVERRIDE_DEVICE_CLASSES = {
-  cover: ["window", "door", "garage", "gate"],
+  cover: [
+    "awning",
+    "blind",
+    "curtain",
+    "damper",
+    "door",
+    "garage",
+    "gate",
+    "shade",
+    "shutter",
+    "window",
+  ],
   binary_sensor: ["window", "door", "garage_door", "opening"],
 };
 
@@ -63,6 +76,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _areaId?: string | null;
 
   @state() private _disabledBy!: string | null;
+
+  @state() private _hiddenBy!: string | null;
 
   private _deviceLookup?: Record<string, DeviceRegistryEntry>;
 
@@ -100,6 +115,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._areaId = this.entry.area_id;
       this._entityId = this.entry.entity_id;
       this._disabledBy = this.entry.disabled_by;
+      this._hiddenBy = this.entry.hidden_by;
       this._device =
         this.entry.device_id && this._deviceLookup
           ? this._deviceLookup[this.entry.device_id]
@@ -161,12 +177,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ></ha-icon-picker>
         ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
         (domain === "cover" && this.entry.original_device_class === null)
-          ? html`<mwc-select
+          ? html`<ha-select
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_class"
               )}
               .value=${this._deviceClass}
+              naturalMenuWidth
+              fixedMenuPosition
               @selected=${this._deviceClassChanged}
+              @closed=${stopPropagation}
             >
               ${OVERRIDE_DEVICE_CLASSES[domain].map(
                 (deviceClass: string) => html`
@@ -177,7 +196,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   </mwc-list-item>
                 `
               )}
-            </mwc-select>`
+            </ha-select>`
           : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
@@ -196,75 +215,126 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
           : ""}
-        <div class="row">
-          <ha-switch
-            .checked=${!this._disabledBy}
-            .disabled=${this._device?.disabled_by}
-            @change=${this._disabledByChanged}
-          >
-          </ha-switch>
-          <div>
-            <div>
-              ${this.hass.localize(
+        <ha-expansion-panel
+          .header=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.advanced"
+          )}
+          outlined
+        >
+          <div class="label">
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.entity_status"
+            )}:
+          </div>
+          <div class="secondary">
+            ${this._disabledBy && this._disabledBy !== "user"
+              ? this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.enabled_cause",
+                  "cause",
+                  this.hass.localize(
+                    `config_entry.disabled_by.${this._disabledBy}`
+                  )
+                )
+              : ""}
+          </div>
+          <div class="row">
+            <mwc-formfield
+              .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.enabled_label"
               )}
-            </div>
-            <div class="secondary">
-              ${this._disabledBy && this._disabledBy !== "user"
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.enabled_cause",
-                    "cause",
-                    this.hass.localize(
-                      `config_entry.disabled_by.${this._disabledBy}`
-                    )
-                  )
-                : ""}
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_description"
-              )}
-              <br />${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.note"
-              )}
-            </div>
-          </div>
-        </div>
-
-        ${this.entry.device_id
-          ? html`<ha-expansion-panel
-              .header=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.advanced"
-              )}
-              outlined
             >
-              <p>
-                ${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.area_note"
-                )}
-              </p>
-              ${this._areaId
-                ? html`<mwc-button @click=${this._clearArea}
-                    >${this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.follow_device_area"
-                    )}</mwc-button
-                  >`
-                : this._device
-                ? html`<mwc-button @click=${this._openDeviceSettings}
-                    >${this.hass.localize(
-                      "ui.dialogs.entity_registry.editor.change_device_area"
-                    )}</mwc-button
-                  >`
-                : ""}
-              <ha-area-picker
-                .hass=${this.hass}
-                .value=${this._areaId}
-                .placeholder=${this._device?.area_id}
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.area"
-                )}
-                @value-changed=${this._areaPicked}
-              ></ha-area-picker
-            ></ha-expansion-panel>`
-          : ""}
+              <ha-radio
+                name="hiddendisabled"
+                value="enabled"
+                .checked=${!this._hiddenBy && !this._disabledBy}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                this._device?.disabled_by ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
+            <mwc-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.hidden_label"
+              )}
+            >
+              <ha-radio
+                name="hiddendisabled"
+                value="hidden"
+                .checked=${this._hiddenBy !== null}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                Boolean(this._device?.disabled_by) ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
+            <mwc-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.disabled_label"
+              )}
+            >
+              <ha-radio
+                name="hiddendisabled"
+                value="disabled"
+                .checked=${this._disabledBy !== null}
+                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
+                Boolean(this._device?.disabled_by) ||
+                (this._disabledBy && this._disabledBy !== "user")}
+                @change=${this._viewStatusChanged}
+              ></ha-radio>
+            </mwc-formfield>
+          </div>
+
+          ${this._disabledBy !== null
+            ? html`
+                <div class="secondary">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.enabled_description"
+                  )}
+                </div>
+              `
+            : this._hiddenBy !== null
+            ? html`
+                <div class="secondary">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.hidden_description"
+                  )}
+                </div>
+              `
+            : ""}
+          ${this.entry.device_id
+            ? html`
+                <div class="label">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.change_area"
+                  )}:
+                </div>
+                <ha-area-picker
+                  .hass=${this.hass}
+                  .value=${this._areaId}
+                  .placeholder=${this._device?.area_id}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.area"
+                  )}
+                  @value-changed=${this._areaPicked}
+                ></ha-area-picker>
+                <div class="secondary">
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.area_note"
+                  )}
+                  ${this._device
+                    ? html`
+                        <button class="link" @click=${this._openDeviceSettings}>
+                          ${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.change_device_area"
+                          )}
+                        </button>
+                      `
+                    : ""}
+                </div>
+              `
+            : ""}
+        </ha-expansion-panel>
       </div>
       <div class="buttons">
         <mwc-button
@@ -310,9 +380,21 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._areaId = ev.detail.value;
   }
 
-  private _clearArea() {
-    this._error = undefined;
-    this._areaId = null;
+  private _viewStatusChanged(ev: CustomEvent): void {
+    switch ((ev.target as any).value) {
+      case "enabled":
+        this._disabledBy = null;
+        this._hiddenBy = null;
+        break;
+      case "disabled":
+        this._disabledBy = "user";
+        this._hiddenBy = null;
+        break;
+      case "hidden":
+        this._hiddenBy = "user";
+        this._disabledBy = null;
+        break;
+    }
   }
 
   private _openDeviceSettings() {
@@ -338,6 +420,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       (this._disabledBy === null || this._disabledBy === "user")
     ) {
       params.disabled_by = this._disabledBy;
+    }
+    if (
+      this.entry.hidden_by !== this._hiddenBy &&
+      (this._hiddenBy === null || this._hiddenBy === "user")
+    ) {
+      params.hidden_by = this._hiddenBy;
     }
     try {
       const result = await updateEntityRegistryEntry(
@@ -390,10 +478,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _disabledByChanged(ev: Event): void {
-    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -420,8 +504,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
-        mwc-select {
+        ha-select {
           width: 100%;
+          margin: 8px 0;
         }
         ha-switch {
           margin-right: 16px;
@@ -430,14 +515,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           display: block;
           margin: 8px 0;
         }
+        ha-area-picker {
+          margin: 8px 0;
+          display: block;
+        }
         .row {
           margin: 8px 0;
           color: var(--primary-text-color);
           display: flex;
           align-items: center;
         }
-        p {
+        .label {
+          margin-top: 16px;
+        }
+        .secondary {
           margin: 8px 0;
+          width: 340px;
         }
       `,
     ];

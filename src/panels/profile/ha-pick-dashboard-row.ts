@@ -1,11 +1,11 @@
+import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
 import { setDefaultPanel } from "../../data/panel";
 import { HomeAssistant } from "../../types";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select/mwc-select";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
@@ -29,7 +29,7 @@ class HaPickDashboardRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.dashboard.description")}
         </span>
-        <mwc-select
+        <ha-select
           .label=${this.hass.localize(
             "ui.panel.profile.dashboard.dropdown_label"
           )}
@@ -52,7 +52,7 @@ class HaPickDashboardRow extends LitElement {
               </mwc-list-item>
             `;
           })}
-        </mwc-select>
+        </ha-select>
       </ha-settings-row>
     `;
   }

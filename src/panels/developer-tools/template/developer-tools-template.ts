@@ -289,6 +289,12 @@ class HaPanelDevTemplate extends LitElement {
         .rendered.error {
           color: var(--error-color);
         }
+
+        @media all and (max-width: 870px) {
+          .render-pane {
+            max-width: 100%;
+          }
+        }
       `,
     ];
   }

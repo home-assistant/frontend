@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-select";
 import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
@@ -15,6 +14,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-service-description";
 import {
   Cluster,
@@ -82,7 +82,7 @@ export class ZHAClusterCommands extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <mwc-select
+            <ha-select
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.cluster_commands.commands_of_cluster"
               )}
@@ -100,7 +100,7 @@ export class ZHAClusterCommands extends LitElement {
                   </mwc-list-item>
                 `
               )}
-            </mwc-select>
+            </ha-select>
           </div>
           ${this._showHelp
             ? html`
@@ -206,7 +206,7 @@ export class ZHAClusterCommands extends LitElement {
     return [
       haStyle,
       css`
-        mwc-select {
+        ha-select {
           margin-top: 16px;
         }
         .menu {
