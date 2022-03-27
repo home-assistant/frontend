@@ -2,6 +2,15 @@
   // https://github.com/microsoft/vscode-js-debug/blob/master/OPTIONS.md
   "configurations": [
     {
+      "name": "Attach",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+    {
       "name": "Debug Frontend",
       "request": "launch",
       "type": "pwa-chrome",
