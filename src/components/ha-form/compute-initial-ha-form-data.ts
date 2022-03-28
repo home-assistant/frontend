@@ -34,9 +34,34 @@ export const computeInitialHaFormData = (
       };
     } else if ("selector" in field) {
       const selector: Selector = field.selector;
-      if ("boolean" in selector) {
+
+      if ("device" in selector) {
+        if (selector.device.multiple) {
+          data[field.name] = [];
+        } else {
+          data[field.name] = "";
+        }
+      } else if ("entity" in selector) {
+        if (selector.entity.multiple) {
+          data[field.name] = [];
+        } else {
+          data[field.name] = "";
+        }
+      } else if ("area" in selector) {
+        if (selector.area.multiple) {
+          data[field.name] = [];
+        } else {
+          data[field.name] = "";
+        }
+      } else if ("boolean" in selector) {
         data[field.name] = false;
-      } else if ("text" in selector) {
+      } else if (
+        "text" in selector ||
+        "addon" in selector ||
+        "attribute" in selector ||
+        "icon" in selector ||
+        "theme" in selector
+      ) {
         data[field.name] = "";
       } else if ("number" in selector) {
         data[field.name] = selector.number.min ?? 0;
@@ -44,16 +69,29 @@ export const computeInitialHaFormData = (
         if (selector.select.options.length) {
           data[field.name] = selector.select.options[0][0];
         }
-      } else if ("duration" in selector || "time" in selector) {
+      } else if ("duration" in selector) {
         data[field.name] = {
           hours: 0,
           minutes: 0,
           seconds: 0,
         };
+      } else if ("time" in selector) {
+        data[field.name] = "00:00:00";
+      } else if ("date" in selector || "datetime" in selector) {
+        const now = new Date().toISOString().slice(0, 10);
+        data[field.name] = `${now} 00:00:00`;
       } else if ("color_rgb" in selector) {
         data[field.name] = [0, 0, 0];
       } else if ("color_temp" in selector) {
         data[field.name] = selector.color_temp.min_mireds ?? 153;
+      } else if (
+        "action" in selector ||
+        "media" in selector ||
+        "target" in selector
+      ) {
+        data[field.name] = {};
+      } else {
+        throw new Error("Selector not supported in initial form data");
       }
     }
   });
