@@ -65,7 +65,7 @@ const OVERRIDE_DEVICE_CLASSES = {
     ],
   ],
   binary_sensor: [
-    ["connectivity", "lock", "update"], // Other
+    ["lock"], // Lock
     ["window", "door", "garage_door", "opening"], // Door
     ["battery", "battery_charging"], // Battery
     ["cold", "gas", "heat"], // Climate
@@ -145,8 +145,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  protected willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
     if (!changedProperties.has("entry")) {
       return;
     }
