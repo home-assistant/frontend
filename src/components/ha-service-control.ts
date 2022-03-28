@@ -471,6 +471,7 @@ export class HaServiceControl extends LitElement {
       }
       ha-settings-row {
         --paper-time-input-justify-content: flex-end;
+        --settings-row-content-width: 100%;
         border-top: var(
           --service-control-items-border-top,
           1px solid var(--divider-color)
@@ -488,9 +489,6 @@ export class HaServiceControl extends LitElement {
       p {
         margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
-      }
-      :host(:not([narrow])) ha-settings-row ha-selector {
-        width: 60%;
       }
       .checkbox-spacer {
         width: 32px;
