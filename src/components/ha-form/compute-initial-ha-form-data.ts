@@ -36,23 +36,11 @@ export const computeInitialHaFormData = (
       const selector: Selector = field.selector;
 
       if ("device" in selector) {
-        if (selector.device.multiple) {
-          data[field.name] = [];
-        } else {
-          data[field.name] = "";
-        }
+        data[field.name] = selector.device.multiple ? [] : "";
       } else if ("entity" in selector) {
-        if (selector.entity.multiple) {
-          data[field.name] = [];
-        } else {
-          data[field.name] = "";
-        }
+        data[field.name] = selector.entity.multiple ? [] : "";
       } else if ("area" in selector) {
-        if (selector.area.multiple) {
-          data[field.name] = [];
-        } else {
-          data[field.name] = "";
-        }
+        data[field.name] = selector.area.multiple ? [] : "";
       } else if ("boolean" in selector) {
         data[field.name] = false;
       } else if (
