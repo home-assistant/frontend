@@ -62,6 +62,7 @@ export interface ContextConstraint {
 export interface BaseTrigger {
   platform: string;
   id?: string;
+  variables?: Record<string, unknown>;
 }
 
 export interface StateTrigger extends BaseTrigger {
