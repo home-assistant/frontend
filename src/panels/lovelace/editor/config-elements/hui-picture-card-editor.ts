@@ -6,7 +6,7 @@ import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
-import "../../components/hui-theme-select-editor";
+import "../../../../components/ha-theme-picker";
 import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -72,12 +72,17 @@ export class HuiPictureCardEditor
           .configValue=${"image"}
           @input=${this._valueChanged}
         ></ha-textfield>
-        <hui-theme-select-editor
+        <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
+          .label=${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        ></ha-theme-picker>
         <hui-action-editor
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.tap_action"
