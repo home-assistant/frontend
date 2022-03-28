@@ -39,17 +39,21 @@ export const computeInitialHaFormData = (
       } else if ("text" in selector) {
         data[field.name] = "";
       } else if ("number" in selector) {
-        data[field.name] = "min" in selector.number ? selector.number.min : 0;
+        data[field.name] = selector.number.min ?? 0;
       } else if ("select" in selector) {
         if (selector.select.options.length) {
           data[field.name] = selector.select.options[0][0];
         }
-      } else if ("duration" in selector) {
+      } else if ("duration" in selector || "time" in selector) {
         data[field.name] = {
           hours: 0,
           minutes: 0,
           seconds: 0,
         };
+      } else if ("color_rgb" in selector) {
+        data[field.name] = [0, 0, 0];
+      } else if ("color_temp" in selector) {
+        data[field.name] = selector.color_temp.min_mireds ?? 153;
       }
     }
   });
