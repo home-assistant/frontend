@@ -83,6 +83,11 @@ const OVERRIDE_DEVICE_CLASSES = {
   ],
 };
 
+// const OVERRIDE_SENSOR_UNITS = {
+//   temperature: ["°C", "°F", "K"],
+//   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
+// };
+
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
