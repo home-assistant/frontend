@@ -138,9 +138,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
       return;
     }
     (ev.currentTarget as any).value = "";
-    if (!toAdd) {
-      return;
-    }
     const currentAreas = this._currentAreas;
     if (currentAreas.includes(toAdd)) {
       return;
