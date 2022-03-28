@@ -25,6 +25,8 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
+  native_unit_of_measurement?: string;
+  unit_of_measurement?: string;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -41,6 +43,9 @@ export interface EntityRegistryEntryUpdateParams {
   disabled_by?: string | null;
   hidden_by: string | null;
   new_entity_id?: string;
+  options?: {
+    unit_of_measurement?: string | null;
+  };
 }
 
 export const findBatteryEntity = (

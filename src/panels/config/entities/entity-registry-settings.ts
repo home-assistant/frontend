@@ -83,10 +83,10 @@ const OVERRIDE_DEVICE_CLASSES = {
   ],
 };
 
-// const OVERRIDE_SENSOR_UNITS = {
-//   temperature: ["°C", "°F", "K"],
-//   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
-// };
+const OVERRIDE_SENSOR_UNITS = {
+  temperature: ["°C", "°F", "K"],
+  pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
+};
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -111,6 +111,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _device?: DeviceRegistryEntry;
 
   @state() private _helperConfigEntry?: ConfigEntry;
+
+  @state() private _unit_of_measurement?: string | null;
 
   @state() private _error?: string;
 
@@ -170,6 +172,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this.entry.device_id && this._deviceLookup
         ? this._deviceLookup[this.entry.device_id]
         : undefined;
+
+    this._unit_of_measurement =
+      this.entry.unit_of_measurement || this.entry.native_unit_of_measurement;
 
     const domain = computeDomain(this.entry.entity_id);
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
@@ -269,6 +274,29 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                         `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                       )}
                     </mwc-list-item>
+                  `
+                )}
+              </ha-select>
+            `
+          : ""}
+        ${this._deviceClass &&
+        OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
+          this.entry.native_unit_of_measurement
+        )
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.unit_of_measurement"
+                )}
+                .value=${this._unit_of_measurement}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._unitChanged}
+                @closed=${stopPropagation}
+              >
+                ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
+                  (unit: string) => html`
+                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
                 )}
               </ha-select>
@@ -474,6 +502,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._deviceClass = ev.target.value;
   }
 
+  private _unitChanged(ev): void {
+    this._error = undefined;
+    this._unit_of_measurement = ev.target.value;
+  }
+
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
@@ -525,6 +558,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       (this._hiddenBy === null || this._hiddenBy === "user")
     ) {
       params.hidden_by = this._hiddenBy;
+    }
+    if (this.entry.unit_of_measurement !== this._unit_of_measurement) {
+      params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     try {
       const result = await updateEntityRegistryEntry(
