@@ -1,6 +1,5 @@
-import "@material/mwc-formfield/mwc-formfield";
-import "../../../components/ha-radio";
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -20,9 +19,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import {
+  ConfigEntry,
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -34,6 +39,7 @@ import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -42,27 +48,39 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import {
-  ConfigEntry,
-  deleteConfigEntry,
-  getConfigEntries,
-} from "../../../data/config_entries";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
-    "awning",
-    "blind",
-    "curtain",
-    "damper",
-    "door",
-    "garage",
-    "gate",
-    "shade",
-    "shutter",
-    "window",
+    [
+      "awning",
+      "blind",
+      "curtain",
+      "damper",
+      "door",
+      "garage",
+      "gate",
+      "shade",
+      "shutter",
+      "window",
+    ],
   ],
-  binary_sensor: ["window", "door", "garage_door", "opening"],
+  binary_sensor: [
+    ["lock"], // Lock
+    ["window", "door", "garage_door", "opening"], // Door
+    ["battery", "battery_charging"], // Battery
+    ["cold", "gas", "heat"], // Climate
+    ["running", "motion", "moving", "occupancy", "presence", "vibration"], // Presence
+    ["power", "plug", "light"], // Power
+    [
+      "smoke",
+      "safety",
+      "sound",
+      "problem",
+      "tamper",
+      "carbon_monoxide",
+      "moisture",
+    ], // Alarm
+  ],
 };
 
 @customElement("entity-registry-settings")
@@ -85,8 +103,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _hiddenBy!: string | null;
 
-  private _deviceLookup?: Record<string, DeviceRegistryEntry>;
-
   @state() private _device?: DeviceRegistryEntry;
 
   @state() private _helperConfigEntry?: ConfigEntry;
@@ -96,6 +112,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _submitting?: boolean;
 
   private _origEntityId!: string;
+
+  private _deviceLookup?: Record<string, DeviceRegistryEntry>;
+
+  private _deviceClassOptions?: string[][];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -125,23 +145,41 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (changedProperties.has("entry")) {
-      this._error = undefined;
-      this._name = this.entry.name || "";
-      this._icon = this.entry.icon || "";
-      this._deviceClass =
-        this.entry.device_class || this.entry.original_device_class;
-      this._origEntityId = this.entry.entity_id;
-      this._areaId = this.entry.area_id;
-      this._entityId = this.entry.entity_id;
-      this._disabledBy = this.entry.disabled_by;
-      this._hiddenBy = this.entry.hidden_by;
-      this._device =
-        this.entry.device_id && this._deviceLookup
-          ? this._deviceLookup[this.entry.device_id]
-          : undefined;
+  protected willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
+    if (!changedProperties.has("entry")) {
+      return;
+    }
+
+    this._error = undefined;
+    this._name = this.entry.name || "";
+    this._icon = this.entry.icon || "";
+    this._deviceClass =
+      this.entry.device_class || this.entry.original_device_class;
+    this._origEntityId = this.entry.entity_id;
+    this._areaId = this.entry.area_id;
+    this._entityId = this.entry.entity_id;
+    this._disabledBy = this.entry.disabled_by;
+    this._hiddenBy = this.entry.hidden_by;
+    this._device =
+      this.entry.device_id && this._deviceLookup
+        ? this._deviceLookup[this.entry.device_id]
+        : undefined;
+
+    const domain = computeDomain(this.entry.entity_id);
+    const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
+
+    if (!deviceClasses) {
+      return;
+    }
+
+    this._deviceClassOptions = [[], []];
+    for (const deviceClass of deviceClasses) {
+      if (deviceClass.includes(this.entry.original_device_class!)) {
+        this._deviceClassOptions[0] = deviceClass;
+      } else {
+        this._deviceClassOptions[1].push(...deviceClass);
+      }
     }
   }
 
@@ -197,28 +235,39 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
-        ${OVERRIDE_DEVICE_CLASSES[domain]?.includes(this._deviceClass) ||
-        (domain === "cover" && this.entry.original_device_class === null)
-          ? html`<ha-select
-              .label=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.device_class"
-              )}
-              .value=${this._deviceClass}
-              naturalMenuWidth
-              fixedMenuPosition
-              @selected=${this._deviceClassChanged}
-              @closed=${stopPropagation}
-            >
-              ${OVERRIDE_DEVICE_CLASSES[domain].map(
-                (deviceClass: string) => html`
-                  <mwc-list-item .value=${deviceClass}>
-                    ${this.hass.localize(
-                      `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                    )}
-                  </mwc-list-item>
-                `
-              )}
-            </ha-select>`
+        ${this._deviceClassOptions
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.device_class"
+                )}
+                .value=${this._deviceClass}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._deviceClassChanged}
+                @closed=${stopPropagation}
+              >
+                ${this._deviceClassOptions[0].map(
+                  (deviceClass: string) => html`
+                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                      ${this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                      )}
+                    </mwc-list-item>
+                  `
+                )}
+                <li divider role="separator"></li>
+                ${this._deviceClassOptions[1].map(
+                  (deviceClass: string) => html`
+                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                      ${this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                      )}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-select>
+            `
           : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
@@ -584,6 +633,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .secondary {
           margin: 8px 0;
           width: 340px;
+        }
+        li[divider] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];
