@@ -115,7 +115,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _deviceLookup?: Record<string, DeviceRegistryEntry>;
 
-  private _deviceClassOptions?: string[];
+  private _deviceClassOptions?: string[][];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -168,20 +168,17 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
     const domain = computeDomain(this.entry.entity_id);
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
-    if (deviceClasses) {
-      if (
-        this.entry.original_device_class === null ||
-        this.hass.userData?.showAdvanced
-      ) {
-        this._deviceClassOptions = ([] as string[]).concat(...deviceClasses);
-        return;
-      }
 
-      for (const deviceClass of deviceClasses) {
-        if (deviceClass.includes(this.entry.original_device_class!)) {
-          this._deviceClassOptions = deviceClass;
-          break;
-        }
+    if (!deviceClasses) {
+      return;
+    }
+
+    this._deviceClassOptions = [[], []];
+    for (const deviceClass of deviceClasses) {
+      if (deviceClass.includes(this.entry.original_device_class!)) {
+        this._deviceClassOptions[0] = deviceClass;
+      } else {
+        this._deviceClassOptions[1].push(...deviceClass);
       }
     }
   }
@@ -239,26 +236,38 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .disabled=${this._submitting}
         ></ha-icon-picker>
         ${this._deviceClassOptions
-          ? html`<ha-select
-              .label=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.device_class"
-              )}
-              .value=${this._deviceClass}
-              naturalMenuWidth
-              fixedMenuPosition
-              @selected=${this._deviceClassChanged}
-              @closed=${stopPropagation}
-            >
-              ${this._deviceClassOptions.map(
-                (deviceClass: string) => html`
-                  <mwc-list-item .value=${deviceClass} test=${deviceClass}>
-                    ${this.hass.localize(
-                      `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                    )}
-                  </mwc-list-item>
-                `
-              )}
-            </ha-select>`
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.device_class"
+                )}
+                .value=${this._deviceClass}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._deviceClassChanged}
+                @closed=${stopPropagation}
+              >
+                ${this._deviceClassOptions[0].map(
+                  (deviceClass: string) => html`
+                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                      ${this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                      )}
+                    </mwc-list-item>
+                  `
+                )}
+                <li divider role="separator"></li>
+                ${this._deviceClassOptions[1].map(
+                  (deviceClass: string) => html`
+                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                      ${this.hass.localize(
+                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
+                      )}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-select>
+            `
           : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
@@ -616,6 +625,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .secondary {
           margin: 8px 0;
           width: 340px;
+        }
+        li[divider] {
+          border-bottom-color: var(--divider-color);
         }
       `,
     ];
