@@ -52,7 +52,10 @@ export class HaLocationSelector extends LitElement {
           longitude: value?.longitude || this.hass.config.longitude,
           radius: selector.location.radius ? value?.radius || 1000 : undefined,
           radius_color: zoneRadiusColor,
-          icon: selector.location.icon,
+          icon:
+            selector.location.icon || selector.location.radius
+              ? "mdi:map-marker-radius"
+              : "mdi:map-marker",
           location_editable: true,
           radius_editable: true,
         },
