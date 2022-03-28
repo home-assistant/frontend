@@ -1,20 +1,20 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, css, html } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import { BlueprintInput } from "../../../../src/data/blueprint";
+import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import { BlueprintInput } from "../../../../src/data/blueprint";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
-import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import { getEntity } from "../../../../src/fake_data/entity";
-import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
-import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -202,6 +202,7 @@ const SCHEMAS: {
     input: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
       device: { name: "Device", selector: { device: { multiple: true } } },
+      area: { name: "Area", selector: { area: { multiple: true } } },
     },
   },
 ];
