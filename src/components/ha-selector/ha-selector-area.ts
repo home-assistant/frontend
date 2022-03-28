@@ -6,6 +6,7 @@ import { EntityRegistryEntry } from "../../data/entity_registry";
 import { AreaSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-area-picker";
+import "../ha-areas-picker";
 
 @customElement("ha-selector-area")
 export class HaAreaSelector extends LitElement {
@@ -38,21 +39,43 @@ export class HaAreaSelector extends LitElement {
   }
 
   protected render() {
-    return html`<ha-area-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      no-add
-      .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterEntities}
-      .includeDeviceClasses=${this.selector.area.entity?.device_class
-        ? [this.selector.area.entity.device_class]
-        : undefined}
-      .includeDomains=${this.selector.area.entity?.domain
-        ? [this.selector.area.entity.domain]
-        : undefined}
-      .disabled=${this.disabled}
-    ></ha-area-picker>`;
+    if (!this.selector.area.multiple) {
+      return html`
+        <ha-area-picker
+          .hass=${this.hass}
+          .value=${this.value}
+          .label=${this.label}
+          no-add
+          .deviceFilter=${this._filterDevices}
+          .entityFilter=${this._filterEntities}
+          .includeDeviceClasses=${this.selector.area.entity?.device_class
+            ? [this.selector.area.entity.device_class]
+            : undefined}
+          .includeDomains=${this.selector.area.entity?.domain
+            ? [this.selector.area.entity.domain]
+            : undefined}
+          .disabled=${this.disabled}
+        ></ha-area-picker>
+      `;
+    }
+
+    return html`
+      <ha-areas-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .pickAreaLabel=${this.label}
+        no-add
+        .deviceFilter=${this._filterDevices}
+        .entityFilter=${this._filterEntities}
+        .includeDeviceClasses=${this.selector.area.entity?.device_class
+          ? [this.selector.area.entity.device_class]
+          : undefined}
+        .includeDomains=${this.selector.area.entity?.domain
+          ? [this.selector.area.entity.domain]
+          : undefined}
+        .disabled=${this.disabled}
+      ></ha-areas-picker>
+    `;
   }
 
   private _filterEntities = (entity: EntityRegistryEntry): boolean => {
