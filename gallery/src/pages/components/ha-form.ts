@@ -1,18 +1,18 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, html } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
-import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
-import "../../../../src/components/ha-form/ha-form";
-import "../../components/demo-black-white-row";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
+import "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../../src/types";
-import { getEntity } from "../../../../src/fake_data/entity";
+import "../../components/demo-black-white-row";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -147,7 +147,9 @@ const SCHEMAS: {
       { name: "target", selector: { target: {} } },
       { name: "number", selector: { number: { min: 0, max: 10 } } },
       { name: "boolean", selector: { boolean: {} } },
-      { name: "time", selector: { time: {} } },
+      { name: "time", required: true, selector: { time: {} } },
+      { name: "datetime", required: true, selector: { datetime: {} } },
+      { name: "date", required: true, selector: { date: {} } },
       { name: "action", selector: { action: {} } },
       { name: "text", selector: { text: { multiline: false } } },
       { name: "text_multiline", selector: { text: { multiline: true } } },
