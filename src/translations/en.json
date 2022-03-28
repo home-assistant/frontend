@@ -401,6 +401,10 @@
         "add_device_id": "Choose device",
         "add_entity_id": "Choose entity"
       },
+      "theme-picker": {
+        "theme": "Theme",
+        "no_theme": "No theme"
+      },
       "user-picker": {
         "no_user": "No user",
         "add_user": "Add user",
@@ -3458,7 +3462,6 @@
               "tap_action": "Tap Action",
               "title": "Title",
               "theme": "Theme",
-              "no_theme": "No theme",
               "unit": "Unit",
               "url": "URL",
               "state": "State",

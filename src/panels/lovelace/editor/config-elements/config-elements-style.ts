@@ -23,7 +23,6 @@ export const configElementStyle = css`
   .suffix {
     margin: 0 8px;
   }
-  hui-theme-select-editor,
   hui-action-editor,
   ha-select,
   ha-textfield,

@@ -6,7 +6,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
+import "../../../../components/ha-theme-picker";
 import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
@@ -67,12 +67,17 @@ export class HuiShoppingListEditor
           .configValue=${"title"}
           @input=${this._valueChanged}
         ></ha-textfield>
-        <hui-theme-select-editor
+        <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
+          .label=${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        ></ha-theme-picker>
       </div>
     `;
   }

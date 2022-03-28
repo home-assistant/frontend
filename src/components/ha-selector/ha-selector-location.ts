@@ -6,7 +6,6 @@ import type {
   LocationSelector,
   LocationSelectorValue,
 } from "../../data/selector";
-import "../../panels/lovelace/components/hui-theme-select-editor";
 import type { HomeAssistant } from "../../types";
 import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
