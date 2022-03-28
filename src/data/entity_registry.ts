@@ -25,8 +25,6 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
-  native_unit_of_measurement?: string;
-  unit_of_measurement?: string;
 }
 
 export interface UpdateEntityRegistryEntryResult {

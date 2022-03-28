@@ -2,14 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -173,8 +166,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ? this._deviceLookup[this.entry.device_id]
         : undefined;
 
-    this._unit_of_measurement =
-      this.entry.unit_of_measurement || this.entry.native_unit_of_measurement;
+    const stateObj: HassEntity | undefined =
+      this.hass.states[this.entry.entity_id];
+    this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
 
     const domain = computeDomain(this.entry.entity_id);
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
@@ -280,15 +274,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._deviceClass &&
+        stateObj.attributes.unit_of_measurement &&
         OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
-          this.entry.native_unit_of_measurement
+          stateObj.attributes.unit_of_measurement
         )
           ? html`
               <ha-select
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.unit_of_measurement"
                 )}
-                .value=${this._unit_of_measurement}
+                .value=${stateObj.attributes.unit_of_measurement}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._unitChanged}
@@ -547,6 +542,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       device_class: this._deviceClass || null,
       new_entity_id: this._entityId.trim(),
     };
+
+    const stateObj: HassEntity | undefined =
+      this.hass.states[this.entry.entity_id];
+
     if (
       this.entry.disabled_by !== this._disabledBy &&
       (this._disabledBy === null || this._disabledBy === "user")
@@ -559,7 +558,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     ) {
       params.hidden_by = this._hiddenBy;
     }
-    if (this.entry.unit_of_measurement !== this._unit_of_measurement) {
+    if (
+      stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
+    ) {
       params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     try {
