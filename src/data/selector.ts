@@ -46,6 +46,7 @@ export interface AreaSelector {
       manufacturer?: DeviceSelector["device"]["manufacturer"];
       model?: DeviceSelector["device"]["model"];
     };
+    multiple?: boolean;
   };
 }
 
