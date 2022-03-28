@@ -2,13 +2,13 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-select";
-import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-select";
+import { HomeAssistant } from "../types";
 
-@customElement("hui-theme-select-editor")
-export class HuiThemeSelectEditor extends LitElement {
+@customElement("ha-theme-picker")
+export class HaThemePicker extends LitElement {
   @property() public value?: string;
 
   @property() public label?: string;
@@ -19,11 +19,7 @@ export class HuiThemeSelectEditor extends LitElement {
     return html`
       <ha-select
         .label=${this.label ||
-        `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.optional"
-        )})`}
+        this.hass!.localize("ui.components.theme_picker.theme")}
         .value=${this.value}
         @selected=${this._changed}
         @closed=${stopPropagation}
@@ -32,7 +28,7 @@ export class HuiThemeSelectEditor extends LitElement {
       >
         <mwc-list-item value="remove"
           >${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.no_theme"
+            "ui.components.theme_picker.no_theme"
           )}</mwc-list-item
         >
         ${Object.keys(this.hass!.themes.themes)
@@ -64,6 +60,6 @@ export class HuiThemeSelectEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-theme-select-editor": HuiThemeSelectEditor;
+    "ha-theme-picker": HaThemePicker;
   }
 }

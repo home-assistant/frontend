@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
+import "../../../../components/ha-theme-picker";
 import { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
@@ -62,12 +62,17 @@ export class HuiMediaControlCardEditor
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
-        <hui-theme-select-editor
+        <ha-theme-picker
+          .label=${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        ></ha-theme-picker>
       </div>
     `;
   }

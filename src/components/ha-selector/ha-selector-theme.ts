@@ -1,4 +1,4 @@
-import "../../panels/lovelace/components/hui-theme-select-editor";
+import "../ha-theme-picker";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
@@ -18,11 +18,11 @@ export class HaThemeSelector extends LitElement {
 
   protected render() {
     return html`
-      <hui-theme-select-editor
+      <ha-theme-picker
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
-      ></hui-theme-select-editor>
+      ></ha-theme-picker>
     `;
   }
 }

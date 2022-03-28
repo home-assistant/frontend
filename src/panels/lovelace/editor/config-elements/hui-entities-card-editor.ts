@@ -31,7 +31,7 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
-import "../../components/hui-theme-select-editor";
+import "../../../../components/ha-theme-picker";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
@@ -265,12 +265,17 @@ export class HuiEntitiesCardEditor
           .configValue=${"title"}
           @input=${this._valueChanged}
         ></ha-textfield>
-        <hui-theme-select-editor
+        <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
+          .label=${`${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        ></ha-theme-picker>
         <div class="side-by-side">
           <ha-formfield
             .label=${this.hass.localize(
