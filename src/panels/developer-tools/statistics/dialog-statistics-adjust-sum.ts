@@ -49,6 +49,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   @state() private _chosenStat?: StatisticValue;
 
+  private _origAmount?: number;
+
   @state() private _amount?: number;
 
   private _dateTimeSelector: DateTimeSelector = {
@@ -81,6 +83,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._moment = undefined;
     this._stats5min = undefined;
     this._statsHour = undefined;
+    this._origAmount = undefined;
     this._amount = undefined;
     this._chosenStat = undefined;
     this._busy = false;
@@ -143,6 +146,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
             hasMeta
             @click=${() => {
               this._chosenStat = stat;
+              this._origAmount = growth;
               this._amount = growth;
             }}
           >
@@ -295,8 +299,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         this.hass,
         this._params!.statistic.statistic_id,
         this._chosenStat!.start,
-        this._chosenStat!.end,
-        this._amount!
+        this._amount! - this._origAmount!
       );
     } catch (err: any) {
       this._busy = false;

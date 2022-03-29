@@ -470,13 +470,11 @@ export const adjustStatisticsSum = (
   hass: HomeAssistant,
   statistic_id: string,
   start_time: string,
-  end_time: string,
-  new_value: number
+  adjustment: number
 ): Promise<void> =>
   hass.callWS({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time,
-    end_time,
-    new_value,
+    adjustment,
   });
