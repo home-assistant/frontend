@@ -145,8 +145,6 @@ class DemoMoreInfoUpdate extends LitElement {
     `;
   }
 
-  private _releaseNotes();
-
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
