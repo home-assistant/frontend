@@ -261,7 +261,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       [statId],
       "hour"
     );
-    this._statsHour = statId in statsHourData ? statsHourData[statId] : [];
+    this._statsHour =
+      statId in statsHourData ? statsHourData[statId].slice(0, 6) : [];
 
     // Can't have 5 min data if no hourly data
     if (this._statsHour.length === 0) {
@@ -283,7 +284,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       "5minute"
     );
 
-    this._stats5min = statId in stats5MinData ? stats5MinData[statId] : [];
+    this._stats5min =
+      statId in stats5MinData ? stats5MinData[statId].slice(0, 6) : [];
   }
 
   private async _fixIssue(): Promise<void> {
