@@ -1,24 +1,37 @@
+import { mdiChevronRight } from "@mdi/js";
+import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-button/mwc-button";
-import { LitElement, TemplateResult, html, CSSResultGroup, css } from "lit";
+import {
+  LitElement,
+  TemplateResult,
+  html,
+  CSSResultGroup,
+  css,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import "../../../components/ha-dialog";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-formfield";
-import "../../../components/ha-radio";
+import "../../../components/ha-dialog";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-selector/ha-selector-datetime";
+import "../../../components/ha-selector/ha-selector-number";
 import "../../../components/ha-form/ha-form";
 import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
-import type {
-  HaFormBaseSchema,
-  HaFormSchema,
-} from "../../../components/ha-form/types";
-import { adjustStatisticsSum } from "../../../data/history";
+import {
+  adjustStatisticsSum,
+  fetchStatistics,
+  StatisticValue,
+} from "../../../data/history";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
+import { DateTimeSelector, NumberSelector } from "../../../data/selector";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 
-let lastMoment: string | undefined;
+/* eslint-disable lit/no-template-arrow */
 
 @customElement("dialog-statistics-adjust-sum")
 export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
@@ -26,29 +39,51 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   @state() private _params?: DialogStatisticsAdjustSumParams;
 
-  @state() private _data?: {
-    moment: string;
-    amount: number;
+  @state() private _busy = false;
+
+  @state() private _moment?: string;
+
+  @state() private _stats5min?: StatisticValue[];
+
+  @state() private _statsHour?: StatisticValue[];
+
+  @state() private _chosenStat?: StatisticValue;
+
+  @state() private _amount?: number;
+
+  private _dateTimeSelector: DateTimeSelector = {
+    datetime: {},
   };
 
-  @state() private _busy = false;
+  private _amountSelector = memoizeOne(
+    (unit_of_measurement: string): NumberSelector => ({
+      number: {
+        step: 0.01,
+        unit_of_measurement,
+        mode: "box",
+      },
+    })
+  );
 
   public showDialog(params: DialogStatisticsAdjustSumParams): void {
     this._params = params;
-    this._busy = false;
     const now = new Date();
-    this._data = {
-      moment:
-        lastMoment ||
-        `${now.getFullYear()}-${
-          now.getMonth() + 1
-        }-${now.getDate()} ${now.getHours()}:00:00`,
-      amount: 0,
-    };
+    this._moment = `${now.getFullYear()}-${
+      now.getMonth() + 1
+    }-${now.getDate()} ${now.getHours()}:${
+      now.getMinutes() - (now.getMinutes() % 5)
+    }:00`;
+    this._fetchStats();
   }
 
   public closeDialog(): void {
     this._params = undefined;
+    this._moment = undefined;
+    this._stats5min = undefined;
+    this._statsHour = undefined;
+    this._amount = undefined;
+    this._chosenStat = undefined;
+    this._busy = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -57,92 +92,198 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       return html``;
     }
 
+    let content: TemplateResult;
+
+    if (!this._chosenStat) {
+      content = this._renderPickStatistic();
+    } else {
+      content = this._renderAdjustStat();
+    }
+
     return html`
       <ha-dialog
         open
+        scrimClickAction
+        escapeKeyAction
         @closed=${this.closeDialog}
-        heading="Adjust sum for a specific time."
+        heading="Adjust a statistic"
       >
-        <div class="card-content">
-          Adjust statistics if it incorrectly counted values that were already
-          counted. When adjusted, all subsequent values will be re-calculted
-          from the new value. This feature is limited to hourly statistics.
-        </div>
-        <ha-form
-          .hass=${this.hass}
-          .schema=${this._getSchema(this._params.statistic)}
-          .data=${this._data}
-          .computeLabel=${this._computeLabel}
-          .disabled=${this._busy}
-          @value-changed=${this._valueChanged}
-        ></ha-form>
-
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._fixIssue}
-          dialogInitialFocus
-          label="Adjust"
-        ></mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          dialogAction="cancel"
-          .label=${this.hass.localize("ui.common.close")}
-        ></mwc-button>
+        ${content}
       </ha-dialog>
     `;
   }
 
-  private _getSchema = memoizeOne((statistic): HaFormSchema[] => [
-    {
-      type: "constant",
-      name: "name",
-      value: statistic.name || statistic.statistic_id,
-    },
-    {
-      name: "moment",
-      required: true,
-      selector: {
-        datetime: {},
-      },
-    },
-    {
-      name: "amount",
-      required: true,
-      default: 0,
-      selector: {
-        number: {
-          mode: "box",
-          step: 0.1,
-          unit_of_measurement: statistic.unit_of_measurement,
-        },
-      },
-    },
-  ]);
-
-  private _computeLabel(value: HaFormBaseSchema) {
-    switch (value.name) {
-      case "name":
-        return "Statistic";
-      case "moment":
-        return "Moment to adjust";
-      case "amount":
-        return "Amount";
-      default:
-        return value.name;
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("hass")) {
+      return true;
     }
+    // We only respond to hass changes if the translations changed
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !oldHass || oldHass.localize !== this.hass.localize;
   }
 
-  private _valueChanged(ev) {
-    const newData = ev.detail.value;
+  private _renderPickStatistic() {
+    let stats: TemplateResult;
 
-    // If we change the amount, let's truncate the moment to the whole
-    // hour as that's how statistics adjustment works.
-    if (this._data && this._data.amount !== newData.amount && newData.moment) {
-      const parts = newData.moment.split(" ");
-      const timeParts = parts[1].split(":");
-      newData.moment = `${parts[0]} ${timeParts[0]}:00:00`;
+    if (!this._stats5min || !this._statsHour) {
+      stats = html` <ha-circular-progress active></ha-circular-progress> `;
+    } else if (this._statsHour.length < 2 && this._stats5min.length < 2) {
+      stats = html` <p>No statistics found for this period.</p> `;
+    } else {
+      const data =
+        this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
+      const unit = this._params!.statistic.unit_of_measurement;
+      const rows: TemplateResult[] = [];
+      for (let i = 1; i < data.length; i++) {
+        const stat = data[i];
+        const growth = Math.round((stat.sum! - data[i - 1].sum!) * 100) / 100;
+        rows.push(html`
+          <mwc-list-item
+            twoline
+            hasMeta
+            @click=${() => {
+              this._chosenStat = stat;
+              this._amount = growth;
+            }}
+          >
+            <span>${growth} ${unit}</span>
+            <span slot="secondary">
+              ${formatDateTime(new Date(stat.start), this.hass.locale)}
+            </span>
+            <ha-svg-icon slot="meta" .path=${mdiChevronRight}></ha-svg-icon>
+          </mwc-list-item>
+        `);
+      }
+      stats = html`${rows}`;
     }
-    this._data = newData;
+
+    return html`
+      <div class="text-content">
+        Sometimes the statistics end up being incorrect for a specific point in
+        time. This can mess up your beautiful graphs! Select a time below to
+        find the bad moment and adjust the data.
+      </div>
+      <ha-selector-datetime
+        label="Pick a time"
+        .hass=${this.hass}
+        .selector=${this._dateTimeSelector}
+        .value=${this._moment}
+        @value-changed=${(ev) => {
+          this._moment = ev.detail.value;
+          this._fetchStats();
+        }}
+      ></ha-selector-datetime>
+
+      <div class="stat-list">${stats}</div>
+
+      <mwc-button
+        slot="primaryAction"
+        dialogAction="cancel"
+        .label=${this.hass.localize("ui.common.close")}
+      ></mwc-button>
+    `;
+  }
+
+  private _renderAdjustStat() {
+    return html`
+      <div class="text-content">
+        ${this._params!.statistic.name || this._params!.statistic.statistic_id}
+      </div>
+
+      <div class="table-row">
+        <span>Start</span>
+        <span
+          >${formatDateTime(
+            new Date(this._chosenStat!.start),
+            this.hass.locale
+          )}</span
+        >
+      </div>
+
+      <div class="table-row">
+        <span>End</span>
+        <span
+          >${formatDateTime(
+            new Date(this._chosenStat!.end),
+            this.hass.locale
+          )}</span
+        >
+      </div>
+
+      <ha-selector-number
+        label="New Value"
+        .hass=${this.hass}
+        .selector=${this._amountSelector(
+          this._params!.statistic.unit_of_measurement
+        )}
+        .value=${this._amount}
+        .disabled=${this._busy}
+        @value-changed=${(ev) => {
+          this._amount = ev.detail.value;
+        }}
+      ></ha-selector-number>
+
+      <mwc-button
+        slot="primaryAction"
+        label="Adjust"
+        .disabled=${this._busy}
+        @click=${() => {
+          this._fixIssue();
+        }}
+      ></mwc-button>
+      <mwc-button
+        slot="secondaryAction"
+        .label=${this.hass.localize("ui.common.back")}
+        .disabled=${this._busy}
+        @click=${() => {
+          this._chosenStat = undefined;
+        }}
+      ></mwc-button>
+    `;
+  }
+
+  private async _fetchStats(): Promise<void> {
+    this._stats5min = undefined;
+    this._statsHour = undefined;
+    const statId = this._params!.statistic.statistic_id;
+    const moment = new Date(this._moment!);
+
+    // Search 3 hours before and 3 hours after chosen time
+    const hourStatStart = new Date(moment.getTime());
+    hourStatStart.setTime(hourStatStart.getTime() - 3 * 3600 * 1000);
+    const hourStatEnd = new Date(moment.getTime());
+    hourStatEnd.setTime(hourStatEnd.getTime() + 3 * 3600 * 1000);
+
+    const statsHourData = await fetchStatistics(
+      this.hass,
+      hourStatStart,
+      hourStatEnd,
+      [statId],
+      "hour"
+    );
+    this._statsHour = statId in statsHourData ? statsHourData[statId] : [];
+
+    // Can't have 5 min data if no hourly data
+    if (this._statsHour.length === 0) {
+      this._stats5min = [];
+      return;
+    }
+
+    // Search 15 minutes before and 15 minutes after chosen time
+    const minStatStart = new Date(moment.getTime());
+    minStatStart.setTime(minStatStart.getTime() - 15 * 60 * 1000);
+    const minStatEnd = new Date(moment.getTime());
+    minStatEnd.setTime(minStatEnd.getTime() + 15 * 60 * 1000);
+
+    const stats5MinData = await fetchStatistics(
+      this.hass,
+      minStatStart,
+      minStatEnd,
+      [statId],
+      "5minute"
+    );
+
+    this._stats5min = statId in stats5MinData ? stats5MinData[statId] : [];
   }
 
   private async _fixIssue(): Promise<void> {
@@ -151,8 +292,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       await adjustStatisticsSum(
         this.hass,
         this._params!.statistic.statistic_id,
-        this._data!.moment,
-        this._data!.amount
+        this._chosenStat!.start,
+        this._chosenStat!.end,
+        this._amount!
       );
     } catch (err: any) {
       this._busy = false;
@@ -164,7 +306,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     showToast(this, {
       message: "Statistic sum adjusted",
     });
-    lastMoment = this._data!.moment;
     this.closeDialog();
   }
 
@@ -173,8 +314,27 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        div {
-          margin-bottom: 16px;
+        .text-content,
+        ha-selector-datetime,
+        ha-selector-number {
+          margin-bottom: 20px;
+        }
+        mwc-list-item {
+          margin: 0 -24px;
+          --mdc-list-side-padding: 24px;
+        }
+        .table-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+        .stat-list {
+          min-height: 360px;
+          display: flex;
+          flex-direction: column;
+        }
+        .stat-list ha-circular-progress {
+          margin: 0 auto;
         }
       `,
     ];
