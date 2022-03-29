@@ -117,26 +117,26 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       actions: {
         title: "",
         type: "overflow-menu",
-        template: (
-          _info,
-          statistic: StatisticsMetaData
-        ) => html`<ha-icon-overflow-menu
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .items=${[
-            {
-              path: mdiSlopeUphill,
-              label: localize(
-                "ui.panel.developer-tools.tabs.statistics.adjust_sum"
-              ),
-              action: () =>
-                showStatisticsAdjustSumDialog(this, {
-                  statistic: statistic,
-                }),
-            },
-          ]}
-          style="color: var(--secondary-text-color)"
-        ></ha-icon-overflow-menu>`,
+        template: (_info, statistic: StatisticsMetaData) =>
+          statistic.has_sum
+            ? html`<ha-icon-overflow-menu
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .items=${[
+                  {
+                    path: mdiSlopeUphill,
+                    label: localize(
+                      "ui.panel.developer-tools.tabs.statistics.adjust_sum"
+                    ),
+                    action: () =>
+                      showStatisticsAdjustSumDialog(this, {
+                        statistic: statistic,
+                      }),
+                  },
+                ]}
+                style="color: var(--secondary-text-color)"
+              ></ha-icon-overflow-menu>`
+            : html`<div style="width:48px"></div>`,
       },
     })
   );
@@ -212,6 +212,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
+          has_mean: false,
+          has_sum: false,
         });
       }
     });
