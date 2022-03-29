@@ -21,6 +21,8 @@ export class HaDeviceSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
@@ -36,20 +38,23 @@ export class HaDeviceSelector extends LitElement {
 
   protected render() {
     if (!this.selector.device.multiple) {
-      return html`<ha-device-picker
-        .hass=${this.hass}
-        .value=${this.value}
-        .label=${this.label}
-        .deviceFilter=${this._filterDevices}
-        .includeDeviceClasses=${this.selector.device.entity?.device_class
-          ? [this.selector.device.entity.device_class]
-          : undefined}
-        .includeDomains=${this.selector.device.entity?.domain
-          ? [this.selector.device.entity.domain]
-          : undefined}
-        .disabled=${this.disabled}
-        allow-custom-entity
-      ></ha-device-picker> `;
+      return html`
+        <ha-device-picker
+          .hass=${this.hass}
+          .value=${this.value}
+          .label=${this.label}
+          .deviceFilter=${this._filterDevices}
+          .includeDeviceClasses=${this.selector.device.entity?.device_class
+            ? [this.selector.device.entity.device_class]
+            : undefined}
+          .includeDomains=${this.selector.device.entity?.domain
+            ? [this.selector.device.entity.domain]
+            : undefined}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          allow-custom-entity
+        ></ha-device-picker>
+      `;
     }
 
     return html`
@@ -63,6 +68,7 @@ export class HaDeviceSelector extends LitElement {
         .includeDomains=${this.selector.device.entity?.domain
           ? [this.selector.device.entity.domain]
           : undefined}
+        .required=${this.required}
       ></ha-devices-picker>
     `;
   }

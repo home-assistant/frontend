@@ -28,8 +28,8 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box";
+import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 
@@ -83,6 +83,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
 
   @property({ type: Boolean }) public disabled?: boolean;
+
+  @property({ type: Boolean }) public required?: boolean;
 
   @state() private _areas?: AreaRegistryEntry[];
 
@@ -315,6 +317,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         .value=${this.value}
         .disabled=${this.disabled}
+        .required=${this.required}
         .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.area-picker.area")
           : this.label}

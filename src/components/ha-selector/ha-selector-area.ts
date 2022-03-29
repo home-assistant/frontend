@@ -22,6 +22,8 @@ export class HaAreaSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
@@ -55,6 +57,7 @@ export class HaAreaSelector extends LitElement {
             ? [this.selector.area.entity.domain]
             : undefined}
           .disabled=${this.disabled}
+          .required=${this.required}
         ></ha-area-picker>
       `;
     }
@@ -74,6 +77,7 @@ export class HaAreaSelector extends LitElement {
           ? [this.selector.area.entity.domain]
           : undefined}
         .disabled=${this.disabled}
+        .required=${this.required}
       ></ha-areas-picker>
     `;
   }

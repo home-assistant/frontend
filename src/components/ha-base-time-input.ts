@@ -129,7 +129,9 @@ export class HaBaseTimeInput extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
+      ${this.label
+        ? html`<label>${this.label}${this.required ? "*" : ""}</label>`
+        : ""}
       <div class="time-input-wrap">
         ${this.enableDay
           ? html`

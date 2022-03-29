@@ -58,6 +58,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property() public entities?: EntityRegistryEntry[];
 
+  @property() public required?: boolean;
+
   /**
    * Show only devices with entities from specific domains.
    * @type {Array}
@@ -263,9 +265,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.device-picker.device")
-          : this.label}
+        .label=${`${
+          this.label === undefined && this.hass
+            ? this.hass.localize("ui.components.device-picker.device")
+            : this.label
+        } ${this.required ? "*" : ""}`}
         .value=${this._value}
         .renderer=${rowRenderer}
         .disabled=${this.disabled}

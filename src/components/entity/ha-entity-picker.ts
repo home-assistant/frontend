@@ -39,6 +39,8 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
@@ -299,9 +301,11 @@ export class HaEntityPicker extends LitElement {
         item-label-path="friendly_name"
         .hass=${this.hass}
         .value=${this._value}
-        .label=${this.label === undefined
-          ? this.hass.localize("ui.components.entity.entity-picker.entity")
-          : this.label}
+        .label=${`${
+          this.label === undefined
+            ? this.hass.localize("ui.components.entity.entity-picker.entity")
+            : this.label
+        } ${this.required ? "*" : ""}`}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
         .renderer=${rowRenderer}

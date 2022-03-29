@@ -23,6 +23,8 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     if (!this.selector.entity.multiple) {
       return html`<ha-entity-picker
@@ -33,6 +35,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .excludeEntities=${this.selector.entity.exclude_entities}
         .entityFilter=${this._filterEntities}
         .disabled=${this.disabled}
+        .required=${this.required}
         allow-custom-entity
       ></ha-entity-picker>`;
     }
@@ -45,6 +48,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
         .entityFilter=${this._filterEntities}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
+        .required=${this.required}
       ></ha-entities-picker>
     `;
   }

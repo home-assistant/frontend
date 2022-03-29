@@ -11,6 +11,8 @@ class HaDevicesPicker extends LitElement {
 
   @property() public value?: string[];
 
+  @property({ type: Boolean }) public required?: boolean;
+
   /**
    * Show entities from specific domains.
    * @type {string}
@@ -66,6 +68,7 @@ class HaDevicesPicker extends LitElement {
           .excludeDomains=${this.excludeDomains}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
+          .required=${this.required}
           @value-changed=${this._addDevice}
         ></ha-device-picker>
       </div>

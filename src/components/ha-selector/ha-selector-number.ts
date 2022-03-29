@@ -27,7 +27,7 @@ export class HaNumberSelector extends LitElement {
 
   protected render() {
     return html`${this.selector.number.mode !== "box"
-        ? html`${this.label}<ha-slider
+        ? html`${this.label}${this.required ? "*" : ""}<ha-slider
               .min=${this.selector.number.min}
               .max=${this.selector.number.max}
               .value=${this._value}

@@ -6,8 +6,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-select";
 import "../ha-radio";
+import "../ha-select";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -57,6 +57,7 @@ export class HaSelectSelector extends LitElement {
         .value=${this.value}
         .helper=${this.helper}
         .disabled=${this.disabled}
+        .required=${this.required}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
