@@ -301,14 +301,13 @@ export class HaEntityPicker extends LitElement {
         item-label-path="friendly_name"
         .hass=${this.hass}
         .value=${this._value}
-        .label=${`${
-          this.label === undefined
-            ? this.hass.localize("ui.components.entity.entity-picker.entity")
-            : this.label
-        } ${this.required ? "*" : ""}`}
+        .label=${this.label === undefined
+          ? this.hass.localize("ui.components.entity.entity-picker.entity")
+          : this.label}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
         .renderer=${rowRenderer}
+        .required=${this.required}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
