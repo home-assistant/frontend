@@ -2,7 +2,14 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -166,11 +173,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ? this._deviceLookup[this.entry.device_id]
         : undefined;
 
-    const stateObj: HassEntity | undefined =
-      this.hass.states[this.entry.entity_id];
-    this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
-
     const domain = computeDomain(this.entry.entity_id);
+
+    if (domain === "sensor") {
+      const stateObj: HassEntity | undefined =
+        this.hass.states[this.entry.entity_id];
+      this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
+    }
+
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
 
     if (!deviceClasses) {
@@ -545,6 +555,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
     const stateObj: HassEntity | undefined =
       this.hass.states[this.entry.entity_id];
+    const domain = computeDomain(this.entry.entity_id);
 
     if (
       this.entry.disabled_by !== this._disabledBy &&
@@ -559,8 +570,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.hidden_by = this._hiddenBy;
     }
     if (
+      domain === "sensor" &&
       stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
+      params.options_domain = "sensor";
       params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     try {
