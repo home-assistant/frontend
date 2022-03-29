@@ -28,7 +28,7 @@ import {
 } from "../../../data/history";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
-import { DateTimeSelector, NumberSelector } from "../../../data/selector";
+import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 
 /* eslint-disable lit/no-template-arrow */
