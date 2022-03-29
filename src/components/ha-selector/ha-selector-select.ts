@@ -70,7 +70,7 @@ export class HaSelectSelector extends LitElement {
                   .checked=${this.value?.includes(item.value)}
                   .value=${item.value}
                   .disabled=${this.disabled}
-                  @change=${this._valueChanged}
+                  @change=${this._checkboxChanged}
                 ></ha-checkbox>
               </ha-formfield>
             `
@@ -115,6 +115,22 @@ export class HaSelectSelector extends LitElement {
       `;
     }
 
+    if (this.selector.select.custom_value) {
+      return html`
+        <ha-combo-box
+          item-value-path="value"
+          item-label-path="label"
+          .hass=${this.hass}
+          .label=${this.label}
+          .disabled=${this.disabled}
+          .value=${this._filter}
+          .items=${options}
+          @filter-changed=${this._filterChanged}
+          @value-changed=${this._comboBoxValueChanged}
+        ></ha-combo-box>
+      `;
+    }
+
     return html`
       <ha-select
         fixedMenuPosition
@@ -143,11 +159,42 @@ export class HaSelectSelector extends LitElement {
 
   private _valueChanged(ev) {
     ev.stopPropagation();
-    if (this.disabled || !ev.target.value) {
+    const value = ev.detail?.value || ev.target.value;
+    if (this.disabled || !value) {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.target.value,
+      value: value,
+    });
+  }
+
+  private _checkboxChanged(ev) {
+    ev.stopPropagation();
+    if (this.disabled) {
+      return;
+    }
+
+    let newValue: string[];
+    const value: string = ev.target.value;
+    const checked = ev.target.checked;
+
+    if (checked) {
+      if (!this.value) {
+        newValue = [value];
+      } else if (this.value.includes(value)) {
+        return;
+      } else {
+        newValue = [...this.value, value];
+      }
+    } else {
+      if (!this.value?.includes(value)) {
+        return;
+      }
+      newValue = (this.value as string[]).filter((v) => v !== value);
+    }
+
+    fireEvent(this, "value-changed", {
+      value: newValue,
     });
   }
 
@@ -165,6 +212,13 @@ export class HaSelectSelector extends LitElement {
     const newValue = ev.detail.value;
 
     if (this.disabled || newValue === "") {
+      return;
+    }
+
+    if (!this.selector.select.multiple) {
+      fireEvent(this, "value-changed", {
+        value: newValue,
+      });
       return;
     }
 
@@ -198,7 +252,8 @@ export class HaSelectSelector extends LitElement {
 
   static styles = css`
     ha-select,
-    mwc-formfield {
+    mwc-formfield,
+    ha-formfield {
       display: block;
     }
   `;
