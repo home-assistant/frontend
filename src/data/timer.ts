@@ -12,6 +12,7 @@ export type TimerEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     duration: string;
     remaining: string;
+    restore: boolean;
   };
 };
 
@@ -26,12 +27,14 @@ export interface Timer {
   name: string;
   icon?: string;
   duration?: string | number | DurationDict;
+  restore?: boolean;
 }
 
 export interface TimerMutableParams {
   name: string;
   icon: string;
   duration: string | number | DurationDict;
+  restore: boolean;
 }
 
 export const fetchTimer = (hass: HomeAssistant) =>
