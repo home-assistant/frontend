@@ -6,7 +6,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-dialog";
 import "../../../components/ha-circular-progress";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
@@ -32,6 +31,7 @@ import "./forms/ha-input_text-form";
 import "./forms/ha-timer-form";
 import { domainToName } from "../../../data/integration";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
+import { brandsUrl } from "../../../util/brands-url";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -146,10 +146,17 @@ export class DialogHelperDetail extends LitElement {
               dialogInitialFocus
               graphic="icon"
             >
-              <ha-svg-icon
+              <img
                 slot="graphic"
-                .path=${domainIcon(domain)}
-              ></ha-svg-icon>
+                loading="lazy"
+                src=${brandsUrl({
+                  domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                referrerpolicy="no-referrer"
+              />
               <span class="item-text"> ${label} </span>
             </mwc-list-item>
             ${!isLoaded
