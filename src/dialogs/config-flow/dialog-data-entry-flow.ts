@@ -35,6 +35,7 @@ import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import {
   DataEntryFlowDialogParams,
+  FlowHandlers,
   LoadingReason,
 } from "./show-dialog-data-entry-flow";
 import "./step-flow-abort";
@@ -85,7 +86,7 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _areas?: AreaRegistryEntry[];
 
-  @state() private _handlers?: string[];
+  @state() private _handlers?: FlowHandlers;
 
   @state() private _handler?: string;
 
