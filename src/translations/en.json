@@ -786,6 +786,7 @@
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
+          "unit_of_measurement": "Unit of Measurement",
           "device_class": "Show as",
           "device_classes": {
             "binary_sensor": {

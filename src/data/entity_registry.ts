@@ -41,6 +41,10 @@ export interface EntityRegistryEntryUpdateParams {
   disabled_by?: string | null;
   hidden_by: string | null;
   new_entity_id?: string;
+  options_domain?: string;
+  options?: {
+    unit_of_measurement?: string | null;
+  };
 }
 
 export const findBatteryEntity = (
