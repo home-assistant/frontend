@@ -39,6 +39,8 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
@@ -305,6 +307,7 @@ export class HaEntityPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
         .renderer=${rowRenderer}
+        .required=${this.required}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}

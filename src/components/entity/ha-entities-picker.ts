@@ -14,6 +14,8 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ type: Array }) public value?: string[];
 
+  @property({ type: Boolean }) public required?: boolean;
+
   /**
    * Show entities from specific domains.
    * @type {string}
@@ -108,6 +110,7 @@ class HaEntitiesPickerLight extends LitElement {
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
           .entityFilter=${this._entityFilter}
           .label=${this.pickEntityLabel}
+          .required=${this.required}
           @value-changed=${this._addEntity}
         ></ha-entity-picker>
       </div>

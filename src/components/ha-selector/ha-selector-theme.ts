@@ -1,8 +1,8 @@
-import "../ha-theme-picker";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
 import type { ThemeSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+import "../ha-theme-picker";
 
 @customElement("ha-selector-theme")
 export class HaThemeSelector extends LitElement {
@@ -16,12 +16,16 @@ export class HaThemeSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`
       <ha-theme-picker
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .disabled=${this.disabled}
+        .required=${this.required}
       ></ha-theme-picker>
     `;
   }

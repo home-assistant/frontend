@@ -33,7 +33,7 @@ class HaLabeledSlider extends PolymerElement {
         }
       </style>
 
-      <div class="title">[[caption]]</div>
+      <div class="title">[[_getTitle()]]</div>
       <div class="extra-container"><slot name="extra"></slot></div>
       <div class="slider-container">
         <ha-icon icon="[[icon]]" hidden$="[[!icon]]"></ha-icon>
@@ -49,10 +49,15 @@ class HaLabeledSlider extends PolymerElement {
     `;
   }
 
+  _getTitle() {
+    return `${this.caption}${this.required ? "*" : ""}`;
+  }
+
   static get properties() {
     return {
       caption: String,
       disabled: Boolean,
+      required: Boolean,
       min: Number,
       max: Number,
       pin: Boolean,

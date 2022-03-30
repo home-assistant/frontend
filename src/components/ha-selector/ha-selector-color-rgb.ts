@@ -1,9 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
-import type { ColorRGBSelector } from "../../data/selector";
-import { fireEvent } from "../../common/dom/fire_event";
 import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
+import { fireEvent } from "../../common/dom/fire_event";
+import type { ColorRGBSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-textfield";
 
 @customElement("ha-selector-color_rgb")
@@ -18,12 +18,16 @@ export class HaColorRGBSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`
       <ha-textfield
         type="color"
         .value=${this.value ? rgb2hex(this.value as any) : ""}
         .label=${this.label || ""}
+        .required=${this.required}
+        .disalbled=${this.disabled}
         @change=${this._valueChanged}
       ></ha-textfield>
     `;

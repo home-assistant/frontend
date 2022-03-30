@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
 import type { DateSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-date-input";
 
 @customElement("ha-selector-date")
@@ -16,6 +16,8 @@ export class HaDateSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`
       <ha-date-input
@@ -23,6 +25,7 @@ export class HaDateSelector extends LitElement {
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .value=${this.value}
+        .required=${this.required}
       >
       </ha-date-input>
     `;

@@ -4,8 +4,8 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import "./ha-select";
 import { HomeAssistant } from "../types";
+import "./ha-select";
 
 @customElement("ha-theme-picker")
 export class HaThemePicker extends LitElement {
@@ -15,12 +15,18 @@ export class HaThemePicker extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
+
   protected render(): TemplateResult {
     return html`
       <ha-select
         .label=${this.label ||
         this.hass!.localize("ui.components.theme_picker.theme")}
         .value=${this.value}
+        .required=${this.required}
+        .disabled=${this.disabled}
         @selected=${this._changed}
         @closed=${stopPropagation}
         fixedMenuPosition
