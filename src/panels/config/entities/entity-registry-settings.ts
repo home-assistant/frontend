@@ -29,6 +29,11 @@ import {
   getConfigEntries,
 } from "../../../data/config_entries";
 import {
+  createConfigFlow,
+  handleConfigFlowStep,
+} from "../../../data/config_flow";
+import { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
+import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
   updateDeviceRegistryEntry,
@@ -36,9 +41,11 @@ import {
 import {
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
+  fetchEntityRegistry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
@@ -48,6 +55,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
+import { showEntityEditorDialog } from "./show-dialog-entity-editor";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -88,6 +96,8 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
+const SWITCH_AS_DOMAINS = ["light", "lock", "cover", "fan", "siren"];
+
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -101,6 +111,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _entityId!: string;
 
   @state() private _deviceClass?: string;
+
+  @state() private _switchAs = "switch";
 
   @state() private _areaId?: string | null;
 
@@ -263,7 +275,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               >
                 ${this._deviceClassOptions[0].map(
                   (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                    <mwc-list-item .value=${deviceClass}>
                       ${this.hass.localize(
                         `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                       )}
@@ -273,7 +285,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 <li divider role="separator"></li>
                 ${this._deviceClassOptions[1].map(
                   (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass} test=${deviceClass}>
+                    <mwc-list-item .value=${deviceClass}>
                       ${this.hass.localize(
                         `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
                       )}
@@ -306,6 +318,28 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 )}
               </ha-select>
             `
+          : ""}
+        ${domain === "switch"
+          ? html`<ha-select
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.device_class"
+              )}
+              naturalMenuWidth
+              fixedMenuPosition
+              @selected=${this._switchAsChanged}
+              @closed=${stopPropagation}
+            >
+              <mwc-list-item value="switch" selected>
+                ${domainToName(this.hass.localize, "switch")}</mwc-list-item
+              >
+              ${SWITCH_AS_DOMAINS.map(
+                (as_domain) => html`
+                  <mwc-list-item .value=${as_domain}>
+                    ${domainToName(this.hass.localize, as_domain)}
+                  </mwc-list-item>
+                `
+              )}
+            </ha-select>`
           : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
@@ -512,6 +546,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._unit_of_measurement = ev.target.value;
   }
 
+  private _switchAsChanged(ev): void {
+    if (ev.target.value === "") {
+      return;
+    }
+    this._switchAs = ev.target.value;
+  }
+
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
@@ -545,6 +586,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+
+    const parent = (this.getRootNode() as ShadowRoot).host as HTMLElement;
+
     const params: Partial<EntityRegistryEntryUpdateParams> = {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
@@ -603,6 +647,46 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
+    }
+
+    if (this._switchAs !== "switch") {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
+            "domain",
+            this._switchAs
+          ),
+        }))
+      ) {
+        return;
+      }
+      const configFlow = await createConfigFlow(this.hass, "switch_as_x");
+      const result = (await handleConfigFlowStep(
+        this.hass,
+        configFlow.flow_id,
+        {
+          entity_id: this._entityId.trim(),
+          target_domain: this._switchAs,
+        }
+      )) as DataEntryFlowStepCreateEntry;
+      if (!result.result?.entry_id) {
+        return;
+      }
+      const unsub = await this.hass.connection.subscribeEvents(() => {
+        unsub();
+        fetchEntityRegistry(this.hass.connection).then((entityRegistry) => {
+          const entity = entityRegistry.find(
+            (reg) => reg.config_entry_id === result.result!.entry_id
+          );
+          if (!entity) {
+            return;
+          }
+          showEntityEditorDialog(parent, {
+            entity_id: entity.entity_id,
+          });
+        });
+      }, "entity_registry_updated");
     }
   }
 
