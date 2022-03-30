@@ -2,6 +2,11 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-markdown-element";
 
+// Import components that are allwoed to be defined.
+import "./ha-alert";
+import "./ha-icon";
+import "./ha-svg-icon";
+
 @customElement("ha-markdown")
 export class HaMarkdown extends LitElement {
   @property() public content?;
