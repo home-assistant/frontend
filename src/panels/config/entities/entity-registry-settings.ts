@@ -647,7 +647,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (this._switchAs) {
       if (
         !(await showConfirmationDialog(this, {
-          text: `This entity will be replaced by an entity of the domain '${this._switchAs}', the original entity will be hidden. You can manually change your configuration to use the new entity. If you remove the new entity, the old entity will be restored.`,
+          text: this.hass!.localize(
+            "ui.dialogs.entity_registry.editor.switch_as_x_confirm",
+            "domain",
+            this._switchAs
+          ),
         }))
       ) {
         return;
