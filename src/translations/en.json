@@ -842,7 +842,7 @@
           "hidden_cause": "Hidden by {cause}.",
           "device_disabled": "The device of this entity is disabled.",
           "open_device_settings": "Open device settings",
-          "switch_as_x_confirm": "This switch will be replaced by a {domain} and hidden from the UI. Current configuration using the switch will continue to work. Removing the {domain} will un-hide the switch. Are you sure you want to change it?",
+          "switch_as_x_confirm": "This switch will be replaced by a fan. Existing configurations using the switch will continue to work.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
           "enabled_delay_confirm": "The enabled entities will be added to Home Assistant in {delay} seconds",
           "enabled_restart_confirm": "Restart Home Assistant to finish enabling the entities",

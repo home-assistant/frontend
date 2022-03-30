@@ -329,7 +329,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @selected=${this._switchAsChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item value=""></mwc-list-item>
+              <mwc-list-item value="switch" selected>
+                ${domainToName(this.hass.localize, "switch")}</mwc-list-item
+              >
               ${SWITCH_AS_DOMAINS.map(
                 (as_domain) => html`
                   <mwc-list-item .value=${as_domain}>
