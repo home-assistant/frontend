@@ -47,7 +47,7 @@ const renderMarkdown = (
       input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
-      "ha-alert": ["alert-type"],
+      "ha-alert": ["alert-type", "title"],
     };
   }
 
