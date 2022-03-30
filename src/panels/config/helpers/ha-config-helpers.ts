@@ -29,6 +29,14 @@ import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { navigate } from "../../../common/navigate";
+import { extractSearchParam } from "../../../common/url/search-params";
+import { getConfigFlowHandlers } from "../../../data/config_flow";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -219,6 +227,67 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._getConfigEntries();
+    if (this.route.path === "/add") {
+      this._handleAdd();
+    }
+  }
+
+  private async _handleAdd() {
+    const domain = extractSearchParam("domain");
+    navigate("/config/helpers", { replace: true });
+    if (!domain) {
+      return;
+    }
+    if (HELPER_DOMAINS.includes(domain)) {
+      showHelperDetailDialog(this, {
+        domain,
+      });
+      return;
+    }
+    const handlers = await getConfigFlowHandlers(this.hass, "helper");
+
+    if (!handlers.includes(domain)) {
+      const integrations = await getConfigFlowHandlers(
+        this.hass,
+        "integration"
+      );
+      if (integrations.includes(domain)) {
+        navigate(`/config/integrations/add?domain=${domain}`, {
+          replace: true,
+        });
+        return;
+      }
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.no_config_flow"
+        ),
+      });
+      return;
+    }
+    const localize = await this.hass.loadBackendTranslation(
+      "title",
+      domain,
+      true
+    );
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.panel.config.integrations.confirm_new", {
+          integration: domainToName(localize, domain),
+        }),
+      }))
+    ) {
+      return;
+    }
+    showConfigFlowDialog(this, {
+      dialogClosedCallback: () => {
+        this._getConfigEntries();
+      },
+      startFlowHandler: domain,
+      showAdvanced: this.hass.userData?.showAdvanced,
+    });
   }
 
   protected willUpdate(changedProps: PropertyValues) {
