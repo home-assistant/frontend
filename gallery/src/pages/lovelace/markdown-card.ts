@@ -9,7 +9,7 @@ const CONFIGS = [
     heading: "markdown-it demo",
     config: `
 - type: markdown
-  content: >
+  content: >-
     # h1 Heading 8-)
 
     ## h2 Heading
@@ -249,6 +249,17 @@ const CONFIGS = [
     ::: warning
     *here be dragons*
     :::
+
+    ### ha-alert
+
+    You can use our [\`ha-alert\`](https://design.home-assistant.io/#components/ha-alert) component in markdown content rendered in the Home Assistant Frontend.
+
+    <ha-alert alert-type="error">This is an error alert — check it out!</ha-alert>
+    <ha-alert alert-type="warning">This is a warning alert — check it out!</ha-alert>
+    <ha-alert alert-type="info">This is an info alert — check it out!</ha-alert>
+    <ha-alert alert-type="success">This is a success alert — check it out!</ha-alert>
+    <ha-alert title="Test alert">This is an alert with a title</ha-alert>
+
     `,
   },
 ];
