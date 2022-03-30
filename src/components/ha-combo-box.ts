@@ -110,14 +110,18 @@ export class HaComboBox extends LitElement {
     return this._comboBox.selectedItem;
   }
 
+  public setInputValue(value: string) {
+    this._comboBox.value = value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
         .itemLabelPath=${this.itemLabelPath}
-        .value=${this.value || ""}
         .items=${this.items}
+        .value=${this.value || ""}
         .filteredItems=${this.filteredItems}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}

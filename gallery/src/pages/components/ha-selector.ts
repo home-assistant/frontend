@@ -109,7 +109,7 @@ const AREAS = [
 
 const SCHEMAS: {
   name: string;
-  input: Record<string, BlueprintInput | null>;
+  input: Record<string, (BlueprintInput & { required?: boolean }) | null>;
 }[] = [
   {
     name: "One of each",
@@ -166,12 +166,30 @@ const SCHEMAS: {
       object: { name: "Object", selector: { object: {} } },
       select_radio: {
         name: "Select (Radio)",
-        selector: { select: { options: ["Option 1", "Option 2"] } },
+        selector: {
+          select: { options: ["Option 1", "Option 2"], mode: "list" },
+        },
       },
       select: {
         name: "Select",
         selector: {
           select: {
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
+      },
+      select_custom: {
+        name: "Select (Custom)",
+        selector: {
+          select: {
+            custom_value: true,
             options: [
               "Option 1",
               "Option 2",
@@ -203,6 +221,34 @@ const SCHEMAS: {
       entity: { name: "Entity", selector: { entity: { multiple: true } } },
       device: { name: "Device", selector: { device: { multiple: true } } },
       area: { name: "Area", selector: { area: { multiple: true } } },
+      select: {
+        name: "Select Multiple",
+        selector: {
+          select: {
+            multiple: true,
+            custom_value: true,
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
+      },
+      select_checkbox: {
+        name: "Select Multiple (Checkbox)",
+        required: false,
+        selector: {
+          select: {
+            mode: "list",
+            multiple: true,
+            options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+          },
+        },
+      },
     },
   },
 ];
