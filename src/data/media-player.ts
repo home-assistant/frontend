@@ -16,6 +16,11 @@ import {
   mdiPlayPause,
   mdiPodcast,
   mdiPower,
+  mdiRepeat,
+  mdiRepeatOff,
+  mdiRepeatOnce,
+  mdiShuffle,
+  mdiShuffleDisabled,
   mdiSkipNext,
   mdiSkipPrevious,
   mdiStop,
@@ -49,6 +54,8 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   entity_picture_local?: string;
   is_volume_muted?: boolean;
   volume_level?: number;
+  repeat?: string;
+  shuffle?: boolean;
   source?: string;
   source_list?: string[];
   sound_mode?: string;
@@ -80,7 +87,9 @@ export const SUPPORT_VOLUME_BUTTONS = 1024;
 export const SUPPORT_SELECT_SOURCE = 2048;
 export const SUPPORT_STOP = 4096;
 export const SUPPORT_PLAY = 16384;
+export const SUPPORT_REPEAT_SET = 262144;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
+export const SUPPORT_SHUFFLE_SET = 32768;
 export const SUPPORT_BROWSE_MEDIA = 131072;
 
 export type MediaPlayerBrowseAction = "pick" | "play";
@@ -233,7 +242,8 @@ export const computeMediaDescription = (
 };
 
 export const computeMediaControls = (
-  stateObj: MediaPlayerEntity
+  stateObj: MediaPlayerEntity,
+  useExtendedControls = false
 ): ControlButton[] | undefined => {
   if (!stateObj) {
     return undefined;
@@ -266,6 +276,18 @@ export const computeMediaControls = (
   }
 
   const assumedState = stateObj.attributes.assumed_state === true;
+  const stateAttr = stateObj.attributes;
+
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET) &&
+    useExtendedControls
+  ) {
+    buttons.push({
+      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
+      action: "shuffle_set",
+    });
+  }
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
@@ -337,6 +359,22 @@ export const computeMediaControls = (
     });
   }
 
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_REPEAT_SET) &&
+    useExtendedControls
+  ) {
+    buttons.push({
+      icon:
+        stateAttr.repeat === "all"
+          ? mdiRepeat
+          : stateAttr.repeat === "one"
+          ? mdiRepeatOnce
+          : mdiRepeatOff,
+      action: "repeat_set",
+    });
+  }
+
   return buttons.length > 0 ? buttons : undefined;
 };
 
@@ -375,3 +413,31 @@ export const setMediaPlayerVolume = (
   volume_level: number
 ) =>
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
+
+export const handleMediaControlClick = (
+  hass: HomeAssistant,
+  stateObj: MediaPlayerEntity,
+  action: string
+) =>
+  hass!.callService(
+    "media_player",
+    action,
+    action === "shuffle_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          shuffle: !stateObj!.attributes.shuffle,
+        }
+      : action === "repeat_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          repeat:
+            stateObj!.attributes.repeat === "all"
+              ? "one"
+              : stateObj!.attributes.repeat === "off"
+              ? "all"
+              : "off",
+        }
+      : {
+          entity_id: stateObj!.entity_id,
+        }
+  );
