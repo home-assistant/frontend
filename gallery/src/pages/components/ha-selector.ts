@@ -392,7 +392,6 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                       <span slot="heading">${value?.name || key}</span>
                       <span slot="description">${value?.description}</span>
                       <ha-selector
-                        .required=${true}
                         .hass=${this.hass}
                         .selector=${value!.selector}
                         .key=${key}
