@@ -96,6 +96,13 @@ class MoreInfoMediaPlayer extends LitElement {
                       .path=${stateObj.attributes.is_volume_muted
                         ? mdiVolumeOff
                         : mdiVolumeHigh}
+                      .label=${this.hass.localize(
+                        `ui.card.media_player.${
+                          stateObj.attributes.is_volume_muted
+                            ? "media_volume_unmute"
+                            : "media_volume_mute"
+                        }`
+                      )}
                       @click=${this._toggleMute}
                     ></ha-icon-button>
                   `
@@ -105,11 +112,17 @@ class MoreInfoMediaPlayer extends LitElement {
                     <ha-icon-button
                       action="volume_down"
                       .path=${mdiVolumeMinus}
+                      .label=${this.hass.localize(
+                        "ui.card.media_player.media_volume_down"
+                      )}
                       @click=${this._handleClick}
                     ></ha-icon-button>
                     <ha-icon-button
                       action="volume_up"
                       .path=${mdiVolumePlus}
+                      .label=${this.hass.localize(
+                        "ui.card.media_player.media_volume_up"
+                      )}
                       @click=${this._handleClick}
                     ></ha-icon-button>
                   `
