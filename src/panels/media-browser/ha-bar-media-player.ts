@@ -39,6 +39,7 @@ import {
   computeMediaDescription,
   formatMediaTime,
   getCurrentProgress,
+  handleMediaControlClick,
   MediaPlayerEntity,
   MediaPlayerItem,
   setMediaPlayerVolume,
@@ -173,7 +174,7 @@ export class BarMediaPlayer extends LitElement {
     }
 
     const controls = !this.narrow
-      ? computeMediaControls(stateObj)
+      ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
           (supportsFeature(stateObj, SUPPORT_PAUSE) ||
             supportsFeature(stateObj, SUPPORT_STOP))) ||
@@ -490,9 +491,11 @@ export class BarMediaPlayer extends LitElement {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
 
     if (!this._browserPlayer) {
-      this.hass!.callService("media_player", action, {
-        entity_id: this.entityId,
-      });
+      handleMediaControlClick(
+        this.hass!,
+        this._stateObj!,
+        (e.currentTarget as HTMLElement).getAttribute("action")!
+      );
       return;
     }
     if (action === "media_pause") {

@@ -19,13 +19,15 @@ export class HaNumberSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public required = true;
 
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
     return html`${this.selector.number.mode !== "box"
-        ? html`${this.label}<ha-slider
+        ? html`${this.label}${this.required ? "*" : ""}<ha-slider
               .min=${this.selector.number.min}
               .max=${this.selector.number.max}
               .value=${this._value}
@@ -46,8 +48,10 @@ export class HaNumberSelector extends LitElement {
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
-        .value=${this.value || ""}
+        .value=${this.value ?? ""}
         .step=${this.selector.number.step ?? 1}
+        helperPersistent
+        .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
         .suffix=${this.selector.number.unit_of_measurement}

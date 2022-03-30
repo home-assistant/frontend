@@ -6,6 +6,7 @@ import { AutomationConfig } from "./automation";
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
+  http_use_ssl: boolean;
 }
 
 export interface GoogleEntityConfig {
@@ -59,6 +60,7 @@ export interface CloudStatusLoggedIn {
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
   http_use_ssl: boolean;
+  active_subscription: boolean;
 }
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;

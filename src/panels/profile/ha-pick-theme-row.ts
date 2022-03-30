@@ -173,6 +173,9 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
+    if (!(themeName in this.hass.themes.themes)) {
+      return false; // User's theme no longer exists
+    }
     return "modes" in this.hass.themes.themes[themeName];
   }
 

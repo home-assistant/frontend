@@ -4,8 +4,8 @@ import { assert } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
 import type { HomeAssistant } from "../../../../types";
 import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
 import { GraphHeaderFooterConfig } from "../../header-footer/types";
@@ -50,15 +50,14 @@ export class HuiGraphFooterEditor
       <div class="card-config">
         <ha-entity-picker
           allow-custom-entity
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
+          )}
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
+          .required=${true}
           @change=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">

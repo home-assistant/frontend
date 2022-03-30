@@ -117,11 +117,23 @@ export class HuiGlanceCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) =>
-    this.hass!.localize(
-      `ui.panel.lovelace.editor.card.glance.${schema.name}`
-    ) ||
-    this.hass!.localize(`ui.panel.lovelace.editor.card.generic.${schema.name}`);
+  private _computeLabelCallback = (schema: HaFormSchema) => {
+    if (schema.name === "theme") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.theme"
+      )} (${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.config.optional"
+      )})`;
+    }
+    return (
+      this.hass!.localize(
+        `ui.panel.lovelace.editor.card.glance.${schema.name}`
+      ) ||
+      this.hass!.localize(
+        `ui.panel.lovelace.editor.card.generic.${schema.name}`
+      )
+    );
+  };
 }
 
 declare global {

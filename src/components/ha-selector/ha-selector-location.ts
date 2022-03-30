@@ -6,7 +6,6 @@ import type {
   LocationSelector,
   LocationSelectorValue,
 } from "../../data/selector";
-import "../../panels/lovelace/components/hui-theme-select-editor";
 import type { HomeAssistant } from "../../types";
 import type { MarkerLocation } from "../map/ha-locations-editor";
 import "../map/ha-locations-editor";
@@ -52,7 +51,10 @@ export class HaLocationSelector extends LitElement {
           longitude: value?.longitude || this.hass.config.longitude,
           radius: selector.location.radius ? value?.radius || 1000 : undefined,
           radius_color: zoneRadiusColor,
-          icon: selector.location.icon,
+          icon:
+            selector.location.icon || selector.location.radius
+              ? "mdi:map-marker-radius"
+              : "mdi:map-marker",
           location_editable: true,
           radius_editable: true,
         },

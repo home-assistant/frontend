@@ -23,6 +23,7 @@ import { showMediaBrowserDialog } from "../../../components/media-player/show-me
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaControls,
+  handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
@@ -47,7 +48,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     const stateObj = this.stateObj;
-    const controls = computeMediaControls(stateObj);
+    const controls = computeMediaControls(stateObj, true);
 
     return html`
       <div class="controls">
@@ -202,6 +203,7 @@ class MoreInfoMediaPlayer extends LitElement {
       }
 
       .basic-controls {
+        display: inline-flex;
         flex-grow: 1;
       }
 
@@ -231,12 +233,10 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _handleClick(e: MouseEvent): void {
-    this.hass!.callService(
-      "media_player",
-      (e.currentTarget! as HTMLElement).getAttribute("action")!,
-      {
-        entity_id: this.stateObj!.entity_id,
-      }
+    handleMediaControlClick(
+      this.hass!,
+      this.stateObj!,
+      (e.currentTarget as HTMLElement).getAttribute("action")!
     );
   }
 

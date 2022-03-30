@@ -488,6 +488,14 @@ export class HaMap extends ReactiveElement {
         text-align: center;
         color: var(--primary-text-color);
       }
+      .leaflet-pane {
+        z-index: 0 !important;
+      }
+      .leaflet-control,
+      .leaflet-top,
+      .leaflet-bottom {
+        z-index: 1 !important;
+      }
     `;
   }
 }

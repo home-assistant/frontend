@@ -2,8 +2,8 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-base-time-input";
 import { FrontendLocaleData } from "../data/translation";
+import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
 
 @customElement("ha-time-input")
@@ -15,6 +15,8 @@ export class HaTimeInput extends LitElement {
   @property() public label?: string;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "enable-second" })
   public enableSecond = false;
@@ -43,6 +45,7 @@ export class HaTimeInput extends LitElement {
         .disabled=${this.disabled}
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
+        .required=${this.required}
       ></ha-base-time-input>
     `;
   }

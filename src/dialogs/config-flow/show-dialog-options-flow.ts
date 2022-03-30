@@ -89,6 +89,12 @@ export const showOptionsFlowDialog = (
         );
       },
 
+      renderShowFormStepFieldHelper(hass, step, field) {
+        return hass.localize(
+          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`
+        );
+      },
+
       renderShowFormStepFieldError(hass, step, error) {
         return hass.localize(
           `component.${configEntry.domain}.options.error.${error}`,
@@ -132,6 +138,37 @@ export const showOptionsFlowDialog = (
               ></ha-markdown>
             `
           : "";
+      },
+
+      renderMenuHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${step.handler}.option.step.${step.step_id}.title`
+          ) || hass.localize(`component.${step.handler}.title`)
+        );
+      },
+
+      renderMenuDescription(hass, step) {
+        const description = hass.localize(
+          `component.${step.handler}.option.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
+      },
+
+      renderMenuOption(hass, step, option) {
+        return hass.localize(
+          `component.${step.handler}.options.step.${step.step_id}.menu_options.${option}`,
+          step.description_placeholders
+        );
       },
 
       renderLoadingDescription(hass, reason) {
