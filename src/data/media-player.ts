@@ -243,7 +243,7 @@ export const computeMediaDescription = (
 
 export const computeMediaControls = (
   stateObj: MediaPlayerEntity,
-  useExtendedControls?: boolean
+  useExtendedControls = false
 ): ControlButton[] | undefined => {
   if (!stateObj) {
     return undefined;
@@ -253,10 +253,6 @@ export const computeMediaControls = (
 
   if (UNAVAILABLE_STATES.includes(state)) {
     return undefined;
-  }
-
-  if (useExtendedControls === undefined) {
-    useExtendedControls = false;
   }
 
   if (state === "off") {
@@ -419,11 +415,10 @@ export const setMediaPlayerVolume = (
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
 
 export const handleMediaControlClick = (
-  e: MouseEvent,
   hass: HomeAssistant,
-  stateObj: MediaPlayerEntity
-): void => {
-  const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
+  stateObj: MediaPlayerEntity,
+  action: string
+) =>
   hass!.callService(
     "media_player",
     action,
@@ -446,4 +441,3 @@ export const handleMediaControlClick = (
           entity_id: stateObj!.entity_id,
         }
   );
-};

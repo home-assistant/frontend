@@ -491,7 +491,11 @@ export class BarMediaPlayer extends LitElement {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
 
     if (!this._browserPlayer) {
-      handleMediaControlClick(e, this.hass!, this._stateObj!);
+      handleMediaControlClick(
+        this.hass!,
+        this._stateObj!,
+        (e.currentTarget as HTMLElement).getAttribute("action")!
+      );
       return;
     }
     if (action === "media_pause") {

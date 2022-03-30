@@ -233,7 +233,11 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _handleClick(e: MouseEvent): void {
-    handleMediaControlClick(e, this.hass!, this.stateObj!);
+    handleMediaControlClick(
+      this.hass!,
+      this.stateObj!,
+      (e.currentTarget as HTMLElement).getAttribute("action")!
+    );
   }
 
   private _toggleMute() {

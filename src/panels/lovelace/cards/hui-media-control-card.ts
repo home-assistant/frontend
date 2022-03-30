@@ -505,7 +505,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(e: MouseEvent): void {
-    handleMediaControlClick(e, this.hass!, this._stateObj!);
+    handleMediaControlClick(
+      this.hass!,
+      this._stateObj!,
+      (e.currentTarget as HTMLElement).getAttribute("action")!
+    );
   }
 
   private _updateProgressBar(): void {
