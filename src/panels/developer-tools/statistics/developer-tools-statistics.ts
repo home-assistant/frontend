@@ -129,7 +129,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                   @click=${this._showStatisticsAdjustSumDialog}
                 ></ha-icon-button>
               `
-            : html`<div style="width:48px"></div>`,
+            : "",
       },
     })
   );
