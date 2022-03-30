@@ -131,8 +131,8 @@ export class HaSelectSelector extends LitElement {
           .hass=${this.hass}
           .label=${this.label}
           .disabled=${this.disabled}
-          .value=${this._filter || this.value}
           .items=${options}
+          .value=${this.value}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
         ></ha-combo-box>
@@ -207,13 +207,15 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
-  private _removeItem(ev): void {
+  private async _removeItem(ev) {
     (this.value as string[])!.splice(ev.target.idx, 1);
+    this.value = [...this.value];
 
     fireEvent(this, "value-changed", {
       value: this.value,
     });
-    this.requestUpdate();
+    await this.updateComplete;
+    this._filterChanged();
   }
 
   private _comboBoxValueChanged(ev: CustomEvent): void {
@@ -237,6 +239,11 @@ export class HaSelectSelector extends LitElement {
 
     // // Trying to reset the value... Not working currently
     // this._filter = "";
+    setTimeout(() => {
+      this._filterChanged();
+      this.comboBox._comboBox.inputElement.value = "";
+    }, 0);
+    // this.comboBox._comboBox.inputElement.value = undefined;
     // this.comboBox.value = "";
     // this.requestUpdate();
 
@@ -248,15 +255,18 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
-  private _filterChanged(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
+  private _filterChanged(ev?: CustomEvent): void {
+    this._filter = ev?.detail.value || "";
 
     const filteredItems = this.comboBox.items?.filter((item) => {
+      if (this.selector.select.multiple && this.value?.includes(item.value)) {
+        return false;
+      }
       const label = item.label || item.value;
       return label.toLowerCase().includes(this._filter?.toLowerCase());
     });
 
-    if (this._filter !== "" && this.selector.select.custom_value) {
+    if (this._filter && this.selector.select.custom_value) {
       filteredItems?.unshift({ label: this._filter, value: this._filter });
     }
 
