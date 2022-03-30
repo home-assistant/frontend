@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
@@ -24,9 +23,9 @@ import {
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
-import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
 const FIX_ISSUES_ORDER = {
   no_state: 0,
@@ -116,27 +115,21 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       },
       actions: {
         title: "",
-        type: "overflow-menu",
-        template: (
-          _info,
-          statistic: StatisticsMetaData
-        ) => html`<ha-icon-overflow-menu
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .items=${[
-            {
-              path: mdiSlopeUphill,
-              label: localize(
-                "ui.panel.developer-tools.tabs.statistics.adjust_sum"
-              ),
-              action: () =>
-                showStatisticsAdjustSumDialog(this, {
-                  statistic: statistic,
-                }),
-            },
-          ]}
-          style="color: var(--secondary-text-color)"
-        ></ha-icon-overflow-menu>`,
+        label: localize("ui.panel.developer-tools.tabs.statistics.adjust_sum"),
+        type: "icon-button",
+        template: (_info, statistic: StatisticsMetaData) =>
+          statistic.has_sum
+            ? html`
+                <ha-icon-button
+                  .label=${localize(
+                    "ui.panel.developer-tools.tabs.statistics.adjust_sum"
+                  )}
+                  .path=${mdiSlopeUphill}
+                  .statistic=${statistic}
+                  @click=${this._showStatisticsAdjustSumDialog}
+                ></ha-icon-button>
+              `
+            : "",
       },
     })
   );
@@ -152,6 +145,13 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         @row-click=${this._rowClicked}
       ></ha-data-table>
     `;
+  }
+
+  private _showStatisticsAdjustSumDialog(ev) {
+    ev.stopPropagation();
+    showStatisticsAdjustSumDialog(this, {
+      statistic: ev.currentTarget.statistic,
+    });
   }
 
   private _rowClicked(ev) {
@@ -212,6 +212,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
+          has_mean: false,
+          has_sum: false,
         });
       }
     });
