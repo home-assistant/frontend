@@ -208,11 +208,11 @@ export class HaSelectSelector extends LitElement {
   }
 
   private async _removeItem(ev) {
-    (this.value as string[])!.splice(ev.target.idx, 1);
-    this.value = [...this.value];
+    const value: string[] = [...(this.value! as string[])];
+    value.splice(ev.target.idx, 1);
 
     fireEvent(this, "value-changed", {
-      value: this.value,
+      value,
     });
     await this.updateComplete;
     this._filterChanged();
@@ -239,7 +239,7 @@ export class HaSelectSelector extends LitElement {
 
     setTimeout(() => {
       this._filterChanged();
-      this.comboBox._comboBox.inputElement.value = "";
+      this.comboBox.setInputValue("");
     }, 0);
 
     const currentValue =
