@@ -67,6 +67,7 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
+import { HELPER_DOMAINS } from "../helpers/const";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -661,6 +662,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const handlers = await getConfigFlowHandlers(this.hass, "integration");
 
     if (!handlers.includes(domain)) {
+      if (HELPER_DOMAINS.includes(domain)) {
+        navigate(`/config/helpers/add?domain=${domain}`, {
+          replace: true,
+        });
+        return;
+      }
       const helpers = await getConfigFlowHandlers(this.hass, "helper");
       if (helpers.includes(domain)) {
         navigate(`/config/helpers/add?domain=${domain}`, {

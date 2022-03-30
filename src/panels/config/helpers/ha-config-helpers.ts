@@ -243,6 +243,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
+    if (HELPER_DOMAINS.includes(domain)) {
+      showHelperDetailDialog(this, {
+        domain,
+      });
+      return;
+    }
     const handlers = await getConfigFlowHandlers(this.hass, "helper");
 
     if (!handlers.includes(domain)) {
