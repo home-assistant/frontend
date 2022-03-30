@@ -82,7 +82,7 @@ class HaConfigBackup extends LitElement {
         title: "",
         width: "15%",
         template: (_: string, backup: BackupContent) =>
-          html` <ha-icon-overflow-menu
+          html`<ha-icon-overflow-menu
             .hass=${this.hass}
             .narrow=${this.narrow}
             .items=${[
@@ -122,7 +122,7 @@ class HaConfigBackup extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._backupData === undefined) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     return html`
