@@ -594,7 +594,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         <ha-icon-button
                           id="hide-btn"
                           @click=${this._hideSelected}
-                          .path=${mdiCancel}
+                          .path=${mdiEyeOff}
                           .label=${this.hass.localize("ui.common.hide")}
                         ></ha-icon-button>
                         <paper-tooltip animation-delay="0" for="hide-btn">
