@@ -115,7 +115,7 @@ class DateRangePickerElement extends WrappedElement {
             color: var(--primary-text-color);
             min-width: initial !important;
           }
-          .daterangepicker:after {
+          .daterangepicker:before {
             display: none;
           }
           .daterangepicker:after {

@@ -1,12 +1,13 @@
-import { LitElement, html, TemplateResult, css } from "lit";
-import { customElement, property } from "lit/decorators";
-import "./ha-select";
 import "@material/mwc-list/mwc-list-item";
-import "./ha-textfield";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-select";
+import "./ha-textfield";
 
 export interface TimeChangedEvent {
+  days?: number;
   hours: number;
   minutes: number;
   seconds: number;
@@ -20,6 +21,11 @@ export class HaBaseTimeInput extends LitElement {
    * Label for the input
    */
   @property() label?: string;
+
+  /**
+   * Helper for the input
+   */
+  @property() helper?: string;
 
   /**
    * auto validate time inputs
@@ -42,6 +48,11 @@ export class HaBaseTimeInput extends LitElement {
   @property({ type: Boolean }) disabled = false;
 
   /**
+   * day
+   */
+  @property({ type: Number }) days = 0;
+
+  /**
    * hour
    */
   @property({ type: Number }) hours = 0;
@@ -60,6 +71,11 @@ export class HaBaseTimeInput extends LitElement {
    * milli second
    */
   @property({ type: Number }) milliseconds = 0;
+
+  /**
+   * Label for the day input
+   */
+  @property() dayLabel = "";
 
   /**
    * Label for the hour input
@@ -92,6 +108,11 @@ export class HaBaseTimeInput extends LitElement {
   @property({ type: Boolean }) enableMillisecond = false;
 
   /**
+   * show the day field
+   */
+  @property({ type: Boolean }) enableDay = false;
+
+  /**
    * limit hours input
    */
   @property({ type: Boolean }) noHoursLimit = false;
@@ -108,8 +129,33 @@ export class HaBaseTimeInput extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
+      ${this.label
+        ? html`<label>${this.label}${this.required ? "*" : ""}</label>`
+        : ""}
       <div class="time-input-wrap">
+        ${this.enableDay
+          ? html`
+              <ha-textfield
+                id="day"
+                type="number"
+                inputmode="numeric"
+                .value=${this.days}
+                .label=${this.dayLabel}
+                name="days"
+                @input=${this._valueChanged}
+                @focus=${this._onFocus}
+                no-spinner
+                .required=${this.required}
+                .autoValidate=${this.autoValidate}
+                min="0"
+                .disabled=${this.disabled}
+                suffix=":"
+                class="hasSuffix"
+              >
+              </ha-textfield>
+            `
+          : ""}
+
         <ha-textfield
           id="hour"
           type="number"
@@ -207,6 +253,7 @@ export class HaBaseTimeInput extends LitElement {
               <mwc-list-item value="PM">PM</mwc-list-item>
             </ha-select>`}
       </div>
+      ${this.helper ? html`<div class="helper">${this.helper}</div>` : ""}
     `;
   }
 
@@ -302,6 +349,13 @@ export class HaBaseTimeInput extends LitElement {
       text-transform: var(--mdc-typography-body2-text-transform, inherit);
       color: var(--mdc-theme-text-primary-on-background, rgba(0, 0, 0, 0.87));
       padding-left: 4px;
+    }
+
+    .helper {
+      color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
+      font-size: 0.75rem;
+      padding-left: 16px;
+      padding-right: 16px;
     }
   `;
 }

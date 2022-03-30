@@ -9,11 +9,10 @@ import {
   mdiCast,
   mdiCastConnected,
   mdiClock,
-  mdiEmoticonDead,
-  mdiFlash,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
+  mdiLightSwitch,
   mdiLock,
   mdiLockAlert,
   mdiLockClock,
@@ -22,16 +21,16 @@ import {
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiSleep,
-  mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
   mdiWeatherNight,
-  mdiZWave,
+  mdiPackage,
+  mdiPackageDown,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
+import { updateIsInstalling, UpdateEntity } from "../../data/update";
 /**
  * Return the icon to be used for a domain.
  *
@@ -112,19 +111,7 @@ export const domainIcon = (
         case "switch":
           return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
         default:
-          return mdiFlash;
-      }
-
-    case "zwave":
-      switch (compareState) {
-        case "dead":
-          return mdiEmoticonDead;
-        case "sleeping":
-          return mdiSleep;
-        case "initializing":
-          return mdiTimerSand;
-        default:
-          return mdiZWave;
+          return mdiLightSwitch;
       }
 
     case "sensor": {
@@ -149,6 +136,13 @@ export const domainIcon = (
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
         : mdiWeatherNight;
+
+    case "update":
+      return compareState === "on"
+        ? updateIsInstalling(stateObj as UpdateEntity)
+          ? mdiPackageDown
+          : mdiPackageUp
+        : mdiPackage;
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

@@ -69,6 +69,12 @@ export class HuiAreaCardEditor
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
     switch (schema.name) {
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
       case "area":
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
       case "navigation_path":

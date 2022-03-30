@@ -27,7 +27,7 @@ import { HomeAssistant } from "../../../../../../types";
 export class HaDeviceInfoZWaveJS extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device!: DeviceRegistryEntry;
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @state() private _entryId?: string;
 
@@ -58,12 +58,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       return;
     }
 
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
     let zwaveJsConfEntries = 0;
     for (const entry of configEntries) {
-      if (entry.domain !== "zwave_js") {
-        continue;
-      }
       if (zwaveJsConfEntries) {
         this._multipleConfigEntries = true;
       }
@@ -171,5 +170,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-zwave_js": HaDeviceInfoZWaveJS;
   }
 }

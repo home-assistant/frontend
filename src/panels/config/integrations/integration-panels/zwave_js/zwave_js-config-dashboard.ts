@@ -384,7 +384,9 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (!this.configEntryId) {
       return;
     }
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
     this._configEntry = configEntries.find(
       (entry) => entry.entry_id === this.configEntryId!
     );
@@ -467,7 +469,9 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (!this.configEntryId) {
       return;
     }
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
     const configEntry = configEntries.find(
       (entry) => entry.entry_id === this.configEntryId
     );

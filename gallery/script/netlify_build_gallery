@@ -23,7 +23,7 @@ if [[ "${PULL_REQUEST}" == "true" ]]; then
     createStatus "pending" "Building design preview" "https://app.netlify.com/sites/home-assistant-gallery/deploys/$BUILD_ID"
     gulp build-gallery
     if [ $? -eq 0 ]; then
-      createStatus "success" "Build complete" "$DEPLOY_URL"
+      createStatus "success" "Build complete" "$DEPLOY_PRIME_URL"
     else
       createStatus "error" "Build failed" "https://app.netlify.com/sites/home-assistant-gallery/deploys/$BUILD_ID"
     fi

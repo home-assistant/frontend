@@ -172,6 +172,12 @@ export class HuiGaugeCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.gauge.needle_gauge"
         );
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
     }
     return (
       this.hass!.localize(

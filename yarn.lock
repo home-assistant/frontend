@@ -2975,17 +2975,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:6.5.95":
-  version: 6.5.95
-  resolution: "@mdi/js@npm:6.5.95"
-  checksum: b1db7713d216c119f584bf973514a2f9d8f2e671e91bf19ce8e56cfa7a9843c0a060328e794507ac31f2bded1032123294f39ff8e987ea5acb2719ab522ef146
+"@mdi/js@npm:6.6.95":
+  version: 6.6.95
+  resolution: "@mdi/js@npm:6.6.95"
+  checksum: 4cf8c48156f0e9ff67e4394cd428158bd164b1a6b7ca1aa70fc6a6aee91cfede9eba56720eb7d13fa57315ac636e9519a62dedd3cd2a9708aa11f2e3624ddbff
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:6.5.95":
-  version: 6.5.95
-  resolution: "@mdi/svg@npm:6.5.95"
-  checksum: 2d45221d042d52d54c85eaf672a5f3697ed5201607fa38a6e235ee2e60d1c3c25d456a284f19ce47b5f06418cacfee29e8fecf6580b8c28538fd26044becaf1a
+"@mdi/svg@npm:6.6.95":
+  version: 6.6.95
+  resolution: "@mdi/svg@npm:6.6.95"
+  checksum: 59b79db945847a3d981351418e0e7a457b831e09846fa751d44e80df8fb4cd19ef12bc889538ed2945d2638e522aa7ea5b1f97997e19dd68345f5d7bf5cad5e6
   languageName: node
   linkType: hard
 
@@ -3136,19 +3136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-dropdown@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-dropdown@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-behaviors": ^3.0.0-pre.26
-    "@polymer/iron-overlay-behavior": ^3.0.0-pre.27
-    "@polymer/neon-animation": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 2c1ba429c8f5553f8493f256691efa8a338e8c038c1102f482ecb612b61c079b5019f6c362aefb31b44d3429661152c1b6912408a69c67e9d6fff62914ad801f
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-fit-behavior@npm:^3.0.0-pre.26, @polymer/iron-fit-behavior@npm:^3.1.0":
+"@polymer/iron-fit-behavior@npm:^3.0.0-pre.26":
   version: 3.1.0
   resolution: "@polymer/iron-fit-behavior@npm:3.1.0"
   dependencies:
@@ -3295,17 +3283,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/neon-animation@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/neon-animation@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-resizable-behavior": ^3.0.0-pre.26
-    "@polymer/iron-selector": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: c5ea5e1ef9f2017faaa5799ea108b26634dd7d986fe469369e629075efe382a5e5d4f9c537bacc77f9852453a2758c9f67e491d6ea5a1c4457f772bfdf06c707
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-behaviors@npm:^3.0.0-pre.27":
   version: 3.0.1
   resolution: "@polymer/paper-behaviors@npm:3.0.1"
@@ -3315,25 +3292,6 @@ __metadata:
     "@polymer/paper-ripple": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
   checksum: 1b61e7472588cfadfcac611f535b1c9a82a11e3925710ddd18d1def243fc9461b50eca2a453cf6cf067a5662a1fb5d0146b633cbd87b78c59f85502caf9b9974
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-dropdown-menu@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@polymer/paper-dropdown-menu@npm:3.2.0"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-form-element-behavior": ^3.0.0-pre.26
-    "@polymer/iron-icon": ^3.0.0-pre.26
-    "@polymer/iron-iconset-svg": ^3.0.0-pre.26
-    "@polymer/iron-validatable-behavior": ^3.0.0-pre.26
-    "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-input": ^3.1.0
-    "@polymer/paper-menu-button": ^3.1.0
-    "@polymer/paper-ripple": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.3.1
-  checksum: dc7f6a8e3d449f37068ad5ee1d1c6d9037c9abd855ccc1d4e433d743c6378bb25af165ea86174edd1414887cf56a011ad0adda6d24dd55765e9458d49dc3e5e3
   languageName: node
   linkType: hard
 
@@ -3349,7 +3307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-input@npm:^3.0.0-pre.26, @polymer/paper-input@npm:^3.1.0, @polymer/paper-input@npm:^3.2.1":
+"@polymer/paper-input@npm:^3.0.0-pre.26, @polymer/paper-input@npm:^3.2.1":
   version: 3.2.1
   resolution: "@polymer/paper-input@npm:3.2.1"
   dependencies:
@@ -3385,21 +3343,6 @@ __metadata:
     "@polymer/paper-styles": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
   checksum: 5200382e9ccd806e2f2963fd53a267585c414997cd60a4af137d347dd34d475da69b561989eaef8536777714fbdd2660db7dbffef1b9928e521119c19531cb23
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-menu-button@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@polymer/paper-menu-button@npm:3.1.0"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-behaviors": ^3.0.0-pre.26
-    "@polymer/iron-dropdown": ^3.0.0-pre.26
-    "@polymer/iron-fit-behavior": ^3.1.0
-    "@polymer/neon-animation": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 9243e104bac583189c6221f2df8dffeb331868cbf8084dd488cf2ddaba25987bfb3d4d2a9bd3168e6b49f28ba6b1b07ef7163fbfcf3af97978d34608e91cc605
   languageName: node
   linkType: hard
 
@@ -9105,15 +9048,14 @@ fsevents@^1.2.7:
     "@material/mwc-textfield": 0.25.3
     "@material/mwc-top-app-bar-fixed": ^0.25.3
     "@material/top-app-bar": 14.0.0-canary.261f2db59.0
-    "@mdi/js": 6.5.95
-    "@mdi/svg": 6.5.95
+    "@mdi/js": 6.6.95
+    "@mdi/svg": 6.6.95
     "@open-wc/dev-server-hmr": ^0.0.2
     "@polymer/app-layout": ^3.1.0
     "@polymer/iron-flex-layout": ^3.0.1
     "@polymer/iron-icon": ^3.0.1
     "@polymer/iron-input": ^3.0.1
     "@polymer/iron-resizable-behavior": ^3.0.1
-    "@polymer/paper-dropdown-menu": ^3.2.0
     "@polymer/paper-input": ^3.2.1
     "@polymer/paper-item": ^3.0.1
     "@polymer/paper-listbox": ^3.0.1
@@ -9186,7 +9128,7 @@ fsevents@^1.2.7:
     gulp-rename: ^2.0.0
     gulp-zopfli-green: ^3.0.1
     hls.js: ^1.1.5
-    home-assistant-js-websocket: ^6.0.1
+    home-assistant-js-websocket: ^7.0.1
     html-minifier: ^4.0.0
     husky: ^1.3.1
     idb-keyval: ^5.1.3
@@ -9240,7 +9182,6 @@ fsevents@^1.2.7:
     vis-network: ^8.5.4
     vue: ^2.6.12
     vue2-daterange-picker: ^0.5.1
-    web-animations-js: ^2.3.2
     webpack: ^5.55.1
     webpack-cli: ^4.8.0
     webpack-dev-server: ^4.3.0
@@ -9257,10 +9198,10 @@ fsevents@^1.2.7:
   languageName: unknown
   linkType: soft
 
-"home-assistant-js-websocket@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "home-assistant-js-websocket@npm:6.0.1"
-  checksum: 566d6de6a4eb0e05ca434a45433cfe6fdd6b5cb2008e9a165709e08335df1c9b70903564c479ab8d48c6f5468a9784f47697192f9023170d2d86d43a461d6126
+"home-assistant-js-websocket@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "home-assistant-js-websocket@npm:7.0.1"
+  checksum: c9a87f11222571226adff43f022008d35df1f78799efae43e9a36f768eef10d21aed99886c905086c42c24d85d47c78e328c1be9593c117b397a18ee86b2fe64
   languageName: node
   linkType: hard
 
@@ -15700,13 +15641,6 @@ typescript@^4.4.3:
   dependencies:
     minimalistic-assert: ^1.0.0
   checksum: 2abc306c96930b757972a1c4650eb6b25b5d99f24088714957f88629e137db569368c5de0e57986c89ea70db2f1df9bba11a87cb6d0c8694b6f53a0159fab3bf
-  languageName: node
-  linkType: hard
-
-"web-animations-js@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "web-animations-js@npm:2.3.2"
-  checksum: 194db111bb2f92c15100c33b63af320ccdc26066748e358a945b947c510216c78e0a1e2ae22fefbaacb585c8a0b41b62a1417d8b549636ee32e16f059bb488f2
   languageName: node
   linkType: hard
 

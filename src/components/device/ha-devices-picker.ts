@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -10,6 +10,8 @@ class HaDevicesPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string[];
+
+  @property({ type: Boolean }) public required?: boolean;
 
   /**
    * Show entities from specific domains.
@@ -66,6 +68,7 @@ class HaDevicesPicker extends LitElement {
           .excludeDomains=${this.excludeDomains}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
+          .required=${this.required}
           @value-changed=${this._addDevice}
         ></ha-device-picker>
       </div>
@@ -116,6 +119,12 @@ class HaDevicesPicker extends LitElement {
 
     this._updateDevices([...currentDevices, toAdd]);
   }
+
+  static override styles = css`
+    div {
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

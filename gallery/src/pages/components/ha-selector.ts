@@ -1,20 +1,20 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, css, html } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import { BlueprintInput } from "../../../../src/data/blueprint";
+import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import { BlueprintInput } from "../../../../src/data/blueprint";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
-import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import { getEntity } from "../../../../src/fake_data/entity";
-import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
-import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -109,7 +109,7 @@ const AREAS = [
 
 const SCHEMAS: {
   name: string;
-  input: Record<string, BlueprintInput | null>;
+  input: Record<string, (BlueprintInput & { required?: boolean }) | null>;
 }[] = [
   {
     name: "One of each",
@@ -146,6 +146,8 @@ const SCHEMAS: {
       },
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
+      date: { name: "Date", selector: { date: {} } },
+      datetime: { name: "Date Time", selector: { datetime: {} } },
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
@@ -162,9 +164,42 @@ const SCHEMAS: {
         },
       },
       object: { name: "Object", selector: { object: {} } },
+      select_radio: {
+        name: "Select (Radio)",
+        selector: {
+          select: { options: ["Option 1", "Option 2"], mode: "list" },
+        },
+      },
       select: {
         name: "Select",
-        selector: { select: { options: ["Option 1", "Option 2"] } },
+        selector: {
+          select: {
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
+      },
+      select_custom: {
+        name: "Select (Custom)",
+        selector: {
+          select: {
+            custom_value: true,
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
       },
       icon: { name: "Icon", selector: { icon: {} } },
       media: { name: "Media", selector: { media: {} } },
@@ -173,6 +208,47 @@ const SCHEMAS: {
         name: "Location with radius",
         selector: { location: { radius: true, icon: "mdi:home" } },
       },
+      color_temp: {
+        name: "Color Temperature",
+        selector: { color_temp: {} },
+      },
+      color_rgb: { name: "Color", selector: { color_rgb: {} } },
+    },
+  },
+  {
+    name: "Multiples",
+    input: {
+      entity: { name: "Entity", selector: { entity: { multiple: true } } },
+      device: { name: "Device", selector: { device: { multiple: true } } },
+      area: { name: "Area", selector: { area: { multiple: true } } },
+      select: {
+        name: "Select Multiple",
+        selector: {
+          select: {
+            multiple: true,
+            custom_value: true,
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
+      },
+      select_checkbox: {
+        name: "Select Multiple (Checkbox)",
+        required: false,
+        selector: {
+          select: {
+            mode: "list",
+            multiple: true,
+            options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+          },
+        },
+      },
     },
   },
 ];
@@ -180,6 +256,12 @@ const SCHEMAS: {
 @customElement("demo-components-ha-selector")
 class DemoHaSelector extends LitElement implements ProvideHassElement {
   @state() public hass!: HomeAssistant;
+
+  @state() private _disabled = false;
+
+  @state() private _required = false;
+
+  @state() private _label = true;
 
   private data = SCHEMAS.map(() => ({}));
 
@@ -314,6 +396,29 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
 
   protected render(): TemplateResult {
     return html`
+      <div class="options">
+        <ha-formfield label="Labels">
+          <ha-switch
+            .name=${"label"}
+            .checked=${this._label}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Required">
+          <ha-switch
+            .name=${"required"}
+            .checked=${this._required}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Disabled">
+          <ha-switch
+            .name=${"disabled"}
+            .checked=${this._disabled}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+      </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
         const valueChanged = (ev) => {
@@ -336,7 +441,10 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                         .hass=${this.hass}
                         .selector=${value!.selector}
                         .key=${key}
+                        .label=${this._label ? value!.name : undefined}
                         .value=${data[key] ?? value!.default}
+                        .disabled=${this._disabled}
+                        .required=${this._required}
                         @value-changed=${valueChanged}
                       ></ha-selector>
                     </ha-settings-row>
@@ -349,9 +457,19 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     `;
   }
 
+  private _handleOptionChange(ev) {
+    this[`_${ev.target.name}`] = ev.target.checked;
+  }
+
   static styles = css`
     ha-selector {
       width: 60;
+    }
+    .options {
+      padding: 16px 48px;
+    }
+    .options ha-formfield {
+      margin-right: 16px;
     }
   `;
 }

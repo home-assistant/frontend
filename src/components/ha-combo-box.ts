@@ -87,6 +87,8 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @property({ type: Boolean, reflect: true, attribute: "opened" })
   private _opened?: boolean;
 
@@ -108,17 +110,22 @@ export class HaComboBox extends LitElement {
     return this._comboBox.selectedItem;
   }
 
+  public setInputValue(value: string) {
+    this._comboBox.value = value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <vaadin-combo-box-light
         .itemValuePath=${this.itemValuePath}
         .itemIdPath=${this.itemIdPath}
         .itemLabelPath=${this.itemLabelPath}
-        .value=${this.value || ""}
         .items=${this.items}
+        .value=${this.value || ""}
         .filteredItems=${this.filteredItems}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}
+        .required=${this.required}
         ${comboBoxRenderer(this.renderer || this._defaultRowRenderer)}
         @opened-changed=${this._openedChanged}
         @filter-changed=${this._filterChanged}
@@ -129,6 +136,7 @@ export class HaComboBox extends LitElement {
           .label=${this.label}
           .placeholder=${this.placeholder}
           .disabled=${this.disabled}
+          .required=${this.required}
           .validationMessage=${this.validationMessage}
           .errorMessage=${this.errorMessage}
           class="input"

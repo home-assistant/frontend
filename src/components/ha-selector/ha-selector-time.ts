@@ -16,12 +16,15 @@ export class HaTimeSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   protected render() {
     return html`
       <ha-time-input
         .value=${this.value}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
+        .required=${this.required}
         .label=${this.label}
         enable-second
       ></ha-time-input>

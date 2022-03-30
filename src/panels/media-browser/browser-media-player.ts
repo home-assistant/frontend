@@ -84,7 +84,7 @@ export class BrowserMediaPlayer {
       last_changed: now,
       last_updated: now,
       attributes: {},
-      context: { id: "", user_id: null },
+      context: { id: "", user_id: null, parent_id: null },
     };
   }
 
