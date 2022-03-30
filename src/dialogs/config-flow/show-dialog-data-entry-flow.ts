@@ -12,10 +12,14 @@ import {
 } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 
+export interface FlowHandlers {
+  integrations: string[];
+  helpers: string[];
+}
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;
 
-  getFlowHandlers?: (hass: HomeAssistant) => Promise<string[]>;
+  getFlowHandlers?: (hass: HomeAssistant) => Promise<FlowHandlers>;
 
   createFlow(hass: HomeAssistant, handler: string): Promise<DataEntryFlowStep>;
 

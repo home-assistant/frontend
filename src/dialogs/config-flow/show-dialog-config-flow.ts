@@ -1,5 +1,4 @@
 import { html } from "lit";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -23,17 +22,12 @@ export const showConfigFlowDialog = (
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
     getFlowHandlers: async (hass) => {
-      const [handlers] = await Promise.all([
+      const [integrations, helpers] = await Promise.all([
         getConfigFlowHandlers(hass, "integration"),
+        getConfigFlowHandlers(hass, "helper"),
         hass.loadBackendTranslation("title", undefined, true),
       ]);
-
-      return handlers.sort((handlerA, handlerB) =>
-        caseInsensitiveStringCompare(
-          domainToName(hass.localize, handlerA),
-          domainToName(hass.localize, handlerB)
-        )
-      );
+      return { integrations, helpers };
     },
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([

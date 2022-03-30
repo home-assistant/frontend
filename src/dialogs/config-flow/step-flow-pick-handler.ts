@@ -26,11 +26,13 @@ import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import { configFlowContentStyles } from "./styles";
+import { FlowHandlers } from "./show-dialog-data-entry-flow";
 
 interface HandlerObj {
   name: string;
   slug: string;
   is_add?: boolean;
+  is_helper?: boolean;
 }
 
 declare global {
@@ -46,7 +48,7 @@ declare global {
 class StepFlowPickHandler extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public handlers!: string[];
+  @property({ attribute: false }) public handlers!: FlowHandlers;
 
   @property() public initialFilter?: string;
 
@@ -57,8 +59,12 @@ class StepFlowPickHandler extends LitElement {
   private _height?: number;
 
   private _filterHandlers = memoizeOne(
-    (h: string[], filter?: string, _localize?: LocalizeFunc) => {
-      const handlers: HandlerObj[] = h.map((handler) => ({
+    (
+      h: FlowHandlers,
+      filter?: string,
+      _localize?: LocalizeFunc
+    ): [HandlerObj[], HandlerObj[]] => {
+      const integrations: HandlerObj[] = h.integrations.map((handler) => ({
         name: domainToName(this.hass.localize, handler),
         slug: handler,
       }));
@@ -70,17 +76,31 @@ class StepFlowPickHandler extends LitElement {
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const fuse = new Fuse(handlers, options);
-        return fuse.search(filter).map((result) => result.item);
+        const helpers: HandlerObj[] = h.helpers.map((handler) => ({
+          name: domainToName(this.hass.localize, handler),
+          slug: handler,
+          is_helper: true,
+        }));
+        return [
+          new Fuse(integrations, options)
+            .search(filter)
+            .map((result) => result.item),
+          new Fuse(helpers, options)
+            .search(filter)
+            .map((result) => result.item),
+        ];
       }
-      return handlers.sort((a, b) =>
-        caseInsensitiveStringCompare(a.name, b.name)
-      );
+      return [
+        integrations.sort((a, b) =>
+          caseInsensitiveStringCompare(a.name, b.name)
+        ),
+        [],
+      ];
     }
   );
 
   protected render(): TemplateResult {
-    const handlers = this._getHandlers();
+    const [integrations, helpers] = this._getHandlers();
 
     const addDeviceRows: HandlerObj[] = ["zha", "zwave_js"]
       .filter((domain) => isComponentLoaded(this.hass, domain))
@@ -115,8 +135,8 @@ class StepFlowPickHandler extends LitElement {
               <li divider padded class="divider" role="separator"></li>
             `
           : ""}
-        ${handlers.length
-          ? handlers.map((handler) => this._renderRow(handler))
+        ${integrations.length
+          ? integrations.map((handler) => this._renderRow(handler))
           : html`
               <p>
                 ${this.hass.localize(
@@ -139,6 +159,12 @@ class StepFlowPickHandler extends LitElement {
                 >.
               </p>
             `}
+        ${helpers.length
+          ? html`
+              <li divider padded class="divider" role="separator"></li>
+              ${helpers.map((handler) => this._renderRow(handler))}
+            `
+          : ""}
       </mwc-list>
     `;
   }
@@ -162,7 +188,7 @@ class StepFlowPickHandler extends LitElement {
           })}
           referrerpolicy="no-referrer"
         />
-        <span>${handler.name}</span>
+        <span>${handler.name} ${handler.is_helper ? " (helper)" : ""}</span>
         ${handler.is_add ? "" : html`<ha-icon-next slot="meta"></ha-icon-next>`}
       </mwc-list-item>
     `;
@@ -236,6 +262,13 @@ class StepFlowPickHandler extends LitElement {
       return;
     }
 
+    if (handler.is_helper) {
+      navigate(`/config/helpers/add?domain=${handler.slug}`);
+      // This closes dialog.
+      fireEvent(this, "flow-update");
+      return;
+    }
+
     fireEvent(this, "handler-picked", {
       handler: handler.slug,
     });
@@ -250,7 +283,7 @@ class StepFlowPickHandler extends LitElement {
 
     if (handlers.length > 0) {
       fireEvent(this, "handler-picked", {
-        handler: handlers[0].slug,
+        handler: handlers[0][0].slug,
       });
     }
   }
