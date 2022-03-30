@@ -170,16 +170,6 @@ const SCHEMAS: {
           select: { options: ["Option 1", "Option 2"], mode: "list" },
         },
       },
-      select_checkbox: {
-        name: "Select (Checkbox)",
-        required: false,
-        selector: {
-          select: {
-            mode: "list",
-            options: ["Option 1", "Option 2", "Option 3", "Option 4"],
-          },
-        },
-      },
       select: {
         name: "Select",
         selector: {
@@ -237,7 +227,25 @@ const SCHEMAS: {
           select: {
             multiple: true,
             custom_value: true,
-            options: ["Option 1", "Option 2"],
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
+      },
+      select_checkbox: {
+        name: "Select Multiple (Checkbox)",
+        required: false,
+        selector: {
+          select: {
+            mode: "list",
+            multiple: true,
+            options: ["Option 1", "Option 2", "Option 3", "Option 4"],
           },
         },
       },

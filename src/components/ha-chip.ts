@@ -62,12 +62,17 @@ export class HaChip extends LitElement {
 
       .mdc-chip__icon--leading,
       .mdc-chip__icon--trailing {
-        --mdc-icon-size: 20px;
+        --mdc-icon-size: 18px;
+        line-height: 14px;
         color: var(--ha-chip-icon-color, var(--ha-chip-text-color));
       }
       .mdc-chip.no-text
         .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
         margin-right: -4px;
+      }
+
+      span[role="gridcell"] {
+        line-height: 14px;
       }
     `;
   }

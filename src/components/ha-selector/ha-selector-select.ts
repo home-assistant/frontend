@@ -41,7 +41,7 @@ export class HaSelectSelector extends LitElement {
     );
 
     if (!this.selector.select.custom_value && this._mode === "list") {
-      if (this.required) {
+      if (!this.selector.select.multiple || this.required) {
         return html`
           <div>
             ${this.label}
@@ -101,6 +101,7 @@ export class HaSelectSelector extends LitElement {
               `
           )}
         </ha-chip-set>
+
         <ha-combo-box
           item-value-path="value"
           item-label-path="label"
@@ -108,7 +109,7 @@ export class HaSelectSelector extends LitElement {
           .label=${this.label}
           .disabled=${this.disabled}
           .value=${this._filter}
-          .items=${options}
+          .items=${options.filter((item) => !this.value?.includes(item.value))}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
         ></ha-combo-box>
@@ -116,6 +117,13 @@ export class HaSelectSelector extends LitElement {
     }
 
     if (this.selector.select.custom_value) {
+      if (
+        this.value !== undefined &&
+        !options.find((option) => option.value === this.value)
+      ) {
+        options.unshift({ value: this.value, label: this.value });
+      }
+
       return html`
         <ha-combo-box
           item-value-path="value"
@@ -123,7 +131,7 @@ export class HaSelectSelector extends LitElement {
           .hass=${this.hass}
           .label=${this.label}
           .disabled=${this.disabled}
-          .value=${this._filter}
+          .value=${this._filter || this.value}
           .items=${options}
           @filter-changed=${this._filterChanged}
           @value-changed=${this._comboBoxValueChanged}
@@ -152,9 +160,10 @@ export class HaSelectSelector extends LitElement {
   }
 
   private get _mode(): "list" | "dropdown" {
-    return this.selector.select.mode || this.selector.select.options.length > 6
-      ? "list"
-      : "dropdown";
+    return (
+      this.selector.select.mode ||
+      (this.selector.select.options.length < 6 ? "list" : "dropdown")
+    );
   }
 
   private _valueChanged(ev) {
@@ -222,10 +231,14 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    // Trying to reset the value... Not working currently
-    this._filter = "";
-    this.comboBox.value = "";
-    this.requestUpdate();
+    if (newValue !== undefined && this.value?.includes(newValue)) {
+      return;
+    }
+
+    // // Trying to reset the value... Not working currently
+    // this._filter = "";
+    // this.comboBox.value = "";
+    // this.requestUpdate();
 
     const currentValue =
       !this.value || this.value === "" ? [] : (this.value as string[]);
