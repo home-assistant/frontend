@@ -5,6 +5,7 @@ import {
   UPDATE_SUPPORT_BACKUP,
   UPDATE_SUPPORT_PROGRESS,
   UPDATE_SUPPORT_INSTALL,
+  UPDATE_SUPPORT_RELEASE_NOTES,
 } from "../../../../src/data/update";
 import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
@@ -13,6 +14,7 @@ import {
   provideHass,
 } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
+import { LONG_TEXT } from "../../data/text";
 
 const base_attributes = {
   title: "Awesome",
@@ -108,6 +110,24 @@ const ENTITIES = [
     latest_version: null,
     friendly_name: "Update without latest_version",
   }),
+  getEntity("update", "update16", "off", {
+    ...base_attributes,
+    friendly_name: "Update with release notes",
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_RELEASE_NOTES,
+  }),
+  getEntity("update", "update17", "off", {
+    ...base_attributes,
+    friendly_name: "Update with release notes error",
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_RELEASE_NOTES,
+  }),
+  getEntity("update", "update18", "off", {
+    ...base_attributes,
+    friendly_name: "Update with release notes loading",
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_RELEASE_NOTES,
+  }),
 ];
 
 @customElement("demo-more-info-update")
@@ -130,6 +150,24 @@ class DemoMoreInfoUpdate extends LitElement {
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
+    hass.mockWS(
+      "update/release_notes",
+      (msg: { type: string; entity_id: string }) => {
+        if (msg.entity_id === "update.update16") {
+          return LONG_TEXT;
+        }
+        if (msg.entity_id === "update.update17") {
+          return Promise.reject({
+            code: "error",
+            message: "Could not fetch release notes",
+          });
+        }
+        if (msg.entity_id === "update.update18") {
+          return undefined;
+        }
+        return null;
+      }
+    );
   }
 }
 
