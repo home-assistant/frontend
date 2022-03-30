@@ -4049,7 +4049,8 @@
                 "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
                 "clear": "Delete all old statistic data for this entity"
               }
-            }
+            },
+            "adjust_sum": "Adjust sum"
           }
         }
       },
