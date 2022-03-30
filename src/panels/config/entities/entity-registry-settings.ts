@@ -112,7 +112,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _deviceClass?: string;
 
-  @state() private _switchAs?: string;
+  @state() private _switchAs = "switch";
 
   @state() private _areaId?: string | null;
 
@@ -547,6 +547,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private _switchAsChanged(ev): void {
+    if (ev.target.value === "") {
+      return;
+    }
     this._switchAs = ev.target.value;
   }
 
@@ -646,7 +649,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       this._submitting = false;
     }
 
-    if (this._switchAs) {
+    if (this._switchAs !== "switch") {
       if (
         !(await showConfirmationDialog(this, {
           text: this.hass!.localize(
