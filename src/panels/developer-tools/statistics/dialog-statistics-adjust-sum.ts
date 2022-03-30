@@ -1,35 +1,35 @@
-import { mdiChevronRight } from "@mdi/js";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import { mdiChevronRight } from "@mdi/js";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultGroup,
   css,
+  CSSResultGroup,
+  html,
+  LitElement,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import "../../../components/ha-dialog";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
+import "../../../components/ha-form/ha-form";
 import "../../../components/ha-selector/ha-selector-datetime";
 import "../../../components/ha-selector/ha-selector-number";
-import "../../../components/ha-form/ha-form";
-import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
+import "../../../components/ha-svg-icon";
 import {
   adjustStatisticsSum,
   fetchStatistics,
   StatisticValue,
 } from "../../../data/history";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { showToast } from "../../../util/toast";
 import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle, haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
+import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
 
 /* eslint-disable lit/no-template-arrow */
 
@@ -129,9 +129,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     let stats: TemplateResult;
 
     if (!this._stats5min || !this._statsHour) {
-      stats = html` <ha-circular-progress active></ha-circular-progress> `;
+      stats = html`<ha-circular-progress active></ha-circular-progress>`;
     } else if (this._statsHour.length < 2 && this._stats5min.length < 2) {
-      stats = html` <p>No statistics found for this period.</p> `;
+      stats = html`<p>No statistics found for this period.</p>`;
     } else {
       const data =
         this._stats5min.length >= 2 ? this._stats5min : this._statsHour;
@@ -172,20 +172,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .hass=${this.hass}
         .selector=${this._dateTimeSelector}
         .value=${this._moment}
-        @value-changed=${(ev) => {
-          this._moment = ev.detail.value;
-          this._fetchStats();
-        }}
+        @value-changed=${this._dateTimeSelectorChanged}
       ></ha-selector-datetime>
-
       <div class="stat-list">${stats}</div>
-
       <mwc-button
         slot="primaryAction"
         dialogAction="cancel"
         .label=${this.hass.localize("ui.common.close")}
       ></mwc-button>
     `;
+  }
+
+  private _dateTimeSelectorChanged(ev) {
+    this._moment = ev.detail.value;
+    this._fetchStats();
   }
 
   private _renderAdjustStat() {
@@ -319,6 +319,27 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-dialog {
+            --mdc-dialog-max-height: 100%;
+            height: 100%;
+          }
+        }
+
+        @media all and (min-width: 850px) {
+          ha-dialog {
+            --mdc-dialog-max-height: 80%;
+            --mdc-dialog-max-height: 80%;
+          }
+        }
+
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          ha-dialog {
+            --mdc-dialog-max-width: 480px;
+          }
+        }
+
         .text-content,
         ha-selector-datetime,
         ha-selector-number {
