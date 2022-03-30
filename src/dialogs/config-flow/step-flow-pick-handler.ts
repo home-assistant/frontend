@@ -283,7 +283,7 @@ class StepFlowPickHandler extends LitElement {
 
     if (handlers.length > 0) {
       fireEvent(this, "handler-picked", {
-        handler: handlers[0].slug,
+        handler: handlers[0][0].slug,
       });
     }
   }
