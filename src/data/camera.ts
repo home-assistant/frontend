@@ -2,7 +2,7 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
+import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
@@ -50,7 +50,7 @@ export const fetchThumbnailUrlWithCache = async (
   width: number,
   height: number
 ) => {
-  const base_url = await timeCachePromiseFunc(
+  const base_url = await timeCacheEntityPromiseFunc(
     "_cameraTmbUrl",
     9000,
     fetchThumbnailUrl,

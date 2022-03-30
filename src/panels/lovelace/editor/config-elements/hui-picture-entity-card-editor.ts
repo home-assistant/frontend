@@ -108,32 +108,30 @@ export class HuiPictureEntityCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <div class="card-config">
-        <div class="side-by-side">
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.tap_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._tap_action}
-            .actions=${actions}
-            .configValue=${"tap_action"}
-            @value-changed=${this._changed}
-          ></hui-action-editor>
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hold_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._hold_action}
-            .actions=${actions}
-            .configValue=${"hold_action"}
-            @value-changed=${this._changed}
-          ></hui-action-editor>
-        </div>
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.tap_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._tap_action}
+          .actions=${actions}
+          .configValue=${"tap_action"}
+          @value-changed=${this._changed}
+        ></hui-action-editor>
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.hold_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._hold_action}
+          .actions=${actions}
+          .configValue=${"hold_action"}
+          @value-changed=${this._changed}
+        ></hui-action-editor>
       </div>
     `;
   }
@@ -170,6 +168,14 @@ export class HuiPictureEntityCardEditor
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
       );
+    }
+
+    if (schema.name === "theme") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.theme"
+      )} (${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.config.optional"
+      )})`;
     }
 
     return (

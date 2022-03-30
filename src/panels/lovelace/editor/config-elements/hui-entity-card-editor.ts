@@ -112,6 +112,14 @@ export class HuiEntityCardEditor
       );
     }
 
+    if (schema.name === "theme") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.theme"
+      )} (${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.config.optional"
+      )})`;
+    }
+
     return this.hass!.localize(
       `ui.panel.lovelace.editor.card.generic.${schema.name}`
     );

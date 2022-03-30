@@ -85,7 +85,7 @@ class HaInputSelectForm extends LitElement {
         ${this._options.length
           ? this._options.map(
               (option, index) => html`
-                <mwc-list-item class="option" hasMeta noninteractive>
+                <mwc-list-item class="option" hasMeta>
                   ${option}
                   <ha-icon-button
                     slot="meta"

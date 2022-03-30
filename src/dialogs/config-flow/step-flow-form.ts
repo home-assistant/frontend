@@ -54,6 +54,7 @@ class StepFlowForm extends LitElement {
           .schema=${step.data_schema}
           .error=${step.errors}
           .computeLabel=${this._labelCallback}
+          .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
         ></ha-form>
       </div>
@@ -165,6 +166,9 @@ class StepFlowForm extends LitElement {
 
   private _labelCallback = (field: HaFormSchema): string =>
     this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
+
+  private _helperCallback = (field: HaFormSchema): string =>
+    this.flowConfig.renderShowFormStepFieldHelper(this.hass, this.step, field);
 
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);

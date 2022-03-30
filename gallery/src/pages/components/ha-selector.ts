@@ -1,20 +1,20 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, css, html } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import { BlueprintInput } from "../../../../src/data/blueprint";
+import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
+import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import { BlueprintInput } from "../../../../src/data/blueprint";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
-import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import { getEntity } from "../../../../src/fake_data/entity";
-import { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
-import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -146,6 +146,8 @@ const SCHEMAS: {
       },
       boolean: { name: "Boolean", selector: { boolean: {} } },
       time: { name: "Time", selector: { time: {} } },
+      date: { name: "Date", selector: { date: {} } },
+      datetime: { name: "Date Time", selector: { datetime: {} } },
       action: { name: "Action", selector: { action: {} } },
       text: {
         name: "Text",
@@ -162,12 +164,45 @@ const SCHEMAS: {
         },
       },
       object: { name: "Object", selector: { object: {} } },
+      select_radio: {
+        name: "Select (Radio)",
+        selector: { select: { options: ["Option 1", "Option 2"] } },
+      },
       select: {
         name: "Select",
-        selector: { select: { options: ["Option 1", "Option 2"] } },
+        selector: {
+          select: {
+            options: [
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4",
+              "Option 5",
+              "Option 6",
+            ],
+          },
+        },
       },
       icon: { name: "Icon", selector: { icon: {} } },
       media: { name: "Media", selector: { media: {} } },
+      location: { name: "Location", selector: { location: {} } },
+      location_radius: {
+        name: "Location with radius",
+        selector: { location: { radius: true, icon: "mdi:home" } },
+      },
+      color_temp: {
+        name: "Color Temperature",
+        selector: { color_temp: {} },
+      },
+      color_rgb: { name: "Color", selector: { color_rgb: {} } },
+    },
+  },
+  {
+    name: "Multiples",
+    input: {
+      entity: { name: "Entity", selector: { entity: { multiple: true } } },
+      device: { name: "Device", selector: { device: { multiple: true } } },
+      area: { name: "Area", selector: { area: { multiple: true } } },
     },
   },
 ];
@@ -279,7 +314,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
           can_play: true,
           can_expand: false,
           children_media_class: null,
-          thumbnail: null,
+          thumbnail: "https://brands.home-assistant.io/_/image/logo.png",
         },
         {
           title: "movie.mp4",

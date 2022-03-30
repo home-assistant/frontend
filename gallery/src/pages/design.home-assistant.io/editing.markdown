@@ -2,6 +2,8 @@
 title: Editing design.home-assistant.io
 ---
 
+![Home Assistant Logo](/images/logo-with-text.png)
+
 # How to edit design.home-assistant.io
 
 All pages are stored in [the pages folder][pages-folder] on GitHub. Pages are grouped in a folder per sidebar section. Each page can contain a `<page name>.markdown` description file, a `<page name>.ts` demo file or both. If both are defined the description is rendered first. The description can contain metadata to specify the title of the page.
@@ -41,15 +43,12 @@ import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
 
-
 @customElement("demo-user-experience-usability")
 export class DemoUserExperienceUsability extends LitElement {
   protected render() {
     return html`
       <ha-card>
-        <div class="card-content">
-          Hello world!
-        </div>
+        <div class="card-content">Hello world!</div>
       </ha-card>
     `;
   }

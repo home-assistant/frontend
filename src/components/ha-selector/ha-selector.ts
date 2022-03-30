@@ -8,6 +8,9 @@ import "./ha-selector-addon";
 import "./ha-selector-area";
 import "./ha-selector-attribute";
 import "./ha-selector-boolean";
+import "./ha-selector-color-rgb";
+import "./ha-selector-date";
+import "./ha-selector-datetime";
 import "./ha-selector-device";
 import "./ha-selector-duration";
 import "./ha-selector-entity";
@@ -20,6 +23,8 @@ import "./ha-selector-time";
 import "./ha-selector-icon";
 import "./ha-selector-media";
 import "./ha-selector-theme";
+import "./ha-selector-location";
+import "./ha-selector-color-temp";
 
 @customElement("ha-selector")
 export class HaSelector extends LitElement {
@@ -38,6 +43,8 @@ export class HaSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @property() public context?: Record<string, any>;
 
   public focus() {
     this.shadowRoot?.getElementById("selector")?.focus();
@@ -58,6 +65,7 @@ export class HaSelector extends LitElement {
         disabled: this.disabled,
         required: this.required,
         helper: this.helper,
+        context: this.context,
         id: "selector",
       })}
     `;

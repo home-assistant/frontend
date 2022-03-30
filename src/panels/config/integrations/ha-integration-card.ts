@@ -55,8 +55,6 @@ const integrationsWithPanel = {
   hassio: "/hassio/dashboard",
   mqtt: "/config/mqtt",
   zha: "/config/zha/dashboard",
-  ozw: "/config/ozw/dashboard",
-  zwave: "/config/zwave",
   zwave_js: "/config/zwave_js/dashboard",
 };
 

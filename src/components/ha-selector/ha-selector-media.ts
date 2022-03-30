@@ -12,6 +12,7 @@ import {
 } from "../../data/media-player";
 import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import "../ha-alert";
 import "../ha-form/ha-form";
 import type { HaFormSchema } from "../ha-form/types";
@@ -49,6 +50,18 @@ export class HaMediaSelector extends LitElement {
         // Thumbnails served by local API require authentication
         getSignedPath(this.hass, thumbnail).then((signedPath) => {
           this._thumbnailUrl = signedPath.path;
+        });
+      } else if (
+        thumbnail &&
+        thumbnail.startsWith("https://brands.home-assistant.io")
+      ) {
+        // The backend is not aware of the theme used by the users,
+        // so we rewrite the URL to show a proper icon
+        this._thumbnailUrl = brandsUrl({
+          domain: extractDomainFromBrandUrl(thumbnail),
+          type: "icon",
+          useFallback: true,
+          darkOptimized: this.hass.themes?.darkMode,
         });
       } else {
         this._thumbnailUrl = thumbnail;

@@ -134,9 +134,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
       (entry) =>
-        entry.domain ===
-        (this.selector.target.device?.integration ||
-          this.selector.target.entity?.integration)
+        entry.domain === this.selector.target.device?.integration ||
+        entry.domain === this.selector.target.entity?.integration
     );
   }
 

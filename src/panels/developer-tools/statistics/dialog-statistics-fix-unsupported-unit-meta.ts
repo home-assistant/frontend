@@ -8,7 +8,7 @@ import { HomeAssistant } from "../../../types";
 import { updateStatisticsMetadata } from "../../../data/history";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
-import { DialogStatisticsUnsupportedUnitMetaParams } from "./show-dialog-statistics-fix-unsupported-unit-meta";
+import type { DialogStatisticsUnsupportedUnitMetaParams } from "./show-dialog-statistics-fix-unsupported-unit-meta";
 
 @customElement("dialog-statistics-fix-unsupported-unit-meta")
 export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
