@@ -1165,6 +1165,7 @@
         "backup": {
           "caption": "[%key:ui::panel::config::dashboard::backup::title%]",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
+          "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
           "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
           "name": "[%key:supervisor::backup::name%]",

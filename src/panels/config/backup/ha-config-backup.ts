@@ -1,10 +1,18 @@
 import { mdiDelete, mdiDownload, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
@@ -130,11 +138,19 @@ class HaConfigBackup extends LitElement {
       >
         <ha-fab
           slot="fab"
-          .label=${this.hass.localize("ui.panel.config.backup.create_backup")}
+          ?disabled=${this._backupData.backing_up}
+          .label=${this._backupData.backing_up
+            ? this.hass.localize("ui.panel.config.backup.creating_backup")
+            : this.hass.localize("ui.panel.config.backup.create_backup")}
           extended
           @click=${this._generateBackup}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          ${this._backupData.backing_up
+            ? html`<ha-circular-progress
+                slot="icon"
+                active
+              ></ha-circular-progress>`
+            : html`<ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>`}
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
@@ -167,12 +183,10 @@ class HaConfigBackup extends LitElement {
       return;
     }
 
-    try {
-      await generateBackup(this.hass);
-    } catch (err) {
-      showAlertDialog(this, { text: (err as Error).message });
-      return;
-    }
+    generateBackup(this.hass)
+      .then(() => this._getBackups())
+      .catch((err) => showAlertDialog(this, { text: (err as Error).message }));
+
     await this._getBackups();
   }
 
@@ -190,6 +204,16 @@ class HaConfigBackup extends LitElement {
 
     await removeBackup(this.hass, backup.slug);
     await this._getBackups();
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      css`
+        ha-fab[disabled] {
+          --mdc-theme-secondary: var(--disabled-text-color) !important;
+        }
+      `,
+    ];
   }
 }
 
