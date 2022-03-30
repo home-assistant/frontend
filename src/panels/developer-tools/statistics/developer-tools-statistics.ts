@@ -8,7 +8,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-icon-overflow-menu";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   clearStatistics,
