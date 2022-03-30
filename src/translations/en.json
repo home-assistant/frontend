@@ -900,7 +900,8 @@
           "step": "Step size"
         },
         "timer": {
-          "duration": "Duration"
+          "duration": "Duration",
+          "restore": "Restore?"
         }
       },
       "options_flow": {
