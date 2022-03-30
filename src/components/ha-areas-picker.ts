@@ -56,6 +56,8 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -95,6 +97,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
           .entityFilter=${this.entityFilter}
           .disabled=${this.disabled}
           .placeholder=${this.placeholder}
+          .required=${this.required}
           @value-changed=${this._addArea}
         ></ha-area-picker>
       </div>

@@ -1,8 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
-import type { ColorTempSelector } from "../../data/selector";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { ColorTempSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 
 @customElement("ha-selector-color_temp")
@@ -17,6 +17,8 @@ export class HaColorTempSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`
       <ha-labeled-slider
@@ -26,6 +28,8 @@ export class HaColorTempSelector extends LitElement {
         .min=${this.selector.color_temp.min_mireds ?? 153}
         .max=${this.selector.color_temp.max_mireds ?? 500}
         .value=${this.value}
+        .disabled=${this.disabled}
+        .required=${this.required}
         @change=${this._valueChanged}
       ></ha-labeled-slider>
     `;

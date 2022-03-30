@@ -35,6 +35,8 @@ export class HaDateInput extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @property() public label?: string;
 
   render() {
@@ -46,6 +48,7 @@ export class HaDateInput extends LitElement {
       .value=${this.value
         ? formatDateNumeric(new Date(this.value), this.locale)
         : ""}
+      .required=${this.required}
     >
       <ha-svg-icon slot="trailingIcon" .path=${mdiCalendar}></ha-svg-icon>
     </ha-textfield>`;

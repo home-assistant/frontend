@@ -35,6 +35,8 @@ export class HaMediaSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ type: Boolean, reflect: true }) public required = true;
+
   @state() private _thumbnailUrl?: string | null;
 
   willUpdate(changedProps: PropertyValues<this>) {
@@ -84,6 +86,7 @@ export class HaMediaSelector extends LitElement {
         .label=${this.label ||
         this.hass.localize("ui.components.selectors.media.pick_media_player")}
         .disabled=${this.disabled}
+        .required=${this.required}
         include-domains='["media_player"]'
         allow-custom-entity
         @value-changed=${this._entityChanged}

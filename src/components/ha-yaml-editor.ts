@@ -33,6 +33,8 @@ export class HaYamlEditor extends LitElement {
 
   @property({ type: Boolean }) public readOnly = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @state() private _yaml = "";
 
   public setValue(value): void {
@@ -59,7 +61,7 @@ export class HaYamlEditor extends LitElement {
       return html``;
     }
     return html`
-      ${this.label ? html`<p>${this.label}</p>` : ""}
+      ${this.label ? html`<p>${this.label}${this.required ? "*" : ""}</p>` : ""}
       <ha-code-editor
         .hass=${this.hass}
         .value=${this._yaml}
