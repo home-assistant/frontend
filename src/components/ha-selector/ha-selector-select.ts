@@ -237,15 +237,10 @@ export class HaSelectSelector extends LitElement {
       return;
     }
 
-    // // Trying to reset the value... Not working currently
-    // this._filter = "";
     setTimeout(() => {
       this._filterChanged();
       this.comboBox._comboBox.inputElement.value = "";
     }, 0);
-    // this.comboBox._comboBox.inputElement.value = undefined;
-    // this.comboBox.value = "";
-    // this.requestUpdate();
 
     const currentValue =
       !this.value || this.value === "" ? [] : (this.value as string[]);
