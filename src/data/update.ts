@@ -3,11 +3,13 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { HomeAssistant } from "../types";
 
 export const UPDATE_SUPPORT_INSTALL = 1;
 export const UPDATE_SUPPORT_SPECIFIC_VERSION = 2;
 export const UPDATE_SUPPORT_PROGRESS = 4;
 export const UPDATE_SUPPORT_BACKUP = 8;
+export const UPDATE_SUPPORT_RELEASE_NOTES = 16;
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
   current_version: string | null;
@@ -34,3 +36,9 @@ export const updateCanInstall = (entity: UpdateEntity): boolean =>
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   updateUsesProgress(entity) || !!entity.attributes.in_progress;
+
+export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
+  hass.callWS<string | null>({
+    type: "update/release_notes",
+    entity_id: entityId,
+  });

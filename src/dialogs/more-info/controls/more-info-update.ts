@@ -1,18 +1,23 @@
+import "../../../components/ha-alert";
+import "../../../components/ha-faded";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
-  updateIsInstalling,
   UpdateEntity,
+  updateIsInstalling,
+  updateReleaseNotes,
   UPDATE_SUPPORT_BACKUP,
   UPDATE_SUPPORT_INSTALL,
   UPDATE_SUPPORT_PROGRESS,
+  UPDATE_SUPPORT_RELEASE_NOTES,
   UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
@@ -22,6 +27,10 @@ class MoreInfoUpdate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: UpdateEntity;
+
+  @state() private _releaseNotes?: string | null;
+
+  @state() private _error?: string;
 
   protected render(): TemplateResult {
     if (
@@ -49,6 +58,9 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       ${this.stateObj.attributes.title
         ? html`<h3>${this.stateObj.attributes.title}</h3>`
+        : ""}
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : ""}
 
       <div class="row">
@@ -89,11 +101,19 @@ class MoreInfoUpdate extends LitElement {
             </div>
           </div>`
         : ""}
-      ${this.stateObj.attributes.release_summary
+      ${supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES) &&
+      !this._error
+        ? this._releaseNotes === undefined
+          ? html`<ha-circular-progress active></ha-circular-progress>`
+          : html`<hr />
+              <ha-faded>
+                <ha-markdown .content=${this._releaseNotes}></ha-markdown>
+              </ha-faded> `
+        : this.stateObj.attributes.release_summary
         ? html`<hr />
             <ha-markdown
               .content=${this.stateObj.attributes.release_summary}
-            ></ha-markdown> `
+            ></ha-markdown>`
         : ""}
       ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
         ? html`<hr />
@@ -134,6 +154,18 @@ class MoreInfoUpdate extends LitElement {
           : ""}
       </div>
     `;
+  }
+
+  protected firstUpdated(): void {
+    if (supportsFeature(this.stateObj!, UPDATE_SUPPORT_RELEASE_NOTES)) {
+      updateReleaseNotes(this.hass, this.stateObj!.entity_id)
+        .then((result) => {
+          this._releaseNotes = result;
+        })
+        .catch((err) => {
+          this._error = err.message;
+        });
+    }
   }
 
   get _shouldCreateBackup(): boolean | null {
@@ -200,6 +232,10 @@ class MoreInfoUpdate extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      ha-circular-progress {
+        width: 100%;
+        justify-content: center;
       }
     `;
   }
