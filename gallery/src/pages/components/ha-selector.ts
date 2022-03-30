@@ -211,6 +211,12 @@ const SCHEMAS: {
 class DemoHaSelector extends LitElement implements ProvideHassElement {
   @state() public hass!: HomeAssistant;
 
+  @state() private _disabled = false;
+
+  @state() private _required = false;
+
+  @state() private _label = true;
+
   private data = SCHEMAS.map(() => ({}));
 
   constructor() {
@@ -344,6 +350,29 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
 
   protected render(): TemplateResult {
     return html`
+      <div class="options">
+        <ha-formfield label="Labels">
+          <ha-switch
+            .name=${"label"}
+            .checked=${this._label}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Required">
+          <ha-switch
+            .name=${"required"}
+            .checked=${this._required}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Disabled">
+          <ha-switch
+            .name=${"disabled"}
+            .checked=${this._disabled}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
+      </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
         const valueChanged = (ev) => {
@@ -363,12 +392,13 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                       <span slot="heading">${value?.name || key}</span>
                       <span slot="description">${value?.description}</span>
                       <ha-selector
-                        .required=${true}
                         .hass=${this.hass}
                         .selector=${value!.selector}
                         .key=${key}
-                        .label=${value?.name || key}
+                        .label=${this._label ? value!.name : undefined}
                         .value=${data[key] ?? value!.default}
+                        .disabled=${this._disabled}
+                        .required=${this._required}
                         @value-changed=${valueChanged}
                       ></ha-selector>
                     </ha-settings-row>
@@ -381,9 +411,19 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     `;
   }
 
+  private _handleOptionChange(ev) {
+    this[`_${ev.target.name}`] = ev.target.checked;
+  }
+
   static styles = css`
     ha-selector {
       width: 60;
+    }
+    .options {
+      padding: 16px 48px;
+    }
+    .options ha-formfield {
+      margin-right: 16px;
     }
   `;
 }
