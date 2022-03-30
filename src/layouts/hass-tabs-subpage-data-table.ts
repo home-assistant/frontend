@@ -132,6 +132,12 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property() public tabs!: PageNavigation[];
 
+  /**
+   * Force hides the filter menu.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public hideFilterMenu = false;
+
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
   public clearSelection() {
@@ -195,16 +201,24 @@ export class HaTabsSubpageDataTable extends LitElement {
         .mainPage=${this.mainPage}
         .supervisor=${this.supervisor}
       >
-        <div slot="toolbar-icon">
-          ${this.narrow
-            ? html`<div class="filter-menu">
-                ${this.numHidden || this.activeFilters
-                  ? html`<span class="badge">${this.numHidden || "!"}</span>`
-                  : ""}
-                <slot name="filter-menu"></slot>
-              </div>`
-            : ""}<slot name="toolbar-icon"></slot>
-        </div>
+        ${!this.hideFilterMenu
+          ? html`
+              <div slot="toolbar-icon">
+                ${this.narrow
+                  ? html`
+                      <div class="filter-menu">
+                        ${this.numHidden || this.activeFilters
+                          ? html`<span class="badge"
+                              >${this.numHidden || "!"}</span
+                            >`
+                          : ""}
+                        <slot name="filter-menu"></slot>
+                      </div>
+                    `
+                  : ""}<slot name="toolbar-icon"></slot>
+              </div>
+            `
+          : ""}
         ${this.narrow
           ? html`
               <div slot="header">
