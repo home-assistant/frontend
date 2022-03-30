@@ -23,6 +23,7 @@ import { showMediaBrowserDialog } from "../../../components/media-player/show-me
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   computeMediaControls,
+  handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
@@ -47,7 +48,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     const stateObj = this.stateObj;
-    const controls = computeMediaControls(stateObj);
+    const controls = computeMediaControls(stateObj, true);
 
     return html`
       <div class="controls">
@@ -232,29 +233,7 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _handleClick(e: MouseEvent): void {
-    const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-    this.hass!.callService(
-      "media_player",
-      action,
-      action === "shuffle_set"
-        ? {
-            entity_id: this.stateObj!.entity_id,
-            shuffle: !this.stateObj!.attributes.shuffle,
-          }
-        : action === "repeat_set"
-        ? {
-            entity_id: this.stateObj!.entity_id,
-            repeat:
-              this.stateObj!.attributes.repeat === "all"
-                ? "one"
-                : this.stateObj!.attributes.repeat === "off"
-                ? "all"
-                : "off",
-          }
-        : {
-            entity_id: this.stateObj!.entity_id,
-          }
-    );
+    handleMediaControlClick(e, this.hass!, this.stateObj!);
   }
 
   private _toggleMute() {

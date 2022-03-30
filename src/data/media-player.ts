@@ -241,8 +241,9 @@ export const computeMediaDescription = (
   return secondaryTitle;
 };
 
-export const computeEssentialMediaControls = (
-  stateObj: MediaPlayerEntity
+export const computeMediaControls = (
+  stateObj: MediaPlayerEntity,
+  useExtendedControls?: boolean
 ): ControlButton[] | undefined => {
   if (!stateObj) {
     return undefined;
@@ -252,6 +253,10 @@ export const computeEssentialMediaControls = (
 
   if (UNAVAILABLE_STATES.includes(state)) {
     return undefined;
+  }
+
+  if (useExtendedControls === undefined) {
+    useExtendedControls = false;
   }
 
   if (state === "off") {
@@ -275,6 +280,18 @@ export const computeEssentialMediaControls = (
   }
 
   const assumedState = stateObj.attributes.assumed_state === true;
+  const stateAttr = stateObj.attributes;
+
+  if (
+    (state === "playing" || state === "paused" || assumedState) &&
+    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET) &&
+    useExtendedControls
+  ) {
+    buttons.push({
+      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
+      action: "shuffle_set",
+    });
+  }
 
   if (
     (state === "playing" || state === "paused" || assumedState) &&
@@ -346,40 +363,10 @@ export const computeEssentialMediaControls = (
     });
   }
 
-  return buttons.length > 0 ? buttons : undefined;
-};
-
-export const computeMediaControls = (
-  stateObj: MediaPlayerEntity
-): ControlButton[] | undefined => {
-  if (!stateObj) {
-    return undefined;
-  }
-
-  const state = stateObj.state;
-  const shortButtons = computeEssentialMediaControls(stateObj);
-
-  if (shortButtons === undefined) {
-    return undefined;
-  }
-
-  const buttons: ControlButton[] = shortButtons.concat();
-  const stateAttr = stateObj.attributes;
-  const assumedState = stateAttr.assumed_state === true;
-
   if (
     (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_SHUFFLE_SET)
-  ) {
-    buttons.unshift({
-      icon: stateAttr.shuffle === true ? mdiShuffle : mdiShuffleDisabled,
-      action: "shuffle_set",
-    });
-  }
-
-  if (
-    (state === "playing" || state === "paused" || assumedState) &&
-    supportsFeature(stateObj, SUPPORT_REPEAT_SET)
+    supportsFeature(stateObj, SUPPORT_REPEAT_SET) &&
+    useExtendedControls
   ) {
     buttons.push({
       icon:
@@ -430,3 +417,33 @@ export const setMediaPlayerVolume = (
   volume_level: number
 ) =>
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
+
+export const handleMediaControlClick = (
+  e: MouseEvent,
+  hass: HomeAssistant,
+  stateObj: MediaPlayerEntity
+): void => {
+  const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
+  hass!.callService(
+    "media_player",
+    action,
+    action === "shuffle_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          shuffle: !stateObj!.attributes.shuffle,
+        }
+      : action === "repeat_set"
+      ? {
+          entity_id: stateObj!.entity_id,
+          repeat:
+            stateObj!.attributes.repeat === "all"
+              ? "one"
+              : stateObj!.attributes.repeat === "off"
+              ? "all"
+              : "off",
+        }
+      : {
+          entity_id: stateObj!.entity_id,
+        }
+  );
+};

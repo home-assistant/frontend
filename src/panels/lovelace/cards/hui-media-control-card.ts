@@ -25,9 +25,10 @@ import { showMediaBrowserDialog } from "../../../components/media-player/show-me
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   cleanupMediaTitle,
-  computeEssentialMediaControls,
+  computeMediaControls,
   computeMediaDescription,
   getCurrentProgress,
+  handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
@@ -174,7 +175,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       UNAVAILABLE_STATES.includes(entityState) ||
       (entityState === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
-    const controls = computeEssentialMediaControls(stateObj);
+    const controls = computeMediaControls(stateObj, false);
     const showControls =
       controls &&
       (!this._veryNarrow ||
@@ -504,10 +505,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(e: MouseEvent): void {
-    const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-    this.hass!.callService("media_player", action, {
-      entity_id: this._config!.entity,
-    });
+    handleMediaControlClick(e, this.hass!, this._stateObj!);
   }
 
   private _updateProgressBar(): void {
