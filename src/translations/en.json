@@ -211,6 +211,8 @@
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
         "media_volume_unmute": "Volume unmute",
+        "repeat_set": "Repeat mode",
+        "shuffle_set": "Shuffle",
         "text_to_speak": "Text to speak",
         "nothing_playing": "Nothing Playing"
       },
