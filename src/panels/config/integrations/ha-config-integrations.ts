@@ -661,6 +661,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const handlers = await getConfigFlowHandlers(this.hass, "integration");
 
     if (!handlers.includes(domain)) {
+      const helpers = await getConfigFlowHandlers(this.hass, "helper");
+      if (helpers.includes(domain)) {
+        navigate(`/config/helpers/add?domain=${domain}`, {
+          replace: true,
+        });
+        return;
+      }
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error"
