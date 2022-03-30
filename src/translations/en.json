@@ -1070,6 +1070,10 @@
             "title": "Automations & Scenes",
             "description": "Manage automations, scenes, scripts and helpers"
           },
+          "backup": {
+            "title": "Backup",
+            "description": "Generate backups of your Home Assistant configuration"
+          },
           "blueprints": {
             "title": "Blueprints",
             "description": "Pre-made automations and scripts by the community"
@@ -1158,6 +1162,27 @@
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
             "confirmation_text": "All devices in this area will become unassigned."
+          }
+        },
+        "backup": {
+          "caption": "[%key:ui::panel::config::dashboard::backup::title%]",
+          "create_backup": "[%key:supervisor::backup::create_backup%]",
+          "creating_backup": "Backup is currently being created",
+          "download_backup": "[%key:supervisor::backup::download_backup%]",
+          "remove_backup": "[%key:supervisor::backup::delete_backup_title%]",
+          "name": "[%key:supervisor::backup::name%]",
+          "size": "[%key:supervisor::backup::size%]",
+          "created": "[%key:supervisor::backup::created%]",
+          "no_backups": "[%key:supervisor::backup::no_backups%]",
+          "create": {
+            "title": "Create backup",
+            "description": "Create a backup of your current configuration directory, this will take some time.",
+            "confirm": "create"
+          },
+          "remove": {
+            "title": "Remove backup",
+            "description": "Are you sure you want to remove the backup with the name {name}?",
+            "confirm": "[%key:ui::common::remove%]"
           }
         },
         "tag": {
