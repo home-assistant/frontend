@@ -227,17 +227,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._getConfigEntries();
-    const localizePromise = this.hass.loadBackendTranslation(
-      "title",
-      undefined,
-      true
-    );
     if (this.route.path === "/add") {
-      this._handleAdd(localizePromise);
+      this._handleAdd();
     }
   }
 
-  private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
+  private async _handleAdd() {
     const domain = extractSearchParam("domain");
     navigate("/config/helpers", { replace: true });
     if (!domain) {
@@ -272,10 +267,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    const localize = await localizePromise;
+    const localize = await this.hass.loadBackendTranslation(
+      "title",
+      domain,
+      true
+    );
     if (
       !(await showConfirmationDialog(this, {
-        title: localize("ui.panel.config.integrations.confirm_new", {
+        title: this.hass.localize("ui.panel.config.integrations.confirm_new", {
           integration: domainToName(localize, domain),
         }),
       }))
