@@ -1,10 +1,10 @@
-import "../entity/ha-entity-attribute-picker";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { AttributeSelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
+import "../entity/ha-entity-attribute-picker";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
@@ -17,6 +17,8 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
   @property() public label?: string;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = true;
 
   @property() public context?: {
     filter_entity?: string;
@@ -31,6 +33,7 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
         .value=${this.value}
         .label=${this.label}
         .disabled=${this.disabled}
+        .required=${this.required}
         allow-custom-value
       ></ha-entity-attribute-picker>
     `;

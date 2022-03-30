@@ -86,6 +86,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -269,6 +271,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         .value=${this._value}
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
+        .required=${this.required}
         item-value-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}

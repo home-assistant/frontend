@@ -39,6 +39,8 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @property({ type: Boolean }) public invalid = false;
 
   @state() private _opened = false;
@@ -56,6 +58,7 @@ export class HaIconPicker extends LitElement {
         .filteredItems=${iconItems}
         .label=${this.label}
         .disabled=${this.disabled}
+        .required=${this.required}
         .placeholder=${this.placeholder}
         .errorMessage=${this.errorMessage}
         .invalid=${this.invalid}

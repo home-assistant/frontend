@@ -30,6 +30,8 @@ class HaAddonPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @query("ha-combo-box") private _comboBox!: HaComboBox;
 
   public open() {
@@ -55,6 +57,8 @@ class HaAddonPicker extends LitElement {
           ? this.hass.localize("ui.components.addon-picker.addon")
           : this.label}
         .value=${this._value}
+        .required=${this.required}
+        .disabled=${this.disabled}
         .renderer=${rowRenderer}
         .items=${this._addons}
         item-value-path="slug"
