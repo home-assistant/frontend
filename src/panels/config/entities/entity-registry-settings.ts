@@ -650,7 +650,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           text: `This entity will be replaced by an entity of the domain '${this._switchAs}', the original entity will be hidden. You can manually change your configuration to use the new entity. If you remove the new entity, the old entity will be restored.`,
         }))
       ) {
-        this._submitting = false;
         return;
       }
       const configFlow = await createConfigFlow(this.hass, "switch_as_x");
