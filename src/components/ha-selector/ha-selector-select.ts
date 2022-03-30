@@ -1,11 +1,17 @@
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
-import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../ha-checkbox";
+import "../ha-chip";
+import "../ha-chip-set";
+import type { HaComboBox } from "../ha-combo-box";
+import "../ha-formfield";
 import "../ha-radio";
 import "../ha-select";
 
@@ -15,7 +21,7 @@ export class HaSelectSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: SelectSelector;
 
-  @property() public value?: string;
+  @property() public value?: string | string[];
 
   @property() public label?: string;
 
@@ -25,27 +31,113 @@ export class HaSelectSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @query("ha-combo-box", true) private comboBox!: HaComboBox;
+
+  private _filter = "";
+
   protected render() {
-    if (this.required && this.selector.select.options!.length < 6) {
+    const options = this.selector.select.options.map((option) =>
+      typeof option === "object" ? option : { value: option, label: option }
+    );
+
+    if (!this.selector.select.custom_value && this._mode === "list") {
+      if (!this.selector.select.multiple || this.required) {
+        return html`
+          <div>
+            ${this.label}
+            ${options.map(
+              (item: SelectOption) => html`
+                <mwc-formfield .label=${item.label}>
+                  <ha-radio
+                    .checked=${item.value === this.value}
+                    .value=${item.value}
+                    .disabled=${this.disabled}
+                    @change=${this._valueChanged}
+                  ></ha-radio>
+                </mwc-formfield>
+              `
+            )}
+          </div>
+        `;
+      }
+
       return html`
         <div>
-          ${this.label}
-          ${this.selector.select.options.map((item: string | SelectOption) => {
-            const value = typeof item === "object" ? item.value : item;
-            const label = typeof item === "object" ? item.label : item;
-
-            return html`
-              <mwc-formfield .label=${label}>
-                <ha-radio
-                  .checked=${value === this.value}
-                  .value=${value}
+          ${this.label}${options.map(
+            (item: SelectOption) => html`
+              <ha-formfield .label=${item.label}>
+                <ha-checkbox
+                  .checked=${this.value?.includes(item.value)}
+                  .value=${item.value}
                   .disabled=${this.disabled}
-                  @change=${this._valueChanged}
-                ></ha-radio>
-              </mwc-formfield>
-            `;
-          })}
+                  @change=${this._checkboxChanged}
+                ></ha-checkbox>
+              </ha-formfield>
+            `
+          )}
         </div>
+      `;
+    }
+
+    if (this.selector.select.multiple) {
+      const value =
+        !this.value || this.value === "" ? [] : (this.value as string[]);
+
+      return html`
+        <ha-chip-set>
+          ${value?.map(
+            (item, idx) =>
+              html`
+                <ha-chip hasTrailingIcon>
+                  ${options.find((option) => option.value === item)?.label ||
+                  item}
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiClose}
+                    .idx=${idx}
+                    @click=${this._removeItem}
+                  ></ha-svg-icon>
+                </ha-chip>
+              `
+          )}
+        </ha-chip-set>
+
+        <ha-combo-box
+          item-value-path="value"
+          item-label-path="label"
+          .hass=${this.hass}
+          .label=${this.label}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .value=${this._filter}
+          .items=${options.filter((item) => !this.value?.includes(item.value))}
+          @filter-changed=${this._filterChanged}
+          @value-changed=${this._comboBoxValueChanged}
+        ></ha-combo-box>
+      `;
+    }
+
+    if (this.selector.select.custom_value) {
+      if (
+        this.value !== undefined &&
+        !options.find((option) => option.value === this.value)
+      ) {
+        options.unshift({ value: this.value, label: this.value });
+      }
+
+      return html`
+        <ha-combo-box
+          item-value-path="value"
+          item-label-path="label"
+          .hass=${this.hass}
+          .label=${this.label}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .items=${options}
+          .value=${this.value}
+          @filter-changed=${this._filterChanged}
+          @value-changed=${this._comboBoxValueChanged}
+        ></ha-combo-box>
       `;
     }
 
@@ -57,40 +149,134 @@ export class HaSelectSelector extends LitElement {
         .value=${this.value}
         .helper=${this.helper}
         .disabled=${this.disabled}
-        .required=${this.required}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
-        ${this.selector.select.options.map((item: string | SelectOption) => {
-          const value = typeof item === "object" ? item.value : item;
-          const label = typeof item === "object" ? item.label : item;
-
-          return html`<mwc-list-item .value=${value}>${label}</mwc-list-item>`;
-        })}
+        ${options.map(
+          (item: SelectOption) => html`
+            <mwc-list-item .value=${item.value}>${item.label}</mwc-list-item>
+          `
+        )}
       </ha-select>
     `;
   }
 
+  private get _mode(): "list" | "dropdown" {
+    return (
+      this.selector.select.mode ||
+      (this.selector.select.options.length < 6 ? "list" : "dropdown")
+    );
+  }
+
   private _valueChanged(ev) {
     ev.stopPropagation();
-    if (this.disabled || !ev.target.value) {
+    const value = ev.detail?.value || ev.target.value;
+    if (this.disabled || !value) {
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.target.value,
+      value: value,
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
+  private _checkboxChanged(ev) {
+    ev.stopPropagation();
+    if (this.disabled) {
+      return;
+    }
+
+    let newValue: string[];
+    const value: string = ev.target.value;
+    const checked = ev.target.checked;
+
+    if (checked) {
+      if (!this.value) {
+        newValue = [value];
+      } else if (this.value.includes(value)) {
+        return;
+      } else {
+        newValue = [...this.value, value];
       }
-      mwc-formfield {
-        display: block;
+    } else {
+      if (!this.value?.includes(value)) {
+        return;
       }
-    `;
+      newValue = (this.value as string[]).filter((v) => v !== value);
+    }
+
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
   }
+
+  private async _removeItem(ev) {
+    const value: string[] = [...(this.value! as string[])];
+    value.splice(ev.target.idx, 1);
+
+    fireEvent(this, "value-changed", {
+      value,
+    });
+    await this.updateComplete;
+    this._filterChanged();
+  }
+
+  private _comboBoxValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+
+    if (this.disabled || newValue === "") {
+      return;
+    }
+
+    if (!this.selector.select.multiple) {
+      fireEvent(this, "value-changed", {
+        value: newValue,
+      });
+      return;
+    }
+
+    if (newValue !== undefined && this.value?.includes(newValue)) {
+      return;
+    }
+
+    setTimeout(() => {
+      this._filterChanged();
+      this.comboBox.setInputValue("");
+    }, 0);
+
+    const currentValue =
+      !this.value || this.value === "" ? [] : (this.value as string[]);
+
+    fireEvent(this, "value-changed", {
+      value: [...currentValue, newValue],
+    });
+  }
+
+  private _filterChanged(ev?: CustomEvent): void {
+    this._filter = ev?.detail.value || "";
+
+    const filteredItems = this.comboBox.items?.filter((item) => {
+      if (this.selector.select.multiple && this.value?.includes(item.value)) {
+        return false;
+      }
+      const label = item.label || item.value;
+      return label.toLowerCase().includes(this._filter?.toLowerCase());
+    });
+
+    if (this._filter && this.selector.select.custom_value) {
+      filteredItems?.unshift({ label: this._filter, value: this._filter });
+    }
+
+    this.comboBox.filteredItems = filteredItems;
+  }
+
+  static styles = css`
+    ha-select,
+    mwc-formfield,
+    ha-formfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {
