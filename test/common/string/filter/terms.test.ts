@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { termsSearchFunction } from "../../../../src/common/string/filter/terms";
+import { termsMatcher } from "../../../../src/common/string/filter/terms";
 
 describe("termsSearch", () => {
   const testEntities = [
@@ -29,7 +29,7 @@ describe("termsSearch", () => {
     searchInput: string | null,
     expectedResults: string[]
   ) {
-    const searchFunction = termsSearchFunction(searchInput);
+    const searchFunction = termsMatcher(searchInput);
     const matchingEntities = testEntities.filter(
       (entity) => searchFunction(entity.id) || searchFunction(entity.name)
     );
