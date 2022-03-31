@@ -15,9 +15,7 @@ export function termsSearchRegex(search: string | null): RegExp {
   return new RegExp(searchExpression, "i");
 }
 
-export function termsSearchFunction(
-  search: string | null
-): (string) => boolean {
+export function termsMatcher(search: string | null): (string) => boolean {
   const searchRegExp = termsSearchRegex(search);
   return (value: string) => searchRegExp.test(value);
 }

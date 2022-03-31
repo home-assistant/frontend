@@ -7,20 +7,20 @@ import type {
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
-import { termsSearchFunction } from "../../common/string/filter/terms";
+import { termsMatcher } from "../../common/string/filter/terms";
 
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  const filterFunction = termsSearchFunction(filter);
+  const matcher = termsMatcher(filter);
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          filterFunction(
+          matcher(
             String(
               column.filterKey
                 ? row[column.valueColumn || key][column.filterKey]
