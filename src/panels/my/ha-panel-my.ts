@@ -117,6 +117,10 @@ const REDIRECTS: Redirects = {
     component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
+  backup: {
+    component: "backup",
+    redirect: "/config/backup",
+  },
   people: {
     component: "person",
     redirect: "/config/person",
@@ -183,6 +187,15 @@ class HaPanelMy extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     const path = this.route.path.substring(1);
+
+    if (path === "backup" && isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass, "hassio")) {
+        navigate("/hassio/backups", {
+          replace: true,
+        });
+        return;
+      }
+    }
 
     if (path.startsWith("supervisor")) {
       if (!isComponentLoaded(this.hass, "hassio")) {
