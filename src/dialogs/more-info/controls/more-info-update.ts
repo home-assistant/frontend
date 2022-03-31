@@ -14,6 +14,7 @@ import {
   UpdateEntity,
   updateIsInstalling,
   updateReleaseNotes,
+  UPDATE_SUPPORT_AUTO_UPDATE,
   UPDATE_SUPPORT_BACKUP,
   UPDATE_SUPPORT_INSTALL,
   UPDATE_SUPPORT_PROGRESS,
@@ -130,14 +131,16 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <hr />
       <div class="actions">
-        <mwc-button
-          @click=${this._handleSkip}
-          .disabled=${skippedVersion ||
-          this.stateObj.state === "off" ||
-          updateIsInstalling(this.stateObj)}
-        >
-          ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
-        </mwc-button>
+        ${supportsFeature(this.stateObj, UPDATE_SUPPORT_AUTO_UPDATE)
+          ? ""
+          : html`<mwc-button
+              @click=${this._handleSkip}
+              .disabled=${skippedVersion ||
+              this.stateObj.state === "off" ||
+              updateIsInstalling(this.stateObj)}
+            >
+              ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
+            </mwc-button>`}
         ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
           ? html`
               <mwc-button

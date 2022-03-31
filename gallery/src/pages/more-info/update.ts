@@ -6,6 +6,7 @@ import {
   UPDATE_SUPPORT_PROGRESS,
   UPDATE_SUPPORT_INSTALL,
   UPDATE_SUPPORT_RELEASE_NOTES,
+  UPDATE_SUPPORT_AUTO_UPDATE,
 } from "../../../../src/data/update";
 import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
@@ -127,6 +128,12 @@ const ENTITIES = [
     friendly_name: "Update with release notes loading",
     supported_features:
       base_attributes.supported_features + UPDATE_SUPPORT_RELEASE_NOTES,
+  }),
+  getEntity("update", "update18", "on", {
+    ...base_attributes,
+    friendly_name: "Update with auto update",
+    supported_features:
+      base_attributes.supported_features + UPDATE_SUPPORT_AUTO_UPDATE,
   }),
 ];
 
