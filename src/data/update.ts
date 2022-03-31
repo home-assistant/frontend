@@ -2,6 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { BINARY_STATE_ON } from "../common/const";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { HomeAssistant } from "../types";
 
@@ -30,9 +31,8 @@ export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   typeof entity.attributes.in_progress === "number";
 
 export const updateCanInstall = (entity: UpdateEntity): boolean =>
-  supportsFeature(entity, UPDATE_SUPPORT_INSTALL) &&
-  entity.attributes.latest_version !== entity.attributes.current_version &&
-  entity.attributes.latest_version !== entity.attributes.skipped_version;
+  entity.state === BINARY_STATE_ON &&
+  supportsFeature(entity, UPDATE_SUPPORT_INSTALL);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   updateUsesProgress(entity) || !!entity.attributes.in_progress;
