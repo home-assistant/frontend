@@ -75,7 +75,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     this._entityRows = [];
 
     this.entities.forEach((entry) => {
-      if (entry.disabled_by || entry.hidden_by) {
+      if (entry.disabled_by) {
         if (this._extDisabledEntityEntries) {
           hiddenEntities.push(
             this._extDisabledEntityEntries[entry.entity_id] || entry
@@ -167,7 +167,11 @@ export class HaDeviceEntitiesCard extends LitElement {
         computeStateName(stateObj),
         this.deviceName.toLowerCase()
       );
-      if (name) {
+      if (entry.hidden_by) {
+        config.name = `${
+          name || computeStateName(stateObj)
+        } (${this.hass.localize("ui.panel.config.devices.entities.hidden")})`;
+      } else if (name) {
         config.name = name;
       }
     }
