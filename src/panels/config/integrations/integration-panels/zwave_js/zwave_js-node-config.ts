@@ -19,6 +19,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-select";
@@ -130,7 +131,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       ></hass-error-screen>`;
     }
 
-    if (!this._config) {
+    if (!this._config || !this._nodeMetadata) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
@@ -178,20 +179,27 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          <ha-card>
-            ${this._config
-              ? html`
-                  ${Object.entries(this._config).map(
-                    ([id, item]) => html` <ha-settings-row
-                      class="config-item"
-                      .configId=${id}
-                      .narrow=${this.narrow}
-                    >
-                      ${this._generateConfigBox(id, item)}
-                    </ha-settings-row>`
+          ${this._nodeMetadata.comments.length > 0
+            ? html`
+                <div>
+                  ${this._nodeMetadata.comments.map(
+                    (comment) => html`<ha-alert .alertType=${comment.level}>
+                      ${comment.text}
+                    </ha-alert>`
                   )}
-                `
-              : ``}
+                </div>
+              `
+            : ``}
+          <ha-card>
+            ${Object.entries(this._config).map(
+              ([id, item]) => html` <ha-settings-row
+                class="config-item"
+                .configId=${id}
+                .narrow=${this.narrow}
+              >
+                ${this._generateConfigBox(id, item)}
+              </ha-settings-row>`
+            )}
           </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
