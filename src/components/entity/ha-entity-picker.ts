@@ -15,7 +15,7 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
-import { termsSearchFunction } from "../../common/string/filter/terms";
+import { defaultFuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 
 interface HassEntityWithCachedName extends HassEntity {
   friendly_name: string;
@@ -335,11 +335,17 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value;
-    const filterFunction = termsSearchFunction(filterString);
-    (this.comboBox as any).filteredItems = this._states.filter(
-      (entityState) =>
-        filterFunction(entityState.entity_id) ||
-        filterFunction(computeStateName(entityState))
+
+    const sortableEntityStates = this._states.map((entityState) => ({
+      strings: [entityState.entity_id, computeStateName(entityState)],
+      entityState: entityState,
+    }));
+    const sortedEntityStates = defaultFuzzyFilterSort(
+      filterString,
+      sortableEntityStates
+    );
+    (this.comboBox as any).filteredItems = sortedEntityStates.map(
+      (sortableItem) => sortableItem.entityState
     );
   }
 
