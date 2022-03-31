@@ -179,29 +179,21 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${this._nodeMetadata
-            ? html`
-                ${this._nodeMetadata.comments.map(
-                  (comment) => html`<ha-alert alert-type=${comment.level}>
-                    ${comment.text}
-                  </ha-alert>`
-                )}
-              `
-            : ``}
+          ${this._nodeMetadata.comments.map(
+            (comment) => html`<ha-alert alert-type=${comment.level}>
+              ${comment.text}
+            </ha-alert>`
+          )}
           <ha-card>
-            ${this._config
-              ? html`
-                  ${Object.entries(this._config).map(
-                    ([id, item]) => html` <ha-settings-row
-                      class="config-item"
-                      .configId=${id}
-                      .narrow=${this.narrow}
-                    >
-                      ${this._generateConfigBox(id, item)}
-                    </ha-settings-row>`
-                  )}
-                `
-              : ``}
+            ${Object.entries(this._config).map(
+              ([id, item]) => html` <ha-settings-row
+                class="config-item"
+                .configId=${id}
+                .narrow=${this.narrow}
+              >
+                ${this._generateConfigBox(id, item)}
+              </ha-settings-row>`
+            )}
           </ha-card>
         </ha-config-section>
       </hass-tabs-subpage>
