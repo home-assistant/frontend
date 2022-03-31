@@ -1,4 +1,6 @@
+import { token_set_ratio } from "fuzzball";
 import { fuzzyScore } from "./filter";
+import { termsMatcher } from "./terms";
 
 /**
  * Determine whether a sequence of letters exists in another string,
@@ -66,7 +68,7 @@ export interface ScorableTextItem {
   strings: string[];
 }
 
-type FuzzyFilterSort = <T extends ScorableTextItem>(
+export type FuzzyFilterSort = <T extends ScorableTextItem>(
   filter: string,
   items: T[]
 ) => T[];
@@ -81,3 +83,36 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) =>
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
+
+export const ratioFilterSort: FuzzyFilterSort = (filter, items) =>
+  items
+    .map((item) => {
+      const itemScores = item.strings.map((itemString) =>
+        token_set_ratio(filter, itemString)
+      );
+      item.score = Math.max(...itemScores);
+      return item;
+    })
+    .filter((item) => item.score !== undefined)
+    .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
+      scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
+    );
+
+export const termsFilterSort: FuzzyFilterSort = (filter, items) => {
+  const matcher = termsMatcher(filter);
+  return items
+    .map((item, index) => {
+      let itemMatch = false;
+      item.strings.forEach((itemString) => {
+        itemMatch = itemMatch || matcher(itemString);
+      });
+      item.score = itemMatch ? index : undefined;
+      return item;
+    })
+    .filter((item) => item.score !== undefined)
+    .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
+      scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
+    );
+};
+
+export const defaultFuzzyFilterSort = ratioFilterSort;
