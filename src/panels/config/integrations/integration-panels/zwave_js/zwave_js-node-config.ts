@@ -19,6 +19,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-select";
@@ -130,7 +131,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       ></hass-error-screen>`;
     }
 
-    if (!this._config) {
+    if (!this._config || !this._nodeMetadata) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
@@ -178,6 +179,15 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
+          ${this._nodeMetadata
+            ? html`
+                ${this._nodeMetadata.comments.map(
+                  (comment) => html`<ha-alert alert-type=${comment.level}>
+                    ${comment.text}
+                  </ha-alert>`
+                )}
+              `
+            : ``}
           <ha-card>
             ${this._config
               ? html`
