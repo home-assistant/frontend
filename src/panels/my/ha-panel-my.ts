@@ -189,12 +189,10 @@ class HaPanelMy extends LitElement {
     const path = this.route.path.substring(1);
 
     if (path === "backup" && isComponentLoaded(this.hass, "hassio")) {
-      if (isComponentLoaded(this.hass, "hassio")) {
-        navigate("/hassio/backups", {
-          replace: true,
-        });
-        return;
-      }
+      navigate("/hassio/backups", {
+        replace: true,
+      });
+      return;
     }
 
     if (path.startsWith("supervisor")) {
