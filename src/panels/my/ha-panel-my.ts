@@ -163,7 +163,18 @@ const REDIRECTS: Redirects = {
     component: "media_source",
     redirect: "/media-browser",
   },
+  // Redirect old backup paths to the backup integration
+  supervisor_snapshots: {
+    component: "backup",
+    redirect: "/config/backup",
+  },
+  supervisor_backups: {
+    component: "backup",
+    redirect: "/config/backup",
+  },
 };
+
+const backupPaths = ["backup", "supervisor_snapshots", "supervisor_backups"];
 
 export type ParamType = "url" | "string";
 
@@ -188,14 +199,14 @@ class HaPanelMy extends LitElement {
     super.connectedCallback();
     const path = this.route.path.substring(1);
 
-    if (path === "backup" && isComponentLoaded(this.hass, "hassio")) {
+    if (backupPaths.includes(path) && isComponentLoaded(this.hass, "hassio")) {
       navigate("/hassio/backups", {
         replace: true,
       });
       return;
     }
 
-    if (path.startsWith("supervisor")) {
+    if (path.startsWith("supervisor") && !backupPaths.includes(path)) {
       if (!isComponentLoaded(this.hass, "hassio")) {
         this._error = "no_supervisor";
         return;
