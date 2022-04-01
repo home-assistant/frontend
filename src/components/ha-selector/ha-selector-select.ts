@@ -108,7 +108,7 @@ export class HaSelectSelector extends LitElement {
           .hass=${this.hass}
           .label=${this.label}
           .disabled=${this.disabled}
-          .required=${this.required}
+          .required=${this.required && !value.length}
           .value=${this._filter}
           .items=${options.filter((item) => !this.value?.includes(item.value))}
           @filter-changed=${this._filterChanged}

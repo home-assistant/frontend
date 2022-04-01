@@ -13,6 +13,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
+import type { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity, setSelectOption } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
@@ -106,9 +107,14 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _selectedChanged(ev): void {
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this.hass!.states[
+      this._config!.entity
+    ] as InputSelectEntity;
     const option = ev.target.value;
-    if (option === stateObj.state) {
+    if (
+      option === stateObj.state ||
+      !stateObj.attributes.options.includes(option)
+    ) {
       return;
     }
 

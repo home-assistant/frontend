@@ -130,14 +130,20 @@ class MoreInfoUpdate extends LitElement {
         : ""}
       <hr />
       <div class="actions">
-        <mwc-button
-          @click=${this._handleSkip}
-          .disabled=${skippedVersion ||
-          this.stateObj.state === "off" ||
-          updateIsInstalling(this.stateObj)}
-        >
-          ${this.hass.localize("ui.dialogs.more_info_control.update.skip")}
-        </mwc-button>
+        ${this.stateObj.attributes.auto_update
+          ? ""
+          : html`
+              <mwc-button
+                @click=${this._handleSkip}
+                .disabled=${skippedVersion ||
+                this.stateObj.state === "off" ||
+                updateIsInstalling(this.stateObj)}
+              >
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.skip"
+                )}
+              </mwc-button>
+            `}
         ${supportsFeature(this.stateObj, UPDATE_SUPPORT_INSTALL)
           ? html`
               <mwc-button

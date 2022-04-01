@@ -13,9 +13,12 @@ import { HaComboBox } from "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
   item
-) => html`<mwc-list-item twoline>
+) => html`<mwc-list-item twoline graphic="icon">
   <span>${item.name}</span>
   <span slot="secondary">${item.slug}</span>
+  ${item.icon
+    ? html`<img slot="graphic" .src="/api/hassio/addons/${item.slug}/icon" />`
+    : ""}
 </mwc-list-item>`;
 
 @customElement("ha-addon-picker")
