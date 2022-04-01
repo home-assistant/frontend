@@ -18,7 +18,7 @@ import { LONG_TEXT } from "../../data/text";
 
 const base_attributes = {
   title: "Awesome",
-  current_version: "1.2.2",
+  installed_version: "1.2.2",
   latest_version: "1.2.3",
   release_url: "https://home-assistant.io",
   supported_features: UPDATE_SUPPORT_INSTALL,
@@ -50,7 +50,7 @@ const ENTITIES = [
   }),
   getEntity("update", "update5", "off", {
     ...base_attributes,
-    current_version: "1.2.3",
+    installed_version: "1.2.3",
     friendly_name: "No update",
   }),
   getEntity("update", "update6", "off", {
@@ -102,8 +102,8 @@ const ENTITIES = [
   }),
   getEntity("update", "update14", "off", {
     ...base_attributes,
-    current_version: null,
-    friendly_name: "Update without current_version",
+    installed_version: null,
+    friendly_name: "Update without installed_version",
   }),
   getEntity("update", "update15", "off", {
     ...base_attributes,
