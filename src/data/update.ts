@@ -13,6 +13,7 @@ export const UPDATE_SUPPORT_BACKUP = 8;
 export const UPDATE_SUPPORT_RELEASE_NOTES = 16;
 
 interface UpdateEntityAttributes extends HassEntityAttributeBase {
+  auto_update: boolean | null;
   current_version: string | null;
   in_progress: boolean | number;
   latest_version: string | null;
