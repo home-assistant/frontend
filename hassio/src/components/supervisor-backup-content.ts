@@ -32,13 +32,6 @@ interface AddonCheckboxItem extends CheckboxItem {
 
 const _computeFolders = (folders): CheckboxItem[] => {
   const list: CheckboxItem[] = [];
-  if (folders.includes("homeassistant")) {
-    list.push({
-      slug: "homeassistant",
-      name: "Home Assistant configuration",
-      checked: false,
-    });
-  }
   if (folders.includes("ssl")) {
     list.push({ slug: "ssl", name: "SSL", checked: false });
   }
@@ -100,7 +93,7 @@ export class SupervisorBackupContent extends LitElement {
       this.folders = _computeFolders(
         this.backup
           ? this.backup.folders
-          : ["homeassistant", "ssl", "share", "media", "addons/local"]
+          : ["ssl", "share", "media", "addons/local"]
       );
       this.addons = _computeAddons(
         this.backup ? this.backup.addons : this.supervisor?.supervisor.addons
