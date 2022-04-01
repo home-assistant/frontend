@@ -110,7 +110,7 @@ class HaEntitiesPickerLight extends LitElement {
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
           .entityFilter=${this._entityFilter}
           .label=${this.pickEntityLabel}
-          .required=${this.required}
+          .required=${this.required && currentEntities.length === 0}
           @value-changed=${this._addEntity}
         ></ha-entity-picker>
       </div>

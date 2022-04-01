@@ -68,7 +68,7 @@ class HaDevicesPicker extends LitElement {
           .excludeDomains=${this.excludeDomains}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
-          .required=${this.required}
+          .required=${this.required && currentDevices.length === 0}
           @value-changed=${this._addDevice}
         ></ha-device-picker>
       </div>
