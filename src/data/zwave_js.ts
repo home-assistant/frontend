@@ -167,10 +167,16 @@ export interface ZwaveJSNodeMetadata {
   wakeup: string;
   reset: string;
   device_database_url: string;
+  comments: ZWaveJSNodeComment[];
 }
 
 export interface ZWaveJSNodeConfigParams {
   [key: string]: ZWaveJSNodeConfigParam;
+}
+
+export interface ZWaveJSNodeComment {
+  level: "info" | "warning" | "error";
+  text: string;
 }
 
 export interface ZWaveJSNodeConfigParam {

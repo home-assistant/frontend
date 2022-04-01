@@ -128,6 +128,11 @@ const ENTITIES = [
     supported_features:
       base_attributes.supported_features + UPDATE_SUPPORT_RELEASE_NOTES,
   }),
+  getEntity("update", "update19", "on", {
+    ...base_attributes,
+    friendly_name: "Update with auto update",
+    auto_update: true,
+  }),
 ];
 
 @customElement("demo-more-info-update")
