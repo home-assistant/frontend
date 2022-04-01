@@ -731,7 +731,7 @@
           "setting": "Setting"
         },
         "update": {
-          "current_version": "Current version",
+          "installed_version": "Installed version",
           "latest_version": "Latest version",
           "release_announcement": "Read release announcement",
           "skip": "Skip",

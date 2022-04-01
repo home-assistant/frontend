@@ -66,11 +66,11 @@ class MoreInfoUpdate extends LitElement {
       <div class="row">
         <div class="key">
           ${this.hass.localize(
-            "ui.dialogs.more_info_control.update.current_version"
+            "ui.dialogs.more_info_control.update.installed_version"
           )}
         </div>
         <div class="value">
-          ${this.stateObj.attributes.current_version ??
+          ${this.stateObj.attributes.installed_version ??
           this.hass.localize("state.default.unavailable")}
         </div>
       </div>
