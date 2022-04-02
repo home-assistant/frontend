@@ -15,6 +15,7 @@ import type { LovelaceRowEditor } from "../../types";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 
 const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
+  none: {},
   "entity-id": {},
   "last-changed": {},
   "last-updated": {},
