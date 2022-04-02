@@ -35,6 +35,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .has-direction .container-direction,
         .has-oscillating .container-oscillating {
           display: block;
+          margin-top: 8px;
         }
 
         ha-select {
