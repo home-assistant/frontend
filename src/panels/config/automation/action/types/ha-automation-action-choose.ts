@@ -165,6 +165,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
           right: 0;
           padding: 4px;
         }
+        ha-form::part(root) {
+          overflow: visible;
+        }
       `,
     ];
   }
