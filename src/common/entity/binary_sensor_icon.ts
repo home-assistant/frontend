@@ -37,7 +37,7 @@ import {
   mdiThermometer,
   mdiVibrate,
   mdiWater,
-  mdiWaterOff,
+  mdiWaterCheck,
   mdiWindowClosed,
   mdiWindowOpen,
 } from "@mdi/js";
@@ -76,7 +76,7 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "lock":
       return is_off ? mdiLock : mdiLockOpen;
     case "moisture":
-      return is_off ? mdiWaterOff : mdiWater;
+      return is_off ? mdiWaterCheck : mdiWater;
     case "motion":
       return is_off ? mdiMotionSensorOff : mdiMotionSensor;
     case "occupancy":
