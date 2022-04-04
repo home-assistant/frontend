@@ -77,7 +77,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="root">
+      <div class="root" part="root">
         ${this.error && this.error.base
           ? html`
               <ha-alert alert-type="error">
@@ -173,7 +173,6 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   static get styles(): CSSResultGroup {
-    // .root has overflow: auto to avoid margin collapse
     return css`
       .root {
         margin-bottom: -24px;
