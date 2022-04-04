@@ -17,6 +17,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stringCompare } from "../../../common/string/compare";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -277,22 +278,24 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               >
                 ${this._deviceClassesSorted(
                   domain,
-                  this._deviceClassOptions[0]
+                  this._deviceClassOptions[0],
+                  this.hass.localize
                 ).map(
                   (entry) => html`
                     <mwc-list-item .value=${entry.deviceClass}>
-                      ${entry.translation}
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
                 <li divider role="separator"></li>
                 ${this._deviceClassesSorted(
                   domain,
-                  this._deviceClassOptions[1]
+                  this._deviceClassOptions[1],
+                  this.hass.localize
                 ).map(
                   (entry) => html`
                     <mwc-list-item .value=${entry.deviceClass}>
-                      ${entry.translation}
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
@@ -724,15 +727,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private _deviceClassesSorted = memoizeOne(
-    (domain: string, deviceClasses: string[]) =>
+    (domain: string, deviceClasses: string[], localize: LocalizeFunc) =>
       deviceClasses
         .map((entry) => ({
           deviceClass: entry,
-          translation: this.hass.localize(
+          label: localize(
             `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
           ),
         }))
-        .sort((a, b) => stringCompare(a.translation, b.translation))
+        .sort((a, b) => stringCompare(a.label, b.label))
   );
 
   static get styles(): CSSResultGroup {
