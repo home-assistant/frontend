@@ -13,6 +13,7 @@ import {
   mdiLanConnect,
   mdiLanDisconnect,
   mdiLightSwitch,
+  mdiLightSwitchOff,
   mdiLock,
   mdiLockAlert,
   mdiLockClock,
@@ -21,8 +22,6 @@ import {
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
   mdiWeatherNight,
@@ -109,7 +108,7 @@ export const domainIcon = (
         case "outlet":
           return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
-          return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+          return compareState === "on" ? mdiLightSwitch : mdiLightSwitchOff;
         default:
           return mdiLightSwitch;
       }
