@@ -96,7 +96,8 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
-const SWITCH_AS_DOMAINS = ["light", "lock", "cover", "fan", "siren"];
+// Keep array sorted for good UX as that is also the render order
+const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -332,6 +333,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               <mwc-list-item value="switch" selected>
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
               >
+              <li divider role="separator"></li>
               ${SWITCH_AS_DOMAINS.map(
                 (as_domain) => html`
                   <mwc-list-item .value=${as_domain}>
