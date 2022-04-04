@@ -287,7 +287,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                     </mwc-list-item>
                   `
                 )}
-                <li divider role="separator"></li>
+                ${this._deviceClassOptions[0].length &&
+                this._deviceClassOptions[1].length
+                  ? html`<li divider role="separator"></li>`
+                  : ""}
                 ${this._deviceClassesSorted(
                   domain,
                   this._deviceClassOptions[1],
