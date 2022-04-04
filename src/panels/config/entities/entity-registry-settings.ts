@@ -98,7 +98,6 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
-// Keep array sorted for good UX as that is also the render order
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
