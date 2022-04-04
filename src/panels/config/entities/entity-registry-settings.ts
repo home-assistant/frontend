@@ -17,6 +17,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stringCompare } from "../../../common/string/compare";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -335,10 +336,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
               >
               <li divider role="separator"></li>
-              ${this._switchAsDomainsSorted(SWITCH_AS_DOMAINS).map(
+              ${this._switchAsDomainsSorted(
+                SWITCH_AS_DOMAINS,
+                this.hass.localize
+              ).map(
                 (entry) => html`
                   <mwc-list-item .value=${entry.domain}>
-                    ${entry.translation}
+                    ${entry.label}
                   </mwc-list-item>
                 `
               )}
@@ -722,13 +726,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     showOptionsFlowDialog(this, this._helperConfigEntry!);
   }
 
-  private _switchAsDomainsSorted = memoizeOne((domains: string[]) =>
-    domains
-      .map((entry) => ({
-        domain: entry,
-        translation: domainToName(this.hass.localize, entry),
-      }))
-      .sort((a, b) => stringCompare(a.translation, b.translation))
+  private _switchAsDomainsSorted = memoizeOne(
+    (domains: string[], localize: LocalizeFunc) =>
+      domains
+        .map((entry) => ({
+          domain: entry,
+          label: domainToName(localize, entry),
+        }))
+        .sort((a, b) => stringCompare(a.label, b.label))
   );
 
   static get styles(): CSSResultGroup {
