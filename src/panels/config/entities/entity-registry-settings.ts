@@ -200,13 +200,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
 
     this._deviceClassOptions = [[], []];
-    for (const deviceClass of deviceClasses) {
-      if (deviceClass.includes(this.entry.original_device_class!)) {
-        this._deviceClassOptions[0] = deviceClass;
-      } else {
-        this._deviceClassOptions[1].push(...deviceClass);
+    for (const deviceClassSub of deviceClasses) {
+      for (const deviceClass of deviceClassSub) {
+        if (deviceClass.includes(this.entry.original_device_class!)) {
+          this._deviceClassOptions[0].push(deviceClass);
+        } else {
+          this._deviceClassOptions[1].push(deviceClass);
+        }
       }
     }
+    this._deviceClassOptions[1] = this._deviceClassOptions[1].sort();
   }
 
   protected render(): TemplateResult {
