@@ -253,6 +253,10 @@ class HaPanelHistory extends LitElement {
           padding: 8px 16px 0;
         }
 
+        :host([narrow]) .filters {
+          flex-wrap: wrap;
+        }
+
         ha-date-range-picker {
           margin-right: 16px;
           max-width: 100%;
