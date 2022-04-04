@@ -99,7 +99,7 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
-const SWITCH_AS_DOMAINS = ["light", "lock", "cover", "fan", "siren"];
+const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -342,10 +342,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               <mwc-list-item value="switch" selected>
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
               >
-              ${SWITCH_AS_DOMAINS.map(
-                (as_domain) => html`
-                  <mwc-list-item .value=${as_domain}>
-                    ${domainToName(this.hass.localize, as_domain)}
+              <li divider role="separator"></li>
+              ${this._switchAsDomainsSorted(
+                SWITCH_AS_DOMAINS,
+                this.hass.localize
+              ).map(
+                (entry) => html`
+                  <mwc-list-item .value=${entry.domain}>
+                    ${entry.label}
                   </mwc-list-item>
                 `
               )}
@@ -728,6 +732,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private async _showOptionsFlow() {
     showOptionsFlowDialog(this, this._helperConfigEntry!);
   }
+
+  private _switchAsDomainsSorted = memoizeOne(
+    (domains: string[], localize: LocalizeFunc) =>
+      domains
+        .map((entry) => ({
+          domain: entry,
+          label: domainToName(localize, entry),
+        }))
+        .sort((a, b) => stringCompare(a.label, b.label))
+  );
 
   private _deviceClassesSorted = memoizeOne(
     (domain: string, deviceClasses: string[], localize: LocalizeFunc) =>
