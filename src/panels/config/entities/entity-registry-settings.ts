@@ -11,10 +11,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -334,10 +336,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
               >
               <li divider role="separator"></li>
-              ${SWITCH_AS_DOMAINS.map(
-                (as_domain) => html`
-                  <mwc-list-item .value=${as_domain}>
-                    ${domainToName(this.hass.localize, as_domain)}
+              ${this._switchAsDomainsSorted(SWITCH_AS_DOMAINS).map(
+                (entry) => html`
+                  <mwc-list-item .value=${entry.domain}>
+                    ${entry.translation}
                   </mwc-list-item>
                 `
               )}
@@ -720,6 +722,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private async _showOptionsFlow() {
     showOptionsFlowDialog(this, this._helperConfigEntry!);
   }
+
+  private _switchAsDomainsSorted = memoizeOne((domains: string[]) =>
+    domains
+      .map((entry) => ({
+        domain: entry,
+        translation: domainToName(this.hass.localize, entry),
+      }))
+      .sort((a, b) => stringCompare(a.translation, b.translation))
+  );
 
   static get styles(): CSSResultGroup {
     return [
