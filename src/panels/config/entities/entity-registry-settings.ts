@@ -11,10 +11,13 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { stringCompare } from "../../../common/string/compare";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -273,22 +276,26 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._deviceClassChanged}
                 @closed=${stopPropagation}
               >
-                ${this._deviceClassOptions[0].map(
-                  (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[0],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <mwc-list-item .value=${entry.deviceClass}>
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
                 <li divider role="separator"></li>
-                ${this._deviceClassOptions[1].map(
-                  (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[1],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <mwc-list-item .value=${entry.deviceClass}>
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
@@ -718,6 +725,18 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private async _showOptionsFlow() {
     showOptionsFlowDialog(this, this._helperConfigEntry!);
   }
+
+  private _deviceClassesSorted = memoizeOne(
+    (domain: string, deviceClasses: string[], localize: LocalizeFunc) =>
+      deviceClasses
+        .map((entry) => ({
+          deviceClass: entry,
+          label: localize(
+            `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
+          ),
+        }))
+        .sort((a, b) => stringCompare(a.label, b.label))
+  );
 
   static get styles(): CSSResultGroup {
     return [
