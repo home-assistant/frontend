@@ -16,6 +16,8 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -32,6 +34,7 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
         this.context?.filter_entity}
         .value=${this.value}
         .label=${this.label}
+        .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-value

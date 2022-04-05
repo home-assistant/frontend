@@ -46,6 +46,9 @@ class HaLabeledSlider extends PolymerElement {
           value="{{value}}"
         ></ha-slider>
       </div>
+      <template is="dom-if" if="[[helper]]">
+        <ha-input-helper-text>[[helper]]</ha-input-helper-text>
+      </template>
     `;
   }
 
@@ -62,6 +65,7 @@ class HaLabeledSlider extends PolymerElement {
       max: Number,
       pin: Boolean,
       step: Number,
+      helper: String,
 
       extra: {
         type: Boolean,

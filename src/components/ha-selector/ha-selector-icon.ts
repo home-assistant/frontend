@@ -15,6 +15,8 @@ export class HaIconSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -26,6 +28,7 @@ export class HaIconSelector extends LitElement {
         .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .fallbackPath=${this.selector.icon.fallbackPath}
         .placeholder=${this.selector.icon.placeholder}
         @value-changed=${this._valueChanged}

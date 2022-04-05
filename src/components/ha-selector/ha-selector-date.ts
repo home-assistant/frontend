@@ -14,6 +14,8 @@ export class HaDateSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -26,6 +28,7 @@ export class HaDateSelector extends LitElement {
         .disabled=${this.disabled}
         .value=${this.value}
         .required=${this.required}
+        .helper=${this.helper}
       >
       </ha-date-input>
     `;
