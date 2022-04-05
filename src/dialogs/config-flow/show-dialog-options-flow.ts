@@ -1,6 +1,6 @@
 import { html } from "lit";
 import { ConfigEntry } from "../../data/config_entries";
-import { domainToName } from "../../data/integration";
+import { domainToName, IntegrationManifest } from "../../data/integration";
 import {
   createOptionsFlow,
   deleteOptionsFlow,
@@ -16,12 +16,15 @@ export const loadOptionsFlowDialog = loadDataEntryFlowDialog;
 
 export const showOptionsFlowDialog = (
   element: HTMLElement,
-  configEntry: ConfigEntry
+  configEntry: ConfigEntry,
+  manifest?: IntegrationManifest | null
 ): void =>
   showFlowDialog(
     element,
     {
       startFlowHandler: configEntry.entry_id,
+      domain: configEntry.domain,
+      manifest,
     },
     {
       loadDevicesAndAreas: false,

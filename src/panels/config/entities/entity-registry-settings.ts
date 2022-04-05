@@ -730,7 +730,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this._helperConfigEntry!);
+    showOptionsFlowDialog(this, this._helperConfigEntry!, null);
   }
 
   private _switchAsDomainsSorted = memoizeOne(

@@ -190,6 +190,10 @@ class StepFlowForm extends LitElement {
           margin-top: 24px;
           display: block;
         }
+        h2 {
+          word-break: break-word;
+          padding-right: 72px;
+        }
       `,
     ];
   }
