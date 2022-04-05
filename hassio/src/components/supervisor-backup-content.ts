@@ -180,7 +180,7 @@ export class SupervisorBackupContent extends LitElement {
             >
               <ha-checkbox
                 .checked=${this.homeAssistant}
-                @click=${this.toggleHomeAssistant}
+                @change=${this.toggleHomeAssistant}
               >
               </ha-checkbox>
             </ha-formfield>

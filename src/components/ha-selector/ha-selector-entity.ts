@@ -23,6 +23,8 @@ export class HaEntitySelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -33,6 +35,7 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
         .entityFilter=${this._filterEntities}
@@ -47,6 +50,7 @@ export class HaEntitySelector extends LitElement {
       <ha-entities-picker
         .hass=${this.hass}
         .value=${this.value}
+        .helper=${this.helper}
         .entityFilter=${this._filterEntities}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}

@@ -29,6 +29,8 @@ class HaAddonPicker extends LitElement {
 
   @property() public value = "";
 
+  @property() public helper?: string;
+
   @state() private _addons?: HassioAddonInfo[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -62,6 +64,7 @@ class HaAddonPicker extends LitElement {
         .value=${this._value}
         .required=${this.required}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .renderer=${rowRenderer}
         .items=${this._addons}
         item-value-path="slug"

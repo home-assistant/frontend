@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiChevronRight } from "@mdi/js";
+import formatISO9075 from "date-fns/formatISO9075";
 import {
   css,
   CSSResultGroup,
@@ -69,12 +70,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   public showDialog(params: DialogStatisticsAdjustSumParams): void {
     this._params = params;
+    // moment is in format YYYY-MM-DD HH:mm:ss because of selector
+    // Here we create a date with minutes set to %5
     const now = new Date();
-    this._moment = `${now.getFullYear()}-${
-      now.getMonth() + 1
-    }-${now.getDate()} ${now.getHours()}:${
-      now.getMinutes() - (now.getMinutes() % 5)
-    }:00`;
+    now.setMinutes(now.getMinutes() - (now.getMinutes() % 5), 0);
+    this._moment = formatISO9075(now);
     this._fetchStats();
   }
 
@@ -167,6 +167,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         time. This can mess up your beautiful graphs! Select a time below to
         find the bad moment and adjust the data.
       </div>
+      <div class="text-content">
+        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
+      </div>
       <ha-selector-datetime
         label="Pick a time"
         .hass=${this.hass}
@@ -191,7 +194,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   private _renderAdjustStat() {
     return html`
       <div class="text-content">
-        ${this._params!.statistic.name || this._params!.statistic.statistic_id}
+        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
       </div>
 
       <div class="table-row">
@@ -250,7 +253,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._stats5min = undefined;
     this._statsHour = undefined;
     const statId = this._params!.statistic.statistic_id;
-    const moment = new Date(this._moment!);
+
+    // moment is in format YYYY-MM-DD HH:mm:ss because of selector
+    // Here we convert it to an ISO string.
+    const moment = new Date(this._moment!.replace(" ", "T"));
 
     // Search 3 hours before and 3 hours after chosen time
     const hourStatStart = new Date(moment.getTime());

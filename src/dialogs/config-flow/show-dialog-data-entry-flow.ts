@@ -10,6 +10,7 @@ import {
   DataEntryFlowStepMenu,
   DataEntryFlowStepProgress,
 } from "../../data/data_entry_flow";
+import { IntegrationManifest } from "../../data/integration";
 import { HomeAssistant } from "../../types";
 
 export interface FlowHandlers {
@@ -122,6 +123,8 @@ export interface DataEntryFlowDialogParams {
   startFlowHandler?: string;
   searchQuery?: string;
   continueFlowId?: string;
+  manifest?: IntegrationManifest | null;
+  domain?: string;
   dialogClosedCallback?: (params: {
     flowFinished: boolean;
     entryId?: string;

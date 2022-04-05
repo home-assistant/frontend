@@ -243,6 +243,10 @@ class MoreInfoUpdate extends LitElement {
         width: 100%;
         justify-content: center;
       }
+      mwc-linear-progress {
+        margin-bottom: -10px;
+        margin-top: -10px;
+      }
     `;
   }
 }

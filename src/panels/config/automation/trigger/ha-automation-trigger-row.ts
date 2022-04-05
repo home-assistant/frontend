@@ -442,6 +442,9 @@ export default class HaAutomationTriggerRow extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
+        .rtl .card-menu {
+          float: left;
+        }
         .triggered {
           cursor: pointer;
           position: absolute;
@@ -469,9 +472,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         .triggered.accent {
           background-color: var(--accent-color);
           color: var(--text-accent-color, var(--text-primary-color));
-        }
-        .rtl .card-menu {
-          float: left;
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);

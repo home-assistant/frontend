@@ -482,7 +482,11 @@ export class HaIntegrationCard extends LitElement {
   );
 
   private _showOptions(ev) {
-    showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
+    showOptionsFlowDialog(
+      this,
+      ev.target.closest("ha-card").configEntry,
+      this.manifest
+    );
   }
 
   private _handleRename(ev: CustomEvent<RequestSelectedDetail>): void {

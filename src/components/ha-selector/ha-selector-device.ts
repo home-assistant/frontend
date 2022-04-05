@@ -17,6 +17,8 @@ export class HaDeviceSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -43,6 +45,7 @@ export class HaDeviceSelector extends LitElement {
           .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
+          .helper=${this.helper}
           .deviceFilter=${this._filterDevices}
           .includeDeviceClasses=${this.selector.device.entity?.device_class
             ? [this.selector.device.entity.device_class]
@@ -62,6 +65,7 @@ export class HaDeviceSelector extends LitElement {
       <ha-devices-picker
         .hass=${this.hass}
         .value=${this.value}
+        .helper=${this.helper}
         .includeDeviceClasses=${this.selector.device.entity?.device_class
           ? [this.selector.device.entity.device_class]
           : undefined}

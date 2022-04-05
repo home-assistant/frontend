@@ -43,6 +43,7 @@ import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
 import "./ha-icon-button";
 import "./ha-svg-icon";
+import "./ha-input-helper-text";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -51,6 +52,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public value?: HassServiceTarget;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   /**
    * Show only targets with entities from specific domains.
@@ -213,7 +216,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             </span>
           </span>
         </div>
-      </div>`;
+      </div>
+
+      ${this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        : ""} `;
   }
 
   private async _showPicker(ev) {

@@ -39,11 +39,15 @@ export class HaDateInput extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   render() {
     return html`<ha-textfield
       .label=${this.label}
+      .helper=${this.helper}
       .disabled=${this.disabled}
       iconTrailing
+      helperPersistent
       @click=${this._openDialog}
       .value=${this.value
         ? formatDateNumeric(new Date(this.value), this.locale)

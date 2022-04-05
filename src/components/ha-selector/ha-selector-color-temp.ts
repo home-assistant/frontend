@@ -15,6 +15,8 @@ export class HaColorTempSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -29,6 +31,7 @@ export class HaColorTempSelector extends LitElement {
         .max=${this.selector.color_temp.max_mireds ?? 500}
         .value=${this.value}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .required=${this.required}
         @change=${this._valueChanged}
       ></ha-labeled-slider>
