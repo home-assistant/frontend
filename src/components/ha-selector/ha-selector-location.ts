@@ -20,6 +20,8 @@ export class HaLocationSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   protected render() {
@@ -27,6 +29,7 @@ export class HaLocationSelector extends LitElement {
       <ha-locations-editor
         class="flex"
         .hass=${this.hass}
+        .helper=${this.helper}
         .locations=${this._location(this.selector, this.value)}
         @location-updated=${this._locationChanged}
         @radius-updated=${this._radiusChanged}

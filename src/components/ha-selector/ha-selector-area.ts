@@ -18,6 +18,8 @@ export class HaAreaSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -47,6 +49,7 @@ export class HaAreaSelector extends LitElement {
           .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
+          .helper=${this.helper}
           no-add
           .deviceFilter=${this._filterDevices}
           .entityFilter=${this._filterEntities}
@@ -66,6 +69,7 @@ export class HaAreaSelector extends LitElement {
       <ha-areas-picker
         .hass=${this.hass}
         .value=${this.value}
+        .helper=${this.helper}
         .pickAreaLabel=${this.label}
         no-add
         .deviceFilter=${this._filterDevices}

@@ -28,6 +28,8 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public value?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) private _opened = false;
 
   @query("ha-combo-box", true) private _comboBox!: HaComboBox;
@@ -64,6 +66,7 @@ class HaEntityAttributePicker extends LitElement {
         )}
         .disabled=${this.disabled || !this.entityId}
         .required=${this.required}
+        .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
         item-value-path="value"
         item-label-path="label"

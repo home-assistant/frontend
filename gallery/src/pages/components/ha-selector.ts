@@ -261,6 +261,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
 
   @state() private _required = false;
 
+  @state() private _helper = false;
+
   @state() private _label = true;
 
   private data = SCHEMAS.map(() => ({}));
@@ -418,6 +420,13 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
             @change=${this._handleOptionChange}
           ></ha-switch>
         </ha-formfield>
+        <ha-formfield label="Helper text">
+          <ha-switch
+            .name=${"helper"}
+            .checked=${this._helper}
+            @change=${this._handleOptionChange}
+          ></ha-switch>
+        </ha-formfield>
       </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
@@ -446,6 +455,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                         .disabled=${this._disabled}
                         .required=${this._required}
                         @value-changed=${valueChanged}
+                        .helper=${this._helper ? "Helper text" : undefined}
                       ></ha-selector>
                     </ha-settings-row>
                   `
@@ -466,7 +476,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       width: 60;
     }
     .options {
-      padding: 16px 48px;
+      max-width: 800px;
+      margin: 16px auto;
     }
     .options ha-formfield {
       margin-right: 16px;

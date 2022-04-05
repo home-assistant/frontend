@@ -14,6 +14,8 @@ export class HaTimeInput extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -46,6 +48,7 @@ export class HaTimeInput extends LitElement {
         @value-changed=${this._timeChanged}
         .enableSecond=${this.enableSecond}
         .required=${this.required}
+        .helper=${this.helper}
       ></ha-base-time-input>
     `;
   }
