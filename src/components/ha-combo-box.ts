@@ -64,6 +64,8 @@ export class HaComboBox extends LitElement {
 
   @property() public validationMessage?: string;
 
+  @property() public helper?: string;
+
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   @property({ type: Boolean }) public invalid?: boolean;
@@ -147,6 +149,8 @@ export class HaComboBox extends LitElement {
           .suffix=${html`<div style="width: 28px;"></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
+          .helper=${this.helper}
+          helperPersistent
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-textfield>

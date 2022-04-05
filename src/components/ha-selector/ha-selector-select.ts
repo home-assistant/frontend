@@ -58,6 +58,7 @@ export class HaSelectSelector extends LitElement {
               `
             )}
           </div>
+          ${this._renderHelper()}
         `;
       }
 
@@ -76,6 +77,7 @@ export class HaSelectSelector extends LitElement {
             `
           )}
         </div>
+        ${this._renderHelper()}
       `;
     }
 
@@ -107,6 +109,7 @@ export class HaSelectSelector extends LitElement {
           item-label-path="label"
           .hass=${this.hass}
           .label=${this.label}
+          .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
           .value=${this._filter}
@@ -131,6 +134,7 @@ export class HaSelectSelector extends LitElement {
           item-label-path="label"
           .hass=${this.hass}
           .label=${this.label}
+          .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required}
           .items=${options}
@@ -159,6 +163,12 @@ export class HaSelectSelector extends LitElement {
         )}
       </ha-select>
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+      : "";
   }
 
   private get _mode(): "list" | "dropdown" {

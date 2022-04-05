@@ -26,6 +26,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @state() private _entityPlaformLookup?: Record<string, string>;
 
   @state() private _configEntries?: ConfigEntry[];
@@ -64,6 +66,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     return html`<ha-target-picker
       .hass=${this.hass}
       .value=${this.value}
+      .helper=${this.helper}
       .deviceFilter=${this._filterDevices}
       .entityRegFilter=${this._filterRegEntities}
       .entityFilter=${this._filterEntities}

@@ -15,6 +15,8 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
 
   @property() public value?: string[];
 
+  @property() public helper?: string;
+
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
@@ -90,6 +92,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
           .noAdd=${this.noAdd}
           .hass=${this.hass}
           .label=${this.pickAreaLabel}
+          .helper=${this.helper}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeDeviceClasses=${this.includeDeviceClasses}

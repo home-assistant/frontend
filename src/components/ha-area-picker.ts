@@ -49,6 +49,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property() public value?: string;
 
+  @property() public helper?: string;
+
   @property() public placeholder?: string;
 
   @property({ type: Boolean, attribute: "no-add" })
@@ -312,6 +314,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     return html`
       <ha-combo-box
         .hass=${this.hass}
+        .helper=${this.helper}
         item-value-path="area_id"
         item-id-path="area_id"
         item-label-path="name"
