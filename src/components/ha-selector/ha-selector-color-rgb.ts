@@ -16,6 +16,8 @@ export class HaColorRGBSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -24,9 +26,11 @@ export class HaColorRGBSelector extends LitElement {
     return html`
       <ha-textfield
         type="color"
+        helperPersistent
         .value=${this.value ? rgb2hex(this.value as any) : ""}
         .label=${this.label || ""}
         .required=${this.required}
+        .helper=${this.helper}
         .disalbled=${this.disabled}
         @change=${this._valueChanged}
       ></ha-textfield>

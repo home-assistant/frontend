@@ -36,10 +36,9 @@ import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
-import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
+import { throttle } from "../common/util/throttle";
 import { ActionHandlerDetail } from "../data/lovelace";
 import {
   PersistentNotification,
@@ -294,11 +293,7 @@ class HaSidebar extends LitElement {
       toggleAttribute(this, "rtl", computeRTL(this.hass));
     }
 
-    this._updatesCount = Object.values(this.hass.states).filter(
-      (entity) =>
-        computeStateDomain(entity) === "update" &&
-        updateCanInstall(entity as UpdateEntity)
-    ).length;
+    this._calculateCounts();
 
     if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
@@ -311,6 +306,21 @@ class HaSidebar extends LitElement {
       }
     }
   }
+
+  private _calculateCounts = throttle(() => {
+    let updateCount = 0;
+
+    for (const entityId of Object.keys(this.hass.states)) {
+      if (
+        entityId.startsWith("update.") &&
+        updateCanInstall(this.hass.states[entityId] as UpdateEntity)
+      ) {
+        updateCount++;
+      }
+    }
+
+    this._updatesCount = updateCount;
+  }, 5000);
 
   private _renderHeader() {
     return html`<div
@@ -519,14 +529,9 @@ class HaSidebar extends LitElement {
   }
 
   private _renderNotifications() {
-    let notificationCount = this._notifications
+    const notificationCount = this._notifications
       ? this._notifications.length
       : 0;
-    for (const entityId in this.hass.states) {
-      if (computeDomain(entityId) === "configurator") {
-        notificationCount++;
-      }
-    }
 
     return html`<div
       class="notifications-container"

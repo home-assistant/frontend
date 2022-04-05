@@ -11,10 +11,13 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { stringCompare } from "../../../common/string/compare";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
@@ -96,7 +99,7 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
-const SWITCH_AS_DOMAINS = ["light", "lock", "cover", "fan", "siren"];
+const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -273,22 +276,29 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._deviceClassChanged}
                 @closed=${stopPropagation}
               >
-                ${this._deviceClassOptions[0].map(
-                  (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[0],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <mwc-list-item .value=${entry.deviceClass}>
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
-                <li divider role="separator"></li>
-                ${this._deviceClassOptions[1].map(
-                  (deviceClass: string) => html`
-                    <mwc-list-item .value=${deviceClass}>
-                      ${this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${deviceClass}`
-                      )}
+                ${this._deviceClassOptions[0].length &&
+                this._deviceClassOptions[1].length
+                  ? html`<li divider role="separator"></li>`
+                  : ""}
+                ${this._deviceClassesSorted(
+                  domain,
+                  this._deviceClassOptions[1],
+                  this.hass.localize
+                ).map(
+                  (entry) => html`
+                    <mwc-list-item .value=${entry.deviceClass}>
+                      ${entry.label}
                     </mwc-list-item>
                   `
                 )}
@@ -296,9 +306,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             `
           : ""}
         ${this._deviceClass &&
-        stateObj.attributes.unit_of_measurement &&
+        stateObj?.attributes.unit_of_measurement &&
         OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
-          stateObj.attributes.unit_of_measurement
+          stateObj?.attributes.unit_of_measurement
         )
           ? html`
               <ha-select
@@ -332,10 +342,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               <mwc-list-item value="switch" selected>
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
               >
-              ${SWITCH_AS_DOMAINS.map(
-                (as_domain) => html`
-                  <mwc-list-item .value=${as_domain}>
-                    ${domainToName(this.hass.localize, as_domain)}
+              <li divider role="separator"></li>
+              ${this._switchAsDomainsSorted(
+                SWITCH_AS_DOMAINS,
+                this.hass.localize
+              ).map(
+                (entry) => html`
+                  <mwc-list-item .value=${entry.domain}>
+                    ${entry.label}
                   </mwc-list-item>
                 `
               )}
@@ -716,8 +730,30 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this._helperConfigEntry!);
+    showOptionsFlowDialog(this, this._helperConfigEntry!, null);
   }
+
+  private _switchAsDomainsSorted = memoizeOne(
+    (domains: string[], localize: LocalizeFunc) =>
+      domains
+        .map((entry) => ({
+          domain: entry,
+          label: domainToName(localize, entry),
+        }))
+        .sort((a, b) => stringCompare(a.label, b.label))
+  );
+
+  private _deviceClassesSorted = memoizeOne(
+    (domain: string, deviceClasses: string[], localize: LocalizeFunc) =>
+      deviceClasses
+        .map((entry) => ({
+          deviceClass: entry,
+          label: localize(
+            `ui.dialogs.entity_registry.editor.device_classes.${domain}.${entry}`
+          ),
+        }))
+        .sort((a, b) => stringCompare(a.label, b.label))
+  );
 
   static get styles(): CSSResultGroup {
     return [

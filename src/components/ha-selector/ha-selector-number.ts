@@ -6,6 +6,7 @@ import { NumberSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-slider";
 import "../ha-textfield";
+import "../ha-input-helper-text";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -26,8 +27,13 @@ export class HaNumberSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   protected render() {
-    return html`${this.selector.number.mode !== "box"
-        ? html`${this.label}${this.required ? "*" : ""}<ha-slider
+    const isBox = this.selector.number.mode === "box";
+
+    return html`
+      ${this.label}${this.required ? "*" : ""}
+      <div class="input">
+        ${!isBox
+          ? html`<ha-slider
               .min=${this.selector.number.min}
               .max=${this.selector.number.max}
               .value=${this._value}
@@ -39,28 +45,33 @@ export class HaNumberSelector extends LitElement {
               @change=${this._handleSliderChange}
             >
             </ha-slider>`
+          : ""}
+        <ha-textfield
+          inputMode="numeric"
+          pattern="[0-9]+([\\.][0-9]+)?"
+          .label=${this.selector.number.mode !== "box" ? undefined : this.label}
+          .placeholder=${this.placeholder}
+          class=${classMap({ single: this.selector.number.mode === "box" })}
+          .min=${this.selector.number.min}
+          .max=${this.selector.number.max}
+          .value=${this.value ?? ""}
+          .step=${this.selector.number.step ?? 1}
+          helperPersistent
+          .helper=${isBox ? this.helper : undefined}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .suffix=${this.selector.number.unit_of_measurement}
+          type="number"
+          autoValidate
+          ?no-spinner=${this.selector.number.mode !== "box"}
+          @input=${this._handleInputChange}
+        >
+        </ha-textfield>
+      </div>
+      ${!isBox && this.helper
+        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
         : ""}
-      <ha-textfield
-        inputMode="numeric"
-        pattern="[0-9]+([\\.][0-9]+)?"
-        .label=${this.selector.number.mode !== "box" ? undefined : this.label}
-        .placeholder=${this.placeholder}
-        class=${classMap({ single: this.selector.number.mode === "box" })}
-        .min=${this.selector.number.min}
-        .max=${this.selector.number.max}
-        .value=${this.value ?? ""}
-        .step=${this.selector.number.step ?? 1}
-        helperPersistent
-        .helper=${this.helper}
-        .disabled=${this.disabled}
-        .required=${this.required}
-        .suffix=${this.selector.number.unit_of_measurement}
-        type="number"
-        autoValidate
-        ?no-spinner=${this.selector.number.mode !== "box"}
-        @input=${this._handleInputChange}
-      >
-      </ha-textfield>`;
+    `;
   }
 
   private get _value() {
@@ -92,7 +103,7 @@ export class HaNumberSelector extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
+      .input {
         display: flex;
         justify-content: space-between;
         align-items: center;

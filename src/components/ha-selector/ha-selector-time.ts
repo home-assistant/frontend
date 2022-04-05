@@ -14,6 +14,8 @@ export class HaTimeSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -25,6 +27,7 @@ export class HaTimeSelector extends LitElement {
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
         .required=${this.required}
+        .helper=${this.helper}
         .label=${this.label}
         enable-second
       ></ha-time-input>

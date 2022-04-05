@@ -48,6 +48,8 @@ export class HaEntityPicker extends LitElement {
 
   @property() public value?: string;
 
+  @property() public helper?: string;
+
   /**
    * Show entities from specific domains.
    * @type {Array}
@@ -304,6 +306,7 @@ export class HaEntityPicker extends LitElement {
         .label=${this.label === undefined
           ? this.hass.localize("ui.components.entity.entity-picker.entity")
           : this.label}
+        .helper=${this.helper}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._states}
         .renderer=${rowRenderer}

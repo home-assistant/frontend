@@ -52,6 +52,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property() public value?: string;
 
+  @property() public helper?: string;
+
   @property() public devices?: DeviceRegistryEntry[];
 
   @property() public areas?: AreaRegistryEntry[];
@@ -269,6 +271,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           ? this.hass.localize("ui.components.device-picker.device")
           : this.label}
         .value=${this._value}
+        .helper=${this.helper}
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
         .required=${this.required}
