@@ -167,6 +167,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         time. This can mess up your beautiful graphs! Select a time below to
         find the bad moment and adjust the data.
       </div>
+      <div class="text-content">
+        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
+      </div>
       <ha-selector-datetime
         label="Pick a time"
         .hass=${this.hass}
@@ -191,7 +194,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   private _renderAdjustStat() {
     return html`
       <div class="text-content">
-        ${this._params!.statistic.name || this._params!.statistic.statistic_id}
+        <b>Statistic:</b> ${this._params!.statistic.statistic_id}
       </div>
 
       <div class="table-row">
