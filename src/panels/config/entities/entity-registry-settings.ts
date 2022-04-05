@@ -716,7 +716,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   }
 
   private async _showOptionsFlow() {
-    showOptionsFlowDialog(this, this._helperConfigEntry!);
+    showOptionsFlowDialog(this, this._helperConfigEntry!, null);
   }
 
   static get styles(): CSSResultGroup {

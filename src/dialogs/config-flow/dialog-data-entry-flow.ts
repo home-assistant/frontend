@@ -29,6 +29,7 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
+import { fetchIntegrationManifest } from "../../data/integration";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -43,10 +44,10 @@ import "./step-flow-create-entry";
 import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
+import "./step-flow-menu";
 import "./step-flow-pick-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-progress";
-import "./step-flow-menu";
 
 let instance = 0;
 
@@ -237,22 +238,32 @@ class DataEntryFlowDialog extends LitElement {
               ""
             : html`
                 <div class="dialog-actions">
-                  ${["form", "menu", "external"].includes(
-                    this._step?.type as any
-                  )
+                  ${([
+                    "form",
+                    "menu",
+                    "external",
+                    "progress",
+                    "data_entry_flow_progressed",
+                  ].includes(this._step?.type as any) &&
+                    this._params.manifest?.is_built_in) ||
+                  this._params.manifest?.documentation
                     ? html`
                         <a
-                          href=${documentationUrl(
-                            this.hass,
-                            `/integrations/${this._step!.handler}`
-                          )}
+                          href=${this._params.manifest.is_built_in
+                            ? documentationUrl(
+                                this.hass,
+                                `/integrations/${this._params.manifest.domain}`
+                              )
+                            : this._params?.manifest?.documentation}
                           target="_blank"
                           rel="noreferrer noopener"
-                          ><ha-icon-button
+                        >
+                          <ha-icon-button
                             .label=${this.hass.localize("ui.common.help")}
                             .path=${mdiHelpCircle}
                             ?rtl=${computeRTL(this.hass)}
-                          ></ha-icon-button
+                          >
+                          </ha-icon-button
                         ></a>
                       `
                     : ""}
@@ -427,6 +438,17 @@ class DataEntryFlowDialog extends LitElement {
         this._handler = undefined;
       }
       this._processStep(step);
+      if (this._params!.manifest === undefined) {
+        try {
+          this._params!.manifest = await fetchIntegrationManifest(
+            this.hass,
+            this._params?.domain || step.handler
+          );
+        } catch (_) {
+          // No manifest
+          this._params!.manifest = null;
+        }
+      }
     } else {
       this._step = null;
       this._flowsInProgress = flowsInProgress;

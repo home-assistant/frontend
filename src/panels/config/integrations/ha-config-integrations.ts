@@ -700,6 +700,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         this._handleFlowUpdated();
       },
       startFlowHandler: domain,
+      manifest: this._manifests[domain],
       showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
