@@ -61,7 +61,9 @@ export class HaYamlEditor extends LitElement {
       return html``;
     }
     return html`
-      ${this.label ? html`<p>${this.label}${this.required ? "*" : ""}</p>` : ""}
+      ${this.label
+        ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
+        : ""}
       <ha-code-editor
         .hass=${this.hass}
         .value=${this._yaml}
