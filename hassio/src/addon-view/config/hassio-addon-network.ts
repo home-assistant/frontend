@@ -126,19 +126,20 @@ class HassioAddonNetwork extends LitElement {
       showOptional: boolean,
       advanced: boolean
     ): HaFormSchema[] =>
-      Object.keys(config)
-        .filter((entry) => showOptional || config[entry] !== null)
-        .map((entry) => ({
-          name: entry,
-          selector: {
-            number: {
-              mode: "box",
-              min: 0,
-              max: 65535,
-              unit_of_measurement: advanced ? entry : undefined,
-            },
+      (showOptional
+        ? Object.keys(config)
+        : Object.keys(config).filter((entry) => config[entry] !== null)
+      ).map((entry) => ({
+        name: entry,
+        selector: {
+          number: {
+            mode: "box",
+            min: 0,
+            max: 65535,
+            unit_of_measurement: advanced ? entry : undefined,
           },
-        }))
+        },
+      }))
   );
 
   private _computeLabel = (_: HaFormSchema): string => "";
@@ -197,8 +198,7 @@ class HassioAddonNetwork extends LitElement {
     this._error = undefined;
     const networkconfiguration = {};
     Object.entries(this._config!).forEach(([key, value]) => {
-      networkconfiguration[key] =
-        value === undefined ? null : parseInt(String(value), 10);
+      networkconfiguration[key] = value ?? null;
     });
 
     const data: HassioAddonSetOptionParams = {
