@@ -77,7 +77,11 @@ class HassioAddonNetwork extends LitElement {
             @value-changed=${this._configChanged}
             .computeLabel=${this._computeLabel}
             .computeHelper=${this._computeHelper}
-            .schema=${this._createSchema(this._config, this._showOptional)}
+            .schema=${this._createSchema(
+              this._config,
+              this._showOptional,
+              this.hass.userData?.showAdvanced || false
+            )}
           ></ha-form>
         </div>
         ${hasHiddenOptions
@@ -117,13 +121,22 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private _createSchema = memoizeOne(
-    (config: Record<string, number>, showOptional: boolean): HaFormSchema[] =>
+    (
+      config: Record<string, number>,
+      showOptional: boolean,
+      advanced: boolean
+    ): HaFormSchema[] =>
       Object.keys(config)
         .filter((entry) => showOptional || config[entry] !== null)
         .map((entry) => ({
           name: entry,
           selector: {
-            number: { mode: "box", min: 0, max: 65535 },
+            number: {
+              mode: "box",
+              min: 0,
+              max: 65535,
+              unit_of_measurement: advanced ? entry : undefined,
+            },
           },
         }))
   );
