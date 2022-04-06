@@ -4171,7 +4171,8 @@
           "container": "Container",
           "disabled": "Disabled",
           "header": "Network",
-          "host": "Host"
+          "show_disabled": "Show disabled ports",
+          "introduction": "Change the ports on your host that are exposed by the add-on"
         }
       },
       "dashboard": {
