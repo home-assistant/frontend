@@ -108,7 +108,7 @@ export const domainIcon = (
         case "outlet":
           return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
-          return compareState === "on" 
+          return compareState === "on"
             ? mdiToggleSwitchVariant
             : mdiToggleSwitchVariantOff;
         default:
