@@ -1039,6 +1039,8 @@ class HaSidebar extends LitElement {
 
         .notification-badge,
         .configuration-badge {
+          left: calc(var(--app-drawer-width) - 42px);
+          position: absolute;
           min-width: 20px;
           box-sizing: border-box;
           border-radius: 50%;
