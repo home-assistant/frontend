@@ -113,6 +113,7 @@ export class HuiAreaCard
         .filter(
           (entry) =>
             !entry.entity_category &&
+            !entry.hidden_by &&
             (entry.area_id
               ? entry.area_id === areaId
               : entry.device_id && devicesInArea.has(entry.device_id))
