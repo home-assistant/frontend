@@ -3,7 +3,8 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import { HaDevicePickerDeviceFilterFunc } from "./ha-device-picker";
+import "./ha-device-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./ha-device-picker";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
