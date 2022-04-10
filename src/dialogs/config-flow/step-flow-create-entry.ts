@@ -28,7 +28,7 @@ class StepFlowCreateEntry extends LitElement {
     const localize = this.hass.localize;
 
     return html`
-      <h2>Success!</h2>
+      <h2>${localize("ui.panel.config.integrations.config_flow.success")}!</h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
         ${this.step.result?.state === "not_loaded"
@@ -41,7 +41,11 @@ class StepFlowCreateEntry extends LitElement {
         ${this.devices.length === 0
           ? ""
           : html`
-              <p>We found the following devices:</p>
+              <p>
+                ${localize(
+                  "ui.panel.config.integrations.config_flow.found_following_devices"
+                )}:
+              </p>
               <div class="devices">
                 ${this.devices.map(
                   (device) =>
@@ -49,7 +53,12 @@ class StepFlowCreateEntry extends LitElement {
                       <div class="device">
                         <div>
                           <b>${computeDeviceName(device, this.hass)}</b><br />
-                          ${device.model} (${device.manufacturer})
+                          ${!device.model && !device.manufacturer
+                            ? html`&nbsp;`
+                            : html`${device.model}
+                              ${device.manufacturer
+                                ? html`(${device.manufacturer})`
+                                : ""}`}
                         </div>
                         <ha-area-picker
                           .hass=${this.hass}
