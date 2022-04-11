@@ -8,6 +8,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-textarea";
 import "../../../components/ha-textfield";
 import {
+  AUTOMATION_DEFAULT_MODE,
   Condition,
   ManualAutomationConfig,
   Trigger,
@@ -99,7 +100,7 @@ export class HaManualAutomationEditor extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
               )}
-              .value=${this.config.mode}
+              .value=${this.config.mode || AUTOMATION_DEFAULT_MODE}
               @selected=${this._modeChanged}
               fixedMenuPosition
             >
