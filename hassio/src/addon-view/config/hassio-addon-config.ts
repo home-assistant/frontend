@@ -82,13 +82,13 @@ class HassioAddonConfig extends LitElement {
   public computeLabel = (entry: HaFormSchema): string =>
     this.addon.translations[this.hass.language]?.configuration?.[entry.name]
       ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name].name ||
+    this.addon.translations.en?.configuration?.[entry.name]?.name ||
     entry.name;
 
   public computeHelper = (entry: HaFormSchema): string =>
     this.addon.translations[this.hass.language]?.configuration?.[entry.name]
       ?.description ||
-    this.addon.translations.en?.configuration?.[entry.name].description ||
+    this.addon.translations.en?.configuration?.[entry.name]?.description ||
     "";
 
   private _convertSchema = memoizeOne(
