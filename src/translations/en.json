@@ -2711,12 +2711,14 @@
             "open_configuration_url": "Visit device"
           },
           "config_flow": {
+            "success": "Success",
             "aborted": "Aborted",
             "close": "Close",
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
+            "found_following_devices": "We found the following devices",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
