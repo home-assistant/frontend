@@ -31,10 +31,12 @@ import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-error";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 
@@ -50,6 +52,8 @@ const OPTIONS = [
   "repeat",
   "choose",
   "device_id",
+  "stop",
+  "error",
 ];
 
 const getType = (action: Action | undefined) => {

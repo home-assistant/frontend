@@ -2013,6 +2013,14 @@
                   "remove_option": "Remove option",
                   "conditions": "Conditions",
                   "sequence": "Actions"
+                },
+                "stop": {
+                  "label": "Stop",
+                  "stop": "Reason for stopping"
+                },
+                "error": {
+                  "label": "Error",
+                  "error": "Error description"
                 }
               }
             }
