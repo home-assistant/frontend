@@ -179,7 +179,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${this._nodeMetadata.comments.length > 0
+          ${this._nodeMetadata.comments?.length > 0
             ? html`
                 <div>
                   ${this._nodeMetadata.comments.map(
