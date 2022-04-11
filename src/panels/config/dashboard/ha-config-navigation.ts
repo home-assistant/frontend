@@ -5,9 +5,9 @@ import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
-import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
-import { HomeAssistant } from "../../../types";
+import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {

@@ -1081,8 +1081,8 @@
             "description": "Pre-made automations and scripts by the community"
           },
           "supervisor": {
-            "title": "Add-ons, Backups & Supervisor",
-            "description": "Create backups, check logs or reboot your system"
+            "title": "Add-ons",
+            "description": "Extend the function around Home Assistant"
           },
           "dashboards": {
             "title": "Dashboards",
@@ -1105,8 +1105,12 @@
             "description": "Location and notifications"
           },
           "settings": {
-            "title": "Settings",
-            "description": "Basic settings, server controls, logs and info"
+            "title": "System",
+            "description": "Create backups, check logs or reboot your system"
+          },
+          "about": {
+            "title": "About",
+            "description": "Version, system health and links to documentation"
           }
         },
         "common": {
@@ -3075,6 +3079,15 @@
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
+        },
+        "analytics": {
+          "caption": "Analytics"
+        },
+        "network": {
+          "caption": "Network"
+        },
+        "storage": {
+          "caption": "Storage"
         }
       },
       "lovelace": {
