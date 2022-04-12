@@ -551,7 +551,7 @@ class HUIRoot extends LitElement {
     let newSelectView;
     let force = false;
 
-    const viewPath = this.route!.path.split("/")[1];
+    const viewPath = decodeURI(this.route!.path.split("/")[1]);
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
