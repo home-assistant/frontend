@@ -38,7 +38,7 @@ class ConfigAnalytics extends LitElement {
       : undefined;
 
     return html`
-      <ha-card header="Analytics">
+      <ha-card header="Analytics" outlined>
         <div class="card-content">
           ${error ? html`<div class="error">${error}</div>` : ""}
           <p>

@@ -29,9 +29,6 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
 
         <ha-config-name-form hass="[[hass]]"></ha-config-name-form>
         <ha-config-core-form hass="[[hass]]"></ha-config-core-form>
-        <ha-config-url-form hass="[[hass]]"></ha-config-url-form>
-        <ha-config-network hass="[[hass]]"></ha-config-network>
-        <ha-config-analytics hass="[[hass]]"></ha-config-analytics>
       </ha-config-section>
     `;
   }

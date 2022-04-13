@@ -332,6 +332,10 @@ class HaPanelConfig extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
+      analytics: {
+        tag: "ha-config-section-analytics",
+        load: () => import("./core/ha-config-section-analytics"),
+      },
       areas: {
         tag: "ha-config-areas",
         load: () => import("./areas/ha-config-areas"),
@@ -398,6 +402,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-lovelace",
         load: () => import("./lovelace/ha-config-lovelace"),
       },
+      network: {
+        tag: "ha-config-section-network",
+        load: () => import("./core/ha-config-section-network"),
+      },
       person: {
         tag: "ha-config-person",
         load: () => import("./person/ha-config-person"),
@@ -413,6 +421,10 @@ class HaPanelConfig extends HassRouterPage {
       helpers: {
         tag: "ha-config-helpers",
         load: () => import("./helpers/ha-config-helpers"),
+      },
+      storage: {
+        tag: "ha-config-section-storage",
+        load: () => import("./core/ha-config-section-storage"),
       },
       users: {
         tag: "ha-config-users",
