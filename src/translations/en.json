@@ -1066,19 +1066,15 @@
         "dashboard": {
           "devices": {
             "title": "Devices & Services",
-            "description": "Integrations, devices, entities and areas"
+            "description": "Integrations, devices, entities and helpers"
           },
           "automations": {
             "title": "Automations & Scenes",
-            "description": "Manage automations, scenes, scripts and helpers"
+            "description": "Manage automations, scenes, scripts and blueprints"
           },
           "backup": {
             "title": "Backup",
             "description": "Generate backups of your Home Assistant configuration"
-          },
-          "blueprints": {
-            "title": "Blueprints",
-            "description": "Pre-made automations and scripts by the community"
           },
           "supervisor": {
             "title": "Add-ons",

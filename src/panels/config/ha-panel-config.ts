@@ -60,11 +60,11 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
-      path: "/config/blueprint",
-      translationKey: "blueprints",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#64B5F6",
-      component: "blueprint",
+      path: "/config/areas",
+      translationKey: "areas",
+      iconPath: mdiSofa,
+      iconColor: "#E48629",
+      components: ["zone"],
     },
     {
       path: "/config/backup",
@@ -99,7 +99,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "people",
       iconPath: mdiAccount,
       iconColor: "#E48629",
-      components: ["person", "zone", "users"],
+      components: ["person", "users"],
     },
     {
       path: "#external-app-configuration",
@@ -157,11 +157,11 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
-      component: "areas",
-      path: "/config/areas",
-      translationKey: "ui.panel.config.areas.caption",
-      iconPath: mdiSofa,
-      iconColor: "#2D338F",
+      component: "helpers",
+      path: "/config/helpers",
+      translationKey: "ui.panel.config.helpers.caption",
+      iconPath: mdiTools,
+      iconColor: "#4D2EA4",
       core: true,
     },
   ],
@@ -187,16 +187,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiScriptText,
       iconColor: "#518C43",
     },
-    {
-      component: "helpers",
-      path: "/config/helpers",
-      translationKey: "ui.panel.config.helpers.caption",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
-      core: true,
-    },
-  ],
-  blueprints: [
     {
       component: "blueprint",
       path: "/config/blueprint",
@@ -242,13 +232,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#E48629",
     },
     {
-      component: "zone",
-      path: "/config/zone",
-      translationKey: "ui.panel.config.zone.caption",
-      iconPath: mdiMapMarkerRadius,
-      iconColor: "#E48629",
-    },
-    {
       component: "users",
       path: "/config/users",
       translationKey: "ui.panel.config.users.caption",
@@ -256,6 +239,23 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#E48629",
       core: true,
       advancedOnly: true,
+    },
+  ],
+  areas: [
+    {
+      component: "areas",
+      path: "/config/areas",
+      translationKey: "ui.panel.config.areas.caption",
+      iconPath: mdiSofa,
+      iconColor: "#2D338F",
+      core: true,
+    },
+    {
+      component: "zone",
+      path: "/config/location",
+      translationKey: "ui.panel.config.zone.caption",
+      iconPath: mdiMapMarkerRadius,
+      iconColor: "#E48629",
     },
   ],
   general: [
@@ -430,7 +430,7 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-users",
         load: () => import("./users/ha-config-users"),
       },
-      zone: {
+      location: {
         tag: "ha-config-zone",
         load: () => import("./zone/ha-config-zone"),
       },
