@@ -53,6 +53,7 @@ import "./ha-icon-button";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -329,6 +330,7 @@ class HaSidebar extends LitElement {
       .actionHandler=${actionHandler({
         hasHold: !this.editMode,
         disabled: this.editMode,
+        hasDoubleClick: true,
       })}
     >
       ${!this.narrow
@@ -631,10 +633,12 @@ class HaSidebar extends LitElement {
   }
 
   private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
-    if (ev.detail.action !== "hold") {
+    if (ev.detail.action === "double_tap") {
+      showQuickBar(this, {});
+      return;
+    } if (ev.detail.action !== "hold") {
       return;
     }
-
     fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
 
