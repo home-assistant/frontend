@@ -56,13 +56,10 @@ class MoreInfoUpdate extends LitElement {
             ></mwc-linear-progress>`
           : html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
         : ""}
-      ${this.stateObj.attributes.title
-        ? html`<h3>${this.stateObj.attributes.title}</h3>`
-        : ""}
+      <h3>${this.stateObj.attributes.title}</h3>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : ""}
-
       <div class="row">
         <div class="key">
           ${this.hass.localize(
