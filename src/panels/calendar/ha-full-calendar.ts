@@ -129,14 +129,12 @@ export class HAFullCalendar extends LitElement {
                       >
                       <ha-icon-button-prev
                         .label=${this.hass.localize("ui.common.previous")}
-                        .path=${mdiChevronLeft}
                         class="prev"
                         @click=${this._handlePrev}
                       >
                       </ha-icon-button-prev>
                       <ha-icon-button-next
                         .label=${this.hass.localize("ui.common.next")}
-                        .path=${mdiChevronRight}
                         class="next"
                         @click=${this._handleNext}
                       >
