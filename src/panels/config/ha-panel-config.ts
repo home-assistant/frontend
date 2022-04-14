@@ -22,6 +22,7 @@ import {
   mdiShape,
   mdiSofa,
   mdiTools,
+  mdiUpdate,
   mdiViewDashboard,
 } from "@mdi/js";
 import { PolymerElement } from "@polymer/polymer";
@@ -108,8 +109,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#8E24AA",
     },
     {
-      path: "/config/server_control",
-      translationKey: "settings",
+      path: "/config/system",
+      translationKey: "system",
       iconPath: mdiCog,
       iconColor: "#301ABE",
       core: true,
@@ -308,6 +309,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiServer,
       iconColor: "#518C43",
     },
+    {
+      path: "/config/update",
+      translationKey: "ui.panel.config.update.caption",
+      iconPath: mdiUpdate,
+      iconColor: "#4A5963",
+    },
   ],
   about: [
     {
@@ -368,9 +375,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-devices",
         load: () => import("./devices/ha-config-devices"),
       },
-      server_control: {
-        tag: "ha-config-server-control",
-        load: () => import("./server_control/ha-config-server-control"),
+      system: {
+        tag: "ha-config-system-navigation",
+        load: () => import("./core/ha-config-system-navigation"),
       },
       logs: {
         tag: "ha-config-logs",

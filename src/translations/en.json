@@ -1104,7 +1104,7 @@
             "title": "Companion App",
             "description": "Location and notifications"
           },
-          "settings": {
+          "system": {
             "title": "System",
             "description": "Create backups, check logs or reboot your system"
           },
