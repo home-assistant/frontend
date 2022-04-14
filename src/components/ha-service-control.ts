@@ -373,8 +373,13 @@ export class HaServiceControl extends LitElement {
     if (ev.detail.value === this._value?.service) {
       return;
     }
+    const value = {
+      ...this._value,
+      service: ev.detail.value || "",
+      data: { ...this._value?.data },
+    };
     fireEvent(this, "value-changed", {
-      value: { service: ev.detail.value || "" },
+      value,
     });
   }
 
