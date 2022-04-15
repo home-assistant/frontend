@@ -2016,11 +2016,8 @@
                 },
                 "stop": {
                   "label": "Stop",
-                  "stop": "Reason for stopping"
-                },
-                "error": {
-                  "label": "Error",
-                  "error": "Error description"
+                  "stop": "Reason for stopping",
+                  "error": "Stop because of an unexpected error"
                 }
               }
             }
