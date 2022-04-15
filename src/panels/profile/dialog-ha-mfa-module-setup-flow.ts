@@ -34,6 +34,8 @@ class HaMfaModuleSetupFlow extends LitElement {
 
   @state() private _errorMessage?: string;
 
+  private perform_submit = async (_: Event) => this._submitStep();
+
   public showDialog({ continueFlowId, mfaModuleId, dialogClosedCallback }) {
     this._instance = instance++;
     this._dialogClosedCallback = dialogClosedCallback;
@@ -115,6 +117,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                       .hass=${this.hass}
                       .data=${this._stepData}
                       .schema=${this._step.data_schema}
+                      .submit_fn=${this.perform_submit}
                       .error=${this._step.errors}
                       .computeLabel=${this._computeLabel}
                       .computeError=${this._computeError}

@@ -12,7 +12,8 @@ export type HaFormSchema =
   | HaFormMultiSelectSchema
   | HaFormTimeSchema
   | HaFormSelector
-  | HaFormGridSchema;
+  | HaFormGridSchema
+  | HaFormFrontendComponent;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -25,6 +26,12 @@ export interface HaFormBaseSchema {
     suggested_value?: HaFormData;
   };
   context?: Record<string, string>;
+}
+
+export interface HaFormFrontendComponent extends HaFormBaseSchema {
+  type: "frontend-component";
+  component_name: string;
+  options: { [k: string]: any };
 }
 
 export interface HaFormGridSchema extends HaFormBaseSchema {

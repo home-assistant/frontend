@@ -46,6 +46,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _storeToken = false;
 
+  private perform_submit = (e: Event) => this._handleSubmit(e);
+
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
@@ -205,6 +207,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           <ha-form
             .data=${this._stepData}
             .schema=${step.data_schema}
+            .submit_fn=${this.perform_submit}
             .error=${step.errors}
             .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}
