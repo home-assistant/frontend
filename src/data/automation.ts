@@ -69,7 +69,7 @@ export interface BaseTrigger {
 
 export interface StateTrigger extends BaseTrigger {
   platform: "state";
-  entity_id: string;
+  entity_id: string | string[];
   attribute?: string;
   from?: string | number;
   to?: string | string[] | number;
