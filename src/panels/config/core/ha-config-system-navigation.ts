@@ -1,12 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
-import "../../../layouts/ha-app-layout";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "../ha-config-section";
@@ -19,11 +16,11 @@ class HaConfigSystemNavigation extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public cloudStatus?: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   protected render(): TemplateResult {
     const pages = configSections.general.map((page) => ({
@@ -34,19 +31,10 @@ class HaConfigSystemNavigation extends LitElement {
     }));
 
     return html`
-      <ha-app-layout>
-        <app-header fixed slot="header">
-          <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>
-              ${this.hass.localize("ui.panel.config.dashboard.system.title")}
-            </div>
-          </app-toolbar>
-        </app-header>
-
+      <hass-subpage
+        back-path="/config"
+        .header=${this.hass.localize("ui.panel.config.dashboard.system.title")}
+      >
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -67,7 +55,7 @@ class HaConfigSystemNavigation extends LitElement {
             ></ha-navigation-list>
           </ha-card>
         </ha-config-section>
-      </ha-app-layout>
+      </hass-subpage>
     `;
   }
 

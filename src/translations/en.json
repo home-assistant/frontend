@@ -1120,6 +1120,7 @@
           "learn_more": "Learn more"
         },
         "updates": {
+          "caption": "Updates",
           "no_update_entities": {
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
@@ -1171,7 +1172,7 @@
           }
         },
         "backup": {
-          "caption": "[%key:ui::panel::config::dashboard::backup::title%]",
+          "caption": "Backups",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",

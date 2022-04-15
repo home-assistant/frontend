@@ -311,7 +311,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     },
     {
       path: "/config/update",
-      translationKey: "ui.panel.config.update.caption",
+      translationKey: "ui.panel.config.updates.caption",
       iconPath: mdiUpdate,
       iconColor: "#4A5963",
     },

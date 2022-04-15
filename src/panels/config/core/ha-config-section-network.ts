@@ -1,7 +1,7 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
 import "./ha-config-network";
 import "./ha-config-url-form";
 
@@ -15,18 +15,16 @@ class HaConfigSectionNetwork extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
-        back-path="/config"
+      <hass-subpage
+        back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configSections.general}
       >
         <div class="content">
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

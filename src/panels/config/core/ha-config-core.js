@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import { configSections } from "../ha-panel-config";
@@ -31,12 +31,10 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <hass-tabs-subpage
+      <hass-subpage
         hass="[[hass]]"
         narrow="[[narrow]]"
-        route="[[route]]"
-        back-path="/config"
-        tabs="[[_computeTabs()]]"
+        back-path="/config/system"
         show-advanced="[[showAdvanced]]"
       >
         <div class$="[[computeClasses(isWide)]]">
@@ -46,7 +44,7 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
             hass="[[hass]]"
           ></ha-config-section-core>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
