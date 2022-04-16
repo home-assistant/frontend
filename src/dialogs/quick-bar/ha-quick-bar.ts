@@ -321,7 +321,7 @@ export class QuickBar extends SubscribeMixin(LitElement) {
 
     this._items = this._items || [
       generateEntityItems(this.hass, entityLookup, deviceLookup, areaLookup),
-      ...generateCommandItems(this, this.hass),
+      ...generateCommandItems(this.hass),
     ];
   }
 

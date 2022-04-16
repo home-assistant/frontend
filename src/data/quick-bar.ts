@@ -12,7 +12,6 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { domainIcon } from "../common/entity/domain_icon";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import { QuickBar } from "../dialogs/quick-bar/ha-quick-bar";
 import { PageNavigation } from "../layouts/hass-tabs-subpage";
 import { configSections } from "../panels/config/ha-panel-config";
 import { HomeAssistant } from "../types";
@@ -85,12 +84,11 @@ export const generateEntityItems = (
     .sort((a, b) => caseInsensitiveStringCompare(a.primaryText, b.primaryText));
 
 export const generateCommandItems = (
-  element: QuickBar,
   hass: HomeAssistant
 ): Array<QuickBarItem[]> => [
   generateNavigationCommands(hass),
   generateReloadCommands(hass),
-  generateServerControlCommands(element, hass),
+  generateServerControlCommands(hass),
 ];
 
 export const generateReloadCommands = (hass: HomeAssistant): QuickBarItem[] => {
@@ -136,7 +134,6 @@ export const generateReloadCommands = (hass: HomeAssistant): QuickBarItem[] => {
 };
 
 export const generateServerControlCommands = (
-  element: QuickBar,
   hass: HomeAssistant
 ): QuickBarItem[] => {
   const serverActions = ["restart", "stop"];
