@@ -1,44 +1,43 @@
 import {
-  mdiServerNetwork,
-  mdiNavigationVariantOutline,
   mdiEarth,
+  mdiNavigationVariantOutline,
   mdiReload,
+  mdiServerNetwork,
 } from "@mdi/js";
 import { canShowPage } from "../common/config/can_show_page";
 import { componentsWithService } from "../common/config/components_with_service";
-import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { domainIcon } from "../common/entity/domain_icon";
-import { navigate } from "../common/navigate";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import {
-  ConfirmationDialogParams,
-  showConfirmationDialog,
-} from "../dialogs/generic/show-dialog-box";
 import { QuickBar } from "../dialogs/quick-bar/ha-quick-bar";
 import { PageNavigation } from "../layouts/hass-tabs-subpage";
 import { configSections } from "../panels/config/ha-panel-config";
 import { HomeAssistant } from "../types";
+import { AreaRegistryEntry } from "./area_registry";
+import { computeDeviceName, DeviceRegistryEntry } from "./device_registry";
+import { EntityRegistryEntry } from "./entity_registry";
 import { domainToName } from "./integration";
 import { getPanelNameTranslationKey } from "./panel";
 
 export interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
   primaryTextAlt?: string;
-  secondaryText: string;
+  secondaryText?: string;
+  metaText?: string;
   categoryKey:
     | "reload"
     | "navigation"
     | "server_control"
     | "entity"
     | "suggestion";
-  action(data?: any): void;
+  actionData: string | string[];
   iconPath?: string;
   icon?: string;
   path?: string;
+  isSuggestion?: boolean;
 }
 
 export type NavigationInfo = PageNavigation &
@@ -47,23 +46,34 @@ export type NavigationInfo = PageNavigation &
 export type BaseNavigationCommand = Pick<QuickBarItem, "primaryText" | "path">;
 
 export const generateEntityItems = (
-  element: QuickBar,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  entities: { [entityId: string]: EntityRegistryEntry },
+  devices: { [deviceId: string]: DeviceRegistryEntry },
+  areas: { [areaId: string]: AreaRegistryEntry }
 ): QuickBarItem[] =>
   Object.keys(hass.states)
     .map((entityId) => {
       const entityState = hass.states[entityId];
+      const entity = entities[entityId];
+      const deviceName = entity?.device_id
+        ? computeDeviceName(devices[entity.device_id], hass)
+        : undefined;
       const entityItem = {
         primaryText: computeStateName(entityState),
-        primaryTextAlt: entityId,
-        secondaryText: hass.userData?.showAdvanced
-          ? entityId
-          : computeStateDisplay(hass.localize, entityState, hass.locale),
+        primaryTextAlt: computeStateDisplay(
+          hass.localize,
+          entityState,
+          hass.locale
+        ),
+        secondaryText:
+          (deviceName ? `${deviceName} | ` : "") +
+          (hass.userData?.showAdvanced ? entityId : ""),
+        metaText: entity?.area_id ? areas[entity.area_id].name : undefined,
         icon: entityState.attributes.icon,
         iconPath: entityState.attributes.icon
           ? undefined
           : domainIcon(computeDomain(entityId), entityState),
-        action: () => fireEvent(element, "hass-more-info", { entityId }),
+        actionData: entityId,
         categoryKey: "entity" as const,
       };
 
@@ -95,21 +105,21 @@ export const generateReloadCommands = (hass: HomeAssistant): QuickBarItem[] => {
         "domain",
         domainToName(hass.localize, domain)
       ),
-    action: () => hass.callService(domain, "reload"),
+    actionData: [domain, "reload"],
     secondaryText: "Reload changes made to the domain file",
   }));
 
   // Add "frontend.reload_themes"
   commands.push({
     primaryText: hass.localize("ui.dialogs.quick-bar.commands.reload.themes"),
-    action: () => hass.callService("frontend", "reload_themes"),
+    actionData: ["frontend", "reload_themes"],
     secondaryText: "Reload changes made to themes.yaml",
   });
 
   // Add "homeassistant.reload_core_config"
   commands.push({
     primaryText: hass.localize("ui.dialogs.quick-bar.commands.reload.core"),
-    action: () => hass.callService("homeassistant", "reload_core_config"),
+    actionData: ["homeassistant", "reload_core_config"],
     secondaryText: "Reload changes made to configuration.yaml",
   });
 
@@ -141,23 +151,19 @@ export const generateServerControlCommands = (
         hass.localize(`ui.dialogs.quick-bar.commands.server_control.${action}`)
       ),
       categoryKey,
-      action: () => hass.callService("homeassistant", action),
+      actionData: action,
     };
 
-    return generateConfirmationCommand(
-      element,
-      {
-        ...item,
-        strings: [
-          `${hass.localize(
-            `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-          )} ${item.primaryText}`,
-        ],
-        secondaryText: "Control your server",
-        iconPath: mdiServerNetwork,
-      },
-      hass.localize("ui.dialogs.generic.ok")
-    );
+    return {
+      ...item,
+      strings: [
+        `${hass.localize(
+          `ui.dialogs.quick-bar.commands.types.${categoryKey}`
+        )} ${item.primaryText}`,
+      ],
+      secondaryText: "Control your server",
+      iconPath: mdiServerNetwork,
+    };
   });
 };
 
@@ -249,19 +255,6 @@ export const getNavigationInfoFromConfig = (
   return undefined;
 };
 
-export const generateConfirmationCommand = (
-  element: QuickBar,
-  item: QuickBarItem,
-  confirmText: ConfirmationDialogParams["confirmText"]
-): QuickBarItem => ({
-  ...item,
-  action: () =>
-    showConfirmationDialog(element, {
-      confirmText,
-      confirm: item.action,
-    }),
-});
-
 const finalizeNavigationCommands = (
   items: BaseNavigationCommand[],
   hass: HomeAssistant
@@ -273,7 +266,7 @@ const finalizeNavigationCommands = (
       secondaryText: "Navigation",
       iconPath: mdiEarth,
       ...item,
-      action: () => navigate(item.path!),
+      actionData: item.path!,
     };
 
     return {

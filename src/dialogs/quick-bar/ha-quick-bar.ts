@@ -3,33 +3,50 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMagnify } from "@mdi/js";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import { navigate } from "../../common/navigate";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
+import {
+  AreaRegistryEntry,
+  subscribeAreaRegistry,
+} from "../../data/area_registry";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
 import {
   generateCommandItems,
   generateEntityItems,
   QuickBarItem,
 } from "../../data/quick-bar";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
   haStyle,
   haStyleDialog,
   haStyleScrollbar,
 } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
 
 @customElement("ha-quick-bar")
-export class QuickBar extends LitElement {
+export class QuickBar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _items?: Array<QuickBarItem[]>;
@@ -40,10 +57,6 @@ export class QuickBar extends LitElement {
 
   @state() private _search = "";
 
-  @state() private _open = false;
-
-  @state() private _commandMode = false;
-
   @state() private _opened = false;
 
   @state() private _done = false;
@@ -51,6 +64,12 @@ export class QuickBar extends LitElement {
   @state() private _narrow = false;
 
   @state() private _hint?: string;
+
+  @state() private _entities?: EntityRegistryEntry[];
+
+  @state() private _areas?: AreaRegistryEntry[];
+
+  @state() private _devices?: DeviceRegistryEntry[];
 
   @query("ha-textfield", false) private _filterInputField?: HTMLElement;
 
@@ -74,12 +93,23 @@ export class QuickBar extends LitElement {
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
-    this._initializeItems();
-    this._opened = true;
+  }
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeAreaRegistry(this.hass.connection!, (areas) => {
+        this._areas = areas;
+      }),
+      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
+        this._devices = devices;
+      }),
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entities = entities;
+      }),
+    ];
   }
 
   public closeDialog() {
-    this._open = false;
     this._opened = false;
     this._focusSet = false;
     this._filter = "";
@@ -87,8 +117,23 @@ export class QuickBar extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render() {
-    if (!this._open) {
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (
+      (changedProperties.has("_entity") ||
+        changedProperties.has("_areas") ||
+        changedProperties.has("_devices")) &&
+      this._areas &&
+      this._devices &&
+      this._entities
+    ) {
+      this._initializeItems();
+      this._opened = true;
+    }
+  }
+
+  protected render(): TemplateResult {
+    if (!this._opened) {
       return html``;
     }
 
@@ -176,28 +221,6 @@ export class QuickBar extends LitElement {
             `
           : html`
               <mwc-list>
-                <<<<<<< HEAD
-                ${this._opened
-                  ? html`<lit-virtualizer
-                      scroller
-                      @keydown=${this._handleListItemKeyDown}
-                      @rangechange=${this._handleRangeChanged}
-                      @click=${this._handleItemClick}
-                      class="ha-scrollbar"
-                      style=${styleMap({
-                        height: this._narrow
-                          ? "calc(100vh - 56px)"
-                          : `${Math.min(
-                              items.length * (this._commandMode ? 56 : 72) + 26,
-                              500
-                            )}px`,
-                      })}
-                      .items=${items}
-                      .renderItem=${this._renderItem}
-                    >
-                    </lit-virtualizer>`
-                  : ""}
-                =======
                 <lit-virtualizer
                   scroller
                   @keydown=${this._handleListItemKeyDown}
@@ -218,7 +241,6 @@ export class QuickBar extends LitElement {
                   .renderItem=${this._renderItem}
                 >
                 </lit-virtualizer>
-                >>>>>>> 64654972a (Stash)
               </mwc-list>
             `}
         ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
@@ -238,14 +260,19 @@ export class QuickBar extends LitElement {
         ${index === 0 || item?.categoryKey !== previous?.categoryKey
           ? html`
               <div class="entry-title">
-                ${this.hass.localize(
-                  `ui.dialogs.quick-bar.commands.types.${item.categoryKey}`
-                )}
+                ${item.isSuggestion
+                  ? this.hass.localize(
+                      "ui.dialogs.quick-bar.commands.types.suggestions"
+                    )
+                  : this.hass.localize(
+                      `ui.dialogs.quick-bar.commands.types.${item.categoryKey}`
+                    )}
               </div>
             `
           : ""}
         <mwc-list-item
-          .twoline=${item.secondaryText}
+          .twoline=${Boolean(item.secondaryText)}
+          .hasMeta=${Boolean(item.metaText)}
           .item=${item}
           index=${ifDefined(index)}
           graphic="icon"
@@ -268,27 +295,64 @@ export class QuickBar extends LitElement {
                 >
               `
             : ""}
+          ${item.metaText
+            ? html`<ha-chip slot="meta">${item.metaText}</ha-chip>`
+            : ""}
         </mwc-list-item>
       </div>
     `;
   };
 
   private _initializeItems() {
+    const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
+    for (const device of this._devices!) {
+      deviceLookup[device.id] = device;
+    }
+
+    const entityLookup: { [entityId: string]: EntityRegistryEntry } = {};
+    for (const entity of this._entities!) {
+      entityLookup[entity.entity_id] = entity;
+    }
+
+    const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
+    for (const area of this._areas!) {
+      areaLookup[area.area_id] = area;
+    }
+
     this._items = this._items || [
-      generateEntityItems(this, this.hass),
+      generateEntityItems(this.hass, entityLookup, deviceLookup, areaLookup),
       ...generateCommandItems(this, this.hass),
     ];
   }
 
   private async processItemAndCloseDialog(item: QuickBarItem, index: number) {
     if (!this._suggestions.includes(item)) {
-      this._suggestions.unshift({ ...item, categoryKey: "suggestion" });
+      this._suggestions.unshift({ ...item, isSuggestion: true });
       this._suggestions = this._suggestions.slice(0, 3);
     }
 
     this._addSpinnerToItem(index);
 
-    await item.action();
+    switch (item.categoryKey) {
+      case "entity":
+        fireEvent(this, "hass-more-info", {
+          entityId: item.actionData as string,
+        });
+        break;
+      case "reload":
+        this.hass.callService(item.actionData[0], item.actionData[1]);
+        break;
+      case "navigation":
+        navigate(item.actionData as string);
+        break;
+      case "server_control":
+        showConfirmationDialog(this, {
+          confirmText: this.hass.localize("ui.dialogs.generic.ok"),
+          confirm: () =>
+            this.hass.callService("homeassistant", item.actionData as string),
+        });
+        break;
+    }
     this.closeDialog();
   }
 
@@ -416,17 +480,6 @@ export class QuickBar extends LitElement {
     this._getItemAtIndex(index)?.appendChild(spinner);
   }
 
-  private _getSuggestionsWithActions(): QuickBarItem[] {
-    return this._suggestions.map((item) => {
-      let action;
-      switch (item.categoryKey) {
-        case "entity":
-          action = () => fireEvent(this, "hass-more-info", {});
-      }
-      return { ...item, action };
-    });
-  }
-
   static get styles() {
     return [
       haStyleScrollbar,
@@ -522,6 +575,10 @@ export class QuickBar extends LitElement {
 
         lit-virtualizer {
           contain: size layout !important;
+        }
+
+        ha-chip {
+          margin-left: -48px;
         }
       `,
     ];
