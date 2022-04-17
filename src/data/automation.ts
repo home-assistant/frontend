@@ -152,6 +152,12 @@ export interface EventTrigger extends BaseTrigger {
   context?: ContextConstraint;
 }
 
+export interface CalendarTrigger extends BaseTrigger {
+  platform: "calendar";
+  event: "start";
+  entity_id: string;
+}
+
 export type Trigger =
   | StateTrigger
   | MqttTrigger
@@ -166,7 +172,8 @@ export type Trigger =
   | TimeTrigger
   | TemplateTrigger
   | EventTrigger
-  | DeviceTrigger;
+  | DeviceTrigger
+  | CalendarTrigger;
 
 interface BaseCondition {
   condition: string;

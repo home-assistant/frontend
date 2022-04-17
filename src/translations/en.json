@@ -1742,6 +1742,11 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "type": {
+                "calendar": {
+                  "label": "Calendar",
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
+                  "start": "Event Start"
+                },
                 "device": {
                   "label": "Device",
                   "trigger": "Trigger",
