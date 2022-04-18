@@ -170,6 +170,7 @@ const SCHEMAS: {
           select: { options: ["Option 1", "Option 2"], mode: "list" },
         },
       },
+      template: { name: "Template", selector: { template: {} } },
       select: {
         name: "Select",
         selector: {
