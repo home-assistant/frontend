@@ -5921,6 +5921,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cbor-js@npm:0.1.0":
+  version: 0.1.0
+  resolution: "cbor-js@npm:0.1.0"
+  checksum: 9267e1d1eda70d34994fec05bb1aa53541673276131ff776194ee7b41e4ee80aec8c5c33f3a1bea3d393f9724c4f46c217b89ee2bcff6e35de583f3c533050fd
+  languageName: node
+  linkType: hard
+
 "chai@npm:^4.3.4":
   version: 4.3.4
   resolution: "chai@npm:4.3.4"
@@ -9096,6 +9103,7 @@ fsevents@^1.2.7:
     "@webcomponents/webcomponentsjs": ^2.2.10
     app-datepicker: ^5.0.1
     babel-loader: ^8.2.2
+    cbor-js: 0.1.0
     chai: ^4.3.4
     chart.js: ^3.3.2
     comlink: ^4.3.1
