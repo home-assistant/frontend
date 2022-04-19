@@ -1,12 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import {
-  mdiCloudLock,
-  mdiDotsVertical,
-  mdiLightbulbOutline,
-  mdiMagnify,
-  mdiNewBox,
-} from "@mdi/js";
+import { mdiCloudLock, mdiDotsVertical, mdiMagnify, mdiNewBox } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import type { HassEntities } from "home-assistant-js-websocket";
@@ -29,6 +23,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tip";
 import { CloudStatus } from "../../../data/cloud";
 import { updateCanInstall, UpdateEntity } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -90,7 +85,7 @@ const randomTip = (hass: HomeAssistant) => {
       ),
       weight: 2,
     },
-    { content: hass.localize("ui.dialogs.quick-bar.key_c_hint"), weight: 1 },
+    { content: hass.localize("ui.tips.key_c_hint"), weight: 1 },
   ];
 
   tips.forEach((tip) => {
@@ -201,11 +196,7 @@ class HaConfigDashboard extends LitElement {
               .pages=${configSections.dashboard}
             ></ha-config-navigation>
           </ha-card>
-          <div class="tips">
-            <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
-            <span class="tip-word">Tip!</span>
-            <span class="text">${this._tip}</span>
-          </div>
+          <ha-tip>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -342,17 +333,8 @@ class HaConfigDashboard extends LitElement {
           margin-top: -42px;
         }
 
-        .tips {
-          text-align: center;
+        ha-tip {
           margin-bottom: max(env(safe-area-inset-bottom), 8px);
-        }
-
-        .tips .text {
-          color: var(--secondary-text-color);
-        }
-
-        .tip-word {
-          font-weight: 500;
         }
 
         .new {

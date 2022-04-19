@@ -240,7 +240,7 @@ export class QuickBar extends LitElement {
                   : ""}
               </mwc-list>
             `}
-        ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
+        ${this._hint ? html`<ha-tip>${this._hint}</ha-tip>` : ""}
       </ha-dialog>
     `;
   }
@@ -782,10 +782,8 @@ export class QuickBar extends LitElement {
           text-transform: capitalize;
         }
 
-        .hint {
+        ha-tip {
           padding: 20px;
-          font-style: italic;
-          text-align: center;
         }
 
         .nothing-found {
