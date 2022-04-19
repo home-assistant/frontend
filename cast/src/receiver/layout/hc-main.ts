@@ -222,6 +222,7 @@ export class HcMain extends HassElement {
     // We should not get this command before we are connected.
     // Means a client got out of sync. Let's send status to them.
     if (!this.hass) {
+      this._sendStatus(msg.senderId!);
       this._error = "Cannot show Lovelace because we're not connected.";
       this._sendError(
         ReceiverErrorCode.NOT_CONNECTED,
