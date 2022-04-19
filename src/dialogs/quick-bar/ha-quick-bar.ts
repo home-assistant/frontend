@@ -445,6 +445,11 @@ export class QuickBar extends SubscribeMixin(LitElement) {
         ? ev.target.parentElement
         : ev.target.parentElement.parentElement;
 
+    // Need to resolve when clicking on the chip
+    if (!target.item) {
+      return;
+    }
+
     this.processItemAndCloseDialog(
       target.item,
       Number((target as HTMLElement).getAttribute("index"))
