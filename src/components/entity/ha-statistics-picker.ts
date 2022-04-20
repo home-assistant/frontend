@@ -111,7 +111,9 @@ class HaStatisticsPicker extends LitElement {
         display: block;
       }
       ha-statistic-picker {
+        display: block;
         width: 100%;
+        margin-top: 8px;
       }
     `;
   }

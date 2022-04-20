@@ -86,6 +86,7 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <h3>
@@ -175,9 +176,17 @@ export class DialogEnergySolarSettings
 
   private async _fetchSolarForecastConfigEntries() {
     const domains = this._params!.info.solar_forecast_domains;
-    this._configEntries = (await getConfigEntries(this.hass)).filter((entry) =>
-      domains.includes(entry.domain)
-    );
+    this._configEntries =
+      domains.length === 0
+        ? []
+        : domains.length === 1
+        ? await getConfigEntries(this.hass, {
+            type: "integration",
+            domain: domains[0],
+          })
+        : (await getConfigEntries(this.hass, { type: "integration" })).filter(
+            (entry) => domains.includes(entry.domain)
+          );
   }
 
   private _handleForecastChanged(ev: CustomEvent) {

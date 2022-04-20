@@ -11,7 +11,7 @@ import {
 } from "../../../data/history";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
-import { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
+import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
 export class DialogStatisticsFixUnitsChanged extends LitElement {
@@ -65,6 +65,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             name="action"
             .checked=${this._action === "update"}
             @change=${this._handleActionChanged}
+            dialogInitialFocus
           ></ha-radio>
         </ha-formfield>
         <ha-formfield

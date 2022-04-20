@@ -1,11 +1,8 @@
+import { HaSelect } from "../../../../../components/ha-select";
 import { Cluster, ZHADevice } from "../../../../../data/zha";
 
-export interface PickerTarget extends EventTarget {
-  selected: number;
-}
-
 export interface ItemSelectedEvent {
-  target?: PickerTarget;
+  target?: HaSelect;
 }
 
 export interface ZHADeviceRemovedEvent {

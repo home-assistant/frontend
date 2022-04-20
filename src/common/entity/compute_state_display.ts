@@ -1,12 +1,18 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { FrontendLocaleData } from "../../data/translation";
+import {
+  updateIsInstalling,
+  UpdateEntity,
+  UPDATE_SUPPORT_PROGRESS,
+} from "../../data/update";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
+import { supportsFeature } from "./supports-feature";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -123,7 +129,33 @@ export const computeStateDisplay = (
     domain === "scene" ||
     (domain === "sensor" && stateObj.attributes.device_class === "timestamp")
   ) {
-    return formatDateTime(new Date(compareState), locale);
+    try {
+      return formatDateTime(new Date(compareState), locale);
+    } catch (_err) {
+      return compareState;
+    }
+  }
+
+  if (domain === "update") {
+    // When updating, and entity does not support % show "Installing"
+    // When updating, and entity does support % show "Installing (xx%)"
+    // When update available, show the version
+    // When the latest version is skipped, show the latest version
+    // When update is not available, show "Up-to-date"
+    // When update is not available and there is no latest_version show "Unavailable"
+    return compareState === "on"
+      ? updateIsInstalling(stateObj as UpdateEntity)
+        ? supportsFeature(stateObj, UPDATE_SUPPORT_PROGRESS)
+          ? localize("ui.card.update.installing_with_progress", {
+              progress: stateObj.attributes.in_progress,
+            })
+          : localize("ui.card.update.installing")
+        : stateObj.attributes.latest_version
+      : stateObj.attributes.skipped_version ===
+        stateObj.attributes.latest_version
+      ? stateObj.attributes.latest_version ??
+        localize("state.default.unavailable")
+      : localize("ui.card.update.up_to_date");
   }
 
   return (

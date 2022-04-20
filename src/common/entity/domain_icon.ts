@@ -8,9 +8,9 @@ import {
   mdiCalendar,
   mdiCast,
   mdiCastConnected,
+  mdiCheckCircleOutline,
   mdiClock,
-  mdiEmoticonDead,
-  mdiFlash,
+  mdiCloseCircleOutline,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
@@ -18,20 +18,18 @@ import {
   mdiLockAlert,
   mdiLockClock,
   mdiLockOpen,
+  mdiPackage,
+  mdiPackageDown,
   mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiSleep,
-  mdiTimerSand,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
-  mdiCheckCircleOutline,
-  mdiCloseCircleOutline,
+  mdiToggleSwitchVariant,
+  mdiToggleSwitchVariantOff,
   mdiWeatherNight,
-  mdiZWave,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
+import { updateIsInstalling, UpdateEntity } from "../../data/update";
 /**
  * Return the icon to be used for a domain.
  *
@@ -110,21 +108,11 @@ export const domainIcon = (
         case "outlet":
           return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
-          return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+          return compareState === "on"
+            ? mdiToggleSwitchVariant
+            : mdiToggleSwitchVariantOff;
         default:
-          return mdiFlash;
-      }
-
-    case "zwave":
-      switch (compareState) {
-        case "dead":
-          return mdiEmoticonDead;
-        case "sleeping":
-          return mdiSleep;
-        case "initializing":
-          return mdiTimerSand;
-        default:
-          return mdiZWave;
+          return mdiToggleSwitchVariant;
       }
 
     case "sensor": {
@@ -149,6 +137,13 @@ export const domainIcon = (
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
         : mdiWeatherNight;
+
+    case "update":
+      return compareState === "on"
+        ? updateIsInstalling(stateObj as UpdateEntity)
+          ? mdiPackageDown
+          : mdiPackageUp
+        : mdiPackage;
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

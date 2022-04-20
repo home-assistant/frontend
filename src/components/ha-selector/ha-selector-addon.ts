@@ -14,11 +14,20 @@ export class HaAddonSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = true;
+
   protected render() {
     return html`<ha-addon-picker
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
+      .helper=${this.helper}
+      .disabled=${this.disabled}
+      .required=${this.required}
       allow-custom-entity
     ></ha-addon-picker>`;
   }

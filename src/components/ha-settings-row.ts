@@ -21,7 +21,7 @@ export class HaSettingsRow extends LitElement {
           <div secondary><slot name="description"></slot></div>
         </paper-item-body>
       </div>
-      <slot></slot>
+      <div class="content"><slot></slot></div>
     `;
   }
 
@@ -42,6 +42,18 @@ export class HaSettingsRow extends LitElement {
           var(--paper-item-body-two-line-min-height, 72px) - 16px
         );
         flex: 1;
+      }
+      .content {
+        display: contents;
+      }
+      :host(:not([narrow])) .content {
+        display: flex;
+        justify-content: flex-end;
+        flex: 1;
+        padding: 16px 0;
+      }
+      .content ::slotted(*) {
+        width: var(--settings-row-content-width);
       }
       :host([narrow]) {
         align-items: normal;

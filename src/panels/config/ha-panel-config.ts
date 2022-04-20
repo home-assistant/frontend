@@ -1,5 +1,6 @@
 import {
   mdiAccount,
+  mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiCellphoneCog,
   mdiCog,
@@ -21,18 +22,12 @@ import {
   mdiTools,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import { PolymerElement } from "@polymer/polymer";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
-import {
-  fetchSupervisorAvailableUpdates,
-  SupervisorAvailableUpdates,
-} from "../../data/supervisor/root";
 import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -68,6 +63,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiPaletteSwatch,
       iconColor: "#64B5F6",
       component: "blueprint",
+    },
+    {
+      path: "/config/backup",
+      translationKey: "backup",
+      iconPath: mdiBackupRestore,
+      iconColor: "#4084CD",
+      component: "backup",
     },
     {
       path: "/hassio",
@@ -109,6 +111,15 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiCog,
       iconColor: "#4A5963",
       core: true,
+    },
+  ],
+  backup: [
+    {
+      path: "/config/backup",
+      translationKey: "ui.panel.config.backup.caption",
+      iconPath: mdiBackupRestore,
+      iconColor: "#4084CD",
+      component: "backup",
     },
   ],
   devices: [
@@ -293,6 +304,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-automation",
         load: () => import("./automation/ha-config-automation"),
       },
+      backup: {
+        tag: "ha-config-backup",
+        load: () => import("./backup/ha-config-backup"),
+      },
       blueprint: {
         tag: "ha-config-blueprint",
         load: () => import("./blueprint/ha-config-blueprint"),
@@ -378,20 +393,10 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/zha/zha-config-dashboard-router"
           ),
       },
-      zwave: {
-        tag: "zwave-config-router",
-        load: () =>
-          import("./integrations/integration-panels/zwave/zwave-config-router"),
-      },
       mqtt: {
         tag: "mqtt-config-panel",
         load: () =>
           import("./integrations/integration-panels/mqtt/mqtt-config-panel"),
-      },
-      ozw: {
-        tag: "ozw-config-router",
-        load: () =>
-          import("./integrations/integration-panels/ozw/ozw-config-router"),
       },
       zwave_js: {
         tag: "zwave_js-config-router",
@@ -408,8 +413,6 @@ class HaPanelConfig extends HassRouterPage {
   @state() private _wide = false;
 
   @state() private _cloudStatus?: CloudStatus;
-
-  @state() private _supervisorUpdates?: SupervisorAvailableUpdates[] | null;
 
   private _listeners: Array<() => void> = [];
 
@@ -445,19 +448,7 @@ class HaPanelConfig extends HassRouterPage {
         }
       });
     }
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._loadSupervisorUpdates();
-      this.addEventListener("ha-refresh-supervisor", () => {
-        this._loadSupervisorUpdates();
-      });
-      this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
-          this._loadSupervisorUpdates();
-        }
-      });
-    } else {
-      this._supervisorUpdates = null;
-    }
+
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
     );
@@ -488,7 +479,6 @@ class HaPanelConfig extends HassRouterPage {
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
-        supervisorUpdates: this._supervisorUpdates,
       });
     } else {
       el.route = this.routeTail;
@@ -497,7 +487,6 @@ class HaPanelConfig extends HassRouterPage {
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
-      el.supervisorUpdates = this._supervisorUpdates;
     }
   }
 
@@ -513,16 +502,6 @@ class HaPanelConfig extends HassRouterPage {
         !this._cloudStatus.remote_connected)
     ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
-    }
-  }
-
-  private async _loadSupervisorUpdates(): Promise<void> {
-    try {
-      this._supervisorUpdates = await fetchSupervisorAvailableUpdates(
-        this.hass
-      );
-    } catch (err) {
-      this._supervisorUpdates = null;
     }
   }
 }

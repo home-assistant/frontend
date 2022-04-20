@@ -1,6 +1,3 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
@@ -67,7 +64,7 @@ export class HaStatisticPicker extends LitElement {
     id: string;
     name: string;
     state?: HassEntity;
-  }> = (item) => html` <mwc-list-item graphic="avatar" twoline>
+  }> = (item) => html`<mwc-list-item graphic="avatar" twoline>
     ${item.state
       ? html`<state-badge slot="graphic" .stateObj=${item.state}></state-badge>`
       : ""}

@@ -67,7 +67,7 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("value")) {
       return;
     }
@@ -135,7 +135,9 @@ export class HaServiceControl extends LitElement {
       let updatedDefaultValue = false;
       if (this._value && serviceData) {
         // Set mandatory bools without a default value to false
-        this._value.data ??= {};
+        if (!this._value.data) {
+          this._value.data = {};
+        }
         serviceData.fields.forEach((field) => {
           if (
             field.selector &&
@@ -469,6 +471,7 @@ export class HaServiceControl extends LitElement {
       }
       ha-settings-row {
         --paper-time-input-justify-content: flex-end;
+        --settings-row-content-width: 100%;
         border-top: var(
           --service-control-items-border-top,
           1px solid var(--divider-color)
@@ -480,21 +483,12 @@ export class HaServiceControl extends LitElement {
         display: block;
         margin: var(--service-control-padding, 0 16px);
       }
-      ha-service-picker {
-        padding-top: 16px;
-      }
       ha-yaml-editor {
         padding: 16px 0;
       }
       p {
         margin: var(--service-control-padding, 0 16px);
         padding: 16px 0;
-      }
-      :host(:not([narrow])) ha-settings-row paper-input {
-        width: 60%;
-      }
-      :host(:not([narrow])) ha-settings-row ha-selector {
-        width: 60%;
       }
       .checkbox-spacer {
         width: 32px;

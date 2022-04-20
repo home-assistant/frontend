@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { mdiSlopeUphill } from "@mdi/js";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -22,6 +23,7 @@ import {
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
 
@@ -111,6 +113,24 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
             : ""}`,
         width: "113px",
       },
+      actions: {
+        title: "",
+        label: localize("ui.panel.developer-tools.tabs.statistics.adjust_sum"),
+        type: "icon-button",
+        template: (_info, statistic: StatisticsMetaData) =>
+          statistic.has_sum
+            ? html`
+                <ha-icon-button
+                  .label=${localize(
+                    "ui.panel.developer-tools.tabs.statistics.adjust_sum"
+                  )}
+                  .path=${mdiSlopeUphill}
+                  .statistic=${statistic}
+                  @click=${this._showStatisticsAdjustSumDialog}
+                ></ha-icon-button>
+              `
+            : "",
+      },
     })
   );
 
@@ -125,6 +145,13 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
         @row-click=${this._rowClicked}
       ></ha-data-table>
     `;
+  }
+
+  private _showStatisticsAdjustSumDialog(ev) {
+    ev.stopPropagation();
+    showStatisticsAdjustSumDialog(this, {
+      statistic: ev.currentTarget.statistic,
+    });
   }
 
   private _rowClicked(ev) {
@@ -185,6 +212,8 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
+          has_mean: false,
+          has_sum: false,
         });
       }
     });

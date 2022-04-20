@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -69,6 +69,7 @@ export class HaDeviceAction extends LitElement {
       ${this._capabilities?.extra_fields
         ? html`
             <ha-form
+              .hass=${this.hass}
               .data=${this._extraFieldsData(this.action, this._capabilities)}
               .schema=${this._capabilities.extra_fields}
               .computeLabel=${this._extraFieldsComputeLabelCallback(
@@ -107,6 +108,11 @@ export class HaDeviceAction extends LitElement {
   private _devicePicked(ev) {
     ev.stopPropagation();
     this._deviceId = ev.target.value;
+    if (this._deviceId === undefined) {
+      fireEvent(this, "value-changed", {
+        value: HaDeviceAction.defaultConfig,
+      });
+    }
   }
 
   private _deviceActionPicked(ev) {
@@ -135,6 +141,16 @@ export class HaDeviceAction extends LitElement {
         `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
       ) || schema.name;
   }
+
+  static styles = css`
+    ha-device-picker {
+      display: block;
+      margin-bottom: 16px;
+    }
+    ha-device-action-picker {
+      display: block;
+    }
+  `;
 }
 
 declare global {

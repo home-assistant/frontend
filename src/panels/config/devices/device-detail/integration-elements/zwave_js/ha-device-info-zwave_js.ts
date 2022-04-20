@@ -27,7 +27,7 @@ import { HomeAssistant } from "../../../../../../types";
 export class HaDeviceInfoZWaveJS extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public device!: DeviceRegistryEntry;
+  @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
   @state() private _entryId?: string;
 
@@ -58,12 +58,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       return;
     }
 
-    const configEntries = await getConfigEntries(this.hass);
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
     let zwaveJsConfEntries = 0;
     for (const entry of configEntries) {
-      if (entry.domain !== "zwave_js") {
-        continue;
-      }
       if (zwaveJsConfEntries) {
         this._multipleConfigEntries = true;
       }
@@ -103,52 +102,58 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
         ${this._node.node_id}
       </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.node_status"
-        )}:
-        ${this.hass.localize(
-          `ui.panel.config.zwave_js.node_status.${
-            nodeStatus[this._node.status]
-          }`
-        )}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.node_ready"
-        )}:
-        ${this._node.ready
-          ? this.hass.localize("ui.common.yes")
-          : this.hass.localize("ui.common.no")}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.highest_security"
-        )}:
-        ${this._node.highest_security_class !== null
-          ? this.hass.localize(
-              `ui.panel.config.zwave_js.security_classes.${
-                SecurityClass[this._node.highest_security_class]
-              }.title`
-            )
-          : this._node.is_secure === false
-          ? this.hass.localize(
-              "ui.panel.config.zwave_js.security_classes.none.title"
-            )
-          : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
-      </div>
-      <div>
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.device_info.zwave_plus"
-        )}:
-        ${this._node.zwave_plus_version
-          ? this.hass.localize(
-              "ui.panel.config.zwave_js.device_info.zwave_plus_version",
-              "version",
-              this._node.zwave_plus_version
-            )
-          : this.hass.localize("ui.common.no")}
-      </div>
+      ${!this._node.is_controller_node
+        ? html`
+            <div>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.node_status"
+              )}:
+              ${this.hass.localize(
+                `ui.panel.config.zwave_js.node_status.${
+                  nodeStatus[this._node.status]
+                }`
+              )}
+            </div>
+            <div>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.node_ready"
+              )}:
+              ${this._node.ready
+                ? this.hass.localize("ui.common.yes")
+                : this.hass.localize("ui.common.no")}
+            </div>
+            <div>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.highest_security"
+              )}:
+              ${this._node.highest_security_class !== null
+                ? this.hass.localize(
+                    `ui.panel.config.zwave_js.security_classes.${
+                      SecurityClass[this._node.highest_security_class]
+                    }.title`
+                  )
+                : this._node.is_secure === false
+                ? this.hass.localize(
+                    "ui.panel.config.zwave_js.security_classes.none.title"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.zwave_js.device_info.unknown"
+                  )}
+            </div>
+            <div>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.device_info.zwave_plus"
+              )}:
+              ${this._node.zwave_plus_version
+                ? this.hass.localize(
+                    "ui.panel.config.zwave_js.device_info.zwave_plus_version",
+                    "version",
+                    this._node.zwave_plus_version
+                  )
+                : this.hass.localize("ui.common.no")}
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -165,5 +170,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-zwave_js": HaDeviceInfoZWaveJS;
   }
 }

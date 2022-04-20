@@ -1,10 +1,10 @@
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-textfield";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { InputDateTime } from "../../../../data/input_datetime";
 import { haStyle } from "../../../../resources/styles";
@@ -60,10 +60,10 @@ class HaInputDateTimeForm extends LitElement {
 
     return html`
       <div class="form">
-        <paper-input
+        <ha-textfield
           .value=${this._name}
           .configValue=${"name"}
-          @value-changed=${this._valueChanged}
+          @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
@@ -72,7 +72,7 @@ class HaInputDateTimeForm extends LitElement {
           )}
           .invalid=${nameInvalid}
           dialogInitialFocus
-        ></paper-input>
+        ></ha-textfield>
         <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
@@ -142,7 +142,7 @@ class HaInputDateTimeForm extends LitElement {
     }
     ev.stopPropagation();
     const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
+    const value = ev.detail?.value || (ev.target as any).value;
     if (this[`_${configValue}`] === value) {
       return;
     }
@@ -150,7 +150,7 @@ class HaInputDateTimeForm extends LitElement {
     if (!value) {
       delete newValue[configValue];
     } else {
-      newValue[configValue] = ev.detail.value;
+      newValue[configValue] = value;
     }
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -166,6 +166,10 @@ class HaInputDateTimeForm extends LitElement {
         }
         .row {
           padding: 16px 0;
+        }
+        ha-textfield {
+          display: block;
+          margin: 8px 0;
         }
       `,
     ];

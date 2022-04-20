@@ -38,12 +38,12 @@ export interface ConfigError {
   message: string;
 }
 
-export interface EntitiesEditorEvent {
-  detail?: {
+export interface EntitiesEditorEvent extends CustomEvent {
+  detail: {
     entities?: EntityConfig[];
     item?: any;
   };
-  target?: EventTarget;
+  target: EventTarget | null;
 }
 
 export interface EditorTarget extends EventTarget {

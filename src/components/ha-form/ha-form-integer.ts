@@ -1,6 +1,3 @@
-import "@material/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield";
-import type { Slider } from "@material/mwc-slider";
 import {
   css,
   CSSResultGroup,
@@ -14,18 +11,21 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
 import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 import "../ha-slider";
+import { HaTextField } from "../ha-textfield";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormIntegerSchema;
+  @property({ attribute: false }) public schema!: HaFormIntegerSchema;
 
-  @property() public data?: HaFormIntegerData;
+  @property({ attribute: false }) public data?: HaFormIntegerData;
 
   @property() public label?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-input ha-slider") private _input?: HTMLElement;
+  @query("ha-textfield ha-slider") private _input?:
+    | HaTextField
+    | HTMLInputElement;
 
   private _lastValue?: HaFormIntegerData;
 
@@ -70,7 +70,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
 
     return html`
-      <mwc-textfield
+      <ha-textfield
         type="number"
         inputMode="numeric"
         .label=${this.label}
@@ -81,7 +81,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
-      ></mwc-textfield>
+      ></ha-textfield>
     `;
   }
 
@@ -138,7 +138,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
-    const source = ev.target as TextField | Slider;
+    const source = ev.target as HaTextField | HTMLInputElement;
     const rawValue = source.value;
 
     let value: number | undefined;
@@ -172,7 +172,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       ha-slider {
         flex: 1;
       }
-      mwc-textfield {
+      ha-textfield {
         display: block;
       }
     `;

@@ -8,6 +8,8 @@ import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES } from "./script";
 
+export const AUTOMATION_DEFAULT_MODE: ManualAutomationConfig["mode"] = "single";
+
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
@@ -62,11 +64,12 @@ export interface ContextConstraint {
 export interface BaseTrigger {
   platform: string;
   id?: string;
+  variables?: Record<string, unknown>;
 }
 
 export interface StateTrigger extends BaseTrigger {
   platform: "state";
-  entity_id: string;
+  entity_id: string | string[];
   attribute?: string;
   from?: string | number;
   to?: string | string[] | number;

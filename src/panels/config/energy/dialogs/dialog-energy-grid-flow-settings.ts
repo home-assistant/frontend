@@ -104,6 +104,7 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
           @value-changed=${this._statisticChanged}
+          dialogInitialFocus
         ></ha-statistic-picker>
 
         <p>
@@ -189,24 +190,21 @@ export class DialogEnergyGridFlowSettings
           ></ha-radio>
         </ha-formfield>
         ${this._costs === "number"
-          ? html`<paper-input
+          ? html`<ha-textfield
               .label=${this.hass.localize(
                 `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_input`
               )}
-              no-label-float
               class="price-options"
               step=".01"
               type="number"
               .value=${this._source.number_energy_price}
-              @value-changed=${this._numberPriceChanged}
+              .suffix=${this.hass.localize(
+                `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_suffix`,
+                { currency: this.hass.config.currency }
+              )}
+              @change=${this._numberPriceChanged}
             >
-              <span slot="suffix"
-                >${this.hass.localize(
-                  `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_suffix`,
-                  { currency: this.hass.config.currency }
-                )}</span
-              >
-            </paper-input>`
+            </ha-textfield>`
           : ""}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
@@ -242,7 +240,7 @@ export class DialogEnergyGridFlowSettings
     this._costStat = null;
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.detail.value),
+      number_energy_price: Number((ev.target as any).value),
       entity_energy_price: null,
     };
   }
@@ -301,13 +299,10 @@ export class DialogEnergyGridFlowSettings
         ha-formfield {
           display: block;
         }
-        ha-statistic-picker {
-          width: 100%;
-        }
         .price-options {
           display: block;
           padding-left: 52px;
-          margin-top: -16px;
+          margin-top: -8px;
         }
       `,
     ];

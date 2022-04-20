@@ -87,6 +87,7 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   name?: string;
   show_name?: boolean;
   icon?: string;
+  icon_height?: string;
   show_icon?: boolean;
   theme?: string;
   tap_action?: ActionConfig;

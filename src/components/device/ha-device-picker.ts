@@ -38,7 +38,7 @@ export type HaDevicePickerDeviceFilterFunc = (
 ) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<mwc-list-item
-  twoline
+  .twoline=${!!item.area}
 >
   <span>${item.name}</span>
   <span slot="secondary">${item.area}</span>
@@ -51,6 +51,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public label?: string;
 
   @property() public value?: string;
+
+  @property() public helper?: string;
 
   @property() public devices?: DeviceRegistryEntry[];
 
@@ -86,6 +88,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
+  @property({ type: Boolean }) public required?: boolean;
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -105,7 +109,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (!devices.length) {
         return [
           {
-            id: "",
+            id: "no_devices",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_devices"),
           },
@@ -201,7 +205,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (!outputDevices.length) {
         return [
           {
-            id: "",
+            id: "no_devices",
             area: "",
             name: this.hass.localize("ui.components.device-picker.no_match"),
           },
@@ -267,10 +271,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           ? this.hass.localize("ui.components.device-picker.device")
           : this.label}
         .value=${this._value}
+        .helper=${this.helper}
         .renderer=${rowRenderer}
         .disabled=${this.disabled}
+        .required=${this.required}
         item-value-path="id"
-        item-id-path="id"
         item-label-path="name"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._deviceChanged}
@@ -284,7 +289,11 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   private _deviceChanged(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    let newValue = ev.detail.value;
+
+    if (newValue === "no_devices") {
+      newValue = "";
+    }
 
     if (newValue !== this._value) {
       this._setValue(newValue);

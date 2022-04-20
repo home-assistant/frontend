@@ -6,6 +6,7 @@ import { AutomationConfig } from "./automation";
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
+  http_use_ssl: boolean;
 }
 
 export interface GoogleEntityConfig {
@@ -47,6 +48,7 @@ export interface CloudPreferences {
 export interface CloudStatusLoggedIn {
   logged_in: true;
   cloud: "disconnected" | "connecting" | "connected";
+  cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
   google_entities: EntityFilter;
@@ -58,6 +60,7 @@ export interface CloudStatusLoggedIn {
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
   http_use_ssl: boolean;
+  active_subscription: boolean;
 }
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
@@ -186,10 +189,3 @@ export const updateCloudAlexaEntityConfig = (
     entity_id: entityId,
     ...values,
   });
-
-export interface CloudTTSInfo {
-  languages: Array<[string, string]>;
-}
-
-export const getCloudTTSInfo = (hass: HomeAssistant) =>
-  hass.callWS<CloudTTSInfo>({ type: "cloud/tts/info" });

@@ -1,5 +1,4 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -11,10 +10,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
-import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
+import type { InputSelectEntity } from "../../../data/input_select";
 import { SelectEntity, setSelectOption } from "../../../data/select";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
@@ -64,56 +63,35 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hideName
       >
-        <ha-paper-dropdown-menu
+        <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
+          .value=${stateObj.state}
           .disabled=${stateObj.state === UNAVAILABLE}
-          @iron-select=${this._selectedChanged}
+          naturalMenuWidth
+          @selected=${this._selectedChanged}
           @click=${stopPropagation}
+          @closed=${stopPropagation}
         >
-          <paper-listbox slot="dropdown-content">
-            ${stateObj.attributes.options
-              ? stateObj.attributes.options.map(
-                  (option) =>
-                    html`
-                      <paper-item .option=${option}
-                        >${(stateObj.attributes.device_class &&
-                          this.hass!.localize(
-                            `component.select.state.${stateObj.attributes.device_class}.${option}`
-                          )) ||
+          ${stateObj.attributes.options
+            ? stateObj.attributes.options.map(
+                (option) =>
+                  html`
+                    <mwc-list-item .value=${option}
+                      >${(stateObj.attributes.device_class &&
                         this.hass!.localize(
-                          `component.select.state._.${option}`
-                        ) ||
-                        option}</paper-item
-                      >
-                    `
-                )
-              : ""}
-          </paper-listbox>
-        </ha-paper-dropdown-menu>
+                          `component.select.state.${stateObj.attributes.device_class}.${option}`
+                        )) ||
+                      this.hass!.localize(
+                        `component.select.state._.${option}`
+                      ) ||
+                      option}
+                    </mwc-list-item>
+                  `
+              )
+            : ""}
+        </ha-select>
       </hui-generic-entity-row>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    if (!this.hass || !this._config) {
-      return;
-    }
-
-    const stateObj = this.hass.states[this._config.entity] as
-      | SelectEntity
-      | undefined;
-
-    if (!stateObj) {
-      return;
-    }
-
-    // Update selected after rendering the items or else it won't work in Firefox
-    if (stateObj.attributes.options) {
-      this.shadowRoot!.querySelector("paper-listbox")!.selected =
-        stateObj.attributes.options.indexOf(stateObj.state);
-    }
   }
 
   static get styles(): CSSResultGroup {
@@ -122,29 +100,21 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         display: flex;
         align-items: center;
       }
-      ha-paper-dropdown-menu {
-        margin-left: 16px;
-        flex: 1;
-      }
-      paper-item {
-        cursor: pointer;
-        min-width: 200px;
-      }
-      .pointer {
-        cursor: pointer;
-      }
-      state-badge:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
+      ha-select {
+        width: 100%;
       }
     `;
   }
 
   private _selectedChanged(ev): void {
-    const stateObj = this.hass!.states[this._config!.entity];
-    const option = ev.target.selectedItem.option;
-    if (option === stateObj.state) {
+    const stateObj = this.hass!.states[
+      this._config!.entity
+    ] as InputSelectEntity;
+    const option = ev.target.value;
+    if (
+      option === stateObj.state ||
+      !stateObj.attributes.options.includes(option)
+    ) {
       return;
     }
 

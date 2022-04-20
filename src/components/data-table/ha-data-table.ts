@@ -1,4 +1,3 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
@@ -22,7 +21,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../common/search/search-input";
+import "../search-input";
 import { debounce } from "../../common/util/debounce";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
@@ -31,6 +30,7 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import { filterData, sortData } from "./sort-filter";
 import { HomeAssistant } from "../../types";
+import "@lit-labs/virtualizer";
 
 declare global {
   // for fire event
@@ -70,6 +70,7 @@ export interface DataTableSortColumnData {
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   title: TemplateResult | string;
+  label?: TemplateResult | string;
   type?: "numeric" | "icon" | "icon-button" | "overflow-menu";
   template?: (data: any, row: T) => TemplateResult | string;
   width?: string;
@@ -294,6 +295,7 @@ export class HaDataTable extends LitElement {
               };
               return html`
                 <div
+                  aria-label=${column.label}
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({
@@ -337,110 +339,98 @@ export class HaDataTable extends LitElement {
                 </div>
               `
             : html`
-                <div
+                <lit-virtualizer
+                  scroller
                   class="mdc-data-table__content scroller ha-scrollbar"
                   @scroll=${this._saveScrollPos}
-                >
-                  ${scroll({
-                    items: this._items,
-                    layout: Layout1d,
-                    renderItem: (row: DataTableRowData, index) => {
-                      // not sure how this happens...
-                      if (!row) {
-                        return html``;
-                      }
-                      if (row.append) {
-                        return html`
-                          <div class="mdc-data-table__row">${row.content}</div>
-                        `;
-                      }
-                      if (row.empty) {
-                        return html` <div class="mdc-data-table__row"></div> `;
-                      }
-                      return html`
-                        <div
-                          aria-rowindex=${index! + 2}
-                          role="row"
-                          .rowId=${row[this.id]}
-                          @click=${this._handleRowClick}
-                          class="mdc-data-table__row ${classMap({
-                            "mdc-data-table__row--selected":
-                              this._checkedRows.includes(String(row[this.id])),
-                            clickable: this.clickable,
-                          })}"
-                          aria-selected=${ifDefined(
-                            this._checkedRows.includes(String(row[this.id]))
-                              ? true
-                              : undefined
-                          )}
-                          .selectable=${row.selectable !== false}
-                        >
-                          ${this.selectable
-                            ? html`
-                                <div
-                                  class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                                  role="cell"
-                                >
-                                  <ha-checkbox
-                                    class="mdc-data-table__row-checkbox"
-                                    @change=${this._handleRowCheckboxClick}
-                                    .rowId=${row[this.id]}
-                                    .disabled=${row.selectable === false}
-                                    .checked=${this._checkedRows.includes(
-                                      String(row[this.id])
-                                    )}
-                                  >
-                                  </ha-checkbox>
-                                </div>
-                              `
-                            : ""}
-                          ${Object.entries(this.columns).map(
-                            ([key, column]) => {
-                              if (column.hidden) {
-                                return "";
-                              }
-                              return html`
-                                <div
-                                  role="cell"
-                                  class="mdc-data-table__cell ${classMap({
-                                    "mdc-data-table__cell--numeric":
-                                      column.type === "numeric",
-                                    "mdc-data-table__cell--icon":
-                                      column.type === "icon",
-                                    "mdc-data-table__cell--icon-button":
-                                      column.type === "icon-button",
-                                    "mdc-data-table__cell--overflow-menu":
-                                      column.type === "overflow-menu",
-                                    grows: Boolean(column.grows),
-                                    forceLTR: Boolean(column.forceLTR),
-                                  })}"
-                                  style=${column.width
-                                    ? styleMap({
-                                        [column.grows ? "minWidth" : "width"]:
-                                          column.width,
-                                        maxWidth: column.maxWidth
-                                          ? column.maxWidth
-                                          : "",
-                                      })
-                                    : ""}
-                                >
-                                  ${column.template
-                                    ? column.template(row[key], row)
-                                    : row[key]}
-                                </div>
-                              `;
-                            }
-                          )}
-                        </div>
-                      `;
-                    },
-                  })}
-                </div>
+                  .items=${this._items}
+                  .renderItem=${this._renderRow}
+                ></lit-virtualizer>
               `}
         </div>
       </div>
     `;
   }
+
+  private _renderRow = (
+    row: DataTableRowData,
+    index: number
+  ): TemplateResult => {
+    // not sure how this happens...
+    if (!row) {
+      return html``;
+    }
+    if (row.append) {
+      return html` <div class="mdc-data-table__row">${row.content}</div> `;
+    }
+    if (row.empty) {
+      return html` <div class="mdc-data-table__row"></div> `;
+    }
+    return html`
+      <div
+        aria-rowindex=${index + 2}
+        role="row"
+        .rowId=${row[this.id]}
+        @click=${this._handleRowClick}
+        class="mdc-data-table__row ${classMap({
+          "mdc-data-table__row--selected": this._checkedRows.includes(
+            String(row[this.id])
+          ),
+          clickable: this.clickable,
+        })}"
+        aria-selected=${ifDefined(
+          this._checkedRows.includes(String(row[this.id])) ? true : undefined
+        )}
+        .selectable=${row.selectable !== false}
+      >
+        ${this.selectable
+          ? html`
+              <div
+                class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                role="cell"
+              >
+                <ha-checkbox
+                  class="mdc-data-table__row-checkbox"
+                  @change=${this._handleRowCheckboxClick}
+                  .rowId=${row[this.id]}
+                  .disabled=${row.selectable === false}
+                  .checked=${this._checkedRows.includes(String(row[this.id]))}
+                >
+                </ha-checkbox>
+              </div>
+            `
+          : ""}
+        ${Object.entries(this.columns).map(([key, column]) => {
+          if (column.hidden) {
+            return "";
+          }
+          return html`
+            <div
+              role="cell"
+              class="mdc-data-table__cell ${classMap({
+                "mdc-data-table__cell--numeric": column.type === "numeric",
+                "mdc-data-table__cell--icon": column.type === "icon",
+                "mdc-data-table__cell--icon-button":
+                  column.type === "icon-button",
+                "mdc-data-table__cell--overflow-menu":
+                  column.type === "overflow-menu",
+                grows: Boolean(column.grows),
+                forceLTR: Boolean(column.forceLTR),
+              })}"
+              style=${column.width
+                ? styleMap({
+                    [column.grows ? "minWidth" : "width"]: column.width,
+                    maxWidth: column.maxWidth ? column.maxWidth : "",
+                  })
+                : ""}
+            >
+              ${column.template ? column.template(row[key], row) : row[key]}
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  };
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();
@@ -536,7 +526,7 @@ export class HaDataTable extends LitElement {
     }
   }
 
-  private _handleRowCheckboxClick(ev: Event) {
+  private _handleRowCheckboxClick = (ev: Event) => {
     const checkbox = ev.currentTarget as HaCheckbox;
     const rowId = (checkbox as any).rowId;
 
@@ -549,16 +539,16 @@ export class HaDataTable extends LitElement {
       this._checkedRows = this._checkedRows.filter((row) => row !== rowId);
     }
     this._checkedRowsChanged();
-  }
+  };
 
-  private _handleRowClick(ev: Event) {
+  private _handleRowClick = (ev: Event) => {
     const target = ev.target as HTMLElement;
     if (["HA-CHECKBOX", "MWC-BUTTON"].includes(target.tagName)) {
       return;
     }
     const rowId = (ev.currentTarget as any).rowId;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
-  }
+  };
 
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
@@ -571,6 +561,9 @@ export class HaDataTable extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
+    if (this.filter) {
+      return;
+    }
     this._debounceSearch(ev.detail.value);
   }
 
@@ -935,11 +928,10 @@ export class HaDataTable extends LitElement {
         }
         .table-header {
           border-bottom: 1px solid var(--divider-color);
-          padding: 0 16px;
         }
         search-input {
-          position: relative;
-          top: 2px;
+          display: block;
+          flex: 1;
         }
         slot[name="header"] {
           display: block;
@@ -952,6 +944,7 @@ export class HaDataTable extends LitElement {
         }
         .scroller {
           height: calc(100% - 57px);
+          overflow: overlay !important;
         }
 
         .mdc-data-table__table.auto-height .scroller {
@@ -966,6 +959,9 @@ export class HaDataTable extends LitElement {
         }
         .clickable {
           cursor: pointer;
+        }
+        lit-virtualizer {
+          contain: size layout !important;
         }
       `,
     ];

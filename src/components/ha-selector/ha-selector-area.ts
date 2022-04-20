@@ -6,6 +6,7 @@ import { EntityRegistryEntry } from "../../data/entity_registry";
 import { AreaSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../ha-area-picker";
+import "../ha-areas-picker";
 
 @customElement("ha-selector-area")
 export class HaAreaSelector extends LitElement {
@@ -17,9 +18,13 @@ export class HaAreaSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = true;
 
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
@@ -28,27 +33,57 @@ export class HaAreaSelector extends LitElement {
         oldSelector !== this.selector &&
         this.selector.area.device?.integration
       ) {
-        this._loadConfigEntries();
+        getConfigEntries(this.hass, {
+          domain: this.selector.area.device.integration,
+        }).then((entries) => {
+          this._configEntries = entries;
+        });
       }
     }
   }
 
   protected render() {
-    return html`<ha-area-picker
-      .hass=${this.hass}
-      .value=${this.value}
-      .label=${this.label}
-      no-add
-      .deviceFilter=${this._filterDevices}
-      .entityFilter=${this._filterEntities}
-      .includeDeviceClasses=${this.selector.area.entity?.device_class
-        ? [this.selector.area.entity.device_class]
-        : undefined}
-      .includeDomains=${this.selector.area.entity?.domain
-        ? [this.selector.area.entity.domain]
-        : undefined}
-      .disabled=${this.disabled}
-    ></ha-area-picker>`;
+    if (!this.selector.area.multiple) {
+      return html`
+        <ha-area-picker
+          .hass=${this.hass}
+          .value=${this.value}
+          .label=${this.label}
+          .helper=${this.helper}
+          no-add
+          .deviceFilter=${this._filterDevices}
+          .entityFilter=${this._filterEntities}
+          .includeDeviceClasses=${this.selector.area.entity?.device_class
+            ? [this.selector.area.entity.device_class]
+            : undefined}
+          .includeDomains=${this.selector.area.entity?.domain
+            ? [this.selector.area.entity.domain]
+            : undefined}
+          .disabled=${this.disabled}
+          .required=${this.required}
+        ></ha-area-picker>
+      `;
+    }
+
+    return html`
+      <ha-areas-picker
+        .hass=${this.hass}
+        .value=${this.value}
+        .helper=${this.helper}
+        .pickAreaLabel=${this.label}
+        no-add
+        .deviceFilter=${this._filterDevices}
+        .entityFilter=${this._filterEntities}
+        .includeDeviceClasses=${this.selector.area.entity?.device_class
+          ? [this.selector.area.entity.device_class]
+          : undefined}
+        .includeDomains=${this.selector.area.entity?.domain
+          ? [this.selector.area.entity.domain]
+          : undefined}
+        .disabled=${this.disabled}
+        .required=${this.required}
+      ></ha-areas-picker>
+    `;
   }
 
   private _filterEntities = (entity: EntityRegistryEntry): boolean => {
@@ -85,12 +120,6 @@ export class HaAreaSelector extends LitElement {
     }
     return true;
   };
-
-  private async _loadConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === this.selector.area.device?.integration
-    );
-  }
 }
 
 declare global {

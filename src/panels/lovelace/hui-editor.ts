@@ -148,8 +148,8 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         app-toolbar {
-          background-color: var(--dark-background-color, #455a64);
-          color: var(--dark-text-color);
+          background-color: var(--app-header-edit-background-color, #455a64);
+          color: var(--app-header-edit-text-color, #fff);
         }
 
         mwc-button[disabled] {

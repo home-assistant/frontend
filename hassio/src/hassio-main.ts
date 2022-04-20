@@ -121,7 +121,8 @@ export class HassioMain extends SupervisorBaseElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      themeSettings
+      themeSettings,
+      true
     );
   }
 }

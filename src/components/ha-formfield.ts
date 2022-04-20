@@ -1,11 +1,11 @@
-import { Formfield } from "@material/mwc-formfield";
-import { css, CSSResultGroup } from "lit";
+import { FormfieldBase } from "@material/mwc-formfield/mwc-formfield-base";
+import { styles } from "@material/mwc-formfield/mwc-formfield.css";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-formfield")
-// @ts-expect-error
-export class HaFormfield extends Formfield {
+export class HaFormfield extends FormfieldBase {
   protected _labelClick() {
     const input = this.input;
     if (input) {
@@ -23,20 +23,18 @@ export class HaFormfield extends Formfield {
     }
   }
 
-  protected static get styles(): CSSResultGroup {
-    return [
-      Formfield.styles,
-      css`
-        :host(:not([alignEnd])) ::slotted(ha-switch) {
-          margin-right: 10px;
-        }
-        :host([dir="rtl"]:not([alignEnd])) ::slotted(ha-switch) {
-          margin-left: 10px;
-          margin-right: auto;
-        }
-      `,
-    ];
-  }
+  static override styles = [
+    styles,
+    css`
+      :host(:not([alignEnd])) ::slotted(ha-switch) {
+        margin-right: 10px;
+      }
+      :host([dir="rtl"]:not([alignEnd])) ::slotted(ha-switch) {
+        margin-left: 10px;
+        margin-right: auto;
+      }
+    `,
+  ];
 }
 
 declare global {

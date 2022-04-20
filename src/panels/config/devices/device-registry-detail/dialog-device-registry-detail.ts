@@ -1,16 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
 import { computeDeviceName } from "../../../../data/device_registry";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
@@ -60,15 +56,18 @@ class DialogDeviceRegistryDetail extends LitElement {
         .heading=${computeDeviceName(device, this.hass)}
       >
         <div>
-          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+            : ""}
           <div class="form">
-            <paper-input
+            <ha-textfield
               .value=${this._nameByUser}
-              @value-changed=${this._nameChanged}
+              @input=${this._nameChanged}
               .label=${this.hass.localize("ui.panel.config.devices.name")}
               .placeholder=${device.name || ""}
               .disabled=${this._submitting}
-            ></paper-input>
+              dialogInitialFocus
+            ></ha-textfield>
             <ha-area-picker
               .hass=${this.hass}
               .value=${this._areaId}
@@ -134,9 +133,9 @@ class DialogDeviceRegistryDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>): void {
+  private _nameChanged(ev): void {
     this._error = undefined;
-    this._nameByUser = ev.detail.value;
+    this._nameByUser = ev.target.value;
   }
 
   private _areaPicked(event: CustomEvent): void {
@@ -176,8 +175,9 @@ class DialogDeviceRegistryDetail extends LitElement {
         mwc-button.warning {
           margin-right: auto;
         }
-        .error {
-          color: var(--error-color);
+        ha-textfield {
+          display: block;
+          margin-bottom: 16px;
         }
         ha-switch {
           margin-right: 16px;

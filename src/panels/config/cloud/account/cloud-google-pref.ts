@@ -1,12 +1,12 @@
 import "@material/mwc-button";
-import "@material/mwc-textfield/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield/mwc-textfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { syncCloudGoogleEntities } from "../../../../data/google_assistant";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -136,7 +136,7 @@ export class CloudGooglePref extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
-                  <mwc-textfield
+                  <ha-textfield
                     id="google_secure_devices_pin"
                     .label=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
@@ -146,7 +146,7 @@ export class CloudGooglePref extends LitElement {
                     )}
                     .value=${google_secure_devices_pin || ""}
                     @change=${this._pinChanged}
-                  ></mwc-textfield>
+                  ></ha-textfield>
                 </div>
               `}
         </div>
@@ -229,7 +229,7 @@ export class CloudGooglePref extends LitElement {
   }
 
   private async _pinChanged(ev) {
-    const input = ev.target as TextField;
+    const input = ev.target as HaTextField;
     try {
       await updateCloudPref(this.hass, {
         [input.id]: input.value || null,
@@ -260,7 +260,7 @@ export class CloudGooglePref extends LitElement {
         right: auto;
         left: 24px;
       }
-      mwc-textfield {
+      ha-textfield {
         width: 250px;
         display: block;
         margin-top: 8px;

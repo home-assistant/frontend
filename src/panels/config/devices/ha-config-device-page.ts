@@ -27,11 +27,13 @@ import {
   computeDeviceName,
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
+  removeConfigEntryFromDevice,
 } from "../../../data/device_registry";
 import {
   fetchDiagnosticHandler,
   getDeviceDiagnosticsDownloadUrl,
   getConfigEntryDiagnosticsDownloadUrl,
+  DiagnosticInfo,
 } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -94,6 +96,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _diagnosticDownloadLinks?:
     | number
     | (TemplateResult | string)[];
+
+  @state() private _deleteButtons?: (TemplateResult | string)[];
 
   private _device = memoizeOne(
     (
@@ -186,10 +190,11 @@ export class HaConfigDevicePage extends LitElement {
       changedProps.has("entries")
     ) {
       this._diagnosticDownloadLinks = undefined;
+      this._deleteButtons = undefined;
     }
 
     if (
-      this._diagnosticDownloadLinks ||
+      (this._diagnosticDownloadLinks && this._deleteButtons) ||
       !this.devices ||
       !this.deviceId ||
       !this.entries
@@ -198,7 +203,9 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     this._diagnosticDownloadLinks = Math.random();
+    this._deleteButtons = []; // To prevent re-rendering if no delete buttons
     this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
+    this._renderDeleteButtons();
   }
 
   private async _renderDiagnosticButtons(requestId: number): Promise<void> {
@@ -213,22 +220,32 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     let links = await Promise.all(
-      this._integrations(device, this.entries).map(async (entry) => {
-        if (entry.state !== "loaded") {
-          return false;
-        }
-        const info = await fetchDiagnosticHandler(this.hass, entry.domain);
+      this._integrations(device, this.entries).map(
+        async (entry): Promise<boolean | { link: string; domain: string }> => {
+          if (entry.state !== "loaded") {
+            return false;
+          }
+          let info: DiagnosticInfo;
+          try {
+            info = await fetchDiagnosticHandler(this.hass, entry.domain);
+          } catch (err: any) {
+            if (err.code === "not_found") {
+              return false;
+            }
+            throw err;
+          }
 
-        if (!info.handlers.device && !info.handlers.config_entry) {
-          return false;
+          if (!info.handlers.device && !info.handlers.config_entry) {
+            return false;
+          }
+          return {
+            link: info.handlers.device
+              ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
+              : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
+            domain: entry.domain,
+          };
         }
-        return {
-          link: info.handlers.device
-            ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
-            : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
-          domain: entry.domain,
-        };
-      })
+      )
     );
 
     links = links.filter(Boolean);
@@ -261,6 +278,55 @@ export class HaConfigDevicePage extends LitElement {
         `
       );
     }
+  }
+
+  private _renderDeleteButtons() {
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+    const buttons: TemplateResult[] = [];
+    this._integrations(device, this.entries).forEach((entry) => {
+      if (entry.state !== "loaded" || !entry.supports_remove_device) {
+        return;
+      }
+      buttons.push(html`
+        <mwc-button
+          class="warning"
+          .entryId=${entry.entry_id}
+          @click=${this._confirmDeleteEntry}
+        >
+          ${buttons.length > 1
+            ? this.hass.localize(
+                `ui.panel.config.devices.delete_device_integration`,
+                {
+                  integration: domainToName(this.hass.localize, entry.domain),
+                }
+              )
+            : this.hass.localize(`ui.panel.config.devices.delete_device`)}
+        </mwc-button>
+      `);
+    });
+
+    if (buttons.length > 0) {
+      this._deleteButtons = buttons;
+    }
+  }
+
+  private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
+    const entryId = (e.currentTarget as any).entryId;
+
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entryId);
   }
 
   protected firstUpdated(changedProps) {
@@ -374,6 +440,9 @@ export class HaConfigDevicePage extends LitElement {
 
     if (Array.isArray(this._diagnosticDownloadLinks)) {
       deviceActions.push(...this._diagnosticDownloadLinks);
+    }
+    if (this._deleteButtons) {
+      deviceActions.push(...this._deleteButtons);
     }
 
     return html`
@@ -499,7 +568,7 @@ export class HaConfigDevicePage extends LitElement {
                       )}
                       .deviceName=${deviceName}
                       .entities=${entitiesByCategory[category]}
-                      .showDisabled=${device.disabled_by !== null}
+                      .showHidden=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
                   `
@@ -812,12 +881,15 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _showScriptDialog() {
-    showDeviceAutomationDialog(this, { deviceId: this.deviceId, script: true });
+    showDeviceAutomationDialog(this, {
+      device: this._device(this.deviceId, this.devices)!,
+      script: true,
+    });
   }
 
   private _showAutomationDialog() {
     showDeviceAutomationDialog(this, {
-      deviceId: this.deviceId,
+      device: this._device(this.deviceId, this.devices)!,
       script: false,
     });
   }
@@ -839,33 +911,6 @@ export class HaConfigDevicePage extends LitElement {
           .hass=${this.hass}
           .device=${device}
         ></ha-device-actions-mqtt>
-      `);
-    }
-    if (domains.includes("ozw")) {
-      import("./device-detail/integration-elements/ozw/ha-device-actions-ozw");
-      import("./device-detail/integration-elements/ozw/ha-device-info-ozw");
-      deviceInfo.push(html`
-        <ha-device-info-ozw
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-info-ozw>
-      `);
-      deviceActions.push(html`
-        <ha-device-actions-ozw
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-ozw>
-      `);
-    }
-    if (domains.includes("tasmota")) {
-      import(
-        "./device-detail/integration-elements/tasmota/ha-device-actions-tasmota"
-      );
-      deviceActions.push(html`
-        <ha-device-actions-tasmota
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-tasmota>
       `);
     }
     if (domains.includes("zha")) {

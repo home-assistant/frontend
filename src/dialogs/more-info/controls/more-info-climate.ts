@@ -1,6 +1,4 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -12,10 +10,11 @@ import {
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-climate-control";
-import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-switch";
 import {
@@ -169,109 +168,93 @@ class MoreInfoClimate extends LitElement {
 
         <div class="container-hvac_modes">
           <div class="controls">
-            <ha-paper-dropdown-menu
-              label-float
-              dynamic-align
+            <ha-select
               .label=${hass.localize("ui.card.climate.operation")}
+              .value=${stateObj.state}
+              fixedMenuPosition
+              naturalMenuWidth
+              @selected=${this._handleOperationmodeChanged}
+              @closed=${stopPropagation}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                attr-for-selected="item-name"
-                .selected=${stateObj.state}
-                @selected-changed=${this._handleOperationmodeChanged}
-              >
-                ${stateObj.attributes.hvac_modes
-                  .concat()
-                  .sort(compareClimateHvacModes)
-                  .map(
-                    (mode) => html`
-                      <paper-item item-name=${mode}>
-                        ${hass.localize(`component.climate.state._.${mode}`)}
-                      </paper-item>
-                    `
-                  )}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>
+              ${stateObj.attributes.hvac_modes
+                .concat()
+                .sort(compareClimateHvacModes)
+                .map(
+                  (mode) => html`
+                    <mwc-list-item .value=${mode}>
+                      ${hass.localize(`component.climate.state._.${mode}`)}
+                    </mwc-list-item>
+                  `
+                )}
+            </ha-select>
           </div>
         </div>
 
         ${supportPresetMode && stateObj.attributes.preset_modes
           ? html`
               <div class="container-preset_modes">
-                <ha-paper-dropdown-menu
-                  label-float
-                  dynamic-align
+                <ha-select
                   .label=${hass.localize("ui.card.climate.preset_mode")}
+                  .value=${stateObj.attributes.preset_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handlePresetmodeChanged}
+                  @closed=${stopPropagation}
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    attr-for-selected="item-name"
-                    .selected=${stateObj.attributes.preset_mode}
-                    @selected-changed=${this._handlePresetmodeChanged}
-                  >
-                    ${stateObj.attributes.preset_modes!.map(
-                      (mode) => html`
-                        <paper-item item-name=${mode}>
-                          ${hass.localize(
-                            `state_attributes.climate.preset_mode.${mode}`
-                          ) || mode}
-                        </paper-item>
-                      `
-                    )}
-                  </paper-listbox>
-                </ha-paper-dropdown-menu>
+                  ${stateObj.attributes.preset_modes!.map(
+                    (mode) => html`
+                      <mwc-list-item .value=${mode}>
+                        ${hass.localize(
+                          `state_attributes.climate.preset_mode.${mode}`
+                        ) || mode}
+                      </mwc-list-item>
+                    `
+                  )}
+                </ha-select>
               </div>
             `
           : ""}
         ${supportFanMode && stateObj.attributes.fan_modes
           ? html`
               <div class="container-fan_list">
-                <ha-paper-dropdown-menu
-                  label-float
-                  dynamic-align
+                <ha-select
                   .label=${hass.localize("ui.card.climate.fan_mode")}
+                  .value=${stateObj.attributes.fan_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleFanmodeChanged}
+                  @closed=${stopPropagation}
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    attr-for-selected="item-name"
-                    .selected=${stateObj.attributes.fan_mode}
-                    @selected-changed=${this._handleFanmodeChanged}
-                  >
-                    ${stateObj.attributes.fan_modes!.map(
-                      (mode) => html`
-                        <paper-item item-name=${mode}>
-                          ${hass.localize(
-                            `state_attributes.climate.fan_mode.${mode}`
-                          ) || mode}
-                        </paper-item>
-                      `
-                    )}
-                  </paper-listbox>
-                </ha-paper-dropdown-menu>
+                  ${stateObj.attributes.fan_modes!.map(
+                    (mode) => html`
+                      <mwc-list-item .value=${mode}>
+                        ${hass.localize(
+                          `state_attributes.climate.fan_mode.${mode}`
+                        ) || mode}
+                      </mwc-list-item>
+                    `
+                  )}
+                </ha-select>
               </div>
             `
           : ""}
         ${supportSwingMode && stateObj.attributes.swing_modes
           ? html`
               <div class="container-swing_list">
-                <ha-paper-dropdown-menu
-                  label-float
-                  dynamic-align
+                <ha-select
                   .label=${hass.localize("ui.card.climate.swing_mode")}
+                  .value=${stateObj.attributes.swing_mode}
+                  fixedMenuPosition
+                  naturalMenuWidth
+                  @selected=${this._handleSwingmodeChanged}
+                  @closed=${stopPropagation}
                 >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    attr-for-selected="item-name"
-                    .selected=${stateObj.attributes.swing_mode}
-                    @selected-changed=${this._handleSwingmodeChanged}
-                  >
-                    ${stateObj.attributes.swing_modes!.map(
-                      (mode) => html`
-                        <paper-item item-name=${mode}>${mode}</paper-item>
-                      `
-                    )}
-                  </paper-listbox>
-                </ha-paper-dropdown-menu>
+                  ${stateObj.attributes.swing_modes!.map(
+                    (mode) => html`
+                      <mwc-list-item .value=${mode}>${mode}</mwc-list-item>
+                    `
+                  )}
+                </ha-select>
               </div>
             `
           : ""}
@@ -366,7 +349,7 @@ class MoreInfoClimate extends LitElement {
   }
 
   private _handleFanmodeChanged(ev) {
-    const newVal = ev.detail.value;
+    const newVal = ev.target.value;
     this._callServiceHelper(
       this.stateObj!.attributes.fan_mode,
       newVal,
@@ -376,14 +359,14 @@ class MoreInfoClimate extends LitElement {
   }
 
   private _handleOperationmodeChanged(ev) {
-    const newVal = ev.detail.value;
+    const newVal = ev.target.value;
     this._callServiceHelper(this.stateObj!.state, newVal, "set_hvac_mode", {
       hvac_mode: newVal,
     });
   }
 
   private _handleSwingmodeChanged(ev) {
-    const newVal = ev.detail.value;
+    const newVal = ev.target.value;
     this._callServiceHelper(
       this.stateObj!.attributes.swing_mode,
       newVal,
@@ -393,7 +376,7 @@ class MoreInfoClimate extends LitElement {
   }
 
   private _handlePresetmodeChanged(ev) {
-    const newVal = ev.detail.value || null;
+    const newVal = ev.target.value || null;
     this._callServiceHelper(
       this.stateObj!.attributes.preset_mode,
       newVal,
@@ -444,12 +427,9 @@ class MoreInfoClimate extends LitElement {
         color: var(--primary-text-color);
       }
 
-      ha-paper-dropdown-menu {
+      ha-select {
         width: 100%;
-      }
-
-      paper-item {
-        cursor: pointer;
+        margin-top: 8px;
       }
 
       ha-slider {
@@ -488,3 +468,9 @@ class MoreInfoClimate extends LitElement {
 }
 
 customElements.define("more-info-climate", MoreInfoClimate);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-climate": MoreInfoClimate;
+  }
+}

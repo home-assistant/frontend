@@ -1,11 +1,11 @@
 import { mdiCalendar } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
+import "./ha-textfield";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 
@@ -35,20 +35,27 @@ export class HaDateInput extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   render() {
-    return html`<paper-input
+    return html`<ha-textfield
       .label=${this.label}
+      .helper=${this.helper}
       .disabled=${this.disabled}
-      no-label-float
+      iconTrailing
+      helperPersistent
       @click=${this._openDialog}
       .value=${this.value
         ? formatDateNumeric(new Date(this.value), this.locale)
         : ""}
+      .required=${this.required}
     >
-      <ha-svg-icon slot="suffix" .path=${mdiCalendar}></ha-svg-icon>
-    </paper-input>`;
+      <ha-svg-icon slot="trailingIcon" .path=${mdiCalendar}></ha-svg-icon>
+    </ha-textfield>`;
   }
 
   private _openDialog() {
@@ -73,9 +80,6 @@ export class HaDateInput extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input {
-        width: 110px;
-      }
       ha-svg-icon {
         color: var(--secondary-text-color);
       }

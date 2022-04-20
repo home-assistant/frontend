@@ -101,7 +101,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                     )}
                   </p>`
                 : this._step.type === "form"
-                ? html` <ha-markdown
+                ? html`<ha-markdown
                       allowsvg
                       breaks
                       .content=${this.hass.localize(
@@ -112,6 +112,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                       )}
                     ></ha-markdown>
                     <ha-form
+                      .hass=${this.hass}
                       .data=${this._stepData}
                       .schema=${this._step.data_schema}
                       .error=${this._step.errors}

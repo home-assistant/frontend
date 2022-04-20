@@ -1,5 +1,3 @@
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +13,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-chip";
+import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/ha-textfield";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
@@ -61,7 +61,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: AlarmPanelCardConfig;
 
-  @query("#alarmCode") private _input?: PaperInputElement;
+  @query("#alarmCode") private _input?: HaTextField;
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
@@ -182,14 +182,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         ${!stateObj.attributes.code_format
           ? html``
           : html`
-              <paper-input
+              <ha-textfield
                 id="alarmCode"
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
                 .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
                   ? "numeric"
                   : "text"}
-              ></paper-input>
+              ></ha-textfield>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER
           ? html``
@@ -263,6 +263,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         padding-bottom: 16px;
         position: relative;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         box-sizing: border-box;
         --alarm-color-disarmed: var(--label-badge-green);
         --alarm-color-pending: var(--label-badge-yellow);
@@ -282,6 +285,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       .unavailable {
@@ -319,8 +324,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         }
       }
 
-      paper-input {
-        margin: 0 auto 8px;
+      ha-textfield {
+        display: block;
+        margin: 8px;
         max-width: 150px;
         text-align: center;
       }

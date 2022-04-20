@@ -1,6 +1,6 @@
 // To use comlink under ES5
 import { expose } from "comlink";
-import marked from "marked";
+import { marked } from "marked";
 import "proxy-polyfill";
 import { filterXSS, getDefaultWhiteList } from "xss";
 
@@ -47,6 +47,7 @@ const renderMarkdown = (
       input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
+      "ha-alert": ["alert-type", "title"],
     };
   }
 

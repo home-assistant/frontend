@@ -14,7 +14,7 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
-import "../../../src/common/search/search-input";
+import "../../../src/components/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";
@@ -110,8 +110,6 @@ class HassioAddonStore extends LitElement {
               <div class="search">
                 <search-input
                   .hass=${this.hass}
-                  no-label-float
-                  no-underline
                   .filter=${this._filter}
                   @value-changed=${this._filterChanged}
                 ></search-input>
@@ -221,13 +219,14 @@ class HassioAddonStore extends LitElement {
         margin-top: 24px;
       }
       .search {
-        padding: 0 16px;
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        position: sticky;
+        top: 0;
+        z-index: 2;
       }
-      .search search-input {
-        position: relative;
-        top: 2px;
+      search-input {
+        display: block;
+        --mdc-text-field-fill-color: var(--sidebar-background-color);
+        --mdc-text-field-idle-line-color: var(--divider-color);
       }
       .advanced {
         padding: 12px;

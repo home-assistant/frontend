@@ -1,18 +1,15 @@
-import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
   mdiCancel,
   mdiDelete,
+  mdiEyeOff,
   mdiFilterVariant,
   mdiPencilOff,
   mdiPlus,
   mdiRestoreAlert,
   mdiUndo,
 } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -24,7 +21,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import "../../../common/search/search-input";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
@@ -33,6 +29,7 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
@@ -105,11 +102,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _showDisabled = false;
 
+  @state() private _showHidden = false;
+
   @state() private _showUnavailable = true;
 
   @state() private _showReadOnly = true;
 
-  @state() private _filter = "";
+  @state() private _filter: string = history.state?.filter || "";
 
   @state() private _numHiddenEntities = 0;
 
@@ -168,6 +167,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     (narrow, _language, showDisabled): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.state_icon"
+        ),
         type: "icon",
         template: (_, entry: EntityRow) => html`
           <ha-state-icon
@@ -250,7 +252,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "68px",
         template: (_status, entity: EntityRow) =>
-          entity.unavailable || entity.disabled_by || entity.readonly
+          entity.unavailable ||
+          entity.disabled_by ||
+          entity.hidden_by ||
+          entity.readonly
             ? html`
                 <div
                   tabindex="0"
@@ -266,6 +271,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       ? mdiAlertCircle
                       : entity.disabled_by
                       ? mdiCancel
+                      : entity.hidden_by
+                      ? mdiEyeOff
                       : mdiPencilOff}
                   ></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
@@ -280,6 +287,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       : entity.disabled_by
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.disabled"
+                        )
+                      : entity.hidden_by
+                      ? this.hass.localize(
+                          "ui.panel.config.entities.picker.status.hidden"
                         )
                       : this.hass.localize(
                           "ui.panel.config.entities.picker.status.readonly"
@@ -302,6 +313,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean,
+      showHidden: boolean,
       entries?: ConfigEntry[]
     ) => {
       const result: EntityRow[] = [];
@@ -363,10 +375,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         );
       }
 
+      if (!showHidden) {
+        filteredEntities = filteredEntities.filter(
+          (entity) => !entity.hidden_by
+        );
+      }
+
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
-        const restored = entity?.attributes.restored;
+        const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? deviceLookup[entry.device_id!]?.area_id;
         const area = areaId ? areaLookup[areaId] : undefined;
 
@@ -466,6 +484,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._showDisabled,
         this._showUnavailable,
         this._showReadOnly,
+        this._showHidden,
         this._entries
       );
 
@@ -488,6 +507,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .data=${filteredEntities}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenEntities}
+        .hideFilterMenu=${this._selectedEntities.length > 0}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search"
         )}
@@ -507,125 +527,155 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .hasFab=${includeZHAFab}
       >
         ${this._selectedEntities.length
-          ? html`<div
-              class=${classMap({
-                "header-toolbar": this.narrow,
-                "table-header": !this.narrow,
-              })}
-              slot="header"
-            >
-              <p class="selected-txt">
-                ${this.hass.localize(
-                  "ui.panel.config.entities.picker.selected",
-                  "number",
-                  this._selectedEntities.length
-                )}
-              </p>
-              <div class="header-btns">
-                ${!this.narrow
-                  ? html`
-                      <mwc-button @click=${this._enableSelected}
-                        >${this.hass.localize(
-                          "ui.panel.config.entities.picker.enable_selected.button"
-                        )}</mwc-button
-                      >
-                      <mwc-button @click=${this._disableSelected}
-                        >${this.hass.localize(
-                          "ui.panel.config.entities.picker.disable_selected.button"
-                        )}</mwc-button
-                      >
-                      <mwc-button @click=${this._removeSelected} class="warning"
-                        >${this.hass.localize(
-                          "ui.panel.config.entities.picker.remove_selected.button"
-                        )}</mwc-button
-                      >
-                    `
-                  : html`
-                      <ha-icon-button
-                        id="enable-btn"
-                        @click=${this._enableSelected}
-                        .path=${mdiUndo}
-                        .label=${this.hass.localize("ui.common.enable")}
-                      ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" for="enable-btn">
-                        ${this.hass.localize(
-                          "ui.panel.config.entities.picker.enable_selected.button"
-                        )}
-                      </paper-tooltip>
-                      <ha-icon-button
-                        id="disable-btn"
-                        @click=${this._disableSelected}
-                        .path=${mdiCancel}
-                        .label=${this.hass.localize("ui.common.disable")}
-                      ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" for="disable-btn">
-                        ${this.hass.localize(
-                          "ui.panel.config.entities.picker.disable_selected.button"
-                        )}
-                      </paper-tooltip>
-                      <ha-icon-button
-                        class="warning"
-                        id="remove-btn"
-                        @click=${this._removeSelected}
-                        .path=${mdiDelete}
-                        .label=${this.hass.localize("ui.common.remove")}
-                      ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" for="remove-btn">
-                        ${this.hass.localize(
-                          "ui.panel.config.entities.picker.remove_selected.button"
-                        )}
-                      </paper-tooltip>
-                    `}
+          ? html`
+              <div
+                class=${classMap({
+                  "header-toolbar": this.narrow,
+                  "table-header": !this.narrow,
+                })}
+                slot="header"
+              >
+                <p class="selected-txt">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.selected",
+                    "number",
+                    this._selectedEntities.length
+                  )}
+                </p>
+                <div class="header-btns">
+                  ${!this.narrow
+                    ? html`
+                        <mwc-button @click=${this._enableSelected}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.enable_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button @click=${this._disableSelected}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.disable_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button @click=${this._hideSelected}
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.hide_selected.button"
+                          )}</mwc-button
+                        >
+                        <mwc-button
+                          @click=${this._removeSelected}
+                          class="warning"
+                          >${this.hass.localize(
+                            "ui.panel.config.entities.picker.remove_selected.button"
+                          )}</mwc-button
+                        >
+                      `
+                    : html`
+                        <ha-icon-button
+                          id="enable-btn"
+                          @click=${this._enableSelected}
+                          .path=${mdiUndo}
+                          .label=${this.hass.localize("ui.common.enable")}
+                        ></ha-icon-button>
+                        <paper-tooltip animation-delay="0" for="enable-btn">
+                          ${this.hass.localize(
+                            "ui.panel.config.entities.picker.enable_selected.button"
+                          )}
+                        </paper-tooltip>
+                        <ha-icon-button
+                          id="disable-btn"
+                          @click=${this._disableSelected}
+                          .path=${mdiCancel}
+                          .label=${this.hass.localize("ui.common.disable")}
+                        ></ha-icon-button>
+                        <paper-tooltip animation-delay="0" for="disable-btn">
+                          ${this.hass.localize(
+                            "ui.panel.config.entities.picker.disable_selected.button"
+                          )}
+                        </paper-tooltip>
+                        <ha-icon-button
+                          id="hide-btn"
+                          @click=${this._hideSelected}
+                          .path=${mdiEyeOff}
+                          .label=${this.hass.localize("ui.common.hide")}
+                        ></ha-icon-button>
+                        <paper-tooltip animation-delay="0" for="hide-btn">
+                          ${this.hass.localize(
+                            "ui.panel.config.entities.picker.hide_selected.button"
+                          )}
+                        </paper-tooltip>
+                        <ha-icon-button
+                          class="warning"
+                          id="remove-btn"
+                          @click=${this._removeSelected}
+                          .path=${mdiDelete}
+                          .label=${this.hass.localize("ui.common.remove")}
+                        ></ha-icon-button>
+                        <paper-tooltip animation-delay="0" for="remove-btn">
+                          ${this.hass.localize(
+                            "ui.panel.config.entities.picker.remove_selected.button"
+                          )}
+                        </paper-tooltip>
+                      `}
+                </div>
               </div>
-            </div> `
-          : html`<ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.filter"
-                )}
-                .path=${mdiFilterVariant}
-              ></ha-icon-button>
-              <mwc-list-item
-                @request-selected=${this._showDisabledChanged}
-                graphic="control"
-                .selected=${this._showDisabled}
-              >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showDisabled}
-                ></ha-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_disabled"
-                )}
-              </mwc-list-item>
-              <mwc-list-item
-                @request-selected=${this._showRestoredChanged}
-                graphic="control"
-                .selected=${this._showUnavailable}
-              >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showUnavailable}
-                ></ha-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_unavailable"
-                )}
-              </mwc-list-item>
-              <mwc-list-item
-                @request-selected=${this._showReadOnlyChanged}
-                graphic="control"
-                .selected=${this._showReadOnly}
-              >
-                <ha-checkbox
-                  slot="graphic"
-                  .checked=${this._showReadOnly}
-                ></ha-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_readonly"
-                )}
-              </mwc-list-item>
-            </ha-button-menu>`}
+            `
+          : html`
+              <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.entities.picker.filter.filter"
+                  )}
+                  .path=${mdiFilterVariant}
+                ></ha-icon-button>
+                ${this.narrow && activeFilters?.length
+                  ? html`<mwc-list-item @click=${this._clearFilter}
+                      >${this.hass.localize(
+                        "ui.components.data-table.filtering_by"
+                      )}
+                      ${activeFilters.join(", ")}
+                      <span class="clear">Clear</span></mwc-list-item
+                    >`
+                  : ""}
+                <ha-check-list-item
+                  @request-selected=${this._showDisabledChanged}
+                  .selected=${this._showDisabled}
+                  left
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.entities.picker.filter.show_disabled"
+                  )}
+                </ha-check-list-item>
+                <ha-check-list-item
+                  @request-selected=${this._showHiddenChanged}
+                  .selected=${this._showHidden}
+                  left
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.entities.picker.filter.show_hidden"
+                  )}
+                </ha-check-list-item>
+                <ha-check-list-item
+                  @request-selected=${this._showRestoredChanged}
+                  graphic="control"
+                  .selected=${this._showUnavailable}
+                  left
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.entities.picker.filter.show_unavailable"
+                  )}
+                </ha-check-list-item>
+                <ha-check-list-item
+                  @request-selected=${this._showReadOnlyChanged}
+                  graphic="control"
+                  .selected=${this._showReadOnly}
+                  left
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.entities.picker.filter.show_readonly"
+                  )}
+                </ha-check-list-item>
+              </ha-button-menu>
+            `}
         ${includeZHAFab
           ? html`<a href="/config/zha/add" slot="fab">
               <ha-fab
@@ -673,6 +723,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           entity_id: entityId,
           platform: computeDomain(entityId),
           disabled_by: null,
+          hidden_by: null,
           area_id: null,
           config_entry_id: null,
           device_id: null,
@@ -695,6 +746,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._showDisabled = ev.detail.selected;
   }
 
+  private _showHiddenChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showHidden = ev.detail.selected;
+  }
+
   private _showRestoredChanged(ev: CustomEvent<RequestSelectedDetail>) {
     if (ev.detail.source !== "property") {
       return;
@@ -711,6 +769,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
+    history.replaceState({ filter: this._filter }, "");
   }
 
   private _handleSelectionChanged(
@@ -785,6 +844,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
             disabled_by: "user",
+          })
+        );
+        this._clearSelection();
+      },
+    });
+  }
+
+  private _hideSelected() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_title",
+        "number",
+        this._selectedEntities.length
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entities.picker.hide_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.hide"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: () => {
+        this._selectedEntities.forEach((entity) =>
+          updateEntityRegistryEntry(this.hass, entity, {
+            hidden_by: "user",
           })
         );
         this._clearSelection();
@@ -872,8 +954,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 58px;
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          height: 56px;
+          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          border-bottom: 1px solid
+            var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+          box-sizing: border-box;
         }
         .header-toolbar {
           display: flex;
@@ -896,12 +981,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .header-toolbar .header-btns {
           margin-right: -12px;
         }
+        .header-btns {
+          display: flex;
+        }
         .header-btns > mwc-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }
         ha-button-menu {
-          margin: 0 -8px 0 8px;
+          margin-left: 8px;
+        }
+        .clear {
+          color: var(--primary-color);
+          padding-left: 8px;
+          text-transform: uppercase;
         }
       `,
     ];

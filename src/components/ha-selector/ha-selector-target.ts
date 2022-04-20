@@ -1,8 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import "@polymer/paper-input/paper-input";
 import {
   HassEntity,
   HassServiceTarget,
@@ -30,6 +25,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   @property() public value?: HassServiceTarget;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   @state() private _entityPlaformLookup?: Record<string, string>;
 
@@ -69,6 +66,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     return html`<ha-target-picker
       .hass=${this.hass}
       .value=${this.value}
+      .helper=${this.helper}
       .deviceFilter=${this._filterDevices}
       .entityRegFilter=${this._filterRegEntities}
       .entityFilter=${this._filterEntities}
@@ -139,9 +137,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
       (entry) =>
-        entry.domain ===
-        (this.selector.target.device?.integration ||
-          this.selector.target.entity?.integration)
+        entry.domain === this.selector.target.device?.integration ||
+        entry.domain === this.selector.target.entity?.integration
     );
   }
 

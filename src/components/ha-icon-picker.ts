@@ -1,16 +1,13 @@
-import { mdiCheck, mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
 import { css, html, LitElement, TemplateResult } from "lit";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
+import { HomeAssistant } from "../types";
+import "./ha-combo-box";
+import type { HaComboBox } from "./ha-combo-box";
 import "./ha-icon";
-import "./ha-icon-button";
 
 type IconItem = {
   icon: string;
@@ -19,38 +16,22 @@ type IconItem = {
 let iconItems: IconItem[] = [];
 
 // eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<style>
-    paper-icon-item {
-      padding: 0;
-      margin: -8px;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
-  </style>
-
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-icon-item>
-    <ha-icon .icon=${item.icon} slot="item-icon"></ha-icon>
-    <paper-item-body>${item.icon}</paper-item-body>
-  </paper-icon-item>`;
+const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<mwc-list-item
+  graphic="avatar"
+>
+  <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+  ${item.icon}
+</mwc-list-item>`;
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
+  @property() public hass?: HomeAssistant;
+
   @property() public value?: string;
 
   @property() public label?: string;
+
+  @property() public helper?: string;
 
   @property() public placeholder?: string;
 
@@ -60,55 +41,48 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public required = false;
+
   @property({ type: Boolean }) public invalid = false;
 
   @state() private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
+  @query("ha-combo-box", true) private comboBox!: HaComboBox;
 
   protected render(): TemplateResult {
     return html`
-      <vaadin-combo-box-light
+      <ha-combo-box
+        .hass=${this.hass}
         item-value-path="icon"
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
         .filteredItems=${iconItems}
-        ${comboBoxRenderer(rowRenderer)}
+        .label=${this.label}
+        .helper=${this.helper}
+        .disabled=${this.disabled}
+        .required=${this.required}
+        .placeholder=${this.placeholder}
+        .errorMessage=${this.errorMessage}
+        .invalid=${this.invalid}
+        .renderer=${rowRenderer}
+        icon
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
       >
-        <paper-input
-          .label=${this.label}
-          .placeholder=${this.placeholder}
-          .disabled=${this.disabled}
-          class="input"
-          autocapitalize="none"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-          .errorMessage=${this.errorMessage}
-          .invalid=${this.invalid}
-        >
-          ${this._value || this.placeholder
-            ? html`
-                <ha-icon .icon=${this._value || this.placeholder} slot="prefix">
-                </ha-icon>
-              `
-            : this.fallbackPath
-            ? html`<ha-svg-icon
-                .path=${this.fallbackPath}
-                slot="prefix"
-              ></ha-svg-icon>`
-            : ""}
-          <ha-icon-button
-            .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            slot="suffix"
-            class="toggle-button"
-          ></ha-icon-button>
-        </paper-input>
-      </vaadin-combo-box-light>
+        ${this._value || this.placeholder
+          ? html`
+              <ha-icon .icon=${this._value || this.placeholder} slot="icon">
+              </ha-icon>
+            `
+          : this.fallbackPath
+          ? html`<ha-svg-icon
+              .path=${this.fallbackPath}
+              slot="icon"
+            ></ha-svg-icon>`
+          : ""}
+      </ha-combo-box>
     `;
   }
 
@@ -150,6 +124,7 @@ export class HaIconPicker extends LitElement {
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
+    ev.stopPropagation();
     this._setValue(ev.detail.value);
   }
 
@@ -158,7 +133,7 @@ export class HaIconPicker extends LitElement {
     fireEvent(
       this,
       "value-changed",
-      { value },
+      { value: this._value },
       {
         bubbles: false,
         composed: false,
@@ -205,16 +180,12 @@ export class HaIconPicker extends LitElement {
     return css`
       ha-icon,
       ha-svg-icon {
+        color: var(--primary-text-color);
         position: relative;
         bottom: 2px;
       }
       *[slot="prefix"] {
         margin-right: 8px;
-      }
-      paper-input > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
       }
     `;
   }

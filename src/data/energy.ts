@@ -12,7 +12,12 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
-import { fetchStatistics, Statistics } from "./history";
+import {
+  fetchStatistics,
+  Statistics,
+  StatisticsMetaData,
+  getStatisticMetadata,
+} from "./history";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -136,6 +141,7 @@ export interface GasSourceTypeEnergyPreference {
   entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
+  unit_of_measurement?: string | null;
 }
 
 type EnergySource =
@@ -241,14 +247,14 @@ const getEnergyData = async (
   end?: Date
 ): Promise<EnergyData> => {
   const [configEntries, entityRegistryEntries, info] = await Promise.all([
-    getConfigEntries(hass),
+    getConfigEntries(hass, { domain: "co2signal" }),
     subscribeOne(hass.connection, subscribeEntityRegistry),
     getEnergyInfo(hass),
   ]);
 
-  const co2SignalConfigEntry = configEntries.find(
-    (entry) => entry.domain === "co2signal"
-  );
+  const co2SignalConfigEntry = configEntries.length
+    ? configEntries[0]
+    : undefined;
 
   let co2SignalEntity: string | undefined;
 
@@ -271,6 +277,15 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   const statIDs: string[] = [];
+  const gasSources: GasSourceTypeEnergyPreference[] =
+    prefs.energy_sources.filter(
+      (source) => source.type === "gas"
+    ) as GasSourceTypeEnergyPreference[];
+  const gasStatisticIdsWithMeta: StatisticsMetaData[] =
+    await getStatisticMetadata(
+      hass,
+      gasSources.map((source) => source.stat_energy_from)
+    );
 
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
@@ -280,6 +295,20 @@ const getEnergyData = async (
 
     if (source.type === "gas") {
       statIDs.push(source.stat_energy_from);
+      const entity = hass.states[source.stat_energy_from];
+      if (!entity) {
+        for (const statisticIdWithMeta of gasStatisticIdsWithMeta) {
+          if (
+            statisticIdWithMeta?.statistic_id === source.stat_energy_from &&
+            statisticIdWithMeta?.unit_of_measurement
+          ) {
+            source.unit_of_measurement =
+              statisticIdWithMeta?.unit_of_measurement === "Wh"
+                ? "kWh"
+                : statisticIdWithMeta?.unit_of_measurement;
+          }
+        }
+      }
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
       }
@@ -558,6 +587,9 @@ export const getEnergyGasUnit = (
       return entity.attributes.unit_of_measurement === "Wh"
         ? "kWh"
         : entity.attributes.unit_of_measurement;
+    }
+    if (source.unit_of_measurement) {
+      return source.unit_of_measurement;
     }
   }
   return undefined;

@@ -15,7 +15,7 @@ import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../common/search/search-input";
+import "../../../../components/search-input";
 import "../../../../components/ha-circular-progress";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
 import type {
@@ -100,7 +100,6 @@ export class HuiCardPicker extends LitElement {
       <search-input
         .hass=${this.hass}
         .filter=${this._filter}
-        no-label-float
         @value-changed=${this._handleSearchChange}
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.edit_card.search_cards"
@@ -337,7 +336,8 @@ export class HuiCardPicker extends LitElement {
       css`
         search-input {
           display: block;
-          margin: 0 -8px;
+          --mdc-shape-small: var(--card-picker-search-shape);
+          margin: var(--card-picker-search-margin);
         }
 
         .cards-container {

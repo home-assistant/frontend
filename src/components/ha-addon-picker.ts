@@ -13,9 +13,12 @@ import { HaComboBox } from "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (
   item
-) => html`<mwc-list-item twoline>
+) => html`<mwc-list-item twoline graphic="icon">
   <span>${item.name}</span>
   <span slot="secondary">${item.slug}</span>
+  ${item.icon
+    ? html`<img slot="graphic" .src="/api/hassio/addons/${item.slug}/icon" />`
+    : ""}
 </mwc-list-item>`;
 
 @customElement("ha-addon-picker")
@@ -26,9 +29,13 @@ class HaAddonPicker extends LitElement {
 
   @property() public value = "";
 
+  @property() public helper?: string;
+
   @state() private _addons?: HassioAddonInfo[];
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public required = false;
 
   @query("ha-combo-box") private _comboBox!: HaComboBox;
 
@@ -55,6 +62,9 @@ class HaAddonPicker extends LitElement {
           ? this.hass.localize("ui.components.addon-picker.addon")
           : this.label}
         .value=${this._value}
+        .required=${this.required}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .renderer=${rowRenderer}
         .items=${this._addons}
         item-value-path="slug"

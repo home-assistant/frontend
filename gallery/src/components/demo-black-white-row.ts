@@ -53,13 +53,19 @@ class DemoBlackWhiteRow extends LitElement {
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    applyThemesOnElement(this.shadowRoot!.querySelector(".dark"), {
-      default_theme: "default",
-      default_dark_theme: "default",
-      themes: {},
-      darkMode: true,
-      theme: "default",
-    });
+    applyThemesOnElement(
+      this.shadowRoot!.querySelector(".dark"),
+      {
+        default_theme: "default",
+        default_dark_theme: "default",
+        themes: {},
+        darkMode: true,
+        theme: "default",
+      },
+      undefined,
+      undefined,
+      true
+    );
   }
 
   handleSubmit(ev) {

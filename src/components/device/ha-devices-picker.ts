@@ -1,15 +1,22 @@
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "./ha-device-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./ha-device-picker";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string[];
+
+  @property() public helper?: string;
+
+  @property({ type: Boolean }) public disabled?: boolean;
+
+  @property({ type: Boolean }) public required?: boolean;
 
   /**
    * Show entities from specific domains.
@@ -35,6 +42,8 @@ class HaDevicesPicker extends LitElement {
 
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
+  @property() public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -49,11 +58,13 @@ class HaDevicesPicker extends LitElement {
               allow-custom-entity
               .curValue=${entityId}
               .hass=${this.hass}
+              .deviceFilter=${this.deviceFilter}
               .includeDomains=${this.includeDomains}
               .excludeDomains=${this.excludeDomains}
               .includeDeviceClasses=${this.includeDeviceClasses}
               .value=${entityId}
               .label=${this.pickedDeviceLabel}
+              .disabled=${this.disabled}
               @value-changed=${this._deviceChanged}
             ></ha-device-picker>
           </div>
@@ -61,11 +72,16 @@ class HaDevicesPicker extends LitElement {
       )}
       <div>
         <ha-device-picker
+          allow-custom-entity
           .hass=${this.hass}
+          .helper=${this.helper}
+          .deviceFilter=${this.deviceFilter}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .label=${this.pickDeviceLabel}
+          .disabled=${this.disabled}
+          .required=${this.required && !currentDevices.length}
           @value-changed=${this._addDevice}
         ></ha-device-picker>
       </div>
@@ -116,6 +132,12 @@ class HaDevicesPicker extends LitElement {
 
     this._updateDevices([...currentDevices, toAdd]);
   }
+
+  static override styles = css`
+    div {
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {

@@ -4,7 +4,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import "../../../common/search/search-input";
+import "../../../components/search-input";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "./error-log-card";
 import "./system-log-card";
@@ -22,7 +22,7 @@ export class HaConfigLogs extends LitElement {
 
   @property() public route!: Route;
 
-  @state() private _filter = extractSearchParam("filter") ?? "";
+  @state() private _filter = extractSearchParam("filter") || "";
 
   @query("system-log-card", true) private systemLog?: SystemLogCard;
 
@@ -43,8 +43,6 @@ export class HaConfigLogs extends LitElement {
           <div slot="header">
             <search-input
               class="header"
-              no-label-float
-              no-underline
               @value-changed=${this._filterChanged}
               .hass=${this.hass}
               .filter=${this._filter}
@@ -55,9 +53,6 @@ export class HaConfigLogs extends LitElement {
       : html`
           <div class="search">
             <search-input
-              autofocus
-              no-label-float
-              no-underline
               @value-changed=${this._filterChanged}
               .hass=${this.hass}
               .filter=${this._filter}
@@ -98,18 +93,19 @@ export class HaConfigLogs extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
         }
-
         .search {
-          padding: 0 16px;
-          background: var(--sidebar-background-color);
-          border-bottom: 1px solid var(--divider-color);
+          position: sticky;
+          top: 0;
+          z-index: 2;
         }
-
-        .search search-input {
-          position: relative;
-          top: 2px;
+        search-input {
+          display: block;
+          --mdc-text-field-fill-color: var(--sidebar-background-color);
+          --mdc-text-field-idle-line-color: var(--divider-color);
         }
-
+        search-input.header {
+          --mdc-ripple-color: transparant;
+        }
         .content {
           direction: ltr;
         }

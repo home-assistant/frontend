@@ -1,7 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -13,13 +11,14 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
-import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
+import "../../components/ha-select";
 import "../../components/ha-settings-row";
+import "../../components/ha-textfield";
 import {
-  DEFAULT_PRIMARY_COLOR,
   DEFAULT_ACCENT_COLOR,
+  DEFAULT_PRIMARY_COLOR,
 } from "../../resources/ha-style";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -63,22 +62,17 @@ export class HaPickThemeRow extends LitElement {
             ${this.hass.localize("ui.panel.profile.themes.link_promo")}
           </a>
         </span>
-        <ha-paper-dropdown-menu
+        <ha-select
           .label=${this.hass.localize("ui.panel.profile.themes.dropdown_label")}
-          dynamic-align
           .disabled=${!hasThemes}
+          .value=${this.hass.selectedTheme?.theme || "Backend-selected"}
+          @selected=${this._handleThemeSelection}
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected=${this.hass.selectedTheme?.theme || "Backend-selected"}
-            attr-for-selected="theme"
-            @iron-select=${this._handleThemeSelection}
-          >
-            ${this._themeNames.map(
-              (theme) => html`<paper-item .theme=${theme}>${theme}</paper-item>`
-            )}
-          </paper-listbox>
-        </ha-paper-dropdown-menu>
+          ${this._themeNames.map(
+            (theme) =>
+              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
+          )}
+        </ha-select>
       </ha-settings-row>
       ${curTheme === "default" || this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">
@@ -91,7 +85,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="auto"
-                ?checked=${themeSettings?.dark === undefined}
+                .checked=${themeSettings?.dark === undefined}
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
@@ -103,7 +97,7 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="light"
-                ?checked=${themeSettings?.dark === false}
+                .checked=${themeSettings?.dark === false}
               >
               </ha-radio>
             </ha-formfield>
@@ -116,13 +110,13 @@ export class HaPickThemeRow extends LitElement {
                 @change=${this._handleDarkMode}
                 name="dark_mode"
                 value="dark"
-                ?checked=${themeSettings?.dark === true}
+                .checked=${themeSettings?.dark === true}
               >
               </ha-radio>
             </ha-formfield>
             ${curTheme === "default"
-              ? html` <div class="color-pickers">
-                  <paper-input
+              ? html`<div class="color-pickers">
+                  <ha-textfield
                     .value=${themeSettings?.primaryColor ||
                     DEFAULT_PRIMARY_COLOR}
                     type="color"
@@ -131,8 +125,8 @@ export class HaPickThemeRow extends LitElement {
                     )}
                     .name=${"primaryColor"}
                     @change=${this._handleColorChange}
-                  ></paper-input>
-                  <paper-input
+                  ></ha-textfield>
+                  <ha-textfield
                     .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
                     type="color"
                     .label=${this.hass.localize(
@@ -140,7 +134,7 @@ export class HaPickThemeRow extends LitElement {
                     )}
                     .name=${"accentColor"}
                     @change=${this._handleColorChange}
-                  ></paper-input>
+                  ></ha-textfield>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <mwc-button @click=${this._resetColors}>
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
@@ -179,6 +173,9 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
+    if (!(themeName in this.hass.themes.themes)) {
+      return false; // User's theme no longer exists
+    }
     return "modes" in this.hass.themes.themes[themeName];
   }
 
@@ -195,8 +192,8 @@ export class HaPickThemeRow extends LitElement {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev: CustomEvent) {
-    const theme = ev.detail.item.theme;
+  private _handleThemeSelection(ev) {
+    const theme = ev.target.value;
     if (theme === "Backend-selected") {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
@@ -234,7 +231,8 @@ export class HaPickThemeRow extends LitElement {
         align-items: center;
         flex-grow: 1;
       }
-      paper-input {
+      ha-textfield {
+        --text-field-padding: 8px;
         min-width: 75px;
         flex-grow: 1;
         margin: 0 4px;

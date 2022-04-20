@@ -1,17 +1,17 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
-import "@material/mwc-textfield";
-import type { TextField } from "@material/mwc-textfield";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-icon-button";
+import "../ha-textfield";
+import type { HaTextField } from "../ha-textfield";
 import type {
   HaFormElement,
   HaFormStringData,
@@ -28,11 +28,13 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _unmaskedPassword = false;
 
-  @query("mwc-textfield") private _input?: HTMLElement;
+  @query("ha-textfield") private _input?: HaTextField;
 
   public focus(): void {
     if (this._input) {
@@ -45,7 +47,7 @@ export class HaFormString extends LitElement implements HaFormElement {
       this.schema.name.includes(field)
     );
     return html`
-      <mwc-textfield
+      <ha-textfield
         .type=${!isPassword
           ? this._stringType
           : this._unmaskedPassword
@@ -53,6 +55,8 @@ export class HaFormString extends LitElement implements HaFormElement {
           : "password"}
         .label=${this.label}
         .value=${this.data || ""}
+        .helper=${this.helper}
+        helperPersistent
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
@@ -62,7 +66,7 @@ export class HaFormString extends LitElement implements HaFormElement {
           : this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @input=${this._valueChanged}
-      ></mwc-textfield>
+      ></ha-textfield>
       ${isPassword
         ? html`<ha-icon-button
             toggles
@@ -85,7 +89,7 @@ export class HaFormString extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event): void {
-    let value: string | undefined = (ev.target as TextField).value;
+    let value: string | undefined = (ev.target as HaTextField).value;
     if (this.data === value) {
       return;
     }
@@ -118,7 +122,7 @@ export class HaFormString extends LitElement implements HaFormElement {
       :host([own-margin]) {
         margin-bottom: 5px;
       }
-      mwc-textfield {
+      ha-textfield {
         display: block;
       }
       ha-icon-button {

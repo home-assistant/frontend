@@ -9,3 +9,5 @@ export const brandsUrl = (options: BrandsOptions): string =>
   `https://brands.home-assistant.io/${options.useFallback ? "_/" : ""}${
     options.domain
   }/${options.darkOptimized ? "dark_" : ""}${options.type}.png`;
+
+export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];

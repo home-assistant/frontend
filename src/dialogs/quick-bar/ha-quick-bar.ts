@@ -1,8 +1,5 @@
-import "../../components/ha-textfield";
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
-import type { List } from "@material/mwc-list/mwc-list";
-import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
@@ -13,7 +10,7 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -25,7 +22,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
-import "../../common/search/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
@@ -36,11 +32,12 @@ import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
+import "../../components/ha-textfield";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
-import { haStyleDialog } from "../../resources/styles";
+import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import {
   ConfirmationDialogParams,
@@ -89,11 +86,11 @@ export class QuickBar extends LitElement {
 
   @state() private _search = "";
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _commandMode = false;
 
-  @state() private _done = false;
+  @state() private _opened = false;
 
   @state() private _narrow = false;
 
@@ -112,30 +109,40 @@ export class QuickBar extends LitElement {
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
     this._initializeItemsIfNeeded();
-    this._opened = true;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
     this._opened = false;
-    this._done = false;
     this._focusSet = false;
     this._filter = "";
     this._search = "";
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _getItems = memoizeOne(
+    (commandMode: boolean, commandItems, entityItems, filter: string) => {
+      const items = commandMode ? commandItems : entityItems;
+
+      if (items && filter && filter !== " ") {
+        return this._filterItems(items, filter);
+      }
+      return items;
+    }
+  );
+
   protected render() {
-    if (!this._opened) {
+    if (!this._open) {
       return html``;
     }
 
-    let items: QuickBarItem[] | undefined = this._commandMode
-      ? this._commandItems
-      : this._entityItems;
-
-    if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items, this._filter);
-    }
+    const items: QuickBarItem[] | undefined = this._getItems(
+      this._commandMode,
+      this._commandItems,
+      this._entityItems,
+      this._filter
+    );
 
     return html`
       <ha-dialog
@@ -155,7 +162,7 @@ export class QuickBar extends LitElement {
               "ui.dialogs.quick-bar.filter_placeholder"
             )}
             .value=${this._commandMode ? `>${this._search}` : this._search}
-            .icon=${true}
+            icon
             .iconTrailing=${this._search !== undefined || this._narrow}
             @input=${this._handleSearchChange}
             @keydown=${this._handleInputKeyDown}
@@ -210,25 +217,27 @@ export class QuickBar extends LitElement {
               </div>
             `
           : html`
-              <mwc-list
-                @rangechange=${this._handleRangeChanged}
-                @keydown=${this._handleListItemKeyDown}
-                @selected=${this._handleSelected}
-                style=${styleMap({
-                  height: this._narrow
-                    ? "calc(100vh - 56px)"
-                    : `${Math.min(
-                        items.length * (this._commandMode ? 56 : 72) + 26,
-                        this._done ? 500 : 0
-                      )}px`,
-                })}
-              >
-                ${scroll({
-                  items,
-                  layout: Layout1d,
-                  renderItem: (item: QuickBarItem, index) =>
-                    this._renderItem(item, index),
-                })}
+              <mwc-list>
+                ${this._opened
+                  ? html`<lit-virtualizer
+                      scroller
+                      @keydown=${this._handleListItemKeyDown}
+                      @rangechange=${this._handleRangeChanged}
+                      @click=${this._handleItemClick}
+                      class="ha-scrollbar"
+                      style=${styleMap({
+                        height: this._narrow
+                          ? "calc(100vh - 56px)"
+                          : `${Math.min(
+                              items.length * (this._commandMode ? 56 : 72) + 26,
+                              500
+                            )}px`,
+                      })}
+                      .items=${items}
+                      .renderItem=${this._renderItem}
+                    >
+                    </lit-virtualizer>`
+                  : ""}
               </mwc-list>
             `}
         ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
@@ -245,9 +254,7 @@ export class QuickBar extends LitElement {
   }
 
   private _handleOpened() {
-    this.updateComplete.then(() => {
-      this._done = true;
-    });
+    this._opened = true;
   }
 
   private async _handleRangeChanged(e) {
@@ -261,14 +268,14 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _renderItem(item: QuickBarItem, index?: number) {
+  private _renderItem = (item: QuickBarItem, index: number): TemplateResult => {
     if (!item) {
       return html``;
     }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
       : this._renderEntityItem(item as EntityItem, index);
-  }
+  };
 
   private _renderEntityItem(item: EntityItem, index?: number) {
     return html`
@@ -335,16 +342,6 @@ export class QuickBar extends LitElement {
 
     await item.action();
     this.closeDialog();
-  }
-
-  private _handleSelected(ev: SingleSelectedEvent) {
-    const index = ev.detail.index;
-    if (index < 0) {
-      return;
-    }
-
-    const item = ((ev.target as List).items[index] as any).item;
-    this.processItemAndCloseDialog(item, index);
   }
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
@@ -431,18 +428,37 @@ export class QuickBar extends LitElement {
 
   private _handleListItemKeyDown(ev: KeyboardEvent) {
     const isSingleCharacter = ev.key.length === 1;
-    const isFirstListItem =
-      (ev.target as HTMLElement).getAttribute("index") === "0";
+    const index = (ev.target as HTMLElement).getAttribute("index");
+    const isFirstListItem = index === "0";
     this._focusListElement = ev.target as ListItem;
+    if (ev.key === "ArrowDown") {
+      this._getItemAtIndex(Number(index) + 1)?.focus();
+    }
     if (ev.key === "ArrowUp") {
       if (isFirstListItem) {
         this._filterInputField?.focus();
+      } else {
+        this._getItemAtIndex(Number(index) - 1)?.focus();
       }
     }
+    if (ev.key === "Enter" || ev.key === " ") {
+      this.processItemAndCloseDialog(
+        (ev.target as any).item,
+        Number((ev.target as HTMLElement).getAttribute("index"))
+      );
+    }
     if (ev.key === "Backspace" || isSingleCharacter) {
-      (ev.currentTarget as List).scrollTop = 0;
+      (ev.currentTarget as HTMLElement).scrollTop = 0;
       this._filterInputField?.focus();
     }
+  }
+
+  private _handleItemClick(ev) {
+    const listItem = ev.target.closest("mwc-list-item");
+    this.processItemAndCloseDialog(
+      listItem.item,
+      Number(listItem.getAttribute("index"))
+    );
   }
 
   private _generateEntityItems(): EntityItem[] {
@@ -683,6 +699,7 @@ export class QuickBar extends LitElement {
 
   static get styles() {
     return [
+      haStyleScrollbar,
       haStyleDialog,
       css`
         .heading {
@@ -779,6 +796,10 @@ export class QuickBar extends LitElement {
         div[slot="trailingIcon"] {
           display: flex;
           align-items: center;
+        }
+
+        lit-virtualizer {
+          contain: size layout !important;
         }
       `,
     ];

@@ -10,7 +10,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/common/search/search-input";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-button-menu";
@@ -46,7 +45,6 @@ import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
-import { SUPERVISOR_UPDATE_NAMES } from "../../../src/panels/config/dashboard/ha-config-updates";
 import { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
@@ -55,6 +53,12 @@ declare global {
     "update-complete": undefined;
   }
 }
+
+const SUPERVISOR_UPDATE_NAMES = {
+  core: "Home Assistant Core",
+  os: "Home Assistant Operating System",
+  supervisor: "Home Assistant Supervisor",
+};
 
 type updateType = "os" | "supervisor" | "core" | "addon";
 
@@ -192,13 +196,7 @@ class UpdateAvailableCard extends LitElement {
                     </a>`
                   : ""}
                 <span></span>
-                <ha-progress-button
-                  .disabled=${!this._version ||
-                  (this._shouldCreateBackup &&
-                    this.supervisor.info?.state !== "running")}
-                  @click=${this._update}
-                  raised
-                >
+                <ha-progress-button @click=${this._update} raised>
                   ${this.supervisor.localize("common.update")}
                 </ha-progress-button>
               </div>
@@ -360,8 +358,14 @@ class UpdateAvailableCard extends LitElement {
   }
 
   private async _update() {
+    if (this._shouldCreateBackup && this.supervisor.info.state === "freeze") {
+      this._error = this.supervisor.localize("backup.backup_already_running");
+      return;
+    }
+
     this._error = undefined;
     this._updating = true;
+
     try {
       if (this._updateType === "addon") {
         await updateHassioAddon(

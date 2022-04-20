@@ -1,6 +1,5 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -8,7 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { featureClassNames } from "../../../common/entity/feature_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-select";
 import "../../../components/ha-switch";
 import "../../../components/ha-water_heater-control";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -27,12 +26,8 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--primary-text-color);
         }
 
-        ha-paper-dropdown-menu {
+        ha-select {
           width: 100%;
-        }
-
-        paper-item {
-          cursor: pointer;
         }
 
         ha-water_heater-control.range-control-left,
@@ -75,27 +70,23 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
           <div class="container-operation_list">
             <div class="controls">
-              <ha-paper-dropdown-menu
-                label-float=""
-                dynamic-align=""
+              <ha-select
                 label="[[localize('ui.card.water_heater.operation')]]"
+                value="[[stateObj.attributes.operation_mode]]"
+                on-selected="handleOperationmodeChanged"
+                fixedMenuPosition
+                naturalMenuWidth
+                on-closed="stopPropagation"
               >
-                <paper-listbox
-                  slot="dropdown-content"
-                  selected="[[stateObj.attributes.operation_mode]]"
-                  attr-for-selected="item-name"
-                  on-selected-changed="handleOperationmodeChanged"
+                <template
+                  is="dom-repeat"
+                  items="[[stateObj.attributes.operation_list]]"
                 >
-                  <template
-                    is="dom-repeat"
-                    items="[[stateObj.attributes.operation_list]]"
-                  >
-                    <paper-item item-name$="[[item]]"
-                      >[[_localizeOperationMode(localize, item)]]</paper-item
-                    >
-                  </template>
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                  <mwc-list-item value="[[item]]">
+                    [[_localizeOperationMode(localize, item)]]
+                  </mwc-list-item>
+                </template>
+              </ha-select>
             </div>
           </div>
         </template>
@@ -209,11 +200,15 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   handleOperationmodeChanged(ev) {
     const oldVal = this.stateObj.attributes.operation_mode;
-    const newVal = ev.detail.value;
+    const newVal = ev.target.value;
     if (!newVal || oldVal === newVal) return;
     this.callServiceHelper("set_operation_mode", {
       operation_mode: newVal,
     });
+  }
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
   }
 
   callServiceHelper(service, data) {

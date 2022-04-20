@@ -1,9 +1,7 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import { mdiHelpCircle } from "@mdi/js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
@@ -13,9 +11,11 @@ import {
   TemplateResult,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-service-description";
 import {
   Attribute,
@@ -48,7 +48,7 @@ export class ZHAClusterAttributes extends LitElement {
 
   @state() private _attributes: Attribute[] = [];
 
-  @state() private _selectedAttributeIndex = -1;
+  @state() private _selectedAttributeId?: number;
 
   @state() private _attributeValue?: any = "";
 
@@ -60,7 +60,7 @@ export class ZHAClusterAttributes extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = [];
-      this._selectedAttributeIndex = -1;
+      this._selectedAttributeId = undefined;
       this._attributeValue = "";
       this._fetchAttributesForCluster();
     }
@@ -92,29 +92,25 @@ export class ZHAClusterAttributes extends LitElement {
 
         <ha-card class="content">
           <div class="attribute-picker">
-            <paper-dropdown-menu
-              label=${this.hass!.localize(
+            <ha-select
+              .label=${this.hass!.localize(
                 "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
               )}
               class="menu"
+              .value=${String(this._selectedAttributeId)}
+              @selected=${this._selectedAttributeChanged}
+              @closed=${stopPropagation}
+              fixedMenuPosition
+              naturalMenuWidth
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._selectedAttributeIndex}
-                @iron-select=${this._selectedAttributeChanged}
-              >
-                ${this._attributes.map(
-                  (entry) => html`
-                    <paper-item
-                      >${entry.name +
-                      " (id: " +
-                      formatAsPaddedHex(entry.id) +
-                      ")"}</paper-item
-                    >
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+              ${this._attributes.map(
+                (entry) => html`
+                  <mwc-list-item .value=${String(entry.id)}>
+                    ${entry.name + " (id: " + formatAsPaddedHex(entry.id) + ")"}
+                  </mwc-list-item>
+                `
+              )}
+            </ha-select>
           </div>
           ${this.showHelp
             ? html`
@@ -125,7 +121,7 @@ export class ZHAClusterAttributes extends LitElement {
                 </div>
               `
             : ""}
-          ${this._selectedAttributeIndex !== -1
+          ${this._selectedAttributeId !== undefined
             ? this._renderAttributeInteractions()
             : ""}
         </ha-card>
@@ -218,7 +214,7 @@ export class ZHAClusterAttributes extends LitElement {
       endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
-      attribute: this._attributes[this._selectedAttributeIndex].id,
+      attribute: this._selectedAttributeId!,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
         : undefined,
@@ -236,7 +232,7 @@ export class ZHAClusterAttributes extends LitElement {
       endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
-      attribute: this._attributes[this._selectedAttributeIndex].id,
+      attribute: this._selectedAttributeId!,
       value: this._attributeValue,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
@@ -266,7 +262,7 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private _selectedAttributeChanged(event: ItemSelectedEvent): void {
-    this._selectedAttributeIndex = event.target!.selected;
+    this._selectedAttributeId = Number(event.target!.value);
     this._attributeValue = "";
   }
 
@@ -274,6 +270,10 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
+        ha-select {
+          margin-top: 16px;
+        }
+
         .menu {
           width: 100%;
         }

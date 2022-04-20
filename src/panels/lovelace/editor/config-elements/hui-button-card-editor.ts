@@ -1,25 +1,22 @@
-import "@polymer/paper-input/paper-input";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string, assign } from "superstruct";
+import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-switch";
-import { ActionConfig } from "../../../../data/lovelace";
-import { HomeAssistant } from "../../../../types";
-import { ButtonCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
-import "../../components/hui-entity-editor";
-import "../../components/hui-theme-select-editor";
-import { LovelaceCardEditor } from "../../types";
-import { actionConfigStruct } from "../structs/action-struct";
-import { EditorTarget } from "../types";
-import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import { ActionConfig } from "../../../../data/lovelace";
+import type { HomeAssistant } from "../../../../types";
+import type { ButtonCardConfig } from "../../cards/types";
+import "../../components/hui-action-editor";
+import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type { EditorTarget } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -60,35 +57,55 @@ export class HuiButtonCardEditor
     this._config = config;
   }
 
-  get _entity(): string {
-    return this._config!.entity || "";
-  }
-
-  get _name(): string {
-    return this._config!.name || "";
-  }
-
-  get _show_name(): boolean {
-    return this._config!.show_name ?? true;
-  }
-
-  get _show_state(): boolean {
-    return this._config!.show_state ?? false;
-  }
-
-  get _icon(): string {
-    return this._config!.icon || "";
-  }
-
-  get _show_icon(): boolean {
-    return this._config!.show_icon ?? true;
-  }
-
-  get _icon_height(): string {
-    return this._config!.icon_height && this._config!.icon_height.includes("px")
-      ? String(parseFloat(this._config!.icon_height))
-      : "";
-  }
+  private _schema = memoizeOne(
+    (
+      entity?: string,
+      icon?: string,
+      entityState?: HassEntity
+    ): HaFormSchema[] => [
+      { name: "entity", selector: { entity: {} } },
+      {
+        name: "",
+        type: "grid",
+        schema: [
+          { name: "name", selector: { text: {} } },
+          {
+            name: "icon",
+            selector: {
+              icon: {
+                placeholder: icon || entityState?.attributes.icon,
+                fallbackPath:
+                  !icon &&
+                  !entityState?.attributes.icon &&
+                  entityState &&
+                  entity
+                    ? domainIcon(computeDomain(entity), entityState)
+                    : undefined,
+              },
+            },
+          },
+        ],
+      },
+      {
+        name: "",
+        type: "grid",
+        column_min_width: "100px",
+        schema: [
+          { name: "show_name", selector: { boolean: {} } },
+          { name: "show_state", selector: { boolean: {} } },
+          { name: "show_icon", selector: { boolean: {} } },
+        ],
+      },
+      {
+        name: "",
+        type: "grid",
+        schema: [
+          { name: "icon_height", selector: { text: { suffix: "px" } } },
+          { name: "theme", selector: { theme: {} } },
+        ],
+      },
+    ]
+  );
 
   get _tap_action(): ActionConfig | undefined {
     return this._config!.tap_action;
@@ -98,180 +115,105 @@ export class HuiButtonCardEditor
     return this._config!.hold_action || { action: "more-info" };
   }
 
-  get _theme(): string {
-    return this._config!.theme || "";
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
 
-    const dir = computeRTLDirection(this.hass!);
-    const entityState = this.hass.states[this._entity];
+    const entityState = this._config.entity
+      ? this.hass.states[this._config.entity]
+      : undefined;
+
+    const schema = this._schema(
+      this._config.entity,
+      this._config.icon,
+      entityState
+    );
+
+    const data = {
+      show_name: true,
+      show_icon: true,
+      ...this._config,
+    };
+
+    if (data.icon_height?.includes("px")) {
+      data.icon_height = String(parseFloat(data.icon_height));
+    }
 
     return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${schema}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
       <div class="card-config">
-        <ha-entity-picker
+        <hui-action-editor
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
+            "ui.panel.lovelace.editor.card.generic.tap_action"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .value=${this._entity}
-          .configValue=${"entity"}
-          @value-changed=${this._valueChanged}
-          allow-custom-entity
-        ></ha-entity-picker>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.name"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._name}
-            .configValue=${"name"}
-            @value-changed=${this._valueChanged}
-          ></paper-input>
-          <ha-icon-picker
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.icon"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._icon}
-            .placeholder=${this._icon || entityState?.attributes.icon}
-            .fallbackPath=${!this._icon &&
-            !entityState?.attributes.icon &&
-            entityState
-              ? domainIcon(computeDomain(entityState.entity_id), entityState)
-              : undefined}
-            .configValue=${"icon"}
-            @value-changed=${this._valueChanged}
-          ></ha-icon-picker>
-        </div>
-        <div class="side-by-side">
-          <div>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.show_name"
-              )}
-              .dir=${dir}
-            >
-              <ha-switch
-                .checked=${this._show_name !== false}
-                .configValue=${"show_name"}
-                @change=${this._change}
-              ></ha-switch>
-            </ha-formfield>
-          </div>
-          <div>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.show_state"
-              )}
-              .dir=${dir}
-            >
-              <ha-switch
-                .checked=${this._show_state !== false}
-                .configValue=${"show_state"}
-                @change=${this._change}
-              ></ha-switch>
-            </ha-formfield>
-          </div>
-          <div>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.card.generic.show_icon"
-              )}
-              .dir=${dir}
-            >
-              <ha-switch
-                .checked=${this._show_icon !== false}
-                .configValue=${"show_icon"}
-                @change=${this._change}
-              ></ha-switch>
-            </ha-formfield>
-          </div>
-        </div>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.icon_height"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value=${this._icon_height}
-            .configValue=${"icon_height"}
-            @value-changed=${this._valueChanged}
-            type="number"
-            ><div class="suffix" slot="suffix">px</div>
-          </paper-input>
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value=${this._theme}
-            .configValue=${"theme"}
-            @value-changed=${this._valueChanged}
-          ></hui-theme-select-editor>
-        </div>
-        <div class="side-by-side">
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.tap_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._tap_action}
-            .actions=${actions}
-            .configValue=${"tap_action"}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @value-changed=${this._valueChanged}
-          ></hui-action-editor>
-          <hui-action-editor
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.hold_action"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .hass=${this.hass}
-            .config=${this._hold_action}
-            .actions=${actions}
-            .configValue=${"hold_action"}
-            .tooltipText=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.button.default_action_help"
-            )}
-            @value-changed=${this._valueChanged}
-          ></hui-action-editor>
-        </div>
+          .config=${this._tap_action}
+          .actions=${actions}
+          .configValue=${"tap_action"}
+          .tooltipText=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.button.default_action_help"
+          )}
+          @value-changed=${this._actionChanged}
+        ></hui-action-editor>
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.hold_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._hold_action}
+          .actions=${actions}
+          .configValue=${"hold_action"}
+          .tooltipText=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.button.default_action_help"
+          )}
+          @value-changed=${this._actionChanged}
+        ></hui-action-editor>
       </div>
     `;
   }
 
-  private _change(ev: Event) {
-    if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-    const value = target.checked;
+  private _valueChanged(ev: CustomEvent): void {
+    const config = ev.detail.value;
 
-    if (this[`_${target.configValue}`] === value) {
-      return;
+    if (config.icon_height && !config.icon_height.endsWith("px")) {
+      config.icon_height += "px";
     }
 
-    fireEvent(this, "config-changed", {
-      config: {
-        ...this._config,
-        [target.configValue!]: value,
-      },
-    });
+    fireEvent(this, "config-changed", { config });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _computeLabelCallback = (schema: HaFormSchema) => {
+    if (schema.name === "entity") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.entity"
+      )}`;
+    }
+
+    if (schema.name === "theme") {
+      return `${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.theme"
+      )} (${this.hass!.localize(
+        "ui.panel.lovelace.editor.card.config.optional"
+      )})`;
+    }
+
+    return this.hass!.localize(
+      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+    );
+  };
+
+  private _actionChanged(ev: CustomEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -289,10 +231,7 @@ export class HuiButtonCardEditor
       } else {
         newConfig = {
           ...this._config,
-          [target.configValue!]:
-            target.configValue === "icon_height" && !isNaN(Number(target.value))
-              ? `${String(value)}px`
-              : value,
+          [target.configValue!]: value,
         };
       }
     }
