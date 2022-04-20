@@ -15,7 +15,7 @@ if [ -z $(which hass) ]; then
   echo "Installing Home Asstant core from dev."
   python3 -m pip install --upgrade \
     colorlog \
-    git+git://github.com/home-assistant/home-assistant.git@dev
+    git+https://github.com/home-assistant/home-assistant.git@dev
 fi
 
 if [ ! -d "${WD}/config" ]; then
