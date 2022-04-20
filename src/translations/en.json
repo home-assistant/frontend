@@ -2014,6 +2014,12 @@
                   "remove_option": "Remove option",
                   "conditions": "Conditions",
                   "sequence": "Actions"
+                },
+                "if": {
+                  "label": "If-then",
+                  "if": "If",
+                  "then": "Then",
+                  "else": "Else"
                 }
               }
             }
