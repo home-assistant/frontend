@@ -6,6 +6,7 @@ import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
 import "./ha-svg-icon";
+import "./ha-clickable-list-item";
 
 @customElement("ha-navigation-list")
 class HaNavigationList extends LitElement {
@@ -22,30 +23,28 @@ class HaNavigationList extends LitElement {
       <mwc-list>
         ${this.pages.map(
           (page) => html`
-            <a href=${page.path} role="option" tabindex="-1">
-              <mwc-list-item
-                graphic="avatar"
-                .twoline=${this.hasSecondary}
-                .hasMeta=${!this.narrow}
-                @click=${this._entryClicked}
-                path=${page.path}
+            <ha-clickable-list-item
+              graphic="avatar"
+              .twoline=${this.hasSecondary}
+              .hasMeta=${!this.narrow}
+              @click=${this._entryClicked}
+              href=${page.path}
+            >
+              <div
+                slot="graphic"
+                class=${page.iconColor ? "icon-background" : ""}
+                .style="background-color: ${page.iconColor || "undefined"}"
               >
-                <div
-                  slot="graphic"
-                  class=${page.iconColor ? "icon-background" : ""}
-                  .style="background-color: ${page.iconColor || "undefined"}"
-                >
-                  <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
-                </div>
-                <span>${page.name}</span>
-                ${this.hasSecondary
-                  ? html`<span slot="secondary">${page.description}</span>`
-                  : ""}
-                ${!this.narrow
-                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
-                  : ""}
-              </mwc-list-item>
-            </a>
+                <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
+              </div>
+              <span>${page.name}</span>
+              ${this.hasSecondary
+                ? html`<span slot="secondary">${page.description}</span>`
+                : ""}
+              ${!this.narrow
+                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                : ""}
+            </ha-clickable-list-item>
           `
         )}
       </mwc-list>

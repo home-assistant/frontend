@@ -68,12 +68,13 @@ class HaConfigNavigation extends LitElement {
   }
 
   private _entryClicked(ev) {
-    ev.stopPropagation();
-    if (
-      ev.currentTarget.parentElement.href.endsWith(
-        "#external-app-configuration"
-      )
-    ) {
+    const anchor = ev
+      .composedPath()
+      .find((n) => (n as HTMLElement).tagName === "A") as
+      | HTMLAnchorElement
+      | undefined;
+
+    if (anchor?.href?.endsWith("#external-app-configuration")) {
       ev.preventDefault();
       this.hass.auth.external!.fireMessage({
         type: "config_screen/show",
