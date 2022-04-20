@@ -18,13 +18,13 @@ import "../ha-config-section";
 export class HaConfigServerControl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @state() private _validating = false;
 
@@ -54,81 +54,73 @@ export class HaConfigServerControl extends LitElement {
         .narrow=${this.narrow}
         back-path="/config/system"
         .showAdvanced=${this.showAdvanced}
+        .header=${this.hass.localize("ui.panel.config.server_control.caption")}
       >
-        <ha-config-section .isWide=${this.isWide}>
-          <span slot="header"
-            >${this.hass.localize(
-              "ui.panel.config.server_control.caption"
-            )}</span
-          >
-          <span slot="introduction"
-            >${this.hass.localize(
-              "ui.panel.config.server_control.description"
-            )}</span
-          >
-
+        <div class="content">
           ${this.showAdvanced
-            ? html` <ha-card
-                header=${this.hass.localize(
-                  "ui.panel.config.server_control.section.validation.heading"
-                )}
-              >
-                <div class="card-content">
-                  ${this.hass.localize(
-                    "ui.panel.config.server_control.section.validation.introduction"
+            ? html`
+                <ha-card
+                  header=${this.hass.localize(
+                    "ui.panel.config.server_control.section.validation.heading"
                   )}
-                  ${!this._validateLog
-                    ? html`
-                        <div
-                          class="validate-container layout vertical center-center"
-                        >
-                          ${!this._validating
-                            ? html`
-                                ${this._isValid
-                                  ? html` <div
-                                      class="validate-result"
-                                      id="result"
-                                    >
-                                      ${this.hass.localize(
-                                        "ui.panel.config.server_control.section.validation.valid"
-                                      )}
-                                    </div>`
-                                  : ""}
-                                <mwc-button
-                                  raised
-                                  @click=${this._validateConfig}
-                                >
-                                  ${this.hass.localize(
-                                    "ui.panel.config.server_control.section.validation.check_config"
-                                  )}
-                                </mwc-button>
-                              `
-                            : html`
-                                <ha-circular-progress
-                                  active
-                                ></ha-circular-progress>
-                              `}
-                        </div>
-                      `
-                    : html`
-                        <div class="config-invalid">
-                          <span class="text">
-                            ${this.hass.localize(
-                              "ui.panel.config.server_control.section.validation.invalid"
-                            )}
-                          </span>
-                          <mwc-button raised @click=${this._validateConfig}>
-                            ${this.hass.localize(
-                              "ui.panel.config.server_control.section.validation.check_config"
-                            )}
-                          </mwc-button>
-                        </div>
-                        <div id="configLog" class="validate-log">
-                          ${this._validateLog}
-                        </div>
-                      `}
-                </div>
-              </ha-card>`
+                >
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.server_control.section.validation.introduction"
+                    )}
+                    ${!this._validateLog
+                      ? html`
+                          <div
+                            class="validate-container layout vertical center-center"
+                          >
+                            ${!this._validating
+                              ? html`
+                                  ${this._isValid
+                                    ? html` <div
+                                        class="validate-result"
+                                        id="result"
+                                      >
+                                        ${this.hass.localize(
+                                          "ui.panel.config.server_control.section.validation.valid"
+                                        )}
+                                      </div>`
+                                    : ""}
+                                  <mwc-button
+                                    raised
+                                    @click=${this._validateConfig}
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.panel.config.server_control.section.validation.check_config"
+                                    )}
+                                  </mwc-button>
+                                `
+                              : html`
+                                  <ha-circular-progress
+                                    active
+                                  ></ha-circular-progress>
+                                `}
+                          </div>
+                        `
+                      : html`
+                          <div class="config-invalid">
+                            <span class="text">
+                              ${this.hass.localize(
+                                "ui.panel.config.server_control.section.validation.invalid"
+                              )}
+                            </span>
+                            <mwc-button raised @click=${this._validateConfig}>
+                              ${this.hass.localize(
+                                "ui.panel.config.server_control.section.validation.check_config"
+                              )}
+                            </mwc-button>
+                          </div>
+                          <div id="configLog" class="validate-log">
+                            ${this._validateLog}
+                          </div>
+                        `}
+                  </div>
+                </ha-card>
+              `
             : ""}
 
           <ha-card
@@ -181,26 +173,28 @@ export class HaConfigServerControl extends LitElement {
                   </div>
                   ${this._reloadableDomains.map(
                     (domain) =>
-                      html`<div class="card-actions">
-                        <ha-call-service-button
-                          .hass=${this.hass}
-                          .domain=${domain}
-                          service="reload"
-                          >${this.hass.localize(
-                            `ui.panel.config.server_control.section.reloading.${domain}`
-                          ) ||
-                          this.hass.localize(
-                            "ui.panel.config.server_control.section.reloading.reload",
-                            "domain",
-                            domainToName(this.hass.localize, domain)
-                          )}
-                        </ha-call-service-button>
-                      </div>`
+                      html`
+                        <div class="card-actions">
+                          <ha-call-service-button
+                            .hass=${this.hass}
+                            .domain=${domain}
+                            service="reload"
+                            >${this.hass.localize(
+                              `ui.panel.config.server_control.section.reloading.${domain}`
+                            ) ||
+                            this.hass.localize(
+                              "ui.panel.config.server_control.section.reloading.reload",
+                              "domain",
+                              domainToName(this.hass.localize, domain)
+                            )}
+                          </ha-call-service-button>
+                        </div>
+                      `
                   )}
                 </ha-card>
               `
             : ""}
-        </ha-config-section>
+        </div>
       </hass-subpage>
     `;
   }
@@ -251,10 +245,22 @@ export class HaConfigServerControl extends LitElement {
           direction: ltr;
         }
 
-        ha-config-section {
-          padding-bottom: 24px;
+        .content {
+          padding: 28px 20px 0;
+          max-width: 1040px;
+          margin: 0 auto;
+        }
+
+        ha-card {
+          margin-top: 24px;
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-server-control": HaConfigServerControl;
   }
 }
