@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
-import "../../../layouts/hass-tabs-subpage";
 import "../../../components/ha-logo-svg";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -34,7 +34,7 @@ class HaConfigInfo extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.general}
+        .tabs=${configSections.about}
       >
         <div class="about">
           <a

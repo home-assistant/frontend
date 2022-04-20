@@ -1067,23 +1067,19 @@
         "dashboard": {
           "devices": {
             "title": "Devices & Services",
-            "description": "Integrations, devices, entities and areas"
+            "description": "Integrations, devices, entities and helpers"
           },
           "automations": {
             "title": "Automations & Scenes",
-            "description": "Manage automations, scenes, scripts and helpers"
+            "description": "Manage automations, scenes, scripts and blueprints"
           },
           "backup": {
             "title": "Backup",
             "description": "Generate backups of your Home Assistant configuration"
           },
-          "blueprints": {
-            "title": "Blueprints",
-            "description": "Pre-made automations and scripts by the community"
-          },
           "supervisor": {
-            "title": "Add-ons, Backups & Supervisor",
-            "description": "Create backups, check logs or reboot your system"
+            "title": "Add-ons",
+            "description": "Extend the function around Home Assistant"
           },
           "dashboards": {
             "title": "Dashboards",
@@ -1098,16 +1094,24 @@
             "description": "Trigger automations when an NFC tag, QR code, etc. is scanned"
           },
           "people": {
-            "title": "People & Zones",
-            "description": "Manage the people and zones that Home Assistant tracks"
+            "title": "People",
+            "description": "Manage the people that Home Assistant tracks"
+          },
+          "areas": {
+            "title": "Areas & Zones",
+            "description": "Manage areas & zones that Home Assistant tracks"
           },
           "companion": {
             "title": "Companion App",
             "description": "Location and notifications"
           },
-          "settings": {
-            "title": "Settings",
-            "description": "Basic settings, server controls, logs and info"
+          "system": {
+            "title": "System",
+            "description": "Create backups, check logs or reboot your system"
+          },
+          "about": {
+            "title": "About",
+            "description": "Version, system health and links to documentation"
           }
         },
         "common": {
@@ -1117,6 +1121,7 @@
           "learn_more": "Learn more"
         },
         "updates": {
+          "caption": "Updates",
           "no_update_entities": {
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
@@ -1168,7 +1173,7 @@
           }
         },
         "backup": {
-          "caption": "[%key:ui::panel::config::dashboard::backup::title%]",
+          "caption": "Backups",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
@@ -1457,6 +1462,9 @@
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
+        },
+        "hardware": {
+          "caption": "Hardware"
         },
         "info": {
           "caption": "Info",
@@ -1764,7 +1772,7 @@
                 "geo_location": {
                   "label": "Geolocation",
                   "source": "Source",
-                  "zone": "Zone",
+                  "zone": "Location",
                   "event": "Event",
                   "enter": "Enter",
                   "leave": "Leave"
@@ -3087,6 +3095,15 @@
         "tips": {
           "tip": "Tip!",
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
+        },
+        "analytics": {
+          "caption": "Analytics"
+        },
+        "network": {
+          "caption": "Network"
+        },
+        "storage": {
+          "caption": "Storage"
         }
       },
       "lovelace": {
@@ -3680,7 +3697,7 @@
         }
       },
       "map": {
-        "edit_zones": "Edit Zones"
+        "edit_zones": "Edit zones"
       },
       "profile": {
         "current_user": "You are currently logged in as {fullName}.",

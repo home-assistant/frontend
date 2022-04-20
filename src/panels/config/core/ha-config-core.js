@@ -3,11 +3,11 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
-import { configSections } from "../ha-panel-config";
-import "./ha-config-section-core";
+import "./ha-config-core-form";
+import "./ha-config-name-form";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -17,36 +17,29 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="iron-flex ha-style">
         .content {
-          padding-bottom: 32px;
-        }
-
-        .border {
-          margin: 32px auto 0;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+          padding: 28px 20px 0;
           max-width: 1040px;
+          margin: 0 auto;
         }
 
-        .narrow .border {
-          max-width: 640px;
+        ha-config-name-form,
+        ha-config-core-form {
+          display: block;
+          margin-top: 24px;
         }
       </style>
 
-      <hass-tabs-subpage
+      <hass-subpage
         hass="[[hass]]"
         narrow="[[narrow]]"
-        route="[[route]]"
-        back-path="/config"
-        tabs="[[_computeTabs()]]"
-        show-advanced="[[showAdvanced]]"
+        header="[[localize('ui.panel.config.core.caption')]]"
+        back-path="/config/system"
       >
-        <div class$="[[computeClasses(isWide)]]">
-          <ha-config-section-core
-            is-wide="[[isWide]]"
-            show-advanced="[[showAdvanced]]"
-            hass="[[hass]]"
-          ></ha-config-section-core>
+        <div class="content">
+          <ha-config-name-form hass="[[hass]]"></ha-config-name-form>
+          <ha-config-core-form hass="[[hass]]"></ha-config-core-form>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -58,14 +51,6 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
       showAdvanced: Boolean,
       route: Object,
     };
-  }
-
-  _computeTabs() {
-    return configSections.general;
-  }
-
-  computeClasses(isWide) {
-    return isWide ? "content" : "content narrow";
   }
 }
 

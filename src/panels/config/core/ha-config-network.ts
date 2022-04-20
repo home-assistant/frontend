@@ -9,6 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-network";
@@ -28,7 +29,7 @@ class ConfigNetwork extends LitElement {
 
   @state() private _networkConfig?: NetworkConfig;
 
-  @state() private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   protected render(): TemplateResult {
     if (
@@ -39,9 +40,15 @@ class ConfigNetwork extends LitElement {
     }
 
     return html`
-      <ha-card header="Network">
+      <ha-card outlined header="Network">
         <div class="card-content">
-          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+          ${this._error
+            ? html`
+                <ha-alert alert-type="error"
+                  >${this._error.message || this._error.code}</ha-alert
+                >
+              `
+            : ""}
           <p>
             Configure which network adapters integrations will use. Currently
             this setting only affects multicast traffic. A restart is required

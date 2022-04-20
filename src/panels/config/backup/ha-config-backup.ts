@@ -34,7 +34,6 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-backup")
 class HaConfigBackup extends LitElement {
@@ -129,13 +128,15 @@ class HaConfigBackup extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/system"
         .route=${this.route}
-        .tabs=${configSections.backup}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._backupData.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_bakcups")}
       >
+        <span slot="header"
+          >${this.hass.localize("ui.panel.config.backup.caption")}</span
+        >
         <ha-fab
           slot="fab"
           ?disabled=${this._backupData.backing_up}

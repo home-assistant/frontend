@@ -4,12 +4,15 @@ import {
   mdiBadgeAccountHorizontal,
   mdiCellphoneCog,
   mdiCog,
+  mdiCpu32Bit,
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
+  mdiInformationOutline,
   mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
+  mdiNetwork,
   mdiNfcVariant,
   mdiPalette,
   mdiPaletteSwatch,
@@ -20,6 +23,7 @@ import {
   mdiShape,
   mdiSofa,
   mdiTools,
+  mdiUpdate,
   mdiViewDashboard,
 } from "@mdi/js";
 import { PolymerElement } from "@polymer/polymer";
@@ -58,11 +62,11 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
-      path: "/config/blueprint",
-      translationKey: "blueprints",
-      iconPath: mdiPaletteSwatch,
-      iconColor: "#64B5F6",
-      component: "blueprint",
+      path: "/config/areas",
+      translationKey: "areas",
+      iconPath: mdiSofa,
+      iconColor: "#E48629",
+      components: ["zone"],
     },
     {
       path: "/config/backup",
@@ -74,8 +78,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     {
       path: "/hassio",
       translationKey: "supervisor",
-      iconPath: mdiHomeAssistant,
-      iconColor: "#4084CD",
+      iconPath: mdiPuzzle,
+      iconColor: "#F1C447",
       component: "hassio",
     },
     {
@@ -97,7 +101,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "people",
       iconPath: mdiAccount,
       iconColor: "#E48629",
-      components: ["person", "zone", "users"],
+      components: ["person", "users"],
     },
     {
       path: "#external-app-configuration",
@@ -106,9 +110,16 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#8E24AA",
     },
     {
-      path: "/config/server_control",
-      translationKey: "settings",
+      path: "/config/system",
+      translationKey: "system",
       iconPath: mdiCog,
+      iconColor: "#301ABE",
+      core: true,
+    },
+    {
+      path: "/config/info",
+      translationKey: "about",
+      iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
     },
@@ -148,11 +159,11 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
-      component: "areas",
-      path: "/config/areas",
-      translationKey: "ui.panel.config.areas.caption",
-      iconPath: mdiSofa,
-      iconColor: "#2D338F",
+      component: "helpers",
+      path: "/config/helpers",
+      translationKey: "ui.panel.config.helpers.caption",
+      iconPath: mdiTools,
+      iconColor: "#4D2EA4",
       core: true,
     },
   ],
@@ -178,16 +189,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiScriptText,
       iconColor: "#518C43",
     },
-    {
-      component: "helpers",
-      path: "/config/helpers",
-      translationKey: "ui.panel.config.helpers.caption",
-      iconPath: mdiTools,
-      iconColor: "#4D2EA4",
-      core: true,
-    },
-  ],
-  blueprints: [
     {
       component: "blueprint",
       path: "/config/blueprint",
@@ -233,13 +234,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#E48629",
     },
     {
-      component: "zone",
-      path: "/config/zone",
-      translationKey: "ui.panel.config.zone.caption",
-      iconPath: mdiMapMarkerRadius,
-      iconColor: "#E48629",
-    },
-    {
       component: "users",
       path: "/config/users",
       translationKey: "ui.panel.config.users.caption",
@@ -247,6 +241,23 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#E48629",
       core: true,
       advancedOnly: true,
+    },
+  ],
+  areas: [
+    {
+      component: "areas",
+      path: "/config/areas",
+      translationKey: "ui.panel.config.areas.caption",
+      iconPath: mdiSofa,
+      iconColor: "#2D338F",
+      core: true,
+    },
+    {
+      component: "zone",
+      path: "/config/location",
+      translationKey: "ui.panel.config.zone.caption",
+      iconPath: mdiMapMarkerRadius,
+      iconColor: "#E48629",
     },
   ],
   general: [
@@ -275,6 +286,45 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
+      path: "/config/backup",
+      translationKey: "ui.panel.config.backup.caption",
+      iconPath: mdiBackupRestore,
+      iconColor: "#4084CD",
+      component: "backup",
+    },
+    {
+      path: "/config/analytics",
+      translationKey: "ui.panel.config.analytics.caption",
+      iconPath: mdiShape,
+      iconColor: "#f1c447",
+    },
+    {
+      path: "/config/hardware",
+      translationKey: "ui.panel.config.hardware.caption",
+      iconPath: mdiCpu32Bit,
+      iconColor: "#4A5963",
+    },
+    {
+      path: "/config/network",
+      translationKey: "ui.panel.config.network.caption",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      path: "/config/storage",
+      translationKey: "ui.panel.config.storage.caption",
+      iconPath: mdiServer,
+      iconColor: "#518C43",
+    },
+    {
+      path: "/config/update",
+      translationKey: "ui.panel.config.updates.caption",
+      iconPath: mdiUpdate,
+      iconColor: "#4A5963",
+    },
+  ],
+  about: [
+    {
       component: "info",
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
@@ -296,6 +346,10 @@ class HaPanelConfig extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
+      analytics: {
+        tag: "ha-config-section-analytics",
+        load: () => import("./core/ha-config-section-analytics"),
+      },
       areas: {
         tag: "ha-config-areas",
         load: () => import("./areas/ha-config-areas"),
@@ -328,9 +382,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-devices",
         load: () => import("./devices/ha-config-devices"),
       },
-      server_control: {
-        tag: "ha-config-server-control",
-        load: () => import("./server_control/ha-config-server-control"),
+      system: {
+        tag: "ha-config-system-navigation",
+        load: () => import("./core/ha-config-system-navigation"),
       },
       logs: {
         tag: "ha-config-logs",
@@ -362,6 +416,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-lovelace",
         load: () => import("./lovelace/ha-config-lovelace"),
       },
+      network: {
+        tag: "ha-config-section-network",
+        load: () => import("./core/ha-config-section-network"),
+      },
       person: {
         tag: "ha-config-person",
         load: () => import("./person/ha-config-person"),
@@ -378,11 +436,15 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-helpers",
         load: () => import("./helpers/ha-config-helpers"),
       },
+      storage: {
+        tag: "ha-config-section-storage",
+        load: () => import("./core/ha-config-section-storage"),
+      },
       users: {
         tag: "ha-config-users",
         load: () => import("./users/ha-config-users"),
       },
-      zone: {
+      location: {
         tag: "ha-config-zone",
         load: () => import("./zone/ha-config-zone"),
       },
