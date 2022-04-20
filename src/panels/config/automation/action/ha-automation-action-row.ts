@@ -410,7 +410,7 @@ export default class HaAutomationActionRow extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        .rtl .card-menu {
+        :host-context([style*="direction: rtl;"]) .card-menu {
           right: initial;
           left: 16px;
         }

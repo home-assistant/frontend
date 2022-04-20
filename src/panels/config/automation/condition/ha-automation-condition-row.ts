@@ -245,7 +245,7 @@ export default class HaAutomationConditionRow extends LitElement {
           display: flex;
           align-items: center;
         }
-        .rtl .card-menu {
+        :host-context([style*="direction: rtl;"]) .card-menu {
           float: left;
         }
         mwc-list-item[disabled] {
