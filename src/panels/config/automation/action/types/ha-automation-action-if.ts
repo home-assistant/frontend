@@ -37,7 +37,7 @@ export class HaIfAction extends LitElement implements ActionElement {
       <h3>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.if.then"
-        )}:
+        )}*:
       </h3>
       <ha-automation-action
         .actions=${action.then}
