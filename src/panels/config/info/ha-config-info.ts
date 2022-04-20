@@ -1,11 +1,10 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property } from "lit/decorators";
 import "../../../components/ha-logo-svg";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { configSections } from "../ha-panel-config";
 import "./integrations-card";
 import "./system-health-card";
 
@@ -29,12 +28,11 @@ class HaConfigInfo extends LitElement {
       (window as any).CUSTOM_UI_LIST || [];
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        .route=${this.route}
-        .tabs=${configSections.about}
+        .header=${this.hass.localize("ui.panel.config.info.caption")}
       >
         <div class="about">
           <a
@@ -113,21 +111,23 @@ class HaConfigInfo extends LitElement {
               "type",
               JS_TYPE
             )}
-            ${customUiList.length > 0
-              ? html`
-                  <div>
-                    ${this.hass.localize("ui.panel.config.info.custom_uis")}
-                    ${customUiList.map(
-                      (item) => html`
-                        <div>
-                          <a href=${item.url} target="_blank"> ${item.name}</a>:
-                          ${item.version}
-                        </div>
-                      `
-                    )}
-                  </div>
-                `
-              : ""}
+            ${
+              customUiList.length > 0
+                ? html`
+                    <div>
+                      ${this.hass.localize("ui.panel.config.info.custom_uis")}
+                      ${customUiList.map(
+                        (item) => html`
+                          <div>
+                            <a href=${item.url} target="_blank"> ${item.name}</a
+                            >: ${item.version}
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `
+                : ""
+            }
           </p>
         </div>
         <div>

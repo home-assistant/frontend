@@ -254,7 +254,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     },
     {
       component: "zone",
-      path: "/config/location",
+      path: "/config/zone",
       translationKey: "ui.panel.config.zone.caption",
       iconPath: mdiMapMarkerRadius,
       iconColor: "#E48629",
@@ -436,6 +436,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-helpers",
         load: () => import("./helpers/ha-config-helpers"),
       },
+      server_control: {
+        tag: "ha-config-server-control",
+        load: () => import("./server_control/ha-config-server-control"),
+      },
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./core/ha-config-section-storage"),
@@ -444,7 +448,7 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-users",
         load: () => import("./users/ha-config-users"),
       },
-      location: {
+      zone: {
         tag: "ha-config-zone",
         load: () => import("./zone/ha-config-zone"),
       },
