@@ -32,6 +32,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property() public mode = "yaml";
 
+  @property() public name;
+
   public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public autofocus = false;
