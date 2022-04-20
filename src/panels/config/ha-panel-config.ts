@@ -4,6 +4,7 @@ import {
   mdiBadgeAccountHorizontal,
   mdiCellphoneCog,
   mdiCog,
+  mdiCpu32Bit,
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
@@ -296,6 +297,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.analytics.caption",
       iconPath: mdiShape,
       iconColor: "#f1c447",
+    },
+    {
+      path: "/config/hardware",
+      translationKey: "ui.panel.config.hardware.caption",
+      iconPath: mdiCpu32Bit,
+      iconColor: "#4A5963",
     },
     {
       path: "/config/network",
