@@ -18,6 +18,7 @@ class HaConfigSectionAnalytics extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.analytics.caption")}
       >
         <div class="content">
           <ha-config-analytics .hass=${this.hass}></ha-config-analytics>

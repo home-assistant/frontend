@@ -19,6 +19,7 @@ class HaConfigSectionNetwork extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.network.caption")}
       >
         <div class="content">
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>

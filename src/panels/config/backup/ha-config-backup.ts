@@ -134,6 +134,9 @@ class HaConfigBackup extends LitElement {
         .data=${this._getItems(this._backupData.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_bakcups")}
       >
+        <span slot="header"
+          >${this.hass.localize("ui.panel.config.backup.caption")}</span
+        >
         <ha-fab
           slot="fab"
           ?disabled=${this._backupData.backing_up}

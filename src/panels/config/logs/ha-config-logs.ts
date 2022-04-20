@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/search-input";
+import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -64,6 +65,7 @@ export class HaConfigLogs extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
         ${search}
