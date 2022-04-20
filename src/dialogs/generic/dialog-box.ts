@@ -76,7 +76,7 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   .value=${this._value || ""}
-                  @keyup=${this._handleKeyUp}
+                  @keyup=${this._valueChanged}
                   @change=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
@@ -118,12 +118,6 @@ class DialogBox extends LitElement {
       this._params.cancel();
     }
     this._close();
-  }
-
-  private _handleKeyUp(ev: KeyboardEvent) {
-    if (ev.keyCode === 13) {
-      this._confirm();
-    }
   }
 
   private _confirm(): void {
