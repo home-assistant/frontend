@@ -29,7 +29,6 @@ export class HaTemplateTrigger extends LitElement {
         mode="jinja2"
         .hass=${this.hass}
         .value=${value_template}
-        autofocus
         autocomplete-entities
         @value-changed=${this._valueChanged}
         dir="ltr"
