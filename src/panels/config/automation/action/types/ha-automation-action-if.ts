@@ -93,7 +93,7 @@ export class HaIfAction extends LitElement implements ActionElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle];
+    return haStyle;
   }
 }
 
