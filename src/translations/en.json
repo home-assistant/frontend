@@ -735,6 +735,7 @@
           "latest_version": "Latest version",
           "release_announcement": "Read release announcement",
           "skip": "Skip",
+          "clear_skipped": "Clear skipped",
           "install": "Install",
           "create_backup": "Create backup before updating"
         },
