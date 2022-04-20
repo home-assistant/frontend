@@ -7,6 +7,7 @@ import {
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelp,
+  mdiMagnify,
   mdiHelpCircle,
   mdiMicrophone,
   mdiPencil,
@@ -72,6 +73,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
+import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -264,6 +266,10 @@ class HUIRoot extends LitElement {
                         </ha-tabs>
                       `
                     : html`<div main-title>${this.config.title}</div>`}
+                  <ha-icon-button
+                    .path=${mdiMagnify}
+                    @click=${this._showQuickBar}
+                  ></ha-icon-button>
                   ${!this.narrow &&
                   this._conversation(this.hass.config.components)
                     ? html`
@@ -551,7 +557,7 @@ class HUIRoot extends LitElement {
     let newSelectView;
     let force = false;
 
-    const viewPath = this.route!.path.split("/")[1];
+    const viewPath = decodeURI(this.route!.path.split("/")[1]);
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
@@ -670,6 +676,13 @@ class HUIRoot extends LitElement {
       confirmText: this.hass.localize("ui.common.refresh"),
       dismissText: this.hass.localize("ui.common.not_now"),
       confirm: () => location.reload(),
+    });
+  }
+
+  private _showQuickBar(): void {
+    showQuickBar(this, {
+      commandMode: false,
+      hint: this.hass.localize("ui.dialogs.quick-bar.key_e_hint"),
     });
   }
 

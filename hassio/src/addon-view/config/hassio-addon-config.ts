@@ -55,6 +55,8 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
   }),
 ]);
 
+const MASKED_FIELDS = ["password", "secret", "token"];
+
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -82,13 +84,13 @@ class HassioAddonConfig extends LitElement {
   public computeLabel = (entry: HaFormSchema): string =>
     this.addon.translations[this.hass.language]?.configuration?.[entry.name]
       ?.name ||
-    this.addon.translations.en?.configuration?.[entry.name].name ||
+    this.addon.translations.en?.configuration?.[entry.name]?.name ||
     entry.name;
 
   public computeHelper = (entry: HaFormSchema): string =>
     this.addon.translations[this.hass.language]?.configuration?.[entry.name]
       ?.description ||
-    this.addon.translations.en?.configuration?.[entry.name].description ||
+    this.addon.translations.en?.configuration?.[entry.name]?.description ||
     "";
 
   private _convertSchema = memoizeOne(
@@ -113,7 +115,14 @@ class HassioAddonConfig extends LitElement {
             : {
                 name: entry.name,
                 required: entry.required,
-                selector: { text: { type: "text" } },
+                selector: {
+                  text: {
+                    type:
+                      entry.format || MASKED_FIELDS.includes(entry.name)
+                        ? "password"
+                        : "text",
+                  },
+                },
               }
           : entry.type === "boolean"
           ? {

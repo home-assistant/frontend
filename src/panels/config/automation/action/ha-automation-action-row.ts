@@ -32,6 +32,7 @@ import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-if";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-service";
@@ -50,6 +51,7 @@ const OPTIONS = [
   "wait_for_trigger",
   "repeat",
   "choose",
+  "if",
   "device_id",
   "stop",
 ];

@@ -735,6 +735,7 @@
           "latest_version": "Latest version",
           "release_announcement": "Read release announcement",
           "skip": "Skip",
+          "clear_skipped": "Clear skipped",
           "install": "Install",
           "create_backup": "Create backup before updating"
         },
@@ -1450,7 +1451,7 @@
           "internal_url_label": "Local Network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
-          "external_get_ha_cloud": "Access from anywhere using Home Assistant Cloud",
+          "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
@@ -2014,11 +2015,17 @@
                   "conditions": "Conditions",
                   "sequence": "Actions"
                 },
+                "if": {
+                  "label": "If-then",
+                  "if": "If",
+                  "then": "Then",
+                  "else": "Else"
+                },
                 "stop": {
                   "label": "Stop",
                   "stop": "Reason for stopping",
                   "error": "Stop because of an unexpected error"
-                }
+                }                         
               }
             }
           },
@@ -2716,12 +2723,14 @@
             "open_configuration_url": "Visit device"
           },
           "config_flow": {
+            "success": "Success",
             "aborted": "Aborted",
             "close": "Close",
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
+            "found_following_devices": "We found the following devices",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
@@ -4208,7 +4217,7 @@
           },
           "rating": {
             "title": "Add-on Security Rating",
-            "description": "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk)."
+            "description": "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 8. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 8 is the highest score (considered the most secure and lowest risk)."
           },
           "host_network": {
             "title": "Host Network",
