@@ -206,6 +206,12 @@ export interface VariablesAction {
   variables: Record<string, unknown>;
 }
 
+export interface StopAction {
+  alias?: string;
+  stop: string;
+  error?: boolean;
+}
+
 interface UnknownAction {
   alias?: string;
   [key: string]: unknown;
@@ -225,6 +231,7 @@ export type Action =
   | IfAction
   | VariablesAction
   | PlayMediaAction
+  | StopAction
   | UnknownAction;
 
 export interface ActionTypes {
@@ -241,6 +248,7 @@ export interface ActionTypes {
   variables: VariablesAction;
   service: ServiceAction;
   play_media: PlayMediaAction;
+  stop: StopAction;
   unknown: UnknownAction;
 }
 
@@ -316,6 +324,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("variables" in action) {
     return "variables";
+  }
+  if ("stop" in action) {
+    return "stop";
   }
   if ("service" in action) {
     if ("metadata" in action) {
