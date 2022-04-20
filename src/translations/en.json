@@ -2025,7 +2025,7 @@
                   "label": "Stop",
                   "stop": "Reason for stopping",
                   "error": "Stop because of an unexpected error"
-                }                         
+                }
               }
             }
           },
