@@ -1,11 +1,11 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { extractSearchParam } from "../../../common/url/search-params";
+import "../../../components/search-input";
+import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
-import "../../../components/search-input";
-import { extractSearchParam } from "../../../common/url/search-params";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
@@ -62,12 +62,11 @@ export class HaConfigLogs extends LitElement {
         `;
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
-        .route=${this.route}
-        .tabs=${configSections.general}
+        .header=${this.hass.localize("ui.panel.config.logs.caption")}
+        back-path="/config/system"
       >
         ${search}
         <div class="content">
@@ -80,7 +79,7 @@ export class HaConfigLogs extends LitElement {
             .filter=${this._filter}
           ></error-log-card>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

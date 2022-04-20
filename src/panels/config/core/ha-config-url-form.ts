@@ -9,17 +9,17 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/ha-card";
-import "../../../components/ha-switch";
+import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
 import "../../../components/ha-formfield";
+import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
-import { isIPAddress } from "../../../common/string/is_ip_address";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends LitElement {
@@ -74,7 +74,10 @@ class ConfigUrlForm extends LitElement {
     }
 
     return html`
-      <ha-card .header=${this.hass.localize("ui.panel.config.url.caption")}>
+      <ha-card
+        outlined
+        .header=${this.hass.localize("ui.panel.config.url.caption")}
+      >
         <div class="card-content">
           ${!canEdit
             ? html`
@@ -335,6 +338,7 @@ class ConfigUrlForm extends LitElement {
 
       a {
         color: var(--primary-color);
+        text-decoration: none;
       }
     `;
   }

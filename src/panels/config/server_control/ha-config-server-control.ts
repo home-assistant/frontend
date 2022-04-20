@@ -8,11 +8,11 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
+import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
@@ -49,12 +49,10 @@ export class HaConfigServerControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        back-path="/config"
-        .tabs=${configSections.general}
+        back-path="/config/system"
         .showAdvanced=${this.showAdvanced}
       >
         <ha-config-section .isWide=${this.isWide}>
@@ -203,7 +201,7 @@ export class HaConfigServerControl extends LitElement {
               `
             : ""}
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 

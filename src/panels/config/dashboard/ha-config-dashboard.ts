@@ -34,6 +34,7 @@ import { updateCanInstall, UpdateEntity } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
+import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -119,10 +120,26 @@ class HaConfigDashboard extends LitElement {
 
   private _notifyUpdates = false;
 
+  private _pages = memoizeOne((clouStatus, isLoaded) => {
+    const pages: PageNavigation[] = [];
+    if (clouStatus && isLoaded) {
+      pages.push({
+        component: "cloud",
+        path: "/config/cloud",
+        name: "Home Assistant Cloud",
+        info: this.cloudStatus,
+        iconPath: mdiCloudLock,
+        iconColor: "#3B808E",
+      });
+    }
+    return [...pages, ...configSections.dashboard];
+  });
+
   protected render(): TemplateResult {
     const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
       this.hass.states
     );
+
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -175,30 +192,14 @@ class HaConfigDashboard extends LitElement {
                   ${this.hass.localize("panel.config")}
                 </div>`
               : ""}
-            ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
-              ? html`
-                  <ha-config-navigation
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .showAdvanced=${this.showAdvanced}
-                    .pages=${[
-                      {
-                        component: "cloud",
-                        path: "/config/cloud",
-                        name: "Home Assistant Cloud",
-                        info: this.cloudStatus,
-                        iconPath: mdiCloudLock,
-                        iconColor: "#3B808E",
-                      },
-                    ]}
-                  ></ha-config-navigation>
-                `
-              : ""}
             <ha-config-navigation
               .hass=${this.hass}
               .narrow=${this.narrow}
               .showAdvanced=${this.showAdvanced}
-              .pages=${configSections.dashboard}
+              .pages=${this._pages(
+                this.cloudStatus,
+                isComponentLoaded(this.hass, "cloud")
+              )}
             ></ha-config-navigation>
           </ha-card>
           <div class="tips">
