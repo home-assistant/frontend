@@ -9,8 +9,7 @@ export class HaFab extends Fab {
     this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
   }
 
-  static override styles = [
-    Fab.styles,
+  static override styles = Fab.styles.concat([
     css`
       :host-context([style*="direction: rtl;"])
         .mdc-fab--extended
@@ -19,7 +18,7 @@ export class HaFab extends Fab {
         margin-right: calc(12px - 20px) !important;
       }
     `,
-  ];
+  ]);
 }
 
 declare global {
