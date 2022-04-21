@@ -32,20 +32,23 @@ class HaConfigSectionUpdates extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
         <div class="content">
-          ${canInstallUpdates.length
-            ? html`
-                <ha-card>
+          <ha-card outlined>
+            ${canInstallUpdates.length
+              ? html`
                   <ha-config-updates
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                     .updateEntities=${canInstallUpdates}
                     showAll
                   ></ha-config-updates>
-                </ha-card>
-              `
-            : ""}
+                `
+              : html`
+                  ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                `}
+          </ha-card>
         </div>
       </hass-subpage>
     `;

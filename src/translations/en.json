@@ -1122,6 +1122,7 @@
         },
         "updates": {
           "caption": "Updates",
+          "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
