@@ -3103,7 +3103,9 @@
           "caption": "Network"
         },
         "storage": {
-          "caption": "Storage"
+          "caption": "Storage",
+          "used_space": "Used Space",
+          "emmc_lifetime_used": "eMMC Lifetime Used"
         }
       },
       "lovelace": {

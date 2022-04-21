@@ -317,7 +317,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#518C43",
     },
     {
-      path: "/config/update",
+      path: "/config/updates",
       translationKey: "ui.panel.config.updates.caption",
       iconPath: mdiUpdate,
       iconColor: "#4A5963",
@@ -443,6 +443,10 @@ class HaPanelConfig extends HassRouterPage {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./core/ha-config-section-storage"),
+      },
+      updates: {
+        tag: "ha-config-section-updates",
+        load: () => import("./core/ha-config-section-updates"),
       },
       users: {
         tag: "ha-config-users",
