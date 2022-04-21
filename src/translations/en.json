@@ -1099,7 +1099,7 @@
           },
           "areas": {
             "title": "Areas & Zones",
-            "description": "Manage areas & zones that Home Assistant tracks"
+            "description": "Manage areas and zones that Home Assistant tracks"
           },
           "companion": {
             "title": "Companion App",

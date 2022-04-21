@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
@@ -81,6 +81,12 @@ class HaConfigNavigation extends LitElement {
       });
     }
   }
+
+  static styles: CSSResultGroup = css`
+    ha-navigation-list {
+      --navigation-list-item-title-font-size: 16px;
+    }
+  `;
 }
 
 declare global {

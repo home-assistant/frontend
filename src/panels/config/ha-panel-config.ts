@@ -278,18 +278,24 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
     {
+      path: "/config/updates",
+      translationKey: "ui.panel.config.updates.caption",
+      iconPath: mdiUpdate,
+      iconColor: "#3B808E",
+    },
+    {
       component: "logs",
       path: "/config/logs",
       translationKey: "ui.panel.config.logs.caption",
       iconPath: mdiMathLog,
-      iconColor: "#4A5963",
+      iconColor: "#C65326",
       core: true,
     },
     {
       path: "/config/backup",
       translationKey: "ui.panel.config.backup.caption",
       iconPath: mdiBackupRestore,
-      iconColor: "#4084CD",
+      iconColor: "#0D47A1",
       component: "backup",
     },
     {
@@ -297,12 +303,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.analytics.caption",
       iconPath: mdiShape,
       iconColor: "#f1c447",
-    },
-    {
-      path: "/config/hardware",
-      translationKey: "ui.panel.config.hardware.caption",
-      iconPath: mdiCpu32Bit,
-      iconColor: "#4A5963",
     },
     {
       path: "/config/network",
@@ -317,10 +317,10 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#518C43",
     },
     {
-      path: "/config/updates",
-      translationKey: "ui.panel.config.updates.caption",
-      iconPath: mdiUpdate,
-      iconColor: "#4A5963",
+      path: "/config/hardware",
+      translationKey: "ui.panel.config.hardware.caption",
+      iconPath: mdiCpu32Bit,
+      iconColor: "#301A8E",
     },
   ],
   about: [
