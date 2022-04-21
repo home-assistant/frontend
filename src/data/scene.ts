@@ -50,7 +50,9 @@ export interface SceneConfig {
 }
 
 export interface SceneEntities {
-  [entityId: string]: string | { state: string; [key: string]: any };
+  [entityId: string]:
+    | string
+    | { state: string; [key: string]: any; entity_only?: boolean | undefined };
 }
 
 export const activateScene = (

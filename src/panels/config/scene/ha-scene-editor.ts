@@ -634,9 +634,11 @@ export class HaSceneEditor extends SubscribeMixin(
       if (!entityReg.device_id) {
         continue;
       }
+      const entity = config.entities[entityReg.entity_id];
       if (
         !this._devices.includes(entityReg.device_id) &&
-        !config.entities[entityReg.entity_id].entity_only
+        !(typeof entity === "string") &&
+        !entity.entity_only
       ) {
         this._devices = [...this._devices, entityReg.device_id];
       }
@@ -819,8 +821,9 @@ export class HaSceneEditor extends SubscribeMixin(
       if (entityState) {
         output[entityReg.entity_id] = {
           ...entityState,
-          entity_only:
-            entityReg.device_id && !this._devices.includes(entityReg.device_id),
+          entity_only: !!(
+            entityReg.device_id && !this._devices.includes(entityReg.device_id)
+          ),
         };
       }
     }
