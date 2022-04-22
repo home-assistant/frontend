@@ -84,6 +84,10 @@ class ErrorLogCard extends LitElement {
       .warning {
         color: var(--warning-color);
       }
+
+      :host-context([style*="direction: rtl;"]) mwc-button {
+        direction: rtl;
+      }
     `;
   }
 
