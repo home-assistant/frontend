@@ -10,9 +10,7 @@ const SCHEMA: HaFormSchema[] = [
   {
     name: "wait_template",
     selector: {
-      text: {
-        multiline: true,
-      },
+      template: {},
     },
   },
   {
