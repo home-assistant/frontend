@@ -28,6 +28,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
 import "./types/ha-automation-trigger-geo_location";
@@ -44,6 +45,7 @@ import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 
 const OPTIONS = [
+  "calendar",
   "device",
   "event",
   "state",
