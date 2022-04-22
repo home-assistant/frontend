@@ -4166,6 +4166,10 @@
           "energy_devices_graph_title": "Monitor individual devices"
         }
       }
+    },
+    "tips": {
+      "key_c_hint": "Press 'c' on any page to open the command dialog",
+      "key_e_hint": "Press 'e' on any page to open the entity search dialog"
     }
   },
   "supervisor": {
