@@ -204,6 +204,10 @@ export class SystemLogCard extends LitElement {
       .warning {
         color: var(--warning-color);
       }
+
+      :host-context([style*="direction: rtl;"]) .card-actions {
+        direction: rtl;
+      }
     `;
   }
 }
