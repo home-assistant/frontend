@@ -77,7 +77,7 @@ class DialogBox extends LitElement {
                   dialogInitialFocus
                   .value=${this._value || ""}
                   @keyup=${this._handleKeyUp}
-                  @change=${this._valueChanged}
+                  @input=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -120,12 +120,12 @@ class DialogBox extends LitElement {
     this._close();
   }
 
- private _handleKeyUp(ev: KeyboardEvent) {
+  private _handleKeyUp(ev: KeyboardEvent) {
     if (ev.keyCode === 13) {
       this._confirm();
     }
   }
-  
+
   private _confirm(): void {
     if (this._params!.confirm) {
       this._params!.confirm(this._value);
