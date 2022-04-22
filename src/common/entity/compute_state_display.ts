@@ -33,6 +33,7 @@ export const computeStateDisplay = (
         return formatNumber(compareState, locale, {
           style: "currency",
           currency: stateObj.attributes.unit_of_measurement,
+          minimumFractionDigits: 2,
         });
       } catch (_err) {
         // fallback to default
