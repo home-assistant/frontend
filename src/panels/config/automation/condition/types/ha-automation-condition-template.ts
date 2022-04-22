@@ -1,6 +1,6 @@
-import "../../../../../components/ha-textarea";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../../../components/ha-textarea";
 import type { TemplateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-condition-row";
@@ -25,7 +25,7 @@ export class HaTemplateCondition extends LitElement {
         *
       </p>
       <ha-code-editor
-        name="value_template"
+        .name=${"value_template"}
         mode="jinja2"
         .hass=${this.hass}
         .value=${value_template}
