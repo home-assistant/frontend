@@ -77,7 +77,7 @@ class DialogBox extends LitElement {
                   dialogInitialFocus
                   .value=${this._value || ""}
                   @keyup=${this._handleKeyUp}
-                  @change=${this._valueChanged}
+                  @input=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
