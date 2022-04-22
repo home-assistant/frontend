@@ -13,7 +13,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
@@ -44,6 +43,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
+import { showCoreZoneDetailDialog } from "./show-dialog-core-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
 @customElement("ha-config-zone")
@@ -186,15 +186,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
-                        disabled=${ifDefined(
-                          stateObject.entity_id === "zone.home" &&
-                            this.narrow &&
-                            this._canEditCore
-                            ? undefined
-                            : true
-                        )}
+                        .disabled=${stateObject.entity_id === "zone.home" &&
+                        !this._canEditCore}
                         .path=${stateObject.entity_id === "zone.home" &&
-                        this.narrow &&
                         this._canEditCore
                           ? mdiPencil
                           : mdiPencilOff}
@@ -391,22 +385,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog(entry);
   }
 
-  private async _openCoreConfig(ev: Event) {
-    const entityId: string = (ev.currentTarget! as any).entityId;
-    if (entityId !== "zone.home" || !this.narrow || !this._canEditCore) {
-      return;
-    }
-    if (
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.zone.go_to_core_config"),
-        text: this.hass.localize("ui.panel.config.zone.home_zone_core_config"),
-        confirmText: this.hass!.localize("ui.common.yes"),
-        dismissText: this.hass!.localize("ui.common.no"),
-      }))
-    ) {
-      return;
-    }
-    navigate("/config/core");
+  private async _openCoreConfig() {
+    showCoreZoneDetailDialog(this);
   }
 
   private async _createEntry(values: ZoneMutableParams) {
