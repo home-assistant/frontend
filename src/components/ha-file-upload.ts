@@ -176,9 +176,23 @@ export class HaFileUpload extends LitElement {
         .mdc-text-field__icon--leading {
           margin-bottom: 12px;
         }
+        :host-context([style*="direction: rtl;"])
+          .mdc-text-field__icon--leading {
+          margin-right: 0px;
+        }
         .mdc-text-field--filled .mdc-floating-label--float-above {
           transform: scale(0.75);
           top: 8px;
+        }
+        :host-context([style*="direction: rtl;"]) .mdc-floating-label {
+          left: initial;
+          right: 16px;
+        }
+        :host-context([style*="direction: rtl;"])
+          .mdc-text-field--filled
+          .mdc-floating-label {
+          left: initial;
+          right: 48px;
         }
         .dragged:before {
           position: var(--layout-fit_-_position);

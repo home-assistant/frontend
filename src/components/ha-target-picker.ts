@@ -616,6 +616,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
       }
+      :host-context([style*="direction: rtl;"]) .mdc-chip__icon {
+        margin-right: -14px !important;
+        margin-left: 4px !important;
+      }
     `;
   }
 }
