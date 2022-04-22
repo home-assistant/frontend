@@ -25,7 +25,7 @@ export class HaTemplateTrigger extends LitElement {
         *
       </p>
       <ha-code-editor
-        name="value_template"
+        .name=${"value_template"}
         mode="jinja2"
         .hass=${this.hass}
         .value=${value_template}
