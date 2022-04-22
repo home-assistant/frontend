@@ -120,6 +120,12 @@ class DialogBox extends LitElement {
     this._close();
   }
 
+ private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 13) {
+      this._confirm();
+    }
+  }
+  
   private _confirm(): void {
     if (this._params!.confirm) {
       this._params!.confirm(this._value);
