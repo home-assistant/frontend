@@ -6,7 +6,6 @@ import {
   mdiCog,
   mdiCpu32Bit,
   mdiDevices,
-  mdiHomeAssistant,
   mdiInformation,
   mdiInformationOutline,
   mdiLightningBolt,
@@ -262,14 +261,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   general: [
     {
-      component: "core",
-      path: "/config/core",
-      translationKey: "ui.panel.config.core.caption",
-      iconPath: mdiHomeAssistant,
-      iconColor: "#4A5963",
-      core: true,
-    },
-    {
       component: "server_control",
       path: "/config/server_control",
       translationKey: "ui.panel.config.server_control.caption",
@@ -373,10 +364,6 @@ class HaPanelConfig extends HassRouterPage {
       cloud: {
         tag: "ha-config-cloud",
         load: () => import("./cloud/ha-config-cloud"),
-      },
-      core: {
-        tag: "ha-config-core",
-        load: () => import("./core/ha-config-core"),
       },
       devices: {
         tag: "ha-config-devices",

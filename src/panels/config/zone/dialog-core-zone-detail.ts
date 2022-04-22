@@ -15,8 +15,6 @@ import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { SYMBOL_TO_ISO } from "../../../data/currency";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import "../core/ha-config-core-form";
-import "../core/ha-config-name-form";
 
 @customElement("dialog-core-zone-detail")
 class DialogZoneDetail extends LitElement {
