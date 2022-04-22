@@ -28,7 +28,7 @@ class HaConfigSectionStorage extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "network")) {
+    if (isComponentLoaded(this.hass, "hassio")) {
       this._load();
     }
   }
