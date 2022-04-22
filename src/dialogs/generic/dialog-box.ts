@@ -76,7 +76,7 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   .value=${this._value || ""}
-                  @keyup=${this._valueChanged}
+                  @keyup=${this._handleKeyUp}
                   @change=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
