@@ -127,7 +127,7 @@ export interface ZWaveJSClient {
 
 export interface ZWaveJSController {
   home_id: number;
-  library_version: string;
+  sdk_version: string;
   type: number;
   own_node_id: number;
   is_secondary: boolean;
