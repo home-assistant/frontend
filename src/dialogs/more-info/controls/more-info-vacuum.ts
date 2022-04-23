@@ -119,7 +119,15 @@ class MoreInfoVacuum extends LitElement {
                         "ui.dialogs.more_info_control.vacuum.status"
                       )}:
                     </span>
-                    <span><strong>${stateObj.attributes.status}</strong></span>
+                    <span>
+                      <strong>
+                        ${stateObj.attributes.status ||
+                        this.hass.localize(
+                          `component.vacuum.state._.${stateObj.state}`
+                        ) ||
+                        stateObj.state}
+                      </strong>
+                    </span>
                   </div>
                 `
               : ""}
