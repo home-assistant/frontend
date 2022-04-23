@@ -154,7 +154,7 @@ export interface EventTrigger extends BaseTrigger {
 
 export interface CalendarTrigger extends BaseTrigger {
   platform: "calendar";
-  event: "start";
+  event: "start" | "end";
   entity_id: string;
 }
 

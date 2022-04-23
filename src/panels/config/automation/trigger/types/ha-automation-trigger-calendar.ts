@@ -31,6 +31,12 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
             "ui.panel.config.automation.editor.triggers.type.calendar.start"
           ),
         ],
+        [
+          "end",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.calendar.end"
+          ),
+        ],
       ],
     },
   ]);
