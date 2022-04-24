@@ -127,7 +127,7 @@ export interface ZWaveJSClient {
 
 export interface ZWaveJSController {
   home_id: number;
-  library_version: string;
+  sdk_version: string;
   type: number;
   own_node_id: number;
   is_secondary: boolean;
@@ -136,7 +136,7 @@ export interface ZWaveJSController {
   was_real_primary: boolean;
   is_static_update_controller: boolean;
   is_slave: boolean;
-  serial_api_version: string;
+  firmware_version: string;
   manufacturer_id: number;
   product_id: number;
   product_type: number;
