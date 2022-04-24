@@ -1,6 +1,7 @@
 import {
   mdiCheck,
   mdiCheckCircleOutline,
+  mdiDotsVertical,
   mdiOpenInNew,
   mdiPlus,
 } from "@mdi/js";
@@ -16,6 +17,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-clickable-list-item";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
@@ -216,7 +218,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     if (isComponentLoaded(this.hass, "energy")) {
       result.push({
         icon: "hass:lightning-bolt",
-        title: this.hass.localize(`ui.panel.config.dashboard.energy.title`),
+        title: this.hass.localize(`ui.panel.config.dashboard.energy.main`),
         show_in_sidebar: true,
         mode: "storage",
         url_path: "energy",
@@ -260,6 +262,32 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hasFab
         clickable
       >
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <ha-button-menu
+                corner="BOTTOM_START"
+                slot="toolbar-icon"
+                activatable
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                <ha-clickable-list-item
+                  @click=${this._entryClicked}
+                  href="/config/lovelace/resources"
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.caption"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.caption"
+                  )}
+                </ha-clickable-list-item>
+              </ha-button-menu>
+            `
+          : ""}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -353,5 +381,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
         }
       },
     });
+  }
+
+  private _entryClicked(ev) {
+    ev.currentTarget.blur();
   }
 }

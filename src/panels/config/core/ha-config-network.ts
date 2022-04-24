@@ -40,7 +40,7 @@ class ConfigNetwork extends LitElement {
     }
 
     return html`
-      <ha-card outlined header="Network">
+      <ha-card outlined header="Network Adapter">
         <div class="card-content">
           ${this._error
             ? html`

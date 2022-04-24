@@ -1066,52 +1066,52 @@
         "header": "Configure Home Assistant",
         "dashboard": {
           "devices": {
-            "title": "Devices & Services",
-            "description": "Integrations, devices, entities and helpers"
+            "main": "Devices & Services",
+            "secondary": "Integrations, devices, entities and helpers"
           },
           "automations": {
-            "title": "Automations & Scenes",
-            "description": "Manage automations, scenes, scripts and blueprints"
+            "main": "Automations & Scenes",
+            "secondary": "Manage automations, scenes, scripts and blueprints"
           },
           "backup": {
-            "title": "Backup",
-            "description": "Generate backups of your Home Assistant configuration"
+            "main": "Backup",
+            "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "title": "Add-ons",
-            "description": "Extend the function around Home Assistant"
+            "main": "Add-ons",
+            "secondary": "Extend the function around Home Assistant"
           },
           "dashboards": {
-            "title": "Dashboards",
-            "description": "Create customized sets of cards to control your home"
+            "main": "Dashboards",
+            "secondary": "Create customized sets of cards to control your home"
           },
           "energy": {
-            "title": "Energy",
-            "description": "Monitor your energy production and consumption"
+            "main": "Energy",
+            "secondary": "Monitor your energy production and consumption"
           },
           "tags": {
-            "title": "Tags",
-            "description": "Trigger automations when an NFC tag, QR code, etc. is scanned"
+            "main": "Tags",
+            "secondary": "Trigger automations when an NFC tag, QR code, etc. is scanned"
           },
           "people": {
-            "title": "People",
-            "description": "Manage the people that Home Assistant tracks"
+            "main": "People",
+            "secondary": "Manage the people that Home Assistant tracks"
           },
           "areas": {
-            "title": "Areas & Zones",
-            "description": "Manage areas & zones that Home Assistant tracks"
+            "main": "Areas & Zones",
+            "secondary": "Manage areas and zones that Home Assistant tracks"
           },
           "companion": {
-            "title": "Companion App",
-            "description": "Location and notifications"
+            "main": "Companion App",
+            "secondary": "Location and notifications"
           },
           "system": {
-            "title": "System",
-            "description": "Create backups, check logs or reboot your system"
+            "main": "System",
+            "secondary": "Create backups, check logs or reboot your system"
           },
           "about": {
-            "title": "About",
-            "description": "Version, system health and links to documentation"
+            "main": "About",
+            "secondary": "Version, system health and links to documentation"
           }
         },
         "common": {
@@ -1122,6 +1122,7 @@
         },
         "updates": {
           "caption": "Updates",
+          "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
@@ -1778,7 +1779,7 @@
                 "geo_location": {
                   "label": "Geolocation",
                   "source": "Source",
-                  "zone": "Location",
+                  "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
                   "leave": "Leave"
@@ -3109,7 +3110,9 @@
           "caption": "Network"
         },
         "storage": {
-          "caption": "Storage"
+          "caption": "Storage",
+          "used_space": "Used Space",
+          "emmc_lifetime_used": "eMMC Lifetime Used"
         }
       },
       "lovelace": {
