@@ -33,7 +33,7 @@ class HaConfigSystemNavigation extends LitElement {
     return html`
       <hass-subpage
         back-path="/config"
-        .header=${this.hass.localize("ui.panel.config.dashboard.system.title")}
+        .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -43,9 +43,7 @@ class HaConfigSystemNavigation extends LitElement {
           <ha-card>
             ${this.narrow
               ? html`<div class="title">
-                  ${this.hass.localize(
-                    "ui.panel.config.dashboard.system.title"
-                  )}
+                  ${this.hass.localize("ui.panel.config.dashboard.system.main")}
                 </div>`
               : ""}
             <ha-navigation-list

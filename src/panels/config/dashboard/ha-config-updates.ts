@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
@@ -19,7 +19,7 @@ class HaConfigUpdates extends LitElement {
   @property({ attribute: false })
   public updateEntities?: UpdateEntity[];
 
-  @state() private _showAll = false;
+  @property({ type: Boolean, reflect: true }) showAll = false;
 
   protected render(): TemplateResult {
     if (!this.updateEntities?.length) {
@@ -27,7 +27,7 @@ class HaConfigUpdates extends LitElement {
     }
 
     const updates =
-      this._showAll || this.updateEntities.length <= 3
+      this.showAll || this.updateEntities.length <= 3
         ? this.updateEntities
         : this.updateEntities.slice(0, 2);
 
@@ -66,7 +66,7 @@ class HaConfigUpdates extends LitElement {
           </paper-icon-item>
         `
       )}
-      ${!this._showAll && this.updateEntities.length >= 4
+      ${!this.showAll && this.updateEntities.length >= 4
         ? html`
             <button class="show-more" @click=${this._showAllClicked}>
               ${this.hass.localize("ui.panel.config.updates.more_updates", {
@@ -85,7 +85,7 @@ class HaConfigUpdates extends LitElement {
   }
 
   private _showAllClicked() {
-    this._showAll = true;
+    this.showAll = true;
   }
 
   static get styles(): CSSResultGroup[] {
