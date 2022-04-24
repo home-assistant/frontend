@@ -310,6 +310,7 @@ export class HaBaseTimeInput extends LitElement {
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
+      direction: ltr;
     }
     ha-textfield {
       width: 40px;
