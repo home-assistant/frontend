@@ -3152,7 +3152,19 @@
         "storage": {
           "caption": "Storage",
           "used_space": "Used Space",
-          "emmc_lifetime_used": "eMMC Lifetime Used"
+          "emmc_lifetime_used": "eMMC Lifetime Used",
+          "datadisk": {
+            "title": "Move datadisk",
+            "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+            "select_device": "Select new datadisk",
+            "no_devices": "No suitable attached devices found",
+            "moving_desc": "Rebooting and moving datadisk. Please have patience",
+            "moving": "Moving datadisk",
+            "loading_devices": "Loading devices",
+            "cancel": "[%key:ui::common::cancel%]",
+            "failed_to_move": "Failed to move datadisk",
+            "move": "Move"
+          }
         },
         "system_health": {
           "caption": "System Health"

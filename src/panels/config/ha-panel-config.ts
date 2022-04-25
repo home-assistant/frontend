@@ -444,7 +444,7 @@ class HaPanelConfig extends HassRouterPage {
       },
       storage: {
         tag: "ha-config-section-storage",
-        load: () => import("./core/ha-config-section-storage"),
+        load: () => import("./storage/ha-config-section-storage"),
       },
       system_health: {
         tag: "ha-config-system-health",
