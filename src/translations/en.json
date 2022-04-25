@@ -1676,6 +1676,7 @@
             }
           }
         },
+
         "automation": {
           "caption": "Automations",
           "description": "Create custom behavior rules for your home",
@@ -3151,6 +3152,9 @@
           "caption": "Storage",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used"
+        },
+        "system_health": {
+          "caption": "System Health"
         }
       },
       "lovelace": {

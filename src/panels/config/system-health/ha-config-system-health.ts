@@ -1,24 +1,21 @@
-import "@material/mwc-button/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-icon-button";
 import { domainToName } from "../../../data/integration";
 import {
   subscribeSystemHealthInfo,
   SystemCheckValueObject,
   SystemHealthInfo,
 } from "../../../data/system_health";
-import { HomeAssistant } from "../../../types";
+import "../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 
 const sortKeys = (a: string, b: string) => {
@@ -37,15 +34,25 @@ const sortKeys = (a: string, b: string) => {
   return 0;
 };
 
-class SystemHealthCard extends LitElement {
+@customElement("ha-config-system-health")
+class HaConfigSystemHealth extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _info?: SystemHealthInfo;
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    this.hass!.loadBackendTranslation("system_health");
+
+    subscribeSystemHealthInfo(this.hass!, (info) => {
+      this._info = info;
+    });
+  }
+
   protected render(): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
     const sections: TemplateResult[] = [];
 
     if (!this._info) {
@@ -139,55 +146,36 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card>
-        <h1 class="card-header">
-          <div class="card-header-text">
-            ${domainToName(this.hass.localize, "system_health")}
-          </div>
-          <ha-button-menu
-            corner="BOTTOM_START"
-            slot="toolbar-icon"
-            @action=${this._copyInfo}
-          >
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
-              .path=${mdiContentCopy}
-            ></ha-icon-button>
-            <mwc-list-item>
-              ${this.hass.localize("ui.panel.config.info.copy_raw")}
-            </mwc-list-item>
-            <mwc-list-item>
-              ${this.hass.localize("ui.panel.config.info.copy_github")}
-            </mwc-list-item>
-          </ha-button-menu>
-        </h1>
-        <div class="card-content">${sections}</div>
-      </ha-card>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/system"
+        .header=${this.hass.localize("ui.panel.config.system_health.caption")}
+      >
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._copyInfo}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+          <mwc-list-item>
+            ${this.hass.localize("ui.panel.config.info.copy_raw")}
+          </mwc-list-item>
+          <mwc-list-item>
+            ${this.hass.localize("ui.panel.config.info.copy_github")}
+          </mwc-list-item>
+        </ha-button-menu>
+        <div class="content">
+          <ha-card outlined>
+            <div class="card-content">${sections}</div>
+          </ha-card>
+        </div>
+      </hass-subpage>
     `;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-
-    this.hass!.loadBackendTranslation("system_health");
-
-    if (!isComponentLoaded(this.hass!, "system_health")) {
-      this._info = {
-        system_health: {
-          info: {
-            error: this.hass.localize(
-              "ui.panel.config.info.system_health_error"
-            ),
-          },
-        },
-      };
-      return;
-    }
-
-    subscribeSystemHealthInfo(this.hass!, (info) => {
-      this._info = info;
-    });
   }
 
   private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
@@ -254,45 +242,59 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      table {
-        width: 100%;
-      }
+  static styles: CSSResultGroup = css`
+    .content {
+      padding: 28px 20px 0;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    ha-card {
+      display: block;
+      max-width: 500px;
+      margin: 0 auto;
+      padding-bottom: 16px;
+      margin-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    table {
+      width: 100%;
+    }
 
-      td:first-child {
-        width: 45%;
-      }
+    td:first-child {
+      width: 45%;
+    }
 
-      td:last-child {
-        direction: ltr;
-      }
+    td:last-child {
+      direction: ltr;
+    }
 
-      .loading-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+    .loading-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      .card-header {
-        justify-content: space-between;
-        display: flex;
-        align-items: center;
-      }
+    .card-header {
+      justify-content: space-between;
+      display: flex;
+      align-items: center;
+    }
 
-      .error {
-        color: var(--error-color);
-      }
+    .error {
+      color: var(--error-color);
+    }
 
-      a {
-        color: var(--primary-color);
-      }
+    a {
+      color: var(--primary-color);
+    }
 
-      a.manage {
-        text-decoration: none;
-      }
-    `;
-  }
+    a.manage {
+      text-decoration: none;
+    }
+  `;
 }
 
-customElements.define("system-health-card", SystemHealthCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-system-health": HaConfigSystemHealth;
+  }
+}
