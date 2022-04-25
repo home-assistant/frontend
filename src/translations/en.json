@@ -1111,7 +1111,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version, system health and links to documentation"
+            "secondary": "Version, loaded integrations and links to documentation"
           }
         },
         "common": {
