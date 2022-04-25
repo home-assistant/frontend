@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -76,6 +76,13 @@ export class HaLocationSelector extends LitElement {
     const radius = ev.detail.radius;
     fireEvent(this, "value-changed", { value: { ...this.value, radius } });
   }
+
+  static styles = css`
+    :host {
+      display: block;
+      height: 400px;
+    }
+  `;
 }
 
 declare global {
