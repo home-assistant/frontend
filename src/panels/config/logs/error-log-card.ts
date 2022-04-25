@@ -15,15 +15,10 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
-import { fetchErrorLog } from "../../../data/error_log";
+import { fetchErrorLog, LogProvider } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioLogs } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
-
-interface LogProvider {
-  key: string;
-  name: string;
-}
 
 const logProviders: LogProvider[] = [
   {
@@ -64,9 +59,7 @@ class ErrorLogCard extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _selectedLogProvider = "core";
-
-  @state() private _hassioLoaded = false;
+  @state() private _selectedLogProvider?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -78,7 +71,8 @@ class ErrorLogCard extends LitElement {
           ? html`
               <ha-card>
                 <div class="header">
-                  ${this.hass.userData?.showAdvanced && this._hassioLoaded
+                  ${this.hass.userData?.showAdvanced &&
+                  isComponentLoaded(this.hass, "hassio")
                     ? html`
                         <ha-select
                           .label=${this.hass.localize(
@@ -121,10 +115,6 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._hassioLoaded = true;
-    }
-
     if (this.hass?.config.safe_mode) {
       this.hass.loadFragmentTranslation("config");
       this._refreshLogs();
@@ -152,6 +142,7 @@ class ErrorLogCard extends LitElement {
   private async _refresh(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
     button.progress = true;
+
     await this._refreshLogs();
     button.progress = false;
   }
@@ -160,7 +151,11 @@ class ErrorLogCard extends LitElement {
     this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     let log: string;
 
-    if (this._hassioLoaded) {
+    if (!this._selectedLogProvider && isComponentLoaded(this.hass, "hassio")) {
+      this._selectedLogProvider = "core";
+    }
+
+    if (this._selectedLogProvider) {
       try {
         log = await fetchHassioLogs(this.hass, this._selectedLogProvider);
       } catch (err: any) {
