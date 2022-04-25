@@ -233,6 +233,20 @@ export interface TriggerCondition extends BaseCondition {
   id: string;
 }
 
+type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
+
+export interface ShorthandAndCondition extends ShorthandBaseCondition {
+  and: Condition[];
+}
+
+export interface ShorthandOrCondition extends ShorthandBaseCondition {
+  or: Condition[];
+}
+
+export interface ShorthandNotCondition extends ShorthandBaseCondition {
+  not: Condition[];
+}
+
 export type Condition =
   | StateCondition
   | NumericStateCondition
@@ -243,6 +257,12 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition
   | TriggerCondition;
+
+export type ConditionWithShorthand =
+  | Condition
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition;
 
 export const triggerAutomationActions = (
   hass: HomeAssistant,
