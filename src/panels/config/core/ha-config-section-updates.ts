@@ -11,6 +11,7 @@ import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-metric";
 import { updateCanInstall, UpdateEntity } from "../../../data/update";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -58,18 +59,25 @@ class HaConfigSectionUpdates extends LitElement {
         </ha-button-menu>
         <div class="content">
           <ha-card outlined>
-            ${canInstallUpdates.length
-              ? html`
-                  <ha-config-updates
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .updateEntities=${canInstallUpdates}
-                    showAll
-                  ></ha-config-updates>
-                `
-              : html`
-                  ${this.hass.localize("ui.panel.config.updates.no_updates")}
-                `}
+            <div class="card-content">
+              ${canInstallUpdates.length
+                ? html`
+                    <ha-config-updates
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .updateEntities=${canInstallUpdates}
+                      showAll
+                    ></ha-config-updates>
+                  `
+                : html`
+                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                  `}
+            </div>
+            <div class="card-actions">
+              <mwc-button @click=${this._checkUpdates}>
+                ${this.hass.localize("ui.panel.config.updates.check_updates")}
+              </mwc-button>
+            </div>
           </ha-card>
         </div>
       </hass-subpage>
@@ -105,6 +113,29 @@ class HaConfigSectionUpdates extends LitElement {
 
   private _toggleSkipped(): void {
     this._showSkipped = !this._showSkipped;
+  }
+
+  private async _checkUpdates(): Promise<void> {
+    const _entities = this._filterUpdateEntities(this.hass.states).map(
+      (entity) => entity.entity_id
+    );
+
+    if (_entities.length) {
+      this._notifyUpdates = true;
+      await this.hass.callService("homeassistant", "update_entity", {
+        entity_id: _entities,
+      });
+      return;
+    }
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.updates.no_update_entities.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.updates.no_update_entities.description"
+      ),
+      warning: true,
+    });
   }
 
   private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
@@ -152,17 +183,27 @@ class HaConfigSectionUpdates extends LitElement {
       margin: 0 auto;
     }
     ha-card {
-      padding: 16px;
       max-width: 500px;
       margin: 0 auto;
       height: 100%;
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-    }
-    ha-card {
-      margin-bottom: 24px;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    .card-actions {
+      height: 48px;
+      border-top: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-content {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      padding: 16px 16px 0 16px;
     }
   `;
 }
