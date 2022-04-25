@@ -131,9 +131,8 @@ class HaConfigDashboard extends LitElement {
   });
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
-      this.hass.states
-    );
+    const [canInstallUpdates, totalUpdates] =
+      this._filterUpdateEntitiesWithInstall(this.hass.states);
 
     return html`
       <ha-app-layout>
@@ -177,8 +176,19 @@ class HaConfigDashboard extends LitElement {
                 <ha-config-updates
                   .hass=${this.hass}
                   .narrow=${this.narrow}
+                  .total=${totalUpdates}
                   .updateEntities=${canInstallUpdates}
                 ></ha-config-updates>
+                ${totalUpdates > canInstallUpdates.length
+                  ? html`<a class="button" href="/config/updates">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.more_updates",
+                        {
+                          count: totalUpdates - canInstallUpdates.length,
+                        }
+                      )}
+                    </a>`
+                  : ""}
               </ha-card>`
             : ""}
           <ha-card outlined>
@@ -259,10 +269,15 @@ class HaConfigDashboard extends LitElement {
   );
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities) =>
-      this._filterUpdateEntities(entities).filter((entity) =>
+    (entities: HassEntities): [UpdateEntity[], number] => {
+      const updates = this._filterUpdateEntities(entities).filter((entity) =>
         updateCanInstall(entity)
-      )
+      );
+      return [
+        updates.slice(0, updates.length === 3 ? updates.length : 2),
+        updates.length,
+      ];
+    }
   );
 
   private _showQuickBar(): void {
@@ -319,6 +334,11 @@ class HaConfigDashboard extends LitElement {
         ha-card a {
           text-decoration: none;
           color: var(--primary-text-color);
+        }
+        a.button {
+          display: block;
+          color: var(--primary-color);
+          padding: 16px;
         }
         .title {
           font-size: 16px;
