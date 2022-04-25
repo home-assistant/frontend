@@ -287,7 +287,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.backup.caption",
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
-      components: ["hassio"],
+      component: "hassio",
     },
     {
       path: "/config/analytics",
