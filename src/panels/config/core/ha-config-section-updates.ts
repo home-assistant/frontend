@@ -160,6 +160,10 @@ class HaConfigSectionUpdates extends LitElement {
       flex-direction: column;
       display: flex;
     }
+    ha-card {
+      margin-bottom: 24px;
+      margin-bottom: max(24px, env(safe-area-inset-bottom));
+    }
   `;
 }
 

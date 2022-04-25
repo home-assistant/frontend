@@ -42,6 +42,7 @@ class HaConfigUpdates extends LitElement {
           <paper-icon-item
             @click=${this._openMoreInfo}
             .entity_id=${entity.entity_id}
+            class=${entity.attributes.skipped_version ? "skipped" : ""}
           >
             <span slot="item-icon" class="icon">
               <state-badge
@@ -60,6 +61,9 @@ class HaConfigUpdates extends LitElement {
                     version_available: entity.attributes.latest_version,
                   }
                 )}
+                ${entity.attributes.skipped_version
+                  ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
+                  : ""}
               </div>
             </paper-item-body>
             ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
@@ -95,6 +99,9 @@ class HaConfigUpdates extends LitElement {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
+        }
+        .skipped {
+          background: var(--secondary-background-color);
         }
         .icon {
           display: inline-flex;
