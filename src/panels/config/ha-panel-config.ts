@@ -407,7 +407,7 @@ class HaPanelConfig extends HassRouterPage {
       },
       network: {
         tag: "ha-config-section-network",
-        load: () => import("./core/ha-config-section-network"),
+        load: () => import("./network/ha-config-section-network"),
       },
       person: {
         tag: "ha-config-person",

@@ -3108,7 +3108,24 @@
           "caption": "Analytics"
         },
         "network": {
-          "caption": "Network"
+          "caption": "Network",
+          "supervisor": {
+            "title": "Configure network interfaces",
+            "connected_to": "Connected to {ssid}",
+            "scan_ap": "Scan for access points",
+            "open": "Open",
+            "wep": "WEP",
+            "wpa": "wpa-psk",
+            "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
+            "static": "Static",
+            "dhcp": "DHCP",
+            "disabled": "Disabled",
+            "ip_netmask": "IP address/Netmask",
+            "gateway": "Gateway address",
+            "dns_servers": "DNS Servers",
+            "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
+            "failed_to_change": "Failed to change network settings"
+          }
         },
         "storage": {
           "caption": "Storage",
