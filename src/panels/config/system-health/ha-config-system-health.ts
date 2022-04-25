@@ -1,6 +1,7 @@
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -19,6 +20,7 @@ import {
   SystemHealthInfo,
 } from "../../../data/system_health";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 
@@ -39,7 +41,7 @@ const sortKeys = (a: string, b: string) => {
 };
 
 @customElement("ha-config-system-health")
-class HaConfigSystemHealth extends LitElement {
+class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -52,13 +54,30 @@ class HaConfigSystemHealth extends LitElement {
 
   @state() private _error?: { code: string; message: string };
 
+  private _timeout?: number;
+
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    if (!isComponentLoaded(this.hass, "system_health")) {
+      return [
+        subscribeSystemHealthInfo(this.hass!, (info) => {
+          this._info = info;
+        }),
+      ];
+    }
+    return [];
+  }
+
+  public disconnectedCallback(): void {
+    clearTimeout(this._timeout);
+  }
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
     this.hass!.loadBackendTranslation("system_health");
 
     if (isComponentLoaded(this.hass, "hassio")) {
-      this._loadStats();
+      this._subscribeStats();
     }
 
     if (isComponentLoaded(this.hass, "system_health")) {
@@ -255,13 +274,14 @@ class HaConfigSystemHealth extends LitElement {
     `;
   }
 
-  private async _loadStats() {
+  private async _subscribeStats() {
     try {
       this._supervisorStats = await fetchHassioStats(this.hass, "supervisor");
       this._coreStats = await fetchHassioStats(this.hass, "core");
     } catch (err: any) {
       this._error = err.message || err;
     }
+    this._timeout = window.setTimeout(() => this._subscribeStats(), 10000);
   }
 
   private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
