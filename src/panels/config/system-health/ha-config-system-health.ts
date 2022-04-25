@@ -79,12 +79,6 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
     if (isComponentLoaded(this.hass, "hassio")) {
       this._subscribeStats();
     }
-
-    if (isComponentLoaded(this.hass, "system_health")) {
-      subscribeSystemHealthInfo(this.hass!, (info) => {
-        this._info = info;
-      });
-    }
   }
 
   protected render(): TemplateResult {
