@@ -1111,7 +1111,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version, system health and links to documentation"
+            "secondary": "Version, loaded integrations and links to documentation"
           }
         },
         "common": {
@@ -1486,11 +1486,11 @@
           "board": "Board"
         },
         "info": {
-          "caption": "Info",
+          "caption": "About",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw Text",
           "copy_github": "For GitHub",
-          "description": "Version, system health and links to documentation",
+          "description": "Version, loaded integration and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
