@@ -9,25 +9,27 @@ import "./ha-settings-row";
 class HaMetric extends LitElement {
   @property({ type: Number }) public value!: number;
 
-  @property({ type: String }) public description!: string;
+  @property({ type: String }) public heading!: string;
 
   @property({ type: String }) public tooltip?: string;
 
   protected render(): TemplateResult {
     const roundedValue = roundWithOneDecimal(this.value);
-    return html`<ha-settings-row>
-      <span slot="heading"> ${this.description} </span>
-      <div slot="description" .title=${this.tooltip ?? ""}>
-        <span class="value"> ${roundedValue} % </span>
-        <ha-bar
-          class=${classMap({
-            "target-warning": roundedValue > 50,
-            "target-critical": roundedValue > 85,
-          })}
-          .value=${this.value}
-        ></ha-bar>
-      </div>
-    </ha-settings-row>`;
+    return html`
+      <ha-settings-row>
+        <span slot="heading"> ${this.heading} </span>
+        <div slot="description" .title=${this.tooltip ?? ""}>
+          <span class="value"> ${roundedValue} % </span>
+          <ha-bar
+            class=${classMap({
+              "target-warning": roundedValue > 50,
+              "target-critical": roundedValue > 85,
+            })}
+            .value=${this.value}
+          ></ha-bar>
+        </div>
+      </ha-settings-row>
+    `;
   }
 
   static get styles(): CSSResultGroup {

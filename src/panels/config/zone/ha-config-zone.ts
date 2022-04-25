@@ -1,4 +1,4 @@
-import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { mdiPencil, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
@@ -36,7 +36,10 @@ import {
   Zone,
   ZoneMutableParams,
 } from "../../../data/zone";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -186,12 +189,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
-                        .disabled=${stateObject.entity_id === "zone.home" &&
+                        .noEdit=${stateObject.entity_id === "zone.home" &&
                         !this._canEditCore}
-                        .path=${stateObject.entity_id === "zone.home" &&
-                        this._canEditCore
-                          ? mdiPencil
-                          : mdiPencilOff}
+                        .path=${mdiPencil}
                         .label=${hass.localize(
                           "ui.panel.config.zone.edit_zone"
                         )}
@@ -385,7 +385,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog(entry);
   }
 
-  private async _openCoreConfig() {
+  private async _openCoreConfig(ev) {
+    if (ev.currentTarget.noEdit) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
+        text: this.hass.localize("ui.panel.config.zone.configured_in_yaml"),
+        confirm: () => {},
+      });
+      return;
+    }
     showCoreZoneDetailDialog(this);
   }
 

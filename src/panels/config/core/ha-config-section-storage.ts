@@ -1,6 +1,5 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
@@ -52,7 +51,7 @@ class HaConfigSectionStorage extends LitElement {
             ? html`
                 <ha-card outlined>
                   <ha-metric
-                    .description=${this.hass.localize(
+                    .heading=${this.hass.localize(
                       "ui.panel.config.storage.used_space"
                     )}
                     .value=${this._getUsedSpace(
@@ -65,7 +64,7 @@ class HaConfigSectionStorage extends LitElement {
                   this._storageData.disk_life_time >= 10
                     ? html`
                         <ha-metric
-                          .description=${this.hass.localize(
+                          .heading=${this.hass.localize(
                             "ui.panel.config.storage.emmc_lifetime_used"
                           )}
                           .value=${this._storageData.disk_life_time}
@@ -86,19 +85,15 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private async _load() {
-    this._error = undefined;
     try {
-      if (isComponentLoaded(this.hass, "hassio")) {
-        this._storageData = await fetchHassioHostInfo(this.hass);
-      }
+      this._storageData = await fetchHassioHostInfo(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
     }
   }
 
-  private _getUsedSpace = memoizeOne((used: number, total: number) =>
-    roundWithOneDecimal(getValueInPercentage(used, 0, total))
-  );
+  private _getUsedSpace = (used: number, total: number) =>
+    roundWithOneDecimal(getValueInPercentage(used, 0, total));
 
   static styles = css`
     .content {
