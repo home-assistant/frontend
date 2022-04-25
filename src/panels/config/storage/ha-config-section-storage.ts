@@ -1,10 +1,7 @@
-import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
-import "../../../components/ha-bar";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-metric";
 import { fetchHassioHostInfo, HassioHostInfo } from "../../../data/hassio/host";
 import "../../../layouts/hass-subpage";
@@ -43,28 +40,6 @@ class HaConfigSectionStorage extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
-        ${this._hostInfo
-          ? html`
-              <ha-button-menu
-                corner="BOTTOM_START"
-                slot="toolbar-icon"
-                @action=${this._moveDatadisk}
-              >
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.storage.datadisk.title"
-                  )}
-                  .path=${mdiDotsVertical}
-                ></ha-icon-button>
-                <mwc-list-item>
-                  ${this.hass.localize(
-                    "ui.panel.config.storage.datadisk.title"
-                  )}
-                </mwc-list-item>
-              </ha-button-menu>
-            `
-          : ""}
         <div class="content">
           ${this._error
             ? html`
@@ -76,30 +51,41 @@ class HaConfigSectionStorage extends LitElement {
           ${this._hostInfo
             ? html`
                 <ha-card outlined>
-                  <ha-metric
-                    .heading=${this.hass.localize(
-                      "ui.panel.config.storage.used_space"
-                    )}
-                    .value=${this._getUsedSpace(
-                      this._hostInfo?.disk_used,
-                      this._hostInfo?.disk_total
-                    )}
-                    .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
-                  ></ha-metric>
-                  ${this._hostInfo.disk_life_time !== "" &&
-                  this._hostInfo.disk_life_time >= 10
-                    ? html`
-                        <ha-metric
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.storage.emmc_lifetime_used"
-                          )}
-                          .value=${this._hostInfo.disk_life_time}
-                          .tooltip=${`${this._hostInfo.disk_life_time - 10} % -
+                  <div class="card-content">
+                    <ha-metric
+                      .heading=${this.hass.localize(
+                        "ui.panel.config.storage.used_space"
+                      )}
+                      .value=${this._getUsedSpace(
+                        this._hostInfo?.disk_used,
+                        this._hostInfo?.disk_total
+                      )}
+                      .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
+                    ></ha-metric>
+                    ${this._hostInfo.disk_life_time !== "" &&
+                    this._hostInfo.disk_life_time >= 10
+                      ? html`
+                          <ha-metric
+                            .heading=${this.hass.localize(
+                              "ui.panel.config.storage.emmc_lifetime_used"
+                            )}
+                            .value=${this._hostInfo.disk_life_time}
+                            .tooltip=${`${
+                              this._hostInfo.disk_life_time - 10
+                            } % -
                           ${this._hostInfo.disk_life_time} %`}
-                          class="emmc"
-                        ></ha-metric>
-                      `
-                    : ""}
+                            class="emmc"
+                          ></ha-metric>
+                        `
+                      : ""}
+                  </div>
+                  <div class="card-actions">
+                    <mwc-button @click=${this._moveDatadisk}>
+                      ${this.hass.localize(
+                        "ui.panel.config.storage.datadisk.title"
+                      )}
+                    </mwc-button>
+                  </div>
                 </ha-card>
               `
             : ""}
@@ -132,13 +118,26 @@ class HaConfigSectionStorage extends LitElement {
       margin: 0 auto;
     }
     ha-card {
-      padding: 16px;
       max-width: 500px;
       margin: 0 auto;
       height: 100%;
       justify-content: space-between;
       flex-direction: column;
       display: flex;
+    }
+    .card-actions {
+      height: 48px;
+      border-top: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-content {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      padding: 16px 16px 0 16px;
     }
   `;
 }
