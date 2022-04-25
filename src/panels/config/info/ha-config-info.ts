@@ -6,7 +6,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./integrations-card";
-import "./system-health-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -131,7 +130,6 @@ class HaConfigInfo extends LitElement {
           </p>
         </div>
         <div>
-          <system-health-card .hass=${this.hass}></system-health-card>
           <integrations-card
             .hass=${this.hass}
             .narrow=${this.narrow}
@@ -180,7 +178,6 @@ class HaConfigInfo extends LitElement {
           color: var(--primary-color);
         }
 
-        system-health-card,
         integrations-card {
           display: block;
           max-width: 600px;
