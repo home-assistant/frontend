@@ -3110,7 +3110,7 @@
         "network": {
           "caption": "Network",
           "supervisor": {
-            "title": "Network settings",
+            "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Scan for access points",
             "open": "Open",
