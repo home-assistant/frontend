@@ -146,14 +146,14 @@ export const showOptionsFlowDialog = (
       renderMenuHeader(hass, step) {
         return (
           hass.localize(
-            `component.${step.handler}.option.step.${step.step_id}.title`
-          ) || hass.localize(`component.${step.handler}.title`)
+            `component.${configEntry.domain}.options.step.${step.step_id}.title`
+          ) || hass.localize(`component.${configEntry.domain}.title`)
         );
       },
 
       renderMenuDescription(hass, step) {
         const description = hass.localize(
-          `component.${step.handler}.option.step.${step.step_id}.description`,
+          `component.${configEntry.domain}.options.step.${step.step_id}.description`,
           step.description_placeholders
         );
         return description
@@ -169,7 +169,7 @@ export const showOptionsFlowDialog = (
 
       renderMenuOption(hass, step, option) {
         return hass.localize(
-          `component.${step.handler}.options.step.${step.step_id}.menu_options.${option}`,
+          `component.${configEntry.domain}.options.step.${step.step_id}.menu_options.${option}`,
           step.description_placeholders
         );
       },
