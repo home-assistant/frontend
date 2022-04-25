@@ -103,6 +103,7 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
+          --navigation-list-item-padding: 4px;
         }
       `,
     ];
