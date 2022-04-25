@@ -1,4 +1,4 @@
-import { mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
@@ -189,9 +189,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
-                        .noEdit=${stateObject.entity_id === "zone.home" &&
+                        .noEdit=${stateObject.entity_id !== "zone.home" ||
                         !this._canEditCore}
-                        .path=${mdiPencil}
+                        .path=${stateObject.entity_id === "zone.home" &&
+                        this._canEditCore
+                          ? mdiPencil
+                          : mdiPencilOff}
                         .label=${hass.localize(
                           "ui.panel.config.zone.edit_zone"
                         )}
