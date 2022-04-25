@@ -405,7 +405,7 @@ class HaPanelConfig extends HassRouterPage {
       },
       network: {
         tag: "ha-config-section-network",
-        load: () => import("./core/ha-config-section-network"),
+        load: () => import("./network/ha-config-section-network"),
       },
       person: {
         tag: "ha-config-person",
@@ -422,6 +422,10 @@ class HaPanelConfig extends HassRouterPage {
       helpers: {
         tag: "ha-config-helpers",
         load: () => import("./helpers/ha-config-helpers"),
+      },
+      hardware: {
+        tag: "ha-config-hardware",
+        load: () => import("./hardware/ha-config-hardware"),
       },
       server_control: {
         tag: "ha-config-server-control",

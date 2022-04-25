@@ -1,9 +1,11 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-network";
 import "./ha-config-url-form";
+import "./supervisor-network";
 
 @customElement("ha-config-section-network")
 class HaConfigSectionNetwork extends LitElement {
@@ -22,6 +24,9 @@ class HaConfigSectionNetwork extends LitElement {
         .header=${this.hass.localize("ui.panel.config.network.caption")}
       >
         <div class="content">
+          ${isComponentLoaded(this.hass, "hassio")
+            ? html`<supervisor-network .hass=${this.hass}></supervisor-network>`
+            : ""}
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
         </div>
@@ -35,9 +40,10 @@ class HaConfigSectionNetwork extends LitElement {
       max-width: 1040px;
       margin: 0 auto;
     }
-    ha-config-network {
+    supervisor-network,
+    ha-config-url-form {
       display: block;
-      margin-top: 24px;
+      margin-bottom: 24px;
     }
   `;
 }
