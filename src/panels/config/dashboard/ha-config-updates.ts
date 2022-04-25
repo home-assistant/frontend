@@ -19,22 +19,20 @@ class HaConfigUpdates extends LitElement {
   @property({ attribute: false })
   public updateEntities?: UpdateEntity[];
 
-  @property({ type: Boolean, reflect: true }) showAll = false;
+  @property({ type: Number })
+  public total?: number;
 
   protected render(): TemplateResult {
     if (!this.updateEntities?.length) {
       return html``;
     }
 
-    const updates =
-      this.showAll || this.updateEntities.length <= 3
-        ? this.updateEntities
-        : this.updateEntities.slice(0, 2);
+    const updates = this.updateEntities;
 
     return html`
       <div class="title">
         ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.updateEntities.length,
+          count: this.total || this.updateEntities.length,
         })}
       </div>
       ${updates.map(
@@ -70,15 +68,6 @@ class HaConfigUpdates extends LitElement {
           </paper-icon-item>
         `
       )}
-      ${!this.showAll && this.updateEntities.length >= 4
-        ? html`
-            <button class="show-more" @click=${this._showAllClicked}>
-              ${this.hass.localize("ui.panel.config.updates.more_updates", {
-                count: this.updateEntities!.length - updates.length,
-              })}
-            </button>
-          `
-        : ""}
     `;
   }
 
@@ -86,10 +75,6 @@ class HaConfigUpdates extends LitElement {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).entity_id,
     });
-  }
-
-  private _showAllClicked() {
-    this.showAll = true;
   }
 
   static get styles(): CSSResultGroup[] {
