@@ -38,6 +38,7 @@ class HaConfigSectionStorage extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.storage.caption")}
       >
         <div class="content">
           ${this._error
@@ -109,9 +110,6 @@ class HaConfigSectionStorage extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-    }
-    .emmc {
-      --metric-bar-ok-color: #000;
     }
   `;
 }
