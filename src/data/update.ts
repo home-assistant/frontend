@@ -31,8 +31,12 @@ export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UPDATE_SUPPORT_PROGRESS) &&
   typeof entity.attributes.in_progress === "number";
 
-export const updateCanInstall = (entity: UpdateEntity): boolean =>
-  entity.state === BINARY_STATE_ON &&
+export const updateCanInstall = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  (entity.state === BINARY_STATE_ON ||
+    (showSkipped && Boolean(entity.attributes.skipped_version))) &&
   supportsFeature(entity, UPDATE_SUPPORT_INSTALL);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>

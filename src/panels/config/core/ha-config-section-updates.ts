@@ -1,11 +1,14 @@
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-metric";
 import { updateCanInstall, UpdateEntity } from "../../../data/update";
 import "../../../layouts/hass-subpage";
@@ -20,11 +23,14 @@ class HaConfigSectionUpdates extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
+  @state() private _showSkipped = false;
+
   private _notifyUpdates = false;
 
   protected render(): TemplateResult {
     const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
-      this.hass.states
+      this.hass.states,
+      this._showSkipped
     );
 
     return html`
@@ -34,6 +40,22 @@ class HaConfigSectionUpdates extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._toggleSkipped}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <mwc-list-item>
+            ${this._showSkipped
+              ? this.hass.localize("ui.panel.config.updates.hide_skipped")
+              : this.hass.localize("ui.panel.config.updates.show_skipped")}
+          </mwc-list-item>
+        </ha-button-menu>
         <div class="content">
           <ha-card outlined>
             ${canInstallUpdates.length
@@ -57,11 +79,18 @@ class HaConfigSectionUpdates extends LitElement {
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (!changedProps.has("hass") || !this._notifyUpdates) {
+    if (
+      !changedProps.has("hass") ||
+      !this._notifyUpdates ||
+      !changedProps.has("_showSkipped")
+    ) {
       return;
     }
     this._notifyUpdates = false;
-    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
+    if (
+      this._filterUpdateEntitiesWithInstall(this.hass.states, this._showSkipped)
+        .length
+    ) {
       showToast(this, {
         message: this.hass.localize(
           "ui.panel.config.updates.updates_refreshed"
@@ -72,6 +101,10 @@ class HaConfigSectionUpdates extends LitElement {
         message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
       });
     }
+  }
+
+  private _toggleSkipped(): void {
+    this._showSkipped = !this._showSkipped;
   }
 
   private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
@@ -106,9 +139,9 @@ class HaConfigSectionUpdates extends LitElement {
   );
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities) =>
+    (entities: HassEntities, showSkipped: boolean) =>
       this._filterUpdateEntities(entities).filter((entity) =>
-        updateCanInstall(entity)
+        updateCanInstall(entity, showSkipped)
       )
   );
 
