@@ -1465,7 +1465,22 @@
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
         },
         "hardware": {
-          "caption": "Hardware"
+          "caption": "Hardware",
+          "available_hardware": {
+            "failed_to_get": "Failed to get available hardware",
+            "title": "Available hardware",
+            "subsystem": "Subsystem",
+            "device_path": "Device path",
+            "id": "ID",
+            "attributes": "Attributes"
+          },
+          "reboot_host": "Reboot host",
+          "reboot_host_confirm": "Are you sure you want to reboot your host?",
+          "failed_to_reboot_host": "Failed to reboot host",
+          "shutdown_host": "Shutdown host",
+          "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
+          "failed_to_shutdown_host": "Failed to shutdown host",
+          "board": "Board"
         },
         "info": {
           "caption": "Info",

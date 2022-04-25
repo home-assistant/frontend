@@ -397,6 +397,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-energy",
         load: () => import("./energy/ha-config-energy"),
       },
+      hardware: {
+        tag: "ha-config-hardware",
+        load: () => import("./hardware/ha-config-hardware"),
+      },
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
