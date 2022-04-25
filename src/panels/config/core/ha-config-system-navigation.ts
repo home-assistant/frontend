@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
@@ -23,12 +24,14 @@ class HaConfigSystemNavigation extends LitElement {
   @property({ type: Boolean }) public showAdvanced!: boolean;
 
   protected render(): TemplateResult {
-    const pages = configSections.general.map((page) => ({
-      ...page,
-      name: page.translationKey
-        ? this.hass.localize(page.translationKey)
-        : page.name,
-    }));
+    const pages = configSections.general
+      .filter((page) => canShowPage(this.hass, page))
+      .map((page) => ({
+        ...page,
+        name: page.translationKey
+          ? this.hass.localize(page.translationKey)
+          : page.name,
+      }));
 
     return html`
       <hass-subpage

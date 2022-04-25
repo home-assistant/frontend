@@ -130,7 +130,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Array of tabs to show on the page.
    * @type {Array}
    */
-  @property() public tabs!: PageNavigation[];
+  @property() public tabs: PageNavigation[] = [];
 
   /**
    * Force hides the filter menu.
