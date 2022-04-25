@@ -106,7 +106,7 @@
     "deep-clone-simple": "^1.1.1",
     "deep-freeze": "^0.0.1",
     "fuse.js": "^6.0.0",
-    "fuzzball": "^2.1.2",
+    "fuzzysort": "^1.2.1",
     "google-timezones-json": "^1.0.2",
     "hls.js": "^1.1.5",
     "home-assistant-js-websocket": "^7.0.1",

@@ -7,14 +7,14 @@ import type {
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
-import { termsMatcher } from "../../common/string/filter/terms";
+import { fuzzyMatcher } from "../../common/string/filter/sequence-matching";
 
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  const matcher = termsMatcher(filter);
+  const matcher = fuzzyMatcher(filter);
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;

@@ -1,54 +1,4 @@
-import { token_set_ratio } from "fuzzball";
-import { fuzzyScore } from "./filter";
-import { termsMatcher } from "./terms";
-
-/**
- * Determine whether a sequence of letters exists in another string,
- *   in that order, allowing for skipping. Ex: "chdr" exists in "chandelier")
- *
- * @param {string} filter - Sequence of letters to check for
- * @param {ScorableTextItem} item - Item against whose strings will be checked
- *
- * @return {number} Score representing how well the word matches the filter. Return of 0 means no match.
- */
-
-export const fuzzySequentialMatch = (
-  filter: string,
-  item: ScorableTextItem
-) => {
-  let topScore = Number.NEGATIVE_INFINITY;
-
-  for (const word of item.strings) {
-    const scores = fuzzyScore(
-      filter,
-      filter.toLowerCase(),
-      0,
-      word,
-      word.toLowerCase(),
-      0,
-      true
-    );
-
-    if (!scores) {
-      continue;
-    }
-
-    // The VS Code implementation of filter returns a 0 for a weak match.
-    // But if .filter() sees a "0", it considers that a failed match and will remove it.
-    // So, we set score to 1 in these cases so the match will be included, and mostly respect correct ordering.
-    const score = scores[0] === 0 ? 1 : scores[0];
-
-    if (score > topScore) {
-      topScore = score;
-    }
-  }
-
-  if (topScore === Number.NEGATIVE_INFINITY) {
-    return undefined;
-  }
-
-  return topScore;
-};
+import fuzzysort from "fuzzysort";
 
 /**
  * An interface that objects must extend in order to use the fuzzy sequence matcher
@@ -73,46 +23,43 @@ export type FuzzyFilterSort = <T extends ScorableTextItem>(
   items: T[]
 ) => T[];
 
-export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) =>
-  items
-    .map((item) => {
-      item.score = fuzzySequentialMatch(filter, item);
-      return item;
-    })
-    .filter((item) => item.score !== undefined)
-    .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
-      scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
-    );
+export function fuzzyMatcher(search: string | null): (string) => boolean {
+  const scorer = fuzzyScorer(search);
+  return (value: string) => scorer([value]) !== Number.NEGATIVE_INFINITY;
+}
 
-export const ratioFilterSort: FuzzyFilterSort = (filter, items) =>
-  items
-    .map((item) => {
-      const itemScores = item.strings.map((itemString) =>
-        token_set_ratio(filter, itemString)
-      );
-      item.score = Math.max(...itemScores);
-      return item;
-    })
-    .filter((item) => item.score !== undefined)
-    .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
-      scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
-    );
+export function fuzzyScorer(
+  search: string | null
+): (values: string[]) => number {
+  const searchTerms = (search || "").match(/("[^"]+"|[^"\s]+)/g);
+  if (!searchTerms) {
+    return () => 0;
+  }
+  return (values) =>
+    searchTerms
+      .map((term) => {
+        const resultsForTerm = fuzzysort.go(term, values, {
+          allowTypo: true,
+        });
+        if (resultsForTerm.length > 0) {
+          return Math.max(...resultsForTerm.map((result) => result.score));
+        }
+        return Number.NEGATIVE_INFINITY;
+      })
+      .reduce((partial, current) => partial + current, 0);
+}
 
-export const termsFilterSort: FuzzyFilterSort = (filter, items) => {
-  const matcher = termsMatcher(filter);
+export const fuzzySortFilterSort: FuzzyFilterSort = (filter, items) => {
+  const scorer = fuzzyScorer(filter);
   return items
-    .map((item, index) => {
-      let itemMatch = false;
-      item.strings.forEach((itemString) => {
-        itemMatch = itemMatch || matcher(itemString);
-      });
-      item.score = itemMatch ? index : undefined;
+    .map((item) => {
+      item.score = scorer(item.strings);
       return item;
     })
-    .filter((item) => item.score !== undefined)
+    .filter((item) => item.score !== undefined && item.score > -100000)
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
 };
 
-export const defaultFuzzyFilterSort = ratioFilterSort;
+export const defaultFuzzyFilterSort = fuzzySortFilterSort;
