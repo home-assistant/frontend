@@ -1,6 +1,14 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { property } from "lit/decorators";
+import { property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-logo-svg";
+import {
+  fetchHassioHostInfo,
+  fetchHassioHassOsInfo,
+  HassioHassOSInfo,
+  HassioHostInfo,
+} from "../../../data/hassio/host";
+import { HassioInfo, fetchHassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -20,6 +28,12 @@ class HaConfigInfo extends LitElement {
   @property() public showAdvanced!: boolean;
 
   @property() public route!: Route;
+
+  @state() private _hostInfo?: HassioHostInfo;
+
+  @state() private _osInfo?: HassioHassOSInfo;
+
+  @state() private _hassioInfo?: HassioInfo;
 
   protected render(): TemplateResult {
     const hass = this.hass;
@@ -47,7 +61,19 @@ class HaConfigInfo extends LitElement {
             </ha-logo-svg>
           </a>
           <br />
-          <h2>Home Assistant ${hass.connection.haVersion}</h2>
+          <h2>Home Assistant Core ${hass.connection.haVersion}</h2>
+          ${this._hassioInfo
+            ? html`<h2>
+                Home Assistant Supervisor ${this._hassioInfo.supervisor}
+              </h2>`
+            : ""}
+          ${this._osInfo
+            ? html`<h2>Home Assistant OS ${this._osInfo.version}</h2>`
+            : ""}
+          ${this._hostInfo
+            ? html`<h4>Kernel version ${this._hostInfo.kernel}</h4>
+                <h4>Agent version ${this._hostInfo.agent_version}</h4>`
+            : ""}
           <p>
             ${this.hass.localize(
               "ui.panel.config.info.path_configuration",
@@ -110,23 +136,21 @@ class HaConfigInfo extends LitElement {
               "type",
               JS_TYPE
             )}
-            ${
-              customUiList.length > 0
-                ? html`
-                    <div>
-                      ${this.hass.localize("ui.panel.config.info.custom_uis")}
-                      ${customUiList.map(
-                        (item) => html`
-                          <div>
-                            <a href=${item.url} target="_blank"> ${item.name}</a
-                            >: ${item.version}
-                          </div>
-                        `
-                      )}
-                    </div>
-                  `
-                : ""
-            }
+            ${customUiList.length > 0
+              ? html`
+                  <div>
+                    ${this.hass.localize("ui.panel.config.info.custom_uis")}
+                    ${customUiList.map(
+                      (item) => html`
+                        <div>
+                          <a href=${item.url} target="_blank"> ${item.name}</a>:
+                          ${item.version}
+                        </div>
+                      `
+                    )}
+                  </div>
+                `
+              : ""}
           </p>
         </div>
         <div>
@@ -135,7 +159,7 @@ class HaConfigInfo extends LitElement {
             .narrow=${this.narrow}
           ></integrations-card>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -149,6 +173,22 @@ class HaConfigInfo extends LitElement {
         this.requestUpdate();
       }
     }, 1000);
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._loadSupervisorInfo();
+    }
+  }
+
+  private async _loadSupervisorInfo(): Promise<void> {
+    const [hostInfo, osInfo, hassioInfo] = await Promise.all([
+      fetchHassioHostInfo(this.hass),
+      fetchHassioHassOsInfo(this.hass),
+      fetchHassioInfo(this.hass),
+    ]);
+
+    this._hassioInfo = hassioInfo;
+    this._osInfo = osInfo;
+    this._hostInfo = hostInfo;
   }
 
   static get styles(): CSSResultGroup {
