@@ -256,7 +256,10 @@ export type Condition =
   | TemplateCondition
   | DeviceCondition
   | LogicalCondition
-  | TriggerCondition
+  | TriggerCondition;
+
+export type ConditionWithShorthand =
+  | Condition
   | ShorthandAndCondition
   | ShorthandOrCondition
   | ShorthandNotCondition;
