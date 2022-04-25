@@ -184,7 +184,7 @@ class HaConfigSystemHealth extends LitElement {
           </mwc-list-item>
         </ha-button-menu>
         <div class="content">
-          <ha-card>
+          <ha-card outlined>
             <div class="card-content">${sections}</div>
           </ha-card>
         </div>
