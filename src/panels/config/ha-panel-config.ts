@@ -322,7 +322,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.system_health.caption",
       iconPath: mdiHeart,
       iconColor: "#507FfE",
-      component: "system_health",
+      components: ["system_health", "hassio"],
     },
   ],
   about: [
