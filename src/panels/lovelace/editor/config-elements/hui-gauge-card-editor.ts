@@ -2,6 +2,7 @@ import "../../../../components/ha-form/ha-form";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
+  array,
   assert,
   assign,
   boolean,
@@ -18,6 +19,11 @@ import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
+const gaugeSegmentStruct = object({
+  from: number(),
+  color: string(),
+});
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -29,6 +35,7 @@ const cardConfigStruct = assign(
     severity: optional(object()),
     theme: optional(string()),
     needle: optional(boolean()),
+    segments: optional(array(gaugeSegmentStruct)),
   })
 );
 
