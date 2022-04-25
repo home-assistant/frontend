@@ -306,12 +306,14 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.storage.caption",
       iconPath: mdiServer,
       iconColor: "#518C43",
+      component: "hassio",
     },
     {
       path: "/config/hardware",
       translationKey: "ui.panel.config.hardware.caption",
       iconPath: mdiCpu32Bit,
       iconColor: "#301A8E",
+      component: "hassio",
     },
   ],
   about: [
