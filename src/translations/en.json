@@ -1514,6 +1514,7 @@
           "description": "View the Home Assistant logs",
           "details": "Log Details ({level})",
           "search": "Search logs",
+          "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "load_full_log": "Load Full Home Assistant Log",
           "loading_log": "Loading error log…",
@@ -1522,6 +1523,7 @@
           "clear": "Clear",
           "refresh": "Refresh",
           "copy": "Copy log entry",
+          "log_provider": "Log Provider",
           "multiple_messages": "message first occurred at {time} and shows up {counter} times",
           "level": {
             "critical": "CRITICAL",
