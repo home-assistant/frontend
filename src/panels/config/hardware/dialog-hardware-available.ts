@@ -8,12 +8,16 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
 import "../../../components/search-input";
-import { HassioHardwareInfo } from "../../../data/hassio/hardware";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
+import {
+  fetchHassioHardwareInfo,
+  HassioHardwareInfo,
+} from "../../../data/hassio/hardware";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { dump } from "../../../resources/js-yaml-dump";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { HardwareAvailableDialogParams } from "./show-dialog-hardware-available";
 
 const _filterDevices = memoizeOne(
   (showAdvanced: boolean, hardware: HassioHardwareInfo, filter: string) =>
@@ -36,27 +40,36 @@ const _filterDevices = memoizeOne(
 class DialogHardwareAvailable extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _dialogParams?: HardwareAvailableDialogParams;
+  @state() private _hardware?: HassioHardwareInfo;
 
   @state() private _filter?: string;
 
-  public showDialog(dialogParams: HardwareAvailableDialogParams): void {
-    this._dialogParams = dialogParams;
+  public async showDialog(): Promise<Promise<void>> {
+    try {
+      this._hardware = await fetchHassioHardwareInfo(this.hass);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.hardware.available_hardware.failed_to_get"
+        ),
+        text: extractApiErrorMessage(err),
+      });
+    }
   }
 
   public closeDialog(): void {
-    this._dialogParams = undefined;
+    this._hardware = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._dialogParams) {
+    if (!this._hardware) {
       return html``;
     }
 
     const devices = _filterDevices(
       this.hass.userData?.showAdvanced || false,
-      this._dialogParams.hardware,
+      this._hardware,
       (this._filter || "").toLowerCase()
     );
 

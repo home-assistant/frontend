@@ -13,10 +13,6 @@ import {
   ignoreSupervisorError,
 } from "../../../data/hassio/common";
 import {
-  fetchHassioHardwareInfo,
-  HassioHardwareInfo,
-} from "../../../data/hassio/hardware";
-import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
   HassioHassOSInfo,
@@ -144,19 +140,7 @@ class HaConfigHardware extends LitElement {
   }
 
   private async _openHardware() {
-    let hardware: HassioHardwareInfo;
-    try {
-      hardware = await fetchHassioHardwareInfo(this.hass);
-    } catch (err: any) {
-      await showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.hardware.available_hardware.failed_to_get"
-        ),
-        text: extractApiErrorMessage(err),
-      });
-      return;
-    }
-    showhardwareAvailableDialog(this, { hardware });
+    showhardwareAvailableDialog(this);
   }
 
   private async _hostReboot(ev: CustomEvent): Promise<void> {
