@@ -5,8 +5,8 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-network";
 import "./ha-config-url-form";
-import "./supervisor-network";
 import "./supervisor-hostname";
+import "./supervisor-network";
 
 @customElement("ha-config-section-network")
 class HaConfigSectionNetwork extends LitElement {
@@ -46,9 +46,12 @@ class HaConfigSectionNetwork extends LitElement {
     }
     supervisor-hostname,
     supervisor-network,
-    ha-config-url-form {
+    ha-config-url-form,
+    ha-config-network {
       display: block;
+      margin: 0 auto;
       margin-bottom: 24px;
+      max-width: 600px;
     }
   `;
 }

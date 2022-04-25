@@ -60,6 +60,7 @@ export class HaConfigServerControl extends LitElement {
           ${this.showAdvanced
             ? html`
                 <ha-card
+                  outlined
                   header=${this.hass.localize(
                     "ui.panel.config.server_control.section.validation.heading"
                   )}
@@ -124,6 +125,7 @@ export class HaConfigServerControl extends LitElement {
             : ""}
 
           <ha-card
+            outlined
             header=${this.hass.localize(
               "ui.panel.config.server_control.section.server_management.heading"
             )}
@@ -152,6 +154,7 @@ export class HaConfigServerControl extends LitElement {
           ${this.showAdvanced
             ? html`
                 <ha-card
+                  outlined
                   header=${this.hass.localize(
                     "ui.panel.config.server_control.section.reloading.heading"
                   )}
