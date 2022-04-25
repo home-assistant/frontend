@@ -1677,7 +1677,6 @@
             }
           }
         },
-
         "automation": {
           "caption": "Automations",
           "description": "Create custom behavior rules for your home",
@@ -3167,7 +3166,11 @@
           }
         },
         "system_health": {
-          "caption": "System Health"
+          "caption": "System Health",
+          "cpu_usage": "CPU Usage",
+          "ram_usage": "RAM Usage",
+          "core_stats": "Core Stats",
+          "supervisor_stats": "Supervisor Stats"
         }
       },
       "lovelace": {

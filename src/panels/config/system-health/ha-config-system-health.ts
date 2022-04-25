@@ -3,11 +3,15 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-metric";
+import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
 import { domainToName } from "../../../data/integration";
 import {
   subscribeSystemHealthInfo,
@@ -42,14 +46,26 @@ class HaConfigSystemHealth extends LitElement {
 
   @state() private _info?: SystemHealthInfo;
 
+  @state() private _supervisorStats?: HassioStats;
+
+  @state() private _coreStats?: HassioStats;
+
+  @state() private _error?: { code: string; message: string };
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
     this.hass!.loadBackendTranslation("system_health");
 
-    subscribeSystemHealthInfo(this.hass!, (info) => {
-      this._info = info;
-    });
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._loadStats();
+    }
+
+    if (isComponentLoaded(this.hass, "system_health")) {
+      subscribeSystemHealthInfo(this.hass!, (info) => {
+        this._info = info;
+      });
+    }
   }
 
   protected render(): TemplateResult {
@@ -152,30 +168,100 @@ class HaConfigSystemHealth extends LitElement {
         back-path="/config/system"
         .header=${this.hass.localize("ui.panel.config.system_health.caption")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._copyInfo}
-        >
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
-            .path=${mdiContentCopy}
-          ></ha-icon-button>
-          <mwc-list-item>
-            ${this.hass.localize("ui.panel.config.info.copy_raw")}
-          </mwc-list-item>
-          <mwc-list-item>
-            ${this.hass.localize("ui.panel.config.info.copy_github")}
-          </mwc-list-item>
-        </ha-button-menu>
+        ${this._error
+          ? html`
+              <ha-alert alert-type="error"
+                >${this._error.message || this._error.code}</ha-alert
+              >
+            `
+          : ""}
+        ${this._info
+          ? html`
+              <ha-button-menu
+                corner="BOTTOM_START"
+                slot="toolbar-icon"
+                @action=${this._copyInfo}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+                  .path=${mdiContentCopy}
+                ></ha-icon-button>
+                <mwc-list-item>
+                  ${this.hass.localize("ui.panel.config.info.copy_raw")}
+                </mwc-list-item>
+                <mwc-list-item>
+                  ${this.hass.localize("ui.panel.config.info.copy_github")}
+                </mwc-list-item>
+              </ha-button-menu>
+            `
+          : ""}
         <div class="content">
           <ha-card outlined>
             <div class="card-content">${sections}</div>
           </ha-card>
+          ${!this._coreStats && !this._supervisorStats
+            ? ""
+            : html`
+                <ha-card outlined>
+                  <div class="card-content">
+                    ${this._coreStats
+                      ? html`
+                          <h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.system_health.core_stats"
+                            )}
+                          </h3>
+                          <ha-metric
+                            .heading=${this.hass.localize(
+                              "ui.panel.config.system_health.cpu_usage"
+                            )}
+                            .value=${this._coreStats.cpu_percent}
+                          ></ha-metric>
+                          <ha-metric
+                            .heading=${this.hass.localize(
+                              "ui.panel.config.system_health.ram_usage"
+                            )}
+                            .value=${this._coreStats.memory_percent}
+                          ></ha-metric>
+                        `
+                      : ""}
+                    ${this._supervisorStats
+                      ? html`
+                          <h3>
+                            ${this.hass.localize(
+                              "ui.panel.config.system_health.supervisor_stats"
+                            )}
+                          </h3>
+                          <ha-metric
+                            .heading=${this.hass.localize(
+                              "ui.panel.config.system_health.cpu_usage"
+                            )}
+                            .value=${this._supervisorStats.cpu_percent}
+                          ></ha-metric>
+                          <ha-metric
+                            .heading=${this.hass.localize(
+                              "ui.panel.config.system_health.ram_usage"
+                            )}
+                            .value=${this._supervisorStats.memory_percent}
+                          ></ha-metric>
+                        `
+                      : ""}
+                  </div>
+                </ha-card>
+              `}
         </div>
       </hass-subpage>
     `;
+  }
+
+  private async _loadStats() {
+    try {
+      this._supervisorStats = await fetchHassioStats(this.hass, "supervisor");
+      this._coreStats = await fetchHassioStats(this.hass, "core");
+    } catch (err: any) {
+      this._error = err.message || err;
+    }
   }
 
   private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
