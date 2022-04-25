@@ -43,7 +43,7 @@ class HaConfigSystemNavigation extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          <ha-card>
+          <ha-card outlined>
             ${this.narrow
               ? html`<div class="title">
                   ${this.hass.localize("ui.panel.config.dashboard.system.main")}
@@ -103,6 +103,7 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
+          --navigation-list-item-padding: 4px;
         }
       `,
     ];

@@ -173,7 +173,7 @@ class HaConfigDashboard extends LitElement {
           full-width
         >
           ${canInstallUpdates.length
-            ? html`<ha-card>
+            ? html`<ha-card outlined>
                 <ha-config-updates
                   .hass=${this.hass}
                   .narrow=${this.narrow}
@@ -181,7 +181,7 @@ class HaConfigDashboard extends LitElement {
                 ></ha-config-updates>
               </ha-card>`
             : ""}
-          <ha-card>
+          <ha-card outlined>
             ${this.narrow && canInstallUpdates.length
               ? html`<div class="title">
                   ${this.hass.localize("panel.config")}

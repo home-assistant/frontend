@@ -81,6 +81,7 @@ class HaNavigationList extends LitElement {
     ha-clickable-list-item {
       cursor: pointer;
       font-size: var(--navigation-list-item-title-font-size);
+      padding: var(--navigation-list-item-padding) 0;
     }
   `;
 }

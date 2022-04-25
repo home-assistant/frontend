@@ -69,7 +69,7 @@ class ErrorLogCard extends LitElement {
           : ""}
         ${this._logHTML
           ? html`
-              <ha-card>
+              <ha-card outlined>
                 <div class="header">
                   ${this.hass.userData?.showAdvanced &&
                   isComponentLoaded(this.hass, "hassio")

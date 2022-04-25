@@ -1435,7 +1435,7 @@
               "introduction": "Manage your location, network and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
-                "location_name": "Name of your Home Assistant installation",
+                "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
                 "elevation": "Elevation",
@@ -2661,7 +2661,8 @@
             "delete": "Delete",
             "create": "Add",
             "update": "Update"
-          }
+          },
+          "core_location_dialog": "Home Assistant Location"
         },
         "integrations": {
           "caption": "Integrations",

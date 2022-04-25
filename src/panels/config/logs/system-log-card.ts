@@ -75,7 +75,7 @@ export class SystemLogCard extends LitElement {
       : [];
     return html`
       <div class="system-log-intro">
-        <ha-card>
+        <ha-card outlined>
           ${this._items === undefined
             ? html`
                 <div class="loading-container">

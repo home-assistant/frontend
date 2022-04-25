@@ -77,7 +77,10 @@ class DialogZoneDetail extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .heading=${createCloseHeading(this.hass, "Core Zone Configuration")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.zone.core_location_dialog")
+        )}
       >
         ${!canEdit
           ? html`
