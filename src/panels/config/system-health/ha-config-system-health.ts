@@ -3,7 +3,6 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
@@ -47,19 +46,6 @@ class HaConfigSystemHealth extends LitElement {
     super.firstUpdated(changedProps);
 
     this.hass!.loadBackendTranslation("system_health");
-
-    if (!isComponentLoaded(this.hass!, "system_health")) {
-      this._info = {
-        system_health: {
-          info: {
-            error: this.hass.localize(
-              "ui.panel.config.info.system_health_error"
-            ),
-          },
-        },
-      };
-      return;
-    }
 
     subscribeSystemHealthInfo(this.hass!, (info) => {
       this._info = info;
