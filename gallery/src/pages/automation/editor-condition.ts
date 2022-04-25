@@ -69,6 +69,14 @@ const SCHEMAS: { name: string; conditions: Condition[] }[] = [
     name: "Trigger",
     conditions: [{ condition: "trigger", ...HaTriggerCondition.defaultConfig }],
   },
+  {
+    name: "Shorthand",
+    conditions: [
+      { and: HaLogicalCondition.defaultConfig.conditions },
+      { or: HaLogicalCondition.defaultConfig.conditions },
+      { not: HaLogicalCondition.defaultConfig.conditions },
+    ],
+  },
 ];
 
 @customElement("demo-automation-editor-condition")
