@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
@@ -54,31 +55,39 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
 
   @state() private _error?: { code: string; message: string };
 
-  private _timeout?: number;
-
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
-    if (!isComponentLoaded(this.hass, "system_health")) {
-      return [
+    const subs: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> = [];
+    if (isComponentLoaded(this.hass, "system_health")) {
+      subs.push(
         subscribeSystemHealthInfo(this.hass!, (info) => {
           this._info = info;
-        }),
-      ];
+        })
+      );
     }
-    return [];
-  }
 
-  public disconnectedCallback(): void {
-    clearTimeout(this._timeout);
+    if (isComponentLoaded(this.hass, "hassio")) {
+      subs.push(
+        subscribePollingCollection(
+          this.hass,
+          async () => {
+            this._supervisorStats = await fetchHassioStats(
+              this.hass,
+              "supervisor"
+            );
+            this._coreStats = await fetchHassioStats(this.hass, "core");
+          },
+          10000
+        )
+      );
+    }
+
+    return subs;
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
     this.hass!.loadBackendTranslation("system_health");
-
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._subscribeStats();
-    }
   }
 
   protected render(): TemplateResult {
@@ -266,16 +275,6 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
         </div>
       </hass-subpage>
     `;
-  }
-
-  private async _subscribeStats() {
-    try {
-      this._supervisorStats = await fetchHassioStats(this.hass, "supervisor");
-      this._coreStats = await fetchHassioStats(this.hass, "core");
-    } catch (err: any) {
-      this._error = err.message || err;
-    }
-    this._timeout = window.setTimeout(() => this._subscribeStats(), 10000);
   }
 
   private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
