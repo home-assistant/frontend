@@ -68,13 +68,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       components: ["zone"],
     },
     {
-      path: "/config/backup",
-      translationKey: "backup",
-      iconPath: mdiBackupRestore,
-      iconColor: "#4084CD",
-      component: "backup",
-    },
-    {
       path: "/hassio",
       translationKey: "supervisor",
       iconPath: mdiPuzzle,
@@ -288,6 +281,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
+    },
+    {
+      path: "/hassio/backups",
+      translationKey: "ui.panel.config.backup.caption",
+      iconPath: mdiBackupRestore,
+      iconColor: "#0D47A1",
+      components: ["hassio"],
     },
     {
       path: "/config/analytics",
