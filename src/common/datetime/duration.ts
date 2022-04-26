@@ -11,7 +11,6 @@ export const UNIT_TO_SECOND_CONVERT = {
   d: DAY_IN_SECONDS,
 };
 
-export const formatDuration = (duration: string, units: string): string => (
-    secondsToDuration(parseFloat(duration) / UNIT_TO_SECOND_CONVERT[units]) ||
-    duration
-  );
+export const formatDuration = (duration: string, units: string): string =>
+  secondsToDuration(parseFloat(duration) / UNIT_TO_SECOND_CONVERT[units]) ||
+  "0";
