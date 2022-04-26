@@ -1,11 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../hassio/src/components/hassio-ansi-to-html";
 import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import "../components/ha-ansi-to-html";
 import { fetchInstallationType } from "../data/onboarding";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
@@ -86,7 +86,7 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
           padding: 4px;
           margin-top: 8px;
         }
-        hassio-ansi-to-html {
+        ha-ansi-to-html {
           display: block;
           line-height: 22px;
           padding: 0 8px;

@@ -1,3 +1,4 @@
+import "../../../src/components/ha-ansi-to-html";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,7 +12,6 @@ import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import "../components/hassio-ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {
@@ -89,8 +89,8 @@ class HassioSupervisorLog extends LitElement {
 
         <div class="card-content" id="content">
           ${this._content
-            ? html`<hassio-ansi-to-html .content=${this._content}>
-              </hassio-ansi-to-html>`
+            ? html`<ha-ansi-to-html .content=${this._content}>
+              </ha-ansi-to-html>`
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
