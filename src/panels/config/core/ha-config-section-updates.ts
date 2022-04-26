@@ -2,7 +2,7 @@ import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -76,6 +76,9 @@ class HaConfigSectionUpdates extends LitElement {
             .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+          <mwc-list-item id="updates">
+            ${this.hass.localize("ui.panel.config.updates.check_updates")}
+          </mwc-list-item>
           <mwc-list-item id="skipped">
             ${this._showSkipped
               ? this.hass.localize("ui.panel.config.updates.hide_skipped")
@@ -107,50 +110,21 @@ class HaConfigSectionUpdates extends LitElement {
                     ${this.hass.localize("ui.panel.config.updates.no_updates")}
                   `}
             </div>
-            <div class="card-actions">
-              <mwc-button @click=${this._checkUpdates}>
-                ${this.hass.localize("ui.panel.config.updates.check_updates")}
-              </mwc-button>
-            </div>
           </ha-card>
         </div>
       </hass-subpage>
     `;
   }
 
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (
-      !changedProps.has("hass") ||
-      !this._notifyUpdates ||
-      !changedProps.has("_showSkipped")
-    ) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (
-      this._filterUpdateEntitiesWithInstall(this.hass.states, this._showSkipped)
-        .length
-    ) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
-    }
-  }
-
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._showSkipped = !this._showSkipped;
+        this._checkUpdates();
         break;
       case 1:
+        this._showSkipped = !this._showSkipped;
+        break;
+      case 2:
         this._toggleBeta();
         break;
     }
@@ -199,22 +173,34 @@ class HaConfigSectionUpdates extends LitElement {
       (entity) => entity.entity_id
     );
 
-    if (_entities.length) {
-      this._notifyUpdates = true;
-      await this.hass.callService("homeassistant", "update_entity", {
-        entity_id: _entities,
+    if (!_entities.length) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.updates.no_update_entities.title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.updates.no_update_entities.description"
+        ),
+        warning: true,
       });
       return;
     }
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.updates.no_update_entities.title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.updates.no_update_entities.description"
-      ),
-      warning: true,
+
+    await this.hass.callService("homeassistant", "update_entity", {
+      entity_id: _entities,
     });
+
+    if (this._filterUpdateEntitiesWithInstall(this.hass.states, false).length) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.updates.updates_refreshed"
+        ),
+      });
+    } else {
+      showToast(this, {
+        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
+      });
+    }
   }
 
   private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
@@ -269,12 +255,6 @@ class HaConfigSectionUpdates extends LitElement {
       flex-direction: column;
       display: flex;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
-    }
-    .card-actions {
-      height: 48px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .card-content {
