@@ -283,6 +283,9 @@ export class HaTabsSubpageDataTable extends LitElement {
         height: calc(100vh - 1px - var(--header-height));
         display: block;
       }
+      :host([narrow]) hass-tabs-subpage {
+        --main-title-margin: 0;
+      }
       .table-header {
         display: flex;
         align-items: center;
