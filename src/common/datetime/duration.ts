@@ -12,5 +12,5 @@ export const UNIT_TO_SECOND_CONVERT = {
 };
 
 export const formatDuration = (duration: string, units: string): string =>
-  secondsToDuration(parseFloat(duration) / UNIT_TO_SECOND_CONVERT[units]) ||
+  secondsToDuration(parseFloat(duration) * UNIT_TO_SECOND_CONVERT[units]) ||
   "0";
