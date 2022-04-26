@@ -69,22 +69,6 @@ export class DeveloperYamlConfig extends LitElement {
                                 )}
                               </div>`
                             : ""}
-                          <div class="card-actions">
-                            <mwc-button raised @click=${this._validateConfig}>
-                              ${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
-                              )}
-                            </mwc-button>
-                            <mwc-button
-                              class="warning"
-                              raised
-                              @click=${this._restart}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
-                              )}
-                            </mwc-button>
-                          </div>
                         `
                       : html`
                           <ha-circular-progress active></ha-circular-progress>
@@ -109,8 +93,26 @@ export class DeveloperYamlConfig extends LitElement {
                   </div>
                 `}
           </div>
+          <div class="card-actions">
+            <mwc-button
+              @click=${this._validateConfig}
+              .disabled=${this._validateLog}
+            >
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
+              )}
+            </mwc-button>
+            <mwc-button
+              class="warning"
+              @click=${this._restart}
+              .disabled=${this._validateLog}
+            >
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
+              )}
+            </mwc-button>
+          </div>
         </ha-card>
-
         <ha-card
           outlined
           header=${this.hass.localize(
@@ -207,10 +209,6 @@ export class DeveloperYamlConfig extends LitElement {
           font-weight: 500;
         }
 
-        .config-invalid mwc-button {
-          float: right;
-        }
-
         .validate-log {
           white-space: pre-line;
           direction: ltr;
@@ -224,6 +222,11 @@ export class DeveloperYamlConfig extends LitElement {
 
         ha-card {
           margin-top: 24px;
+        }
+
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
         }
       `,
     ];
