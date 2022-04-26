@@ -139,6 +139,9 @@ class HaConfigBackup extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._backupData.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.backup.picker.search"
+        )}
       >
         <ha-fab
           slot="fab"
