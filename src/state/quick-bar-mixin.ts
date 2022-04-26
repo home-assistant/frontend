@@ -6,7 +6,6 @@ import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { getMyRedirects } from "../panels/my/ha-panel-my";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
@@ -48,14 +47,16 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, { commandMode });
     }
 
-    private _createMyLink(e: KeyboardEvent) {
+    private async _createMyLink(e: KeyboardEvent) {
       if (!this._canOverrideAlphanumericInput(e) || !this.hass) {
         return;
       }
+
       const targetPath = mainWindow.location.pathname;
+      const myPanel = await import("../panels/my/ha-panel-my");
 
       for (const [slug, redirect] of Object.entries(
-        getMyRedirects(isComponentLoaded(this.hass, "hassio"))
+        myPanel.getMyRedirects(isComponentLoaded(this.hass, "hassio"))
       )) {
         if (redirect.redirect === targetPath) {
           window.open(
