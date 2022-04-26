@@ -281,7 +281,7 @@ class HaConfigSectionUpdates extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-direction: column;
-      padding: 16px 16px 0 16px;
+      padding: 16px;
     }
   `;
 }

@@ -28,6 +28,7 @@ class HaConfigSectionNetwork extends LitElement {
           ${isComponentLoaded(this.hass, "hassio")
             ? html`<supervisor-hostname
                   .hass=${this.hass}
+                  .narrow=${this.narrow}
                 ></supervisor-hostname>
                 <supervisor-network .hass=${this.hass}></supervisor-network>`
             : ""}
