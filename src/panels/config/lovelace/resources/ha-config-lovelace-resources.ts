@@ -77,7 +77,6 @@ export class HaConfigLovelaceRescources extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
         .columns=${this._columns(this.hass.language)}
