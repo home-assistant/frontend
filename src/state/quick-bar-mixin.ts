@@ -67,7 +67,12 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         }
       }
       showToast(this, {
-        message: `No matching my link found for ${targetPath}`,
+        message: this.hass.localize(
+          "ui.notification_toast.no_matching_link_found",
+          {
+            path: targetPath,
+          }
+        ),
       });
     }
 
