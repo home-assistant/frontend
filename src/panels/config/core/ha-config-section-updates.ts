@@ -41,8 +41,6 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
-  private _notifyUpdates = false;
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 

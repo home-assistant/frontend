@@ -113,8 +113,6 @@ class HaConfigDashboard extends LitElement {
 
   @state() private _tip?: string;
 
-  private _notifyUpdates = false;
-
   private _pages = memoizeOne((clouStatus, isLoaded) => {
     const pages: PageNavigation[] = [];
     if (clouStatus && isLoaded) {
@@ -219,22 +217,6 @@ class HaConfigDashboard extends LitElement {
     if (!this._tip && changedProps.has("hass")) {
       this._tip = randomTip(this.hass);
     }
-
-    if (!changedProps.has("hass") || !this._notifyUpdates) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
-    }
   }
 
   private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
@@ -293,22 +275,36 @@ class HaConfigDashboard extends LitElement {
     );
     switch (ev.detail.index) {
       case 0:
-        if (_entities.length) {
-          this._notifyUpdates = true;
-          await this.hass.callService("homeassistant", "update_entity", {
-            entity_id: _entities,
+        if (!_entities.length) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.updates.no_update_entities.title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.updates.no_update_entities.description"
+            ),
+            warning: true,
           });
           return;
         }
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.updates.no_update_entities.title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.updates.no_update_entities.description"
-          ),
-          warning: true,
+
+        await this.hass.callService("homeassistant", "update_entity", {
+          entity_id: _entities,
         });
+
+        if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
+          showToast(this, {
+            message: this.hass.localize(
+              "ui.panel.config.updates.updates_refreshed"
+            ),
+          });
+        } else {
+          showToast(this, {
+            message: this.hass.localize(
+              "ui.panel.config.updates.no_new_updates"
+            ),
+          });
+        }
         break;
     }
   }
