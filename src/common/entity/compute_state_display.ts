@@ -13,6 +13,7 @@ import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 import { supportsFeature } from "./supports-feature";
+import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -132,6 +133,23 @@ export const computeStateDisplay = (
   ) {
     try {
       return formatDateTime(new Date(compareState), locale);
+    } catch (_err) {
+      return compareState;
+    }
+  }
+
+  // state is duration
+  if (
+    domain === "sensor" &&
+    stateObj.attributes.device_class === "duration" &&
+    stateObj.attributes.unit_of_measurement &&
+    UNIT_TO_SECOND_CONVERT[stateObj.attributes.unit_of_measurement]
+  ) {
+    try {
+      return formatDuration(
+        compareState,
+        stateObj.attributes.unit_of_measurement
+      );
     } catch (_err) {
       return compareState;
     }
