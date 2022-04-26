@@ -3211,8 +3211,8 @@
         },
         "system_health": {
           "caption": "System Health",
-          "cpu_usage": "CPU Usage",
-          "ram_usage": "RAM Usage",
+          "cpu_usage": "Process Usage",
+          "ram_usage": "Memory Usage",
           "core_stats": "Core Stats",
           "supervisor_stats": "Supervisor Stats"
         }
