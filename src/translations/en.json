@@ -994,6 +994,38 @@
         "recent_tx_messages": "{n} most recently transmitted message(s)",
         "show_as_yaml": "Show as YAML",
         "triggers": "Triggers"
+      },
+      "unsupported": {
+        "title": "[%key:supervisor::system::supervisor::unsupported_title%]",
+        "description": "[%key:supervisor::system::supervisor::unsupported_description%]",
+        "reasons": {
+          "apparmor": "[%key:supervisor::system::supervisor::unsupported_reason::apparmor%]",
+          "content_trust": "[%key:supervisor::system::supervisor::unsupported_reason::content_trust%]",
+          "dbus": "[%key:supervisor::system::supervisor::unsupported_reason::dbus%]",
+          "docker_configuration": "[%key:supervisor::system::supervisor::unsupported_reason::docker_configuration%]",
+          "docker_version": "[%key:supervisor::system::supervisor::unsupported_reason::docker_version%]",
+          "job_conditions": "[%key:supervisor::system::supervisor::unsupported_reason::job_conditions%]",
+          "lxc": "[%key:supervisor::system::supervisor::unsupported_reason::lxc%]",
+          "network_manager": "[%key:supervisor::system::supervisor::unsupported_reason::network_manager%]",
+          "os": "[%key:supervisor::system::supervisor::unsupported_reason::os%]",
+          "os_agent": "[%key:supervisor::system::supervisor::unsupported_reason::os_agent%]",
+          "privileged": "[%key:supervisor::system::supervisor::unsupported_reason::privileged%]",
+          "software": "[%key:supervisor::system::supervisor::unsupported_reason::software%]",
+          "source_mods": "[%key:supervisor::system::supervisor::unsupported_reason::source_mods%]",
+          "systemd": "[%key:supervisor::system::supervisor::unsupported_reason::systemd%]",
+          "systemd_resolved": "[%key:supervisor::system::supervisor::unsupported_reason::systemd_resolved%]"
+        }
+      },
+      "unhealthy": {
+        "title": "[%key:supervisor::system::supervisor::unhealthy_title%]",
+        "description": "[%key:supervisor::system::supervisor::unhealthy_description%]",
+        "reasons": {
+          "privileged": "[%key:supervisor::system::supervisor::unhealthy_reason::privileged%]",
+          "supervisor": "[%key:supervisor::system::supervisor::unhealthy_reason::supervisor%]",
+          "setup": "[%key:supervisor::system::supervisor::unhealthy_reason::setup%]",
+          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
+          "untrusted": "[%key:supervisor::system::supervisor::unhealthy_reason::untrusted%]"
+        }
       }
     },
     "duration": {
