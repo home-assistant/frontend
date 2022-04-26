@@ -10,8 +10,8 @@ interface State {
   backgroundColor: null | string;
 }
 
-@customElement("hassio-ansi-to-html")
-class HassioAnsiToHtml extends LitElement {
+@customElement("ha-ansi-to-html")
+class HaAnsiToHtml extends LitElement {
   @property() public content!: string;
 
   protected render(): TemplateResult | void {
@@ -241,6 +241,6 @@ class HassioAnsiToHtml extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-ansi-to-html": HassioAnsiToHtml;
+    "ha-ansi-to-html": HaAnsiToHtml;
   }
 }

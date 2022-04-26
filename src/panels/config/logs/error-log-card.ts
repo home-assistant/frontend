@@ -12,6 +12,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
+import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
@@ -55,7 +56,7 @@ class ErrorLogCard extends LitElement {
 
   @state() private _isLogLoaded = false;
 
-  @state() private _logHTML!: TemplateResult[] | string;
+  @state() private _logHTML!: TemplateResult[] | TemplateResult | string;
 
   @state() private _error?: string;
 
@@ -158,6 +159,10 @@ class ErrorLogCard extends LitElement {
     if (this._selectedLogProvider) {
       try {
         log = await fetchHassioLogs(this.hass, this._selectedLogProvider);
+        this._logHTML = html`<ha-ansi-to-html .content=${log}>
+        </ha-ansi-to-html>`;
+        this._isLogLoaded = true;
+        return;
       } catch (err: any) {
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
