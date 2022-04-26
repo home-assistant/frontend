@@ -1,0 +1,35 @@
+import { HomeAssistant } from "../types";
+
+export interface ApplicationCredential {
+  id: string;
+  domain: string;
+  client_id: string;
+  client_secret: string;
+}
+
+export const fetchApplicationCredentials = async (hass: HomeAssistant) =>
+  hass.callWS<ApplicationCredential[]>({
+    type: "application_credentials/list",
+  });
+
+export const createApplicationCredential = async (
+  hass: HomeAssistant,
+  domain: string,
+  clientId: string,
+  clientSecret: string
+) =>
+  hass.callWS<ApplicationCredential>({
+    type: "application_credentials/create",
+    domain,
+    client_id: clientId,
+    client_secret: clientSecret,
+  });
+
+export const deleteApplicationCredential = async (
+  hass: HomeAssistant,
+  applicationCredentialsId: string
+) =>
+  hass.callWS<void>({
+    type: "application_credentials/delete",
+    application_credentials_id: applicationCredentialsId,
+  });

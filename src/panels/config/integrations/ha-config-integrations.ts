@@ -65,6 +65,7 @@ import { configSections } from "../ha-panel-config";
 import "./ha-config-flow-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
+import "./ha-integration-overflow-menu";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import { HELPER_DOMAINS } from "../helpers/const";
@@ -513,6 +514,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          activatable
+        >
+        </ha-integration-overflow-menu>
       </hass-tabs-subpage>
     `;
   }

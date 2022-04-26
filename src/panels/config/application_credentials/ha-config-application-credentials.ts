@@ -1,0 +1,248 @@
+import { mdiPlus, mdiDelete } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  DataTableColumnContainer,
+  SelectionChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import "../../../components/data-table/ha-data-table-icon";
+import "../../../components/ha-fab";
+import "../../../components/ha-help-tooltip";
+import "../../../components/ha-svg-icon";
+import {
+  fetchApplicationCredentials,
+  deleteApplicationCredential,
+  ApplicationCredential,
+} from "../../../data/application_credential";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
+
+@customElement("ha-config-application-credentials")
+export class HaConfigApplicationCredentials extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() public _applicationCredentials: ApplicationCredential[] = [];
+
+  @property() public isWide!: boolean;
+
+  @property() public narrow!: boolean;
+
+  @property() public route!: Route;
+
+  @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
+  private _columns = memoizeOne(
+    (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer<ApplicationCredential> = {
+        clientId: {
+          title: localize(
+            "ui.panel.config.application_credentials.picker.headers.client_id"
+          ),
+          width: "25%",
+          direction: "asc",
+          grows: true,
+          template: (_, entry: ApplicationCredential) =>
+            html`${entry.client_id}`,
+        },
+        application: {
+          title: localize(
+            "ui.panel.config.application_credentials.picker.headers.application"
+          ),
+          sortable: true,
+          width: "20%",
+          direction: "asc",
+          hidden: narrow,
+          template: (_, entry) =>
+            this.hass.localize(`component.${entry.domain}.title`) ||
+            entry.domain,
+        },
+      };
+
+      return columns;
+    }
+  );
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    this._fetchApplicationCredentials();
+  }
+
+  protected render() {
+    return html`
+      <hass-tabs-subpage-data-table
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        backPath="/config"
+        .tabs=${[]}
+        .columns=${this._columns(this.narrow, this.hass.localize)}
+        .data=${this._applicationCredentials}
+        hasFab
+        selectable
+        @selection-changed=${this._handleSelectionChanged}
+      >
+        ${this._selected.length
+          ? html`
+              <div
+                class=${classMap({
+                  "header-toolbar": this.narrow,
+                  "table-header": !this.narrow,
+                })}
+                slot="header"
+              >
+                <p class="selected-txt">
+                  ${this.hass.localize(
+                    "ui.panel.config.application_credentials.picker.selected",
+                    "number",
+                    this._selected.length
+                  )}
+                </p>
+                <div class="header-btns">
+                  ${!this.narrow
+                    ? html`
+                        <mwc-button
+                          @click=${this._removeSelected}
+                          class="warning"
+                          >${this.hass.localize(
+                            "ui.panel.config.application_credentials.picker.remove_selected.button"
+                          )}</mwc-button
+                        >
+                      `
+                    : html`
+                        <ha-icon-button
+                          class="warning"
+                          id="remove-btn"
+                          @click=${this._removeSelected}
+                          .path=${mdiDelete}
+                          .label=${this.hass.localize("ui.common.remove")}
+                        ></ha-icon-button>
+                        <paper-tooltip animation-delay="0" for="remove-btn">
+                          ${this.hass.localize(
+                            "ui.panel.config.application_credentials.picker.remove_selected.button"
+                          )}
+                        </paper-tooltip>
+                      `}
+                </div>
+              </div>
+            `
+          : html``}
+        <ha-fab
+          slot="fab"
+          .label=${this.hass.localize(
+            "ui.panel.config.application_credentials.picker.add_application_credential"
+          )}
+          extended
+          @click=${this._addApplicationCredential}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
+      </hass-tabs-subpage-data-table>
+    `;
+  }
+
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selected = ev.detail.value;
+  }
+
+  private _removeSelected() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.application_credentials.picker.remove_selected.confirm_title`,
+        "number",
+        this._selected.length
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.application_credentials.picker.remove_selected.confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.remove"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: async () => {
+        await Promise.all(
+          this._selected.map(async (applicationCredential) => {
+            await deleteApplicationCredential(this.hass, applicationCredential);
+          })
+        );
+        this._dataTable.clearSelection();
+        this._fetchApplicationCredentials();
+      },
+    });
+  }
+
+  private async _fetchApplicationCredentials() {
+    this._applicationCredentials = await fetchApplicationCredentials(this.hass);
+  }
+
+  private _addApplicationCredential() {
+    showAddApplicationCredentialDialog(this, {
+      applicationCredentialAddedCallback: async (
+        applicationCredential: ApplicationCredential
+      ) => {
+        if (applicationCredential) {
+          this._applicationCredentials = [
+            ...this._applicationCredentials,
+            applicationCredential,
+          ];
+        }
+      },
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 56px;
+        background-color: var(--mdc-text-field-fill-color, whitesmoke);
+        border-bottom: 1px solid
+          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+        box-sizing: border-box;
+      }
+      .header-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--secondary-text-color);
+        position: relative;
+        top: -4px;
+      }
+      .selected-txt {
+        font-weight: bold;
+        padding-left: 16px;
+      }
+      .table-header .selected-txt {
+        margin-top: 20px;
+      }
+      .header-toolbar .selected-txt {
+        font-size: 16px;
+      }
+      .header-toolbar .header-btns {
+        margin-right: -12px;
+      }
+      .header-btns {
+        display: flex;
+      }
+      .header-btns > mwc-button,
+      .header-btns > ha-icon-button {
+        margin: 8px;
+      }
+      ha-button-menu {
+        margin-left: 8px;
+      }
+    `;
+  }
+}

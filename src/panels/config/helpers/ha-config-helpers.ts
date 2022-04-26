@@ -34,6 +34,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
+import "../integrations/ha-integration-overflow-menu";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
@@ -220,6 +221,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          activatable
+        >
+        </ha-integration-overflow-menu>
       </hass-tabs-subpage-data-table>
     `;
   }

@@ -276,7 +276,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._deviceClassChanged}
                 @closed=${stopPropagation}
               >
-                <mwc-list-item></mwc-list-item>
                 ${this._deviceClassesSorted(
                   domain,
                   this._deviceClassOptions[0],

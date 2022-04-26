@@ -35,6 +35,7 @@ import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "../integrations/ha-integration-overflow-menu";
 import { configSections } from "../ha-panel-config";
 import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 
@@ -458,6 +459,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             )}
           </ha-check-list-item>
         </ha-button-menu>
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          activatable
+        >
+        </ha-integration-overflow-menu>
       </hass-tabs-subpage-data-table>
     `;
   }
