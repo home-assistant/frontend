@@ -12,7 +12,7 @@ export interface ApplicationCredential {
 }
 
 export const fetchApplicationCredentialsConfig = async (hass: HomeAssistant) =>
-  hass.callWS<ApplicationCredentialsConfig[]>({
+  hass.callWS<ApplicationCredentialsConfig>({
     type: "application_credentials/config",
   });
 

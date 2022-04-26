@@ -52,7 +52,7 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _clientSecret?: string;
 
-  @state() private _domains: string[];
+  @state() private _domains?: Domain[];
 
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
