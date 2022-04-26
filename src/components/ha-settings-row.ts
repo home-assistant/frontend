@@ -47,7 +47,7 @@ export class HaSettingsRow extends LitElement {
         display: contents;
       }
       :host(:not([narrow])) .content {
-        display: var(--settings-row-content-display);
+        display: var(--settings-row-content-display, flex);
         justify-content: flex-end;
         flex: 1;
         padding: 16px 0;
