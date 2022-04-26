@@ -1236,6 +1236,9 @@
             "title": "Remove backup",
             "description": "Are you sure you want to remove the backup with the name {name}?",
             "confirm": "[%key:ui::common::remove%]"
+          },
+          "picker": {
+            "search": "Search backups"
           }
         },
         "tag": {

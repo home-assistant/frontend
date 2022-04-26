@@ -126,6 +126,12 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
+        tabs=${[
+          {
+            translationKey: "ui.panel.config.backup.caption",
+            path: `/config/backup`,
+          },
+        ]}
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config/system"
@@ -133,10 +139,10 @@ class HaConfigBackup extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._backupData.backups)}
         .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.backup.picker.search"
+        )}
       >
-        <span slot="header"
-          >${this.hass.localize("ui.panel.config.backup.caption")}</span
-        >
         <ha-fab
           slot="fab"
           ?disabled=${this._backupData.backing_up}
