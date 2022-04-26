@@ -111,7 +111,7 @@ const groupByIntegration = (
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property() public isWide!: boolean;
 
@@ -709,6 +709,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        :host([narrow]) hass-tabs-subpage {
+          --main-title-margin: 0;
+        }
         ha-button-menu {
           margin-left: 8px;
         }
