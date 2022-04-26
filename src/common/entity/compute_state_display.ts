@@ -29,6 +29,21 @@ export const computeStateDisplay = (
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (isNumericState(stateObj)) {
+    // state is duration
+    if (
+      stateObj.attributes.device_class === "duration" &&
+      stateObj.attributes.unit_of_measurement &&
+      UNIT_TO_SECOND_CONVERT[stateObj.attributes.unit_of_measurement]
+    ) {
+      try {
+        return formatDuration(
+          compareState,
+          stateObj.attributes.unit_of_measurement
+        );
+      } catch (_err) {
+        return compareState;
+      }
+    }
     if (stateObj.attributes.device_class === "monetary") {
       try {
         return formatNumber(compareState, locale, {
@@ -133,23 +148,6 @@ export const computeStateDisplay = (
   ) {
     try {
       return formatDateTime(new Date(compareState), locale);
-    } catch (_err) {
-      return compareState;
-    }
-  }
-
-  // state is duration
-  if (
-    domain === "sensor" &&
-    stateObj.attributes.device_class === "duration" &&
-    stateObj.attributes.unit_of_measurement &&
-    UNIT_TO_SECOND_CONVERT[stateObj.attributes.unit_of_measurement]
-  ) {
-    try {
-      return formatDuration(
-        compareState,
-        stateObj.attributes.unit_of_measurement
-      );
     } catch (_err) {
       return compareState;
     }
