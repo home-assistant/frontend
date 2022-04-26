@@ -41,7 +41,7 @@ export const computeStateDisplay = (
           stateObj.attributes.unit_of_measurement
         );
       } catch (_err) {
-        return compareState;
+        // fallback to default
       }
     }
     if (stateObj.attributes.device_class === "monetary") {
