@@ -1,11 +1,20 @@
 import { HomeAssistant } from "../types";
 
+export interface ApplicationCredentialsConfig {
+  domains: string[];
+}
+
 export interface ApplicationCredential {
   id: string;
   domain: string;
   client_id: string;
   client_secret: string;
 }
+
+export const fetchApplicationCredentialsConfig = async (hass: HomeAssistant) =>
+  hass.callWS<ApplicationCredentialsConfig[]>({
+    type: "application_credentials/config",
+  });
 
 export const fetchApplicationCredentials = async (hass: HomeAssistant) =>
   hass.callWS<ApplicationCredential[]>({

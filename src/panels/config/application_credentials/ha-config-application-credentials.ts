@@ -18,6 +18,7 @@ import {
   deleteApplicationCredential,
   fetchApplicationCredentials,
 } from "../../../data/application_credential";
+import { domainToName } from "../../../data/integration";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
@@ -63,9 +64,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (_, entry) =>
-            this.hass.localize(`component.${entry.domain}.title`) ||
-            entry.domain,
+          template: (_, entry) => html`${domainToName(localize, entry.domain)}`,
         },
       };
 
@@ -75,6 +74,7 @@ export class HaConfigApplicationCredentials extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
+    this._loadTranslations();
     this._fetchApplicationCredentials();
   }
 
@@ -179,6 +179,10 @@ export class HaConfigApplicationCredentials extends LitElement {
         this._fetchApplicationCredentials();
       },
     });
+  }
+
+  private async _loadTranslations() {
+    await this.hass.loadBackendTranslation("title", undefined, true);
   }
 
   private async _fetchApplicationCredentials() {

@@ -10,17 +10,30 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-combo-box";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import {
+  fetchApplicationCredentialsConfig,
   createApplicationCredential,
   ApplicationCredential,
 } from "../../../data/application_credential";
+import { domainToName } from "../../../data/integration";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+
+interface Domain {
+  id: string;
+  name: string;
+}
+
+const rowRenderer: ComboBoxLitRenderer<Domain> = (item) => html`<mwc-list-item>
+  <span>${item.name}</span>
+</mwc-list-item>`;
 
 @customElement("dialog-add-application-credential")
 export class DialogAddApplicationCredential extends LitElement {
@@ -39,6 +52,8 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _clientSecret?: string;
 
+  @state() private _domains: string[];
+
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
     this._domain = "";
@@ -55,10 +70,19 @@ export class DialogAddApplicationCredential extends LitElement {
         this._createApplicationCredential(ev);
       }
     });
+    this._fetchConfig();
+  }
+
+  private async _fetchConfig() {
+    const config = await fetchApplicationCredentialsConfig(this.hass);
+    this._domains = config.domains.map((domain) => ({
+      id: domain,
+      name: domainToName(this.hass.localize, domain),
+    }));
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._params || !this._domains) {
       return html``;
     }
     return html`
@@ -76,20 +100,21 @@ export class DialogAddApplicationCredential extends LitElement {
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-          <paper-input
-            class="domain"
+          <ha-combo-box
             name="domain"
+            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.domain"
             )}
             .value=${this._domain}
+            .renderer=${rowRenderer}
+            .items=${this._domains}
+            item-id-path="id"
+            item-value-path="id"
+            item-label-path="name"
             required
-            auto-validate
-            autocapitalize="on"
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
-            @value-changed=${this._handleValueChanged}
-            dialogInitialFocus
-          ></paper-input>
+            @value-changed=${this._handleDomainPicked}
+          ></ha-combo-box>
           <paper-input
             class="clientId"
             name="clientId"
@@ -143,6 +168,13 @@ export class DialogAddApplicationCredential extends LitElement {
 
   private _close() {
     this._params = undefined;
+  }
+
+  private async _handleDomainPicked(ev: PolymerChangedEvent<string>) {
+    const target = ev.target as any;
+    if (target.selectedItem) {
+      this._domain = target.selectedItem.id;
+    }
   }
 
   private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
