@@ -332,6 +332,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
+          --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
         }
       `,

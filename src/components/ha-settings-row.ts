@@ -68,7 +68,7 @@ export class HaSettingsRow extends LitElement {
         white-space: normal;
       }
       .prefix-wrap {
-        display: contents;
+        display: var(--settings-row-prefix-display);
       }
       :host([narrow]) .prefix-wrap {
         display: flex;
