@@ -255,9 +255,7 @@ export class HaConfigServerControl extends LitElement {
         }
 
         ha-card {
-          margin: 24px auto;
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
-          max-width: 600px;
+          margin-top: 24px;
         }
       `,
     ];
