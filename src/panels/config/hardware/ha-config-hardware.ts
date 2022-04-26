@@ -218,7 +218,7 @@ class HaConfigHardware extends LitElement {
         margin: 0 auto;
       }
       ha-card {
-        max-width: 500px;
+        max-width: 600px;
         margin: 0 auto;
         height: 100%;
         justify-content: space-between;

@@ -128,7 +128,7 @@ class HaConfigSectionStorage extends LitElement {
       margin: 0 auto;
     }
     ha-card {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       justify-content: space-between;
       flex-direction: column;
