@@ -1,12 +1,13 @@
-import "../../../components/ha-alert";
-import "../../../components/ha-faded";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { BINARY_STATE_OFF } from "../../../common/const";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-alert";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -21,7 +22,7 @@ import {
   UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
-import { BINARY_STATE_OFF } from "../../../common/const";
+import { showConfirmationDialog } from "../../generic/show-dialog-box";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -192,7 +193,29 @@ class MoreInfoUpdate extends LitElement {
     return true;
   }
 
-  private _handleInstall(): void {
+  private async _handleInstall() {
+    const userConfirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.dialogs.more_info_control.update.user_confirmation_title"
+      ),
+      text: this.hass.localize(
+        "ui.dialogs.more_info_control.update.user_confirmation",
+        "title",
+        this.stateObj!.attributes.title,
+        "installed_version",
+        this.stateObj!.attributes.installed_version,
+        "latest_version",
+        this.stateObj!.attributes.latest_version
+      ),
+      confirmText: this.hass.localize(
+        "ui.dialogs.more_info_control.update.install"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      warning: true,
+    });
+
+    if (!userConfirmed) return;
+
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };

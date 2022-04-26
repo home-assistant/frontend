@@ -737,7 +737,9 @@
           "skip": "Skip",
           "clear_skipped": "Clear skipped",
           "install": "Install",
-          "create_backup": "Create backup before updating"
+          "create_backup": "Create backup before updating",
+          "user_confirmation_title": "Are you sure?",
+          "user_confirmation": "Are you sure you want to update {title} from version {installed_version} to {latest_version}?"
         },
         "updater": {
           "title": "Update Instructions"
