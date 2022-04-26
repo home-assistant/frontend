@@ -1661,6 +1661,7 @@
         },
         "server_control": {
           "caption": "Server Controls",
+          "yaml_configuration": "YAML Configuration",
           "description": "Validate and restart the Home Assistant server",
           "section": {
             "validation": {
@@ -1712,6 +1713,7 @@
               "heading": "Home Assistant",
               "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
               "restart": "Restart",
+              "restart_home_assistant": "Restart Home Assistant",
               "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
               "confirm_stop": "Are you sure you want to stop Home Assistant?"

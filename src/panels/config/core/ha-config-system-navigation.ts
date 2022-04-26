@@ -1,9 +1,12 @@
+import { ActionDetail } from "@material/mwc-list";
+import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -38,6 +41,22 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleAction}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <mwc-list-item>
+            ${this.hass.localize(
+              "ui.panel.config.server_control.section.server_management.restart_home_assistant"
+            )}
+          </mwc-list-item>
+        </ha-button-menu>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -58,6 +77,23 @@ class HaConfigSystemNavigation extends LitElement {
         </ha-config-section>
       </hass-subpage>
     `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        showConfirmationDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.server_control.section.server_management.confirm_restart"
+          ),
+          confirmText: this.hass!.localize("ui.common.leave"),
+          dismissText: this.hass!.localize("ui.common.stay"),
+          confirm: () => {
+            this.hass.callService("homeassistant", "restart");
+          },
+        });
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {
