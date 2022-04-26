@@ -54,12 +54,12 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
       const targetPath = mainWindow.location.pathname;
 
-      for (const [path, redirect] of Object.entries(
+      for (const [slug, redirect] of Object.entries(
         getMyRedirects(isComponentLoaded(this.hass, "hassio"))
       )) {
         if (redirect.redirect === targetPath) {
           window.open(
-            `https://my.home-assistant.io/create-link/?redirect=${path}`,
+            `https://my.home-assistant.io/create-link/?redirect=${slug}`,
             "_blank"
           );
 
