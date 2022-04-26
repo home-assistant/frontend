@@ -89,7 +89,8 @@ class ErrorLogCard extends LitElement {
 
     if (
       (changedProps.has("filter") && this._isLogLoaded) ||
-      (changedProps.has("show") && this.show)
+      (changedProps.has("show") && this.show) ||
+      (changedProps.has("provider") && this.show)
     ) {
       this._refreshLogs();
     }

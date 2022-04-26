@@ -16,12 +16,12 @@ import type { SystemLogCard } from "./system-log-card";
 
 const logProviders: LogProvider[] = [
   {
-    key: "supervisor",
-    name: "Supervisor",
-  },
-  {
     key: "core",
     name: "Home Assistant Core",
+  },
+  {
+    key: "supervisor",
+    name: "Supervisor",
   },
   {
     key: "host",
