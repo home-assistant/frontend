@@ -67,7 +67,7 @@ class HaConfigInfo extends LitElement {
                 Home Assistant Supervisor ${this._hassioInfo.supervisor}
               </h2>`
             : ""}
-          ${this._osInfo
+          ${this._osInfo?.version
             ? html`<h2>Home Assistant OS ${this._osInfo.version}</h2>`
             : ""}
           ${this._hostInfo
