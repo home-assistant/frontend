@@ -1,10 +1,10 @@
-import { css, html, LitElement } from "lit";
 import { mdiDotsVertical } from "@mdi/js";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-button";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-integration-overflow-menu")
 export class HaIntegrationOverflowMenu extends LitElement {
@@ -12,7 +12,7 @@ export class HaIntegrationOverflowMenu extends LitElement {
 
   protected render() {
     return html`
-      <ha-button-menu activatable>
+      <ha-button-menu activatable corner="BOTTOM_START">
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
@@ -39,5 +39,11 @@ export class HaIntegrationOverflowMenu extends LitElement {
 
   static get styles() {
     return css``;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-integration-overflow-menu": HaIntegrationOverflowMenu;
   }
 }

@@ -16,9 +16,9 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-check-list-item";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -35,8 +35,8 @@ import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import "../integrations/ha-integration-overflow-menu";
 import { configSections } from "../ha-panel-config";
+import "../integrations/ha-integration-overflow-menu";
 import { showZWaveJSAddNodeDialog } from "../integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 
 interface DeviceRowData extends DeviceRegistryEntry {
@@ -409,6 +409,10 @@ export class HaConfigDeviceDashboard extends LitElement {
         (filteredConfigEntry.domain === "zha" ||
           filteredConfigEntry.domain === "zwave_js")}
       >
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
         ${!filteredConfigEntry
           ? ""
           : filteredConfigEntry.domain === "zwave_js"
@@ -459,13 +463,6 @@ export class HaConfigDeviceDashboard extends LitElement {
             )}
           </ha-check-list-item>
         </ha-button-menu>
-        <ha-integration-overflow-menu
-          .hass=${this.hass}
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          activatable
-        >
-        </ha-integration-overflow-menu>
       </hass-tabs-subpage-data-table>
     `;
   }

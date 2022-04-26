@@ -527,6 +527,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         id="entity_id"
         .hasFab=${includeZHAFab}
       >
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
         ${this._selectedEntities.length
           ? html`
               <div
@@ -688,13 +692,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </ha-fab>
             </a>`
           : html``}
-        <ha-integration-overflow-menu
-          .hass=${this.hass}
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          activatable
-        >
-        </ha-integration-overflow-menu>
       </hass-tabs-subpage-data-table>
     `;
   }

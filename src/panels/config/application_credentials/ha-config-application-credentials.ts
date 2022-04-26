@@ -1,8 +1,7 @@
-import { mdiPlus, mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { LocalizeFunc } from "../../../common/translations/localize";
@@ -15,14 +14,15 @@ import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import {
-  fetchApplicationCredentials,
-  deleteApplicationCredential,
   ApplicationCredential,
+  deleteApplicationCredential,
+  fetchApplicationCredentials,
 } from "../../../data/application_credential";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
 
 @customElement("ha-config-application-credentials")
@@ -85,7 +85,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         backPath="/config"
-        .tabs=${[]}
+        .tabs=${configSections.devices}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._applicationCredentials}
         hasFab
@@ -244,5 +244,11 @@ export class HaConfigApplicationCredentials extends LitElement {
         margin-left: 8px;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-application-credentials": HaConfigApplicationCredentials;
   }
 }
