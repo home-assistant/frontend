@@ -14,15 +14,21 @@ import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-metric";
 import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
+import {
+  fetchHassioResolution,
+  HassioResolution,
+} from "../../../data/hassio/resolution";
 import { domainToName } from "../../../data/integration";
 import {
   subscribeSystemHealthInfo,
   SystemCheckValueObject,
   SystemHealthInfo,
 } from "../../../data/system_health";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 
 const sortKeys = (a: string, b: string) => {
@@ -41,6 +47,11 @@ const sortKeys = (a: string, b: string) => {
   return 0;
 };
 
+export const UNSUPPORTED_REASON_URL = {};
+export const UNHEALTHY_REASON_URL = {
+  privileged: "/more-info/unsupported/privileged",
+};
+
 @customElement("ha-config-system-health")
 class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -50,6 +61,8 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
   @state() private _info?: SystemHealthInfo;
 
   @state() private _supervisorStats?: HassioStats;
+
+  @state() private _resolutionInfo?: HassioResolution;
 
   @state() private _coreStats?: HassioStats;
 
@@ -79,6 +92,9 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
           10000
         )
       );
+      fetchHassioResolution(this.hass).then((data) => {
+        this._resolutionInfo = data;
+      });
     }
 
     return subs;
@@ -219,6 +235,35 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
             `
           : ""}
         <div class="content">
+          ${this._resolutionInfo
+            ? html`${this._resolutionInfo.unhealthy.length
+                ? html`<ha-alert alert-type="error">
+                    ${this.hass.localize("ui.dialogs.unhealthy.title")}
+                    <mwc-button
+                      slot="action"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.common.learn_more"
+                      )}
+                      @click=${this._unhealthyDialog}
+                    >
+                    </mwc-button
+                  ></ha-alert>`
+                : ""}
+              ${this._resolutionInfo.unsupported.length
+                ? html`<ha-alert alert-type="warning">
+                    ${this.hass.localize("ui.dialogs.unsupported.title")}
+                    <mwc-button
+                      slot="action"
+                      .label=${this.hass.localize(
+                        "ui.panel.config.common.learn_more"
+                      )}
+                      @click=${this._unsupportedDialog}
+                    >
+                    </mwc-button>
+                  </ha-alert>`
+                : ""} `
+            : ""}
+
           <ha-card outlined>
             <div class="card-content">${sections}</div>
           </ha-card>
@@ -275,6 +320,64 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private async _unsupportedDialog(): Promise<void> {
+    await showAlertDialog(this, {
+      title: this.hass.localize("ui.dialogs.unsupported.title"),
+      text: html`${this.hass.localize("ui.dialogs.unsupported.description")}
+        <br /><br />
+        <ul>
+          ${this._resolutionInfo!.unsupported.map(
+            (reason) => html`
+              <li>
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    UNSUPPORTED_REASON_URL[reason] ||
+                      `/more-info/unsupported/${reason}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    `ui.dialogs.unsupported.reason.${reason}`
+                  ) || reason}
+                </a>
+              </li>
+            `
+          )}
+        </ul>`,
+    });
+  }
+
+  private async _unhealthyDialog(): Promise<void> {
+    await showAlertDialog(this, {
+      title: this.hass.localize("ui.dialogs.unhealthy.title"),
+      text: html`${this.hass.localize("ui.dialogs.unhealthy.description")}
+        <br /><br />
+        <ul>
+          ${this._resolutionInfo!.unhealthy.map(
+            (reason) => html`
+              <li>
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    UNHEALTHY_REASON_URL[reason] ||
+                      `/more-info/unhealthy/${reason}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.hass.localize(
+                    `ui.dialogs.unhealthy.reason.${reason}`
+                  ) || reason}
+                </a>
+              </li>
+            `
+          )}
+        </ul>`,
+    });
   }
 
   private async _copyInfo(ev: CustomEvent<ActionDetail>): Promise<void> {
@@ -352,6 +455,12 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
       max-width: 500px;
       margin: 0 auto;
       padding-bottom: 16px;
+      margin-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    ha-alert {
+      display: block;
+      max-width: 500px;
+      margin: 0 auto;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
     }
     table {
