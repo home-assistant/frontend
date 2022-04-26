@@ -272,7 +272,6 @@ class HaConfigSectionUpdates extends LitElement {
     }
     .card-actions {
       height: 48px;
-      border-top: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
