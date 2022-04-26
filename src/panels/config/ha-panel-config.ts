@@ -6,7 +6,6 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
-  mdiFileCode,
   mdiHeart,
   mdiInformation,
   mdiInformationOutline,
@@ -256,15 +255,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   general: [
     {
-      component: "server_control",
-      path: "/config/server_control",
-      translationKey: "ui.panel.config.server_control.yaml_configuration",
-      iconPath: mdiFileCode,
-      iconColor: "#4A5963",
-      core: true,
-      advancedOnly: true,
-    },
-    {
       path: "/config/updates",
       translationKey: "ui.panel.config.updates.caption",
       iconPath: mdiUpdate,
@@ -438,10 +428,6 @@ class HaPanelConfig extends HassRouterPage {
       helpers: {
         tag: "ha-config-helpers",
         load: () => import("./helpers/ha-config-helpers"),
-      },
-      server_control: {
-        tag: "ha-config-server-control",
-        load: () => import("./server_control/ha-config-server-control"),
       },
       storage: {
         tag: "ha-config-section-storage",
