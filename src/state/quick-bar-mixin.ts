@@ -1,11 +1,14 @@
 import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { mainWindow } from "../common/dom/get_main_window";
 import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
+import { showToast } from "../util/toast";
 import { HassElement } from "./hass-element";
 
 declare global {
@@ -32,6 +35,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       tinykeys(window, {
         e: (ev) => this._showQuickBar(ev),
         c: (ev) => this._showQuickBar(ev, true),
+        m: (ev) => this._createMyLink(ev),
       });
     }
 
@@ -41,6 +45,36 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
 
       showQuickBar(this, { commandMode });
+    }
+
+    private async _createMyLink(e: KeyboardEvent) {
+      if (!this._canOverrideAlphanumericInput(e) || !this.hass) {
+        return;
+      }
+
+      const targetPath = mainWindow.location.pathname;
+      const myPanel = await import("../panels/my/ha-panel-my");
+
+      for (const [slug, redirect] of Object.entries(
+        myPanel.getMyRedirects(isComponentLoaded(this.hass, "hassio"))
+      )) {
+        if (redirect.redirect === targetPath) {
+          window.open(
+            `https://my.home-assistant.io/create-link/?redirect=${slug}`,
+            "_blank"
+          );
+
+          return;
+        }
+      }
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.notification_toast.no_matching_link_found",
+          {
+            path: targetPath,
+          }
+        ),
+      });
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {
