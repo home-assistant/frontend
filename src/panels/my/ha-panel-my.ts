@@ -176,6 +176,18 @@ const getRedirect = (
         component: hasSupervisor ? "hassio" : "backup",
         redirect: hasSupervisor ? "/hassio/backups" : "/config/backup",
       },
+      supervisor_system: {
+        // Moved from Supervisor panel in 2022.5
+        redirect: "/config/system",
+      },
+      supervisor_logs: {
+        // Moved from Supervisor panel in 2022.5
+        redirect: "/config/logs",
+      },
+      supervisor_info: {
+        // Moved from Supervisor panel in 2022.5
+        redirect: "/config/info",
+      },
     } as Redirects
   )[path]);
 
