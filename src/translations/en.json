@@ -1026,6 +1026,13 @@
           "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
           "untrusted": "[%key:supervisor::system::supervisor::unhealthy_reason::untrusted%]"
         }
+      },
+      "join_beta_channel": {
+        "title": "Join the beta channel",
+        "warning": "[%key:supervisor::system::supervisor::beta_warning%]",
+        "backup": "[%key:supervisor::system::supervisor::beta_backup%]",
+        "release_items": "[%key:supervisor::system::supervisor::beta_release_items%]",
+        "confirm": "[%key:supervisor::system::supervisor::beta_join_confirm%]"
       }
     },
     "duration": {
@@ -1169,6 +1176,8 @@
           "show": "show",
           "show_skipped": "Show skipped",
           "hide_skipped": "Hide skipped",
+          "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
+          "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
         },
         "areas": {

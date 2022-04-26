@@ -1,22 +1,35 @@
+import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
 import "../../../components/ha-metric";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
+import {
+  fetchHassioSupervisorInfo,
+  HassioSupervisorInfo,
+  reloadSupervisor,
+  setSupervisorOption,
+  SupervisorOptions,
+} from "../../../data/hassio/supervisor";
 import { updateCanInstall, UpdateEntity } from "../../../data/update";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
-import "./ha-config-analytics";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -26,7 +39,19 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _showSkipped = false;
 
+  @state() private _supervisorInfo?: HassioSupervisorInfo;
+
   private _notifyUpdates = false;
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      fetchHassioSupervisorInfo(this.hass).then((data) => {
+        this._supervisorInfo = data;
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
@@ -44,18 +69,27 @@ class HaConfigSectionUpdates extends LitElement {
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
-          @action=${this._toggleSkipped}
+          @action=${this._handleAction}
         >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item>
+          <mwc-list-item id="skipped">
             ${this._showSkipped
               ? this.hass.localize("ui.panel.config.updates.hide_skipped")
               : this.hass.localize("ui.panel.config.updates.show_skipped")}
           </mwc-list-item>
+          ${this._supervisorInfo?.channel !== "dev"
+            ? html`
+                <mwc-list-item id="beta">
+                  ${this._supervisorInfo?.channel === "stable"
+                    ? this.hass.localize("ui.panel.config.updates.join_beta")
+                    : this.hass.localize("ui.panel.config.updates.leave_beta")}
+                </mwc-list-item>
+              `
+            : ""}
         </ha-button-menu>
         <div class="content">
           <ha-card outlined>
@@ -111,8 +145,53 @@ class HaConfigSectionUpdates extends LitElement {
     }
   }
 
-  private _toggleSkipped(): void {
-    this._showSkipped = !this._showSkipped;
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._showSkipped = !this._showSkipped;
+        break;
+      case 1:
+        this._toggleBeta();
+        break;
+    }
+  }
+
+  private async _toggleBeta(): Promise<void> {
+    if (this._supervisorInfo!.channel === "stable") {
+      const confirmed = await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.dialogs.join_beta_channel.title"),
+        text: html`${this.hass.localize("ui.dialogs.join_beta_channel.warning")}
+          <br />
+          <b> ${this.hass.localize("ui.dialogs.join_beta_channel.backup")} </b>
+          <br /><br />
+          ${this.hass.localize("ui.dialogs.join_beta_channel.release_items")}
+          <ul>
+            <li>Home Assistant Core</li>
+            <li>Home Assistant Supervisor</li>
+            <li>Home Assistant Operating System</li>
+          </ul>
+          <br />
+          ${this.hass.localize("ui.dialogs.join_beta_channel.confirm")}`,
+        confirmText: this.hass.localize("ui.panel.config.updates.join_beta"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+      });
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    try {
+      const data: Partial<SupervisorOptions> = {
+        channel: this._supervisorInfo!.channel === "stable" ? "beta" : "stable",
+      };
+      await setSupervisorOption(this.hass, data);
+      await reloadSupervisor(this.hass);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: extractApiErrorMessage(err),
+      });
+    }
   }
 
   private async _checkUpdates(): Promise<void> {
