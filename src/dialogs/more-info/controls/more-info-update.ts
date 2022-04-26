@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
@@ -198,15 +199,17 @@ class MoreInfoUpdate extends LitElement {
       title: this.hass.localize(
         "ui.dialogs.more_info_control.update.user_confirmation_title"
       ),
-      text: this.hass.localize(
-        "ui.dialogs.more_info_control.update.user_confirmation",
-        "title",
-        this.stateObj!.attributes.title,
-        "installed_version",
-        this.stateObj!.attributes.installed_version,
-        "latest_version",
-        this.stateObj!.attributes.latest_version
-      ),
+      text: html`${unsafeHTML(
+        this.hass.localize(
+          "ui.dialogs.more_info_control.update.user_confirmation",
+          "title",
+          "<b>" + this.stateObj!.attributes.title + "</b>",
+          "installed_version",
+          this.stateObj!.attributes.installed_version,
+          "latest_version",
+          this.stateObj!.attributes.latest_version
+        )
+      )}`,
       confirmText: this.hass.localize(
         "ui.dialogs.more_info_control.update.install"
       ),
