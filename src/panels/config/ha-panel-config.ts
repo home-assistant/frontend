@@ -540,6 +540,10 @@ class HaPanelConfig extends HassRouterPage {
       "--app-header-border-bottom",
       "1px solid var(--divider-color)"
     );
+    this.style.setProperty(
+      "--ha-card-border-radius",
+      "var(--ha-config-card-border-radius, 8px)"
+    );
   }
 
   protected updatePageEl(el) {
