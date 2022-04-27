@@ -36,10 +36,6 @@ export class HaIntegrationOverflowMenu extends LitElement {
   private _entryClicked(ev) {
     ev.currentTarget.blur();
   }
-
-  static get styles() {
-    return css``;
-  }
 }
 
 declare global {
