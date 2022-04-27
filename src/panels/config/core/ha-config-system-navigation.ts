@@ -1,5 +1,5 @@
 import { ActionDetail } from "@material/mwc-list";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -7,6 +7,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -41,22 +42,25 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleAction}
-        >
+        <div slot="toolbar-icon">
           <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            .path=${mdiDotsVertical}
+            .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+            .path=${mdiMagnify}
+            @click=${this._showQuickBar}
           ></ha-icon-button>
-          <mwc-list-item>
-            ${this.hass.localize(
-              "ui.panel.config.system_dashboard.restart_homeassistant"
-            )}
-          </mwc-list-item>
-        </ha-button-menu>
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <mwc-list-item>
+              ${this.hass.localize(
+                "ui.panel.config.system_dashboard.restart_homeassistant"
+              )}
+            </mwc-list-item>
+          </ha-button-menu>
+        </div>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -87,6 +91,13 @@ class HaConfigSystemNavigation extends LitElement {
         });
         break;
     }
+  }
+
+  private _showQuickBar(): void {
+    showQuickBar(this, {
+      commandMode: true,
+      hint: this.hass.localize("ui.dialogs.quick-bar.key_c_hint"),
+    });
   }
 
   static get styles(): CSSResultGroup {
