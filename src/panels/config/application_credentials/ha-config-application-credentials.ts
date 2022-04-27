@@ -127,11 +127,12 @@ export class HaConfigApplicationCredentials extends LitElement {
                           .path=${mdiDelete}
                           .label=${this.hass.localize("ui.common.remove")}
                         ></ha-icon-button>
-                        <paper-tooltip animation-delay="0" for="remove-btn">
-                          ${this.hass.localize(
+                        <ha-help-tooltip
+                          .label=${this.hass.localize(
                             "ui.panel.config.application_credentials.picker.remove_selected.button"
                           )}
-                        </paper-tooltip>
+                        >
+                        </ha-help-tooltip>
                       `}
                 </div>
               </div>
