@@ -1496,7 +1496,7 @@
                 "save_button": "Save",
                 "currency": "Currency",
                 "edit_location": "Edit location",
-                "edit_location_description": "Location can be editted on the zones page"
+                "edit_location_description": "Location can be changed in zone settings"
               }
             }
           }
