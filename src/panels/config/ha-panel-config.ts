@@ -345,6 +345,8 @@ class HaPanelConfig extends HassRouterPage {
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
+    beforeRender: (page) =>
+      page === "server_control" ? "../developer-tools/yaml" : undefined,
     routes: {
       analytics: {
         tag: "ha-config-section-analytics",
