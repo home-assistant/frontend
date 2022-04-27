@@ -80,6 +80,7 @@ class HaConfigBackup extends LitElement {
       actions: {
         title: "",
         width: "15%",
+        type: "overflow-menu",
         template: (_: string, backup: BackupContent) =>
           html`<ha-icon-overflow-menu
             .hass=${this.hass}
@@ -126,7 +127,7 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
-        tabs=${[
+        .tabs=${[
           {
             translationKey: "ui.panel.config.backup.caption",
             path: `/config/backup`,
