@@ -132,7 +132,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/core",
   },
   server_controls: {
-    redirect: "/config/server_control",
+    redirect: "/developer-tools/yaml",
   },
   logs: {
     redirect: "/config/logs",
