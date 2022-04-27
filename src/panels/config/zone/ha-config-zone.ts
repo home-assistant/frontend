@@ -198,6 +198,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                           : hass.localize("ui.panel.config.zone.edit_zone")}
                         @click=${this._openCoreConfig}
                       ></ha-icon-button>
+                      ${stateObject.entity_id !== "zone.home"
+                        ? html`
+                            <paper-tooltip animation-delay="0" position="left">
+                              ${hass.localize(
+                                "ui.panel.config.zone.configured_in_yaml"
+                              )}
+                            </paper-tooltip>
+                          `
+                        : ""}
                     </div>
                   </paper-icon-item>
                 `
