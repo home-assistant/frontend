@@ -6,7 +6,10 @@ import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -82,7 +85,16 @@ class HaConfigSystemNavigation extends LitElement {
             "ui.panel.config.system_dashboard.confirm_restart"
           ),
           confirm: () => {
-            this.hass.callService("homeassistant", "restart");
+            this.hass
+              .callService("homeassistant", "restart")
+              .catch((reason) => {
+                showAlertDialog(this, {
+                  title: this.hass.localize(
+                    "ui.panel.config.system_dashboard.restart_error"
+                  ),
+                  text: reason.message,
+                });
+              });
           },
         });
         break;
