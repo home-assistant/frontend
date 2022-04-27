@@ -35,7 +35,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/developer-tools/statistics",
   },
   config: {
-    redirect: "/config",
+    redirect: "/config/dashboard",
   },
   cloud: {
     component: "cloud",
@@ -145,7 +145,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/dashboard",
   },
   profile: {
-    redirect: "/profile/dashboard",
+    redirect: "/profile",
   },
   logbook: {
     component: "logbook",
