@@ -409,7 +409,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
             name,
           });
           this._areas = [...this._areas!, area];
-          (this.comboBox as any).items = this._getAreas(
+          (this.comboBox as any).filteredItems = this._getAreas(
             this._areas!,
             this._devices!,
             this._entities!,
