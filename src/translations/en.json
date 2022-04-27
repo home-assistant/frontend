@@ -3165,7 +3165,8 @@
         },
         "system_dashboard": {
           "confirm_restart": "Are you sure you want to restart Home Assistant?",
-          "restart_homeassistant": "Restart Home Assistant"
+          "restart_homeassistant": "Restart Home Assistant",
+          "restart_error": "Failed to restart Home Assistant"
         }
       },
       "lovelace": {
@@ -4201,7 +4202,8 @@
                 "restart_home_assistant": "Restart Home Assistant",
                 "confirm_restart": "Are you sure you want to restart Home Assistant?",
                 "stop": "Stop",
-                "confirm_stop": "Are you sure you want to stop Home Assistant?"
+                "confirm_stop": "Are you sure you want to stop Home Assistant?",
+                "restart_error": "Failed to restart Home Assistant"
               }
             }
           }
