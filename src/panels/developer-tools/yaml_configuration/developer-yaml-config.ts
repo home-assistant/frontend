@@ -183,17 +183,17 @@ export class DeveloperYamlConfig extends LitElement {
       haStyle,
       css`
         .validate-container {
-          height: 140px;
+          height: 60px;
         }
 
         .validate-result {
           color: var(--success-color);
           font-weight: 500;
-          margin-bottom: 1em;
         }
 
         .config-invalid {
           margin: 1em 0;
+          text-align: center;
         }
 
         .config-invalid .text {
