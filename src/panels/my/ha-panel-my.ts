@@ -41,14 +41,14 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     component: "cloud",
     redirect: "/config/cloud",
   },
-  integrations: {
-    redirect: "/config/integrations",
-  },
   config_flow_start: {
     redirect: "/config/integrations/add",
     params: {
       domain: "string",
     },
+  },
+  integrations: {
+    redirect: "/config/integrations",
   },
   config_mqtt: {
     component: "mqtt",
@@ -79,16 +79,16 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   areas: {
     redirect: "/config/areas/dashboard",
   },
-  blueprints: {
-    component: "blueprint",
-    redirect: "/config/blueprint/dashboard",
-  },
   blueprint_import: {
     component: "blueprint",
     redirect: "/config/blueprint/dashboard/import",
     params: {
       blueprint_url: "url",
     },
+  },
+  blueprints: {
+    component: "blueprint",
+    redirect: "/config/blueprint/dashboard",
   },
   automations: {
     component: "automation",

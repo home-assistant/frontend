@@ -75,7 +75,7 @@ class HaConfigSectionUpdates extends LitElement {
           <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
             <ha-icon-button
               slot="trigger"
-              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+              .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <mwc-list-item id="skipped">
