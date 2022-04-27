@@ -46,7 +46,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { showCoreZoneDetailDialog } from "./show-dialog-core-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
 @customElement("ha-config-zone")
@@ -188,30 +187,26 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     <div style="display:inline-block">
                       <ha-icon-button
                         .entityId=${stateObject.entity_id}
-                        @click=${this._openCoreConfig}
                         .noEdit=${stateObject.entity_id !== "zone.home" ||
                         !this._canEditCore}
                         .path=${stateObject.entity_id === "zone.home" &&
                         this._canEditCore
                           ? mdiPencil
                           : mdiPencilOff}
-                        .label=${hass.localize(
-                          "ui.panel.config.zone.edit_zone"
-                        )}
+                        .label=${stateObject.entity_id === "zone.home"
+                          ? hass.localize("ui.panel.config.zone.edit_home")
+                          : hass.localize("ui.panel.config.zone.edit_zone")}
+                        @click=${this._openCoreConfig}
                       ></ha-icon-button>
-                      <paper-tooltip animation-delay="0" position="left">
-                        ${stateObject.entity_id === "zone.home"
-                          ? hass.localize(
-                              `ui.panel.config.zone.${
-                                this.narrow
-                                  ? "edit_home_zone_narrow"
-                                  : "edit_home_zone"
-                              }`
-                            )
-                          : hass.localize(
-                              "ui.panel.config.zone.configured_in_yaml"
-                            )}
-                      </paper-tooltip>
+                      ${stateObject.entity_id !== "zone.home"
+                        ? html`
+                            <paper-tooltip animation-delay="0" position="left">
+                              ${hass.localize(
+                                "ui.panel.config.zone.configured_in_yaml"
+                              )}
+                            </paper-tooltip>
+                          `
+                        : ""}
                     </div>
                   </paper-icon-item>
                 `
@@ -397,7 +392,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       });
       return;
     }
-    showCoreZoneDetailDialog(this);
+    navigate("/config/general");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
