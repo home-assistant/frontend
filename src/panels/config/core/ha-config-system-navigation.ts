@@ -64,9 +64,6 @@ class HaConfigSystemNavigation extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          margin-bottom: env(safe-area-inset-bottom);
-        }
         :host(:not([narrow])) ha-card {
           margin-bottom: max(24px, env(safe-area-inset-bottom));
         }
@@ -79,6 +76,8 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-card {
           overflow: hidden;
+          margin-bottom: 24px;
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
         }
 
         ha-card a {

@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -8,7 +8,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import type { UpdateEntity } from "../../../data/update";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -35,39 +35,44 @@ class HaConfigUpdates extends LitElement {
           count: this.total || this.updateEntities.length,
         })}
       </div>
-      ${updates.map(
-        (entity) => html`
-          <paper-icon-item
-            @click=${this._openMoreInfo}
-            .entity_id=${entity.entity_id}
-            class=${entity.attributes.skipped_version ? "skipped" : ""}
-          >
-            <span slot="item-icon" class="icon">
+      <mwc-list>
+        ${updates.map(
+          (entity) => html`
+            <mwc-list-item
+              twoline
+              graphic="avatar"
+              class=${entity.attributes.skipped_version ? "skipped" : ""}
+              .entity_id=${entity.entity_id}
+              .hasMeta=${!this.narrow}
+              @click=${this._openMoreInfo}
+            >
               <state-badge
+                slot="graphic"
                 .title=${entity.attributes.title ||
                 entity.attributes.friendly_name}
                 .stateObj=${entity}
-                slot="item-icon"
               ></state-badge>
-            </span>
-            <paper-item-body two-line>
-              ${entity.attributes.title || entity.attributes.friendly_name}
-              <div secondary>
+              <span
+                >${entity.attributes.title ||
+                entity.attributes.friendly_name}</span
+              >
+              <span slot="secondary">
                 ${this.hass.localize(
                   "ui.panel.config.updates.version_available",
                   {
                     version_available: entity.attributes.latest_version,
                   }
-                )}
-                ${entity.attributes.skipped_version
+                )}${entity.attributes.skipped_version
                   ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
                   : ""}
-              </div>
-            </paper-item-body>
-            ${!this.narrow ? html`<ha-icon-next></ha-icon-next>` : ""}
-          </paper-icon-item>
-        `
-      )}
+              </span>
+              ${!this.narrow
+                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                : ""}
+            </mwc-list-item>
+          `
+        )}
+      </mwc-list>
     `;
   }
 
@@ -80,6 +85,9 @@ class HaConfigUpdates extends LitElement {
   static get styles(): CSSResultGroup[] {
     return [
       css`
+        :host {
+          --mdc-list-vertical-padding: 0;
+        }
         .title {
           font-size: 16px;
           padding: 16px;
@@ -87,11 +95,6 @@ class HaConfigUpdates extends LitElement {
         }
         .skipped {
           background: var(--secondary-background-color);
-        }
-        .icon {
-          display: inline-flex;
-          height: 100%;
-          align-items: center;
         }
         ha-icon-next {
           color: var(--secondary-text-color);
@@ -114,8 +117,9 @@ class HaConfigUpdates extends LitElement {
           outline: none;
           text-decoration: underline;
         }
-        paper-icon-item {
+        mwc-list-item {
           cursor: pointer;
+          font-size: 16px;
         }
       `,
     ];

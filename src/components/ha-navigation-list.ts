@@ -56,6 +56,9 @@ class HaNavigationList extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    :host {
+      --mdc-list-vertical-padding: 0;
+    }
     a {
       text-decoration: none;
       color: var(--primary-text-color);
