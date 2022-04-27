@@ -53,7 +53,7 @@ class HaConfigSystemNavigation extends LitElement {
           ></ha-icon-button>
           <mwc-list-item>
             ${this.hass.localize(
-              "ui.panel.config.server_control.section.server_management.restart_home_assistant"
+              "ui.panel.config.system_dashboard.restart_homeassistant"
             )}
           </mwc-list-item>
         </ha-button-menu>
@@ -84,10 +84,8 @@ class HaConfigSystemNavigation extends LitElement {
       case 0:
         showConfirmationDialog(this, {
           text: this.hass.localize(
-            "ui.panel.config.server_control.section.server_management.confirm_restart"
+            "ui.panel.config.system_dashboard.confirm_restart"
           ),
-          confirmText: this.hass!.localize("ui.common.leave"),
-          dismissText: this.hass!.localize("ui.common.stay"),
           confirm: () => {
             this.hass.callService("homeassistant", "restart");
           },

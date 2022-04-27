@@ -3153,6 +3153,10 @@
           "ram_usage": "RAM Usage",
           "core_stats": "Core Stats",
           "supervisor_stats": "Supervisor Stats"
+        },
+        "system_dashboard": {
+          "confirm_restart": "Are you sure you want to restart Home Assistant?",
+          "restart_homeassistant": "Restart Home Assistant"
         }
       },
       "lovelace": {
