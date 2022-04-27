@@ -43,8 +43,8 @@ class HaConfigSystemNavigation extends LitElement {
       >
         <ha-button-menu
           corner="BOTTOM_START"
-          slot="toolbar-icon"
           @action=${this._handleAction}
+          slot="toolbar-icon"
         >
           <ha-icon-button
             slot="trigger"
@@ -63,11 +63,6 @@ class HaConfigSystemNavigation extends LitElement {
           full-width
         >
           <ha-card outlined>
-            ${this.narrow
-              ? html`<div class="title">
-                  ${this.hass.localize("ui.panel.config.dashboard.system.main")}
-                </div>`
-              : ""}
             <ha-navigation-list
               .hass=${this.hass}
               .narrow=${this.narrow}
