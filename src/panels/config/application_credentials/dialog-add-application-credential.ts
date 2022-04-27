@@ -60,6 +60,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._clientSecret = "";
     this._error = undefined;
     this._loading = false;
+    this._fetchConfig();
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -69,7 +70,6 @@ export class DialogAddApplicationCredential extends LitElement {
         this._createApplicationCredential(ev);
       }
     });
-    this._fetchConfig();
   }
 
   private async _fetchConfig() {
