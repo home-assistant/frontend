@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -11,10 +11,9 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
+import "../../../components/ha-textfield";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
-import "../../../components/ha-switch";
 import {
   fetchApplicationCredentialsConfig,
   createApplicationCredential,
@@ -115,7 +114,7 @@ export class DialogAddApplicationCredential extends LitElement {
             required
             @value-changed=${this._handleDomainPicked}
           ></ha-combo-box>
-          <paper-input
+          <ha-textfield
             class="clientId"
             name="clientId"
             .label=${this.hass.localize(
@@ -123,14 +122,11 @@ export class DialogAddApplicationCredential extends LitElement {
             )}
             .value=${this._clientId}
             required
-            auto-validate
-            autocapitalize="none"
-            @value-changed=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
+            @input=${this._handleValueChanged}
+            error-message=${this.hass.localize("ui.common.error_required")}
             dialogInitialFocus
-          ></paper-input>
-
-          <paper-input
+          ></ha-textfield>
+          <ha-textfield
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.client_secret"
             )}
@@ -138,10 +134,9 @@ export class DialogAddApplicationCredential extends LitElement {
             name="clientSecret"
             .value=${this._clientSecret}
             required
-            auto-validate
-            @value-changed=${this._handleValueChanged}
-            .errorMessage=${this.hass.localize("ui.common.error_required")}
-          ></paper-input>
+            @input=${this._handleValueChanged}
+            error-message=${this.hass.localize("ui.common.error_required")}
+          ></ha-textfield>
         </div>
         ${this._loading
           ? html`
