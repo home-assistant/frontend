@@ -82,11 +82,6 @@ export class DeveloperYamlConfig extends LitElement {
                         "ui.panel.developer-tools.tabs.yaml.section.validation.invalid"
                       )}
                     </span>
-                    <mwc-button raised @click=${this._validateConfig}>
-                      ${this.hass.localize(
-                        "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
-                      )}
-                    </mwc-button>
                   </div>
                   <div id="configLog" class="validate-log">
                     ${this._validateLog}
@@ -94,10 +89,7 @@ export class DeveloperYamlConfig extends LitElement {
                 `}
           </div>
           <div class="card-actions">
-            <mwc-button
-              @click=${this._validateConfig}
-              .disabled=${this._validateLog}
-            >
+            <mwc-button @click=${this._validateConfig}>
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
               )}
