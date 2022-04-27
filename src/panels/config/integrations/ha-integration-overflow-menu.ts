@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-clickable-list-item";
