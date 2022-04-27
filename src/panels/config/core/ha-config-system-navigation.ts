@@ -85,16 +85,16 @@ class HaConfigSystemNavigation extends LitElement {
             "ui.panel.config.system_dashboard.confirm_restart"
           ),
           confirm: () => {
-            this.hass.callService("homeassistant", "restart").catch(
-              (reason) => {
+            this.hass
+              .callService("homeassistant", "restart")
+              .catch((reason) => {
                 showAlertDialog(this, {
                   title: this.hass.localize(
                     "ui.panel.config.system_dashboard.restart_error"
                   ),
                   text: reason.message,
                 });
-              }
-            );
+              });
           },
         });
         break;

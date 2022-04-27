@@ -171,12 +171,10 @@ export class DeveloperYamlConfig extends LitElement {
         "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart"
       ),
       confirm: () => {
-        this.hass.callService("homeassistant", "restart").catch(
-          (reason) => {
-            this._isValid = false;
-            this._validateLog = reason.message;
-          }
-        );
+        this.hass.callService("homeassistant", "restart").catch((reason) => {
+          this._isValid = false;
+          this._validateLog = reason.message;
+        });
       },
     });
   }
