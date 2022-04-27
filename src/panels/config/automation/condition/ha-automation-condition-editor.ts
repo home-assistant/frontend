@@ -9,9 +9,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-yaml-editor";
-import type {
-  Condition,
-} from "../../../../data/automation";
+import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -45,9 +43,9 @@ const OPTIONS = [
 export default class HaAutomationConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public yamlMode = false;
-
   @property() condition!: Condition;
+
+  @property() public yamlMode = false;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
