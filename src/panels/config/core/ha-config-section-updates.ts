@@ -1,6 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -64,34 +64,38 @@ class HaConfigSectionUpdates extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleAction}
-        >
+        <div slot="toolbar-icon">
           <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
-            .path=${mdiDotsVertical}
+            .label=${this.hass.localize(
+              "ui.panel.config.updates.check_updates"
+            )}
+            .path=${mdiRefresh}
+            @click=${this._checkUpdates}
           ></ha-icon-button>
-          <mwc-list-item id="updates">
-            ${this.hass.localize("ui.panel.config.updates.check_updates")}
-          </mwc-list-item>
-          <mwc-list-item id="skipped">
-            ${this._showSkipped
-              ? this.hass.localize("ui.panel.config.updates.hide_skipped")
-              : this.hass.localize("ui.panel.config.updates.show_skipped")}
-          </mwc-list-item>
-          ${this._supervisorInfo?.channel !== "dev"
-            ? html`
-                <mwc-list-item id="beta">
-                  ${this._supervisorInfo?.channel === "stable"
-                    ? this.hass.localize("ui.panel.config.updates.join_beta")
-                    : this.hass.localize("ui.panel.config.updates.leave_beta")}
-                </mwc-list-item>
-              `
-            : ""}
-        </ha-button-menu>
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <mwc-list-item id="skipped">
+              ${this._showSkipped
+                ? this.hass.localize("ui.panel.config.updates.hide_skipped")
+                : this.hass.localize("ui.panel.config.updates.show_skipped")}
+            </mwc-list-item>
+            ${this._supervisorInfo?.channel !== "dev"
+              ? html`
+                  <mwc-list-item id="beta">
+                    ${this._supervisorInfo?.channel === "stable"
+                      ? this.hass.localize("ui.panel.config.updates.join_beta")
+                      : this.hass.localize(
+                          "ui.panel.config.updates.leave_beta"
+                        )}
+                  </mwc-list-item>
+                `
+              : ""}
+          </ha-button-menu>
+        </div>
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
@@ -117,12 +121,9 @@ class HaConfigSectionUpdates extends LitElement {
   private _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        this._checkUpdates();
-        break;
-      case 1:
         this._showSkipped = !this._showSkipped;
         break;
-      case 2:
+      case 1:
         this._toggleBeta();
         break;
     }
