@@ -14,6 +14,7 @@ import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
 import "../../../components/ha-related-items";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -22,11 +23,12 @@ import {
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-settings-row";
 
 @customElement("supervisor-hostname")
 export class HassioHostname extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) narrow!: boolean;
 
   @state() private _processing = false;
 
@@ -48,11 +50,12 @@ export class HassioHostname extends LitElement {
 
     return html`
       <ha-card
+        class="no-padding"
         outlined
         .header=${this.hass.localize("ui.panel.config.network.hostname.title")}
       >
-        <div class="card-content">
-          <ha-settings-row>
+        <div>
+          <ha-settings-row .narrow=${this.narrow}>
             <span slot="heading">Hostname</span>
             <span slot="description"
               >The name your instance will have on your network</span
@@ -98,21 +101,17 @@ export class HassioHostname extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      css`
-        ha-textfield {
-          width: 100%;
-        }
-        .card-actions {
-          display: flex;
-          flex-direction: row-reverse;
-          justify-content: space-between;
-          align-items: center;
-        }
-      `,
-    ];
-  }
+  static styles: CSSResultGroup = css`
+    ha-textfield {
+      width: 100%;
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
+  `;
 }
 
 declare global {

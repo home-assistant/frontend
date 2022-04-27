@@ -262,7 +262,7 @@ class HaConfigSectionUpdates extends LitElement {
       margin: 0 auto;
     }
     ha-card {
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       height: 100%;
       justify-content: space-between;
@@ -272,7 +272,6 @@ class HaConfigSectionUpdates extends LitElement {
     }
     .card-actions {
       height: 48px;
-      border-top: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -282,7 +281,7 @@ class HaConfigSectionUpdates extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-direction: column;
-      padding: 16px 16px 0 16px;
+      padding: 16px;
     }
   `;
 }

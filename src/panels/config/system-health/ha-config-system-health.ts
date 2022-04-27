@@ -452,7 +452,7 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
     }
     ha-card {
       display: block;
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       padding-bottom: 16px;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
