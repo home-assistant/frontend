@@ -15,7 +15,7 @@ import {
 } from "../../src/panels/my/ha-panel-my";
 import { HomeAssistant, Route } from "../../src/types";
 
-const REDIRECTS: Redirects = {
+export const REDIRECTS: Redirects = {
   supervisor: {
     redirect: "/hassio/dashboard",
   },
