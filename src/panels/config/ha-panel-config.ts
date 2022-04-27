@@ -324,6 +324,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#507FfE",
       components: ["system_health", "hassio"],
     },
+    {
+      path: "/config/general",
+      translationKey: "ui.panel.config.core.caption",
+      iconPath: mdiCog,
+      iconColor: "#653249",
+      core: true,
+    },
   ],
   about: [
     {
@@ -461,6 +468,10 @@ class HaPanelConfig extends HassRouterPage {
       zone: {
         tag: "ha-config-zone",
         load: () => import("./zone/ha-config-zone"),
+      },
+      general: {
+        tag: "ha-config-section-general",
+        load: () => import("./core/ha-config-section-general"),
       },
       zha: {
         tag: "zha-config-dashboard-router",
