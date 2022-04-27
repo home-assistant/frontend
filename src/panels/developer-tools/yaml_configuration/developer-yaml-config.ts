@@ -27,9 +27,9 @@ export class DeveloperYamlConfig extends LitElement {
 
   @state() private _reloadableDomains: string[] = [];
 
-  private _validateLog = "";
+  @state() private _isValid: boolean | null = null;
 
-  private _isValid: boolean | null = null;
+  private _validateLog = "";
 
   protected updated(changedProperties) {
     const oldHass = changedProperties.get("hass");
@@ -170,10 +170,11 @@ export class DeveloperYamlConfig extends LitElement {
       text: this.hass.localize(
         "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart"
       ),
-      confirmText: this.hass!.localize("ui.common.leave"),
-      dismissText: this.hass!.localize("ui.common.stay"),
       confirm: () => {
-        this.hass.callService("homeassistant", "restart");
+        this.hass.callService("homeassistant", "restart").catch((reason) => {
+          this._isValid = false;
+          this._validateLog = reason.message;
+        });
       },
     });
   }
