@@ -215,7 +215,9 @@ export class DeveloperYamlConfig extends LitElement {
         }
 
         .content {
-          padding: 28px 20px 16px;
+          padding: 28px 20px 0;
+          margin-bottom: 24px;
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
           max-width: 1040px;
           margin: 0 auto;
         }
