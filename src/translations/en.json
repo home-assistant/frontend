@@ -1111,7 +1111,7 @@
           },
           "automations": {
             "main": "Automations & Scenes",
-            "secondary": "Manage automations, scenes, scripts and blueprints"
+            "secondary": "Automations, scenes, scripts and blueprints"
           },
           "backup": {
             "main": "Backup",
@@ -1119,11 +1119,11 @@
           },
           "supervisor": {
             "main": "Add-ons",
-            "secondary": "Extend the function around Home Assistant"
+            "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
             "main": "Dashboards",
-            "secondary": "Create customized sets of cards to control your home"
+            "secondary": "Organize how you interact with your home"
           },
           "energy": {
             "main": "Energy",
@@ -1131,15 +1131,15 @@
           },
           "tags": {
             "main": "Tags",
-            "secondary": "Trigger automations when an NFC tag, QR code, etc. is scanned"
+            "secondary": "Manage NFC tags and QR codes"
           },
           "people": {
             "main": "People",
-            "secondary": "Manage the people that Home Assistant tracks"
+            "secondary": "Manage who can access your home"
           },
           "areas": {
             "main": "Areas & Zones",
-            "secondary": "Manage areas and zones that Home Assistant tracks"
+            "secondary": "Manage locations in and around your house"
           },
           "companion": {
             "main": "Companion App",
