@@ -4151,10 +4151,10 @@
             "section": {
               "validation": {
                 "heading": "Configuration validation",
-                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
+                "introduction": "Validate your configuration if you recently made some changes to it and want to make sure that it is all valid.",
                 "check_config": "Check configuration",
                 "valid": "Configuration valid!",
-                "invalid": "Configuration invalid"
+                "invalid": "Configuration invalid!"
               },
               "reloading": {
                 "heading": "YAML configuration reloading",
