@@ -1,6 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiCloudLock, mdiDotsVertical, mdiMagnify, mdiNewBox } from "@mdi/js";
+import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import type { HassEntities } from "home-assistant-js-websocket";
@@ -81,12 +81,12 @@ const randomTip = (hass: HomeAssistant) => {
             rel="noreferrer"
             >Newsletter</a
           >
-          <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon
-        ></span>`
+        </span>`
       ),
       weight: 2,
     },
     { content: hass.localize("ui.tips.key_c_hint"), weight: 1 },
+    { content: hass.localize("ui.tips.key_m_hint"), weight: 1 },
   ];
 
   tips.forEach((tip) => {
