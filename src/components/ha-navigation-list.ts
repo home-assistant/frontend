@@ -71,6 +71,7 @@ class HaNavigationList extends LitElement {
       color: var(--secondary-text-color);
       height: 24px;
       width: 24px;
+      display: block;
     }
     ha-svg-icon {
       padding: 8px;
