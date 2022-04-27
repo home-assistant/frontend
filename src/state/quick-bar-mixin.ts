@@ -14,6 +14,7 @@ import { HassElement } from "./hass-element";
 declare global {
   interface HASSDomEvents {
     "hass-quick-bar": QuickBarParams;
+    "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
   }
 }
@@ -26,6 +27,20 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this.addEventListener("hass-enable-shortcuts", (ev) => {
         this._updateHass({ enableShortcuts: ev.detail });
         storeState(this.hass!);
+      });
+
+      mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
+        switch (ev.detail.key) {
+          case "e":
+            this._showQuickBar(ev.detail);
+            break;
+          case "c":
+            this._showQuickBar(ev.detail, true);
+            break;
+          case "m":
+            this._createMyLink(ev.detail);
+            break;
+        }
       });
 
       this._registerShortcut();
