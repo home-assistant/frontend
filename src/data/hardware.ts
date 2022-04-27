@@ -1,3 +1,19 @@
-export const BOARD_NAMES = {
+export const BOARD_NAMES: Record<string, string> = {
   "odroid-n2": "Home Assistant Blue / ODROID N2+",
+  "odroid-xu3": "ODROID-XU4",
+  "odroid-c2": "ODROID-C2",
+  "odroid-c4": "ODROID-C4",
+  rpi: "Raspberry Pi B/B+/A+",
+  rpi_2: "Raspberry Pi 2 B",
+  rpi_3: "Raspberry Pi 3 B/B+",
+  rpi_3_32b: "Raspberry Pi 3 B/B+",
+  rpi3_64: "Raspberry Pi 3 B/B+",
+  rpi4: "Raspberry Pi 4 B",
+  rpi4_64: "Raspberry Pi 4 B",
+  rpi_4_32b: "Raspberry Pi 4 B",
+  "tinker-s-rk3288": "Tinker S RK3288",
+  "khadas-vim3": "",
+  generic_aarch64: "QEMU",
+  ova: "Virtual Machine",
+  generic_x86_64: "Intel NUC",
 };
