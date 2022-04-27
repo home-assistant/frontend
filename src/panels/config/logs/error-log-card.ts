@@ -16,37 +16,10 @@ import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
-import { fetchErrorLog, LogProvider } from "../../../data/error_log";
+import { fetchErrorLog } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioLogs } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
-
-const logProviders: LogProvider[] = [
-  {
-    key: "supervisor",
-    name: "Supervisor",
-  },
-  {
-    key: "core",
-    name: "Home Assistant Core",
-  },
-  {
-    key: "host",
-    name: "Host",
-  },
-  {
-    key: "dns",
-    name: "DNS",
-  },
-  {
-    key: "audio",
-    name: "Audio",
-  },
-  {
-    key: "multicast",
-    name: "Multicast",
-  },
-];
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -54,13 +27,15 @@ class ErrorLogCard extends LitElement {
 
   @property() public filter = "";
 
+  @property() public provider!: string;
+
+  @property({ type: Boolean, attribute: true }) public show = false;
+
   @state() private _isLogLoaded = false;
 
-  @state() private _logHTML!: TemplateResult[] | TemplateResult | string;
+  @state() private _logHTML?: TemplateResult[] | TemplateResult | string;
 
   @state() private _error?: string;
-
-  @state() private _selectedLogProvider?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -72,26 +47,9 @@ class ErrorLogCard extends LitElement {
           ? html`
               <ha-card outlined>
                 <div class="header">
-                  ${this.hass.userData?.showAdvanced &&
-                  isComponentLoaded(this.hass, "hassio")
-                    ? html`
-                        <ha-select
-                          .label=${this.hass.localize(
-                            "ui.panel.config.logs.log_provider"
-                          )}
-                          @selected=${this._setLogProvider}
-                          .value=${this._selectedLogProvider}
-                        >
-                          ${logProviders.map(
-                            (provider) => html`
-                              <mwc-list-item .value=${provider.key}>
-                                ${provider.name}
-                              </mwc-list-item>
-                            `
-                          )}
-                        </ha-select>
-                      `
-                    : ""}
+                  <h2>
+                    ${this.hass.localize("ui.panel.config.logs.full_logs")}
+                  </h2>
                   <ha-icon-button
                     .path=${mdiRefresh}
                     @click=${this._refresh}
@@ -105,7 +63,7 @@ class ErrorLogCard extends LitElement {
         ${!this._logHTML
           ? html`
               <mwc-button raised @click=${this._refreshLogs}>
-                ${this.hass.localize("ui.panel.config.logs.load_full_log")}
+                ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
           : ""}
@@ -116,7 +74,7 @@ class ErrorLogCard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    if (this.hass?.config.safe_mode) {
+    if (this.hass?.config.safe_mode || this.show) {
       this.hass.loadFragmentTranslation("config");
       this._refreshLogs();
     }
@@ -125,19 +83,17 @@ class ErrorLogCard extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
 
-    if (changedProps.has("filter") && this._isLogLoaded) {
+    if (changedProps.has("provider")) {
+      this._logHTML = undefined;
+    }
+
+    if (
+      (changedProps.has("filter") && this._isLogLoaded) ||
+      (changedProps.has("show") && this.show) ||
+      (changedProps.has("provider") && this.show)
+    ) {
       this._refreshLogs();
     }
-  }
-
-  private async _setLogProvider(ev): Promise<void> {
-    const provider = ev.target.value;
-    if (provider === this._selectedLogProvider) {
-      return;
-    }
-
-    this._selectedLogProvider = provider;
-    this._refreshLogs();
   }
 
   private async _refresh(ev: CustomEvent): Promise<void> {
@@ -152,13 +108,9 @@ class ErrorLogCard extends LitElement {
     this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     let log: string;
 
-    if (!this._selectedLogProvider && isComponentLoaded(this.hass, "hassio")) {
-      this._selectedLogProvider = "core";
-    }
-
-    if (this._selectedLogProvider) {
+    if (isComponentLoaded(this.hass, "hassio")) {
       try {
-        log = await fetchHassioLogs(this.hass, this._selectedLogProvider);
+        log = await fetchHassioLogs(this.hass, this.provider);
         this._logHTML = html`<ha-ansi-to-html .content=${log}>
         </ha-ansi-to-html>`;
         this._isLogLoaded = true;
@@ -167,7 +119,7 @@ class ErrorLogCard extends LitElement {
         this._error = this.hass.localize(
           "ui.panel.config.logs.failed_get_logs",
           "provider",
-          this._selectedLogProvider,
+          this.provider,
           "error",
           extractApiErrorMessage(err)
         );
