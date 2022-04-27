@@ -625,43 +625,43 @@
       "quick-bar": {
         "commands": {
           "reload": {
-            "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
-            "core": "[%key:ui::panel::config::server_control::section::reloading::core%]",
-            "group": "[%key:ui::panel::config::server_control::section::reloading::group%]",
-            "automation": "[%key:ui::panel::config::server_control::section::reloading::automation%]",
-            "script": "[%key:ui::panel::config::server_control::section::reloading::script%]",
-            "scene": "[%key:ui::panel::config::server_control::section::reloading::scene%]",
-            "person": "[%key:ui::panel::config::server_control::section::reloading::person%]",
-            "zone": "[%key:ui::panel::config::server_control::section::reloading::zone%]",
-            "input_boolean": "[%key:ui::panel::config::server_control::section::reloading::input_boolean%]",
-            "input_text": "[%key:ui::panel::config::server_control::section::reloading::input_text%]",
-            "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
-            "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
-            "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
-            "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
-            "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
-            "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
-            "command_line": "[%key:ui::panel::config::server_control::section::reloading::command_line%]",
-            "filter": "[%key:ui::panel::config::server_control::section::reloading::filter%]",
-            "statistics": "[%key:ui::panel::config::server_control::section::reloading::statistics%]",
-            "generic": "[%key:ui::panel::config::server_control::section::reloading::generic%]",
-            "generic_thermostat": "[%key:ui::panel::config::server_control::section::reloading::generic_thermostat%]",
-            "homekit": "[%key:ui::panel::config::server_control::section::reloading::homekit%]",
-            "min_max": "[%key:ui::panel::config::server_control::section::reloading::min_max%]",
-            "history_stats": "[%key:ui::panel::config::server_control::section::reloading::history_stats%]",
-            "trend": "[%key:ui::panel::config::server_control::section::reloading::trend%]",
-            "ping": "[%key:ui::panel::config::server_control::section::reloading::ping%]",
-            "filesize": "[%key:ui::panel::config::server_control::section::reloading::filesize%]",
-            "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
-            "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
-            "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
-            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]",
-            "themes": "[%key:ui::panel::config::server_control::section::reloading::themes%]"
+            "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
+            "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
+            "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
+            "automation": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::automation%]",
+            "script": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::script%]",
+            "scene": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::scene%]",
+            "person": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::person%]",
+            "zone": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_text": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::template%]",
+            "universal": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
+            "themes": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::themes%]"
           },
           "server_control": {
             "perform_action": "{action} server",
-            "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
-            "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+            "restart": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
@@ -687,7 +687,7 @@
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::config::server_control::caption%]"
+            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]"
           }
         },
         "filter_placeholder": "Entity Filter",
@@ -1664,65 +1664,6 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create"
-            }
-          }
-        },
-        "server_control": {
-          "caption": "Server Controls",
-          "description": "Validate and restart the Home Assistant server",
-          "section": {
-            "validation": {
-              "heading": "Configuration validation",
-              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
-              "check_config": "Check configuration",
-              "valid": "Configuration valid!",
-              "invalid": "Configuration invalid"
-            },
-            "reloading": {
-              "heading": "YAML configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
-              "reload": "{domain}",
-              "core": "Location & customizations",
-              "group": "Groups, group entities, and notify services",
-              "automation": "Automations",
-              "script": "Scripts",
-              "scene": "Scenes",
-              "person": "People",
-              "zone": "Zones",
-              "input_boolean": "Input booleans",
-              "input_button": "Input buttons",
-              "input_text": "Input texts",
-              "input_number": "Input numbers",
-              "input_datetime": "Input date times",
-              "input_select": "Input selects",
-              "template": "Template entities",
-              "universal": "Universal media player entities",
-              "rest": "Rest entities and notify services",
-              "command_line": "Command line entities",
-              "filter": "Filter entities",
-              "statistics": "Statistics entities",
-              "generic": "Generic IP camera entities",
-              "generic_thermostat": "Generic thermostat entities",
-              "homekit": "HomeKit",
-              "min_max": "Min/max entities",
-              "history_stats": "History stats entities",
-              "trend": "Trend entities",
-              "ping": "Ping binary sensor entities",
-              "filesize": "File size entities",
-              "telegram": "Telegram notify services",
-              "smtp": "SMTP notify services",
-              "mqtt": "Manually configured MQTT entities",
-              "rpi_gpio": "Raspberry Pi GPIO entities",
-              "timer": "Timers",
-              "themes": "Themes"
-            },
-            "server_management": {
-              "heading": "Home Assistant",
-              "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
-              "restart": "Restart",
-              "confirm_restart": "Are you sure you want to restart Home Assistant?",
-              "stop": "Stop",
-              "confirm_stop": "Are you sure you want to stop Home Assistant?"
             }
           }
         },
@@ -3221,6 +3162,10 @@
           "ram_usage": "Memory Usage",
           "core_stats": "Core Stats",
           "supervisor_stats": "Supervisor Stats"
+        },
+        "system_dashboard": {
+          "confirm_restart": "Are you sure you want to restart Home Assistant?",
+          "restart_homeassistant": "Restart Home Assistant"
         }
       },
       "lovelace": {
@@ -4200,6 +4145,65 @@
               }
             },
             "adjust_sum": "Adjust sum"
+          },
+          "yaml": {
+            "title": "YAML Configuration",
+            "section": {
+              "validation": {
+                "heading": "Configuration validation",
+                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
+                "check_config": "Check configuration",
+                "valid": "Configuration valid!",
+                "invalid": "Configuration invalid"
+              },
+              "reloading": {
+                "heading": "YAML configuration reloading",
+                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
+                "reload": "{domain}",
+                "core": "Location & customizations",
+                "group": "Groups, group entities, and notify services",
+                "automation": "Automations",
+                "script": "Scripts",
+                "scene": "Scenes",
+                "person": "People",
+                "zone": "Zones",
+                "input_boolean": "Input booleans",
+                "input_button": "Input buttons",
+                "input_text": "Input texts",
+                "input_number": "Input numbers",
+                "input_datetime": "Input date times",
+                "input_select": "Input selects",
+                "template": "Template entities",
+                "universal": "Universal media player entities",
+                "rest": "Rest entities and notify services",
+                "command_line": "Command line entities",
+                "filter": "Filter entities",
+                "statistics": "Statistics entities",
+                "generic": "Generic IP camera entities",
+                "generic_thermostat": "Generic thermostat entities",
+                "homekit": "HomeKit",
+                "min_max": "Min/max entities",
+                "history_stats": "History stats entities",
+                "trend": "Trend entities",
+                "ping": "Ping binary sensor entities",
+                "filesize": "File size entities",
+                "telegram": "Telegram notify services",
+                "smtp": "SMTP notify services",
+                "mqtt": "Manually configured MQTT entities",
+                "rpi_gpio": "Raspberry Pi GPIO entities",
+                "timer": "Timers",
+                "themes": "Themes"
+              },
+              "server_management": {
+                "heading": "Home Assistant",
+                "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
+                "restart": "Restart",
+                "restart_home_assistant": "Restart Home Assistant",
+                "confirm_restart": "Are you sure you want to restart Home Assistant?",
+                "stop": "Stop",
+                "confirm_stop": "Are you sure you want to stop Home Assistant?"
+              }
+            }
           }
         }
       },

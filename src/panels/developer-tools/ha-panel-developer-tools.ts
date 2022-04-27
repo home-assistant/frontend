@@ -67,6 +67,9 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.developer-tools.tabs.statistics.title"
               )}
             </paper-tab>
+            <paper-tab page-name="yaml">
+              ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
+            </paper-tab>
           </ha-tabs>
         </app-header>
         <developer-tools-router
