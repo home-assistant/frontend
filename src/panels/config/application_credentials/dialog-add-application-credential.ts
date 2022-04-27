@@ -163,6 +163,7 @@ export class DialogAddApplicationCredential extends LitElement {
 
   private _close() {
     this._params = undefined;
+    this._domains = undefined;
   }
 
   private async _handleDomainPicked(ev: PolymerChangedEvent<string>) {
