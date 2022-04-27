@@ -1,13 +1,11 @@
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
@@ -21,14 +19,16 @@ import {
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../data/hassio/supervisor";
-import { updateCanInstall, UpdateEntity } from "../../../data/update";
+import {
+  checkForEntityUpdates,
+  filterUpdateEntitiesWithInstall,
+} from "../../../data/update";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
 
 @customElement("ha-config-section-updates")
@@ -40,8 +40,6 @@ class HaConfigSectionUpdates extends LitElement {
   @state() private _showSkipped = false;
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
-
-  private _notifyUpdates = false;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -66,31 +64,38 @@ class HaConfigSectionUpdates extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          slot="toolbar-icon"
-          @action=${this._handleAction}
-        >
+        <div slot="toolbar-icon">
           <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
-            .path=${mdiDotsVertical}
+            .label=${this.hass.localize(
+              "ui.panel.config.updates.check_updates"
+            )}
+            .path=${mdiRefresh}
+            @click=${this._checkUpdates}
           ></ha-icon-button>
-          <mwc-list-item id="skipped">
-            ${this._showSkipped
-              ? this.hass.localize("ui.panel.config.updates.hide_skipped")
-              : this.hass.localize("ui.panel.config.updates.show_skipped")}
-          </mwc-list-item>
-          ${this._supervisorInfo?.channel !== "dev"
-            ? html`
-                <mwc-list-item id="beta">
-                  ${this._supervisorInfo?.channel === "stable"
-                    ? this.hass.localize("ui.panel.config.updates.join_beta")
-                    : this.hass.localize("ui.panel.config.updates.leave_beta")}
-                </mwc-list-item>
-              `
-            : ""}
-        </ha-button-menu>
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <mwc-list-item id="skipped">
+              ${this._showSkipped
+                ? this.hass.localize("ui.panel.config.updates.hide_skipped")
+                : this.hass.localize("ui.panel.config.updates.show_skipped")}
+            </mwc-list-item>
+            ${this._supervisorInfo?.channel !== "dev"
+              ? html`
+                  <mwc-list-item id="beta">
+                    ${this._supervisorInfo?.channel === "stable"
+                      ? this.hass.localize("ui.panel.config.updates.join_beta")
+                      : this.hass.localize(
+                          "ui.panel.config.updates.leave_beta"
+                        )}
+                  </mwc-list-item>
+                `
+              : ""}
+          </ha-button-menu>
+        </div>
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
@@ -107,42 +112,10 @@ class HaConfigSectionUpdates extends LitElement {
                     ${this.hass.localize("ui.panel.config.updates.no_updates")}
                   `}
             </div>
-            <div class="card-actions">
-              <mwc-button @click=${this._checkUpdates}>
-                ${this.hass.localize("ui.panel.config.updates.check_updates")}
-              </mwc-button>
-            </div>
           </ha-card>
         </div>
       </hass-subpage>
     `;
-  }
-
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (
-      !changedProps.has("hass") ||
-      !this._notifyUpdates ||
-      !changedProps.has("_showSkipped")
-    ) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (
-      this._filterUpdateEntitiesWithInstall(this.hass.states, this._showSkipped)
-        .length
-    ) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
-    }
   }
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -195,64 +168,12 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   private async _checkUpdates(): Promise<void> {
-    const _entities = this._filterUpdateEntities(this.hass.states).map(
-      (entity) => entity.entity_id
-    );
-
-    if (_entities.length) {
-      this._notifyUpdates = true;
-      await this.hass.callService("homeassistant", "update_entity", {
-        entity_id: _entities,
-      });
-      return;
-    }
-    showAlertDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.updates.no_update_entities.title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.updates.no_update_entities.description"
-      ),
-      warning: true,
-    });
+    checkForEntityUpdates(this, this.hass);
   }
-
-  private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
-    (
-      Object.values(entities).filter(
-        (entity) => computeStateDomain(entity) === "update"
-      ) as UpdateEntity[]
-    ).sort((a, b) => {
-      if (a.attributes.title === "Home Assistant Core") {
-        return -3;
-      }
-      if (b.attributes.title === "Home Assistant Core") {
-        return 3;
-      }
-      if (a.attributes.title === "Home Assistant Operating System") {
-        return -2;
-      }
-      if (b.attributes.title === "Home Assistant Operating System") {
-        return 2;
-      }
-      if (a.attributes.title === "Home Assistant Supervisor") {
-        return -1;
-      }
-      if (b.attributes.title === "Home Assistant Supervisor") {
-        return 1;
-      }
-      return caseInsensitiveStringCompare(
-        a.attributes.title || a.attributes.friendly_name || "",
-        b.attributes.title || b.attributes.friendly_name || ""
-      );
-    })
-  );
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
-      this._filterUpdateEntities(entities).filter((entity) =>
-        updateCanInstall(entity, showSkipped)
-      )
+      filterUpdateEntitiesWithInstall(entities, showSkipped)
   );
 
   static styles = css`
@@ -269,12 +190,6 @@ class HaConfigSectionUpdates extends LitElement {
       flex-direction: column;
       display: flex;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
-    }
-    .card-actions {
-      height: 48px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .card-content {
