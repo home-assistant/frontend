@@ -1051,9 +1051,6 @@ class HaSidebar extends LitElement {
           padding: 0px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
         }
-        .configuration-badge {
-          background-color: var(--primary-color);
-        }
         ha-svg-icon + .notification-badge,
         ha-svg-icon + .configuration-badge {
           position: absolute;
