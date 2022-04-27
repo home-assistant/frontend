@@ -9,7 +9,11 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-yaml-editor";
-import type { Condition } from "../../../../data/automation";
+import type {
+  Condition,
+  ConditionWithShorthand,
+} from "../../../../data/automation";
+import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-condition-and";
@@ -42,9 +46,20 @@ const OPTIONS = [
 export default class HaAutomationConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: Condition;
-
   @property() public yamlMode = false;
+
+  private _condition!: Condition;
+
+  set condition(val: ConditionWithShorthand) {
+    const oldVal = this._condition;
+    this._condition = expandConditionWithShorthand(val);
+    this.requestUpdate("condition", oldVal);
+  }
+
+  @property()
+  get condition(): Condition {
+    return this._condition;
+  }
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string][] =>

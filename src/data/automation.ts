@@ -264,6 +264,28 @@ export type ConditionWithShorthand =
   | ShorthandOrCondition
   | ShorthandNotCondition;
 
+export const expandConditionWithShorthand = (
+  cond: ConditionWithShorthand
+): Condition => {
+  if ("condition" in cond && typeof cond.condition === "object") {
+    return {
+      condition: "and",
+      conditions: cond.condition,
+    };
+  }
+
+  for (const condition of ["and", "or", "not"]) {
+    if (condition in cond) {
+      return {
+        condition,
+        conditions: cond[condition],
+      } as Condition;
+    }
+  }
+
+  return cond as Condition;
+};
+
 export const triggerAutomationActions = (
   hass: HomeAssistant,
   entityId: string
