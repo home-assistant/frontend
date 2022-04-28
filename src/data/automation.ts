@@ -235,6 +235,10 @@ export interface TriggerCondition extends BaseCondition {
 
 type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
 
+export interface ShorthandAndConditionList extends ShorthandBaseCondition {
+  condition: Condition[];
+}
+
 export interface ShorthandAndCondition extends ShorthandBaseCondition {
   and: Condition[];
 }
@@ -260,6 +264,7 @@ export type Condition =
 
 export type ConditionWithShorthand =
   | Condition
+  | ShorthandAndConditionList
   | ShorthandAndCondition
   | ShorthandOrCondition
   | ShorthandNotCondition;
@@ -267,7 +272,7 @@ export type ConditionWithShorthand =
 export const expandConditionWithShorthand = (
   cond: ConditionWithShorthand
 ): Condition => {
-  if ("condition" in cond && typeof cond.condition === "object") {
+  if ("condition" in cond && Array.isArray(cond.condition)) {
     return {
       condition: "and",
       conditions: cond.condition,
