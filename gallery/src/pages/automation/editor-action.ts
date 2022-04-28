@@ -20,6 +20,7 @@ import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
 import { Action } from "../../../../src/data/script";
 import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
+import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";
 
 const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Event", actions: [HaEventAction.defaultConfig] },
@@ -33,6 +34,7 @@ const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Repeat", actions: [HaRepeatAction.defaultConfig] },
   { name: "Choose", actions: [HaChooseAction.defaultConfig] },
   { name: "Variables", actions: [{ variables: { hello: "1" } }] },
+  { name: "Parallel", actions: [HaParallelAction.defaultConfig] },
 ];
 
 @customElement("demo-automation-editor-action")
