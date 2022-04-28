@@ -8,6 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import { BOARD_NAMES } from "../../../data/hardware";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -56,6 +57,18 @@ class HaConfigHardware extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.hardware.caption")}
       >
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <ha-icon-button
+            .label=${this.hass.localize("common.menu")}
+            .path=${mdiDotsVertical}
+            slot="trigger"
+          ></ha-icon-button>
+          <mwc-list-item @click=${this._openHardware}
+            >${this.hass.localize(
+              "ui.panel.config.hardware.available_hardware.title"
+            )}</mwc-list-item
+          >
+        </ha-button-menu>
         ${this._error
           ? html`
               <ha-alert alert-type="error"
@@ -68,59 +81,47 @@ class HaConfigHardware extends LitElement {
               <div class="content">
                 <ha-card outlined>
                   <div class="card-content">
-                    <ha-settings-row>
-                      <span slot="heading"
-                        >${this.hass.localize(
-                          "ui.panel.config.hardware.board"
-                        )}</span
-                      >
-                      <div slot="description">
-                        <span class="value">${this._OSData.board}</span>
-                      </div>
-                    </ha-settings-row>
+                    ${this._OSData?.board
+                      ? html`
+                          <ha-settings-row>
+                            <span slot="heading"
+                              >${BOARD_NAMES[this._OSData.board] ||
+                              this.hass.localize(
+                                "ui.panel.config.hardware.board"
+                              )}</span
+                            >
+                            <div slot="description">
+                              <span class="value">${this._OSData.board}</span>
+                            </div>
+                          </ha-settings-row>
+                        `
+                      : ""}
                   </div>
                   <div class="card-actions">
-                    <div class="buttons">
-                      ${this._hostData.features.includes("reboot")
-                        ? html`
-                            <ha-progress-button
-                              class="warning"
-                              @click=${this._hostReboot}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.hardware.reboot_host"
-                              )}
-                            </ha-progress-button>
-                          `
-                        : ""}
-                      ${this._hostData.features.includes("shutdown")
-                        ? html`
-                            <ha-progress-button
-                              class="warning"
-                              @click=${this._hostShutdown}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.hardware.shutdown_host"
-                              )}
-                            </ha-progress-button>
-                          `
-                        : ""}
-                    </div>
-                    <ha-button-menu corner="BOTTOM_START">
-                      <ha-icon-button
-                        .label=${this.hass.localize("common.menu")}
-                        .path=${mdiDotsVertical}
-                        slot="trigger"
-                      ></ha-icon-button>
-                      <mwc-list-item
-                        .action=${"hardware"}
-                        @click=${this._openHardware}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.hardware.available_hardware.title"
-                        )}
-                      </mwc-list-item>
-                    </ha-button-menu>
+                    ${this._hostData.features.includes("reboot")
+                      ? html`
+                          <ha-progress-button
+                            class="warning"
+                            @click=${this._hostReboot}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.hardware.reboot_host"
+                            )}
+                          </ha-progress-button>
+                        `
+                      : ""}
+                    ${this._hostData.features.includes("shutdown")
+                      ? html`
+                          <ha-progress-button
+                            class="warning"
+                            @click=${this._hostShutdown}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.hardware.shutdown_host"
+                            )}
+                          </ha-progress-button>
+                        `
+                      : ""}
                   </div>
                 </ha-card>
               </div>
@@ -239,10 +240,6 @@ class HaConfigHardware extends LitElement {
         height: 48px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-      }
-      .buttons {
-        display: flex;
         align-items: center;
       }
     `,
