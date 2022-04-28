@@ -1,3 +1,4 @@
+// Keep in sync with https://github.com/home-assistant/analytics.home-assistant.io/blob/dev/site/src/analytics-os-boards.ts#L6-L24
 export const BOARD_NAMES: Record<string, string> = {
   "odroid-n2": "Home Assistant Blue / ODROID-N2",
   "odroid-xu4": "ODROID-XU4",
