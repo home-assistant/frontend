@@ -39,11 +39,13 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
         ],
       ],
     },
+    { name: "offset", selector: { text: {} } },
   ]);
 
   public static get defaultConfig() {
     return {
       event: "start" as CalendarTrigger["event"],
+      offset: 0,
     };
   }
 
