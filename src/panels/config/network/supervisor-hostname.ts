@@ -111,6 +111,9 @@ export class HassioHostname extends LitElement {
       justify-content: space-between;
       align-items: center;
     }
+    ha-settings-row {
+      border-top: none;
+    }
   `;
 }
 
