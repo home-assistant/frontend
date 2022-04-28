@@ -39,9 +39,9 @@ import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
-const randomTip = (hass: HomeAssistant) => {
+const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
-  const tips = [
+  let tips = [
     {
       content: hass.localize(
         "ui.panel.config.tips.join",
@@ -84,10 +84,15 @@ const randomTip = (hass: HomeAssistant) => {
         </span>`
       ),
       weight: 2,
+      narrow: true,
     },
-    { content: hass.localize("ui.tips.key_c_hint"), weight: 1 },
-    { content: hass.localize("ui.tips.key_m_hint"), weight: 1 },
+    { content: hass.localize("ui.tips.key_c_hint"), weight: 1, narrow: false },
+    { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false },
   ];
+
+  if (narrow) {
+    tips = tips.filter((tip) => tip.narrow);
+  }
 
   tips.forEach((tip) => {
     for (let i = 0; i < tip.weight; i++) {
@@ -215,7 +220,7 @@ class HaConfigDashboard extends LitElement {
     super.updated(changedProps);
 
     if (!this._tip && changedProps.has("hass")) {
-      this._tip = randomTip(this.hass);
+      this._tip = randomTip(this.hass, this.narrow);
     }
   }
 
