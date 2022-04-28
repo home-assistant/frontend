@@ -3164,8 +3164,10 @@
           "supervisor_stats": "Supervisor Stats"
         },
         "system_dashboard": {
-          "confirm_restart": "Are you sure you want to restart Home Assistant?",
+          "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
+          "confirm_restart_title": "Are you sure you want to restart Home Assistant?",
           "restart_homeassistant": "Restart Home Assistant",
+          "restart_homeassistant_short": "Restart",
           "restart_error": "Failed to restart Home Assistant"
         }
       },
@@ -4197,10 +4199,9 @@
               },
               "server_management": {
                 "heading": "Home Assistant",
-                "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
+                "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
+                "confirm_restart_title": "Restart Home Assistant?",
                 "restart": "Restart",
-                "restart_home_assistant": "Restart Home Assistant",
-                "confirm_restart": "Are you sure you want to restart Home Assistant?",
                 "stop": "Stop",
                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
                 "restart_error": "Failed to restart Home Assistant"
