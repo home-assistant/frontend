@@ -33,6 +33,7 @@ import "./types/ha-automation-action-delay";
 import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
 import "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-service";
@@ -54,6 +55,7 @@ const OPTIONS = [
   "if",
   "device_id",
   "stop",
+  "parallel",
 ];
 
 const getType = (action: Action | undefined) => {
