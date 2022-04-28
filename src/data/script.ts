@@ -203,6 +203,10 @@ export interface StopAction extends BaseAction {
   error?: boolean;
 }
 
+export interface ParallelAction extends BaseAction {
+  parallel: Action | Action[];
+}
+
 interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
@@ -222,6 +226,7 @@ export type Action =
   | VariablesAction
   | PlayMediaAction
   | StopAction
+  | ParallelAction
   | UnknownAction;
 
 export interface ActionTypes {
@@ -239,6 +244,7 @@ export interface ActionTypes {
   service: ServiceAction;
   play_media: PlayMediaAction;
   stop: StopAction;
+  parallel: ParallelAction;
   unknown: UnknownAction;
 }
 
@@ -317,6 +323,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("stop" in action) {
     return "stop";
+  }
+  if ("parallel" in action) {
+    return "parallel";
   }
   if ("service" in action) {
     if ("metadata" in action) {
