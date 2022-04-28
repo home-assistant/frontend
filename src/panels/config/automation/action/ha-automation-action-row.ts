@@ -449,8 +449,7 @@ export default class HaAutomationActionRow extends LitElement {
           margin-top: 0;
         }
         .disabled-bar {
-          background: var(--error-color);
-          color: var(--text-primary-color);
+          background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
