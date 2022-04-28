@@ -255,6 +255,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   ],
   general: [
     {
+      path: "/config/general",
+      translationKey: "ui.panel.config.core.caption",
+      iconPath: mdiCog,
+      iconColor: "#653249",
+      core: true,
+    },
+    {
       path: "/config/updates",
       translationKey: "ui.panel.config.updates.caption",
       iconPath: mdiUpdate,
@@ -314,13 +321,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiHeart,
       iconColor: "#507FfE",
       components: ["system_health", "hassio"],
-    },
-    {
-      path: "/config/general",
-      translationKey: "ui.panel.config.core.caption",
-      iconPath: mdiCog,
-      iconColor: "#653249",
-      core: true,
     },
   ],
   about: [
