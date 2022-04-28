@@ -1,6 +1,6 @@
 export const BOARD_NAMES: Record<string, string> = {
   "odroid-n2": "Home Assistant Blue / ODROID N2+",
-  "odroid-xu3": "ODROID-XU4",
+  "odroid-xu4": "ODROID-XU4",
   "odroid-c2": "ODROID-C2",
   "odroid-c4": "ODROID-C4",
   rpi: "Raspberry Pi B/B+/A+",
