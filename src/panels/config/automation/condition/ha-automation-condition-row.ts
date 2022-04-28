@@ -75,54 +75,54 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
             </div>`
           : ""}
+        <div class="card-menu">
+          <ha-progress-button @click=${this._testCondition}>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.test"
+            )}
+          </ha-progress-button>
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            >
+            </ha-icon-button>
+            <mwc-list-item>
+              ${this._yamlMode
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_ui"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.duplicate"
+              )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.condition.enabled === false
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.enable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.disable"
+                  )}
+            </mwc-list-item>
+            <mwc-list-item class="warning">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.delete"
+              )}
+            </mwc-list-item>
+          </ha-button-menu>
+        </div>
         <div
           class="card-content ${this.condition.enabled === false
             ? "disabled"
             : ""}"
         >
-          <div class="card-menu">
-            <ha-progress-button @click=${this._testCondition}>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.test"
-              )}
-            </ha-progress-button>
-            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              >
-              </ha-icon-button>
-              <mwc-list-item>
-                ${this._yamlMode
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.edit_ui"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.edit_yaml"
-                    )}
-              </mwc-list-item>
-              <mwc-list-item>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.duplicate"
-                )}
-              </mwc-list-item>
-              <mwc-list-item>
-                ${this.condition.enabled === false
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.enable"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.disable"
-                    )}
-              </mwc-list-item>
-              <mwc-list-item class="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.delete"
-                )}
-              </mwc-list-item>
-            </ha-button-menu>
-          </div>
           ${this._warnings
             ? html`<ha-alert
                 alert-type="warning"
@@ -275,18 +275,23 @@ export default class HaAutomationConditionRow extends LitElement {
       css`
         .disabled {
           opacity: 0.5;
+          pointer-events: none;
+        }
+        .card-content {
+          padding-top: 16px;
+          margin-top: 0;
         }
         .disabled-bar {
           background: var(--error-color);
           color: var(--text-primary-color);
           text-align: center;
-          margin-bottom: 16px;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
         }
         .card-menu {
           float: right;
           z-index: 3;
+          margin: 4px;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
           display: flex;
           align-items: center;
