@@ -167,8 +167,14 @@ export class DeveloperYamlConfig extends LitElement {
 
   private _restart() {
     showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart_title"
+      ),
       text: this.hass.localize(
-        "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart"
+        "ui.panel.developer-tools.tabs.yaml.section.server_management.confirm_restart_text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
       ),
       confirm: () => {
         this.hass.callService("homeassistant", "restart").catch((reason) => {
