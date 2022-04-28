@@ -110,7 +110,9 @@ class ConfigAnalytics extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-
+        p {
+          margin-top: 0;
+        }
         .card-actions {
           display: flex;
           flex-direction: row-reverse;
