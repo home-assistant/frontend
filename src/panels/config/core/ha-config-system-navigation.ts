@@ -1,5 +1,3 @@
-import { ActionDetail } from "@material/mwc-list";
-import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -44,22 +42,18 @@ class HaConfigSystemNavigation extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
       >
-        <ha-button-menu
-          corner="BOTTOM_START"
-          @action=${this._handleAction}
+        <mwc-button
           slot="toolbar-icon"
-        >
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <mwc-list-item>
-            ${this.hass.localize(
-              "ui.panel.config.system_dashboard.restart_homeassistant"
-            )}
-          </mwc-list-item>
-        </ha-button-menu>
+          class="warning"
+          .label=${this.narrow
+            ? this.hass.localize(
+                "ui.panel.config.system_dashboard.restart_homeassistant_short"
+              )
+            : this.hass.localize(
+                "ui.panel.config.system_dashboard.restart_homeassistant"
+              )}
+          @click=${this._restart}
+        ></mwc-button>
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -77,28 +71,28 @@ class HaConfigSystemNavigation extends LitElement {
     `;
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        showConfirmationDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.system_dashboard.confirm_restart"
-          ),
-          confirm: () => {
-            this.hass
-              .callService("homeassistant", "restart")
-              .catch((reason) => {
-                showAlertDialog(this, {
-                  title: this.hass.localize(
-                    "ui.panel.config.system_dashboard.restart_error"
-                  ),
-                  text: reason.message,
-                });
-              });
-          },
+  private _restart() {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.system_dashboard.confirm_restart_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.system_dashboard.confirm_restart_text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.system_dashboard.restart_homeassistant_short"
+      ),
+      confirm: () => {
+        this.hass.callService("homeassistant", "restart").catch((reason) => {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.system_dashboard.restart_error"
+            ),
+            text: reason.message,
+          });
         });
-        break;
-    }
+      },
+    });
   }
 
   static get styles(): CSSResultGroup {
