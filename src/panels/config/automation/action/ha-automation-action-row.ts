@@ -159,8 +159,15 @@ export default class HaAutomationActionRow extends LitElement {
     const yamlMode = this._yamlMode;
 
     return html`
-      <ha-card class=${this.action.enabled === false ? "disabled" : ""}>
-        <div class="card-content">
+      <ha-card>
+        ${this.action.enabled === false
+          ? html`<div class="disabled-bar">Disabled</div>`
+          : ""}
+        <div
+          class="card-content ${this.action.enabled === false
+            ? "disabled"
+            : ""}"
+        >
           <div class="card-menu">
             ${this.index !== 0
               ? html`
@@ -431,6 +438,13 @@ export default class HaAutomationActionRow extends LitElement {
       css`
         .disabled {
           opacity: 0.5;
+        }
+        .disabled-bar {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
         .card-menu {
           position: absolute;

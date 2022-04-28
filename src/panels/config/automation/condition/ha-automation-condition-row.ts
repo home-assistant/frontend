@@ -67,8 +67,15 @@ export default class HaAutomationConditionRow extends LitElement {
       return html``;
     }
     return html`
-      <ha-card class=${this.condition.enabled === false ? "disabled" : ""}>
-        <div class="card-content">
+      <ha-card>
+        ${this.condition.enabled === false
+          ? html`<div class="disabled-bar">Disabled</div>`
+          : ""}
+        <div
+          class="card-content ${this.condition.enabled === false
+            ? "disabled"
+            : ""}"
+        >
           <div class="card-menu">
             <ha-progress-button @click=${this._testCondition}>
               ${this.hass.localize(
@@ -264,6 +271,13 @@ export default class HaAutomationConditionRow extends LitElement {
       css`
         .disabled {
           opacity: 0.5;
+        }
+        .disabled-bar {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
         .card-menu {
           float: right;

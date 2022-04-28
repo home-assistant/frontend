@@ -127,8 +127,15 @@ export default class HaAutomationTriggerRow extends LitElement {
     const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
-      <ha-card class=${this.trigger.enabled === false ? "disabled" : ""}>
-        <div class="card-content">
+      <ha-card>
+        ${this.trigger.enabled === false
+          ? html`<div class="disabled-bar">Disabled</div>`
+          : ""}
+        <div
+          class="card-content ${this.trigger.enabled === false
+            ? "disabled"
+            : ""}"
+        >
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
               <ha-icon-button
@@ -225,7 +232,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                     `
                   )}
                 </ha-select>
-
                 ${showId
                   ? html`
                       <ha-textfield
@@ -464,6 +470,13 @@ export default class HaAutomationTriggerRow extends LitElement {
       css`
         .disabled {
           opacity: 0.5;
+        }
+        .disabled-bar {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
         .card-menu {
           float: right;
