@@ -280,6 +280,7 @@ export default class HaAutomationConditionRow extends LitElement {
           background: var(--error-color);
           color: var(--text-primary-color);
           text-align: center;
+          margin-bottom: 16px;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
         }
