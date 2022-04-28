@@ -34,6 +34,9 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
   developer_statistics: {
     redirect: "/developer-tools/statistics",
   },
+  server_controls: {
+    redirect: "/developer-tools/yaml",
+  },
   config: {
     redirect: "/config/dashboard",
   },
@@ -129,16 +132,34 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/users",
   },
   general: {
-    redirect: "/config/core",
-  },
-  server_controls: {
-    redirect: "/developer-tools/yaml",
+    redirect: "/config/general",
   },
   logs: {
     redirect: "/config/logs",
   },
   info: {
     redirect: "/config/info",
+  },
+  system_health: {
+    redirect: "/config/system_health",
+  },
+  hardware: {
+    redirect: "/config/hardware",
+  },
+  storage: {
+    redirect: "/config/storage",
+  },
+  network: {
+    redirect: "/config/network",
+  },
+  analytics: {
+    redirect: "/config/analytics",
+  },
+  updates: {
+    redirect: "/config/updates",
+  },
+  system_dashboard: {
+    redirect: "/config/system",
   },
   customize: {
     // customize was removed in 2021.12, fallback to dashboard
