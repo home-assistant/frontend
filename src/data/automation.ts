@@ -65,6 +65,7 @@ export interface BaseTrigger {
   platform: string;
   id?: string;
   variables?: Record<string, unknown>;
+  enabled?: boolean;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -178,6 +179,7 @@ export type Trigger =
 interface BaseCondition {
   condition: string;
   alias?: string;
+  enabled?: boolean;
 }
 
 export interface LogicalCondition extends BaseCondition {

@@ -11,6 +11,7 @@ export interface DeviceAutomation {
   type?: string;
   subtype?: string;
   event?: string;
+  enabled?: boolean;
   metadata?: { secondary: boolean };
 }
 
