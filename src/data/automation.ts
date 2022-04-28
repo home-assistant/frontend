@@ -65,6 +65,7 @@ export interface BaseTrigger {
   platform: string;
   id?: string;
   variables?: Record<string, unknown>;
+  enabled?: boolean;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -178,6 +179,7 @@ export type Trigger =
 interface BaseCondition {
   condition: string;
   alias?: string;
+  enabled?: boolean;
 }
 
 export interface LogicalCondition extends BaseCondition {
@@ -235,6 +237,10 @@ export interface TriggerCondition extends BaseCondition {
 
 type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
 
+export interface ShorthandAndConditionList extends ShorthandBaseCondition {
+  condition: Condition[];
+}
+
 export interface ShorthandAndCondition extends ShorthandBaseCondition {
   and: Condition[];
 }
@@ -260,9 +266,32 @@ export type Condition =
 
 export type ConditionWithShorthand =
   | Condition
+  | ShorthandAndConditionList
   | ShorthandAndCondition
   | ShorthandOrCondition
   | ShorthandNotCondition;
+
+export const expandConditionWithShorthand = (
+  cond: ConditionWithShorthand
+): Condition => {
+  if ("condition" in cond && Array.isArray(cond.condition)) {
+    return {
+      condition: "and",
+      conditions: cond.condition,
+    };
+  }
+
+  for (const condition of ["and", "or", "not"]) {
+    if (condition in cond) {
+      return {
+        condition,
+        conditions: cond[condition],
+      } as Condition;
+    }
+  }
+
+  return cond as Condition;
+};
 
 export const triggerAutomationActions = (
   hass: HomeAssistant,
