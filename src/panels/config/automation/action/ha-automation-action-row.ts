@@ -161,7 +161,11 @@ export default class HaAutomationActionRow extends LitElement {
     return html`
       <ha-card>
         ${this.action.enabled === false
-          ? html`<div class="disabled-bar">Disabled</div>`
+          ? html`<div class="disabled-bar">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.disabled"
+              )}
+            </div>`
           : ""}
         <div
           class="card-content ${this.action.enabled === false

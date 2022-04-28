@@ -1963,6 +1963,7 @@
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "enable": "Enable",
               "disable": "Disable",
+              "disabled": "Disabled",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
               "unsupported_action": "No visual editor support for action: {action}",

@@ -102,7 +102,6 @@ export interface EventAction extends BaseAction {
 }
 
 export interface ServiceAction extends BaseAction {
-  alias?: string;
   service?: string;
   service_template?: string;
   entity_id?: string;
@@ -111,7 +110,6 @@ export interface ServiceAction extends BaseAction {
 }
 
 export interface DeviceAction extends BaseAction {
-  alias?: string;
   type: string;
   device_id: string;
   domain: string;

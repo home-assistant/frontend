@@ -129,7 +129,11 @@ export default class HaAutomationTriggerRow extends LitElement {
     return html`
       <ha-card>
         ${this.trigger.enabled === false
-          ? html`<div class="disabled-bar">Disabled</div>`
+          ? html`<div class="disabled-bar">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.disabled"
+              )}
+            </div>`
           : ""}
         <div
           class="card-content ${this.trigger.enabled === false
