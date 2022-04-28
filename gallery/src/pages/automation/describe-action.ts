@@ -62,6 +62,17 @@ const ACTIONS = [
       entity_id: "input_boolean.toggle_4",
     },
   },
+  {
+    parallel: [
+      { scene: "scene.kitchen_morning" },
+      {
+        service: "media_player.play_media",
+        target: { entity_id: "media_player.living_room" },
+        data: { media_content_id: "", media_content_type: "" },
+        metadata: { title: "Happy Song" },
+      },
+    ],
+  },
 ];
 
 @customElement("demo-automation-describe-action")
