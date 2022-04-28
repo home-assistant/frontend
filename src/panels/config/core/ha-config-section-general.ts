@@ -187,6 +187,7 @@ class HaConfigSectionGeneral extends LitElement {
                   href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
                   target="_blank"
                   rel="noopener noreferrer"
+                  class="find-value"
                   >${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.find_currency_value"
                   )}</a
@@ -344,6 +345,10 @@ class HaConfigSectionGeneral extends LitElement {
       }
       ha-select {
         display: block;
+      }
+      a.find-value {
+        margin-top: 8px;
+        display: inline-block;
       }
       ha-locations-editor {
         display: block;

@@ -12,6 +12,7 @@ export interface DeviceAutomation {
   subtype?: string;
   event?: string;
   enabled?: boolean;
+  metadata?: { secondary: boolean };
 }
 
 export interface DeviceAction extends DeviceAutomation {
@@ -179,4 +180,17 @@ export const localizeDeviceAutomationTrigger = (
     ) ||
     (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!)
   );
+};
+
+export const sortDeviceAutomations = (
+  automationA: DeviceAutomation,
+  automationB: DeviceAutomation
+) => {
+  if (automationA.metadata?.secondary && !automationB.metadata?.secondary) {
+    return 1;
+  }
+  if (!automationA.metadata?.secondary && automationB.metadata?.secondary) {
+    return -1;
+  }
+  return 0;
 };
