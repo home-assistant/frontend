@@ -2,7 +2,7 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
@@ -19,6 +19,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -59,12 +60,14 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   protected render() {
     if (!this.condition) {
       return html``;
     }
     return html`
-      <ha-card>
+      <ha-card class=${this.condition.enabled === false ? "disabled" : ""}>
         <div class="card-content">
           <div class="card-menu">
             <ha-progress-button @click=${this._testCondition}>
@@ -92,6 +95,15 @@ export default class HaAutomationConditionRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
+              </mwc-list-item>
+              <mwc-list-item>
+                ${this.condition.enabled === false
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.enable"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.disable"
+                    )}
               </mwc-list-item>
               <mwc-list-item class="warning">
                 ${this.hass.localize(
@@ -153,8 +165,20 @@ export default class HaAutomationConditionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 2:
+        this._onDisable();
+        break;
+      case 3:
         this._onDelete();
         break;
+    }
+  }
+
+  private _onDisable() {
+    const enabled = !(this.condition.enabled ?? true);
+    const value = { ...this.condition, enabled };
+    fireEvent(this, "value-changed", { value });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
     }
   }
 
@@ -238,6 +262,9 @@ export default class HaAutomationConditionRow extends LitElement {
     return [
       haStyle,
       css`
+        .disabled {
+          opacity: 0.5;
+        }
         .card-menu {
           float: right;
           z-index: 3;

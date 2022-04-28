@@ -159,7 +159,7 @@ export default class HaAutomationActionRow extends LitElement {
     const yamlMode = this._yamlMode;
 
     return html`
-      <ha-card>
+      <ha-card class=${this.action.enabled === false ? "disabled" : ""}>
         <div class="card-content">
           <div class="card-menu">
             ${this.index !== 0
@@ -208,6 +208,15 @@ export default class HaAutomationActionRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
+              </mwc-list-item>
+              <mwc-list-item>
+                ${this.action.enabled === false
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.enable"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.disable"
+                    )}
               </mwc-list-item>
               <mwc-list-item class="warning">
                 ${this.hass.localize(
@@ -314,8 +323,20 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 3:
+        this._onDisable();
+        break;
+      case 4:
         this._onDelete();
         break;
+    }
+  }
+
+  private _onDisable() {
+    const enabled = !(this.action.enabled ?? true);
+    const value = { ...this.action, enabled };
+    fireEvent(this, "value-changed", { value });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
     }
   }
 
@@ -408,6 +429,9 @@ export default class HaAutomationActionRow extends LitElement {
     return [
       haStyle,
       css`
+        .disabled {
+          opacity: 0.5;
+        }
         .card-menu {
           position: absolute;
           right: 16px;

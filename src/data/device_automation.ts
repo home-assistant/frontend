@@ -11,6 +11,7 @@ export interface DeviceAutomation {
   type?: string;
   subtype?: string;
   event?: string;
+  enabled?: boolean;
 }
 
 export interface DeviceAction extends DeviceAutomation {

@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -16,7 +16,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-yaml-editor";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
@@ -104,6 +104,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _triggerColor = false;
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   private _processedTypes = memoizeOne(
@@ -125,7 +127,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
-      <ha-card>
+      <ha-card class=${this.trigger.enabled === false ? "disabled" : ""}>
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
@@ -152,6 +154,15 @@ export default class HaAutomationTriggerRow extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.actions.duplicate"
                 )}
+              </mwc-list-item>
+              <mwc-list-item>
+                ${this.trigger.enabled === false
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.enable"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.disable"
+                    )}
               </mwc-list-item>
               <mwc-list-item class="warning">
                 ${this.hass.localize(
@@ -250,7 +261,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
-  protected override updated(changedProps: PropertyValues): void {
+  protected override updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("trigger")) {
       this._subscribeTrigger();
@@ -347,6 +358,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 3:
+        this._onDisable();
+        break;
+      case 4:
         this._onDelete();
         break;
     }
@@ -363,6 +377,15 @@ export default class HaAutomationTriggerRow extends LitElement {
         fireEvent(this, "value-changed", { value: null });
       },
     });
+  }
+
+  private _onDisable() {
+    const enabled = !(this.trigger.enabled ?? true);
+    const value = { ...this.trigger, enabled };
+    fireEvent(this, "value-changed", { value });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
+    }
   }
 
   private _typeChanged(ev: CustomEvent) {
@@ -439,6 +462,9 @@ export default class HaAutomationTriggerRow extends LitElement {
     return [
       haStyle,
       css`
+        .disabled {
+          opacity: 0.5;
+        }
         .card-menu {
           float: right;
           z-index: 3;
