@@ -3165,7 +3165,7 @@
         },
         "system_dashboard": {
           "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
-          "confirm_restart_title": "Are you sure you want to restart Home Assistant?",
+          "confirm_restart_title": "Restart Home Assistant?",
           "restart_homeassistant": "Restart Home Assistant",
           "restart_homeassistant_short": "Restart",
           "restart_error": "Failed to restart Home Assistant"
