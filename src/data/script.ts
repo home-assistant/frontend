@@ -294,7 +294,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("wait_template" in action) {
     return "wait_template";
   }
-  if ("condition" in action) {
+  if (["condition", "and", "or", "not"].some((key) => key in action)) {
     return "check_condition";
   }
   if ("event" in action) {
