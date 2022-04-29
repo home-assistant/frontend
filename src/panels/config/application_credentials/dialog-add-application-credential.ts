@@ -87,7 +87,7 @@ export class DialogAddApplicationCredential extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -161,9 +161,10 @@ export class DialogAddApplicationCredential extends LitElement {
     `;
   }
 
-  private _close() {
+  public closeDialog() {
     this._params = undefined;
     this._domains = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private async _handleDomainPicked(ev: PolymerChangedEvent<string>) {
@@ -202,7 +203,7 @@ export class DialogAddApplicationCredential extends LitElement {
       return;
     }
     this._params!.applicationCredentialAddedCallback(applicationCredential);
-    this._close();
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
