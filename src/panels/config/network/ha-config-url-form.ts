@@ -252,6 +252,8 @@ class ConfigUrlForm extends LitElement {
         this._cloudStatus = cloudStatus;
         if (cloudStatus.logged_in) {
           this._showCustomExternalUrl = this._externalUrlValue !== null;
+        } else {
+          this._showCustomExternalUrl = true;
         }
       });
     } else {
