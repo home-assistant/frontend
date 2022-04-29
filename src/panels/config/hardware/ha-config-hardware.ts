@@ -59,7 +59,7 @@ class HaConfigHardware extends LitElement {
       >
         <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
           <ha-icon-button
-            .label=${this.hass.localize("common.menu")}
+            .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
