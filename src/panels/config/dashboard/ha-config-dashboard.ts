@@ -195,11 +195,6 @@ class HaConfigDashboard extends LitElement {
               </ha-card>`
             : ""}
           <ha-card outlined>
-            ${this.narrow && canInstallUpdates.length
-              ? html`<div class="title">
-                  ${this.hass.localize("panel.config")}
-                </div>`
-              : ""}
             <ha-config-navigation
               .hass=${this.hass}
               .narrow=${this.narrow}
