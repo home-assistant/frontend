@@ -9,11 +9,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
-import "../../../components/ha-textfield";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-textfield";
 import {
   fetchApplicationCredentialsConfig,
   createApplicationCredential,
@@ -174,10 +175,11 @@ export class DialogAddApplicationCredential extends LitElement {
     }
   }
 
-  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
+  private _handleValueChanged(ev: CustomEvent) {
     this._error = undefined;
     const name = (ev.target as any).name;
-    this[`_${name}`] = ev.detail.value;
+    const value = (ev.target as any).value;
+    this[`_${name}`] = value;
   }
 
   private async _createApplicationCredential(ev) {
@@ -217,6 +219,14 @@ export class DialogAddApplicationCredential extends LitElement {
         .row {
           display: flex;
           padding: 8px 0;
+        }
+        ha-combo-box {
+          display: block;
+          margin-bottom: 24px;
+        }
+        ha-textfield {
+          display: block;
+          margin-bottom: 24px;
         }
       `,
     ];
