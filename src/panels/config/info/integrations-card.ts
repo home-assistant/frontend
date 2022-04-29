@@ -108,7 +108,9 @@ class IntegrationsCard extends LitElement {
 
   private async _fetchSetups() {
     const setups = await fetchIntegrationSetups(this.hass);
-    this._setups = setups.filter((setup) => setup.seconds && setup.seconds > 1);
+    this._setups = setups
+      .filter((setup) => setup.seconds && setup.seconds > 1)
+      .sort((a, b) => b.seconds! - a.seconds!);
   }
 
   private _entryClicked(ev) {
