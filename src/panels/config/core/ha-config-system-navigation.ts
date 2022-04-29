@@ -126,13 +126,15 @@ class HaConfigSystemNavigation extends LitElement {
           padding-bottom: 0;
         }
 
-        :host([narrow]) ha-card {
-          border-radius: 0;
-          box-shadow: unset;
-        }
-
-        :host([narrow]) ha-config-section {
-          margin-top: -42px;
+        @media all and (max-width: 600px) {
+          ha-card {
+            border-width: 1px 0;
+            border-radius: 0;
+            box-shadow: unset;
+          }
+          ha-config-section {
+            margin-top: -42px;
+          }
         }
 
         ha-navigation-list {
