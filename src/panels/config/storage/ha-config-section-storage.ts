@@ -46,7 +46,7 @@ class HaConfigSectionStorage extends LitElement {
               <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
                 <ha-icon-button
                   slot="trigger"
-                  .label=${this.hass.localize("ui.common.overflow")}
+                  .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
                 <mwc-list-item @click=${this._moveDatadisk}>
