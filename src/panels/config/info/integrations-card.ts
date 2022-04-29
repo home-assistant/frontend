@@ -108,9 +108,18 @@ class IntegrationsCard extends LitElement {
 
   private async _fetchSetups() {
     const setups = await fetchIntegrationSetups(this.hass);
-    this._setups = setups
-      .filter((setup) => setup.seconds && setup.seconds > 1)
-      .sort((a, b) => b.seconds! - a.seconds!);
+    this._setups = setups.sort((a, b) => {
+      if (a.seconds === b.seconds) {
+        return 0;
+      }
+      if (a.seconds === undefined) {
+        return 1;
+      }
+      if (b.seconds === undefined) {
+        return 1;
+      }
+      return b.seconds - a.seconds;
+    });
   }
 
   private _entryClicked(ev) {
