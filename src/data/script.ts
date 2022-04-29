@@ -18,7 +18,13 @@ import {
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
-import { Condition, Trigger } from "./automation";
+import {
+  Condition,
+  ShorthandAndCondition,
+  ShorthandNotCondition,
+  ShorthandOrCondition,
+  Trigger,
+} from "./automation";
 import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
@@ -216,6 +222,9 @@ export type Action =
   | DeviceAction
   | ServiceAction
   | Condition
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition
   | DelayAction
   | SceneAction
   | WaitAction
