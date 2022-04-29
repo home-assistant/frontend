@@ -73,6 +73,14 @@ const ACTIONS = [
       },
     ],
   },
+  {
+    stop: "No one is home!",
+  },
+  { repeat: { count: 3, sequence: [{ delay: "00:00:01" }] } },
+  {
+    if: [{ condition: "state" }],
+    then: [{ delay: "00:00:01" }],
+  },
 ];
 
 @customElement("demo-automation-describe-action")
