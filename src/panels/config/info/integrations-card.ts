@@ -1,16 +1,23 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
+import "../../../components/ha-clickable-list-item";
 import {
   domainToName,
   fetchIntegrationManifests,
   fetchIntegrationSetups,
-  integrationIssuesUrl,
   IntegrationManifest,
   IntegrationSetup,
 } from "../../../data/integration";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 
@@ -24,120 +31,69 @@ class IntegrationsCard extends LitElement {
     [domain: string]: IntegrationManifest;
   };
 
-  @state() private _setups?: {
-    [domain: string]: IntegrationSetup;
-  };
+  @state() private _setups?: IntegrationSetup[];
 
-  private _sortedIntegrations = memoizeOne((components: string[]) =>
-    Array.from(
-      new Set(
-        components.map((comp) =>
-          comp.includes(".") ? comp.split(".")[1] : comp
-        )
-      )
-    ).sort()
-  );
-
-  firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchManifests();
     this._fetchSetups();
   }
 
   protected render(): TemplateResult {
+    if (!this._setups) {
+      return html``;
+    }
+
     return html`
       <ha-card
-        .header=${this.hass.localize("ui.panel.config.info.integrations")}
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.system_health.long_loading_integrations"
+        )}
       >
-        <table class="card-content">
-          <thead>
-            <tr>
-              <th></th>
-              ${!this.narrow
-                ? html`<th></th>
-                    <th></th>
-                    <th></th>`
-                : ""}
-              <th>${this.hass.localize("ui.panel.config.info.setup_time")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${this._sortedIntegrations(this.hass!.config.components).map(
-              (domain) => {
-                const manifest = this._manifests && this._manifests[domain];
-                const docLink = manifest
-                  ? html`<a
-                      href=${manifest.is_built_in
-                        ? documentationUrl(
-                            this.hass,
-                            `/integrations/${manifest.domain}`
-                          )
-                        : manifest.documentation}
-                      target="_blank"
-                      rel="noreferrer"
-                      >${this.hass.localize(
-                        "ui.panel.config.info.documentation"
-                      )}</a
-                    >`
-                  : "";
-                const issueLink =
-                  manifest && (manifest.is_built_in || manifest.issue_tracker)
-                    ? html`
-                        <a
-                          href=${integrationIssuesUrl(domain, manifest)}
-                          target="_blank"
-                          rel="noreferrer"
-                          >${this.hass.localize(
-                            "ui.panel.config.info.issues"
-                          )}</a
-                        >
-                      `
-                    : "";
-                const setupSeconds =
-                  this._setups?.[domain]?.seconds?.toFixed(2);
-                return html`
-                  <tr>
-                    <td>
-                      <img
-                        loading="lazy"
-                        src=${brandsUrl({
-                          domain: domain,
-                          type: "icon",
-                          useFallback: true,
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
-                        referrerpolicy="no-referrer"
-                      />
-                    </td>
-                    <td class="name">
-                      ${domainToName(
-                        this.hass.localize,
-                        domain,
-                        manifest
-                      )}<br />
-                      <span class="domain">${domain}</span>
-                      ${this.narrow
-                        ? html`<div class="mobile-row">
-                            <div>${docLink} ${issueLink}</div>
-                            ${setupSeconds ? html`${setupSeconds} s` : ""}
-                          </div>`
-                        : ""}
-                    </td>
-                    ${this.narrow
-                      ? ""
-                      : html`
-                          <td>${docLink}</td>
-                          <td>${issueLink}</td>
-                          <td class="setup">
-                            ${setupSeconds ? html`${setupSeconds} s` : ""}
-                          </td>
-                        `}
-                  </tr>
-                `;
-              }
-            )}
-          </tbody>
-        </table>
+        <mwc-list>
+          ${this._setups?.map((setup) => {
+            const manifest = this._manifests && this._manifests[setup.domain];
+            const docLink = manifest
+              ? manifest.is_built_in
+                ? documentationUrl(
+                    this.hass,
+                    `/integrations/${manifest.domain}`
+                  )
+                : manifest.documentation
+              : "";
+
+            const setupSeconds = setup.seconds?.toFixed(2);
+            return html`
+              <ha-clickable-list-item
+                graphic="avatar"
+                twoline
+                hasMeta
+                @click=${this._entryClicked}
+                href=${docLink}
+              >
+                <img
+                  loading="lazy"
+                  src=${brandsUrl({
+                    domain: setup.domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  referrerpolicy="no-referrer"
+                  slot="graphic"
+                />
+                <span>
+                  ${domainToName(this.hass.localize, setup.domain, manifest)}
+                </span>
+                <span slot="secondary">${setup.domain}</span>
+                <div slot="meta">
+                  ${setupSeconds ? html`${setupSeconds} s` : ""}
+                </div>
+              </ha-clickable-list-item>
+            `;
+          })}
+        </mwc-list>
       </ha-card>
     `;
   }
@@ -151,53 +107,35 @@ class IntegrationsCard extends LitElement {
   }
 
   private async _fetchSetups() {
-    const setups = {};
-    for (const setup of await fetchIntegrationSetups(this.hass)) {
-      setups[setup.domain] = setup;
-    }
-    this._setups = setups;
+    const setups = await fetchIntegrationSetups(this.hass);
+    this._setups = setups.sort((a, b) => {
+      if (a.seconds === b.seconds) {
+        return 0;
+      }
+      if (a.seconds === undefined) {
+        return 1;
+      }
+      if (b.seconds === undefined) {
+        return 1;
+      }
+      return b.seconds - a.seconds;
+    });
+  }
+
+  private _entryClicked(ev) {
+    ev.currentTarget.blur();
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      table {
-        width: 100%;
-      }
-      td,
-      th {
-        padding: 0 8px;
-      }
-      td:first-child {
-        padding-left: 0;
-      }
-      td.name {
-        padding: 8px;
-      }
-      td.setup {
-        text-align: right;
-        white-space: nowrap;
-        direction: ltr;
-      }
-      th {
-        text-align: right;
-      }
-      .domain {
-        color: var(--secondary-text-color);
-      }
-      .mobile-row {
-        display: flex;
-        justify-content: space-between;
-      }
-      .mobile-row a:not(:last-of-type) {
-        margin-right: 4px;
+      ha-clickable-list-item {
+        --mdc-list-item-meta-size: 48px;
+        --mdc-typography-caption-font-size: 12px;
       }
       img {
         display: block;
         max-height: 40px;
         max-width: 40px;
-      }
-      a {
-        color: var(--primary-color);
       }
     `;
   }
