@@ -16,6 +16,7 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/media-player/ha-media-player-browse";
 import "../../components/media-player/ha-media-manage-button";
 import type {
@@ -85,10 +86,10 @@ class PanelMediaBrowser extends LitElement {
           <app-toolbar>
             ${this._navigateIds.length > 1
               ? html`
-                  <ha-icon-button
+                  <ha-icon-button-arrow-prev
                     .path=${mdiArrowLeft}
                     @click=${this._goBack}
-                  ></ha-icon-button>
+                  ></ha-icon-button-arrow-prev>
                 `
               : html`
                   <ha-menu-button
