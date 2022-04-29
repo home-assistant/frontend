@@ -55,6 +55,7 @@ export class HaClickableListItem extends ListItemBase {
           align-items: center;
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
+          overflow: hidden;
         }
       `,
     ];

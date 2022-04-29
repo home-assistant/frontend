@@ -59,13 +59,6 @@ class HaNavigationList extends LitElement {
     :host {
       --mdc-list-vertical-padding: 0;
     }
-    a {
-      text-decoration: none;
-      color: var(--primary-text-color);
-      position: relative;
-      display: block;
-      outline: 0;
-    }
     ha-svg-icon,
     ha-icon-next {
       color: var(--secondary-text-color);
