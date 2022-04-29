@@ -76,13 +76,13 @@ class HaConfigHardware extends LitElement {
               >
             `
           : ""}
-        ${this._OSData && this._hostData
+        ${this._OSData || this._hostData
           ? html`
               <div class="content">
                 <ha-card outlined>
-                  <div class="card-content">
-                    ${this._OSData?.board
-                      ? html`
+                  ${this._OSData?.board
+                    ? html`
+                        <div class="card-content">
                           <ha-settings-row>
                             <span slot="heading"
                               >${BOARD_NAMES[this._OSData.board] ||
@@ -94,35 +94,39 @@ class HaConfigHardware extends LitElement {
                               <span class="value">${this._OSData.board}</span>
                             </div>
                           </ha-settings-row>
-                        `
-                      : ""}
-                  </div>
-                  <div class="card-actions">
-                    ${this._hostData.features.includes("reboot")
-                      ? html`
-                          <ha-progress-button
-                            class="warning"
-                            @click=${this._hostReboot}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.hardware.reboot_host"
-                            )}
-                          </ha-progress-button>
-                        `
-                      : ""}
-                    ${this._hostData.features.includes("shutdown")
-                      ? html`
-                          <ha-progress-button
-                            class="warning"
-                            @click=${this._hostShutdown}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.hardware.shutdown_host"
-                            )}
-                          </ha-progress-button>
-                        `
-                      : ""}
-                  </div>
+                        </div>
+                      `
+                    : ""}
+                  ${this._hostData
+                    ? html`
+                        <div class="card-actions">
+                          ${this._hostData.features.includes("reboot")
+                            ? html`
+                                <ha-progress-button
+                                  class="warning"
+                                  @click=${this._hostReboot}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.hardware.reboot_host"
+                                  )}
+                                </ha-progress-button>
+                              `
+                            : ""}
+                          ${this._hostData.features.includes("shutdown")
+                            ? html`
+                                <ha-progress-button
+                                  class="warning"
+                                  @click=${this._hostShutdown}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.hardware.shutdown_host"
+                                  )}
+                                </ha-progress-button>
+                              `
+                            : ""}
+                        </div>
+                      `
+                    : ""}
                 </ha-card>
               </div>
             `
