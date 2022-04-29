@@ -65,6 +65,9 @@ const getType = (action: Action | undefined) => {
   if ("service" in action || "scene" in action) {
     return getActionType(action);
   }
+  if (["and", "or", "not"].some((key) => key in action)) {
+    return "condition";
+  }
   return OPTIONS.find((option) => option in action);
 };
 
