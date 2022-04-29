@@ -3,12 +3,12 @@ import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-logo-svg";
 import {
-  fetchHassioHostInfo,
   fetchHassioHassOsInfo,
+  fetchHassioHostInfo,
   HassioHassOSInfo,
   HassioHostInfo,
 } from "../../../data/hassio/host";
-import { HassioInfo, fetchHassioInfo } from "../../../data/hassio/supervisor";
+import { fetchHassioInfo, HassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -152,12 +152,6 @@ class HaConfigInfo extends LitElement {
                 `
               : ""}
           </p>
-        </div>
-        <div>
-          <integrations-card
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></integrations-card>
         </div>
       </hass-subpage>
     `;

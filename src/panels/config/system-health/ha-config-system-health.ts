@@ -30,6 +30,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
+import "../info/integrations-card";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
@@ -317,6 +318,11 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
                   </div>
                 </ha-card>
               `}
+
+          <integrations-card
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></integrations-card>
         </div>
       </hass-subpage>
     `;
@@ -450,12 +456,20 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
       max-width: 1040px;
       margin: 0 auto;
     }
+    integrations-card {
+      max-width: 600px;
+      display: block;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-bottom: 24px;
+      margin-bottom: max(24px, env(safe-area-inset-bottom));
+    }
     ha-card {
       display: block;
       max-width: 600px;
       margin: 0 auto;
       padding-bottom: 16px;
-      margin-bottom: max(24px, env(safe-area-inset-bottom));
+      margin-bottom: 24px;
     }
     ha-alert {
       display: block;
