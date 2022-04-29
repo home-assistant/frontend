@@ -44,14 +44,9 @@ class HaConfigSystemNavigation extends LitElement {
       >
         <mwc-button
           slot="toolbar-icon"
-          class="warning"
-          .label=${this.narrow
-            ? this.hass.localize(
-                "ui.panel.config.system_dashboard.restart_homeassistant_short"
-              )
-            : this.hass.localize(
-                "ui.panel.config.system_dashboard.restart_homeassistant"
-              )}
+          .label=${this.hass.localize(
+            "ui.panel.config.system_dashboard.restart_homeassistant_short"
+          )}
           @click=${this._restart}
         ></mwc-button>
         <ha-config-section
