@@ -1,7 +1,11 @@
 import {
   mdiAbTesting,
+  mdiAlertOctagon,
+  mdiArrowDecision,
   mdiArrowUp,
   mdiAsterisk,
+  mdiCallMissed,
+  mdiCallReceived,
   mdiCallSplit,
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
@@ -9,10 +13,12 @@ import {
   mdiChevronRight,
   mdiChevronUp,
   mdiClose,
+  mdiCloseOctagon,
   mdiCodeBrackets,
   mdiDevices,
   mdiExclamation,
   mdiRefresh,
+  mdiShuffleDisabled,
   mdiTimerOutline,
   mdiTrafficLight,
 } from "@mdi/js";
@@ -27,6 +33,8 @@ import {
   DelayAction,
   DeviceAction,
   EventAction,
+  IfAction,
+  ParallelAction,
   RepeatAction,
   SceneAction,
   ServiceAction,
@@ -36,6 +44,8 @@ import {
 import {
   ChooseActionTraceStep,
   ConditionTraceStep,
+  IfActionTraceStep,
+  StopActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
 import "../ha-icon-button";
@@ -110,6 +120,9 @@ export class HatScriptGraph extends LitElement {
     repeat: this.render_repeat_node,
     choose: this.render_choose_node,
     device_id: this.render_device_node,
+    if: this.render_if_node,
+    stop: this.render_stop_node,
+    parallel: this.render_parallel_node,
     other: this.render_other_node,
   };
 
@@ -146,7 +159,7 @@ export class HatScriptGraph extends LitElement {
       >
         <hat-graph-node
           .graphStart=${graphStart}
-          .iconPath=${mdiCallSplit}
+          .iconPath=${mdiArrowDecision}
           ?track=${trace !== undefined}
           ?active=${this.selected === path}
           slot="head"
@@ -191,6 +204,54 @@ export class HatScriptGraph extends LitElement {
                 this.render_action_node(action, `${path}/default/${i}`)
               )
             : ""}
+        </div>
+      </hat-graph-branch>
+    `;
+  }
+
+  private render_if_node(config: IfAction, path: string, graphStart = false) {
+    const trace = this.trace.trace[path] as IfActionTraceStep[] | undefined;
+    const result = trace?.[0].result?.choice;
+    return html`
+      <hat-graph-branch
+        tabindex=${trace === undefined ? "-1" : "0"}
+        @focus=${this.selectNode(config, path)}
+        ?track=${trace !== undefined}
+        ?active=${this.selected === path}
+      >
+        <hat-graph-node
+          .graphStart=${graphStart}
+          .iconPath=${mdiCallSplit}
+          ?track=${trace !== undefined}
+          ?active=${this.selected === path}
+          slot="head"
+          nofocus
+        ></hat-graph-node>
+        ${config.else
+          ? html`<div class="graph-container" ?track=${result === "else"}>
+              <hat-graph-node
+                .iconPath=${mdiCallMissed}
+                ?track=${result === "else"}
+                ?active=${this.selected === path}
+                nofocus
+              ></hat-graph-node
+              >${ensureArray(config.else).map((action, j) =>
+                this.render_action_node(action, `${path}/else/${j}`)
+              )}
+            </div>`
+          : html`<hat-graph-spacer
+              ?track=${result === "else" || result === undefined}
+            ></hat-graph-spacer>`}
+        <div class="graph-container" ?track=${result === "then"}>
+          <hat-graph-node
+            .iconPath=${mdiCallReceived}
+            ?track=${result === "then"}
+            ?active=${this.selected === path}
+            nofocus
+          ></hat-graph-node>
+          ${ensureArray(config.then).map((action, j) =>
+            this.render_action_node(action, `${path}/then/${j}`)
+          )}
         </div>
       </hat-graph-branch>
     `;
@@ -388,6 +449,49 @@ export class HatScriptGraph extends LitElement {
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
+      ></hat-graph-node>
+    `;
+  }
+
+  private render_parallel_node(
+    node: ParallelAction,
+    path: string,
+    graphStart = false
+  ) {
+    const trace: any = this.trace.trace[path];
+    return html`
+      <hat-graph-branch
+        tabindex=${trace === undefined ? "-1" : "0"}
+        @focus=${this.selectNode(node, path)}
+        ?track=${path in this.trace.trace}
+        ?active=${this.selected === path}
+      >
+        <hat-graph-node
+          .graphStart=${graphStart}
+          .iconPath=${mdiShuffleDisabled}
+          ?track=${path in this.trace.trace}
+          ?active=${this.selected === path}
+          slot="head"
+          nofocus
+        ></hat-graph-node>
+        ${ensureArray(node.parallel).map((action, i) =>
+          this.render_action_node(action, `${path}/parallel/${i}/0`)
+        )}
+      </hat-graph-branch>
+    `;
+  }
+
+  private render_stop_node(node: Action, path: string, graphStart = false) {
+    const trace = this.trace.trace[path] as StopActionTraceStep[] | undefined;
+    return html`
+      <hat-graph-node
+        .graphStart=${graphStart}
+        .iconPath=${trace?.[0].result?.error
+          ? mdiAlertOctagon
+          : mdiCloseOctagon}
+        @focus=${this.selectNode(node, path)}
+        ?track=${path in this.trace.trace}
+        ?active=${this.selected === path}
       ></hat-graph-node>
     `;
   }
