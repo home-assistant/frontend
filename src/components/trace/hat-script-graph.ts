@@ -18,6 +18,7 @@ import {
   mdiDevices,
   mdiExclamation,
   mdiRefresh,
+  mdiShuffleDisabled,
   mdiTimerOutline,
   mdiTrafficLight,
 } from "@mdi/js";
@@ -33,6 +34,7 @@ import {
   DeviceAction,
   EventAction,
   IfAction,
+  ParallelAction,
   RepeatAction,
   SceneAction,
   ServiceAction,
@@ -120,6 +122,7 @@ export class HatScriptGraph extends LitElement {
     device_id: this.render_device_node,
     if: this.render_if_node,
     stop: this.render_stop_node,
+    parallel: this.render_parallel_node,
     other: this.render_other_node,
   };
 
@@ -447,6 +450,34 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
       ></hat-graph-node>
+    `;
+  }
+
+  private render_parallel_node(
+    node: ParallelAction,
+    path: string,
+    graphStart = false
+  ) {
+    const trace: any = this.trace.trace[path];
+    return html`
+      <hat-graph-branch
+        tabindex=${trace === undefined ? "-1" : "0"}
+        @focus=${this.selectNode(node, path)}
+        ?track=${path in this.trace.trace}
+        ?active=${this.selected === path}
+      >
+        <hat-graph-node
+          .graphStart=${graphStart}
+          .iconPath=${mdiShuffleDisabled}
+          ?track=${path in this.trace.trace}
+          ?active=${this.selected === path}
+          slot="head"
+          nofocus
+        ></hat-graph-node>
+        ${ensureArray(node.parallel).map((action, i) =>
+          this.render_action_node(action, `${path}/parallel/${i}/0`)
+        )}
+      </hat-graph-branch>
     `;
   }
 
