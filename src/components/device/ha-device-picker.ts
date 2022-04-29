@@ -198,9 +198,10 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
           this.hass,
           deviceEntityLookup[device.id]
         ),
-        area: device.area_id
-          ? areaLookup[device.area_id].name
-          : this.hass.localize("ui.components.device-picker.no_area"),
+        area:
+          device.area_id && areaLookup[device.area_id]
+            ? areaLookup[device.area_id].name
+            : this.hass.localize("ui.components.device-picker.no_area"),
       }));
       if (!outputDevices.length) {
         return [

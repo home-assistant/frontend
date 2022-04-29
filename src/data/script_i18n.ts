@@ -169,5 +169,9 @@ export const describeAction = <T extends ActionType>(
     }`;
   }
 
+  if (actionType === "parallel") {
+    return "Run in parallel";
+  }
+
   return actionType;
 };

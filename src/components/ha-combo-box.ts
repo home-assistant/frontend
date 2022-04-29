@@ -250,6 +250,18 @@ export class HaComboBox extends LitElement {
         top: -7px;
         right: 36px;
       }
+
+      :host-context([style*="direction: rtl;"]) .toggle-button {
+        left: 12px;
+        right: auto;
+        top: -10px;
+      }
+      :host-context([style*="direction: rtl;"]) .clear-button {
+        --mdc-icon-size: 20px;
+        top: -7px;
+        left: 36px;
+        right: auto;
+      }
     `;
   }
 }

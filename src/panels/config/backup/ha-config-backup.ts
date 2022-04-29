@@ -34,7 +34,6 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-backup")
 class HaConfigBackup extends LitElement {
@@ -81,6 +80,7 @@ class HaConfigBackup extends LitElement {
       actions: {
         title: "",
         width: "15%",
+        type: "overflow-menu",
         template: (_: string, backup: BackupContent) =>
           html`<ha-icon-overflow-menu
             .hass=${this.hass}
@@ -127,14 +127,22 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
+        .tabs=${[
+          {
+            translationKey: "ui.panel.config.backup.caption",
+            path: `/config/backup`,
+          },
+        ]}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/system"
         .route=${this.route}
-        .tabs=${configSections.backup}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._backupData.backups)}
-        .noDataText=${this.hass.localize("ui.panel.config.backup.no_bakcups")}
+        .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.backup.picker.search"
+        )}
       >
         <ha-fab
           slot="fab"

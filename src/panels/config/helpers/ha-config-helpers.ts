@@ -6,21 +6,29 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { extractSearchParam } from "../../../common/url/search-params";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
-import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import { getConfigFlowHandlers } from "../../../data/config_flow";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -29,14 +37,6 @@ import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { navigate } from "../../../common/navigate";
-import { extractSearchParam } from "../../../common/url/search-params";
-import { getConfigFlowHandlers } from "../../../data/config_flow";
-import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
 
 // This groups items by a key but only returns last entry per key.
 const groupByOne = <T>(
@@ -196,7 +196,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.automations}
+        .tabs=${configSections.devices}
         .columns=${this._columns(this.narrow, this.hass.localize)}
         .data=${this._getItems(
           this._stateItems,

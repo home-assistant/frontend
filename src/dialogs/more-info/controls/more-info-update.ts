@@ -21,6 +21,7 @@ import {
   UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
+import { BINARY_STATE_OFF } from "../../../common/const";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -129,11 +130,20 @@ class MoreInfoUpdate extends LitElement {
       <div class="actions">
         ${this.stateObj.attributes.auto_update
           ? ""
+          : this.stateObj.state === BINARY_STATE_OFF &&
+            this.stateObj.attributes.skipped_version
+          ? html`
+              <mwc-button @click=${this._handleClearSkipped}>
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.update.clear_skipped"
+                )}
+              </mwc-button>
+            `
           : html`
               <mwc-button
                 @click=${this._handleSkip}
                 .disabled=${skippedVersion ||
-                this.stateObj.state === "off" ||
+                this.stateObj.state === BINARY_STATE_OFF ||
                 updateIsInstalling(this.stateObj)}
               >
                 ${this.hass.localize(
@@ -145,7 +155,7 @@ class MoreInfoUpdate extends LitElement {
           ? html`
               <mwc-button
                 @click=${this._handleInstall}
-                .disabled=${(this.stateObj.state === "off" &&
+                .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
                   !skippedVersion) ||
                 updateIsInstalling(this.stateObj)}
               >
@@ -203,6 +213,12 @@ class MoreInfoUpdate extends LitElement {
 
   private _handleSkip(): void {
     this.hass.callService("update", "skip", {
+      entity_id: this.stateObj!.entity_id,
+    });
+  }
+
+  private _handleClearSkipped(): void {
+    this.hass.callService("update", "clear_skipped", {
       entity_id: this.stateObj!.entity_id,
     });
   }
