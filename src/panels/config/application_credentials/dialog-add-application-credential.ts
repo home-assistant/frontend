@@ -5,7 +5,6 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -62,15 +61,6 @@ export class DialogAddApplicationCredential extends LitElement {
     this._error = undefined;
     this._loading = false;
     this._fetchConfig();
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues) {
-    super.firstUpdated(changedProperties);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._createApplicationCredential(ev);
-      }
-    });
   }
 
   private async _fetchConfig() {
