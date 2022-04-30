@@ -42,6 +42,9 @@ export const REDIRECTS: Redirects = {
     params: {
       addon: "string",
     },
+    optional_params: {
+      repository_url: "url",
+    },
   },
   supervisor_ingress: {
     redirect: "/hassio/ingress",
@@ -123,6 +126,14 @@ class HassioMyRedirect extends LitElement {
         throw Error();
       }
       resultParams[key] = params[key];
+    });
+    Object.entries(redirect.optional_params || {}).forEach(([key, type]) => {
+      if (params[key]) {
+        if (!this._checkParamType(type, params[key])) {
+          throw Error();
+        }
+        resultParams[key] = params[key];
+      }
     });
     return `?${createSearchParam(resultParams)}`;
   }
