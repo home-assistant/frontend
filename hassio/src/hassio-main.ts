@@ -74,7 +74,11 @@ export class HassioMain extends SupervisorBaseElement {
     });
 
     // Forward keydown events to the main window for quickbar access
-    document.body.addEventListener("keydown", (ev) => {
+    document.body.addEventListener("keydown", (ev: KeyboardEvent) => {
+      if (ev.altKey || ev.ctrlKey || ev.shiftKey || ev.metaKey) {
+        // Ignore if modifier keys are pressed
+        return;
+      }
       // @ts-ignore
       fireEvent(mainWindow, "hass-quick-bar-trigger", ev, {
         bubbles: false,
