@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
+import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -8,10 +9,12 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/ha-button-menu";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
@@ -55,6 +58,7 @@ class HaInputSelectForm extends LitElement {
       return html``;
     }
     const nameInvalid = !this._name || this._name.trim() === "";
+    const hasOptions = this._options.length > 0;
 
     return html`
       <div class="form">
@@ -80,11 +84,33 @@ class HaInputSelectForm extends LitElement {
           )}
         ></ha-icon-picker>
         <div class="header">
-          ${this.hass!.localize(
-            "ui.dialogs.helper_settings.input_select.options"
-          )}:
+          <h4>
+            ${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_select.options"
+            )}:
+          </h4>
+          <div class="card-menu">
+            <ha-button-menu
+              menuCorner="END"
+              @action=${this._handleAction}
+              .disabled=${!hasOptions}
+              absolute
+            >
+              <ha-icon-button
+                .label=${this.hass!.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                .disabled=${!hasOptions}
+                slot="trigger"
+              ></ha-icon-button>
+              <mwc-list-item .disabled=${!hasOptions}>
+                ${this.hass!.localize(
+                  "ui.dialogs.helper_settings.input_select.copy_options"
+                )}
+              </mwc-list-item>
+            </ha-button-menu>
+          </div>
         </div>
-        ${this._options.length
+        ${hasOptions
           ? this._options.map(
               (option, index) => html`
                 <mwc-list-item class="option" hasMeta>
@@ -133,6 +159,15 @@ class HaInputSelectForm extends LitElement {
       return;
     }
     this._addOption();
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    ev.stopPropagation();
+    switch (ev.detail.index) {
+      case 0:
+        copyToClipboard(this._options.join("\n"));
+        break;
+    }
   }
 
   private _addOption() {
@@ -209,8 +244,14 @@ class HaInputSelectForm extends LitElement {
           margin-top: 8px;
         }
         .header {
-          margin-top: 8px;
-          margin-bottom: 8px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+        h4 {
+          margin-top: 0;
+          margin-bottom: 0;
         }
       `,
     ];
