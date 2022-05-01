@@ -111,6 +111,9 @@ export class HatScriptGraph extends LitElement {
 
   private typeRenderers = {
     condition: this.render_condition_node,
+    and: this.render_condition_node,
+    or: this.render_condition_node,
+    not: this.render_condition_node,
     delay: this.render_delay_node,
     event: this.render_event_node,
     scene: this.render_scene_node,
