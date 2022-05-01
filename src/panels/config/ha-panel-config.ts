@@ -93,7 +93,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/person",
       translationKey: "people",
       iconPath: mdiAccount,
-      iconColor: "#832EA6",
+      iconColor: "#5A87FA",
       components: ["person", "users"],
     },
     {
