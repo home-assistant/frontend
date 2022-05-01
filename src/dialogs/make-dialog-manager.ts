@@ -1,8 +1,8 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
-import { HaButtonMenu } from "../components/ha-button-menu";
-import { HaDialog } from "../components/ha-dialog";
+import { deepActiveElement } from "../common/dom/deep-active-element";
+import type { HaDialog } from "../components/ha-dialog";
 
 declare global {
   // for fire event
@@ -83,7 +83,7 @@ export const showDialog = async (
     };
   }
 
-  // Go down all components to find the active element,
+  // Find the active element and possible underlay dialog,
   // but keep the original focus target if dialog is being replaced
   if (mainWindow.history.state?.replaced) {
     LOADED[dialogTag].closedFocusTarget =
@@ -91,27 +91,8 @@ export const showDialog = async (
     LOADED[dialogTag].closedFocusDialog =
       LOADED[mainWindow.history.state.dialog].closedFocusDialog;
   } else {
-    let focusedDialog: LoadedDialogInfo["closedFocusDialog"] = null;
-    let focusedElement = document.activeElement;
-    while (focusedElement?.shadowRoot?.activeElement) {
-      focusedElement = focusedElement.shadowRoot.activeElement;
-
-      // Detect when focus is slotted into certain components
-      const slotRoot = focusedElement.assignedSlot?.getRootNode();
-      if (slotRoot instanceof ShadowRoot) {
-        const slotHost = slotRoot.host;
-        if (slotHost instanceof HaButtonMenu) {
-          // Use trigger button since popup menu will be hidden again
-          focusedElement = slotHost.querySelector('[slot="trigger"]');
-          break;
-        } else if (slotHost instanceof HaDialog) {
-          // Focus will return inside another dialog
-          focusedDialog = slotHost;
-        }
-      }
-    }
-    LOADED[dialogTag].closedFocusTarget = focusedElement;
-    LOADED[dialogTag].closedFocusDialog = focusedDialog;
+    [LOADED[dialogTag].closedFocusTarget, LOADED[dialogTag].closedFocusDialog] =
+      deepActiveElement(document, "dialog");
   }
 
   if (addHistory) {
@@ -198,23 +179,15 @@ const _handleClosedFocus = async (ev: HASSDomEvent<DialogClosedParams>) => {
   if (focusTarget instanceof HTMLElement) focusTarget.focus();
 
   // Check if focusing was successful
-  let focusedElement = document.activeElement;
-  let focusSuccess = focusTarget === focusedElement;
-  while (!focusSuccess && focusedElement?.shadowRoot?.activeElement) {
-    focusedElement = focusedElement.shadowRoot.activeElement;
-    focusSuccess = focusTarget === focusedElement;
-  }
-
-  if (!focusSuccess) {
+  if (!deepActiveElement(document, "check", focusTarget)) {
     // Let dialog handle fallback if it exists
     focusDialog?.focus();
 
     if (__DEV__) {
       // eslint-disable-next-line
       console.warn(
-        "Tried to focus %o after closing dialog, but active element is %o",
-        focusTarget,
-        focusedElement
+        "Failed to focus target after closing dialog: %o",
+        focusTarget
       );
     }
   }
