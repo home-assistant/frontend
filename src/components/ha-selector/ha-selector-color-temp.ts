@@ -27,8 +27,8 @@ export class HaColorTempSelector extends LitElement {
         pin
         icon="hass:thermometer"
         .caption=${this.label || ""}
-        .min=${this.selector.color_temp.min_mireds ?? 153}
-        .max=${this.selector.color_temp.max_mireds ?? 500}
+        .min=${this.selector.color_temp?.min_mireds ?? 153}
+        .max=${this.selector.color_temp?.max_mireds ?? 500}
         .value=${this.value}
         .disabled=${this.disabled}
         .helper=${this.helper}
