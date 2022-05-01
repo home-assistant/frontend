@@ -3167,7 +3167,7 @@
           "ram_usage": "Memory Usage",
           "core_stats": "Core Stats",
           "supervisor_stats": "Supervisor Stats",
-          "long_loading_integrations": "Long Loading Integrations"
+          "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
           "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
