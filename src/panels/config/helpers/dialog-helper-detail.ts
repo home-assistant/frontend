@@ -4,6 +4,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import "../../../components/ha-dialog";
@@ -32,6 +33,7 @@ import "./forms/ha-timer-form";
 import { domainToName } from "../../../data/integration";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -185,16 +187,46 @@ export class DialogHelperDetail extends LitElement {
         class=${classMap({ "button-left": !this._domain })}
         scrimClickAction
         escapeKeyAction
-        .heading=${this._domain
-          ? this.hass.localize(
-              "ui.panel.config.helpers.dialog.add_platform",
-              "platform",
-              this.hass.localize(
-                `ui.panel.config.helpers.types.${this._domain}`
-              ) || this._domain
-            )
-          : this.hass.localize("ui.panel.config.helpers.dialog.add_helper")}
       >
+        <div>
+          <div class="dialog-actions">
+            ${this._domain
+              ? html` <a
+                  href=${documentationUrl(
+                    this.hass,
+                    `/integrations/${this._domain}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.help")}
+                    .path=${mdiHelpCircle}
+                  >
+                  </ha-icon-button
+                ></a>`
+              : ""}
+
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.dismiss"
+              )}
+              .path=${mdiClose}
+              dialogAction="close"
+            ></ha-icon-button>
+          </div>
+          <h2>
+            ${this._domain
+              ? this.hass.localize(
+                  "ui.panel.config.helpers.dialog.add_platform",
+                  "platform",
+                  this.hass.localize(
+                    `ui.panel.config.helpers.types.${this._domain}`
+                  ) || this._domain
+                )
+              : this.hass.localize("ui.panel.config.helpers.dialog.add_helper")}
+          </h2>
+        </div>
         ${content}
       </ha-dialog>
     `;
@@ -259,8 +291,46 @@ export class DialogHelperDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        h2 {
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          font-family: var(
+            --mdc-typography-headline6-font-family,
+            var(--mdc-typography-font-family, Roboto, sans-serif)
+          );
+          font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+          line-height: var(--mdc-typography-headline6-line-height, 2rem);
+          font-weight: var(--mdc-typography-headline6-font-weight, 500);
+          letter-spacing: var(
+            --mdc-typography-headline6-letter-spacing,
+            0.0125em
+          );
+          text-decoration: var(
+            --mdc-typography-headline6-text-decoration,
+            inherit
+          );
+          text-transform: var(
+            --mdc-typography-headline6-text-transform,
+            inherit
+          );
+          box-sizing: border-box;
+          margin-top: 0;
+        }
         ha-dialog.button-left {
           --justify-action-buttons: flex-start;
+        }
+        .dialog-actions {
+          padding: 10px;
+          position: absolute;
+          top: 0;
+          right: 0;
+        }
+        :host-context([style*="direction: rtl;"]) .dialog-actions {
+          right: auto;
+          left: 0;
+        }
+        .dialog-actions > * {
+          color: var(--secondary-text-color);
         }
       `,
     ];
