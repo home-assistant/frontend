@@ -11,14 +11,7 @@ import listPlugin from "@fullcalendar/list";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
-import {
-  mdiChevronLeft,
-  mdiChevronRight,
-  mdiViewAgenda,
-  mdiViewDay,
-  mdiViewModule,
-  mdiViewWeek,
-} from "@mdi/js";
+import { mdiViewAgenda, mdiViewDay, mdiViewModule, mdiViewWeek } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
