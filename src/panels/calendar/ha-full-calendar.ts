@@ -33,7 +33,6 @@ import memoize from "memoize-one";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
-import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-icon-button-next";
 import { haStyle } from "../../resources/styles";
@@ -152,20 +151,18 @@ export class HAFullCalendar extends LitElement {
                     <div class="controls">
                       <h1>${this.calendar.view.title}</h1>
                       <div>
-                        <ha-icon-button
+                        <ha-icon-button-prev
                           .label=${this.hass.localize("ui.common.previous")}
-                          .path=${mdiChevronLeft}
                           class="prev"
                           @click=${this._handlePrev}
                         >
-                        </ha-icon-button>
-                        <ha-icon-button
+                        </ha-icon-button-prev>
+                        <ha-icon-button-next
                           .label=${this.hass.localize("ui.common.next")}
-                          .path=${mdiChevronRight}
                           class="next"
                           @click=${this._handleNext}
                         >
-                        </ha-icon-button>
+                        </ha-icon-button-next>
                       </div>
                     </div>
                     <div class="controls">
