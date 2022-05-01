@@ -1152,7 +1152,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version, loaded integrations and links to documentation"
+            "secondary": "Version information, credits and more"
           }
         },
         "common": {
