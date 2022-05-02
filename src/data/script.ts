@@ -165,7 +165,7 @@ export interface PlayMediaAction extends BaseAction {
 }
 
 export interface RepeatAction extends BaseAction {
-  repeat: CountRepeat | WhileRepeat | UntilRepeat;
+  repeat: CountRepeat | WhileRepeat | UntilRepeat | ForEachRepeat;
 }
 
 interface BaseRepeat extends BaseAction {
@@ -182,6 +182,10 @@ export interface WhileRepeat extends BaseRepeat {
 
 export interface UntilRepeat extends BaseRepeat {
   until: Condition[];
+}
+
+export interface ForEachRepeat extends BaseRepeat {
+  for_each: string | any[];
 }
 
 export interface ChooseActionChoice extends BaseAction {

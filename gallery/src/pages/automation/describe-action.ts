@@ -78,8 +78,28 @@ const ACTIONS = [
   },
   { repeat: { count: 3, sequence: [{ delay: "00:00:01" }] } },
   {
+    repeat: {
+      for_each: ["bread", "butter", "cheese"],
+      sequence: [{ delay: "00:00:01" }],
+    },
+  },
+  {
     if: [{ condition: "state" }],
     then: [{ delay: "00:00:01" }],
+    else: [{ delay: "00:00:05" }],
+  },
+  {
+    choose: [
+      {
+        conditions: [{ condition: "state" }],
+        sequence: [{ delay: "00:00:01" }],
+      },
+      {
+        conditions: [{ condition: "sun" }],
+        sequence: [{ delay: "00:00:05" }],
+      },
+    ],
+    default: [{ delay: "00:00:03" }],
   },
 ];
 
