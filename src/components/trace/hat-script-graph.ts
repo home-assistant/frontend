@@ -215,7 +215,19 @@ export class HatScriptGraph extends LitElement {
 
   private render_if_node(config: IfAction, path: string, graphStart = false) {
     const trace = this.trace.trace[path] as IfActionTraceStep[] | undefined;
-    const result = trace?.[0].result?.choice;
+    let trackThen = false;
+    let trackElse = false;
+    for (const trc of trace || []) {
+      if (!trackThen && trc.result?.choice === "then") {
+        trackThen = true;
+      }
+      if ((!trackElse && trc.result?.choice === "else") || !trc.result) {
+        trackElse = true;
+      }
+      if (trackElse && trackThen) {
+        break;
+      }
+    }
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
@@ -232,10 +244,10 @@ export class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
         ${config.else
-          ? html`<div class="graph-container" ?track=${result === "else"}>
+          ? html`<div class="graph-container" ?track=${trackElse}>
               <hat-graph-node
                 .iconPath=${mdiCallMissed}
-                ?track=${result === "else"}
+                ?track=${trackElse}
                 ?active=${this.selected === path}
                 nofocus
               ></hat-graph-node
@@ -243,13 +255,11 @@ export class HatScriptGraph extends LitElement {
                 this.render_action_node(action, `${path}/else/${j}`)
               )}
             </div>`
-          : html`<hat-graph-spacer
-              ?track=${result === "else" || result === undefined}
-            ></hat-graph-spacer>`}
-        <div class="graph-container" ?track=${result === "then"}>
+          : html`<hat-graph-spacer ?track=${trackElse}></hat-graph-spacer>`}
+        <div class="graph-container" ?track=${trackThen}>
           <hat-graph-node
             .iconPath=${mdiCallReceived}
-            ?track=${result === "then"}
+            ?track=${trackThen}
             ?active=${this.selected === path}
             nofocus
           ></hat-graph-node>
