@@ -34,6 +34,7 @@ import {
   DeviceAction,
   EventAction,
   IfAction,
+  ManualScriptConfig,
   ParallelAction,
   RepeatAction,
   SceneAction,
@@ -478,7 +479,20 @@ export class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
         ${ensureArray(node.parallel).map((action, i) =>
-          this.render_action_node(action, `${path}/parallel/${i}/0`)
+          "sequence" in action
+            ? html`<div ?track=${path in this.trace.trace}>
+                ${ensureArray((action as ManualScriptConfig).sequence).map(
+                  (sAction, j) =>
+                    this.render_action_node(
+                      sAction,
+                      `${path}/parallel/${i}/sequence/${j}`
+                    )
+                )}
+              </div>`
+            : this.render_action_node(
+                action,
+                `${path}/parallel/${i}/sequence/0`
+              )
         )}
       </hat-graph-branch>
     `;

@@ -185,7 +185,11 @@ export const getDataFromPath = (
     const asNumber = Number(raw);
 
     if (isNaN(asNumber)) {
-      result = result[raw];
+      const tempResult = result[raw];
+      if (!tempResult && raw === "sequence") {
+        continue;
+      }
+      result = tempResult;
       continue;
     }
 
