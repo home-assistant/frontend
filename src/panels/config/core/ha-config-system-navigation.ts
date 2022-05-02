@@ -61,6 +61,7 @@ class HaConfigSystemNavigation extends LitElement {
               .pages=${pages}
             ></ha-navigation-list>
           </ha-card>
+          <div class="yaml-config">Looking for YAML Configuration? It has moved to <a href="/developer-tools/yaml">Developer Tools</a></a></div>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -135,6 +136,11 @@ class HaConfigSystemNavigation extends LitElement {
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
           --navigation-list-item-padding: 4px;
+        }
+        .yaml-config {
+          margin-bottom: max(env(safe-area-inset-bottom), 24px);
+          text-align: center;
+          font-style: italic;
         }
       `,
     ];

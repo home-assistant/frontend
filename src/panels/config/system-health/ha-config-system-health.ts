@@ -30,7 +30,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import "../info/integrations-card";
+import "./integrations-card";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
