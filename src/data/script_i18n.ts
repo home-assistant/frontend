@@ -225,15 +225,11 @@ export const describeAction = <T extends ActionType>(
         ? `while ${ensureArray(config.repeat.while)
             .map((condition) => describeCondition(condition))
             .join(", ")} is true`
-        : ""
-    }${
-      "until" in config.repeat
+        : "until" in config.repeat
         ? `until ${ensureArray(config.repeat.until)
             .map((condition) => describeCondition(condition))
             .join(", ")} is true`
-        : ""
-    }${
-      "for_each" in config.repeat
+        : "for_each" in config.repeat
         ? `for every item: ${ensureArray(config.repeat.for_each)
             .map((item) => JSON.stringify(item))
             .join(", ")}`
