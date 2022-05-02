@@ -80,6 +80,20 @@ const ACTIONS = [
   {
     if: [{ condition: "state" }],
     then: [{ delay: "00:00:01" }],
+    else: [{ delay: "00:00:05" }],
+  },
+  {
+    choose: [
+      {
+        conditions: [{ condition: "state" }],
+        sequence: [{ delay: "00:00:01" }],
+      },
+      {
+        conditions: [{ condition: "sun" }],
+        sequence: [{ delay: "00:00:05" }],
+      },
+    ],
+    default: [{ delay: "00:00:03" }],
   },
 ];
 
