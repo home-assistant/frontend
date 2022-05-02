@@ -214,7 +214,7 @@ export interface StopAction extends BaseAction {
 }
 
 export interface ParallelAction extends BaseAction {
-  parallel: Action | Action[];
+  parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
 }
 
 interface UnknownAction extends BaseAction {
