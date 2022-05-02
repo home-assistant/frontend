@@ -48,7 +48,7 @@ class IntegrationsCard extends LitElement {
       <ha-card
         outlined
         .header=${this.hass.localize(
-          "ui.panel.config.system_health.long_loading_integrations"
+          "ui.panel.config.system_health.integration_start_time"
         )}
       >
         <mwc-list>
@@ -69,6 +69,7 @@ class IntegrationsCard extends LitElement {
                 graphic="avatar"
                 twoline
                 hasMeta
+                openNewTab
                 @click=${this._entryClicked}
                 href=${docLink}
               >
@@ -129,13 +130,18 @@ class IntegrationsCard extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ha-clickable-list-item {
-        --mdc-list-item-meta-size: 48px;
+        --mdc-list-item-meta-size: 64px;
         --mdc-typography-caption-font-size: 12px;
       }
       img {
         display: block;
         max-height: 40px;
         max-width: 40px;
+      }
+      div[slot="meta"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     `;
   }
