@@ -25,6 +25,7 @@ import {
   ChooseAction,
   ChooseActionChoice,
   getActionType,
+  IfAction,
   RepeatAction,
 } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
@@ -33,6 +34,7 @@ import {
   AutomationTraceExtended,
   ChooseActionTraceStep,
   getDataFromPath,
+  IfActionTraceStep,
   isTriggerPath,
   TriggerTraceStep,
 } from "../../data/trace";
@@ -285,6 +287,10 @@ class ActionRenderer {
       return this._handleRepeat(index);
     }
 
+    if (actionType === "if") {
+      return this._handleIf(index);
+    }
+
     this._renderEntry(path, describeAction(this.hass, data, actionType));
 
     let i = index + 1;
@@ -419,6 +425,52 @@ class ActionRenderer {
       }
 
       i = this._renderItem(i, getActionType(this._getDataFromPath(path)), true);
+    }
+
+    return i;
+  }
+
+  private _handleIf(index: number): number {
+    const ifPath = this.keys[index];
+    const startLevel = ifPath.split("/").length;
+
+    const ifTrace = this._getItem(index)[0] as IfActionTraceStep;
+    const ifConfig = this._getDataFromPath(this.keys[index]) as IfAction;
+    const name = ifConfig.alias || "If";
+
+    if (ifTrace.result) {
+      const choiceConfig = this._getDataFromPath(
+        `${this.keys[index]}/${ifTrace.result.choice}/`
+      ) as any;
+      const choiceName = choiceConfig
+        ? `${choiceConfig.alias || `${ifTrace.result.choice} action executed`}`
+        : `Error: ${ifTrace.error}`;
+      this._renderEntry(ifPath, `${name}: ${choiceName}`);
+    } else {
+      this._renderEntry(ifPath, `${name}: No action taken`);
+    }
+
+    let i;
+
+    // Skip over conditions
+    for (i = index + 1; i < this.keys.length; i++) {
+      const path = this.keys[i];
+      const parts = this.keys[i].split("/");
+
+      // We're done if no more sequence in current level
+      if (parts.length <= startLevel) {
+        return i;
+      }
+
+      // We're going to skip all conditions
+      if (
+        parts[startLevel + 1] === "condition" ||
+        parts.length < startLevel + 2
+      ) {
+        continue;
+      }
+
+      i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
     }
 
     return i;
