@@ -26,6 +26,7 @@ import {
   ChooseActionChoice,
   getActionType,
   IfAction,
+  ParallelAction,
   RepeatAction,
 } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
@@ -291,6 +292,10 @@ class ActionRenderer {
       return this._handleIf(index);
     }
 
+    if (actionType === "parallel") {
+      return this._handleParallel(index);
+    }
+
     this._renderEntry(path, describeAction(this.hass, data, actionType));
 
     let i = index + 1;
@@ -468,6 +473,35 @@ class ActionRenderer {
         parts.length < startLevel + 2
       ) {
         continue;
+      }
+
+      i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
+    }
+
+    return i;
+  }
+
+  private _handleParallel(index: number): number {
+    const parallelPath = this.keys[index];
+    const startLevel = parallelPath.split("/").length;
+
+    const parallelConfig = this._getDataFromPath(
+      this.keys[index]
+    ) as ParallelAction;
+
+    const name = parallelConfig.alias || "Execute in parallel";
+
+    this._renderEntry(parallelPath, name);
+
+    let i;
+
+    for (i = index + 1; i < this.keys.length; i++) {
+      const path = this.keys[i];
+      const parts = path.split("/");
+
+      // We're done if no more sequence in current level
+      if (parts.length <= startLevel) {
+        return i;
       }
 
       i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
