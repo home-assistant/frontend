@@ -96,7 +96,7 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(config, path)}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
-        .disabled=${config.enabled === false}
+        .notEnabled=${config.enabled === false}
         tabindex=${track ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -172,14 +172,14 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(config, path)}
         ?track=${trace !== undefined}
         ?active=${this.selected === path}
-        .disabled=${disabled || config.enabled === false}
+        .notEnabled=${disabled || config.enabled === false}
       >
         <hat-graph-node
           .graphStart=${graphStart}
           .iconPath=${mdiArrowDecision}
           ?track=${trace !== undefined}
           ?active=${this.selected === path}
-          .disabled=${disabled || config.enabled === false}
+          .notEnabled=${disabled || config.enabled === false}
           slot="head"
           nofocus
         ></hat-graph-node>
@@ -202,7 +202,7 @@ export class HatScriptGraph extends LitElement {
                     @focus=${this.selectNode(config, branch_path)}
                     ?track=${track_this}
                     ?active=${this.selected === branch_path}
-                    .disabled=${disabled || config.enabled === false}
+                    .notEnabled=${disabled || config.enabled === false}
                   ></hat-graph-node>
                   ${branch.sequence !== null
                     ? ensureArray(branch.sequence).map((action, j) =>
@@ -261,14 +261,14 @@ export class HatScriptGraph extends LitElement {
         @focus=${this.selectNode(config, path)}
         ?track=${trace !== undefined}
         ?active=${this.selected === path}
-        .disabled=${disabled || config.enabled === false}
+        .notEnabled=${disabled || config.enabled === false}
       >
         <hat-graph-node
           .graphStart=${graphStart}
           .iconPath=${mdiCallSplit}
           ?track=${trace !== undefined}
           ?active=${this.selected === path}
-          .disabled=${disabled || config.enabled === false}
+          .notEnabled=${disabled || config.enabled === false}
           slot="head"
           nofocus
         ></hat-graph-node>
@@ -278,7 +278,7 @@ export class HatScriptGraph extends LitElement {
                 .iconPath=${mdiCallMissed}
                 ?track=${trackElse}
                 ?active=${this.selected === path}
-                .disabled=${disabled || config.enabled === false}
+                .notEnabled=${disabled || config.enabled === false}
                 nofocus
               ></hat-graph-node
               >${ensureArray(config.else).map((action, j) =>
@@ -296,7 +296,7 @@ export class HatScriptGraph extends LitElement {
             .iconPath=${mdiCallReceived}
             ?track=${trackThen}
             ?active=${this.selected === path}
-            .disabled=${disabled || config.enabled === false}
+            .notEnabled=${disabled || config.enabled === false}
             nofocus
           ></hat-graph-node>
           ${ensureArray(config.then).map((action, j) =>
