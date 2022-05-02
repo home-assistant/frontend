@@ -25,9 +25,11 @@ import {
   ChooseAction,
   ChooseActionChoice,
   getActionType,
+  RepeatAction,
 } from "../../data/script";
 import { describeAction } from "../../data/script_i18n";
 import {
+  ActionTraceStep,
   AutomationTraceExtended,
   ChooseActionTraceStep,
   getDataFromPath,
@@ -105,7 +107,7 @@ class LogbookRenderer {
   }
 
   get hasNext() {
-    return this.curIndex !== this.logbookEntries.length;
+    return this.curIndex < this.logbookEntries.length;
   }
 
   maybeRenderItem() {
@@ -201,7 +203,7 @@ class ActionRenderer {
   }
 
   get hasNext() {
-    return this.curIndex !== this.keys.length;
+    return this.curIndex < this.keys.length;
   }
 
   renderItem() {
@@ -214,15 +216,31 @@ class ActionRenderer {
 
   private _renderItem(
     index: number,
-    actionType?: ReturnType<typeof getActionType>
+    actionType?: ReturnType<typeof getActionType>,
+    renderAllIterations?: boolean
   ): number {
     const value = this._getItem(index);
 
-    if (isTriggerPath(value[0].path)) {
-      return this._handleTrigger(index, value[0] as TriggerTraceStep);
+    if (renderAllIterations) {
+      let i;
+      value.forEach((item) => {
+        i = this._renderIteration(index, item, actionType);
+      });
+      return i;
+    }
+    return this._renderIteration(index, value[0], actionType);
+  }
+
+  private _renderIteration(
+    index: number,
+    value: ActionTraceStep,
+    actionType?: ReturnType<typeof getActionType>
+  ) {
+    if (isTriggerPath(value.path)) {
+      return this._handleTrigger(index, value as TriggerTraceStep);
     }
 
-    const timestamp = new Date(value[0].timestamp);
+    const timestamp = new Date(value.timestamp);
 
     // Render all logbook items that are in front of this item.
     while (
@@ -235,7 +253,7 @@ class ActionRenderer {
     this.logbookRenderer.flush();
     this.timeTracker.maybeRenderTime(timestamp);
 
-    const path = value[0].path;
+    const path = value.path;
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
@@ -261,6 +279,10 @@ class ActionRenderer {
 
     if (actionType === "choose") {
       return this._handleChoose(index);
+    }
+
+    if (actionType === "repeat") {
+      return this._handleRepeat(index);
     }
 
     this._renderEntry(path, describeAction(this.hass, data, actionType));
@@ -369,6 +391,34 @@ class ActionRenderer {
       // We know it's an action sequence, so force the type like that
       // for rendering.
       i = this._renderItem(i, getActionType(this._getDataFromPath(path)));
+    }
+
+    return i;
+  }
+
+  private _handleRepeat(index: number): number {
+    const repeatPath = this.keys[index];
+    const startLevel = repeatPath.split("/").length;
+
+    const repeatConfig = this._getDataFromPath(
+      this.keys[index]
+    ) as RepeatAction;
+    const name = repeatConfig.alias || describeAction(this.hass, repeatConfig);
+
+    this._renderEntry(repeatPath, name);
+
+    let i;
+
+    for (i = index + 1; i < this.keys.length; i++) {
+      const path = this.keys[i];
+      const parts = path.split("/");
+
+      // We're done if no more sequence in current level
+      if (parts.length <= startLevel) {
+        return i;
+      }
+
+      i = this._renderItem(i, getActionType(this._getDataFromPath(path)), true);
     }
 
     return i;
