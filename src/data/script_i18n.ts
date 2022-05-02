@@ -232,6 +232,12 @@ export const describeAction = <T extends ActionType>(
             .map((condition) => describeCondition(condition))
             .join(", ")} is true`
         : ""
+    }${
+      "for_each" in config.repeat
+        ? `for every item: ${ensureArray(config.repeat.for_each)
+            .map((item) => JSON.stringify(item))
+            .join(", ")}`
+        : ""
     }`;
   }
 
