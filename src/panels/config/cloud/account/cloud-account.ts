@@ -81,6 +81,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
             </div>
 
             <ha-card
+              outlined
               .header=${this.hass.localize(
                 "ui.panel.config.cloud.account.nabu_casa_account"
               )}

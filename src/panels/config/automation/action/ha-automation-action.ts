@@ -32,7 +32,7 @@ export default class HaAutomationAction extends LitElement {
           ></ha-automation-action-row>
         `
       )}
-      <ha-card>
+      <ha-card outlined>
         <div class="card-actions add-card">
           <mwc-button @click=${this._addAction}>
             ${this.hass.localize(

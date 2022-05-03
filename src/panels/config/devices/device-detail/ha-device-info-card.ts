@@ -1,5 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../../components/ha-card";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import {
   computeDeviceName,
@@ -24,6 +25,7 @@ export class HaDeviceCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
+        outlined
         .header=${this.hass.localize(
           "ui.panel.config.devices.device_info",
           "type",
@@ -143,5 +145,11 @@ export class HaDeviceCard extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-info-card": HaDeviceCard;
   }
 }
