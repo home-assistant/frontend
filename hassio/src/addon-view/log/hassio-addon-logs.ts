@@ -34,7 +34,7 @@ class HassioAddonLogs extends LitElement {
   protected render(): TemplateResult {
     return html`
       <h1>${this.addon.name}</h1>
-      <ha-card>
+      <ha-card outlined>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}

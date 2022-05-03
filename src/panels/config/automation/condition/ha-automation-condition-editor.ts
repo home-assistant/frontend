@@ -5,7 +5,6 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-yaml-editor";

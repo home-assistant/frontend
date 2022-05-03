@@ -67,7 +67,7 @@ export default class HaAutomationConditionRow extends LitElement {
       return html``;
     }
     return html`
-      <ha-card>
+      <ha-card outlined>
         ${this.condition.enabled === false
           ? html`<div class="disabled-bar">
               ${this.hass.localize(

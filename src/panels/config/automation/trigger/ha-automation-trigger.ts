@@ -27,7 +27,7 @@ export default class HaAutomationTrigger extends LitElement {
           ></ha-automation-trigger-row>
         `
       )}
-      <ha-card>
+      <ha-card outlined>
         <div class="card-actions add-card">
           <mwc-button @click=${this._addTrigger}>
             ${this.hass.localize(

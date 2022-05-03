@@ -164,7 +164,7 @@ export default class HaAutomationActionRow extends LitElement {
     const yamlMode = this._yamlMode;
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         ${this.action.enabled === false
           ? html`<div class="disabled-bar">
               ${this.hass.localize(

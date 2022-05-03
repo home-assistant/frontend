@@ -69,7 +69,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           </div>
         </ha-card>`
       )}
-      <ha-card>
+      <ha-card outlined>
         <div class="card-actions add-card">
           <mwc-button @click=${this._addOption}>
             ${this.hass.localize(

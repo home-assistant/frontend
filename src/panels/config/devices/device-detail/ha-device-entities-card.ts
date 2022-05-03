@@ -62,7 +62,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   protected render(): TemplateResult {
     if (!this.entities.length) {
       return html`
-        <ha-card .header=${this.header}>
+        <ha-card outlined .header=${this.header}>
           <div class="empty card-content">
             ${this.hass.localize("ui.panel.config.devices.entities.none")}
           </div>
@@ -89,7 +89,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     });
 
     return html`
-      <ha-card .header=${this.header}>
+      <ha-card outlined .header=${this.header}>
         <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
           ${shownEntities.map((entry) =>
             this.hass.states[entry.entity_id]

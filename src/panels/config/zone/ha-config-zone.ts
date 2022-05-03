@@ -228,7 +228,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 <span slot="introduction">
                   ${hass.localize("ui.panel.config.zone.introduction")}
                 </span>
-                <ha-card>${listBox}</ha-card>
+                <ha-card outlined>${listBox}</ha-card>
               </ha-config-section>
             `
           : ""}
@@ -471,7 +471,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         color: var(--primary-color);
       }
       ha-card {
-        max-width: 600px;
         margin: 16px auto;
         overflow: hidden;
       }

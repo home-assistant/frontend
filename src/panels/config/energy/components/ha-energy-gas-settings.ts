@@ -51,7 +51,7 @@ export class EnergyGasSettings extends LitElement {
     });
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.gas.title")}

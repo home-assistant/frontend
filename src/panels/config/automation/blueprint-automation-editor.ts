@@ -75,7 +75,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.introduction"
           )}
         </span>
-        <ha-card>
+        <ha-card outlined>
           <div class="card-content">
             <ha-textfield
               .label=${this.hass.localize(
@@ -145,6 +145,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
       </ha-config-section>
 
       <ha-card
+        outlined
         class="blueprint"
         .header=${this.hass.localize(
           "ui.panel.config.automation.editor.blueprint.header"
