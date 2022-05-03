@@ -162,31 +162,33 @@ class ErrorLogCard extends LitElement {
 
     this._isLogLoaded = true;
 
-    this._logHTML = log
-      ? log
-          .split("\n")
-          .filter((entry) => {
-            if (this.filter) {
-              return entry.toLowerCase().includes(this.filter.toLowerCase());
-            }
-            return entry;
-          })
-          .map((entry) => {
-            if (entry.includes("INFO"))
-              return html`<div class="info">${entry}</div>`;
+    const split = log && log.split("\n");
 
-            if (entry.includes("WARNING"))
-              return html`<div class="warning">${entry}</div>`;
+    this._logHTML = split
+      ? (this.filter
+          ? split.filter((entry) => {
+              if (this.filter) {
+                return entry.toLowerCase().includes(this.filter.toLowerCase());
+              }
+              return entry;
+            })
+          : split
+        ).map((entry) => {
+          if (entry.includes("INFO"))
+            return html`<div class="info">${entry}</div>`;
 
-            if (
-              entry.includes("ERROR") ||
-              entry.includes("FATAL") ||
-              entry.includes("CRITICAL")
-            )
-              return html`<div class="error">${entry}</div>`;
+          if (entry.includes("WARNING"))
+            return html`<div class="warning">${entry}</div>`;
 
-            return html`<div>${entry}</div>`;
-          })
+          if (
+            entry.includes("ERROR") ||
+            entry.includes("FATAL") ||
+            entry.includes("CRITICAL")
+          )
+            return html`<div class="error">${entry}</div>`;
+
+          return html`<div>${entry}</div>`;
+        })
       : this.hass.localize("ui.panel.config.logs.no_errors");
   }
 
