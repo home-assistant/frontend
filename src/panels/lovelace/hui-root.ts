@@ -266,10 +266,14 @@ class HUIRoot extends LitElement {
                         </ha-tabs>
                       `
                     : html`<div main-title>${this.config.title}</div>`}
-                  <ha-icon-button
-                    .path=${mdiMagnify}
-                    @click=${this._showQuickBar}
-                  ></ha-icon-button>
+                  ${!this.narrow
+                    ? html`
+                        <ha-icon-button
+                          .path=${mdiMagnify}
+                          @click=${this._showQuickBar}
+                        ></ha-icon-button>
+                      `
+                    : ""}
                   ${!this.narrow &&
                   this._conversation(this.hass.config.components)
                     ? html`
@@ -292,6 +296,28 @@ class HUIRoot extends LitElement {
                             )}
                             .path=${mdiDotsVertical}
                           ></ha-icon-button>
+
+                          ${this.narrow
+                            ? html`
+                                <mwc-list-item
+                                  .label=${this.hass!.localize(
+                                    "ui.panel.lovelace.menu.search"
+                                  )}
+                                  graphic="icon"
+                                  @request-selected=${this._showQuickBar}
+                                >
+                                  <span
+                                    >${this.hass!.localize(
+                                      "ui.panel.lovelace.menu.search"
+                                    )}</span
+                                  >
+                                  <ha-svg-icon
+                                    slot="graphic"
+                                    .path=${mdiMagnify}
+                                  ></ha-svg-icon>
+                                </mwc-list-item>
+                              `
+                            : ""}
                           ${this.narrow &&
                           this._conversation(this.hass.config.components)
                             ? html`
