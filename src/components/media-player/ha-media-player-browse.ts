@@ -103,6 +103,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query("lit-virtualizer") private _virtualizer?: LitVirtualizer;
 
+  private _observed = false;
+
   private _headerOffsetHeight = 0;
 
   private _resizeObserver?: ResizeObserver;
@@ -283,21 +285,20 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._animateHeaderHeight();
     } else if (changedProps.has("_currentItem")) {
       this._setHeaderHeight();
-    }
 
-    // This fixes a race condition for resizing of the cards using the grid layout
-    this.updateComplete.then(async () => {
-      await this._virtualizer?.updateComplete;
-      // @ts-ignore
-      const virtualizer = this._virtualizer?._virtualizer;
-      if (!virtualizer || !virtualizer._sizer) {
+      // This fixes a race condition for resizing of the cards using the grid layout
+      if (this._observed) {
         return;
       }
-      setTimeout(
-        () => virtualizer._hostElement.appendChild(virtualizer._sizer),
-        0
-      );
-    });
+
+      // @ts-ignore
+      const virtualizer = this._virtualizer?._virtualizer;
+
+      if (virtualizer) {
+        this._observed = true;
+        setTimeout(() => virtualizer._observeMutations(), 0);
+      }
+    }
   }
 
   protected render(): TemplateResult {
