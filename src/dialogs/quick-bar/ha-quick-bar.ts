@@ -488,7 +488,7 @@ export class QuickBar extends LitElement {
       );
   }
 
-  private async _generateCommandItems(): CommandItem[] {
+  private async _generateCommandItems(): Promise<CommandItem[]> {
     return [
       ...this._generateReloadCommands(),
       ...this._generateServerControlCommands(),
