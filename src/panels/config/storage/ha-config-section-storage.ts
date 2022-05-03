@@ -3,6 +3,7 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-metric";
 import { fetchHassioHostInfo, HassioHostInfo } from "../../../data/hassio/host";
 import "../../../layouts/hass-subpage";
