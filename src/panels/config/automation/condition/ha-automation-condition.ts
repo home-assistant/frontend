@@ -56,7 +56,7 @@ export default class HaAutomationCondition extends LitElement {
           ></ha-automation-condition-row>
         `
       )}
-      <ha-card>
+      <ha-card outlined>
         <div class="card-actions add-card">
           <mwc-button @click=${this._addCondition}>
             ${this.hass.localize(

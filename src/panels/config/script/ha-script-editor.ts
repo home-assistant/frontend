@@ -290,7 +290,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               "ui.panel.config.script.editor.introduction"
                             )}
                           </span>
-                          <ha-card>
+                          <ha-card outlined>
                             <div class="card-content">
                               <ha-form
                                 .schema=${schema}
@@ -387,8 +387,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 ${!this.narrow
                   ? html`
-                      <ha-card
-                        ><div class="card-header">${this._config?.alias}</div>
+                      <ha-card outlined>
+                        <div class="card-header">${this._config?.alias}</div>
                         <div
                           class="card-actions layout horizontal justified center"
                         >
@@ -412,8 +412,8 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                   .defaultValue=${this._preprocessYaml()}
                   @value-changed=${this._yamlChanged}
                 ></ha-yaml-editor>
-                <ha-card
-                  ><div class="card-actions">
+                <ha-card outlined>
+                  <div class="card-actions">
                     <mwc-button @click=${this._copyYaml}>
                       ${this.hass.localize(
                         "ui.panel.config.automation.editor.copy_to_clipboard"

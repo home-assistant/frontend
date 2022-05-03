@@ -80,7 +80,7 @@ export class EnergyGridSettings extends LitElement {
     }
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.grid.title")}

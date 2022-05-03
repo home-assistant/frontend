@@ -1,7 +1,6 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
 import "../../../../components/ha-chip";
 import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";

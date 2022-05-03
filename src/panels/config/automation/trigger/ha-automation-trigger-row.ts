@@ -127,7 +127,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
-      <ha-card>
+      <ha-card outlined>
         ${this.trigger.enabled === false
           ? html`<div class="disabled-bar">
               ${this.hass.localize(
