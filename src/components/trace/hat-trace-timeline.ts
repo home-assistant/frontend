@@ -296,7 +296,12 @@ class ActionRenderer {
       return this._handleParallel(index);
     }
 
-    this._renderEntry(path, describeAction(this.hass, data, actionType));
+    this._renderEntry(
+      path,
+      describeAction(this.hass, data, actionType),
+      undefined,
+      data.enabled === false
+    );
 
     let i = index + 1;
 
@@ -349,10 +354,16 @@ class ActionRenderer {
     const chooseConfig = this._getDataFromPath(
       this.keys[index]
     ) as ChooseAction;
+    const disabled = chooseConfig.enabled === false;
     const name = chooseConfig.alias || "Choose";
 
     if (defaultExecuted) {
-      this._renderEntry(choosePath, `${name}: Default action executed`);
+      this._renderEntry(
+        choosePath,
+        `${name}: Default action executed`,
+        undefined,
+        disabled
+      );
     } else if (chooseTrace.result) {
       const choiceNumeric =
         chooseTrace.result.choice !== "default"
@@ -364,9 +375,19 @@ class ActionRenderer {
       const choiceName = choiceConfig
         ? `${choiceConfig.alias || `Option ${choiceNumeric}`} executed`
         : `Error: ${chooseTrace.error}`;
-      this._renderEntry(choosePath, `${name}: ${choiceName}`);
+      this._renderEntry(
+        choosePath,
+        `${name}: ${choiceName}`,
+        undefined,
+        disabled
+      );
     } else {
-      this._renderEntry(choosePath, `${name}: No action taken`);
+      this._renderEntry(
+        choosePath,
+        `${name}: No action taken`,
+        undefined,
+        disabled
+      );
     }
 
     let i;
@@ -414,9 +435,11 @@ class ActionRenderer {
     const repeatConfig = this._getDataFromPath(
       this.keys[index]
     ) as RepeatAction;
+    const disabled = repeatConfig.enabled === false;
+
     const name = repeatConfig.alias || describeAction(this.hass, repeatConfig);
 
-    this._renderEntry(repeatPath, name);
+    this._renderEntry(repeatPath, name, undefined, disabled);
 
     let i;
 
@@ -441,18 +464,24 @@ class ActionRenderer {
 
     const ifTrace = this._getItem(index)[0] as IfActionTraceStep;
     const ifConfig = this._getDataFromPath(this.keys[index]) as IfAction;
+    const disabled = ifConfig.enabled === false;
     const name = ifConfig.alias || "If";
 
-    if (ifTrace.result) {
+    if (ifTrace.result?.choice) {
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/${ifTrace.result.choice}/`
       ) as any;
       const choiceName = choiceConfig
         ? `${choiceConfig.alias || `${ifTrace.result.choice} action executed`}`
         : `Error: ${ifTrace.error}`;
-      this._renderEntry(ifPath, `${name}: ${choiceName}`);
+      this._renderEntry(ifPath, `${name}: ${choiceName}`, undefined, disabled);
     } else {
-      this._renderEntry(ifPath, `${name}: No action taken`);
+      this._renderEntry(
+        ifPath,
+        `${name}: No action taken`,
+        undefined,
+        disabled
+      );
     }
 
     let i;
@@ -489,9 +518,11 @@ class ActionRenderer {
       this.keys[index]
     ) as ParallelAction;
 
+    const disabled = parallelConfig.enabled === false;
+
     const name = parallelConfig.alias || "Execute in parallel";
 
-    this._renderEntry(parallelPath, name);
+    this._renderEntry(parallelPath, name, undefined, disabled);
 
     let i;
 
@@ -513,11 +544,14 @@ class ActionRenderer {
   private _renderEntry(
     path: string,
     description: string,
-    icon = mdiRecordCircleOutline
+    icon = mdiRecordCircleOutline,
+    disabled = false
   ) {
     this.entries.push(html`
-      <ha-timeline .icon=${icon} data-path=${path}>
-        ${description}
+      <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
+        ${description}${disabled
+          ? html`<span class="disabled"> (disabled)</span>`
+          : ""}
       </ha-timeline>
     `);
   }
