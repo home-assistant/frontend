@@ -130,12 +130,7 @@ class ErrorLogCard extends LitElement {
         if (this.filter) {
           log = log
             .split("\n")
-            .filter((entry) => {
-              if (this.filter) {
-                return entry.toLowerCase().includes(this.filter.toLowerCase());
-              }
-              return entry;
-            })
+            .filter((entry) => entry.toLowerCase().includes(this.filter.toLowerCase()))
             .join("\n");
         }
         if (!log) {
