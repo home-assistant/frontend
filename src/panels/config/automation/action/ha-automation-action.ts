@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -83,7 +84,7 @@ export default class HaAutomationAction extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.actions.concat(this.actions[index]),
+      value: this.actions.concat(deepClone(this.actions[index])),
     });
   }
 
