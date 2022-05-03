@@ -21,6 +21,7 @@ import { fetchErrorLog } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioLogs } from "../../../data/hassio/supervisor";
 import { HomeAssistant } from "../../../types";
+import { debounce } from "../../../common/util/debounce";
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -76,6 +77,12 @@ class ErrorLogCard extends LitElement {
     `;
   }
 
+  private _debounceSearch = debounce(
+    () => (this._isLogLoaded ? this._refreshLogs() : this._debounceSearch()),
+    150,
+    false
+  );
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
@@ -93,11 +100,15 @@ class ErrorLogCard extends LitElement {
     }
 
     if (
-      (changedProps.has("filter") && this._isLogLoaded) ||
       (changedProps.has("show") && this.show) ||
       (changedProps.has("provider") && this.show)
     ) {
       this._refreshLogs();
+      return;
+    }
+
+    if (changedProps.has("filter")) {
+      this._debounceSearch();
     }
   }
 
@@ -116,6 +127,21 @@ class ErrorLogCard extends LitElement {
     if (isComponentLoaded(this.hass, "hassio")) {
       try {
         log = await fetchHassioLogs(this.hass, this.provider);
+        if (this.filter) {
+          log = log
+            .split("\n")
+            .filter((entry) => {
+              if (this.filter) {
+                return entry.toLowerCase().includes(this.filter.toLowerCase());
+              }
+              return entry;
+            })
+            .join("\n");
+        }
+        if (!log) {
+          this._logHTML = this.hass.localize("ui.panel.config.logs.no_errors");
+          return;
+        }
         this._logHTML = html`<ha-ansi-to-html .content=${log}>
         </ha-ansi-to-html>`;
         this._isLogLoaded = true;
