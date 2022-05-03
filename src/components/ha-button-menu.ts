@@ -56,29 +56,31 @@ export class HaButtonMenu extends LitElement {
 
     this.updateComplete.then(() => {
       this.querySelectorAll("mwc-list-item").forEach((item) => {
-        item._getUpdateComplete = item.getUpdateComplete;
+        item!._getUpdateComplete = item.getUpdateComplete;
 
-        var style = document.createElement("style");
+        const style = document.createElement("style");
         style.innerHTML =
           ':host-context([style*="direction: rtl;"]) .rtl-fix, :host-context([style*="direction: rtl;"]) .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}';
-        item.shadowRoot.appendChild(style);
-        var span = item.shadowRoot?.querySelector("span:first-child");
+        item!.shadowRoot.appendChild(style);
+        const span = item.shadowRoot?.querySelector("span:first-child");
         span!.classList.add("rtl-fix");
 
         item.getUpdateComplete = function () {
-          var result = item._getUpdateComplete();
+          const result = item._getUpdateComplete();
 
           // re-apply class since something in ripple handler resets it even though no style changes
-          var span = item.shadowRoot?.querySelector(".rtl-fix");
-          span!.classList.remove("rtl-fix");
-          span!.classList.add("rtl-fix2");
+          const rtlSpan = item.shadowRoot?.querySelector(".rtl-fix");
+          if (rtlSpan) {
+            rtlSpan!.classList.remove("rtl-fix");
+            rtlSpan!.classList.add("rtl-fix2");
 
-          new Promise(function (resolve, reject) {
-            setTimeout(() => resolve("done"), 0);
-          }).then(() => {
-            span!.classList.remove("rtl-fix2");
-            span!.classList.add("rtl-fix");
-          });
+            new Promise((resolve) => {
+              setTimeout(() => resolve("done"), 0);
+            }).then(() => {
+              span!.classList.remove("rtl-fix2");
+              span!.classList.add("rtl-fix");
+            });
+          }
 
           return result;
         };
