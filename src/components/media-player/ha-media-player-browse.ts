@@ -1,10 +1,10 @@
+import "@lit-labs/virtualizer";
+import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { grid } from "@lit-labs/virtualizer/layouts/grid";
-import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -21,10 +21,12 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
+import { getSignedPath } from "../../data/auth";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseMediaPlayer,
@@ -39,6 +41,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-button-menu";
@@ -49,8 +52,6 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
-import { getSignedPath } from "../../data/auth";
-import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 
 declare global {
   interface HASSDomEvents {
@@ -477,6 +478,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                       <lit-virtualizer
                         scroller
                         .items=${children}
+                        style=${styleMap({
+                          height: `${children.length * 72 + 26}px`,
+                        })}
                         .renderItem=${this._renderListItem}
                       ></lit-virtualizer>
                       ${currentItem.not_shown
@@ -606,7 +610,6 @@ export class HaMediaPlayerBrowse extends LitElement {
         </div>
         <span class="title">${child.title}</span>
       </mwc-list-item>
-      <li divider role="separator"></li>
     `;
   };
 
