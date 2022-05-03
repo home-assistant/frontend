@@ -66,7 +66,7 @@ class HassioHostInfo extends LitElement {
       },
     ];
     return html`
-      <ha-card header="Host">
+      <ha-card header="Host" outlined>
         <div class="card-content">
           <div>
             ${this.supervisor.host.features.includes("hostname")

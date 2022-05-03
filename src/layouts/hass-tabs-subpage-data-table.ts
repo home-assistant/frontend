@@ -130,7 +130,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Array of tabs to show on the page.
    * @type {Array}
    */
-  @property() public tabs!: PageNavigation[];
+  @property() public tabs: PageNavigation[] = [];
 
   /**
    * Force hides the filter menu.
@@ -282,6 +282,9 @@ export class HaTabsSubpageDataTable extends LitElement {
       :host(:not([narrow])) ha-data-table {
         height: calc(100vh - 1px - var(--header-height));
         display: block;
+      }
+      :host([narrow]) hass-tabs-subpage {
+        --main-title-margin: 0;
       }
       .table-header {
         display: flex;

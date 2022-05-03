@@ -8,7 +8,7 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import type { Condition } from "../../../../src/data/automation";
+import type { ConditionWithShorthand } from "../../../../src/data/automation";
 import "../../../../src/panels/config/automation/condition/ha-automation-condition";
 import { HaDeviceCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-device";
 import { HaLogicalCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-logical";
@@ -20,7 +20,7 @@ import { HaTimeCondition } from "../../../../src/panels/config/automation/condit
 import { HaTriggerCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-trigger";
 import { HaZoneCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-zone";
 
-const SCHEMAS: { name: string; conditions: Condition[] }[] = [
+const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
   {
     name: "State",
     conditions: [{ condition: "state", ...HaStateCondition.defaultConfig }],
@@ -68,6 +68,14 @@ const SCHEMAS: { name: string; conditions: Condition[] }[] = [
   {
     name: "Trigger",
     conditions: [{ condition: "trigger", ...HaTriggerCondition.defaultConfig }],
+  },
+  {
+    name: "Shorthand",
+    conditions: [
+      { and: HaLogicalCondition.defaultConfig.conditions },
+      { or: HaLogicalCondition.defaultConfig.conditions },
+      { not: HaLogicalCondition.defaultConfig.conditions },
+    ],
   },
 ];
 

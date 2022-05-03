@@ -30,7 +30,7 @@ export class HaNumberSelector extends LitElement {
     const isBox = this.selector.number.mode === "box";
 
     return html`
-      ${this.label}${this.required ? "*" : ""}
+      ${this.label ? html`${this.label}${this.required ? " *" : ""}` : ""}
       <div class="input">
         ${!isBox
           ? html`<ha-slider
@@ -107,6 +107,7 @@ export class HaNumberSelector extends LitElement {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        direction: ltr;
       }
       ha-slider {
         flex: 1;

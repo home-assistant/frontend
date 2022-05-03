@@ -53,7 +53,7 @@ class HaLabeledSlider extends PolymerElement {
   }
 
   _getTitle() {
-    return `${this.caption}${this.required ? "*" : ""}`;
+    return `${this.caption}${this.caption && this.required ? " *" : ""}`;
   }
 
   static get properties() {

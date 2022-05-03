@@ -16,6 +16,7 @@ import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/media-player/ha-media-player-browse";
 import "../../components/media-player/ha-media-manage-button";
 import type {
@@ -85,10 +86,10 @@ class PanelMediaBrowser extends LitElement {
           <app-toolbar>
             ${this._navigateIds.length > 1
               ? html`
-                  <ha-icon-button
+                  <ha-icon-button-arrow-prev
                     .path=${mdiArrowLeft}
                     @click=${this._goBack}
-                  ></ha-icon-button>
+                  ></ha-icon-button-arrow-prev>
                 `
               : html`
                   <ha-menu-button
@@ -170,11 +171,12 @@ class PanelMediaBrowser extends LitElement {
         media_content_id: undefined,
       },
       ...navigateIdsEncoded.map((navigateId) => {
-        const [media_content_type, media_content_id] =
-          decodeURIComponent(navigateId).split(",");
+        const decoded = decodeURIComponent(navigateId);
+        // Don't use split because media_content_id could contain commas
+        const delimiter = decoded.indexOf(",");
         return {
-          media_content_type,
-          media_content_id,
+          media_content_type: decoded.substring(0, delimiter),
+          media_content_id: decoded.substring(delimiter + 1),
         };
       }),
     ];
@@ -277,6 +279,7 @@ class PanelMediaBrowser extends LitElement {
 
         ha-media-player-browse {
           height: calc(100vh - (100px + var(--header-height)));
+          direction: ltr;
         }
 
         :host([narrow]) ha-media-player-browse {

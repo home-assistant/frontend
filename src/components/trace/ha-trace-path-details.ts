@@ -114,6 +114,11 @@ export class HaTracePathDetails extends LitElement {
           const { path, timestamp, result, error, changed_variables, ...rest } =
             trace as any;
 
+          if (result?.enabled === false) {
+            return html`This node was disabled and skipped during execution so
+            no further trace information is available.`;
+          }
+
           return html`
             ${curPath === this.selected.path
               ? ""

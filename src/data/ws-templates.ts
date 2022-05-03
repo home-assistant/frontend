@@ -20,6 +20,7 @@ export const subscribeRenderTemplate = (
     entity_ids?: string | string[];
     variables?: Record<string, unknown>;
     timeout?: number;
+    strict?: boolean;
   }
 ): Promise<UnsubscribeFunc> =>
   conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {

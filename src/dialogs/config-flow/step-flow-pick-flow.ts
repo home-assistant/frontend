@@ -106,6 +106,10 @@ class StepFlowPickFlow extends LitElement {
         h2 {
           padding-right: 66px;
         }
+        :host-context([style*="direction: rtl;"]) h2 {
+          padding-right: auto !important;
+          padding-left: 66px !important;
+        }
         @media all and (max-height: 900px) {
           div {
             max-height: calc(100vh - 134px);

@@ -8,6 +8,8 @@ import { BlueprintInput } from "./blueprint";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action, MODES } from "./script";
 
+export const AUTOMATION_DEFAULT_MODE: ManualAutomationConfig["mode"] = "single";
+
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
@@ -63,11 +65,12 @@ export interface BaseTrigger {
   platform: string;
   id?: string;
   variables?: Record<string, unknown>;
+  enabled?: boolean;
 }
 
 export interface StateTrigger extends BaseTrigger {
   platform: "state";
-  entity_id: string;
+  entity_id: string | string[];
   attribute?: string;
   from?: string | number;
   to?: string | string[] | number;
@@ -150,6 +153,12 @@ export interface EventTrigger extends BaseTrigger {
   context?: ContextConstraint;
 }
 
+export interface CalendarTrigger extends BaseTrigger {
+  platform: "calendar";
+  event: "start" | "end";
+  entity_id: string;
+}
+
 export type Trigger =
   | StateTrigger
   | MqttTrigger
@@ -164,11 +173,13 @@ export type Trigger =
   | TimeTrigger
   | TemplateTrigger
   | EventTrigger
-  | DeviceTrigger;
+  | DeviceTrigger
+  | CalendarTrigger;
 
 interface BaseCondition {
   condition: string;
   alias?: string;
+  enabled?: boolean;
 }
 
 export interface LogicalCondition extends BaseCondition {
@@ -224,6 +235,24 @@ export interface TriggerCondition extends BaseCondition {
   id: string;
 }
 
+type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
+
+export interface ShorthandAndConditionList extends ShorthandBaseCondition {
+  condition: Condition[];
+}
+
+export interface ShorthandAndCondition extends ShorthandBaseCondition {
+  and: Condition[];
+}
+
+export interface ShorthandOrCondition extends ShorthandBaseCondition {
+  or: Condition[];
+}
+
+export interface ShorthandNotCondition extends ShorthandBaseCondition {
+  not: Condition[];
+}
+
 export type Condition =
   | StateCondition
   | NumericStateCondition
@@ -234,6 +263,35 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition
   | TriggerCondition;
+
+export type ConditionWithShorthand =
+  | Condition
+  | ShorthandAndConditionList
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition;
+
+export const expandConditionWithShorthand = (
+  cond: ConditionWithShorthand
+): Condition => {
+  if ("condition" in cond && Array.isArray(cond.condition)) {
+    return {
+      condition: "and",
+      conditions: cond.condition,
+    };
+  }
+
+  for (const condition of ["and", "or", "not"]) {
+    if (condition in cond) {
+      return {
+        condition,
+        conditions: cond[condition],
+      } as Condition;
+    }
+  }
+
+  return cond as Condition;
+};
 
 export const triggerAutomationActions = (
   hass: HomeAssistant,

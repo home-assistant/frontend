@@ -98,6 +98,10 @@ export class HaDialog extends DialogBase {
         margin-left: 40px;
         margin-right: 0px;
       }
+      :host-context([style*="direction: rtl;"]) .dialog-actions {
+        left: 0px !important;
+        right: auto !important;
+      }
     `,
   ];
 }

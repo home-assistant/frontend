@@ -75,7 +75,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.introduction"
           )}
         </span>
-        <ha-card>
+        <ha-card outlined>
           <div class="card-content">
             <ha-textfield
               .label=${this.hass.localize(
@@ -145,6 +145,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
       </ha-config-section>
 
       <ha-card
+        outlined
         class="blueprint"
         .header=${this.hass.localize(
           "ui.panel.config.automation.editor.blueprint.header"
@@ -188,7 +189,12 @@ export class HaBlueprintAutomationEditor extends LitElement {
                     ([key, value]) =>
                       html`<ha-settings-row .narrow=${this.narrow}>
                         <span slot="heading">${value?.name || key}</span>
-                        <span slot="description">${value?.description}</span>
+                        <ha-markdown
+                          slot="description"
+                          class="card-content"
+                          breaks
+                          .content=${value?.description}
+                        ></ha-markdown>
                         ${value?.selector
                           ? html`<ha-selector
                               .hass=${this.hass}
@@ -327,6 +333,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
+          --settings-row-prefix-display: contents;
           border-top: 1px solid var(--divider-color);
         }
       `,

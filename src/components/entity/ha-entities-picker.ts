@@ -14,6 +14,8 @@ class HaEntitiesPickerLight extends LitElement {
 
   @property({ type: Array }) public value?: string[];
 
+  @property({ type: Boolean }) public disabled?: boolean;
+
   @property({ type: Boolean }) public required?: boolean;
 
   @property() public helper?: string;
@@ -96,6 +98,7 @@ class HaEntitiesPickerLight extends LitElement {
               .entityFilter=${this._entityFilter}
               .value=${entityId}
               .label=${this.pickedEntityLabel}
+              .disabled=${this.disabled}
               @value-changed=${this._entityChanged}
             ></ha-entity-picker>
           </div>
@@ -103,6 +106,7 @@ class HaEntitiesPickerLight extends LitElement {
       )}
       <div>
         <ha-entity-picker
+          allow-custom-entity
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
@@ -113,6 +117,7 @@ class HaEntitiesPickerLight extends LitElement {
           .entityFilter=${this._entityFilter}
           .label=${this.pickEntityLabel}
           .helper=${this.helper}
+          .disabled=${this.disabled}
           .required=${this.required && !currentEntities.length}
           @value-changed=${this._addEntity}
         ></ha-entity-picker>

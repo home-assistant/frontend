@@ -5,11 +5,11 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-card";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
+import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-condition-and";
@@ -42,9 +42,13 @@ const OPTIONS = [
 export default class HaAutomationConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: Condition;
+  @property() condition!: Condition;
 
   @property() public yamlMode = false;
+
+  private _processedCondition = memoizeOne((condition) =>
+    expandConditionWithShorthand(condition)
+  );
 
   private _processedTypes = memoizeOne(
     (localize: LocalizeFunc): [string, string][] =>
@@ -60,7 +64,8 @@ export default class HaAutomationConditionEditor extends LitElement {
   );
 
   protected render() {
-    const selected = OPTIONS.indexOf(this.condition.condition);
+    const condition = this._processedCondition(this.condition);
+    const selected = OPTIONS.indexOf(condition.condition);
     const yamlMode = this.yamlMode || selected === -1;
     return html`
       ${yamlMode
@@ -70,7 +75,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.conditions.unsupported_condition",
                     "condition",
-                    this.condition.condition
+                    condition.condition
                   )}
                 `
               : ""}
@@ -90,7 +95,7 @@ export default class HaAutomationConditionEditor extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
-              .value=${this.condition.condition}
+              .value=${condition.condition}
               naturalMenuWidth
               @selected=${this._typeChanged}
             >
@@ -103,8 +108,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
             <div>
               ${dynamicElement(
-                `ha-automation-condition-${this.condition.condition}`,
-                { hass: this.hass, condition: this.condition }
+                `ha-automation-condition-${condition.condition}`,
+                { hass: this.hass, condition: condition }
               )}
             </div>
           `}
@@ -124,7 +129,7 @@ export default class HaAutomationConditionEditor extends LitElement {
       defaultConfig: Omit<Condition, "condition">;
     };
 
-    if (type !== this.condition.condition) {
+    if (type !== this._processedCondition(this.condition).condition) {
       fireEvent(this, "value-changed", {
         value: {
           condition: type,

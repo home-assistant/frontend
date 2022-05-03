@@ -8,5 +8,6 @@ describe("secondsToDuration", () => {
     assert.strictEqual(secondsToDuration(65), "1:05");
     assert.strictEqual(secondsToDuration(3665), "1:01:05");
     assert.strictEqual(secondsToDuration(39665), "11:01:05");
+    assert.strictEqual(secondsToDuration(932093), "258:54:53");
   });
 });

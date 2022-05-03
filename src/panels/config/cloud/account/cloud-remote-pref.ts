@@ -34,6 +34,7 @@ export class CloudRemotePref extends LitElement {
     if (!remote_certificate) {
       return html`
         <ha-card
+          outlined
           header=${this.hass.localize(
             "ui.panel.config.cloud.account.remote.title"
           )}
@@ -49,6 +50,7 @@ export class CloudRemotePref extends LitElement {
 
     return html`
       <ha-card
+        outlined
         header=${this.hass.localize(
           "ui.panel.config.cloud.account.remote.title"
         )}

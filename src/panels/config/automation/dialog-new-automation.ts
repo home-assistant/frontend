@@ -3,7 +3,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
-import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import { showAutomationEditor } from "../../../data/automation";

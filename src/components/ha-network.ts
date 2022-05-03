@@ -163,6 +163,9 @@ export class HaNetwork extends LitElement {
 
         ha-settings-row {
           padding: 0;
+          --paper-time-input-justify-content: flex-end;
+          --settings-row-content-display: contents;
+          --settings-row-prefix-display: contents;
         }
 
         span[slot="heading"],

@@ -384,7 +384,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
-        const restored = entity?.attributes.restored;
+        const restored = entity?.attributes.restored === true;
         const areaId = entry.area_id ?? deviceLookup[entry.device_id!]?.area_id;
         const area = areaId ? areaLookup[areaId] : undefined;
 

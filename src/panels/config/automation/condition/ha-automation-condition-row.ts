@@ -2,7 +2,7 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
@@ -19,6 +19,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -59,47 +60,69 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   protected render() {
     if (!this.condition) {
       return html``;
     }
     return html`
-      <ha-card>
-        <div class="card-content">
-          <div class="card-menu">
-            <ha-progress-button @click=${this._testCondition}>
+      <ha-card outlined>
+        ${this.condition.enabled === false
+          ? html`<div class="disabled-bar">
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.test"
+                "ui.panel.config.automation.editor.actions.disabled"
               )}
-            </ha-progress-button>
-            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              >
-              </ha-icon-button>
-              <mwc-list-item>
-                ${this._yamlMode
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.edit_ui"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.edit_yaml"
-                    )}
-              </mwc-list-item>
-              <mwc-list-item>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.duplicate"
-                )}
-              </mwc-list-item>
-              <mwc-list-item class="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.delete"
-                )}
-              </mwc-list-item>
-            </ha-button-menu>
-          </div>
+            </div>`
+          : ""}
+        <div class="card-menu">
+          <ha-progress-button @click=${this._testCondition}>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.test"
+            )}
+          </ha-progress-button>
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            >
+            </ha-icon-button>
+            <mwc-list-item>
+              ${this._yamlMode
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_ui"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.duplicate"
+              )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.condition.enabled === false
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.enable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.disable"
+                  )}
+            </mwc-list-item>
+            <mwc-list-item class="warning">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.delete"
+              )}
+            </mwc-list-item>
+          </ha-button-menu>
+        </div>
+        <div
+          class="card-content ${this.condition.enabled === false
+            ? "disabled"
+            : ""}"
+        >
           ${this._warnings
             ? html`<ha-alert
                 alert-type="warning"
@@ -153,8 +176,20 @@ export default class HaAutomationConditionRow extends LitElement {
         fireEvent(this, "duplicate");
         break;
       case 2:
+        this._onDisable();
+        break;
+      case 3:
         this._onDelete();
         break;
+    }
+  }
+
+  private _onDisable() {
+    const enabled = !(this.condition.enabled ?? true);
+    const value = { ...this.condition, enabled };
+    fireEvent(this, "value-changed", { value });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
     }
   }
 
@@ -238,14 +273,29 @@ export default class HaAutomationConditionRow extends LitElement {
     return [
       haStyle,
       css`
+        .disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+        .card-content {
+          padding-top: 16px;
+          margin-top: 0;
+        }
+        .disabled-bar {
+          background: var(--divider-color, #e0e0e0);
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
+        }
         .card-menu {
           float: right;
           z-index: 3;
+          margin: 4px;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
           display: flex;
           align-items: center;
         }
-        .rtl .card-menu {
+        :host-context([style*="direction: rtl;"]) .card-menu {
           float: left;
         }
         mwc-list-item[disabled] {

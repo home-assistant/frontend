@@ -47,7 +47,7 @@ export class HaSettingsRow extends LitElement {
         display: contents;
       }
       :host(:not([narrow])) .content {
-        display: flex;
+        display: var(--settings-row-content-display, flex);
         justify-content: flex-end;
         flex: 1;
         padding: 16px 0;
@@ -68,7 +68,7 @@ export class HaSettingsRow extends LitElement {
         white-space: normal;
       }
       .prefix-wrap {
-        display: contents;
+        display: var(--settings-row-prefix-display);
       }
       :host([narrow]) .prefix-wrap {
         display: flex;

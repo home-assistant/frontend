@@ -131,7 +131,7 @@ export class HaBaseTimeInput extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.label
-        ? html`<label>${this.label}${this.required ? "*" : ""}</label>`
+        ? html`<label>${this.label}${this.required ? " *" : ""}</label>`
         : ""}
       <div class="time-input-wrap">
         ${this.enableDay
@@ -310,6 +310,7 @@ export class HaBaseTimeInput extends LitElement {
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
+      direction: ltr;
     }
     ha-textfield {
       width: 40px;

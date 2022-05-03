@@ -1,4 +1,4 @@
-export const promiseTimeout = (ms: number, promise: Promise<any>) => {
+export const promiseTimeout = (ms: number, promise: Promise<any> | any) => {
   const timeout = new Promise((_resolve, reject) => {
     setTimeout(() => {
       reject(`Timed out in ${ms} ms.`);

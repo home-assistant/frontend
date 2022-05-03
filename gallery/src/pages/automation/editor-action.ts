@@ -20,6 +20,10 @@ import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
 import { Action } from "../../../../src/data/script";
 import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
+import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";
+import { HaIfAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-if";
+import { HaStopAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-stop";
+import { HaPlayMediaAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-play_media";
 
 const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Event", actions: [HaEventAction.defaultConfig] },
@@ -28,11 +32,15 @@ const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Condition", actions: [HaConditionAction.defaultConfig] },
   { name: "Delay", actions: [HaDelayAction.defaultConfig] },
   { name: "Scene", actions: [HaSceneAction.defaultConfig] },
+  { name: "Play media", actions: [HaPlayMediaAction.defaultConfig] },
   { name: "Wait", actions: [HaWaitAction.defaultConfig] },
   { name: "WaitForTrigger", actions: [HaWaitForTriggerAction.defaultConfig] },
   { name: "Repeat", actions: [HaRepeatAction.defaultConfig] },
+  { name: "If-Then", actions: [HaIfAction.defaultConfig] },
   { name: "Choose", actions: [HaChooseAction.defaultConfig] },
   { name: "Variables", actions: [{ variables: { hello: "1" } }] },
+  { name: "Parallel", actions: [HaParallelAction.defaultConfig] },
+  { name: "Stop", actions: [HaStopAction.defaultConfig] },
 ];
 
 @customElement("demo-automation-editor-action")
@@ -86,6 +94,6 @@ class DemoHaAutomationEditorAction extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-ha-automation-editor-action": DemoHaAutomationEditorAction;
+    "demo-automation-editor-action": DemoHaAutomationEditorAction;
   }
 }

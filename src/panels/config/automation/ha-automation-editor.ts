@@ -239,8 +239,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                   ? html`
                       ${!this.narrow
                         ? html`
-                            <ha-card
-                              ><div class="card-header">
+                            <ha-card outlined>
+                              <div class="card-header">
                                 ${this._config.alias}
                               </div>
                               ${stateObj
@@ -275,8 +275,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                         .defaultValue=${this._preprocessYaml()}
                         @value-changed=${this._yamlChanged}
                       ></ha-yaml-editor>
-                      <ha-card
-                        ><div class="card-actions">
+                      <ha-card outlined>
+                        <div class="card-actions">
                           <mwc-button @click=${this._copyYaml}>
                             ${this.hass.localize(
                               "ui.panel.config.automation.editor.copy_to_clipboard"

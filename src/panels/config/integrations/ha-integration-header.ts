@@ -143,6 +143,10 @@ export class HaIntegrationHeader extends LitElement {
       width: 40px;
       height: 40px;
     }
+    :host-context([style*="direction: rtl;"]) .header img {
+      margin-right: auto !important;
+      margin-left: 16px;
+    }
     .header .info {
       flex: 1;
       align-self: center;

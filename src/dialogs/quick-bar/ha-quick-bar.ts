@@ -17,6 +17,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -24,7 +25,7 @@ import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
-  fuzzyFilterSort,
+  defaultFuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
@@ -33,6 +34,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
+import { fetchHassioSupervisorInfo } from "../../data/hassio/supervisor";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -240,14 +242,15 @@ export class QuickBar extends LitElement {
                   : ""}
               </mwc-list>
             `}
-        ${this._hint ? html`<div class="hint">${this._hint}</div>` : ""}
+        ${this._hint ? html`<ha-tip>${this._hint}</ha-tip>` : ""}
       </ha-dialog>
     `;
   }
 
-  private _initializeItemsIfNeeded() {
+  private async _initializeItemsIfNeeded() {
     if (this._commandMode) {
-      this._commandItems = this._commandItems || this._generateCommandItems();
+      this._commandItems =
+        this._commandItems || (await this._generateCommandItems());
     } else {
       this._entityItems = this._entityItems || this._generateEntityItems();
     }
@@ -485,11 +488,11 @@ export class QuickBar extends LitElement {
       );
   }
 
-  private _generateCommandItems(): CommandItem[] {
+  private async _generateCommandItems(): Promise<CommandItem[]> {
     return [
       ...this._generateReloadCommands(),
       ...this._generateServerControlCommands(),
-      ...this._generateNavigationCommands(),
+      ...(await this._generateNavigationCommands()),
     ].sort((a, b) =>
       caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
     );
@@ -578,11 +581,40 @@ export class QuickBar extends LitElement {
     });
   }
 
-  private _generateNavigationCommands(): CommandItem[] {
+  private async _generateNavigationCommands(): Promise<CommandItem[]> {
     const panelItems = this._generateNavigationPanelCommands();
     const sectionItems = this._generateNavigationConfigSectionCommands();
+    const supervisorItems: BaseNavigationCommand[] = [];
+    if (isComponentLoaded(this.hass, "hassio")) {
+      const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      supervisorItems.push({
+        path: "/hassio/store",
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.addon_store"
+        ),
+      });
+      supervisorItems.push({
+        path: "/hassio/dashboard",
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.addon_dashboard"
+        ),
+      });
+      for (const addon of supervisorInfo.addons) {
+        supervisorItems.push({
+          path: `/hassio/addon/${addon.slug}`,
+          primaryText: this.hass.localize(
+            "ui.dialogs.quick-bar.commands.navigation.addon_info",
+            { addon: addon.name }
+          ),
+        });
+      }
+    }
 
-    return this._finalizeNavigationCommands([...panelItems, ...sectionItems]);
+    return this._finalizeNavigationCommands([
+      ...panelItems,
+      ...sectionItems,
+      ...supervisorItems,
+    ]);
   }
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
@@ -610,20 +642,14 @@ export class QuickBar extends LitElement {
         if (!canShowPage(this.hass, page)) {
           continue;
         }
-        if (!page.component) {
-          continue;
-        }
+
         const info = this._getNavigationInfoFromConfig(page);
 
         if (!info) {
           continue;
         }
         // Add to list, but only if we do not already have an entry for the same path and component
-        if (
-          items.some(
-            (e) => e.path === info.path && e.component === info.component
-          )
-        ) {
+        if (items.some((e) => e.path === info.path)) {
           continue;
         }
 
@@ -637,14 +663,19 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    if (!page.component) {
-      return undefined;
-    }
-    const caption = this.hass.localize(
-      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
-    );
+    const path = page.path.substring(1);
 
-    if (page.translationKey && caption) {
+    let name = path.substring(path.indexOf("/") + 1);
+    name = name.indexOf("/") > -1 ? name.substring(0, name.indexOf("/")) : name;
+
+    const caption =
+      (name &&
+        this.hass.localize(
+          `ui.dialogs.quick-bar.commands.navigation.${name}`
+        )) ||
+      (page.translationKey && this.hass.localize(page.translationKey));
+
+    if (caption) {
       return { ...page, primaryText: caption };
     }
 
@@ -694,7 +725,7 @@ export class QuickBar extends LitElement {
 
   private _filterItems = memoizeOne(
     (items: QuickBarItem[], filter: string): QuickBarItem[] =>
-      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+      defaultFuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
 
   static get styles() {
@@ -782,10 +813,8 @@ export class QuickBar extends LitElement {
           text-transform: capitalize;
         }
 
-        .hint {
+        ha-tip {
           padding: 20px;
-          font-style: italic;
-          text-align: center;
         }
 
         .nothing-found {

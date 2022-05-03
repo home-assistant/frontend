@@ -117,6 +117,19 @@ export class HaButtonToggleGroup extends LitElement {
         --mdc-shape-small: 4px;
         border-right-width: 1px;
       }
+
+      :host([dir="rtl"]) ha-icon-button:first-child,
+      :host([dir="rtl"]) mwc-button:first-child {
+        border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
+        --mdc-shape-small: 0 4px 4px 0;
+        --mdc-button-outline-width: 1px;
+      }
+      :host([dir="rtl"]) ha-icon-button:last-child,
+      :host([dir="rtl"]) mwc-button:last-child {
+        --mdc-shape-small: 4px 0 0 4px;
+        border-radius: 4px 0 0 4px;
+      }
     `;
   }
 }
