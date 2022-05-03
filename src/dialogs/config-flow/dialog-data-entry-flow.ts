@@ -11,7 +11,6 @@ import {
 } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
@@ -261,7 +260,6 @@ class DataEntryFlowDialog extends LitElement {
                           <ha-icon-button
                             .label=${this.hass.localize("ui.common.help")}
                             .path=${mdiHelpCircle}
-                            ?rtl=${computeRTL(this.hass)}
                           >
                           </ha-icon-button
                         ></a>
@@ -273,7 +271,6 @@ class DataEntryFlowDialog extends LitElement {
                     )}
                     .path=${mdiClose}
                     dialogAction="close"
-                    ?rtl=${computeRTL(this.hass)}
                   ></ha-icon-button>
                 </div>
                 ${this._step === null
@@ -315,6 +312,7 @@ class DataEntryFlowDialog extends LitElement {
                         .flowConfig=${this._params.flowConfig}
                         .step=${this._step}
                         .hass=${this.hass}
+                        .domain=${this._step.handler}
                       ></step-flow-abort>
                     `
                   : this._step.type === "progress"
@@ -521,7 +519,7 @@ class DataEntryFlowDialog extends LitElement {
           top: 0;
           right: 0;
         }
-        .dialog-actions[rtl] {
+        :host-context([style*="direction: rtl;"]) .dialog-actions {
           right: auto;
           left: 0;
         }

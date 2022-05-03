@@ -5,15 +5,22 @@ import { property, state } from "lit/decorators";
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
-  @state() showProgressIndicator = false;
+  @state() private _showProgressIndicator = false;
 
-  private _showProgressIndicatorTimeout;
+  @state() private _retryInSeconds = 60;
+
+  private _showProgressIndicatorTimeout?: NodeJS.Timeout;
+
+  private _retryInterval?: NodeJS.Timeout;
 
   protected render() {
     return this.error
       ? html`
           <p>Unable to connect to Home Assistant.</p>
-          <mwc-button @click=${this._retry}>Retry</mwc-button>
+          <p class="retry-text">
+            Retrying in ${this._retryInSeconds} seconds...
+          </p>
+          <mwc-button @click=${this._retry}>Retry now</mwc-button>
           ${location.host.includes("ui.nabu.casa")
             ? html`
                 <p>
@@ -29,7 +36,7 @@ class HaInitPage extends LitElement {
         `
       : html`
           <div id="progress-indicator-wrapper">
-            ${this.showProgressIndicator
+            ${this._showProgressIndicator
               ? html`<ha-circular-progress active></ha-circular-progress>`
               : ""}
           </div>
@@ -39,14 +46,26 @@ class HaInitPage extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    clearTimeout(this._showProgressIndicatorTimeout);
+    if (this._showProgressIndicatorTimeout) {
+      clearTimeout(this._showProgressIndicatorTimeout);
+    }
+    if (this._retryInterval) {
+      clearInterval(this._retryInterval);
+    }
   }
 
   protected firstUpdated() {
     this._showProgressIndicatorTimeout = setTimeout(async () => {
       await import("../components/ha-circular-progress");
-      this.showProgressIndicator = true;
+      this._showProgressIndicator = true;
     }, 5000);
+
+    this._retryInterval = setInterval(() => {
+      const remainingSeconds = this._retryInSeconds--;
+      if (remainingSeconds <= 0) {
+        this._retry();
+      }
+    }, 1000);
   }
 
   private _retry() {
@@ -69,6 +88,9 @@ class HaInitPage extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .retry-text {
+        margin-top: 0;
       }
       p,
       #loading-text {

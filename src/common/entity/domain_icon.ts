@@ -8,26 +8,25 @@ import {
   mdiCalendar,
   mdiCast,
   mdiCastConnected,
+  mdiCheckCircleOutline,
   mdiClock,
+  mdiCloseCircleOutline,
   mdiGestureTapButton,
   mdiLanConnect,
   mdiLanDisconnect,
-  mdiLightSwitch,
   mdiLock,
   mdiLockAlert,
   mdiLockClock,
   mdiLockOpen,
+  mdiPackage,
+  mdiPackageDown,
   mdiPackageUp,
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
-  mdiCheckCircleOutline,
-  mdiCloseCircleOutline,
+  mdiToggleSwitchVariant,
+  mdiToggleSwitchVariantOff,
   mdiWeatherNight,
-  mdiPackage,
-  mdiPackageDown,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { updateIsInstalling, UpdateEntity } from "../../data/update";
@@ -109,9 +108,11 @@ export const domainIcon = (
         case "outlet":
           return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
-          return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+          return compareState === "on"
+            ? mdiToggleSwitchVariant
+            : mdiToggleSwitchVariantOff;
         default:
-          return mdiLightSwitch;
+          return mdiToggleSwitchVariant;
       }
 
     case "sensor": {

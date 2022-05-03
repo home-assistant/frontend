@@ -51,9 +51,10 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
-        .entityFilter=${this._filterEntities}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
+        .entityFilter=${this._filterEntities}
+        .disabled=${this.disabled}
         .required=${this.required}
       ></ha-entities-picker>
     `;

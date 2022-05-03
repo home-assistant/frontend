@@ -23,17 +23,16 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import {
+  UNHEALTHY_REASON_URL,
+  UNSUPPORTED_REASON_URL,
+} from "../../../src/panels/config/system-health/ha-config-system-health";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
 import { documentationUrl } from "../../../src/util/documentation-url";
 import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
-
-const UNSUPPORTED_REASON_URL = {};
-const UNHEALTHY_REASON_URL = {
-  privileged: "/more-info/unsupported/privileged",
-};
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
@@ -58,7 +57,7 @@ class HassioSupervisorInfo extends LitElement {
       },
     ];
     return html`
-      <ha-card header="Supervisor">
+      <ha-card header="Supervisor" outlined>
         <div class="card-content">
           <div>
             <ha-settings-row>

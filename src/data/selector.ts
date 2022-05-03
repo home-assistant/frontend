@@ -19,6 +19,7 @@ export type Selector =
   | SelectSelector
   | StringSelector
   | TargetSelector
+  | TemplateSelector
   | ThemeSelector
   | TimeSelector;
 
@@ -211,6 +212,11 @@ export interface TargetSelector {
       model?: DeviceSelector["device"]["model"];
     };
   };
+}
+
+export interface TemplateSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  template: {};
 }
 
 export interface ThemeSelector {

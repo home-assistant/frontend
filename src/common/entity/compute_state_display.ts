@@ -13,6 +13,7 @@ import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 import { supportsFeature } from "./supports-feature";
+import { formatDuration, UNIT_TO_SECOND_CONVERT } from "../datetime/duration";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -28,11 +29,27 @@ export const computeStateDisplay = (
 
   // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
   if (isNumericState(stateObj)) {
+    // state is duration
+    if (
+      stateObj.attributes.device_class === "duration" &&
+      stateObj.attributes.unit_of_measurement &&
+      UNIT_TO_SECOND_CONVERT[stateObj.attributes.unit_of_measurement]
+    ) {
+      try {
+        return formatDuration(
+          compareState,
+          stateObj.attributes.unit_of_measurement
+        );
+      } catch (_err) {
+        // fallback to default
+      }
+    }
     if (stateObj.attributes.device_class === "monetary") {
       try {
         return formatNumber(compareState, locale, {
           style: "currency",
           currency: stateObj.attributes.unit_of_measurement,
+          minimumFractionDigits: 2,
         });
       } catch (_err) {
         // fallback to default

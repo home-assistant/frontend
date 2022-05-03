@@ -166,7 +166,7 @@ class HassioAddonInfo extends LitElement {
           `
         : ""}
 
-      <ha-card>
+      <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
             ${!this.narrow ? this.addon.name : ""}
@@ -649,7 +649,7 @@ class HassioAddonInfo extends LitElement {
 
       ${this.addon.long_description
         ? html`
-            <ha-card>
+            <ha-card outlined>
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}

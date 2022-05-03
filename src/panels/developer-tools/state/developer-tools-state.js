@@ -18,6 +18,7 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-tip";
 import "../../../components/search-input";
 import "../../../components/ha-expansion-panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -89,6 +90,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .filters search-input {
           display: block;
           --mdc-text-field-fill-color: transparent;
+        }
+        ha-tip {
+          display: flex;
+          padding: 8px 0;
         }
 
         th.attributes {
@@ -181,6 +186,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               on-change="entityIdChanged"
               allow-custom-entity
             ></ha-entity-picker>
+            <ha-tip>[[localize('ui.tips.key_e_hint')]]</ha-tip>
             <ha-textfield
               label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
               required

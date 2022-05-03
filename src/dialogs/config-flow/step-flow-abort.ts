@@ -15,13 +15,11 @@ class StepFlowAbort extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
+  @property({ attribute: false }) public domain!: string;
+
   protected render(): TemplateResult {
     return html`
-      <h2>
-        ${this.hass.localize(
-          "ui.panel.config.integrations.config_flow.aborted"
-        )}
-      </h2>
+      <h2>${this.hass.localize(`component.${this.domain}.title`)}</h2>
       <div class="content">
         ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>

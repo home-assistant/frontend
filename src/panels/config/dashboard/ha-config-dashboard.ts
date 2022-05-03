@@ -1,15 +1,9 @@
 import type { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import {
-  mdiCloudLock,
-  mdiDotsVertical,
-  mdiLightbulbOutline,
-  mdiMagnify,
-  mdiNewBox,
-} from "@mdi/js";
+import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import type { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -21,31 +15,33 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tip";
 import { CloudStatus } from "../../../data/cloud";
-import { updateCanInstall, UpdateEntity } from "../../../data/update";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  checkForEntityUpdates,
+  filterUpdateEntitiesWithInstall,
+  UpdateEntity,
+} from "../../../data/update";
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
+import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
-const randomTip = (hass: HomeAssistant) => {
+const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
-  const tips = [
+  let tips = [
     {
       content: hass.localize(
         "ui.panel.config.tips.join",
@@ -85,13 +81,18 @@ const randomTip = (hass: HomeAssistant) => {
             rel="noreferrer"
             >Newsletter</a
           >
-          <ha-svg-icon class="new" .path=${mdiNewBox}></ha-svg-icon
-        ></span>`
+        </span>`
       ),
       weight: 2,
+      narrow: true,
     },
-    { content: hass.localize("ui.dialogs.quick-bar.key_c_hint"), weight: 1 },
+    { content: hass.localize("ui.tips.key_c_hint"), weight: 1, narrow: false },
+    { content: hass.localize("ui.tips.key_m_hint"), weight: 1, narrow: false },
   ];
+
+  if (narrow) {
+    tips = tips.filter((tip) => tip.narrow);
+  }
 
   tips.forEach((tip) => {
     for (let i = 0; i < tip.weight; i++) {
@@ -117,12 +118,25 @@ class HaConfigDashboard extends LitElement {
 
   @state() private _tip?: string;
 
-  private _notifyUpdates = false;
+  private _pages = memoizeOne((clouStatus, isLoaded) => {
+    const pages: PageNavigation[] = [];
+    if (clouStatus && isLoaded) {
+      pages.push({
+        component: "cloud",
+        path: "/config/cloud",
+        name: "Home Assistant Cloud",
+        info: this.cloudStatus,
+        iconPath: mdiCloudLock,
+        iconColor: "#3B808E",
+      });
+    }
+    return [...pages, ...configSections.dashboard];
+  });
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
-      this.hass.states
-    );
+    const [canInstallUpdates, totalUpdates] =
+      this._filterUpdateEntitiesWithInstall(this.hass.states);
+
     return html`
       <ha-app-layout>
         <app-header fixed slot="header">
@@ -161,51 +175,37 @@ class HaConfigDashboard extends LitElement {
           full-width
         >
           ${canInstallUpdates.length
-            ? html`<ha-card>
+            ? html`<ha-card outlined>
                 <ha-config-updates
                   .hass=${this.hass}
                   .narrow=${this.narrow}
+                  .total=${totalUpdates}
                   .updateEntities=${canInstallUpdates}
                 ></ha-config-updates>
+                ${totalUpdates > canInstallUpdates.length
+                  ? html`<a class="button" href="/config/updates">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.more_updates",
+                        {
+                          count: totalUpdates - canInstallUpdates.length,
+                        }
+                      )}
+                    </a>`
+                  : ""}
               </ha-card>`
             : ""}
-          <ha-card>
-            ${this.narrow && canInstallUpdates.length
-              ? html`<div class="title">
-                  ${this.hass.localize("panel.config")}
-                </div>`
-              : ""}
-            ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
-              ? html`
-                  <ha-config-navigation
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .showAdvanced=${this.showAdvanced}
-                    .pages=${[
-                      {
-                        component: "cloud",
-                        path: "/config/cloud",
-                        name: "Home Assistant Cloud",
-                        info: this.cloudStatus,
-                        iconPath: mdiCloudLock,
-                        iconColor: "#3B808E",
-                      },
-                    ]}
-                  ></ha-config-navigation>
-                `
-              : ""}
+          <ha-card outlined>
             <ha-config-navigation
               .hass=${this.hass}
               .narrow=${this.narrow}
               .showAdvanced=${this.showAdvanced}
-              .pages=${configSections.dashboard}
+              .pages=${this._pages(
+                this.cloudStatus,
+                isComponentLoaded(this.hass, "cloud")
+              )}
             ></ha-config-navigation>
           </ha-card>
-          <div class="tips">
-            <ha-svg-icon .path=${mdiLightbulbOutline}></ha-svg-icon>
-            <span class="tip-word">Tip!</span>
-            <span class="text">${this._tip}</span>
-          </div>
+          <ha-tip>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-app-layout>
     `;
@@ -215,62 +215,19 @@ class HaConfigDashboard extends LitElement {
     super.updated(changedProps);
 
     if (!this._tip && changedProps.has("hass")) {
-      this._tip = randomTip(this.hass);
-    }
-
-    if (!changedProps.has("hass") || !this._notifyUpdates) {
-      return;
-    }
-    this._notifyUpdates = false;
-    if (this._filterUpdateEntitiesWithInstall(this.hass.states).length) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.updates.updates_refreshed"
-        ),
-      });
-    } else {
-      showToast(this, {
-        message: this.hass.localize("ui.panel.config.updates.no_new_updates"),
-      });
+      this._tip = randomTip(this.hass, this.narrow);
     }
   }
 
-  private _filterUpdateEntities = memoizeOne((entities: HassEntities) =>
-    (
-      Object.values(entities).filter(
-        (entity) => computeStateDomain(entity) === "update"
-      ) as UpdateEntity[]
-    ).sort((a, b) => {
-      if (a.attributes.title === "Home Assistant Core") {
-        return -3;
-      }
-      if (b.attributes.title === "Home Assistant Core") {
-        return 3;
-      }
-      if (a.attributes.title === "Home Assistant Operating System") {
-        return -2;
-      }
-      if (b.attributes.title === "Home Assistant Operating System") {
-        return 2;
-      }
-      if (a.attributes.title === "Home Assistant Supervisor") {
-        return -1;
-      }
-      if (b.attributes.title === "Home Assistant Supervisor") {
-        return 1;
-      }
-      return caseInsensitiveStringCompare(
-        a.attributes.title || a.attributes.friendly_name || "",
-        b.attributes.title || b.attributes.friendly_name || ""
-      );
-    })
-  );
-
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities) =>
-      this._filterUpdateEntities(entities).filter((entity) =>
-        updateCanInstall(entity)
-      )
+    (entities: HassEntities): [UpdateEntity[], number] => {
+      const updates = filterUpdateEntitiesWithInstall(entities);
+
+      return [
+        updates.slice(0, updates.length === 3 ? updates.length : 2),
+        updates.length,
+      ];
+    }
   );
 
   private _showQuickBar(): void {
@@ -281,27 +238,9 @@ class HaConfigDashboard extends LitElement {
   }
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    const _entities = this._filterUpdateEntities(this.hass.states).map(
-      (entity) => entity.entity_id
-    );
     switch (ev.detail.index) {
       case 0:
-        if (_entities.length) {
-          this._notifyUpdates = true;
-          await this.hass.callService("homeassistant", "update_entity", {
-            entity_id: _entities,
-          });
-          return;
-        }
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.updates.no_update_entities.title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.updates.no_update_entities.description"
-          ),
-          warning: true,
-        });
+        checkForEntityUpdates(this, this.hass);
         break;
     }
   }
@@ -328,31 +267,30 @@ class HaConfigDashboard extends LitElement {
           text-decoration: none;
           color: var(--primary-text-color);
         }
+        a.button {
+          display: block;
+          color: var(--primary-color);
+          padding: 16px;
+        }
         .title {
           font-size: 16px;
           padding: 16px;
           padding-bottom: 0;
         }
-        :host([narrow]) ha-card {
-          border-radius: 0;
-          box-shadow: unset;
+
+        @media all and (max-width: 600px) {
+          ha-card {
+            border-width: 1px 0;
+            border-radius: 0;
+            box-shadow: unset;
+          }
+          ha-config-section {
+            margin-top: -42px;
+          }
         }
 
-        :host([narrow]) ha-config-section {
-          margin-top: -42px;
-        }
-
-        .tips {
-          text-align: center;
+        ha-tip {
           margin-bottom: max(env(safe-area-inset-bottom), 8px);
-        }
-
-        .tips .text {
-          color: var(--secondary-text-color);
-        }
-
-        .tip-word {
-          font-weight: 500;
         }
 
         .new {

@@ -99,6 +99,7 @@ export class CloudLogin extends LitElement {
               : ""}
 
             <ha-card
+              outlined
               .header=${this.hass.localize(
                 "ui.panel.config.cloud.login.sign_in"
               )}
@@ -157,7 +158,7 @@ export class CloudLogin extends LitElement {
               </div>
             </ha-card>
 
-            <ha-card>
+            <ha-card outlined>
               <paper-item @click=${this._handleRegister}>
                 <paper-item-body two-line>
                   ${this.hass.localize(

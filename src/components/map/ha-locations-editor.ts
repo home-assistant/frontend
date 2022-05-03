@@ -19,9 +19,9 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import type { HomeAssistant } from "../../types";
+import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap } from "./ha-map";
-import "../ha-input-helper-text";
 
 declare global {
   // for fire event
@@ -297,7 +297,7 @@ export class HaLocationsEditor extends LitElement {
     return css`
       ha-map {
         display: block;
-        height: 300px;
+        height: 100%;
       }
     `;
   }
