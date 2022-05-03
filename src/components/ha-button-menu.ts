@@ -37,6 +37,7 @@ export class HaButtonMenu extends LitElement {
         <slot name="trigger"></slot>
       </div>
       <mwc-menu
+        id="menu"
         .corner=${this.corner}
         .menuCorner=${this.menuCorner}
         .fixed=${this.fixed}
@@ -50,6 +51,52 @@ export class HaButtonMenu extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps): void {
+    super.firstUpdated(changedProps);
+
+    this.updateComplete.then(() => {
+      this.querySelectorAll("mwc-list-item").forEach((item) => {
+        item._getUpdateComplete = item.getUpdateComplete;
+
+        var style = document.createElement("style");
+        style.innerHTML =
+          ".rtl-fix, .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
+        item.shadowRoot.appendChild(style);
+        var span = item.shadowRoot?.querySelector("span:first-child");
+        span.className = "rtl-fix";
+
+        item.getUpdateComplete = function () {
+          var result = item._getUpdateComplete();
+          var span = item.shadowRoot?.querySelector(".rtl-fix");
+          span!.className = "rtl-fix2";
+          new Promise(function (resolve, reject) {
+            setTimeout(() => resolve("done"), 0);
+          }).then(() => {
+            span!.className = "rtl-fix";
+          });
+
+          return result;
+          // wait for all children to render... and then inject again.
+          // check if we need original injection
+        };
+      });
+    });
+  }
+  /*
+  protected async firstUpdated(
+    _changedProperties: Map<string | number | symbol, unknown>
+  ): void {
+    const children = this.querySelectorAll("mwc-list-item");
+    await Promise.all(Array.from(children).map((c) => c.updateComplete));
+
+    this.querySelectorAll("mwc-list-item").forEach((item) => {
+      var style = document.createElement("style");
+      style.innerHTML =
+        "span:first-child { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
+      item.shadowRoot.appendChild(style);
+    });
+  }
+*/
   private _handleClick(): void {
     if (this.disabled) {
       return;
@@ -67,6 +114,34 @@ export class HaButtonMenu extends LitElement {
       ::slotted([disabled]) {
         color: var(--disabled-text-color);
       }
+
+      /*
+      :host-context([style*="direction: rtl;"]) mwc-menu mwc-list-item {
+        background-color: red;
+        margin-right: 0px !important;
+        margin-left: var(--mdc-list-item-graphic-margin, 32px);
+      }
+      */
+
+      /*:host-context([style*="direction: rtl;"]) span([class*="graphic"]) {*/
+      /*
+            :host-context([style*="direction: rtl;"])
+        mwc-menu
+        ::slotted([mwc-list-item]) {
+        background-color: red;
+        margin-right: 0px !important;
+        margin-left: var(--mdc-list-item-graphic-margin, 32px);
+      }
+*/
+
+      /*
+      :host-context([style*="direction: rtl;"]) ::slotted([mwc-list-item]) {
+        background-color: red;
+        margin-right: 0px !important;
+        margin-left: var(--mdc-list-item-graphic-margin, 32px);
+      }
+      */
+      /*::slotted([mwc-list-item]) {*/
     `;
   }
 }
