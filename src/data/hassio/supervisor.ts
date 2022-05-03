@@ -179,7 +179,10 @@ export const fetchHassioInfo = async (
 };
 
 export const fetchHassioLogs = async (hass: HomeAssistant, provider: string) =>
-  hass.callApi<string>("GET", `hassio/${provider}/logs`);
+  hass.callApi<string>(
+    "GET",
+    `hassio/${provider.includes("_") ? `addons/${provider}` : provider}/logs`
+  );
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,
