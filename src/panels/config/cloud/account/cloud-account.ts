@@ -1,26 +1,28 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
-import "@polymer/paper-item/paper-item-body";
+import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import { LitElement, css, html, PropertyValues } from "lit";
+import "@polymer/paper-item/paper-item-body";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/buttons/ha-call-api-button";
-import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import { debounce } from "../../../../common/util/debounce";
 import {
   cloudLogout,
   CloudStatusLoggedIn,
   fetchCloudSubscriptionInfo,
   SubscriptionInfo,
 } from "../../../../data/cloud";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";
@@ -28,8 +30,6 @@ import "./cloud-google-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -210,6 +210,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-webhooks
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
               dir=${this._rtlDirection}
             ></cloud-webhooks>
