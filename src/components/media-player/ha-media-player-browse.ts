@@ -1,4 +1,5 @@
-import { LitVirtualizer } from "@lit-labs/virtualizer";
+import "@lit-labs/virtualizer";
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
