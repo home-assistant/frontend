@@ -103,34 +103,6 @@ export class HaButtonMenu extends LitElement {
       ::slotted([disabled]) {
         color: var(--disabled-text-color);
       }
-
-      /*
-      :host-context([style*="direction: rtl;"]) mwc-menu mwc-list-item {
-        background-color: red;
-        margin-right: 0px !important;
-        margin-left: var(--mdc-list-item-graphic-margin, 32px);
-      }
-      */
-
-      /*:host-context([style*="direction: rtl;"]) span([class*="graphic"]) {*/
-      /*
-            :host-context([style*="direction: rtl;"])
-        mwc-menu
-        ::slotted([mwc-list-item]) {
-        background-color: red;
-        margin-right: 0px !important;
-        margin-left: var(--mdc-list-item-graphic-margin, 32px);
-      }
-*/
-
-      /*
-      :host-context([style*="direction: rtl;"]) ::slotted([mwc-list-item]) {
-        background-color: red;
-        margin-right: 0px !important;
-        margin-left: var(--mdc-list-item-graphic-margin, 32px);
-      }
-      */
-      /*::slotted([mwc-list-item]) {*/
     `;
   }
 }
