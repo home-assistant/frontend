@@ -687,7 +687,10 @@
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]"
+            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
+            "addon_dashboard": "Add-on Dashboard",
+            "addon_store": "Add-on Store",
+            "addon_info": "{addon} Info"
           }
         },
         "filter_placeholder": "Entity Filter",

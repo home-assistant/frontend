@@ -17,6 +17,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -33,6 +34,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
+import { fetchHassioSupervisorInfo } from "../../data/hassio/supervisor";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -245,9 +247,10 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private _initializeItemsIfNeeded() {
+  private async _initializeItemsIfNeeded() {
     if (this._commandMode) {
-      this._commandItems = this._commandItems || this._generateCommandItems();
+      this._commandItems =
+        this._commandItems || (await this._generateCommandItems());
     } else {
       this._entityItems = this._entityItems || this._generateEntityItems();
     }
@@ -485,11 +488,11 @@ export class QuickBar extends LitElement {
       );
   }
 
-  private _generateCommandItems(): CommandItem[] {
+  private async _generateCommandItems(): CommandItem[] {
     return [
       ...this._generateReloadCommands(),
       ...this._generateServerControlCommands(),
-      ...this._generateNavigationCommands(),
+      ...(await this._generateNavigationCommands()),
     ].sort((a, b) =>
       caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
     );
@@ -578,11 +581,40 @@ export class QuickBar extends LitElement {
     });
   }
 
-  private _generateNavigationCommands(): CommandItem[] {
+  private async _generateNavigationCommands(): Promise<CommandItem[]> {
     const panelItems = this._generateNavigationPanelCommands();
     const sectionItems = this._generateNavigationConfigSectionCommands();
+    const supervisorItems: BaseNavigationCommand[] = [];
+    if (isComponentLoaded(this.hass, "hassio")) {
+      const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      supervisorItems.push({
+        path: "/hassio/store",
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.addon_store"
+        ),
+      });
+      supervisorItems.push({
+        path: "/hassio/dashboard",
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.navigation.addon_dashboard"
+        ),
+      });
+      for (const addon of supervisorInfo.addons) {
+        supervisorItems.push({
+          path: `/hassio/addon/${addon.slug}`,
+          primaryText: this.hass.localize(
+            "ui.dialogs.quick-bar.commands.navigation.addon_info",
+            { addon: addon.name }
+          ),
+        });
+      }
+    }
 
-    return this._finalizeNavigationCommands([...panelItems, ...sectionItems]);
+    return this._finalizeNavigationCommands([
+      ...panelItems,
+      ...sectionItems,
+      ...supervisorItems,
+    ]);
   }
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
@@ -610,9 +642,6 @@ export class QuickBar extends LitElement {
         if (!canShowPage(this.hass, page)) {
           continue;
         }
-        if (!page.component) {
-          continue;
-        }
         const info = this._getNavigationInfoFromConfig(page);
 
         if (!info) {
@@ -637,14 +666,14 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    if (!page.component) {
-      return undefined;
-    }
-    const caption = this.hass.localize(
-      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
-    );
+    const caption =
+      this.hass.localize(
+        `ui.dialogs.quick-bar.commands.navigation.${page.component}`
+      ) || page.translationKey
+        ? this.hass.localize(page.translationKey!)
+        : undefined;
 
-    if (page.translationKey && caption) {
+    if (caption) {
       return { ...page, primaryText: caption };
     }
 
