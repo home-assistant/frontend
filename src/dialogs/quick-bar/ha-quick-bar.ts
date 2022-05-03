@@ -610,20 +610,14 @@ export class QuickBar extends LitElement {
         if (!canShowPage(this.hass, page)) {
           continue;
         }
-        if (!page.component) {
-          continue;
-        }
+
         const info = this._getNavigationInfoFromConfig(page);
 
         if (!info) {
           continue;
         }
         // Add to list, but only if we do not already have an entry for the same path and component
-        if (
-          items.some(
-            (e) => e.path === info.path && e.component === info.component
-          )
-        ) {
+        if (items.some((e) => e.path === info.path)) {
           continue;
         }
 
@@ -637,11 +631,13 @@ export class QuickBar extends LitElement {
   private _getNavigationInfoFromConfig(
     page: PageNavigation
   ): NavigationInfo | undefined {
-    if (!page.component) {
-      return undefined;
-    }
+    const path = page.path.substring(1);
+
+    let name = path.substring(path.indexOf("/") + 1);
+    name = name.indexOf("/") > -1 ? name.substring(0, name.indexOf("/")) : name;
+
     const caption = this.hass.localize(
-      `ui.dialogs.quick-bar.commands.navigation.${page.component}`
+      `ui.dialogs.quick-bar.commands.navigation.${name}`
     );
 
     if (page.translationKey && caption) {
