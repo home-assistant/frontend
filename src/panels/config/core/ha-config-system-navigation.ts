@@ -1,10 +1,21 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import "../../../components/ha-card";
-import "../../../components/ha-tip";
 import "../../../components/ha-navigation-list";
-import { CloudStatus } from "../../../data/cloud";
+import "../../../components/ha-tip";
+import { BackupContent, fetchBackupInfo } from "../../../data/backup";
+import { CloudStatus, fetchCloudStatus } from "../../../data/cloud";
+import { BOARD_NAMES } from "../../../data/hardware";
+import { fetchHassioBackups, HassioBackup } from "../../../data/hassio/backup";
+import {
+  fetchHassioHassOsInfo,
+  fetchHassioHostInfo,
+  HassioHassOSInfo,
+  HassioHostInfo,
+} from "../../../data/hassio/host";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -28,15 +39,80 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ type: Boolean }) public showAdvanced!: boolean;
 
+  @state() private _latestBackupDate?: string;
+
+  @state() private _boardName?: string;
+
+  @state() private _storageInfo?: { used: number; free: number; total: number };
+
+  @state() private _externalAccess = false;
+
   protected render(): TemplateResult {
     const pages = configSections.general
       .filter((page) => canShowPage(this.hass, page))
-      .map((page) => ({
-        ...page,
-        name: page.translationKey
-          ? this.hass.localize(page.translationKey)
-          : page.name,
-      }));
+      .map((page) => {
+        let description = "";
+
+        switch (page.translationKey) {
+          case "backup":
+            description = this._latestBackupDate
+              ? this.hass.localize(
+                  "ui.panel.config.backup.description",
+                  "relative_time",
+                  relativeTime(
+                    new Date(this._latestBackupDate),
+                    this.hass.locale
+                  )
+                )
+              : this.hass.localize(
+                  "ui.panel.config.backup.description_no_backup"
+                );
+            break;
+          case "network":
+            description = this.hass.localize(
+              "ui.panel.config.network.description",
+              "state",
+              this._externalAccess
+                ? this.hass.localize("ui.panel.config.network.enabled")
+                : this.hass.localize("ui.panel.config.network.disabled")
+            );
+            break;
+          case "storage":
+            description = this._storageInfo
+              ? this.hass.localize(
+                  "ui.panel.config.storage.description",
+                  "percent_used",
+                  `${Math.round(
+                    (this._storageInfo.used / this._storageInfo.total) * 100
+                  )}%`,
+                  "free_space",
+                  `${this._storageInfo.free} GB`
+                )
+              : "";
+            break;
+          case "hardware":
+            description =
+              this._boardName ||
+              this.hass.localize("ui.panel.config.hardware.description");
+            break;
+
+          default:
+            description = this.hass.localize(
+              `ui.panel.config.${page.translationKey}.description`
+            );
+            break;
+        }
+
+        return {
+          ...page,
+          name: page.translationKey
+            ? this.hass.localize(
+                `ui.panel.config.${page.translationKey}.caption`
+              )
+            : page.name,
+          description,
+        };
+      });
 
     return html`
       <hass-subpage
@@ -60,6 +136,7 @@ class HaConfigSystemNavigation extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
+              hasSecondary
             ></ha-navigation-list>
           </ha-card>
           ${this.hass.userData?.showAdvanced
@@ -71,6 +148,18 @@ class HaConfigSystemNavigation extends LitElement {
         </ha-config-section>
       </hass-subpage>
     `;
+  }
+
+  protected firstUpdated(_changedProperties): void {
+    super.firstUpdated(_changedProperties);
+
+    this._fetchNetworkStatus();
+    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    this._fetchBackupInfo(isHassioLoaded);
+    if (isHassioLoaded) {
+      this._fetchHardwareInfo();
+      this._fetchStorageInfo();
+    }
   }
 
   private _restart() {
@@ -95,6 +184,48 @@ class HaConfigSystemNavigation extends LitElement {
         });
       },
     });
+  }
+
+  private async _fetchBackupInfo(isHassioLoaded: boolean) {
+    const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
+      ? await fetchHassioBackups(this.hass)
+      : await fetchBackupInfo(this.hass).then(
+          (backupData) => backupData.backups
+        );
+
+    if (backups.length > 0) {
+      this._latestBackupDate = (backups as any[]).reduce((a, b) =>
+        a.date > b.date ? a : b
+      ).date;
+    }
+  }
+
+  private async _fetchHardwareInfo() {
+    const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
+    if (osData.board) {
+      this._boardName = BOARD_NAMES[osData.board];
+    }
+  }
+
+  private async _fetchStorageInfo() {
+    const hostInfo: HassioHostInfo = await fetchHassioHostInfo(this.hass);
+    this._storageInfo = {
+      used: hostInfo.disk_used,
+      free: hostInfo.disk_free,
+      total: hostInfo.disk_total,
+    };
+  }
+
+  private async _fetchNetworkStatus() {
+    if (isComponentLoaded(this.hass, "cloud")) {
+      fetchCloudStatus(this.hass).then((cloudStatus) => {
+        if (cloudStatus.logged_in) {
+          this._externalAccess = true;
+        }
+      });
+    } else {
+      this._externalAccess = this.hass.config.external_url !== null;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -141,7 +272,6 @@ class HaConfigSystemNavigation extends LitElement {
 
         ha-navigation-list {
           --navigation-list-item-title-font-size: 16px;
-          --navigation-list-item-padding: 4px;
         }
         ha-tip {
           margin-bottom: max(env(safe-area-inset-bottom), 8px);
