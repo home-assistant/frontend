@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
+import "../../../components/ha-tip";
 import "../../../components/ha-navigation-list";
 import { CloudStatus } from "../../../data/cloud";
 import {
@@ -61,7 +62,12 @@ class HaConfigSystemNavigation extends LitElement {
               .pages=${pages}
             ></ha-navigation-list>
           </ha-card>
-          <div class="yaml-config">Looking for YAML Configuration? It has moved to <a href="/developer-tools/yaml">Developer Tools</a></a></div>
+          ${this.hass.userData?.showAdvanced
+            ? html`<ha-tip>
+                Looking for YAML Configuration? It has moved to
+                <a href="/developer-tools/yaml">Developer Tools</a>
+              </ha-tip>`
+            : ""}
         </ha-config-section>
       </hass-subpage>
     `;
@@ -137,10 +143,8 @@ class HaConfigSystemNavigation extends LitElement {
           --navigation-list-item-title-font-size: 16px;
           --navigation-list-item-padding: 4px;
         }
-        .yaml-config {
-          margin-bottom: max(env(safe-area-inset-bottom), 24px);
-          text-align: center;
-          font-style: italic;
+        ha-tip {
+          margin-bottom: max(env(safe-area-inset-bottom), 8px);
         }
       `,
     ];
