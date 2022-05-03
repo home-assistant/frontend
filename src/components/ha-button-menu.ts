@@ -56,7 +56,7 @@ export class HaButtonMenu extends LitElement {
 
     this.updateComplete.then(() => {
       this.querySelectorAll("mwc-list-item").forEach((item) => {
-        // eslint-disable-next-line
+        // @ts-ignore
         item!._getUpdateComplete = item.getUpdateComplete;
 
         const style = document.createElement("style");
@@ -66,9 +66,9 @@ export class HaButtonMenu extends LitElement {
         const span = item.shadowRoot?.querySelector("span:first-child");
         span!.classList.add("rtl-fix");
 
-        // eslint-disable-next-line
+        // @ts-ignore
         item.getUpdateComplete = function () {
-          // eslint-disable-next-line
+          // @ts-ignore
           const result = item._getUpdateComplete();
 
           // re-apply class since something in ripple handler resets it even though no style changes
