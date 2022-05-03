@@ -82,21 +82,7 @@ export class HaButtonMenu extends LitElement {
       });
     });
   }
-  /*
-  protected async firstUpdated(
-    _changedProperties: Map<string | number | symbol, unknown>
-  ): void {
-    const children = this.querySelectorAll("mwc-list-item");
-    await Promise.all(Array.from(children).map((c) => c.updateComplete));
 
-    this.querySelectorAll("mwc-list-item").forEach((item) => {
-      var style = document.createElement("style");
-      style.innerHTML =
-        "span:first-child { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
-      item.shadowRoot.appendChild(style);
-    });
-  }
-*/
   private _handleClick(): void {
     if (this.disabled) {
       return;
