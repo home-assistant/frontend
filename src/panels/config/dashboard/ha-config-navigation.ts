@@ -6,7 +6,7 @@ import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-navigation-list";
-import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
 
@@ -37,9 +37,7 @@ class HaConfigNavigation extends LitElement {
             ? page.info.logged_in
               ? `
                   ${this.hass.localize(
-                    "ui.panel.config.cloud.description_login",
-                    "email",
-                    (page.info as CloudStatusLoggedIn).email
+                    "ui.panel.config.cloud.description_login"
                   )}
                 `
               : `

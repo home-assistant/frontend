@@ -1144,7 +1144,7 @@
           },
           "tags": {
             "main": "Tags",
-            "secondary": "Manage NFC tags and QR codes"
+            "secondary": "Setup NFC tags and QR codes"
           },
           "people": {
             "main": "People",
@@ -1175,6 +1175,7 @@
         },
         "updates": {
           "caption": "Updates",
+          "description": "Manage updates of Home Assistant, Add-ons and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -1233,6 +1234,8 @@
         },
         "backup": {
           "caption": "Backups",
+          "description": "Last backup {relative_time}",
+          "description_no_backup": "Manage backups and restore Home Assistant to a previous state",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
@@ -1487,7 +1490,7 @@
         },
         "core": {
           "caption": "General",
-          "description": "Location, network and analytics",
+          "description": "Name, Timezone and locale settings",
           "section": {
             "core": {
               "header": "General Configuration",
@@ -1529,6 +1532,7 @@
         },
         "hardware": {
           "caption": "Hardware",
+          "description": "Configure your hub and connected hardware",
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
@@ -1573,7 +1577,7 @@
         },
         "logs": {
           "caption": "Logs",
-          "description": "View the Home Assistant logs",
+          "description": "View and search logs to diagnose issues",
           "details": "Log Details ({level})",
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
@@ -2242,7 +2246,7 @@
           }
         },
         "cloud": {
-          "description_login": "Logged in as {email}",
+          "description_login": "Logged in and connected",
           "description_not_login": "Not logged in",
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
@@ -3134,10 +3138,14 @@
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
         },
         "analytics": {
-          "caption": "Analytics"
+          "caption": "Analytics",
+          "description": "Learn how to share data to better the Open Home"
         },
         "network": {
           "caption": "Network",
+          "description": "External access {state}",
+          "enabled": "enabled",
+          "disabled": "disabled",
           "supervisor": {
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
@@ -3158,6 +3166,7 @@
         },
         "storage": {
           "caption": "Storage",
+          "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
           "datadisk": {
@@ -3175,6 +3184,7 @@
         },
         "system_health": {
           "caption": "System Health",
+          "description": "Status, Stats and Integration startup time",
           "cpu_usage": "Processor Usage",
           "ram_usage": "Memory Usage",
           "core_stats": "Core Stats",
