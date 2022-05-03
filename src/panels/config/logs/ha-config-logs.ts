@@ -6,6 +6,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button-menu";
 import "../../../components/search-input";
 import { LogProvider } from "../../../data/error_log";
+import { fetchHassioSupervisorInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -59,10 +60,19 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _selectedLogProvider = "core";
 
+  @state() private _logProviders = logProviders;
+
   public connectedCallback() {
     super.connectedCallback();
     if (this.systemLog && this.systemLog.loaded) {
       this.systemLog.fetchData();
+    }
+  }
+
+  protected firstUpdated(changedProps): void {
+    super.firstUpdated(changedProps);
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._getInstalledAddons();
     }
   }
 
@@ -107,7 +117,7 @@ export class HaConfigLogs extends LitElement {
               <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
                 <mwc-button
                   slot="trigger"
-                  .label=${logProviders.find(
+                  .label=${this._logProviders.find(
                     (p) => p.key === this._selectedLogProvider
                   )!.name}
                 >
@@ -116,7 +126,7 @@ export class HaConfigLogs extends LitElement {
                     .path=${mdiChevronDown}
                   ></ha-svg-icon>
                 </mwc-button>
-                ${logProviders.map(
+                ${this._logProviders.map(
                   (provider) => html`
                     <mwc-list-item
                       ?selected=${provider.key === this._selectedLogProvider}
@@ -153,6 +163,21 @@ export class HaConfigLogs extends LitElement {
 
   private _selectProvider(ev) {
     this._selectedLogProvider = (ev.currentTarget as any).provider;
+  }
+
+  private async _getInstalledAddons() {
+    try {
+      const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      this._logProviders = [
+        ...this._logProviders,
+        ...supervisorInfo.addons.map((addon) => ({
+          key: addon.slug,
+          name: addon.name,
+        })),
+      ];
+    } catch (err) {
+      // Ignore, nothing the user can do anyway
+    }
   }
 
   static get styles(): CSSResultGroup {
