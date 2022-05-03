@@ -54,11 +54,6 @@ class HaConfigSystemNavigation extends LitElement {
         let description = "";
 
         switch (page.translationKey) {
-          case "logs":
-            description = this.hass.localize(
-              "ui.panel.config.logs.description"
-            );
-            break;
           case "backup":
             description = this._latestBackupDate
               ? this.hass.localize(
