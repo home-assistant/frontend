@@ -63,21 +63,24 @@ export class HaButtonMenu extends LitElement {
           ".rtl-fix, .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
         item.shadowRoot.appendChild(style);
         var span = item.shadowRoot?.querySelector("span:first-child");
-        span.className = "rtl-fix";
+        span!.classList.add("rtl-fix");
 
         item.getUpdateComplete = function () {
           var result = item._getUpdateComplete();
+
+          // re-apply class since something in ripple handler resets it even though no style changes
           var span = item.shadowRoot?.querySelector(".rtl-fix");
-          span!.className = "rtl-fix2";
+          span!.classList.remove("rtl-fix");
+          span!.classList.add("rtl-fix2");
+
           new Promise(function (resolve, reject) {
             setTimeout(() => resolve("done"), 0);
           }).then(() => {
-            span!.className = "rtl-fix";
+            span!.classList.remove("rtl-fix2");
+            span!.classList.add("rtl-fix");
           });
 
           return result;
-          // wait for all children to render... and then inject again.
-          // check if we need original injection
         };
       });
     });
