@@ -218,14 +218,13 @@ class HaConfigSystemNavigation extends LitElement {
 
   private async _fetchNetworkStatus() {
     if (isComponentLoaded(this.hass, "cloud")) {
-      fetchCloudStatus(this.hass).then((cloudStatus) => {
-        if (cloudStatus.logged_in) {
-          this._externalAccess = true;
-        }
-      });
-    } else {
-      this._externalAccess = this.hass.config.external_url !== null;
+      const cloudStatus = await fetchCloudStatus(this.hass);
+      if (cloudStatus.logged_in) {
+        this._externalAccess = true;
+        return;
+      }
     }
+    this._externalAccess = this.hass.config.external_url !== null;
   }
 
   static get styles(): CSSResultGroup {
