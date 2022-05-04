@@ -109,7 +109,11 @@ class HaConfigSectionUpdates extends LitElement {
                     ></ha-config-updates>
                   `
                 : html`
-                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                    <div class="no-updates">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.no_updates"
+                      )}
+                    </div>
                   `}
             </div>
           </ha-card>
@@ -197,6 +201,10 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       padding: 0;
+    }
+
+    .no-updates {
+      padding: 16px;
     }
   `;
 }
