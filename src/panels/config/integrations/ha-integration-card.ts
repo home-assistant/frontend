@@ -52,7 +52,6 @@ import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
 
 const integrationsWithPanel = {
-  hassio: "/hassio/dashboard",
   mqtt: "/config/mqtt",
   zha: "/config/zha/dashboard",
   zwave_js: "/config/zwave_js/dashboard",
