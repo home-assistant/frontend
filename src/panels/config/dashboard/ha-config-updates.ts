@@ -9,6 +9,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import type { UpdateEntity } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-circular-progress";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -51,7 +52,18 @@ class HaConfigUpdates extends LitElement {
                 .title=${entity.attributes.title ||
                 entity.attributes.friendly_name}
                 .stateObj=${entity}
+                class=${this.narrow && entity.attributes.in_progress
+                  ? "updating"
+                  : ""}
               ></state-badge>
+              ${this.narrow && entity.attributes.in_progress
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                    slot="graphic"
+                    class="absolute"
+                  ></ha-circular-progress>`
+                : ""}
               <span
                 >${entity.attributes.title ||
                 entity.attributes.friendly_name}</span
@@ -67,7 +79,13 @@ class HaConfigUpdates extends LitElement {
                   : ""}
               </span>
               ${!this.narrow
-                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                ? entity.attributes.in_progress
+                  ? html`<ha-circular-progress
+                      active
+                      size="small"
+                      slot="meta"
+                    ></ha-circular-progress>`
+                  : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
             </mwc-list-item>
           `
@@ -120,6 +138,12 @@ class HaConfigUpdates extends LitElement {
         mwc-list-item {
           cursor: pointer;
           font-size: 16px;
+        }
+        ha-circular-progress.absolute {
+          position: absolute;
+        }
+        state-badge.updating {
+          opacity: 0.5;
         }
       `,
     ];
