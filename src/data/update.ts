@@ -2,8 +2,10 @@ import type {
   HassEntities,
   HassEntityAttributeBase,
   HassEntityBase,
+  HassEvent,
 } from "home-assistant-js-websocket";
 import { BINARY_STATE_ON } from "../common/const";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
@@ -110,15 +112,32 @@ export const checkForEntityUpdates = async (
     return;
   }
 
+  let updated = 0;
+
+  const unsubscribeEvents = await hass.connection.subscribeEvents<HassEvent>(
+    (event) => {
+      if (computeDomain(event.data.entity_id) === "update") {
+        updated++;
+        showToast(element, {
+          message: hass.localize("ui.panel.config.updates.updates_refreshed", {
+            count: updated,
+          }),
+        });
+      }
+    },
+    "state_changed"
+  );
+
   await hass.callService("homeassistant", "update_entity", {
     entity_id: entities,
   });
 
-  if (filterUpdateEntitiesWithInstall(hass.states).length) {
-    showToast(element, {
-      message: hass.localize("ui.panel.config.updates.updates_refreshed"),
-    });
-  } else {
+  // there is no reliable way to know if all the updates are done updating, so we just wait a bit for now...
+  await new Promise((r) => setTimeout(r, 10000));
+
+  unsubscribeEvents();
+
+  if (updated === 0) {
     showToast(element, {
       message: hass.localize("ui.panel.config.updates.no_new_updates"),
     });
