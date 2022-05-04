@@ -191,9 +191,15 @@ class HaConfigBackup extends LitElement {
       return;
     }
 
+    // Ensure that the fab changes its status
+    this._backupData!.backing_up = true;
+
     generateBackup(this.hass)
       .then(() => this._getBackups())
       .catch((err) => showAlertDialog(this, { text: (err as Error).message }));
+
+    // Ensure that the fab changes its status back
+    this._backupData!.backing_up = false;
 
     await this._getBackups();
   }
