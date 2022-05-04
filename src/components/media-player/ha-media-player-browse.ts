@@ -1,4 +1,5 @@
 import "@lit-labs/virtualizer";
+import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
@@ -100,6 +101,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
+
+  @query("lit-virtualizer") private _virtualizer?: LitVirtualizer;
+
+  private _observed = false;
 
   private _headerOffsetHeight = 0;
 
@@ -281,6 +286,19 @@ export class HaMediaPlayerBrowse extends LitElement {
       this._animateHeaderHeight();
     } else if (changedProps.has("_currentItem")) {
       this._setHeaderHeight();
+
+      // This fixes a race condition for resizing of the cards using the grid layout
+      if (this._observed) {
+        return;
+      }
+
+      // @ts-ignore
+      const virtualizer = this._virtualizer?._virtualizer;
+
+      if (virtualizer) {
+        this._observed = true;
+        setTimeout(() => virtualizer._observeMutations(), 0);
+      }
     }
   }
 
