@@ -1175,7 +1175,7 @@
         },
         "updates": {
           "caption": "Updates",
-          "description": "Manage updates of Home Assistant, Add-ons and devices",
+          "description": "Manage updates of Home Assistant, add-ons and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -1490,7 +1490,7 @@
         },
         "core": {
           "caption": "General",
-          "description": "Name, Timezone and locale settings",
+          "description": "Name, time zone and locale settings",
           "section": {
             "core": {
               "header": "General Configuration",
@@ -3139,7 +3139,7 @@
         },
         "analytics": {
           "caption": "Analytics",
-          "description": "Learn how to share data to better the Open Home"
+          "description": "Learn how to share data to improve Home Assistant"
         },
         "network": {
           "caption": "Network",
@@ -3184,11 +3184,11 @@
         },
         "system_health": {
           "caption": "System Health",
-          "description": "Status, Stats and Integration startup time",
+          "description": "Status, statistics and integration startup time",
           "cpu_usage": "Processor Usage",
           "ram_usage": "Memory Usage",
-          "core_stats": "Core Stats",
-          "supervisor_stats": "Supervisor Stats",
+          "core_stats": "Core Statistics",
+          "supervisor_stats": "Supervisor Statistics",
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
