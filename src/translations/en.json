@@ -1183,7 +1183,7 @@
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "Updates refreshed",
+          "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
