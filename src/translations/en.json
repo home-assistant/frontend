@@ -4122,6 +4122,7 @@
             "description1": "Set the current state representation of an entity within Home Assistant.",
             "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
             "entity": "Entity",
+            "entity_id": "Entity ID",
             "state": "State",
             "attributes": "Attributes",
             "state_attributes": "State attributes (YAML, optional)",

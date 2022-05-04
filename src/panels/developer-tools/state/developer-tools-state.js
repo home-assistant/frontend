@@ -199,6 +199,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               class="state-input"
             ></ha-textfield>
             <p>
+              [[localize('ui.panel.developer-tools.tabs.states.entity_id')]]
+            </p>
+            <pre class="rendered">[[_entityId]]</pre>
+            <p>
               [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
             </p>
             <ha-code-editor
