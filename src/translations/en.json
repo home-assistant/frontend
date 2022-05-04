@@ -3184,11 +3184,11 @@
         },
         "system_health": {
           "caption": "System Health",
-          "description": "Status, statistics and integration startup time",
+          "description": "Status, metrics and integration startup time",
           "cpu_usage": "Processor Usage",
           "ram_usage": "Memory Usage",
-          "core_stats": "Core Statistics",
-          "supervisor_stats": "Supervisor Statistics",
+          "core_stats": "Core Metrics",
+          "supervisor_stats": "Supervisor Metrics",
           "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
