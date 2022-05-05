@@ -2,6 +2,7 @@ import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { computeRTL } from "../common/util/compute_rtl";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
@@ -54,41 +55,46 @@ export class HaButtonMenu extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
-    this.updateComplete.then(() => {
-      this.querySelectorAll("mwc-list-item").forEach((item) => {
-        // @ts-ignore
-        item!._getUpdateComplete = item.getUpdateComplete;
+    document.querySelector("home-assistant")!.provideHass(this);
 
-        const style = document.createElement("style");
-        style.innerHTML =
-          ':host-context([style*="direction: rtl;"]) .rtl-fix, :host-context([style*="direction: rtl;"]) .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}';
-        item!.shadowRoot!.appendChild(style);
-        const span = item.shadowRoot?.querySelector("span:first-child");
-        span!.classList.add("rtl-fix");
-
-        // @ts-ignore
-        item.getUpdateComplete = function () {
+    // @ts-ignore
+    if (computeRTL(this.hass!)) {
+      this.updateComplete.then(() => {
+        this.querySelectorAll("mwc-list-item").forEach((item) => {
           // @ts-ignore
-          const result = item._getUpdateComplete();
+          item!._getUpdateComplete = item.getUpdateComplete;
 
-          // re-apply class since something in ripple handler resets it even though no style changes
-          const rtlSpan = item.shadowRoot?.querySelector(".rtl-fix");
-          if (rtlSpan) {
-            rtlSpan!.classList.remove("rtl-fix");
-            rtlSpan!.classList.add("rtl-fix2");
+          const style = document.createElement("style");
+          style.innerHTML =
+            ':host-context([style*="direction: rtl;"]) .rtl-fix, :host-context([style*="direction: rtl;"]) .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}';
+          item!.shadowRoot!.appendChild(style);
+          const span = item.shadowRoot?.querySelector("span:first-child");
+          span!.classList.add("rtl-fix");
 
-            new Promise((resolve) => {
-              setTimeout(() => resolve("done"), 0);
-            }).then(() => {
-              span!.classList.remove("rtl-fix2");
-              span!.classList.add("rtl-fix");
-            });
-          }
+          // @ts-ignore
+          item.getUpdateComplete = function () {
+            // @ts-ignore
+            const result = item._getUpdateComplete();
 
-          return result;
-        };
+            // re-apply class since something in ripple handler resets it even though no style changes
+            const rtlSpan = item.shadowRoot?.querySelector(".rtl-fix");
+            if (rtlSpan) {
+              rtlSpan!.classList.remove("rtl-fix");
+              rtlSpan!.classList.add("rtl-fix2");
+
+              new Promise((resolve) => {
+                setTimeout(() => resolve("done"), 0);
+              }).then(() => {
+                span!.classList.remove("rtl-fix2");
+                span!.classList.add("rtl-fix");
+              });
+            }
+
+            return result;
+          };
+        });
       });
-    });
+    }
   }
 
   private _handleClick(): void {
