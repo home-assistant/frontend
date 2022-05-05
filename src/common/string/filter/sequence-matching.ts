@@ -31,7 +31,7 @@ export function fuzzyMatcher(search: string | null): (string) => boolean {
 export function fuzzyScorer(
   search: string | null
 ): (values: string[]) => number {
-  const searchTerms = (search || "").match(/("[^"]+"|[^"\s]+)/g);
+  const searchTerms = Array.from(search.matchAll(/(?:"([^"]+)"|([^"\s]+))/g), m => m[1] || m[2]);
   if (!searchTerms) {
     return () => 0;
   }
