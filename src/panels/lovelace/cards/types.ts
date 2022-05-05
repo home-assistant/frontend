@@ -157,6 +157,12 @@ export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyCarbonEmissionsGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-carbon-emissions-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;

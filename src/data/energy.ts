@@ -207,6 +207,7 @@ export const getFossilEnergyConsumption = async (
   startTime: Date,
   energy_statistic_ids: string[],
   co2_statistic_id: string,
+  co2_offset_factor: number,
   endTime?: Date,
   period: "5minute" | "hour" | "day" | "month" = "hour"
 ) =>
@@ -216,8 +217,36 @@ export const getFossilEnergyConsumption = async (
     end_time: endTime?.toISOString(),
     energy_statistic_ids,
     co2_statistic_id,
+    co2_offset_factor,
     period,
   });
+
+
+  export interface CarbonDioxideEquivalent {
+    [date: string]: number;
+  }
+  
+  export const getCarbonDioxideEquivalent = async (
+    hass: HomeAssistant,
+    startTime: Date,
+    energy_statistic_ids: string[],
+    co2_statistic_id: string,
+    co2_offset_factor: number,
+    endTime?: Date,
+    period: "5minute" | "hour" | "day" | "month" = "hour"
+  ) =>
+    hass.callWS<CarbonDioxideEquivalent>({
+      type: "energy/carbon_dioxide_equivalent",
+      start_time: startTime.toISOString(),
+      end_time: endTime?.toISOString(),
+      energy_statistic_ids,
+      co2_statistic_id,
+      co2_offset_factor,
+      period,
+    });
+
+  
+
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -237,7 +266,12 @@ export interface EnergyData {
   stats: Statistics;
   co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
-  fossilEnergyConsumption?: FossilEnergyConsumption;
+  fossilEnergyConsumption?: FossilEnergyConsumption;  // BK? Why separate?
+
+  // TODO - BK? Why would these be here and not included in the stats? What is special about fossilEnergy (and are these special also?)
+  carbonDioxideEquivalentEmissions?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentOffsets?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentAvoided?: CarbonDioxideEquivalent;
 }
 
 const getEnergyData = async (
@@ -252,11 +286,19 @@ const getEnergyData = async (
     getEnergyInfo(hass),
   ]);
 
+  // TODO - This is something to rework a little (as input and output can be different)
+  // I don't think CO2signal is easy to distinguish programattically what the intensity of "just green" is
   const co2SignalConfigEntry = configEntries.length
     ? configEntries[0]
     : undefined;
 
-  let co2SignalEntity: string | undefined;
+  // Percent that is fossil/high-cabon vs renewable/green
+  let co2SignalEntityGridPercentageFossil: string | undefined;
+  // An grid intensity (g / kWh) measure it track emissions from imports and avoided emissions from exports
+  // Note: Input and output can be different in affect if you purchase "guraranteed renewables" (only from renewable sources/battery - i.e. absolute zero)
+  // If you are using an offset mechanism like green power (that takes from teh grid but offset used energy to be net-zero)
+  let co2SignalEntityGridIntensity: string | undefined;
+
 
   if (co2SignalConfigEntry) {
     for (const entry of entityRegistryEntries) {
@@ -264,14 +306,18 @@ const getEnergyData = async (
         continue;
       }
 
-      // The integration offers 2 entities. We want the % one.
       const co2State = hass.states[entry.entity_id];
-      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
+      if (!co2State) {
         continue;
       }
-
-      co2SignalEntity = co2State.entity_id;
-      break;
+      if (co2State.attributes.unit_of_measurement === "%") {
+        co2SignalEntityGridPercentageFossil = co2State.entity_id;
+        continue;
+      }
+      if (co2State.attributes.unit_of_measurement === "gCO2eq/kWh") {
+        co2SignalEntityGridIntensity = co2State.entity_id;
+        continue;
+      }
     }
   }
 
@@ -363,13 +409,57 @@ const getEnergyData = async (
   );
 
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
+  let carbonDioxideEquivalentEmissions: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentOffsets: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentAvoided: CarbonDioxideEquivalent | undefined;
 
-  if (co2SignalEntity !== undefined) {
+  // TODO: Move this to config
+  const co2_import_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
+
+
+  if (co2SignalEntityGridPercentageFossil !== undefined) {
     fossilEnergyConsumption = await getFossilEnergyConsumption(
       hass!,
       start,
       consumptionStatIDs,
-      co2SignalEntity,
+      co2SignalEntityGridPercentageFossil,
+      co2_import_offset_factor,
+      end,
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+    );
+}
+    
+if (co2SignalEntityGridIntensity !== undefined) {
+    carbonDioxideEquivalentEmissions = await getCarbonDioxideEquivalent(
+      hass!,
+      start,
+      consumptionStatIDs,
+      co2SignalEntityGridIntensity,
+      1.0,
+      end,
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+    );
+}
+
+if (co2SignalEntityGridIntensity !== undefined) {
+  carbonDioxideEquivalentOffsets = await getCarbonDioxideEquivalent(
+    hass!,
+    start,
+    consumptionStatIDs,
+    co2SignalEntityGridIntensity,
+    co2_import_offset_factor,
+    end,
+    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+  );
+}
+
+if (co2SignalEntityGridIntensity !== undefined) {
+    carbonDioxideEquivalentAvoided = await getCarbonDioxideEquivalent(
+      hass!,
+      start,
+      statIDs, // TODO - This might need to be a productionStatsId (but it should just be the site/house export values)
+      co2SignalEntityGridIntensity,
+      1.0,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
@@ -395,8 +485,11 @@ const getEnergyData = async (
     prefs,
     stats,
     co2SignalConfigEntry,
-    co2SignalEntity,
+    co2SignalEntity: co2SignalEntityGridPercentageFossil,
     fossilEnergyConsumption,
+    carbonDioxideEquivalentEmissions,
+    carbonDioxideEquivalentOffsets,
+    carbonDioxideEquivalentAvoided,
   };
 
   return data;

@@ -3221,6 +3221,11 @@
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
               "non_fossil_energy_consumed": "Non-fossil energy consumed",
               "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
+            },
+            "carbon_emissions_gauge": {
+              "card_indicates_co2eq_emissions": "This card indicates how many emissions your home created, offset or avoided. The lower the better!",
+              "co2eq_emissions": "CO2Eq Emissions",
+              "co2eq_emissions_not_calculated": "Emissions couldn't be calculated"
             }
           }
         },

@@ -243,6 +243,45 @@ class HuiEnergyDistrubutionCard
       }
     }
 
+    let emittedCO2Equivalent: number | null = null;
+
+    if (this._data.co2SignalEntity && this._data.carbonDioxideEquivalentEmissions) {
+      emittedCO2Equivalent = Object.values(
+        this._data.carbonDioxideEquivalentEmissions
+      ).reduce((sum, a) => sum + a, 0);
+    }
+    else
+    {
+      // TODO - Drop this and guard better in the presentation
+      emittedCO2Equivalent = 0;
+    }
+
+    let offsetCO2Equivalent: number | null = null;
+
+    if (this._data.co2SignalEntity && this._data.carbonDioxideEquivalentOffsets) {
+      offsetCO2Equivalent = Object.values(
+        this._data.carbonDioxideEquivalentOffsets
+      ).reduce((sum, a) => sum + a, 0);
+    }
+    else
+    {
+      // TODO - Drop this and guard better in the presentation
+      offsetCO2Equivalent = 0;
+    }
+
+    let avoidedCO2Equivalent: number | null = null;
+
+    if (this._data.co2SignalEntity && this._data.carbonDioxideEquivalentAvoided) {
+      avoidedCO2Equivalent = Object.values(
+        this._data.carbonDioxideEquivalentAvoided
+      ).reduce((sum, a) => sum + a, 0);
+    }
+    else
+    {
+      // TODO - Drop this and guard better in the presentation
+      avoidedCO2Equivalent = 0;
+    }
+
     const totalLines =
       gridConsumption +
       (solarConsumption || 0) +
@@ -352,7 +391,11 @@ class HuiEnergyDistrubutionCard
                       >${formatNumber(returnedToGrid, this.hass.locale, {
                         maximumFractionDigits: 1,
                       })}
-                      kWh
+                      kWh (
+                      ${formatNumber(avoidedCO2Equivalent, this.hass.locale, {
+                        maximumFractionDigits: 1,
+                      })}
+                      kgCO2eq)
                     </span>`
                   : ""}
                 <span class="consumption">
@@ -364,7 +407,15 @@ class HuiEnergyDistrubutionCard
                     : ""}${formatNumber(totalFromGrid, this.hass.locale, {
                     maximumFractionDigits: 1,
                   })}
-                  kWh
+                  kWh (
+                  ${formatNumber(emittedCO2Equivalent, this.hass.locale, {
+                        maximumFractionDigits: 1,
+                  })}
+                  -
+                  ${formatNumber(offsetCO2Equivalent, this.hass.locale, {
+                    maximumFractionDigits: 1,
+                  })}
+                  kgCO2eq )
                 </span>
               </div>
               <span class="label"
