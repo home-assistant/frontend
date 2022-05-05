@@ -66,7 +66,7 @@ export class HaButtonMenu extends LitElement {
 
           const style = document.createElement("style");
           style.innerHTML =
-            ':host-context([style*="direction: rtl;"]) .rtl-fix, :host-context([style*="direction: rtl;"]) .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}';
+            ".rtl-fix, .rtl-fix2 { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
           item!.shadowRoot!.appendChild(style);
           const span = item.shadowRoot?.querySelector("span:first-child");
           span!.classList.add("rtl-fix");
