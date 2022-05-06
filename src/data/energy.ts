@@ -231,6 +231,7 @@ export const getFossilEnergyConsumption = async (
     startTime: Date,
     energy_statistic_ids: string[],
     co2_statistic_id: string,
+    co2_intensity_default: number,
     co2_offset_factor: number,
     endTime?: Date,
     period: "5minute" | "hour" | "day" | "month" = "hour"
@@ -241,6 +242,7 @@ export const getFossilEnergyConsumption = async (
       end_time: endTime?.toISOString(),
       energy_statistic_ids,
       co2_statistic_id,
+      co2_intensity_default,
       co2_offset_factor,
       period,
     });
@@ -435,6 +437,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
       start,
       consumptionStatIDs,
       co2SignalEntityGridIntensity,
+      600,
       1.0,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
@@ -447,6 +450,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
     start,
     consumptionStatIDs,
     co2SignalEntityGridIntensity,
+    600,
     co2_import_offset_factor,
     end,
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
@@ -459,6 +463,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
       start,
       statIDs, // TODO - This might need to be a productionStatsId (but it should just be the site/house export values)
       co2SignalEntityGridIntensity,
+      600,
       1.0,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
