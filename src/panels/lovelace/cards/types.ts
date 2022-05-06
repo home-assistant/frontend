@@ -163,6 +163,12 @@ export interface EnergyCarbonEmissionsGaugeCardConfig extends LovelaceCardConfig
   collection_key?: string;
 }
 
+export interface EnergyCarbonEmissionsGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-carbon-emissions-graph";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;

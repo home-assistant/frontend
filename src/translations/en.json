@@ -3170,6 +3170,13 @@
             "loading": "Loading…",
             "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
             "no_data_period": "There is no data for this period.",
+            "energy_carbon_emissions_graph": {
+              "total_emitted": "Total emitted {num} kgCO2Eq",
+              "total_offset_and_avoided": "Total offset & avoided {num} kgCO2Eq",
+              "emissions": "Emissions",
+              "avoided": "Avoided",
+              "offsets": "Offsets"
+            },
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
@@ -3223,8 +3230,8 @@
               "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
             },
             "carbon_emissions_gauge": {
-              "card_indicates_co2eq_emissions": "This card indicates how many emissions your home created, offset or avoided. The lower the better!",
-              "co2eq_emissions": "CO2Eq Emissions",
+              "card_indicates_co2eq_emissions": "This card indicates the emissions your home has created, offset or avoided. The lower the better!",
+              "co2eq_emissions": "CO2 Equivalent Emissions",
               "co2eq_emissions_not_calculated": "Emissions couldn't be calculated"
             }
           }
@@ -4174,7 +4181,8 @@
           "energy_gas_graph_title": "Gas consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_devices_graph_title": "Monitor individual devices"
+          "energy_devices_graph_title": "Monitor individual devices",
+          "energy_emissions_graph_title": "Energy emissions"
         }
       }
     },

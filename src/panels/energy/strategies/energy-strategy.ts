@@ -143,6 +143,15 @@ export class EnergyStrategy {
       });
     }
 
+    // Only include if we have a grid
+    if (hasGrid) {
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_emissions_graph_title"),
+        type: "energy-carbon-emissions-graph",
+        collection_key: "energy_dashboard",
+      });
+    }
+
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
       view.cards!.push({

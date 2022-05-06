@@ -3788,6 +3788,13 @@
                             "total_consumed": "Total consumed {num} kWh",
                             "total_returned": "Total returned {num} kWh"
                         },
+                        "energy_carbon_emissions_graph": {
+                            "total_emitted": "Total emitted {num} kgCO2Eq",
+                            "total_offset_and_avoided": "Total avoided & offset {num} kgCO2Eq",
+                            "emissions": "Emissions",
+                            "avoided": "Avoided",
+                            "offsets": "Offsets"
+                        },
                         "grid_neutrality_gauge": {
                             "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
                             "energy_dependency": "This card indicates your net energy usage.",
