@@ -10,6 +10,8 @@ export class HaTimeline extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public raised = false;
 
+  @property({ reflect: true, type: Boolean }) notEnabled = false;
+
   @property({ type: Boolean }) public lastItem = false;
 
   @property({ type: String }) public icon?: string;
@@ -75,6 +77,9 @@ export class HaTimeline extends LitElement {
           align-items: center;
           margin-right: 8px;
           width: 24px;
+        }
+        :host([notEnabled]) ha-svg-icon {
+          opacity: 0.5;
         }
         ha-svg-icon {
           color: var(

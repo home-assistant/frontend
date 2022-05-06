@@ -686,6 +686,16 @@ export class BarMediaPlayer extends LitElement {
       mwc-list-item[selected] {
         font-weight: bold;
       }
+
+      :host-context([style*="direction: rtl;"]) ha-svg-icon[slot="icon"] {
+        margin-left: 8px !important;
+        margin-right: 8px !important;
+      }
+      :host-context([style*="direction: rtl;"])
+        ha-svg-icon[slot="trailingIcon"] {
+        margin-left: 0px !important;
+        margin-right: 8px !important;
+      }
     `;
   }
 }

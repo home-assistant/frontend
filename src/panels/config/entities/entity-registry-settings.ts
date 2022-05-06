@@ -276,6 +276,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @selected=${this._deviceClassChanged}
                 @closed=${stopPropagation}
               >
+                <mwc-list-item></mwc-list-item>
                 ${this._deviceClassesSorted(
                   domain,
                   this._deviceClassOptions[0],
@@ -355,6 +356,25 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               )}
             </ha-select>`
           : ""}
+        ${this._helperConfigEntry
+          ? html`
+              <div class="row">
+                <mwc-button
+                  @click=${this._showOptionsFlow}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.configure_state",
+                    "integration",
+                    domainToName(
+                      this.hass.localize,
+                      this._helperConfigEntry.domain
+                    )
+                  )}
+                </mwc-button>
+              </div>
+            `
+          : ""}
         <ha-textfield
           error-message="Domain needs to stay the same"
           .value=${this._entityId}
@@ -371,20 +391,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
-          : ""}
-        ${this._helperConfigEntry
-          ? html`
-              <div class="row">
-                <mwc-button
-                  @click=${this._showOptionsFlow}
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.configure_state"
-                  )}
-                </mwc-button>
-              </div>
-            `
           : ""}
 
         <ha-expansion-panel

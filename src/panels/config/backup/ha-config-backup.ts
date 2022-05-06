@@ -80,6 +80,7 @@ class HaConfigBackup extends LitElement {
       actions: {
         title: "",
         width: "15%",
+        type: "overflow-menu",
         template: (_: string, backup: BackupContent) =>
           html`<ha-icon-overflow-menu
             .hass=${this.hass}
@@ -126,17 +127,23 @@ class HaConfigBackup extends LitElement {
 
     return html`
       <hass-tabs-subpage-data-table
+        .tabs=${[
+          {
+            translationKey: "ui.panel.config.backup.caption",
+            path: `/config/backup`,
+          },
+        ]}
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config/system"
         .route=${this.route}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._backupData.backups)}
-        .noDataText=${this.hass.localize("ui.panel.config.backup.no_bakcups")}
+        .noDataText=${this.hass.localize("ui.panel.config.backup.no_backups")}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.backup.picker.search"
+        )}
       >
-        <span slot="header"
-          >${this.hass.localize("ui.panel.config.backup.caption")}</span
-        >
         <ha-fab
           slot="fab"
           ?disabled=${this._backupData.backing_up}

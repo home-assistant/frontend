@@ -2,7 +2,7 @@
   "panel": {
     "energy": "Energy",
     "calendar": "Calendar",
-    "config": "Configuration",
+    "config": "Settings",
     "states": "Overview",
     "map": "Map",
     "logbook": "Logbook",
@@ -314,6 +314,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "edit": "Edit",
       "submit": "Submit",
       "rename": "Rename",
       "yes": "Yes",
@@ -624,43 +625,43 @@
       "quick-bar": {
         "commands": {
           "reload": {
-            "reload": "[%key:ui::panel::config::server_control::section::reloading::reload%]",
-            "core": "[%key:ui::panel::config::server_control::section::reloading::core%]",
-            "group": "[%key:ui::panel::config::server_control::section::reloading::group%]",
-            "automation": "[%key:ui::panel::config::server_control::section::reloading::automation%]",
-            "script": "[%key:ui::panel::config::server_control::section::reloading::script%]",
-            "scene": "[%key:ui::panel::config::server_control::section::reloading::scene%]",
-            "person": "[%key:ui::panel::config::server_control::section::reloading::person%]",
-            "zone": "[%key:ui::panel::config::server_control::section::reloading::zone%]",
-            "input_boolean": "[%key:ui::panel::config::server_control::section::reloading::input_boolean%]",
-            "input_text": "[%key:ui::panel::config::server_control::section::reloading::input_text%]",
-            "input_number": "[%key:ui::panel::config::server_control::section::reloading::input_number%]",
-            "input_datetime": "[%key:ui::panel::config::server_control::section::reloading::input_datetime%]",
-            "input_select": "[%key:ui::panel::config::server_control::section::reloading::input_select%]",
-            "template": "[%key:ui::panel::config::server_control::section::reloading::template%]",
-            "universal": "[%key:ui::panel::config::server_control::section::reloading::universal%]",
-            "rest": "[%key:ui::panel::config::server_control::section::reloading::rest%]",
-            "command_line": "[%key:ui::panel::config::server_control::section::reloading::command_line%]",
-            "filter": "[%key:ui::panel::config::server_control::section::reloading::filter%]",
-            "statistics": "[%key:ui::panel::config::server_control::section::reloading::statistics%]",
-            "generic": "[%key:ui::panel::config::server_control::section::reloading::generic%]",
-            "generic_thermostat": "[%key:ui::panel::config::server_control::section::reloading::generic_thermostat%]",
-            "homekit": "[%key:ui::panel::config::server_control::section::reloading::homekit%]",
-            "min_max": "[%key:ui::panel::config::server_control::section::reloading::min_max%]",
-            "history_stats": "[%key:ui::panel::config::server_control::section::reloading::history_stats%]",
-            "trend": "[%key:ui::panel::config::server_control::section::reloading::trend%]",
-            "ping": "[%key:ui::panel::config::server_control::section::reloading::ping%]",
-            "filesize": "[%key:ui::panel::config::server_control::section::reloading::filesize%]",
-            "telegram": "[%key:ui::panel::config::server_control::section::reloading::telegram%]",
-            "smtp": "[%key:ui::panel::config::server_control::section::reloading::smtp%]",
-            "mqtt": "[%key:ui::panel::config::server_control::section::reloading::mqtt%]",
-            "rpi_gpio": "[%key:ui::panel::config::server_control::section::reloading::rpi_gpio%]",
-            "themes": "[%key:ui::panel::config::server_control::section::reloading::themes%]"
+            "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
+            "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
+            "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
+            "automation": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::automation%]",
+            "script": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::script%]",
+            "scene": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::scene%]",
+            "person": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::person%]",
+            "zone": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_text": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::template%]",
+            "universal": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
+            "themes": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::themes%]"
           },
           "server_control": {
             "perform_action": "{action} server",
-            "restart": "[%key:ui::panel::config::server_control::section::server_management::restart%]",
-            "stop": "[%key:ui::panel::config::server_control::section::server_management::stop%]"
+            "restart": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
@@ -675,23 +676,35 @@
             "areas": "[%key:ui::panel::config::areas::caption%]",
             "scene": "[%key:ui::panel::config::scene::caption%]",
             "helpers": "[%key:ui::panel::config::helpers::caption%]",
-            "tag": "[%key:ui::panel::config::tag::caption%]",
+            "tags": "[%key:ui::panel::config::tag::caption%]",
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
             "energy": "Energy Configuration",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
-            "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
+            "network": "[%key:ui::panel::config::network::caption%]",
+            "updates": "[%key:ui::panel::config::updates::caption%]",
+            "hardware": "[%key:ui::panel::config::hardware::caption%]",
+            "storage": "[%key:ui::panel::config::storage::caption%]",
+            "general": "[%key:ui::panel::config::core::caption%]",
+            "backups": "[%key:ui::panel::config::backup::caption%]",
+            "backup": "[%key:ui::panel::config::backup::caption%]",
+            "analytics": "[%key:ui::panel::config::analytics::caption%]",
+            "system_health": "[%key:ui::panel::config::system_health::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::config::server_control::caption%]"
+            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
+            "system": "[%key:ui::panel::config::dashboard::system::main%]",
+            "addon_dashboard": "Add-on Dashboard",
+            "addon_store": "Add-on Store",
+            "addon_info": "{addon} Info"
           }
         },
         "filter_placeholder": "Entity Filter",
         "title": "Quick Search",
-        "key_c_hint": "Press 'c' on any page to open this search bar",
+        "key_c_hint": "Press 'c' on any page to open the search bar",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -857,7 +870,7 @@
           "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
           "follow_device_area": "Follow device area",
           "change_device_area": "Change device area",
-          "configure_state": "Configure State"
+          "configure_state": "{integration} options"
         }
       },
       "helper_settings": {
@@ -994,6 +1007,45 @@
         "recent_tx_messages": "{n} most recently transmitted message(s)",
         "show_as_yaml": "Show as YAML",
         "triggers": "Triggers"
+      },
+      "unsupported": {
+        "title": "[%key:supervisor::system::supervisor::unsupported_title%]",
+        "description": "[%key:supervisor::system::supervisor::unsupported_description%]",
+        "reasons": {
+          "apparmor": "[%key:supervisor::system::supervisor::unsupported_reason::apparmor%]",
+          "content_trust": "[%key:supervisor::system::supervisor::unsupported_reason::content_trust%]",
+          "dbus": "[%key:supervisor::system::supervisor::unsupported_reason::dbus%]",
+          "docker_configuration": "[%key:supervisor::system::supervisor::unsupported_reason::docker_configuration%]",
+          "docker_version": "[%key:supervisor::system::supervisor::unsupported_reason::docker_version%]",
+          "job_conditions": "[%key:supervisor::system::supervisor::unsupported_reason::job_conditions%]",
+          "lxc": "[%key:supervisor::system::supervisor::unsupported_reason::lxc%]",
+          "network_manager": "[%key:supervisor::system::supervisor::unsupported_reason::network_manager%]",
+          "os": "[%key:supervisor::system::supervisor::unsupported_reason::os%]",
+          "os_agent": "[%key:supervisor::system::supervisor::unsupported_reason::os_agent%]",
+          "privileged": "[%key:supervisor::system::supervisor::unsupported_reason::privileged%]",
+          "software": "[%key:supervisor::system::supervisor::unsupported_reason::software%]",
+          "source_mods": "[%key:supervisor::system::supervisor::unsupported_reason::source_mods%]",
+          "systemd": "[%key:supervisor::system::supervisor::unsupported_reason::systemd%]",
+          "systemd_resolved": "[%key:supervisor::system::supervisor::unsupported_reason::systemd_resolved%]"
+        }
+      },
+      "unhealthy": {
+        "title": "[%key:supervisor::system::supervisor::unhealthy_title%]",
+        "description": "[%key:supervisor::system::supervisor::unhealthy_description%]",
+        "reasons": {
+          "privileged": "[%key:supervisor::system::supervisor::unhealthy_reason::privileged%]",
+          "supervisor": "[%key:supervisor::system::supervisor::unhealthy_reason::supervisor%]",
+          "setup": "[%key:supervisor::system::supervisor::unhealthy_reason::setup%]",
+          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
+          "untrusted": "[%key:supervisor::system::supervisor::unhealthy_reason::untrusted%]"
+        }
+      },
+      "join_beta_channel": {
+        "title": "Join the beta channel",
+        "warning": "[%key:supervisor::system::supervisor::beta_warning%]",
+        "backup": "[%key:supervisor::system::supervisor::beta_backup%]",
+        "release_items": "[%key:supervisor::system::supervisor::beta_release_items%]",
+        "confirm": "[%key:supervisor::system::supervisor::beta_join_confirm%]"
       }
     },
     "duration": {
@@ -1044,7 +1096,8 @@
       "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
       "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      "no_matching_link_found": "No matching My link found for {path}"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration",
@@ -1066,52 +1119,52 @@
         "header": "Configure Home Assistant",
         "dashboard": {
           "devices": {
-            "title": "Devices & Services",
-            "description": "Integrations, devices, entities and helpers"
+            "main": "Devices & Services",
+            "secondary": "Integrations, devices, entities and helpers"
           },
           "automations": {
-            "title": "Automations & Scenes",
-            "description": "Manage automations, scenes, scripts and blueprints"
+            "main": "Automations & Scenes",
+            "secondary": "Automations, scenes, scripts and blueprints"
           },
           "backup": {
-            "title": "Backup",
-            "description": "Generate backups of your Home Assistant configuration"
+            "main": "Backup",
+            "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "title": "Add-ons",
-            "description": "Extend the function around Home Assistant"
+            "main": "Add-ons",
+            "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
-            "title": "Dashboards",
-            "description": "Create customized sets of cards to control your home"
+            "main": "Dashboards",
+            "secondary": "Organize how you interact with your home"
           },
           "energy": {
-            "title": "Energy",
-            "description": "Monitor your energy production and consumption"
+            "main": "Energy",
+            "secondary": "Monitor your energy production and consumption"
           },
           "tags": {
-            "title": "Tags",
-            "description": "Trigger automations when an NFC tag, QR code, etc. is scanned"
+            "main": "Tags",
+            "secondary": "Setup NFC tags and QR codes"
           },
           "people": {
-            "title": "People",
-            "description": "Manage the people that Home Assistant tracks"
+            "main": "People",
+            "secondary": "Manage who can access your home"
           },
           "areas": {
-            "title": "Areas & Zones",
-            "description": "Manage areas & zones that Home Assistant tracks"
+            "main": "Areas & Zones",
+            "secondary": "Manage locations in and around your house"
           },
           "companion": {
-            "title": "Companion App",
-            "description": "Location and notifications"
+            "main": "Companion App",
+            "secondary": "Location and notifications"
           },
           "system": {
-            "title": "System",
-            "description": "Create backups, check logs or reboot your system"
+            "main": "System",
+            "secondary": "Create backups, check logs or reboot your system"
           },
           "about": {
-            "title": "About",
-            "description": "Version, system health and links to documentation"
+            "main": "About",
+            "secondary": "Version information, credits and more"
           }
         },
         "common": {
@@ -1122,18 +1175,25 @@
         },
         "updates": {
           "caption": "Updates",
+          "description": "Manage updates of Home Assistant, add-ons and devices",
+          "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "Updates refreshed",
+          "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
           "more_updates": "+{count} updates",
-          "show": "show"
+          "show": "show",
+          "show_skipped": "Show skipped",
+          "hide_skipped": "Hide skipped",
+          "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
+          "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
+          "skipped": "Skipped"
         },
         "areas": {
           "caption": "Areas",
@@ -1174,6 +1234,8 @@
         },
         "backup": {
           "caption": "Backups",
+          "description": "Last backup {relative_time}",
+          "description_no_backup": "Manage backups and restore Home Assistant to a previous state",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
@@ -1191,6 +1253,9 @@
             "title": "Remove backup",
             "description": "Are you sure you want to remove the backup with the name {name}?",
             "confirm": "[%key:ui::common::remove%]"
+          },
+          "picker": {
+            "search": "Search backups"
           }
         },
         "tag": {
@@ -1425,14 +1490,14 @@
         },
         "core": {
           "caption": "General",
-          "description": "Location, network and analytics",
+          "description": "Name, time zone and locale settings",
           "section": {
             "core": {
               "header": "General Configuration",
               "introduction": "Manage your location, network and analytics.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
-                "location_name": "Name of your Home Assistant installation",
+                "location_name": "Name",
                 "latitude": "Latitude",
                 "longitude": "Longitude",
                 "elevation": "Elevation",
@@ -1443,9 +1508,11 @@
                 "unit_system_metric": "Metric",
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
-                "find_currency_value": "Find your value",
+                "find_currency_value": "Find my value",
                 "save_button": "Save",
-                "currency": "Currency"
+                "currency": "Currency",
+                "edit_location": "Edit location",
+                "edit_location_description": "Location can be changed in zone settings"
               }
             }
           }
@@ -1464,14 +1531,30 @@
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certficate."
         },
         "hardware": {
-          "caption": "Hardware"
+          "caption": "Hardware",
+          "description": "Configure your hub and connected hardware",
+          "available_hardware": {
+            "failed_to_get": "Failed to get available hardware",
+            "title": "All Hardware",
+            "subsystem": "Subsystem",
+            "device_path": "Device path",
+            "id": "ID",
+            "attributes": "Attributes"
+          },
+          "reboot_host": "Reboot host",
+          "reboot_host_confirm": "Are you sure you want to reboot your host?",
+          "failed_to_reboot_host": "Failed to reboot host",
+          "shutdown_host": "Shutdown host",
+          "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
+          "failed_to_shutdown_host": "Failed to shutdown host",
+          "board": "Board"
         },
         "info": {
-          "caption": "Info",
+          "caption": "About",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw Text",
           "copy_github": "For GitHub",
-          "description": "Version, system health and links to documentation",
+          "description": "Version, loaded integrations and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
           "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
@@ -1484,7 +1567,6 @@
           "frontend_version": "Frontend version: {version} - {type}",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
-          "integrations": "Integrations",
           "documentation": "Documentation",
           "issues": "Issues",
           "setup_time": "Setup time",
@@ -1495,17 +1577,19 @@
         },
         "logs": {
           "caption": "Logs",
-          "description": "View the Home Assistant logs",
+          "description": "View and search logs to diagnose issues",
           "details": "Log Details ({level})",
           "search": "Search logs",
+          "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
-          "load_full_log": "Load Full Home Assistant Log",
+          "load_logs": "Load Full Logs",
           "loading_log": "Loading error log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
           "copy": "Copy log entry",
+          "log_provider": "Log Provider",
           "multiple_messages": "message first occurred at {time} and shows up {counter} times",
           "level": {
             "critical": "CRITICAL",
@@ -1515,7 +1599,8 @@
             "debug": "DEBUG"
           },
           "custom_integration": "custom integration",
-          "error_from_custom_integration": "This error originated from a custom integration."
+          "error_from_custom_integration": "This error originated from a custom integration.",
+          "full_logs": "Full logs"
         },
         "lovelace": {
           "caption": "Dashboards",
@@ -1597,65 +1682,6 @@
             }
           }
         },
-        "server_control": {
-          "caption": "Server Controls",
-          "description": "Validate and restart the Home Assistant server",
-          "section": {
-            "validation": {
-              "heading": "Configuration validation",
-              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
-              "check_config": "Check configuration",
-              "valid": "Configuration valid!",
-              "invalid": "Configuration invalid"
-            },
-            "reloading": {
-              "heading": "YAML configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
-              "reload": "{domain}",
-              "core": "Location & customizations",
-              "group": "Groups, group entities, and notify services",
-              "automation": "Automations",
-              "script": "Scripts",
-              "scene": "Scenes",
-              "person": "People",
-              "zone": "Zones",
-              "input_boolean": "Input booleans",
-              "input_button": "Input buttons",
-              "input_text": "Input texts",
-              "input_number": "Input numbers",
-              "input_datetime": "Input date times",
-              "input_select": "Input selects",
-              "template": "Template entities",
-              "universal": "Universal media player entities",
-              "rest": "Rest entities and notify services",
-              "command_line": "Command line entities",
-              "filter": "Filter entities",
-              "statistics": "Statistics entities",
-              "generic": "Generic IP camera entities",
-              "generic_thermostat": "Generic thermostat entities",
-              "homekit": "HomeKit",
-              "min_max": "Min/max entities",
-              "history_stats": "History stats entities",
-              "trend": "Trend entities",
-              "ping": "Ping binary sensor entities",
-              "filesize": "File size entities",
-              "telegram": "Telegram notify services",
-              "smtp": "SMTP notify services",
-              "mqtt": "Manually configured MQTT entities",
-              "rpi_gpio": "Raspberry Pi GPIO entities",
-              "timer": "Timers",
-              "themes": "Themes"
-            },
-            "server_management": {
-              "heading": "Home Assistant",
-              "introduction": "Restarting Home Assistant will stop your dashboard and automations. After the reboot, each configuration will be reloaded.",
-              "restart": "Restart",
-              "confirm_restart": "Are you sure you want to restart Home Assistant?",
-              "stop": "Stop",
-              "confirm_stop": "Are you sure you want to stop Home Assistant?"
-            }
-          }
-        },
         "automation": {
           "caption": "Automations",
           "description": "Create custom behavior rules for your home",
@@ -1664,7 +1690,7 @@
             "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about automations",
             "pick_automation": "Pick automation to edit",
-            "no_automations": "We couldn’t find any automations",
+            "no_automations": "We couldn't find any automations",
             "add_automation": "Create automation",
             "only_editable": "Only automations in automations.yaml are editable.",
             "dev_only_editable": "Only automations that have a unique ID assigned are debuggable.",
@@ -1778,7 +1804,7 @@
                 "geo_location": {
                   "label": "Geolocation",
                   "source": "Source",
-                  "zone": "Location",
+                  "zone": "Zone",
                   "event": "Event",
                   "enter": "Enter",
                   "leave": "Leave"
@@ -1950,6 +1976,9 @@
               "run_action_error": "Error running action",
               "run_action_success": "Action run successfully",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
+              "enable": "Enable",
+              "disable": "Disable",
+              "disabled": "Disabled",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm%]",
               "unsupported_action": "No visual editor support for action: {action}",
@@ -2039,6 +2068,9 @@
                   "label": "Stop",
                   "stop": "Reason for stopping",
                   "error": "Stop because of an unexpected error"
+                },
+                "parallel": {
+                  "label": "Run in parallel"
                 }
               }
             }
@@ -2214,7 +2246,7 @@
           }
         },
         "cloud": {
-          "description_login": "Logged in as {email}",
+          "description_login": "Logged in and connected",
           "description_not_login": "Not logged in",
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
@@ -2620,7 +2652,9 @@
           "create_zone": "Add Zone",
           "add_zone": "Add Zone",
           "edit_zone": "Edit Zone",
+          "edit_home": "Edit Home",
           "confirm_delete": "Are you sure you want to delete this zone?",
+          "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
           "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
           "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
@@ -2640,7 +2674,8 @@
             "delete": "Delete",
             "create": "Add",
             "update": "Update"
-          }
+          },
+          "core_location_dialog": "Home Assistant Location"
         },
         "integrations": {
           "caption": "Integrations",
@@ -3103,13 +3138,64 @@
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
         },
         "analytics": {
-          "caption": "Analytics"
+          "caption": "Analytics",
+          "description": "Learn how to share data to improve Home Assistant"
         },
         "network": {
-          "caption": "Network"
+          "caption": "Network",
+          "description": "External access {state}",
+          "enabled": "enabled",
+          "disabled": "disabled",
+          "supervisor": {
+            "title": "Configure network interfaces",
+            "connected_to": "Connected to {ssid}",
+            "scan_ap": "Scan for access points",
+            "open": "Open",
+            "wep": "WEP",
+            "wpa": "wpa-psk",
+            "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
+            "static": "Static",
+            "dhcp": "DHCP",
+            "disabled": "Disabled",
+            "ip_netmask": "IP address/Netmask",
+            "gateway": "Gateway address",
+            "dns_servers": "DNS Servers",
+            "unsaved": "You have unsaved changes, these will get lost if you change tabs, do you want to continue?",
+            "failed_to_change": "Failed to change network settings"
+          }
         },
         "storage": {
-          "caption": "Storage"
+          "caption": "Storage",
+          "description": "{percent_used} used - {free_space} free",
+          "used_space": "Used Space",
+          "emmc_lifetime_used": "eMMC Lifetime Used",
+          "datadisk": {
+            "title": "Move datadisk",
+            "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+            "select_device": "Select new datadisk",
+            "no_devices": "No suitable attached devices found",
+            "moving_desc": "Rebooting and moving datadisk. Please have patience",
+            "moving": "Moving datadisk",
+            "loading_devices": "Loading devices",
+            "cancel": "[%key:ui::common::cancel%]",
+            "failed_to_move": "Failed to move datadisk",
+            "move": "Move"
+          }
+        },
+        "system_health": {
+          "caption": "System Health",
+          "description": "Status, metrics and integration startup time",
+          "cpu_usage": "Processor Usage",
+          "ram_usage": "Memory Usage",
+          "core_stats": "Core Metrics",
+          "supervisor_stats": "Supervisor Metrics",
+          "integration_start_time": "Integration Startup Time"
+        },
+        "system_dashboard": {
+          "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
+          "confirm_restart_title": "Restart Home Assistant?",
+          "restart_homeassistant_short": "Restart",
+          "restart_error": "Failed to restart Home Assistant"
         }
       },
       "lovelace": {
@@ -3262,6 +3348,7 @@
         "menu": {
           "configure_ui": "Edit Dashboard",
           "help": "Help",
+          "search": "Search",
           "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
@@ -4101,6 +4188,65 @@
               }
             },
             "adjust_sum": "Adjust sum"
+          },
+          "yaml": {
+            "title": "YAML",
+            "section": {
+              "validation": {
+                "heading": "Configuration validation",
+                "introduction": "Validate your configuration if you recently made some changes to it and want to make sure that it is all valid.",
+                "check_config": "Check configuration",
+                "valid": "Configuration valid!",
+                "invalid": "Configuration invalid!"
+              },
+              "reloading": {
+                "heading": "YAML configuration reloading",
+                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
+                "reload": "{domain}",
+                "core": "Location & customizations",
+                "group": "Groups, group entities, and notify services",
+                "automation": "Automations",
+                "script": "Scripts",
+                "scene": "Scenes",
+                "person": "People",
+                "zone": "Zones",
+                "input_boolean": "Input booleans",
+                "input_button": "Input buttons",
+                "input_text": "Input texts",
+                "input_number": "Input numbers",
+                "input_datetime": "Input date times",
+                "input_select": "Input selects",
+                "template": "Template entities",
+                "universal": "Universal media player entities",
+                "rest": "Rest entities and notify services",
+                "command_line": "Command line entities",
+                "filter": "Filter entities",
+                "statistics": "Statistics entities",
+                "generic": "Generic IP camera entities",
+                "generic_thermostat": "Generic thermostat entities",
+                "homekit": "HomeKit",
+                "min_max": "Min/max entities",
+                "history_stats": "History stats entities",
+                "trend": "Trend entities",
+                "ping": "Ping binary sensor entities",
+                "filesize": "File size entities",
+                "telegram": "Telegram notify services",
+                "smtp": "SMTP notify services",
+                "mqtt": "Manually configured MQTT entities",
+                "rpi_gpio": "Raspberry Pi GPIO entities",
+                "timer": "Timers",
+                "themes": "Themes"
+              },
+              "server_management": {
+                "heading": "Home Assistant",
+                "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
+                "confirm_restart_title": "Restart Home Assistant?",
+                "restart": "Restart",
+                "stop": "Stop",
+                "confirm_stop": "Are you sure you want to stop Home Assistant?",
+                "restart_error": "Failed to restart Home Assistant"
+              }
+            }
           }
         }
       },
@@ -4188,7 +4334,8 @@
     },
     "tips": {
       "key_c_hint": "Press 'c' on any page to open the command dialog",
-      "key_e_hint": "Press 'e' on any page to open the entity search dialog"
+      "key_e_hint": "Press 'e' on any page to open the entity search dialog",
+      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link"
     }
   },
   "supervisor": {
@@ -4369,6 +4516,7 @@
       "cancel": "[%key:ui::common::cancel%]",
       "yes": "[%key:ui::common::yes%]",
       "no": "[%key:ui::common::no%]",
+      "add": "[%key:supervisor::dialog::repositories::add%]",
       "description": "Description",
       "failed_to_restart_name": "Failed to restart {name}",
       "failed_to_update_name": "Failed to update {name}",
@@ -4438,8 +4586,11 @@
     "my": {
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
+      "add_addon_repository_title": "Missing add-on repository",
+      "add_addon_repository_description": "The addon ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
+      "error_repository_not_found": "The required repository for this Add-on was not found",
       "error_addon_not_started": "The requested add-on is not running. Please start it first",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"

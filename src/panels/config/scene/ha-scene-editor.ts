@@ -287,7 +287,7 @@ export class HaSceneEditor extends SubscribeMixin(
                       "ui.panel.config.scene.editor.introduction"
                     )}
                   </div>
-                  <ha-card>
+                  <ha-card outlined>
                     <div class="card-content">
                       <ha-textfield
                         .value=${this._config.name}
@@ -335,7 +335,7 @@ export class HaSceneEditor extends SubscribeMixin(
                   ${devices.map(
                     (device) =>
                       html`
-                        <ha-card>
+                        <ha-card outlined>
                           <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
@@ -373,6 +373,7 @@ export class HaSceneEditor extends SubscribeMixin(
                   )}
 
                   <ha-card
+                    outlined
                     .header=${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.add"
                     )}
@@ -405,6 +406,7 @@ export class HaSceneEditor extends SubscribeMixin(
                         ${entities.length
                           ? html`
                               <ha-card
+                                outlined
                                 class="entities"
                                 .header=${this.hass.localize(
                                   "ui.panel.config.scene.editor.entities.without_device"
@@ -445,6 +447,7 @@ export class HaSceneEditor extends SubscribeMixin(
                           : ""}
 
                         <ha-card
+                          outlined
                           header=${this.hass.localize(
                             "ui.panel.config.scene.editor.entities.add"
                           )}

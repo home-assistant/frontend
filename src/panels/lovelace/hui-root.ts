@@ -7,8 +7,8 @@ import {
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelp,
-  mdiMagnify,
   mdiHelpCircle,
+  mdiMagnify,
   mdiMicrophone,
   mdiPencil,
   mdiPlus,
@@ -29,7 +29,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { property, state, query } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -61,6 +61,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
 import type { haAppLayout } from "../../layouts/ha-app-layout";
@@ -73,7 +74,6 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
-import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 
 class HUIRoot extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -266,10 +266,14 @@ class HUIRoot extends LitElement {
                         </ha-tabs>
                       `
                     : html`<div main-title>${this.config.title}</div>`}
-                  <ha-icon-button
-                    .path=${mdiMagnify}
-                    @click=${this._showQuickBar}
-                  ></ha-icon-button>
+                  ${!this.narrow
+                    ? html`
+                        <ha-icon-button
+                          .path=${mdiMagnify}
+                          @click=${this._showQuickBar}
+                        ></ha-icon-button>
+                      `
+                    : ""}
                   ${!this.narrow &&
                   this._conversation(this.hass.config.components)
                     ? html`
@@ -292,6 +296,28 @@ class HUIRoot extends LitElement {
                             )}
                             .path=${mdiDotsVertical}
                           ></ha-icon-button>
+
+                          ${this.narrow
+                            ? html`
+                                <mwc-list-item
+                                  .label=${this.hass!.localize(
+                                    "ui.panel.lovelace.menu.search"
+                                  )}
+                                  graphic="icon"
+                                  @request-selected=${this._showQuickBar}
+                                >
+                                  <span
+                                    >${this.hass!.localize(
+                                      "ui.panel.lovelace.menu.search"
+                                    )}</span
+                                  >
+                                  <ha-svg-icon
+                                    slot="graphic"
+                                    .path=${mdiMagnify}
+                                  ></ha-svg-icon>
+                                </mwc-list-item>
+                              `
+                            : ""}
                           ${this.narrow &&
                           this._conversation(this.hass.config.components)
                             ? html`
@@ -557,7 +583,8 @@ class HUIRoot extends LitElement {
     let newSelectView;
     let force = false;
 
-    const viewPath = decodeURI(this.route!.path.split("/")[1]);
+    let viewPath: string | undefined = this.route!.path.split("/")[1];
+    viewPath = viewPath ? decodeURI(viewPath) : undefined;
 
     if (changedProperties.has("route")) {
       const views = this.config.views;

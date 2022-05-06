@@ -10,6 +10,7 @@ import {
   fetchDeviceActions,
   fetchDeviceConditions,
   fetchDeviceTriggers,
+  sortDeviceAutomations,
 } from "../../../../data/device_automation";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -63,16 +64,16 @@ export class DialogDeviceAutomation extends LitElement {
     const { device, script } = this._params;
 
     fetchDeviceActions(this.hass, device.id).then((actions) => {
-      this._actions = actions;
+      this._actions = actions.sort(sortDeviceAutomations);
     });
     if (script) {
       return;
     }
     fetchDeviceTriggers(this.hass, device.id).then((triggers) => {
-      this._triggers = triggers;
+      this._triggers = triggers.sort(sortDeviceAutomations);
     });
     fetchDeviceConditions(this.hass, device.id).then((conditions) => {
-      this._conditions = conditions;
+      this._conditions = conditions.sort(sortDeviceAutomations);
     });
   }
 

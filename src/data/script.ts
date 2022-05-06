@@ -13,11 +13,18 @@ import {
   literal,
   is,
   Describe,
+  boolean,
 } from "superstruct";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
 import { HomeAssistant } from "../types";
-import { Condition, Trigger } from "./automation";
+import {
+  Condition,
+  ShorthandAndCondition,
+  ShorthandNotCondition,
+  ShorthandOrCondition,
+  Trigger,
+} from "./automation";
 import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
@@ -25,6 +32,7 @@ export const MODES_MAX = ["queued", "parallel"];
 
 export const baseActionStruct = object({
   alias: optional(string()),
+  enabled: optional(boolean()),
 });
 
 const targetStruct = object({
@@ -88,15 +96,18 @@ export interface BlueprintScriptConfig extends ManualScriptConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
 }
 
-export interface EventAction {
+interface BaseAction {
   alias?: string;
+  enabled?: boolean;
+}
+
+export interface EventAction extends BaseAction {
   event: string;
   event_data?: Record<string, any>;
   event_data_template?: Record<string, any>;
 }
 
-export interface ServiceAction {
-  alias?: string;
+export interface ServiceAction extends BaseAction {
   service?: string;
   service_template?: string;
   entity_id?: string;
@@ -104,55 +115,48 @@ export interface ServiceAction {
   data?: Record<string, unknown>;
 }
 
-export interface DeviceAction {
-  alias?: string;
+export interface DeviceAction extends BaseAction {
   type: string;
   device_id: string;
   domain: string;
   entity_id: string;
 }
 
-export interface DelayActionParts {
+export interface DelayActionParts extends BaseAction {
   milliseconds?: number;
   seconds?: number;
   minutes?: number;
   hours?: number;
   days?: number;
 }
-export interface DelayAction {
-  alias?: string;
+export interface DelayAction extends BaseAction {
   delay: number | Partial<DelayActionParts> | string;
 }
 
-export interface ServiceSceneAction {
-  alias?: string;
+export interface ServiceSceneAction extends BaseAction {
   service: "scene.turn_on";
   target?: { entity_id?: string };
   entity_id?: string;
   metadata: Record<string, unknown>;
 }
-export interface LegacySceneAction {
-  alias?: string;
+export interface LegacySceneAction extends BaseAction {
   scene: string;
 }
 export type SceneAction = ServiceSceneAction | LegacySceneAction;
 
-export interface WaitAction {
-  alias?: string;
+export interface WaitAction extends BaseAction {
   wait_template: string;
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
-export interface WaitForTriggerAction {
-  alias?: string;
+export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
   timeout?: number;
   continue_on_timeout?: boolean;
 }
 
-export interface PlayMediaAction {
-  alias?: string;
+export interface PlayMediaAction extends BaseAction {
   service: "media_player.play_media";
   target?: { entity_id?: string };
   entity_id?: string;
@@ -160,13 +164,11 @@ export interface PlayMediaAction {
   metadata: Record<string, unknown>;
 }
 
-export interface RepeatAction {
-  alias?: string;
-  repeat: CountRepeat | WhileRepeat | UntilRepeat;
+export interface RepeatAction extends BaseAction {
+  repeat: CountRepeat | WhileRepeat | UntilRepeat | ForEachRepeat;
 }
 
-interface BaseRepeat {
-  alias?: string;
+interface BaseRepeat extends BaseAction {
   sequence: Action | Action[];
 }
 
@@ -182,38 +184,40 @@ export interface UntilRepeat extends BaseRepeat {
   until: Condition[];
 }
 
-export interface ChooseActionChoice {
-  alias?: string;
+export interface ForEachRepeat extends BaseRepeat {
+  for_each: string | any[];
+}
+
+export interface ChooseActionChoice extends BaseAction {
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
 
-export interface ChooseAction {
-  alias?: string;
+export interface ChooseAction extends BaseAction {
   choose: ChooseActionChoice | ChooseActionChoice[] | null;
   default?: Action | Action[];
 }
 
-export interface IfAction {
-  alias?: string;
+export interface IfAction extends BaseAction {
   if: string | Condition[];
   then: Action | Action[];
   else?: Action | Action[];
 }
 
-export interface VariablesAction {
-  alias?: string;
+export interface VariablesAction extends BaseAction {
   variables: Record<string, unknown>;
 }
 
-export interface StopAction {
-  alias?: string;
+export interface StopAction extends BaseAction {
   stop: string;
   error?: boolean;
 }
 
-interface UnknownAction {
-  alias?: string;
+export interface ParallelAction extends BaseAction {
+  parallel: ManualScriptConfig | Action | (ManualScriptConfig | Action)[];
+}
+
+interface UnknownAction extends BaseAction {
   [key: string]: unknown;
 }
 
@@ -222,6 +226,9 @@ export type Action =
   | DeviceAction
   | ServiceAction
   | Condition
+  | ShorthandAndCondition
+  | ShorthandOrCondition
+  | ShorthandNotCondition
   | DelayAction
   | SceneAction
   | WaitAction
@@ -232,6 +239,7 @@ export type Action =
   | VariablesAction
   | PlayMediaAction
   | StopAction
+  | ParallelAction
   | UnknownAction;
 
 export interface ActionTypes {
@@ -249,6 +257,7 @@ export interface ActionTypes {
   service: ServiceAction;
   play_media: PlayMediaAction;
   stop: StopAction;
+  parallel: ParallelAction;
   unknown: UnknownAction;
 }
 
@@ -298,7 +307,7 @@ export const getActionType = (action: Action): ActionType => {
   if ("wait_template" in action) {
     return "wait_template";
   }
-  if ("condition" in action) {
+  if (["condition", "and", "or", "not"].some((key) => key in action)) {
     return "check_condition";
   }
   if ("event" in action) {
@@ -327,6 +336,9 @@ export const getActionType = (action: Action): ActionType => {
   }
   if ("stop" in action) {
     return "stop";
+  }
+  if ("parallel" in action) {
+    return "parallel";
   }
   if ("service" in action) {
     if ("metadata" in action) {

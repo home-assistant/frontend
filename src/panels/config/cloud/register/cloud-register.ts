@@ -121,6 +121,7 @@ export class CloudRegister extends LitElement {
               </ul>
             </div>
             <ha-card
+              outlined
               .header=${this.hass.localize(
                 "ui.panel.config.cloud.register.create_account"
               )}

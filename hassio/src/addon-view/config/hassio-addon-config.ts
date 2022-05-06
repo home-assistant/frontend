@@ -162,7 +162,7 @@ class HassioAddonConfig extends LitElement {
         );
     return html`
       <h1>${this.addon.name}</h1>
-      <ha-card>
+      <ha-card outlined>
         <div class="header">
           <h2>
             ${this.supervisor.localize("addon.configuration.options.header")}

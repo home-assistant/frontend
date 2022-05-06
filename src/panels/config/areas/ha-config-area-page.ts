@@ -259,6 +259,7 @@ class HaConfigAreaPage extends LitElement {
                   <ha-svg-icon .path=${mdiImagePlus} slot="icon"></ha-svg-icon>
                 </mwc-button>`}
             <ha-card
+              outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
                 ? devices.map(
@@ -281,6 +282,7 @@ class HaConfigAreaPage extends LitElement {
                   `}
             </ha-card>
             <ha-card
+              outlined
               .header=${this.hass.localize(
                 "ui.panel.config.areas.editor.linked_entities_caption"
               )}
@@ -314,6 +316,7 @@ class HaConfigAreaPage extends LitElement {
             ${isComponentLoaded(this.hass, "automation")
               ? html`
                   <ha-card
+                    outlined
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.automation.automations_heading"
                     )}
@@ -361,6 +364,7 @@ class HaConfigAreaPage extends LitElement {
             ${isComponentLoaded(this.hass, "scene")
               ? html`
                   <ha-card
+                    outlined
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.scene.scenes_heading"
                     )}
@@ -400,6 +404,7 @@ class HaConfigAreaPage extends LitElement {
             ${isComponentLoaded(this.hass, "script")
               ? html`
                   <ha-card
+                    outlined
                     .header=${this.hass.localize(
                       "ui.panel.config.devices.script.scripts_heading"
                     )}

@@ -33,7 +33,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: WaitAction;
 
   public static get defaultConfig() {
-    return { wait_template: "" };
+    return { wait_template: "", continue_on_timeout: true };
   }
 
   protected render() {

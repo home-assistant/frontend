@@ -18,6 +18,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -75,7 +76,7 @@ export class SystemLogCard extends LitElement {
       : [];
     return html`
       <div class="system-log-intro">
-        <ha-card>
+        <ha-card outlined>
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
@@ -131,7 +132,7 @@ export class SystemLogCard extends LitElement {
                       `
                     )}
 
-                <div class="card-actions">
+                <div class="card-actions" dir=${computeRTLDirection(this.hass)}>
                   <ha-call-service-button
                     .hass=${this.hass}
                     domain="system_log"

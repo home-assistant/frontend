@@ -5,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceAutomation,
   deviceAutomationsEqual,
+  sortDeviceAutomations,
 } from "../../data/device_automation";
 import { HomeAssistant } from "../../types";
 import "../ha-select";
@@ -127,7 +128,9 @@ export abstract class HaDeviceAutomationPicker<
 
   private async _updateDeviceInfo() {
     this._automations = this.deviceId
-      ? await this._fetchDeviceAutomations(this.hass, this.deviceId)
+      ? (await this._fetchDeviceAutomations(this.hass, this.deviceId)).sort(
+          sortDeviceAutomations
+        )
       : // No device, clear the list of automations
         [];
 
@@ -161,8 +164,9 @@ export abstract class HaDeviceAutomationPicker<
     if (this.value && deviceAutomationsEqual(automation, this.value)) {
       return;
     }
-    fireEvent(this, "change");
-    fireEvent(this, "value-changed", { value: automation });
+    const value = { ...automation };
+    delete value.metadata;
+    fireEvent(this, "value-changed", { value });
   }
 
   static get styles(): CSSResultGroup {

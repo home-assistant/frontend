@@ -33,6 +33,11 @@ class HaConfigSectionAnalytics extends LitElement {
       max-width: 1040px;
       margin: 0 auto;
     }
+    ha-config-analytics {
+      display: block;
+      max-width: 600px;
+      margin: 0 auto;
+    }
   `;
 }
 

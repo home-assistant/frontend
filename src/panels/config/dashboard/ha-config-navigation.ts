@@ -1,12 +1,12 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-navigation-list";
-import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { CloudStatus } from "../../../data/cloud";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
 
@@ -30,16 +30,14 @@ class HaConfigNavigation extends LitElement {
         name:
           page.name ||
           this.hass.localize(
-            `ui.panel.config.dashboard.${page.translationKey}.title`
+            `ui.panel.config.dashboard.${page.translationKey}.main`
           ),
         description:
           page.component === "cloud" && (page.info as CloudStatus)
             ? page.info.logged_in
               ? `
                   ${this.hass.localize(
-                    "ui.panel.config.cloud.description_login",
-                    "email",
-                    (page.info as CloudStatusLoggedIn).email
+                    "ui.panel.config.cloud.description_login"
                   )}
                 `
               : `
@@ -51,7 +49,7 @@ class HaConfigNavigation extends LitElement {
                 ${
                   page.description ||
                   this.hass.localize(
-                    `ui.panel.config.dashboard.${page.translationKey}.description`
+                    `ui.panel.config.dashboard.${page.translationKey}.secondary`
                   )
                 }
               `,
@@ -81,6 +79,12 @@ class HaConfigNavigation extends LitElement {
       });
     }
   }
+
+  static styles: CSSResultGroup = css`
+    ha-navigation-list {
+      --navigation-list-item-title-font-size: 16px;
+    }
+  `;
 }
 
 declare global {

@@ -12,6 +12,8 @@ export class HaClickableListItem extends ListItemBase {
   // property used only in css
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
+  @property({ type: Boolean, reflect: true }) public openNewTab = false;
+
   @query("a") private _anchor!: HTMLAnchorElement;
 
   public render() {
@@ -20,7 +22,12 @@ export class HaClickableListItem extends ListItemBase {
 
     return html`${this.disableHref
       ? html`<a aria-role="option">${r}</a>`
-      : html`<a aria-role="option" href=${href}>${r}</a>`}`;
+      : html`<a
+          aria-role="option"
+          target=${this.openNewTab ? "_blank" : ""}
+          href=${href}
+          >${r}</a
+        >`}`;
   }
 
   firstUpdated() {
@@ -55,6 +62,7 @@ export class HaClickableListItem extends ListItemBase {
           align-items: center;
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
+          overflow: hidden;
         }
       `,
     ];

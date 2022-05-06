@@ -1,5 +1,4 @@
 import { customElement } from "lit/decorators";
-import "../../../../components/ha-card";
 import {
   DeviceCondition,
   localizeDeviceAutomationCondition,

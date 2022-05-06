@@ -47,7 +47,7 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.introduction"
           )}
         </span>
-        <ha-card>
+        <ha-card outlined>
           <div class="card-content">
             <ha-textfield
               .label=${this.hass.localize(

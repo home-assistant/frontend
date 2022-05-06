@@ -4,9 +4,9 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
+import "./ha-clickable-list-item";
 import "./ha-icon-next";
 import "./ha-svg-icon";
-import "./ha-clickable-list-item";
 
 @customElement("ha-navigation-list")
 class HaNavigationList extends LitElement {
@@ -56,18 +56,15 @@ class HaNavigationList extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
-    a {
-      text-decoration: none;
-      color: var(--primary-text-color);
-      position: relative;
-      display: block;
-      outline: 0;
+    :host {
+      --mdc-list-vertical-padding: 0;
     }
     ha-svg-icon,
     ha-icon-next {
       color: var(--secondary-text-color);
       height: 24px;
       width: 24px;
+      display: block;
     }
     ha-svg-icon {
       padding: 8px;
@@ -78,9 +75,10 @@ class HaNavigationList extends LitElement {
     .icon-background ha-svg-icon {
       color: #fff;
     }
-    mwc-list-item {
+    ha-clickable-list-item {
       cursor: pointer;
       font-size: var(--navigation-list-item-title-font-size);
+      padding: var(--navigation-list-item-padding) 0;
     }
   `;
 }
