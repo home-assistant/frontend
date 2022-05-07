@@ -180,10 +180,27 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _applyTranslations(hass: HomeAssistant) {
       document.querySelector("html")!.setAttribute("lang", hass.language);
-      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
+      this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
       this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
+    }
+
+    private _applyDirection(hass: HomeAssistant) {
+      if (computeRTL(hass)) {
+        this.style.direction = "rtl";
+        // apply custom properties used to fix RTL appearance throughout the system
+        this.style.setProperty("--rtl-12px", "12px");
+        this.style.setProperty("--rtl--8px", "-8px");
+        this.style.setProperty("--rtl-dir", "rtl");
+      } else {
+        // clear all custom properties (can't use "all" for this)
+        for (let i = this.style.length; i--; ) {
+          this.style.removeProperty(this.style[i]);
+        }
+
+        this.style.direction = "ltr";
+      }
     }
 
     /**
