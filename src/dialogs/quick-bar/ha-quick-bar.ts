@@ -25,7 +25,7 @@ import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
-  defaultFuzzyFilterSort,
+  fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
@@ -725,7 +725,7 @@ export class QuickBar extends LitElement {
 
   private _filterItems = memoizeOne(
     (items: QuickBarItem[], filter: string): QuickBarItem[] =>
-      defaultFuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
 
   static get styles() {
