@@ -7,26 +7,25 @@ import type {
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
-import { fuzzyMatcher } from "../../common/string/filter/sequence-matching";
 
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
-  const matcher = fuzzyMatcher(filter);
+  filter = filter.toUpperCase();
   return data.filter((row) =>
     Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
-          matcher(
-            String(
-              column.filterKey
-                ? row[column.valueColumn || key][column.filterKey]
-                : row[column.valueColumn || key]
-            )
+          String(
+            column.filterKey
+              ? row[column.valueColumn || key][column.filterKey]
+              : row[column.valueColumn || key]
           )
+            .toUpperCase()
+            .includes(filter)
         ) {
           return true;
         }
