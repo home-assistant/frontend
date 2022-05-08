@@ -15,8 +15,8 @@ import {
 import {
   getZwaveJsIdentifiersFromDevice,
   ZWaveJSNodeIdentifiers,
-  ZwaveJSNodeMetadata,
-  fetchZwaveNodeMetadata,
+  ZwaveJSNodeComments,
+  fetchZwaveNodeComments,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -35,7 +35,7 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
 
   @state() private _nodeId?: number;
 
-  @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
+  @state() private _nodeComments?: ZwaveJSNodeComments;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -73,7 +73,7 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
       zwaveJsConfEntries++;
     }
 
-    this._nodeMetadata = await fetchZwaveNodeMetadata(
+    this._nodeComments = await fetchZwaveNodeComments(
       this.hass,
       this._entryId,
       this._nodeId
@@ -81,12 +81,12 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._nodeMetadata || this._nodeMetadata.comments?.length <= 0) {
+    if (!this._nodeComments || this._nodeComments.comments?.length <= 0) {
       return html``;
     }
     return html`
       <div>
-        ${this._nodeMetadata.comments.map(
+        ${this._nodeComments.comments.map(
           (comment) => html`<ha-alert .alertType=${comment.level}>
             ${comment.text}
           </ha-alert>`

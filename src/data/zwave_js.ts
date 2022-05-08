@@ -167,6 +167,9 @@ export interface ZwaveJSNodeMetadata {
   wakeup: string;
   reset: string;
   device_database_url: string;
+}
+
+export interface ZwaveJSNodeComments {
   comments: ZWaveJSNodeComment[];
 }
 
@@ -440,6 +443,17 @@ export const fetchZwaveNodeMetadata = (
   hass.callWS({
     type: "zwave_js/node_metadata",
     device_id,
+  });
+
+export const fetchZwaveNodeComments = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<ZwaveJSNodeComments> =>
+  hass.callWS({
+    type: "zwave_js/node_comments",
+    entry_id,
+    node_id,
   });
 
 export const fetchZwaveNodeConfigParameters = (
