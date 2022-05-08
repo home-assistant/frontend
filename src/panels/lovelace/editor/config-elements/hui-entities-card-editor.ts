@@ -77,6 +77,7 @@ const callServiceEntitiesRowConfigStruct = object({
   icon: optional(string()),
   action_name: optional(string()),
   service_data: optional(any()),
+  data: optional(any()),
 });
 
 const conditionalEntitiesRowConfigStruct = object({

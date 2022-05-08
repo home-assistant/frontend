@@ -131,9 +131,8 @@ export interface CallServiceActionConfig extends BaseActionConfig {
   action: "call-service";
   service: string;
   target?: HassServiceTarget;
-  service_data?: {
-    [key: string]: any;
-  };
+  service_data?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 }
 
 export interface NavigateActionConfig extends BaseActionConfig {

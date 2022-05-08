@@ -52,6 +52,7 @@ export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
   title?: string;
   service?: string;
   service_data?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 }
 
 export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
