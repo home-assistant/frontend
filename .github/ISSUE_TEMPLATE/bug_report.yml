@@ -1,4 +1,4 @@
-name: Report a bug with the Frontend / User Interface
+name: Report a bug with the UI / Dashboards
 description: Report an issue related to the Home Assistant frontend.
 labels: bug
 body:
