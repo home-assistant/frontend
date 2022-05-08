@@ -387,6 +387,7 @@ export class HaConfigDevicePage extends LitElement {
       : device.configuration_url;
 
     const deviceInfo: TemplateResult[] = [];
+    const deviceAlerts: TemplateResult[] = [];
 
     if (device.disabled_by) {
       deviceInfo.push(
@@ -443,7 +444,8 @@ export class HaConfigDevicePage extends LitElement {
       device,
       integrations,
       deviceInfo,
-      deviceActions
+      deviceActions,
+      deviceAlerts
     );
 
     if (Array.isArray(this._diagnosticDownloadLinks)) {
@@ -544,6 +546,15 @@ export class HaConfigDevicePage extends LitElement {
 
                 </div>
           </div>
+          ${
+            deviceAlerts.length
+              ? html`
+                  <div class="alerts fullwidth" slot="alerts">
+                    ${deviceAlerts}
+                  </div>
+                `
+              : ""
+          }
           <div class="column">
               <ha-device-info-card
                 .hass=${this.hass}
@@ -925,7 +936,8 @@ export class HaConfigDevicePage extends LitElement {
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
-    deviceActions: (string | TemplateResult)[]
+    deviceActions: (string | TemplateResult)[],
+    deviceAlerts: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
     if (domains.includes("mqtt")) {
@@ -957,11 +969,20 @@ export class HaConfigDevicePage extends LitElement {
     }
     if (domains.includes("zwave_js")) {
       import(
+        "./device-detail/integration-elements/zwave_js/ha-device-alerts-zwave_js"
+      );
+      import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
       );
       import(
         "./device-detail/integration-elements/zwave_js/ha-device-actions-zwave_js"
       );
+      deviceAlerts.push(html`
+        <ha-device-alerts-zwave_js
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-alerts-zwave_js>
+      `);
       deviceInfo.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
