@@ -83,6 +83,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     this._cacheConfig = {
       cacheKey: _entities.join(),
       hoursToShow: config.hours_to_show || 24,
+      minimum: config.minimum || null,
+      maximum: config.maximum || null,
     };
 
     this._config = config;
@@ -143,6 +145,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
             .isLoadingData=${!this._stateHistory}
             .historyData=${this._stateHistory}
             .names=${this._names}
+            .minimum=${this._config.minimum}
+            .maximum=${this._config.maximum}
             up-to-now
             no-single
           ></state-history-charts>

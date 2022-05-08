@@ -24,6 +24,10 @@ class StateHistoryChartLine extends LitElement {
 
   @property() public unit?: string;
 
+  @property() public minimum?: number;
+
+  @property() public maximum?: number;
+
   @property() public identifier?: string;
 
   @property({ type: Boolean }) public isSingleDevice = false;
@@ -77,6 +81,8 @@ class StateHistoryChartLine extends LitElement {
             ticks: {
               maxTicksLimit: 7,
             },
+            min: this.minimum,
+            max: this.maximum,
             title: {
               display: true,
               text: this.unit,

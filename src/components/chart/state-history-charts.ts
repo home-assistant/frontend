@@ -27,6 +27,10 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
 
+  @property({ type: Number, attribute: "minimum" }) public minimum = null;
+
+  @property({ type: Number, attribute: "maximum" }) public maximum = null;
+
   @property({ type: Boolean }) public isLoadingData = false;
 
   protected render(): TemplateResult {
@@ -70,6 +74,8 @@ class StateHistoryCharts extends LitElement {
             .hass=${this.hass}
             .unit=${line.unit}
             .data=${line.data}
+            .minimum=${this.minimum}
+            .maximum=${this.maximum}
             .identifier=${line.identifier}
             .isSingleDevice=${!this.noSingle &&
             line.data &&

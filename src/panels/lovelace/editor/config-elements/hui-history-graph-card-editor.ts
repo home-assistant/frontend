@@ -27,6 +27,8 @@ const cardConfigStruct = assign(
     entities: array(entitiesConfigStruct),
     title: optional(string()),
     hours_to_show: optional(number()),
+    maximum: optional(number()),
+    minimum: optional(number()),
     refresh_interval: optional(number()),
   })
 );
@@ -42,6 +44,8 @@ const SCHEMA: HaFormSchema[] = [
         name: "refresh_interval",
         selector: { number: { min: 1, mode: "box" } },
       },
+      { name: "minimum", selector: { number: { mode: "box" } } },
+      { name: "maximum", selector: { number: { mode: "box" } } },
     ],
   },
 ];
