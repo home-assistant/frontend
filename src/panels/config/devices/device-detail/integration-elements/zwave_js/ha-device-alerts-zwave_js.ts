@@ -52,7 +52,7 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
     }
   }
 
-  protected async _fetchNodeDetails() {
+  private async _fetchNodeDetails() {
     if (!this._nodeId || !this._entryId) {
       return;
     }
