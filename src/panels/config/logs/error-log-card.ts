@@ -124,7 +124,7 @@ class ErrorLogCard extends LitElement {
     this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     let log: string;
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
       try {
         log = await fetchHassioLogs(this.hass, this.provider);
         if (this.filter) {
