@@ -16,10 +16,6 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
-  @state() private _entryId?: string;
-
-  @state() private _nodeId?: number;
-
   @state() private _nodeComments?: ZwaveJSNodeComments;
 
   protected willUpdate(changedProperties: PropertyValues) {
@@ -37,7 +33,6 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
     if (!identifiers) {
       return;
     }
-    this._nodeId = identifiers.node_id;
 
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
@@ -51,12 +46,10 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
       return;
     }
 
-    this._entryId = configEntry.entry_id;
-
     this._nodeComments = await fetchZwaveNodeComments(
       this.hass,
-      this._entryId,
-      this._nodeId
+      configEntry.entry_id,
+      identifiers.node_id
     );
   }
 
