@@ -61,18 +61,18 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (this._nodeComments?.comments?.length <= 0) {
-      return html``;
+    if (this._nodeComments && this._nodeComments.comments?.length > 0) {
+      return html`
+        <div>
+          ${this._nodeComments.comments.map(
+            (comment) => html`<ha-alert .alertType=${comment.level}>
+              ${comment.text}
+            </ha-alert>`
+          )}
+        </div>
+      `;
     }
-    return html`
-      <div>
-        ${this._nodeComments.comments.map(
-          (comment) => html`<ha-alert .alertType=${comment.level}>
-            ${comment.text}
-          </ha-alert>`
-        )}
-      </div>
-    `;
+    return html``;
   }
 }
 
