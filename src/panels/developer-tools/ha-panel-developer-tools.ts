@@ -42,6 +42,9 @@ class PanelDeveloperTools extends LitElement {
             .selected=${page}
             @iron-activate=${this.handlePageSelected}
           >
+            <paper-tab page-name="yaml">
+              ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
+            </paper-tab>
             <paper-tab page-name="state">
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.states.title"
@@ -66,9 +69,6 @@ class PanelDeveloperTools extends LitElement {
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.statistics.title"
               )}
-            </paper-tab>
-            <paper-tab page-name="yaml">
-              ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
             </paper-tab>
           </ha-tabs>
         </app-header>
