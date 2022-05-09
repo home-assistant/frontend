@@ -479,6 +479,11 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/zwave_js/zwave_js-config-router"
           ),
       },
+      application_credentials: {
+        tag: "ha-config-application-credentials",
+        load: () =>
+          import("./application_credentials/ha-config-application-credentials"),
+      },
     },
   };
 
