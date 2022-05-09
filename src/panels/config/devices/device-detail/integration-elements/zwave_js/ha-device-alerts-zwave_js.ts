@@ -33,14 +33,6 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
-      const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getZwaveJsIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-
       this._fetchNodeDetails();
     }
   }
