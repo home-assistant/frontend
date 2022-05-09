@@ -8,10 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import {
-  ConfigEntry,
-  getConfigEntries,
-} from "../../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../../data/config_entries";
 import {
   getZwaveJsIdentifiersFromDevice,
   ZWaveJSNodeIdentifiers,
@@ -29,16 +26,12 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
 
   @state() private _entryId?: string;
 
-  @state() private _configEntry?: ConfigEntry;
-
-  @state() private _multipleConfigEntries = false;
-
   @state() private _nodeId?: number;
 
   @state() private _nodeComments?: ZwaveJSNodeComments;
 
   protected willUpdate(changedProperties: PropertyValues) {
-  	super.willUpdate(changedProps);
+    super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       const identifiers: ZWaveJSNodeIdentifiers | undefined =
         getZwaveJsIdentifiersFromDevice(this.device);
@@ -53,26 +46,26 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   private async _fetchNodeDetails() {
-    if (!this._nodeId || !this._entryId) {
+    const identifiers: ZWaveJSNodeIdentifiers | undefined =
+      getZwaveJsIdentifiersFromDevice(this.device);
+    if (!identifiers) {
       return;
     }
+    this._nodeId = identifiers.node_id;
 
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
-    let zwaveJsConfEntries = 0;
-    for (const entry of configEntries) {
-      if (zwaveJsConfEntries) {
-        this._multipleConfigEntries = true;
-      }
-      if (entry.entry_id === this._entryId) {
-        this._configEntry = entry;
-      }
-      if (this._configEntry && this._multipleConfigEntries) {
-        break;
-      }
-      zwaveJsConfEntries++;
+
+    const configEntry = configEntries.find((entry) =>
+      this.device.config_entries.includes(entry.entry_id)
+    );
+
+    if (!configEntry) {
+      return;
     }
+
+    this._entryId = configEntry.entry_id;
 
     this._nodeComments = await fetchZwaveNodeComments(
       this.hass,
