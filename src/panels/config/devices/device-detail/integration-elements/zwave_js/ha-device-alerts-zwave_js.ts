@@ -37,7 +37,8 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
 
   @state() private _nodeComments?: ZwaveJSNodeComments;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues) {
+  	super.willUpdate(changedProps);
     if (changedProperties.has("device")) {
       const identifiers: ZWaveJSNodeIdentifiers | undefined =
         getZwaveJsIdentifiersFromDevice(this.device);
