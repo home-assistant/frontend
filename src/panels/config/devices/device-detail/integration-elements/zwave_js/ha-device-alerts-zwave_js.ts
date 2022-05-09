@@ -82,7 +82,7 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._nodeComments || this._nodeComments.comments?.length <= 0) {
+    if (this._nodeComments?.comments?.length <= 0) {
       return html``;
     }
     return html`
