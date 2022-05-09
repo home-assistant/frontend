@@ -20,6 +20,7 @@ import { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
+import { getConfigEntries } from "../../../../../../data/config_entries";
 
 @customElement("ha-device-actions-zwave_js")
 export class HaDeviceActionsZWaveJS extends LitElement {
@@ -33,24 +34,35 @@ export class HaDeviceActionsZWaveJS extends LitElement {
 
   @state() private _node?: ZWaveJSNodeStatus;
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getZwaveJsIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-
       this._fetchNodeDetails();
     }
   }
 
   protected async _fetchNodeDetails() {
-    if (!this._nodeId || !this._entryId) {
+    this._node = undefined;
+
+    const identifiers: ZWaveJSNodeIdentifiers | undefined =
+      getZwaveJsIdentifiersFromDevice(this.device);
+    if (!identifiers) {
       return;
     }
+    this._nodeId = identifiers.node_id;
+
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
+
+    const configEntry = configEntries.find((entry) =>
+      this.device.config_entries.includes(entry.entry_id)
+    );
+
+    if (!configEntry) {
+      return;
+    }
+
+    this._entryId = configEntry.entry_id;
 
     this._node = await fetchZwaveNodeStatus(
       this.hass,
@@ -135,5 +147,11 @@ export class HaDeviceActionsZWaveJS extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-actions-zwave_js": HaDeviceActionsZWaveJS;
   }
 }

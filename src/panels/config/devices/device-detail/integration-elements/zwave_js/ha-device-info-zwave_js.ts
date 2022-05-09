@@ -39,40 +39,38 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @state() private _node?: ZWaveJSNodeStatus;
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getZwaveJsIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-
       this._fetchNodeDetails();
     }
   }
 
   protected async _fetchNodeDetails() {
-    if (!this._nodeId || !this._entryId) {
+    this._node = undefined;
+
+    const identifiers: ZWaveJSNodeIdentifiers | undefined =
+      getZwaveJsIdentifiersFromDevice(this.device);
+    if (!identifiers) {
       return;
     }
+    this._nodeId = identifiers.node_id;
 
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
-    let zwaveJsConfEntries = 0;
-    for (const entry of configEntries) {
-      if (zwaveJsConfEntries) {
-        this._multipleConfigEntries = true;
-      }
-      if (entry.entry_id === this._entryId) {
-        this._configEntry = entry;
-      }
-      if (this._configEntry && this._multipleConfigEntries) {
-        break;
-      }
-      zwaveJsConfEntries++;
+
+    this._configEntry = configEntries.find((entry) =>
+      this.device.config_entries.includes(entry.entry_id)
+    );
+
+    if (!this._configEntry) {
+      return;
+    }
+
+    this._entryId = this._configEntry.entry_id;
+
+    if (configEntries.length > 1) {
+      this._multipleConfigEntries = true;
     }
 
     this._node = await fetchZwaveNodeStatus(
