@@ -1,9 +1,4 @@
-import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { getConfigEntries } from "../../../../../../data/config_entries";
@@ -79,21 +74,6 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
       </div>
     `;
   }
-
-  // static get styles(): CSSResultGroup {
-  //   return [
-  //     haStyle,
-  //     css`
-  //       h4 {
-  //         margin-bottom: 4px;
-  //       }
-  //       div {
-  //         word-break: break-all;
-  //         margin-top: 2px;
-  //       }
-  //     `,
-  //   ];
-  // }
 }
 
 declare global {
