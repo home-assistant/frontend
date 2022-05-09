@@ -1,6 +1,4 @@
 import {
-  css,
-  CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
@@ -15,7 +13,6 @@ import {
   ZwaveJSNodeComments,
   fetchZwaveNodeComments,
 } from "../../../../../../data/zwave_js";
-import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-alerts-zwave_js")
@@ -38,6 +35,8 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   private async _fetchNodeDetails() {
+    this._nodeComments = undefined;
+
     const identifiers: ZWaveJSNodeIdentifiers | undefined =
       getZwaveJsIdentifiersFromDevice(this.device);
     if (!identifiers) {
@@ -81,20 +80,20 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        h4 {
-          margin-bottom: 4px;
-        }
-        div {
-          word-break: break-all;
-          margin-top: 2px;
-        }
-      `,
-    ];
-  }
+  // static get styles(): CSSResultGroup {
+  //   return [
+  //     haStyle,
+  //     css`
+  //       h4 {
+  //         margin-bottom: 4px;
+  //       }
+  //       div {
+  //         word-break: break-all;
+  //         margin-top: 2px;
+  //       }
+  //     `,
+  //   ];
+  // }
 }
 
 declare global {
