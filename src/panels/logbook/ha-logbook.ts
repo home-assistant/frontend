@@ -217,7 +217,8 @@ class HaLogbook extends LitElement {
                   .datetime=${item.when}
                   capitalize
                 ></ha-relative-time>
-                ${item.context_id! in this.traceContexts
+                ${["script", "automation"].includes(item.domain) &&
+                item.context_id! in this.traceContexts
                   ? html`
                       -
                       <a
