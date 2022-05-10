@@ -195,9 +195,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.style.setProperty("--rtl-dir", "rtl");
       } else {
         // clear all custom properties (can't use "all" for this)
-        for (let i = this.style.length; i--; ) {
-          this.style.removeProperty(this.style[i]);
-        }
+        this.style = "";
 
         this.style.direction = "ltr";
       }
