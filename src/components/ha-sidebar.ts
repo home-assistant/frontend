@@ -919,7 +919,7 @@ class HaSidebar extends LitElement {
           margin: 4px;
           padding-left: 12px;
           border-radius: 4px;
-          --paper-item-min-height: 40px;
+          --paper-item-min-height: var(--sidebar-item-min-height, 40px);
           width: 48px;
         }
         :host([expanded]) paper-icon-item {
