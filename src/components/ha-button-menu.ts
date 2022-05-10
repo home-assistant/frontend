@@ -2,7 +2,6 @@ import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { computeRTL } from "../common/util/compute_rtl";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
