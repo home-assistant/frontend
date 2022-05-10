@@ -38,7 +38,6 @@ export class HaButtonMenu extends LitElement {
         <slot name="trigger"></slot>
       </div>
       <mwc-menu
-        id="menu"
         .corner=${this.corner}
         .menuCorner=${this.menuCorner}
         .fixed=${this.fixed}
