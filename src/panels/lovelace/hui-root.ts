@@ -57,10 +57,7 @@ import type {
   LovelacePanelConfig,
   LovelaceViewConfig,
 } from "../../data/lovelace";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import "../../layouts/ha-app-layout";
@@ -240,7 +237,7 @@ class HUIRoot extends LitElement {
                           ${this.lovelace!.config.views.map(
                             (view) => html`
                               <paper-tab
-                                aria-label=${view.title}
+                                .aria-label=${view.title}
                                 class=${classMap({
                                   "hide-tab": Boolean(
                                     view.visible !== undefined &&
@@ -255,7 +252,7 @@ class HUIRoot extends LitElement {
                                 ${view.icon
                                   ? html`
                                       <ha-icon
-                                        title=${view.title}
+                                        .title=${view.title}
                                         .icon=${view.icon}
                                       ></ha-icon>
                                     `
@@ -403,27 +400,6 @@ class HUIRoot extends LitElement {
                                 </mwc-list-item>
                               `
                             : ""}
-                          ${this.hass!.user?.is_admin &&
-                          !this.hass!.config.safe_mode
-                            ? html`
-                                <mwc-list-item
-                                  graphic="icon"
-                                  aria-label=${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.configure_ui"
-                                  )}
-                                  @request-selected=${this
-                                    ._handleEnableEditMode}
-                                >
-                                  ${this.hass!.localize(
-                                    "ui.panel.lovelace.menu.configure_ui"
-                                  )}
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiPencil}
-                                  ></ha-svg-icon>
-                                </mwc-list-item>
-                              `
-                            : ""}
                           ${this._editMode
                             ? html`
                                 <a
@@ -469,7 +445,7 @@ class HUIRoot extends LitElement {
                     ${this.lovelace!.config.views.map(
                       (view) => html`
                         <paper-tab
-                          aria-label=${view.title}
+                          .aria-label=${view.title}
                           class=${classMap({
                             "hide-tab": Boolean(
                               !this._editMode &&
@@ -498,7 +474,7 @@ class HUIRoot extends LitElement {
                           ${view.icon
                             ? html`
                                 <ha-icon
-                                  title=${view.title}
+                                  .title=${view.title}
                                   .icon=${view.icon}
                                 ></ha-icon>
                               `
@@ -674,7 +650,6 @@ class HUIRoot extends LitElement {
     return (
       (this.narrow && this._conversation(this.hass.config.components)) ||
       this._editMode ||
-      (this.hass!.user?.is_admin && !this.hass!.config.safe_mode) ||
       (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
         "yaml" ||
       this._yamlMode
@@ -745,19 +720,6 @@ class HUIRoot extends LitElement {
 
   private _showVoiceCommandDialog(): void {
     showVoiceCommandDialog(this);
-  }
-
-  private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    if (this._yamlMode) {
-      showAlertDialog(this, {
-        text: "The edit UI is not available when in YAML mode.",
-      });
-      return;
-    }
-    this.lovelace!.setEditMode(true);
   }
 
   private _editModeDisable(): void {

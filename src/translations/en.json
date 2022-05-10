@@ -1621,9 +1621,11 @@
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "edit": "Edit"
               },
               "open": "Open",
+              "edit": "Edit",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",

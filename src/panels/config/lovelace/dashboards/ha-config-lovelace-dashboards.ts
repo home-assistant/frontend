@@ -3,6 +3,7 @@ import {
   mdiCheckCircleOutline,
   mdiDotsVertical,
   mdiOpenInNew,
+  mdiPencil,
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -13,6 +14,7 @@ import memoize from "memoize-one";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
+import { addSearchParam } from "../../../../common/url/search-params";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -31,7 +33,10 @@ import {
   LovelacePanelConfig,
   updateDashboard,
 } from "../../../../data/lovelace";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
@@ -42,11 +47,11 @@ import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-deta
 export class HaConfigLovelaceDashboards extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 
@@ -192,6 +197,37 @@ export class HaConfigLovelaceDashboards extends LitElement {
               `,
       };
 
+      columns.edit_path = {
+        title: "",
+        label: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.picker.headers.edit"
+        ),
+        width: "100px",
+        template: (edit_path, dashboard) =>
+          narrow
+            ? html`
+                <ha-icon-button
+                  .path=${mdiPencil}
+                  .urlPath=${edit_path}
+                  .mode=${dashboard.mode}
+                  @click=${this._editDashboard}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.edit"
+                  )}
+                ></ha-icon-button>
+              `
+            : html`
+                <mwc-button
+                  .urlPath=${edit_path}
+                  .mode=${dashboard.mode}
+                  @click=${this._editDashboard}
+                  >${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.edit"
+                  )}</mwc-button
+                >
+              `,
+      };
+
       return columns;
     }
   );
@@ -210,6 +246,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         show_in_sidebar: isDefault,
         require_admin: false,
         url_path: "lovelace",
+        edit_path: "lovelace?edit=1",
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
         iconColor: "var(--primary-color)",
@@ -222,6 +259,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         show_in_sidebar: true,
         mode: "storage",
         url_path: "energy",
+        edit_path: "config/energy",
         filename: "",
         iconColor: "var(--label-badge-yellow)",
       });
@@ -232,6 +270,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .sort((a, b) => stringCompare(a.title, b.title))
         .map((dashboard) => ({
           filename: "",
+          edit_path: `${dashboard.url_path}?${addSearchParam({ edit: "1" })}`,
           ...dashboard,
           default: defaultUrlPath === dashboard.url_path,
         }))
@@ -257,7 +296,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards
         )}
         .data=${this._getItems(this._dashboards)}
-        @row-click=${this._editDashboard}
+        @row-click=${this._updateDashboard}
         id="url_path"
         hasFab
         clickable
@@ -316,7 +355,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     navigate(`/${(ev.target as any).urlPath}`);
   }
 
-  private _editDashboard(ev: CustomEvent) {
+  private _updateDashboard(ev: CustomEvent) {
     const urlPath = (ev.detail as RowClickedEvent).id;
 
     if (urlPath === "energy") {
@@ -325,6 +364,16 @@ export class HaConfigLovelaceDashboards extends LitElement {
     }
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDialog(dashboard, urlPath);
+  }
+
+  private _editDashboard(ev: CustomEvent) {
+    if ((ev.detail as any).mode === "yaml") {
+      showAlertDialog(this, {
+        text: "The edit UI is not available when in YAML mode.",
+      });
+      return;
+    }
+    navigate(`/${(ev.target as any).urlPath}`);
   }
 
   private _addDashboard() {
@@ -385,5 +434,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _entryClicked(ev) {
     ev.currentTarget.blur();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-lovelace-dashboards": HaConfigLovelaceDashboards;
   }
 }
