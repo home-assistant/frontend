@@ -55,10 +55,8 @@ export class HaButtonMenu extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
-    document.querySelector("home-assistant")!.provideHass(this);
-
     // @ts-ignore
-    if (computeRTL(this.hass!)) {
+    if (document.dir === "rtl") {
       this.updateComplete.then(() => {
         this.querySelectorAll("mwc-list-item").forEach((item) => {
           const style = document.createElement("style");
