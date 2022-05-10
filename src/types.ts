@@ -103,6 +103,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   icon: string | null;
   title: string | null;
   url_path: string;
+  hide_header: boolean;
 }
 
 export interface Panels {

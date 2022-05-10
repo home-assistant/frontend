@@ -1621,9 +1621,11 @@
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
                 "filename": "Filename",
-                "url": "Open"
+                "url": "Open",
+                "edit": "Edit"
               },
               "open": "Open",
+              "edit": "Edit",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
@@ -1644,6 +1646,7 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
+              "hide_header": "Hide header",
               "set_default": "Set as default on this device",
               "remove_default": "Remove as default on this device"
             }

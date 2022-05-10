@@ -53,6 +53,7 @@ interface LovelaceGenericDashboard {
   show_in_sidebar: boolean;
   icon?: string;
   title: string;
+  hide_header?: boolean;
 }
 
 export interface LovelaceYamlDashboard extends LovelaceGenericDashboard {
@@ -69,6 +70,7 @@ export interface LovelaceDashboardMutableParams {
   show_in_sidebar: boolean;
   icon?: string;
   title: string;
+  hide_header?: boolean;
 }
 
 export interface LovelaceDashboardCreateParams

@@ -45,6 +45,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         title: "",
         require_admin: false,
         mode: "storage",
+        hide_header: false,
       };
     }
   }
@@ -194,6 +195,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             boolean: {},
           },
         },
+        {
+          name: "hide_header",
+          required: true,
+          selector: {
+            boolean: {},
+          },
+        },
       ].filter(Boolean)
   );
 
@@ -270,6 +278,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           show_in_sidebar: this._data!.show_in_sidebar,
           icon: this._data!.icon || undefined,
           title: this._data!.title,
+          hide_header: this._data!.hide_header || false,
         };
         await this._params!.updateDashboard(values);
       } else {
