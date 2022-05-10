@@ -218,7 +218,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
-            "ui.panel.config.helpers.picker.add_helper"
+            "ui.panel.config.helpers.picker.create_helper"
           )}
           extended
           @click=${this._createHelpler}
