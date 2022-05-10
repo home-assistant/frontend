@@ -192,10 +192,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         // apply custom properties used to fix RTL appearance throughout the system
         this.style.setProperty("--rtl-12px", "12px");
         this.style.setProperty("--rtl--8px", "-8px");
-        this.style.setProperty("--rtl-dir", "rtl");
+        this.style.setProperty("--dir", "rtl");
       } else {
         // clear all custom properties (can't use "all" for this)
-        this.style = "";
+        this.style.cssText = "";
 
         this.style.direction = "ltr";
       }
