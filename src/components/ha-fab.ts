@@ -1,23 +1,25 @@
-import { Fab } from "@material/mwc-fab";
+import { FabBase } from "@material/mwc-fab/mwc-fab-base";
+import { styles } from "@material/mwc-fab/mwc-fab.css";
 import { customElement } from "lit/decorators";
 import { css } from "lit";
 
 @customElement("ha-fab")
-export class HaFab extends Fab {
+export class HaFab extends FabBase {
   protected firstUpdated(changedProperties) {
     super.firstUpdated(changedProperties);
     this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
   }
 
-  static override styles = Fab.styles.concat([
+  static override styles = [
+    styles,
     css`
       .mdc-fab--extended .mdc-fab__icon {
-        margin-inline-start: -8px !important;
-        margin-inline-end: 12px !important;
-        direction: var(--direction) !important;
+        margin-inline-start: -8px;
+        margin-inline-end: 12px;
+        direction: var(--direction);
       }
     `,
-  ]);
+  ];
 }
 
 declare global {
