@@ -239,27 +239,17 @@ export const fetchDateWS = (
   endTime: Date,
   entityId?: string
 ) => {
-  if (entityId) {
-    return hass.callWS<HistoryStates>({
-      type: "history/history_during_period",
-      start_time: startTime.toISOString(),
-      end_time: endTime.toISOString(),
-      minimal_response: true,
-      entity_ids: [entityId],
-      no_attributes: !!(
-        entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
-      ),
-    });
-  }
-  return hass.callWS<HistoryStates>({
+  const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: true,
-    no_attributes: !!(
-      entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
-    ),
-  });
+    no_attributes: true,
+  };
+  if (entityId) {
+    return hass.callWS<HistoryStates>({ ...params, entity_ids: [entityId] });
+  }
+  return hass.callWS<HistoryStates>(params);
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>

@@ -54,7 +54,6 @@ export const getRecent = (
     return cache.data;
   }
 
-  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
   const prom = fetchRecentWS(
     hass,
     entityId,
@@ -63,7 +62,7 @@ export const getRecent = (
     false,
     undefined,
     true,
-    noAttributes
+    true
   ).then(
     (stateHistory) => computeHistory(hass, stateHistory, localize),
     (err) => {
