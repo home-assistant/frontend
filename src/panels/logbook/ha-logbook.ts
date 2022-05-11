@@ -217,13 +217,20 @@ class HaLogbook extends LitElement {
                   .datetime=${item.when}
                   capitalize
                 ></ha-relative-time>
-                ${item.domain === "automation" &&
+                ${["script", "automation"].includes(item.domain!) &&
                 item.context_id! in this.traceContexts
                   ? html`
                       -
                       <a
-                        href=${`/config/automation/trace/${
-                          this.traceContexts[item.context_id!].item_id
+                        href=${`/config/${
+                          this.traceContexts[item.context_id!].domain
+                        }/trace/${
+                          this.traceContexts[item.context_id!].domain ===
+                          "script"
+                            ? `script.${
+                                this.traceContexts[item.context_id!].item_id
+                              }`
+                            : this.traceContexts[item.context_id!].item_id
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}

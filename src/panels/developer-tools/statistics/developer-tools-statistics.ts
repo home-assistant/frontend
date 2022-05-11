@@ -103,6 +103,9 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
       },
       fix: {
         title: "",
+        label: this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+        ),
         template: (_, data: any) =>
           html`${data.issues
             ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}>
