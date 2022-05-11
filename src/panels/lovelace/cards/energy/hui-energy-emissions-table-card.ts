@@ -83,13 +83,13 @@ export class HuiEnergyEmissionsTableCard
     const computedStyles = getComputedStyle(this);
     const colors = {
       emissions: computedStyles
-        .getPropertyValue("--energy-carbon-emissions-color")
+        .getPropertyValue("--energy-carbon-emissions-electrical-color")
         .trim(),
       avoided: computedStyles
-        .getPropertyValue("--energy-carbon-avoided-color")
+        .getPropertyValue("--energy-carbon-avoided-electrical-color")
         .trim(),
       offsets: computedStyles
-        .getPropertyValue("--energy-carbon-offsets-color")
+        .getPropertyValue("--energy-carbon-offsets-electrical-color")
         .trim(),
     };
  

@@ -91,9 +91,11 @@ documentContainer.innerHTML = `<custom-style>
       --energy-battery-out-color: #4db6ac;
       --energy-battery-in-color: #f06292;
       --energy-gas-color: #8E021B;
-      --energy-carbon-avoided-color: #0f9d58;
-      --energy-carbon-offsets-color: #488fc2;
-      --energy-carbon-emissions-color: #964B00;
+      --energy-carbon-avoided-electrical-color: #0f9d58;
+      --energy-carbon-offsets-electrical-color: #488fc2;
+      --energy-carbon-emissions-electrical-color: #964B00;
+      --energy-carbon-offsets-gas-color: #05497a;
+      --energy-carbon-offsets-gas-color: #8E021B;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;
