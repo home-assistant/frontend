@@ -236,7 +236,7 @@ class ErrorLogCard extends LitElement {
     }
 
     mwc-button {
-      direction: var(--rtl-dir, ltr);
+      direction: var(--direction);
     }
   `;
 }
