@@ -94,10 +94,9 @@ export class HuiEnergyEmissionsTableCard
     };
  
 
-    // These become electricity emissions
-    const carbonDioxideEquivalentEmissions = this._data.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentAvoided = this._data.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentOffsets = this._data.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentElectricityEmissions = this._data.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentElectricityAvoided = this._data.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentElectricityOffsets = this._data.carbonDioxideEquivalentElectricityOffsets;
 
     // Need to add Gas in the same way (Emissions and offsets only)
 
@@ -106,9 +105,9 @@ export class HuiEnergyEmissionsTableCard
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
     let allKeys: string[] = [];
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentEmissions ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentAvoided ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentOffsets ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityEmissions ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityAvoided ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityOffsets ));
 
     const uniqueKeys = Array.from(new Set(allKeys));
 
@@ -116,19 +115,19 @@ export class HuiEnergyEmissionsTableCard
     const borderColorEmissions = colors.emissions;
     let electricityEmissions = 0;
     for (const key of uniqueKeys) {
-      electricityEmissions += carbonDioxideEquivalentEmissions[key] || 0;
+      electricityEmissions += carbonDioxideEquivalentElectricityEmissions[key] || 0;
     }
 
     const borderColorOffsets = colors.offsets;
     let electricityOffsets = 0;
     for (const key of uniqueKeys) {
-      electricityOffsets += carbonDioxideEquivalentOffsets[key] || 0;    }
+      electricityOffsets += carbonDioxideEquivalentElectricityOffsets[key] || 0;    }
 
 
     const borderColorAvoided = colors.avoided;
     let electricityAvoided = 0;
     for (const key of uniqueKeys) {
-      electricityAvoided -= carbonDioxideEquivalentAvoided[key] || 0;    }
+      electricityAvoided -= carbonDioxideEquivalentElectricityAvoided[key] || 0;    }
 
 
 
@@ -222,7 +221,7 @@ export class HuiEnergyEmissionsTableCard
                     </td>
                     <th class="mdc-data-table__cell" scope="row">
                     ${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_emissions_table.electricity_offset"
+                        "ui.panel.lovelace.cards.energy.energy_emissions_table.electricity_offsets"
                       )}
                     </th>
                     <td

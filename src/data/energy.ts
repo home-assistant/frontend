@@ -414,9 +414,13 @@ const getEnergyData = async (
   );
 
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
-  let carbonDioxideEquivalentEmissions: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentOffsets: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentAvoided: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentElectricityEmissions: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentElectricityOffsets: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentElectricityAvoided: CarbonDioxideEquivalent | undefined;
+
+  let carbonDioxideEquivalentGasEmissions: CarbonDioxideEquivalent | undefined;
+  let carbonDioxideEquivalentGasOffsets: CarbonDioxideEquivalent | undefined;
+
 
   // TODO: Move this to config
   // TODO: Make electrical
@@ -438,7 +442,7 @@ const getEnergyData = async (
 }
     
 if (co2SignalEntityGridIntensity !== undefined) {
-    carbonDioxideEquivalentEmissions = await getCarbonDioxideEquivalent(
+    carbonDioxideEquivalentElectricityEmissions = await getCarbonDioxideEquivalent(
       hass!,
       start,
       consumptionStatIDs,
@@ -451,7 +455,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
 }
 
 if (co2SignalEntityGridIntensity !== undefined) {
-  carbonDioxideEquivalentOffsets = await getCarbonDioxideEquivalent(
+  carbonDioxideEquivalentElectricityOffsets = await getCarbonDioxideEquivalent(
     hass!,
     start,
     consumptionStatIDs,
@@ -464,7 +468,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
 }
 
 if (co2SignalEntityGridIntensity !== undefined) {
-    carbonDioxideEquivalentAvoided = await getCarbonDioxideEquivalent(
+    carbonDioxideEquivalentElectricityAvoided = await getCarbonDioxideEquivalent(
       hass!,
       start,
       statIDs,
@@ -498,9 +502,11 @@ if (co2SignalEntityGridIntensity !== undefined) {
     co2SignalConfigEntry,
     co2SignalEntity: co2SignalEntityGridPercentageFossil,
     fossilEnergyConsumption,
-    carbonDioxideEquivalentEmissions,
-    carbonDioxideEquivalentOffsets,
-    carbonDioxideEquivalentAvoided,
+    carbonDioxideEquivalentElectricityEmissions,
+    carbonDioxideEquivalentElectricityOffsets,
+    carbonDioxideEquivalentElectricityAvoided,
+    carbonDioxideEquivalentGasEmissions,
+    carbonDioxideEquivalentGasOffsets,
   };
 
   return data;

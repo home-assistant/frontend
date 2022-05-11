@@ -92,8 +92,8 @@ documentContainer.innerHTML = `<custom-style>
       --energy-battery-in-color: #f06292;
       --energy-gas-color: #8E021B;
       --energy-carbon-avoided-color: #0f9d58;
-      --energy-carbon-offsets: #f06292;
-      --energy-carbon-emissions-color: #488fc2;
+      --energy-carbon-offsets-color: #488fc2;
+      --energy-carbon-emissions-color: #964B00;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;

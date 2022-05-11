@@ -278,15 +278,15 @@ export class HuiEnergyCarbonEmissionsGraphCard
       ),
     };
 
-    const carbonDioxideEquivalentEmissions = energyData.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentAvoided = energyData.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentOffsets = energyData.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentElectricityEmissions = energyData.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentElectricityAvoided = energyData.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentElectricityOffsets = energyData.carbonDioxideEquivalentElectricityOffsets;
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
     let allKeys: string[] = [];
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentEmissions ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentAvoided ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentOffsets ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityEmissions ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityAvoided ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityOffsets ));
 
     const uniqueKeys = Array.from(new Set(allKeys));
 
@@ -305,7 +305,7 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
     // Process chart data.
     for (const key of uniqueKeys) {
-      const value = carbonDioxideEquivalentEmissions[key] || 0;
+      const value = carbonDioxideEquivalentElectricityEmissions[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
       dataE[0].data.push({
@@ -329,7 +329,7 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
     // Process chart data.
     for (const key of uniqueKeys) {
-      const value = carbonDioxideEquivalentOffsets[key] || 0;
+      const value = carbonDioxideEquivalentElectricityOffsets[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
       dataO[0].data.push({
@@ -353,7 +353,7 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
     // Process chart data.
     for (const key of uniqueKeys) {
-      const value = carbonDioxideEquivalentAvoided[key] || 0;
+      const value = carbonDioxideEquivalentElectricityAvoided[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
       dataA[0].data.push({
