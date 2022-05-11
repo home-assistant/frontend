@@ -1,6 +1,6 @@
 import { atLeastVersion } from "../common/config/version";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
-import { computeRTL } from "../common/util/compute_rtl";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
   getHassTranslations,
@@ -187,18 +187,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _applyDirection(hass: HomeAssistant) {
-      if (computeRTL(hass)) {
-        this.style.direction = "rtl";
-        // apply custom properties used to fix RTL appearance throughout the system
-        this.style.setProperty("--rtl-12px", "12px");
-        this.style.setProperty("--rtl--8px", "-8px");
-        this.style.setProperty("--dir", "rtl");
-      } else {
-        // clear all custom properties (can't use "all" for this)
-        this.style.cssText = "";
-
-        this.style.direction = "ltr";
-      }
+      const direction = computeRTLDirection(hass);
+      this.style.direction = direction;
+      document.dir = direction;
+      this.style.setProperty("--direction", direction);
     }
 
     /**

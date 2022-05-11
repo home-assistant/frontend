@@ -12,8 +12,9 @@ export class HaFab extends Fab {
   static override styles = Fab.styles.concat([
     css`
       .mdc-fab--extended .mdc-fab__icon {
-        margin-left: var(--rtl-12px, -8px) !important;
-        margin-right: var(--rtl--8px, 12px) !important;
+        margin-inline-start: -8px !important;
+        margin-inline-end: 12px !important;
+        direction: var(--direction) !important;
       }
     `,
   ]);
