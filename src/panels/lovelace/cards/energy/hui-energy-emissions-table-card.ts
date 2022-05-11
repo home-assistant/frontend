@@ -95,9 +95,9 @@ export class HuiEnergyEmissionsTableCard
  
 
     // These become electricity emissions
-    const carbonDioxideEquivalentEmissions = this._data.carbonDioxideEquivalentEmissions;
-    const carbonDioxideEquivalentAvoided = this._data.carbonDioxideEquivalentAvoided;
-    const carbonDioxideEquivalentOffsets = this._data.carbonDioxideEquivalentOffsets;
+    const carbonDioxideEquivalentEmissions = this._data.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentAvoided = this._data.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentOffsets = this._data.carbonDioxideEquivalentElectricityOffsets;
 
     // Need to add Gas in the same way (Emissions and offsets only)
 
@@ -114,29 +114,22 @@ export class HuiEnergyEmissionsTableCard
 
     // Not supporting dark mode as yet...... see usage graphs
     const borderColorEmissions = colors.emissions;
-    let emissions = 0;
+    let electricityEmissions = 0;
     for (const key of uniqueKeys) {
-      emissions += carbonDioxideEquivalentEmissions[key] || 0;
+      electricityEmissions += carbonDioxideEquivalentEmissions[key] || 0;
     }
 
     const borderColorOffsets = colors.offsets;
-    let offsets = 0;
+    let electricityOffsets = 0;
     for (const key of uniqueKeys) {
-      offsets += carbonDioxideEquivalentOffsets[key] || 0;    }
+      electricityOffsets += carbonDioxideEquivalentOffsets[key] || 0;    }
 
 
     const borderColorAvoided = colors.avoided;
-    let avoided = 0;
+    let electricityAvoided = 0;
     for (const key of uniqueKeys) {
-      avoided -= carbonDioxideEquivalentAvoided[key] || 0;    }
+      electricityAvoided -= carbonDioxideEquivalentAvoided[key] || 0;    }
 
-
-    // eslint-disable-next-line no-console
-    console.log({ carbonDioxideEquivalentEmissions });
-    // eslint-disable-next-line no-console
-    console.log({ carbonDioxideEquivalentAvoided });
-    // eslint-disable-next-line no-console
-    console.log({ carbonDioxideEquivalentOffsets });
 
 
     // TODO - Gas
@@ -146,10 +139,10 @@ export class HuiEnergyEmissionsTableCard
     gasOffsets += 0;
 
     
-    netEmissions += emissions;
-    absoluteEmissions += emissions;
-    netEmissions +=  offsets;
-    netEmissions +=  avoided;
+    netEmissions += electricityEmissions;
+    absoluteEmissions += electricityEmissions;
+    netEmissions +=  electricityOffsets;
+    netEmissions +=  electricityAvoided;
 
     netEmissions += gasEmissions;
     absoluteEmissions += gasEmissions;
@@ -213,7 +206,7 @@ export class HuiEnergyEmissionsTableCard
                   <td
                     class="mdc-data-table__cell mdc-data-table__cell--numeric"
                   >
-                    ${formatNumber(emissions, this.hass.locale)} kgCO2Eq
+                    ${formatNumber(electricityEmissions, this.hass.locale)} kgCO2Eq
                   </td>
                 </tr>
 
@@ -235,7 +228,7 @@ export class HuiEnergyEmissionsTableCard
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
-                      ${formatNumber(offsets, this.hass.locale)} kgCO2Eq
+                      ${formatNumber(electricityOffsets, this.hass.locale)} kgCO2Eq
                     </td>
                   </tr>
                   
@@ -257,7 +250,7 @@ export class HuiEnergyEmissionsTableCard
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
-                      ${formatNumber(avoided, this.hass.locale)} kgCO2Eq
+                      ${formatNumber(electricityAvoided, this.hass.locale)} kgCO2Eq
                     </td>
                   </tr>
 

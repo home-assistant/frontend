@@ -83,22 +83,22 @@ class HuiEnergyCarbonEmissionsGaugeCard
       </hui-warning>`;
     }
 
-    const emissions = this._data.carbonDioxideEquivalentEmissions
-    ? Object.values(this._data.carbonDioxideEquivalentEmissions).reduce(
+    const emissions = this._data.carbonDioxideEquivalentElectricityEmissions
+    ? Object.values(this._data.carbonDioxideEquivalentElectricityEmissions).reduce(
         (sum, a) => sum + a,
         0
       )
     : 0;
 
-    const avoided = this._data.carbonDioxideEquivalentAvoided
-    ? Object.values(this._data.carbonDioxideEquivalentAvoided).reduce(
+    const avoided = this._data.carbonDioxideEquivalentElectricityAvoided
+    ? Object.values(this._data.carbonDioxideEquivalentElectricityAvoided).reduce(
         (sum, a) => sum + a,
         0
       )
     : 0;
 
-    const offsets = this._data.carbonDioxideEquivalentOffsets
-    ? Object.values(this._data.carbonDioxideEquivalentOffsets).reduce(
+    const offsets = this._data.carbonDioxideEquivalentElectricityOffsets
+    ? Object.values(this._data.carbonDioxideEquivalentElectricityOffsets).reduce(
         (sum, a) => sum + a,
         0
       )

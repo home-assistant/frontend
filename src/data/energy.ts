@@ -271,9 +271,12 @@ export interface EnergyData {
   fossilEnergyConsumption?: FossilEnergyConsumption;  // BK? Why separate?
 
   // TODO - BK? Why would these be here and not included in the stats? What is special about fossilEnergy (and are these special also?)
-  carbonDioxideEquivalentEmissions?: CarbonDioxideEquivalent;
-  carbonDioxideEquivalentOffsets?: CarbonDioxideEquivalent;
-  carbonDioxideEquivalentAvoided?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentElectricityEmissions?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentElectricityOffsets?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentElectricityAvoided?: CarbonDioxideEquivalent;
+
+  carbonDioxideEquivalentGasEmissions?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentGasOffsets?: CarbonDioxideEquivalent;
 }
 
 const getEnergyData = async (

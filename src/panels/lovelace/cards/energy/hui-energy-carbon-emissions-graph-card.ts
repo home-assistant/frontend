@@ -278,9 +278,9 @@ export class HuiEnergyCarbonEmissionsGraphCard
       ),
     };
 
-    const carbonDioxideEquivalentEmissions = energyData.carbonDioxideEquivalentEmissions;
-    const carbonDioxideEquivalentAvoided = energyData.carbonDioxideEquivalentAvoided;
-    const carbonDioxideEquivalentOffsets = energyData.carbonDioxideEquivalentOffsets;
+    const carbonDioxideEquivalentEmissions = energyData.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentAvoided = energyData.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentOffsets = energyData.carbonDioxideEquivalentElectricityOffsets;
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
     let allKeys: string[] = [];
