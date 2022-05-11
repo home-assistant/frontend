@@ -336,7 +336,7 @@ const processLineChartEntities = (
         processedState = {
           state: state.s,
           last_changed: state.lc * 1000,
-          attributes: state.a,
+          attributes: {},
         };
       }
 
@@ -380,14 +380,11 @@ export const computeHistory = (
   stateHistory: HistoryStates,
   localize: LocalizeFunc
 ): HistoryResult => {
-  const lineChartDevices: {
-    [unit: string]: { [entityId: string]: EntityHistoryState[] };
-  } = {};
+  const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
   if (!stateHistory) {
     return { line: [], timeline: [] };
   }
-
   Object.keys(stateHistory).forEach((entityId) => {
     const stateInfo = stateHistory[entityId];
     if (stateInfo.length === 0) {
@@ -423,12 +420,11 @@ export const computeHistory = (
       );
     } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
       lineChartDevices[unit][entityId].push(...stateInfo);
-    } else if (unit in lineChartDevices) {
-      lineChartDevices[unit][entityId] = stateInfo;
     } else {
-      lineChartDevices[unit] = {
-        entityId: stateInfo,
-      };
+      if (!(unit in lineChartDevices)) {
+        lineChartDevices[unit] = {};
+      }
+      lineChartDevices[unit][entityId] = stateInfo;
     }
   });
 
