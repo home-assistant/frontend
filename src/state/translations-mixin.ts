@@ -180,10 +180,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _applyTranslations(hass: HomeAssistant) {
       document.querySelector("html")!.setAttribute("lang", hass.language);
-      document.dir = computeRTLDirection(hass);
+      this._applyDirection(hass);
       this._loadCoreTranslations(hass.language);
       this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
+    }
+
+    private _applyDirection(hass: HomeAssistant) {
+      const direction = computeRTLDirection(hass);
+      this.style.direction = direction;
+      document.dir = direction;
+      this.style.setProperty("--direction", direction);
     }
 
     /**
