@@ -1479,13 +1479,13 @@
               "type": "Type",
               "editable": "Editable"
             },
-            "add_helper": "Add helper",
+            "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
           },
           "dialog": {
             "create": "Create",
-            "add_helper": "Add helper",
-            "add_platform": "Add {platform}"
+            "create_helper": "Create helper",
+            "create_platform": "Create {platform}"
           }
         },
         "core": {
@@ -2853,6 +2853,30 @@
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
+          }
+        },
+        "application_credentials": {
+          "caption": "Application Credentials",
+          "description": "Manage the OAuth Application Credentials used by Integrations",
+          "editor": {
+            "caption": "Add Application Credential",
+            "create": "Create",
+            "domain": "Integration",
+            "client_id": "OAuth Client ID",
+            "client_secret": "OAuth Client Secret"
+          },
+          "picker": {
+            "add_application_credential": "Add Application Credential",
+            "headers": {
+              "client_id": "OAuth Client ID",
+              "application": "Integration"
+            },
+            "remove_selected": {
+              "button": "Remove selected",
+              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentialss}\n}?",
+              "confirm_text": "Application Credentials in use by an integration may not be removed."
+            },
+            "selected": "{number} selected"
           }
         },
         "mqtt": {

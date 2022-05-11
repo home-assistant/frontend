@@ -61,6 +61,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import "../integrations/ha-integration-overflow-menu";
 import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
   loadEntityEditorDialog,
@@ -526,6 +527,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         id="entity_id"
         .hasFab=${includeZHAFab}
       >
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
         ${this._selectedEntities.length
           ? html`
               <div
