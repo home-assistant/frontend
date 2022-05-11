@@ -245,7 +245,7 @@ export const fetchDateWS = (
       start_time: startTime.toISOString(),
       end_time: endTime.toISOString(),
       minimal_response: true,
-      entity_id: [entityId],
+      entity_ids: [entityId],
       no_attributes: !!(
         entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
       ),
