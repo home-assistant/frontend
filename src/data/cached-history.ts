@@ -6,6 +6,7 @@ import {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
+  entityIdHistoryNeedsAttributes,
   fetchRecentWS,
 } from "./history";
 
@@ -129,6 +130,7 @@ export const getRecentWithCache = (
   }
 
   const curCacheProm = cache.prom;
+  const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
 
   const genProm = async () => {
     let fetchedHistory: HistoryStates;
@@ -144,7 +146,7 @@ export const getRecentWithCache = (
           appendingToCache,
           undefined,
           true,
-          true
+          noAttributes
         ),
       ]);
       fetchedHistory = results[1];
