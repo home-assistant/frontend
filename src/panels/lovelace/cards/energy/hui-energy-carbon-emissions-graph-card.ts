@@ -257,13 +257,13 @@ export class HuiEnergyCarbonEmissionsGraphCard
     const computedStyles = getComputedStyle(this);
     const colors = {
       emissions: computedStyles
-        .getPropertyValue("--energy-grid-return-color")
+        .getPropertyValue("--energy-carbon-emissions-color")
         .trim(),
       avoided: computedStyles
-        .getPropertyValue("--energy-battery-in-color")
+        .getPropertyValue("--energy-carbon-avoided-color")
         .trim(),
       offsets: computedStyles
-        .getPropertyValue("--energy-grid-consumption-color")
+        .getPropertyValue("--energy-carbon-offsets-color")
         .trim(),
     };
     const labels = {

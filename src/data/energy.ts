@@ -416,7 +416,10 @@ const getEnergyData = async (
   let carbonDioxideEquivalentAvoided: CarbonDioxideEquivalent | undefined;
 
   // TODO: Move this to config
+  // TODO: Make electrical
   const co2_import_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
+
+  // TODO Add Gas
 
 
   if (co2SignalEntityGridPercentageFossil !== undefined) {
@@ -461,7 +464,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
     carbonDioxideEquivalentAvoided = await getCarbonDioxideEquivalent(
       hass!,
       start,
-      statIDs, // TODO - This might need to be a productionStatsId (but it should just be the site/house export values)
+      statIDs,
       co2SignalEntityGridIntensity,
       600,
       1.0,

@@ -107,6 +107,25 @@ export class EnergyStrategy {
       });
     }
 
+    // Only include if we have a grid
+    if (hasGrid) {
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_emissions_graph_title"),
+        type: "energy-carbon-emissions-graph",
+        collection_key: "energy_dashboard",
+      });
+    }
+
+    if (hasGrid || hasSolar) {
+      view.cards!.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_emissions_table_title"
+        ),
+        type: "energy-emissions-table",
+        collection_key: "energy_dashboard",
+      });
+    }
+
     // Only include if we have a grid source & return.
     if (hasReturn) {
       view.cards!.push({
@@ -139,15 +158,6 @@ export class EnergyStrategy {
       view.cards!.push({
         type: "energy-carbon-emissions-gauge",
         view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
-      });
-    }
-
-    // Only include if we have a grid
-    if (hasGrid) {
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_emissions_graph_title"),
-        type: "energy-carbon-emissions-graph",
         collection_key: "energy_dashboard",
       });
     }

@@ -139,6 +139,12 @@ export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyEmissionsTableCardConfig extends LovelaceCardConfig {
+  type: "energy-emissions-table";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-solar-consumed-gauge";
   title?: string;
