@@ -307,7 +307,7 @@ const processTimelineEntity = (
 
 const processLineChartEntities = (
   unit,
-  entities: { [entityId: string]: EntityHistoryState[] }
+  entities: HistoryStates
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
