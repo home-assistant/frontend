@@ -11,8 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveNodeStatus,
-  getZwaveJsIdentifiersFromDevice,
-  ZWaveJSNodeIdentifiers,
   ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
@@ -20,6 +18,7 @@ import { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
+import { getConfigEntries } from "../../../../../../data/config_entries";
 
 @customElement("ha-device-actions-zwave_js")
 export class HaDeviceActionsZWaveJS extends LitElement {
@@ -29,34 +28,36 @@ export class HaDeviceActionsZWaveJS extends LitElement {
 
   @state() private _entryId?: string;
 
-  @state() private _nodeId?: number;
-
   @state() private _node?: ZWaveJSNodeStatus;
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers: ZWaveJSNodeIdentifiers | undefined =
-        getZwaveJsIdentifiersFromDevice(this.device);
-      if (!identifiers) {
-        return;
-      }
-      this._nodeId = identifiers.node_id;
-      this._entryId = this.device.config_entries[0];
-
       this._fetchNodeDetails();
     }
   }
 
   protected async _fetchNodeDetails() {
-    if (!this._nodeId || !this._entryId) {
+    if (!this.device) {
       return;
     }
 
-    this._node = await fetchZwaveNodeStatus(
-      this.hass,
-      this._entryId,
-      this._nodeId
+    this._node = undefined;
+
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zwave_js",
+    });
+
+    const configEntry = configEntries.find((entry) =>
+      this.device.config_entries.includes(entry.entry_id)
     );
+
+    if (!configEntry) {
+      return;
+    }
+
+    this._entryId = configEntry.entry_id;
+
+    this._node = await fetchZwaveNodeStatus(this.hass, this.device.id);
   }
 
   protected render(): TemplateResult {
@@ -96,33 +97,30 @@ export class HaDeviceActionsZWaveJS extends LitElement {
   }
 
   private async _reinterviewClicked() {
-    if (!this._nodeId || !this._entryId) {
+    if (!this.device) {
       return;
     }
     showZWaveJSReinterviewNodeDialog(this, {
-      entry_id: this._entryId,
-      node_id: this._nodeId,
+      device_id: this.device.id,
     });
   }
 
   private async _healNodeClicked() {
-    if (!this._nodeId || !this._entryId) {
+    if (!this.device) {
       return;
     }
     showZWaveJSHealNodeDialog(this, {
-      entry_id: this._entryId,
-      node_id: this._nodeId,
+      entry_id: this._entryId!,
       device: this.device,
     });
   }
 
   private async _removeFailedNode() {
-    if (!this._nodeId || !this._entryId) {
+    if (!this.device) {
       return;
     }
     showZWaveJSRemoveFailedNodeDialog(this, {
-      entry_id: this._entryId,
-      node_id: this._nodeId,
+      device_id: this.device.id,
     });
   }
 

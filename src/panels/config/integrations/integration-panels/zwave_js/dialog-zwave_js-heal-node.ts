@@ -24,8 +24,6 @@ class DialogZWaveJSHealNode extends LitElement {
 
   @state() private entry_id?: string;
 
-  @state() private node_id?: number;
-
   @state() private device?: DeviceRegistryEntry;
 
   @state() private _status?: string;
@@ -35,14 +33,12 @@ class DialogZWaveJSHealNode extends LitElement {
   public showDialog(params: ZWaveJSHealNodeDialogParams): void {
     this.entry_id = params.entry_id;
     this.device = params.device;
-    this.node_id = params.node_id;
     this._fetchData();
   }
 
   public closeDialog(): void {
     this.entry_id = undefined;
     this._status = undefined;
-    this.node_id = undefined;
     this.device = undefined;
     this._error = undefined;
 
@@ -221,11 +217,7 @@ class DialogZWaveJSHealNode extends LitElement {
     }
     this._status = "started";
     try {
-      this._status = (await healZwaveNode(
-        this.hass,
-        this.entry_id!,
-        this.node_id!
-      ))
+      this._status = (await healZwaveNode(this.hass, this.device!.id))
         ? "finished"
         : "failed";
     } catch (err: any) {
