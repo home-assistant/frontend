@@ -50,6 +50,21 @@ export class HaButtonMenu extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps): void {
+    super.firstUpdated(changedProps);
+
+    if (document.dir === "rtl") {
+      this.updateComplete.then(() => {
+        this.querySelectorAll("mwc-list-item").forEach((item) => {
+          const style = document.createElement("style");
+          style.innerHTML =
+            "span.material-icons:first-of-type { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
+          item!.shadowRoot!.appendChild(style);
+        });
+      });
+    }
+  }
+
   private _handleClick(): void {
     if (this.disabled) {
       return;
