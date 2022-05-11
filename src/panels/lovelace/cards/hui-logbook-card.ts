@@ -263,7 +263,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       : newEntries;
 
     this._logbookEntries = logbookEntries.filter(
-      (logEntry) => new Date(logEntry.when) > hoursToShowDate
+      (logEntry) => new Date(logEntry.when * 1000) > hoursToShowDate
     );
 
     this._lastLogbookDate = now;
