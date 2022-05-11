@@ -268,13 +268,13 @@ export class HuiEnergyCarbonEmissionsGraphCard
     };
     const labels = {
       avoided: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.avoided"
+        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_avoided"
       ),
       offsets: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.offsets"
+        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_offsets"
       ),
       emissions: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.emissions"
+        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_emissions"
       ),
     };
 

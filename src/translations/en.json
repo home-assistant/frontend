@@ -3259,9 +3259,11 @@
             "energy_carbon_emissions_graph": {
               "total_emitted": "Total emitted {num} kgCO2Eq",
               "total_offset_and_avoided": "Total offset & avoided {num} kgCO2Eq",
-              "emissions": "Emissions",
-              "avoided": "Avoided",
-              "offsets": "Offsets"
+              "electricity_emissions": "Electricity Emissions",
+              "electricity_avoided": "Electricity Avoided",
+              "electricity_offsets": "Electricity Offsets",
+              "gas_emissions": "Gas Emissions",
+              "gas_offsets": "Gas Offsets"
             },
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
@@ -3285,10 +3287,10 @@
               "net_emissions": "Net Emissions",
               "absolute_emissions": "Absolute Emissions",
               "electricity_emissions": "Electricity Emissions",
-              "electricity_offsets": "Electricity Offsets",
-              "electricity_avoided": "Electricity Avoided",
+              "electricity_offsets": "Electricity Emissions Offsets",
+              "electricity_avoided": "Electricity Emissions Avoided",
               "gas_emissions": "Gas Emissions",
-              "gas_offsets": "Gas Offsets"
+              "gas_offsets": "Gas Emissions Offsets"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
