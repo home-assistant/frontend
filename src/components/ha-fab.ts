@@ -13,7 +13,7 @@ export class HaFab extends FabBase {
   static override styles = [
     styles,
     css`
-      .mdc-fab--extended .mdc-fab__icon {
+      :host .mdc-fab--extended .mdc-fab__icon {
         margin-inline-start: -8px;
         margin-inline-end: 12px;
         direction: var(--direction);
