@@ -95,7 +95,7 @@ documentContainer.innerHTML = `<custom-style>
       --energy-carbon-offsets-electrical-color: #488fc2;
       --energy-carbon-emissions-electrical-color: #964B00;
       --energy-carbon-offsets-gas-color: #05497a;
-      --energy-carbon-offsets-gas-color: #8E021B;
+      --energy-carbon-emissions-gas-color: #8E021B;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;

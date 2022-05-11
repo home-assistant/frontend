@@ -82,15 +82,21 @@ export class HuiEnergyEmissionsTableCard
 
     const computedStyles = getComputedStyle(this);
     const colors = {
-      emissions: computedStyles
+      emissions_electrical: computedStyles
         .getPropertyValue("--energy-carbon-emissions-electrical-color")
         .trim(),
-      avoided: computedStyles
+      avoided_electrical: computedStyles
         .getPropertyValue("--energy-carbon-avoided-electrical-color")
         .trim(),
-      offsets: computedStyles
+      offsets_electrical: computedStyles
         .getPropertyValue("--energy-carbon-offsets-electrical-color")
         .trim(),
+      emissions_gas: computedStyles
+        .getPropertyValue("--energy-carbon-emissions-gas-color")
+        .trim(),
+        offsets_gas: computedStyles
+          .getPropertyValue("--energy-carbon-offsets-gas-color")
+          .trim(),
     };
  
 
@@ -115,30 +121,31 @@ export class HuiEnergyEmissionsTableCard
     const uniqueKeys = Array.from(new Set(allKeys));
 
     // Not supporting dark mode as yet...... see usage graphs
-    const borderColorEmissions = colors.emissions;
+    const borderColorEmissionsElectrical = colors.emissions_electrical;
     let electricityEmissions = 0;
     for (const key of uniqueKeys) {
       electricityEmissions += carbonDioxideEquivalentElectricityEmissions[key] || 0;
     }
 
-    const borderColorOffsets = colors.offsets;
+    const borderColorOffsetsElectrical = colors.offsets_electrical;
     let electricityOffsets = 0;
     for (const key of uniqueKeys) {
       electricityOffsets += carbonDioxideEquivalentElectricityOffsets[key] || 0;    }
 
 
-    const borderColorAvoided = colors.avoided;
+    const borderColorAvoidedElectrical = colors.avoided_electrical;
     let electricityAvoided = 0;
     for (const key of uniqueKeys) {
       electricityAvoided -= carbonDioxideEquivalentElectricityAvoided[key] || 0;    }
 
 
+    const borderColorEmissionsGas = colors.emissions_gas;
     let gasEmissions = 0;
     for (const key of uniqueKeys) {
       gasEmissions += carbonDioxideEquivalentGasEmissions[key] || 0;
     }
 
-
+    const borderColorOffsetsGas = colors.offsets_gas;
     let gasOffsets = 0;
     for (const key of uniqueKeys) {
       gasOffsets += carbonDioxideEquivalentGasOffsets[key] || 0;
@@ -192,8 +199,8 @@ export class HuiEnergyEmissionsTableCard
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: borderColorEmissions,
-                        backgroundColor: borderColorEmissions + "7F",
+                        borderColor: borderColorEmissionsElectrical,
+                        backgroundColor: borderColorEmissionsElectrical + "7F",
                       })}
                     ></div>
                   </td>
@@ -214,8 +221,8 @@ export class HuiEnergyEmissionsTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: borderColorOffsets,
-                          backgroundColor: borderColorOffsets + "7F",
+                          borderColor: borderColorOffsetsElectrical,
+                          backgroundColor: borderColorOffsetsElectrical + "7F",
                         })}
                       ></div>
                     </td>
@@ -236,8 +243,8 @@ export class HuiEnergyEmissionsTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: borderColorAvoided,
-                          backgroundColor: borderColorAvoided + "7F",
+                          borderColor: borderColorAvoidedElectrical,
+                          backgroundColor: borderColorAvoidedElectrical + "7F",
                         })}
                       ></div>
                     </td>
@@ -258,8 +265,8 @@ export class HuiEnergyEmissionsTableCard
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: borderColorEmissions,
-                        backgroundColor: borderColorEmissions + "7F",
+                        borderColor: borderColorEmissionsGas,
+                        backgroundColor: borderColorEmissionsGas + "7F",
                       })}
                     ></div>
                   </td>
@@ -280,8 +287,8 @@ export class HuiEnergyEmissionsTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: borderColorOffsets,
-                          backgroundColor: borderColorOffsets + "7F",
+                          borderColor: borderColorOffsetsGas,
+                          backgroundColor: borderColorOffsetsGas + "7F",
                         })}
                       ></div>
                     </td>

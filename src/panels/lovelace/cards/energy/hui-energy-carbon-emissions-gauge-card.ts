@@ -83,28 +83,53 @@ class HuiEnergyCarbonEmissionsGaugeCard
       </hui-warning>`;
     }
 
-    const emissions = this._data.carbonDioxideEquivalentElectricityEmissions
-    ? Object.values(this._data.carbonDioxideEquivalentElectricityEmissions).reduce(
+    let netEmissions = 0;
+    let absoluteEmissions = 0;
+
+    const electricityEmissions = this._data.emissions.carbonDioxideEquivalentElectricityEmissions
+    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityEmissions).reduce(
         (sum, a) => sum + a,
         0
       )
     : 0;
 
-    const avoided = this._data.carbonDioxideEquivalentElectricityAvoided
-    ? Object.values(this._data.carbonDioxideEquivalentElectricityAvoided).reduce(
+    const electricityAvoided = this._data.emissions.carbonDioxideEquivalentElectricityAvoided
+    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityAvoided).reduce(
         (sum, a) => sum + a,
         0
       )
     : 0;
 
-    const offsets = this._data.carbonDioxideEquivalentElectricityOffsets
-    ? Object.values(this._data.carbonDioxideEquivalentElectricityOffsets).reduce(
+    const electricityOffsets = this._data.emissions.carbonDioxideEquivalentElectricityOffsets
+    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityOffsets).reduce(
         (sum, a) => sum + a,
         0
       )
     : 0;
 
-    const netEmissions = emissions - offsets - avoided;
+    const gasEmissions = this._data.emissions.carbonDioxideEquivalentGasEmissions
+    ? Object.values(this._data.emissions.carbonDioxideEquivalentGasEmissions).reduce(
+        (sum, a) => sum + a,
+        0
+      )
+    : 0;
+
+    const gasOffsets = this._data.emissions.carbonDioxideEquivalentGasOffsets
+    ? Object.values(this._data.emissions.carbonDioxideEquivalentGasOffsets).reduce(
+        (sum, a) => sum + a,
+        0
+      )
+    : 0;
+
+
+    netEmissions += electricityEmissions;
+    absoluteEmissions += electricityEmissions;
+    netEmissions +=  electricityOffsets;
+    netEmissions +=  electricityAvoided;
+
+    netEmissions += gasEmissions;
+    absoluteEmissions += gasEmissions;
+    netEmissions +=  gasOffsets;
   
   let value = 0;
   if( netEmissions > 0 ){

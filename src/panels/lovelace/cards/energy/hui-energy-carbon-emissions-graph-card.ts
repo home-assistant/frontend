@@ -256,25 +256,37 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
     const computedStyles = getComputedStyle(this);
     const colors = {
-      emissions: computedStyles
+      emissions_electrical: computedStyles
         .getPropertyValue("--energy-carbon-emissions-electrical-color")
         .trim(),
-      avoided: computedStyles
+      avoided_electrical: computedStyles
         .getPropertyValue("--energy-carbon-avoided-electrical-color")
         .trim(),
-      offsets: computedStyles
+      offsets_electrical: computedStyles
         .getPropertyValue("--energy-carbon-offsets-electrical-color")
+        .trim(),
+      emissions_gas: computedStyles
+        .getPropertyValue("--energy-carbon-emissions-gas-color")
+        .trim(),
+      offsets_gas: computedStyles
+        .getPropertyValue("--energy-carbon-offsets-gas-color")
         .trim(),
     };
     const labels = {
-      avoided: this.hass.localize(
+      avoided_electricity: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_avoided"
       ),
-      offsets: this.hass.localize(
+      offsets_electricity: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_offsets"
       ),
-      emissions: this.hass.localize(
+      emissions_electricity: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.electricity_emissions"
+      ),
+      offsets_gas: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.gas_offsets"
+      ),
+      emissions_gas: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_carbon_emissions_graph.gas_emissions"
       ),
     };
 
@@ -295,8 +307,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     const uniqueKeys = Array.from(new Set(allKeys));
 
     // Not supporting dark mode as yet...... see usage graphs
-    let borderColor = colors.emissions;
-    let labelText = labels.emissions;
+    let borderColor = colors.emissions_electrical;
+    let labelText = labels.emissions_electricity;
 
     // Try to convert the emissions to the chart format here and push on to the datasets
     const dataEE: ChartDataset<"bar">[] = [];
@@ -320,8 +332,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataEE);
 
 
-    borderColor = colors.offsets;
-    labelText = labels.offsets;
+    borderColor = colors.offsets_electrical;
+    labelText = labels.offsets_electrical;
 
     const dataEO: ChartDataset<"bar">[] = [];
     dataEO.push({
@@ -344,8 +356,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataEO);
 
 
-    borderColor = colors.avoided;
-    labelText = labels.avoided;
+    borderColor = colors.avoided_electrical;
+    labelText = labels.avoided_electricity;
 
     const dataEA: ChartDataset<"bar">[] = [];
     dataEA.push({
@@ -371,8 +383,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
 
     // Gas
-    borderColor = colors.emissions;
-    labelText = labels.emissions;
+    borderColor = colors.emissions_gas;
+    labelText = labels.emissions_gas;
 
     // Try to convert the emissions to the chart format here and push on to the datasets
     const dataGE: ChartDataset<"bar">[] = [];
@@ -396,8 +408,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataGE);
 
 
-    borderColor = colors.offsets;
-    labelText = labels.offsets;
+    borderColor = colors.offsets_gas;
+    labelText = labels.offsets_gas;
 
     const dataGO: ChartDataset<"bar">[] = [];
     dataGO.push({
