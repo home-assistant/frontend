@@ -54,7 +54,6 @@ export class HaButtonMenu extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
-    // @ts-ignore
     if (document.dir === "rtl") {
       this.updateComplete.then(() => {
         this.querySelectorAll("mwc-list-item").forEach((item) => {
