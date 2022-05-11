@@ -94,11 +94,12 @@ export class HuiEnergyEmissionsTableCard
     };
  
 
-    const carbonDioxideEquivalentElectricityEmissions = this._data.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentElectricityAvoided = this._data.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentElectricityOffsets = this._data.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentElectricityEmissions = this._data.emissions.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentElectricityAvoided = this._data.emissions.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentElectricityOffsets = this._data.emissions.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentGasEmissions = this._data.emissions.carbonDioxideEquivalentGasEmissions;
+    const carbonDioxideEquivalentGasOffsets = this._data.emissions.carbonDioxideEquivalentGasOffsets;
 
-    // Need to add Gas in the same way (Emissions and offsets only)
 
 
 
@@ -108,6 +109,8 @@ export class HuiEnergyEmissionsTableCard
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityEmissions ));
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityAvoided ));
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityOffsets ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasEmissions ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasOffsets ));
 
     const uniqueKeys = Array.from(new Set(allKeys));
 
@@ -130,12 +133,16 @@ export class HuiEnergyEmissionsTableCard
       electricityAvoided -= carbonDioxideEquivalentElectricityAvoided[key] || 0;    }
 
 
-
-    // TODO - Gas
     let gasEmissions = 0;
-    gasEmissions += 0;
+    for (const key of uniqueKeys) {
+      gasEmissions += carbonDioxideEquivalentGasEmissions[key] || 0;
+    }
+
+
     let gasOffsets = 0;
-    gasOffsets += 0;
+    for (const key of uniqueKeys) {
+      gasOffsets += carbonDioxideEquivalentGasOffsets[key] || 0;
+    }
 
     
     netEmissions += electricityEmissions;
@@ -146,13 +153,6 @@ export class HuiEnergyEmissionsTableCard
     netEmissions += gasEmissions;
     absoluteEmissions += gasEmissions;
     netEmissions +=  gasOffsets;
-
-    // eslint-disable-next-line no-console
-    console.log({ absoluteEmissions });
-
-    // eslint-disable-next-line no-console
-    console.log({ netEmissions });
-
 
 
 

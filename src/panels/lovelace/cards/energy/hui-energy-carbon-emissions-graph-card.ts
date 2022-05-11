@@ -278,15 +278,19 @@ export class HuiEnergyCarbonEmissionsGraphCard
       ),
     };
 
-    const carbonDioxideEquivalentElectricityEmissions = energyData.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentElectricityAvoided = energyData.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentElectricityOffsets = energyData.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentElectricityEmissions = energyData.emissions.carbonDioxideEquivalentElectricityEmissions;
+    const carbonDioxideEquivalentElectricityAvoided = energyData.emissions.carbonDioxideEquivalentElectricityAvoided;
+    const carbonDioxideEquivalentElectricityOffsets = energyData.emissions.carbonDioxideEquivalentElectricityOffsets;
+    const carbonDioxideEquivalentGasEmissions = energyData.emissions.carbonDioxideEquivalentGasEmissions;
+    const carbonDioxideEquivalentGasOffsets = energyData.emissions.carbonDioxideEquivalentGasOffsets;
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
     let allKeys: string[] = [];
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityEmissions ));
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityAvoided ));
     allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityOffsets ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasEmissions ));
+    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasOffsets ));
 
     const uniqueKeys = Array.from(new Set(allKeys));
 
@@ -295,8 +299,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     let labelText = labels.emissions;
 
     // Try to convert the emissions to the chart format here and push on to the datasets
-    const dataE: ChartDataset<"bar">[] = [];
-    dataE.push({
+    const dataEE: ChartDataset<"bar">[] = [];
+    dataEE.push({
       label: labelText,
       stack: "stack",
       backgroundColor: borderColor + "7F",
@@ -308,19 +312,19 @@ export class HuiEnergyCarbonEmissionsGraphCard
       const value = carbonDioxideEquivalentElectricityEmissions[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
-      dataE[0].data.push({
+      dataEE[0].data.push({
         x: date.getTime(),
         y: +1 * value
       });
     }
-    Array.prototype.push.apply(datasets, dataE);
+    Array.prototype.push.apply(datasets, dataEE);
 
 
     borderColor = colors.offsets;
     labelText = labels.offsets;
 
-    const dataO: ChartDataset<"bar">[] = [];
-    dataO.push({
+    const dataEO: ChartDataset<"bar">[] = [];
+    dataEO.push({
       label: labelText,
       stack: "stack",
       backgroundColor: borderColor + "7F",
@@ -332,19 +336,19 @@ export class HuiEnergyCarbonEmissionsGraphCard
       const value = carbonDioxideEquivalentElectricityOffsets[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
-      dataO[0].data.push({
+      dataEO[0].data.push({
         x: date.getTime(),
         y: -1 * value
       });
     }
-    Array.prototype.push.apply(datasets, dataO);
+    Array.prototype.push.apply(datasets, dataEO);
 
 
     borderColor = colors.avoided;
     labelText = labels.avoided;
 
-    const dataA: ChartDataset<"bar">[] = [];
-    dataA.push({
+    const dataEA: ChartDataset<"bar">[] = [];
+    dataEA.push({
       label: labelText,
       stack: "stack",
       backgroundColor: borderColor + "7F",
@@ -356,12 +360,66 @@ export class HuiEnergyCarbonEmissionsGraphCard
       const value = carbonDioxideEquivalentElectricityAvoided[key] || 0;
       const date = new Date(key);
       // @ts-expect-error
-      dataA[0].data.push({
+      dataEA[0].data.push({
         x: date.getTime(),
         y: -1 * value
       });
     }
-    Array.prototype.push.apply(datasets, dataA);
+    Array.prototype.push.apply(datasets, dataEA);
+
+
+
+
+    // Gas
+    borderColor = colors.emissions;
+    labelText = labels.emissions;
+
+    // Try to convert the emissions to the chart format here and push on to the datasets
+    const dataGE: ChartDataset<"bar">[] = [];
+    dataGE.push({
+      label: labelText,
+      stack: "stack",
+      backgroundColor: borderColor + "7F",
+      data: [],
+    });
+
+    // Process chart data.
+    for (const key of uniqueKeys) {
+      const value = carbonDioxideEquivalentGasEmissions[key] || 0;
+      const date = new Date(key);
+      // @ts-expect-error
+      dataGE[0].data.push({
+        x: date.getTime(),
+        y: +1 * value
+      });
+    }
+    Array.prototype.push.apply(datasets, dataGE);
+
+
+    borderColor = colors.offsets;
+    labelText = labels.offsets;
+
+    const dataGO: ChartDataset<"bar">[] = [];
+    dataGO.push({
+      label: labelText,
+      stack: "stack",
+      backgroundColor: borderColor + "7F",
+      data: [],
+    });
+
+    // Process chart data.
+    for (const key of uniqueKeys) {
+      const value = carbonDioxideEquivalentGasOffsets[key] || 0;
+      const date = new Date(key);
+      // @ts-expect-error
+      dataGO[0].data.push({
+        x: date.getTime(),
+        y: -1 * value
+      });
+    }
+    Array.prototype.push.apply(datasets, dataGO);
+
+
 
     // TODO: Remove this
     // eslint-disable-next-line no-console

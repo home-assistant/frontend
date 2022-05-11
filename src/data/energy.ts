@@ -221,6 +221,7 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
+  
 
   export interface CarbonDioxideEquivalent {
     [date: string]: number;
@@ -247,7 +248,14 @@ export const getFossilEnergyConsumption = async (
       period,
     });
 
-  
+// Probably want a type (gas, grid/electrical) and another type for the kind of emission (emitted, avoided, offset)
+export interface Emissions {
+  carbonDioxideEquivalentElectricityEmissions?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentElectricityOffsets?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentElectricityAvoided?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentGasEmissions?: CarbonDioxideEquivalent;
+  carbonDioxideEquivalentGasOffsets?: CarbonDioxideEquivalent;
+}
 
 
 interface EnergySourceByType {
@@ -271,12 +279,7 @@ export interface EnergyData {
   fossilEnergyConsumption?: FossilEnergyConsumption;  // BK? Why separate?
 
   // TODO - BK? Why would these be here and not included in the stats? What is special about fossilEnergy (and are these special also?)
-  carbonDioxideEquivalentElectricityEmissions?: CarbonDioxideEquivalent;
-  carbonDioxideEquivalentElectricityOffsets?: CarbonDioxideEquivalent;
-  carbonDioxideEquivalentElectricityAvoided?: CarbonDioxideEquivalent;
-
-  carbonDioxideEquivalentGasEmissions?: CarbonDioxideEquivalent;
-  carbonDioxideEquivalentGasOffsets?: CarbonDioxideEquivalent;
+  emissions?: Emissions;
 }
 
 const getEnergyData = async (
@@ -417,16 +420,13 @@ const getEnergyData = async (
   let carbonDioxideEquivalentElectricityEmissions: CarbonDioxideEquivalent | undefined;
   let carbonDioxideEquivalentElectricityOffsets: CarbonDioxideEquivalent | undefined;
   let carbonDioxideEquivalentElectricityAvoided: CarbonDioxideEquivalent | undefined;
-
   let carbonDioxideEquivalentGasEmissions: CarbonDioxideEquivalent | undefined;
   let carbonDioxideEquivalentGasOffsets: CarbonDioxideEquivalent | undefined;
 
 
   // TODO: Move this to config
-  // TODO: Make electrical
-  const co2_import_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
-
-  // TODO Add Gas
+  const co2_import_electrical_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
+  const co2_import_gas_offset_factor = 0.0;
 
 
   if (co2SignalEntityGridPercentageFossil !== undefined) {
@@ -435,7 +435,7 @@ const getEnergyData = async (
       start,
       consumptionStatIDs,
       co2SignalEntityGridPercentageFossil,
-      co2_import_offset_factor,
+      co2_import_electrical_offset_factor,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
@@ -461,7 +461,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
     consumptionStatIDs,
     co2SignalEntityGridIntensity,
     600,
-    co2_import_offset_factor,
+    co2_import_electrical_offset_factor,
     end,
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
   );
@@ -480,6 +480,33 @@ if (co2SignalEntityGridIntensity !== undefined) {
     );
   }
 
+  // TODO : Make sense of this conversion for other energy types....
+  if (co2SignalEntityGridIntensity !== undefined) {
+    carbonDioxideEquivalentGasEmissions = await getCarbonDioxideEquivalent(
+      hass!,
+      start,
+      consumptionStatIDs,
+      co2SignalEntityGridIntensity,
+      500,
+      1.0,
+      end,
+      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+    );
+}
+
+if (co2SignalEntityGridIntensity !== undefined) {
+  carbonDioxideEquivalentGasOffsets = await getCarbonDioxideEquivalent(
+    hass!,
+    start,
+    consumptionStatIDs,
+    co2SignalEntityGridIntensity,
+    500,
+    co2_import_gas_offset_factor,
+    end,
+    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+  );
+}
+
   Object.values(stats).forEach((stat) => {
     // if the start of the first value is after the requested period, we have the first data point, and should add a zero point
     if (stat.length && new Date(stat[0].start) > startMinHour) {
@@ -493,6 +520,14 @@ if (co2SignalEntityGridIntensity !== undefined) {
     }
   });
 
+  const emissions = {
+    carbonDioxideEquivalentElectricityEmissions,
+    carbonDioxideEquivalentElectricityOffsets,
+    carbonDioxideEquivalentElectricityAvoided,
+    carbonDioxideEquivalentGasEmissions,
+    carbonDioxideEquivalentGasOffsets,
+  };
+
   const data = {
     start,
     end,
@@ -502,11 +537,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
     co2SignalConfigEntry,
     co2SignalEntity: co2SignalEntityGridPercentageFossil,
     fossilEnergyConsumption,
-    carbonDioxideEquivalentElectricityEmissions,
-    carbonDioxideEquivalentElectricityOffsets,
-    carbonDioxideEquivalentElectricityAvoided,
-    carbonDioxideEquivalentGasEmissions,
-    carbonDioxideEquivalentGasOffsets,
+    emissions
   };
 
   return data;
