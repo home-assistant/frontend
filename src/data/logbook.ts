@@ -136,7 +136,7 @@ export const getLogbookDataFromServer = (
     params = { ...params, end_time: endDate };
   }
   if (entityId) {
-    params = { ...params, entity_ids: [entityId] };
+    params = { ...params, entity_ids: [entityId.split(",")] };
   } else if (contextId) {
     params = { ...params, context_id: contextId };
   }
