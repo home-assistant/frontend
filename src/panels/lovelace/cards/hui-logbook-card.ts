@@ -249,8 +249,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           this.hass,
           lastDate.toISOString(),
           now.toISOString(),
-          this._configEntities!.map((entity) => entity.entity).toString(),
-          true
+          this._configEntities!.map((entity) => entity.entity).toString()
         ),
         this._fetchUserPromise,
       ]);
@@ -264,7 +263,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       : newEntries;
 
     this._logbookEntries = logbookEntries.filter(
-      (logEntry) => new Date(logEntry.when) > hoursToShowDate
+      (logEntry) => new Date(logEntry.when * 1000) > hoursToShowDate
     );
 
     this._lastLogbookDate = now;
