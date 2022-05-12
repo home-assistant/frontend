@@ -226,6 +226,30 @@ export const getFossilEnergyConsumption = async (
   export interface CarbonDioxideEquivalent {
     [date: string]: number;
   }
+
+
+  export interface ElectricityCarbonDioxideEquivalent {
+    type: "grid";
+    kind: "emissions" | "offsets" | "avoided";
+    isEmission: boolean;
+  
+    carbonDioxideEquivalent: CarbonDioxideEquivalent;
+  }
+
+  export interface GasCarbonDioxideEquivalent {
+    type: "gas";
+    kind: "emissions" | "offsets" | "avoided";
+    isEmission: boolean;
+  
+    carbonDioxideEquivalent: CarbonDioxideEquivalent;
+  }
+  
+
+  interface CarbonDioxideEquivalentByType {
+    grid?: ElectricityCarbonDioxideEquivalent[];
+    gas?: GasCarbonDioxideEquivalent[];
+  }
+
   
   export const getCarbonDioxideEquivalent = async (
     hass: HomeAssistant,
@@ -248,6 +272,7 @@ export const getFossilEnergyConsumption = async (
       period,
     });
 
+
 // Probably want a type (gas, grid/electricity) and another type for the kind of emission (emitted, avoided, offset)
 export interface Emissions {
   carbonDioxideEquivalentElectricityEmissions?: CarbonDioxideEquivalent;
@@ -255,7 +280,10 @@ export interface Emissions {
   carbonDioxideEquivalentElectricityAvoided?: CarbonDioxideEquivalent;
   carbonDioxideEquivalentGasEmissions?: CarbonDioxideEquivalent;
   carbonDioxideEquivalentGasOffsets?: CarbonDioxideEquivalent;
+
+  // carbonDioxideEquivalentByType: CarbonDioxideEquivalentByType;
 }
+
 
 
 interface EnergySourceByType {
@@ -417,12 +445,11 @@ const getEnergyData = async (
   );
 
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
-  let carbonDioxideEquivalentElectricityEmissions: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentElectricityOffsets: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentElectricityAvoided: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentGasEmissions: CarbonDioxideEquivalent | undefined;
-  let carbonDioxideEquivalentGasOffsets: CarbonDioxideEquivalent | undefined;
-
+  let carbonDioxideEquivalentElectricityEmissions = {} as  ElectricityCarbonDioxideEquivalent;
+  let carbonDioxideEquivalentElectricityOffsets = {} as  ElectricityCarbonDioxideEquivalent;
+  let carbonDioxideEquivalentElectricityAvoided = {} as  ElectricityCarbonDioxideEquivalent;
+  let carbonDioxideEquivalentGasEmissions = {} as  GasCarbonDioxideEquivalent;
+  let carbonDioxideEquivalentGasOffsets = {} as  GasCarbonDioxideEquivalent;
 
   // TODO: Move this to config
   const co2_import_electricity_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
@@ -442,7 +469,7 @@ const getEnergyData = async (
 }
     
 if (co2SignalEntityGridIntensity !== undefined) {
-    carbonDioxideEquivalentElectricityEmissions = await getCarbonDioxideEquivalent(
+    const carbonDioxideEquivalentTemp = await getCarbonDioxideEquivalent(
       hass!,
       start,
       consumptionStatIDs,
@@ -452,10 +479,13 @@ if (co2SignalEntityGridIntensity !== undefined) {
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
+    carbonDioxideEquivalentElectricityEmissions.isEmission = true;
+    carbonDioxideEquivalentElectricityEmissions.carbonDioxideEquivalent = carbonDioxideEquivalentTemp;
+    carbonDioxideEquivalentElectricityEmissions.kind = "emissions";
 }
 
 if (co2SignalEntityGridIntensity !== undefined) {
-  carbonDioxideEquivalentElectricityOffsets = await getCarbonDioxideEquivalent(
+  const carbonDioxideEquivalentTemp = await getCarbonDioxideEquivalent(
     hass!,
     start,
     consumptionStatIDs,
@@ -465,10 +495,13 @@ if (co2SignalEntityGridIntensity !== undefined) {
     end,
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
   );
+  carbonDioxideEquivalentElectricityOffsets.isEmission = false;
+  carbonDioxideEquivalentElectricityOffsets.carbonDioxideEquivalent = carbonDioxideEquivalentTemp;
+  carbonDioxideEquivalentElectricityOffsets.kind = "offsets";
 }
 
 if (co2SignalEntityGridIntensity !== undefined) {
-    carbonDioxideEquivalentElectricityAvoided = await getCarbonDioxideEquivalent(
+    const carbonDioxideEquivalentTemp = await getCarbonDioxideEquivalent(
       hass!,
       start,
       statIDs,
@@ -478,11 +511,14 @@ if (co2SignalEntityGridIntensity !== undefined) {
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
+    carbonDioxideEquivalentElectricityAvoided.isEmission = false;
+    carbonDioxideEquivalentElectricityAvoided.carbonDioxideEquivalent = carbonDioxideEquivalentTemp;
+    carbonDioxideEquivalentElectricityAvoided.kind = "avoided";
   }
 
   // TODO : Make sense of this conversion for other energy types....
   if (co2SignalEntityGridIntensity !== undefined) {
-    carbonDioxideEquivalentGasEmissions = await getCarbonDioxideEquivalent(
+    const carbonDioxideEquivalentTemp = await getCarbonDioxideEquivalent(
       hass!,
       start,
       consumptionStatIDs,
@@ -492,10 +528,13 @@ if (co2SignalEntityGridIntensity !== undefined) {
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
+    carbonDioxideEquivalentGasEmissions.isEmission = true;
+    carbonDioxideEquivalentGasEmissions.carbonDioxideEquivalent = carbonDioxideEquivalentTemp;
+    carbonDioxideEquivalentGasEmissions.kind = "emissions";
 }
 
 if (co2SignalEntityGridIntensity !== undefined) {
-  carbonDioxideEquivalentGasOffsets = await getCarbonDioxideEquivalent(
+  const carbonDioxideEquivalentTemp = await getCarbonDioxideEquivalent(
     hass!,
     start,
     consumptionStatIDs,
@@ -505,6 +544,9 @@ if (co2SignalEntityGridIntensity !== undefined) {
     end,
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
   );
+  carbonDioxideEquivalentGasOffsets.isEmission = false;
+  carbonDioxideEquivalentGasOffsets.carbonDioxideEquivalent = carbonDioxideEquivalentTemp;
+  carbonDioxideEquivalentGasOffsets.kind = "offsets";
 }
 
   Object.values(stats).forEach((stat) => {
@@ -520,13 +562,20 @@ if (co2SignalEntityGridIntensity !== undefined) {
     }
   });
 
+ 
+
   const emissions = {
-    carbonDioxideEquivalentElectricityEmissions,
-    carbonDioxideEquivalentElectricityOffsets,
-    carbonDioxideEquivalentElectricityAvoided,
-    carbonDioxideEquivalentGasEmissions,
-    carbonDioxideEquivalentGasOffsets,
+    carbonDioxideEquivalentElectricityEmissions: carbonDioxideEquivalentElectricityEmissions.carbonDioxideEquivalent,
+    carbonDioxideEquivalentElectricityOffsets: carbonDioxideEquivalentElectricityOffsets.carbonDioxideEquivalent,
+    carbonDioxideEquivalentElectricityAvoided: carbonDioxideEquivalentElectricityAvoided.carbonDioxideEquivalent,
+    carbonDioxideEquivalentGasEmissions: carbonDioxideEquivalentGasEmissions.carbonDioxideEquivalent,
+    carbonDioxideEquivalentGasOffsets: carbonDioxideEquivalentGasOffsets.carbonDioxideEquivalent
   };
+
+  // eslint-disable-next-line no-console
+  console.log({ emissions });
+
+
 
   const data = {
     start,
