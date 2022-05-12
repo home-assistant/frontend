@@ -110,7 +110,7 @@ export class EnergyStrategy {
     // Only include if we have a grid
     if (hasGrid) {
       view.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_emissions_graph_title"),
+        title: hass.localize("ui.panel.energy.cards.energy_carbon_emissions_graph_title"),
         type: "energy-carbon-emissions-graph",
         collection_key: "energy_dashboard",
       });
@@ -119,9 +119,9 @@ export class EnergyStrategy {
     if (hasGrid || hasSolar) {
       view.cards!.push({
         title: hass.localize(
-          "ui.panel.energy.cards.energy_emissions_table_title"
+          "ui.panel.energy.cards.energy_carbon_emissions_table_title"
         ),
-        type: "energy-emissions-table",
+        type: "energy-carbon-emissions-table",
         collection_key: "energy_dashboard",
       });
     }

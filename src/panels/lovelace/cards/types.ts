@@ -139,8 +139,8 @@ export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergyEmissionsTableCardConfig extends LovelaceCardConfig {
-  type: "energy-emissions-table";
+export interface EnergyCarbonEmissionsTableCardConfig extends LovelaceCardConfig {
+  type: "energy-carbon-emissions-table";
   title?: string;
   collection_key?: string;
 }

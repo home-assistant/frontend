@@ -3258,12 +3258,12 @@
             "no_data_period": "There is no data for this period.",
             "energy_carbon_emissions_graph": {
               "total_emitted": "Total emitted {num} kgCO2Eq",
-              "total_offset_and_avoided": "Total offset & avoided {num} kgCO2Eq",
-              "electricity_emissions": "Electricity Emissions",
-              "electricity_avoided": "Electricity Avoided",
-              "electricity_offsets": "Electricity Offsets",
-              "gas_emissions": "Gas Emissions",
-              "gas_offsets": "Gas Offsets"
+              "total_offset_and_avoided": "Total ofset & avoided {num} kgCO2Eq",
+              "electricity_emissions": "Electricity emissions",
+              "electricity_avoided": "Electricity avoided",
+              "electricity_offsets": "Electricity offsets",
+              "gas_emissions": "Gas emissions",
+              "gas_offsets": "Gas offsets"
             },
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
@@ -4340,9 +4340,9 @@
           "energy_gas_graph_title": "Gas consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
-          "energy_emissions_table_title": "Emissions",
+          "energy_carbon_emissions_table_title": "Emissions",
           "energy_devices_graph_title": "Monitor individual devices",
-          "energy_emissions_graph_title": "Energy emissions"
+          "energy_carbon_emissions_graph_title": "Energy emissions"
         }
       }
     },

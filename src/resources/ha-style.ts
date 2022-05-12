@@ -91,9 +91,9 @@ documentContainer.innerHTML = `<custom-style>
       --energy-battery-out-color: #4db6ac;
       --energy-battery-in-color: #f06292;
       --energy-gas-color: #8E021B;
-      --energy-carbon-avoided-electrical-color: #0f9d58;
-      --energy-carbon-offsets-electrical-color: #488fc2;
-      --energy-carbon-emissions-electrical-color: #964B00;
+      --energy-carbon-avoided-electricity-color: #0f9d58;
+      --energy-carbon-offsets-electricity-color: #488fc2;
+      --energy-carbon-emissions-electricity-color: #964B00;
       --energy-carbon-offsets-gas-color: #05497a;
       --energy-carbon-emissions-gas-color: #8E021B;
 

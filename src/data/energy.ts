@@ -248,7 +248,7 @@ export const getFossilEnergyConsumption = async (
       period,
     });
 
-// Probably want a type (gas, grid/electrical) and another type for the kind of emission (emitted, avoided, offset)
+// Probably want a type (gas, grid/electricity) and another type for the kind of emission (emitted, avoided, offset)
 export interface Emissions {
   carbonDioxideEquivalentElectricityEmissions?: CarbonDioxideEquivalent;
   carbonDioxideEquivalentElectricityOffsets?: CarbonDioxideEquivalent;
@@ -425,7 +425,7 @@ const getEnergyData = async (
 
 
   // TODO: Move this to config
-  const co2_import_electrical_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
+  const co2_import_electricity_offset_factor = 1.0; // Percentage of non-fossil fuels you import and offset (i.e. GreenPower at 100% is a complete offset)
   const co2_import_gas_offset_factor = 0.0;
 
 
@@ -435,7 +435,7 @@ const getEnergyData = async (
       start,
       consumptionStatIDs,
       co2SignalEntityGridPercentageFossil,
-      co2_import_electrical_offset_factor,
+      co2_import_electricity_offset_factor,
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
@@ -461,7 +461,7 @@ if (co2SignalEntityGridIntensity !== undefined) {
     consumptionStatIDs,
     co2SignalEntityGridIntensity,
     600,
-    co2_import_electrical_offset_factor,
+    co2_import_electricity_offset_factor,
     end,
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
   );

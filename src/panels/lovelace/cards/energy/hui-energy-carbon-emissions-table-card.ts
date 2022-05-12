@@ -33,16 +33,16 @@ import { calculateStatisticSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
-import { EnergyEmissionsTableCardConfig } from "../types";
+import { EnergyCarbonEmissionsTableCardConfig } from "../types";
 
-@customElement("hui-energy-emissions-table-card")
-export class HuiEnergyEmissionsTableCard
+@customElement("hui-energy-carbon-emissions-table-card")
+export class HuiEnergyCarbonEmissionsTableCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config?: EnergyEmissionsTableCardConfig;
+  @state() private _config?: EnergyCarbonEmissionsTableCardConfig;
 
   @state() private _data?: EnergyData;
 
@@ -62,7 +62,7 @@ export class HuiEnergyEmissionsTableCard
     return 3;
   }
 
-  public setConfig(config: EnergyEmissionsTableCardConfig): void {
+  public setConfig(config: EnergyCarbonEmissionsTableCardConfig): void {
     this._config = config;
   }
 
@@ -83,14 +83,14 @@ export class HuiEnergyEmissionsTableCard
 
     const computedStyles = getComputedStyle(this);
     const colors = {
-      emissions_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-emissions-electrical-color")
+      emissions_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-emissions-electricity-color")
         .trim(),
-      avoided_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-avoided-electrical-color")
+      avoided_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-avoided-electricity-color")
         .trim(),
-      offsets_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-offsets-electrical-color")
+      offsets_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-offsets-electricity-color")
         .trim(),
       emissions_gas: computedStyles
         .getPropertyValue("--energy-carbon-emissions-gas-color")
@@ -106,9 +106,9 @@ export class HuiEnergyEmissionsTableCard
 
 
     // Not supporting dark mode as yet...... see usage graphs
-    const borderColorEmissionsElectrical = colors.emissions_electrical;
-    const borderColorOffsetsElectrical = colors.offsets_electrical;
-    const borderColorAvoidedElectrical = colors.avoided_electrical;
+    const borderColorEmissionsElectricity = colors.emissions_electricity;
+    const borderColorOffsetsElectricity = colors.offsets_electricity;
+    const borderColorAvoidedElectricity = colors.avoided_electricity;
     const borderColorEmissionsGas = colors.emissions_gas;
     const borderColorOffsetsGas = colors.offsets_gas;
    
@@ -165,8 +165,8 @@ export class HuiEnergyEmissionsTableCard
                     <div
                       class="bullet"
                       style=${styleMap({
-                        borderColor: borderColorEmissionsElectrical,
-                        backgroundColor: borderColorEmissionsElectrical + "7F",
+                        borderColor: borderColorEmissionsElectricity,
+                        backgroundColor: borderColorEmissionsElectricity + "7F",
                       })}
                     ></div>
                   </td>
@@ -187,8 +187,8 @@ export class HuiEnergyEmissionsTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: borderColorOffsetsElectrical,
-                          backgroundColor: borderColorOffsetsElectrical + "7F",
+                          borderColor: borderColorOffsetsElectricity,
+                          backgroundColor: borderColorOffsetsElectricity + "7F",
                         })}
                       ></div>
                     </td>
@@ -209,8 +209,8 @@ export class HuiEnergyEmissionsTableCard
                       <div
                         class="bullet"
                         style=${styleMap({
-                          borderColor: borderColorAvoidedElectrical,
-                          backgroundColor: borderColorAvoidedElectrical + "7F",
+                          borderColor: borderColorAvoidedElectricity,
+                          backgroundColor: borderColorAvoidedElectricity + "7F",
                         })}
                       ></div>
                     </td>
@@ -365,6 +365,6 @@ export class HuiEnergyEmissionsTableCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-emissions-table-card": HuiEnergyEmissionsTableCard;
+    "hui-energy-carbon-emissions-table-card": HuiEnergyCarbonEmissionsTableCard;
   }
 }

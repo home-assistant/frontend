@@ -256,14 +256,14 @@ export class HuiEnergyCarbonEmissionsGraphCard
 
     const computedStyles = getComputedStyle(this);
     const colors = {
-      emissions_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-emissions-electrical-color")
+      emissions_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-emissions-electricity-color")
         .trim(),
-      avoided_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-avoided-electrical-color")
+      avoided_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-avoided-electricity-color")
         .trim(),
-      offsets_electrical: computedStyles
-        .getPropertyValue("--energy-carbon-offsets-electrical-color")
+      offsets_electricity: computedStyles
+        .getPropertyValue("--energy-carbon-offsets-electricity-color")
         .trim(),
       emissions_gas: computedStyles
         .getPropertyValue("--energy-carbon-emissions-gas-color")
@@ -307,7 +307,7 @@ export class HuiEnergyCarbonEmissionsGraphCard
     const uniqueKeys = Array.from(new Set(allKeys));
 
     // Not supporting dark mode as yet...... see usage graphs
-    let borderColor = colors.emissions_electrical;
+    let borderColor = colors.emissions_electricity;
     let labelText = labels.emissions_electricity;
 
     // Try to convert the emissions to the chart format here and push on to the datasets
@@ -332,8 +332,8 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataEE);
 
 
-    borderColor = colors.offsets_electrical;
-    labelText = labels.offsets_electrical;
+    borderColor = colors.offsets_electricity;
+    labelText = labels.offsets_electricity;
 
     const dataEO: ChartDataset<"bar">[] = [];
     dataEO.push({
@@ -356,7 +356,7 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataEO);
 
 
-    borderColor = colors.avoided_electrical;
+    borderColor = colors.avoided_electricity;
     labelText = labels.avoided_electricity;
 
     const dataEA: ChartDataset<"bar">[] = [];

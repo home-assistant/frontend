@@ -25,9 +25,9 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyCarbonEmissionsGaugeCardConfig } from "../types";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: "var(--energy-carbon-avoided-electrical-color)" },
-  { level: 0, stroke: "var(--energy-carbon-offsets-electrical-color)" },
-  { level: 1, stroke: "var(--energy-carbon-emissions-electrical-color)" },
+  { level: -1, stroke: "var(--energy-carbon-avoided-electricity-color)" },
+  { level: 0, stroke: "var(--energy-carbon-offsets-electricity-color)" },
+  { level: 1, stroke: "var(--energy-carbon-emissions-electricity-color)" },
 ];
 
 @customElement("hui-energy-carbon-emissions-gauge-card")
