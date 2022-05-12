@@ -25,6 +25,7 @@ export interface LogbookEntry {
   context_entity_id?: string;
   context_entity_id_name?: string;
   context_name?: string;
+  context_message?: string;
   state?: string;
 }
 
