@@ -351,7 +351,6 @@
         "from_service": "from service",
         "from_automation": "from automation",
         "from_script": "from script",
-        "triggered_by_state_of": "triggered by state of",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
         "messages": {
