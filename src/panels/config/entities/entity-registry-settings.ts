@@ -582,11 +582,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       return;
     }
 
-    // If value is "outlet" that means we kept the "switch" domain, but actually changed
+    // If value is "outlet" that means the user kept the "switch" domain, but actually changed
     // the device_class of the switch to "outlet".
-    if (ev.target.value !== "outlet") {
-      this._switchAs = ev.target.value;
-    }
+    const switchAs = ev.target.value === "outlet" ? "switch" : ev.target.value;
+    this._switchAs = switchAs;
 
     if (ev.target.value === "outlet" || ev.target.value === "switch") {
       this._deviceClass = ev.target.value;
