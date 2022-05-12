@@ -1781,7 +1781,10 @@
                   "label": "Calendar",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "start": "Event Start",
-                  "end": "Event End"
+                  "end": "Event End",
+                  "offset": "Offset (optional)",
+                  "before": "Before",
+                  "after": "After"
                 },
                 "device": {
                   "label": "Device",
