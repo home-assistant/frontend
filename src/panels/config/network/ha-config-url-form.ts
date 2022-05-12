@@ -154,7 +154,16 @@ class ConfigUrlForm extends LitElement {
           ${!this._showCustomExternalUrl && hasCloud
             ? html`
                 ${remoteEnabled
-                  ? ""
+                  ? html`
+                      <div class="row">
+                        <div class="flex"></div>
+                        <a href="/config/cloud"
+                          >${this.hass.localize(
+                            "ui.panel.config.url.manage_ha_cloud"
+                          )}</a
+                        >
+                      </div>
+                    `
                   : html`
                       <ha-alert alert-type="error">
                         ${this.hass.localize(
