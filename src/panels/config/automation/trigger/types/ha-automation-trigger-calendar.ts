@@ -5,9 +5,10 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { CalendarTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { HaDurationData } from "../../../../../components/ha-duration-input";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
 @customElement("ha-automation-trigger-calendar")
 export class HaCalendarTrigger extends LitElement implements TriggerElement {
@@ -72,14 +73,14 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
   protected render() {
     const schema = this._schema(this.hass.localize);
     // Convert from string representation to ha form duration representation
-    const duration = createDurationData(this.trigger.offset);
+    const trigger_offset = this.trigger.offset;
+    const duration: HaDurationData = createDurationData(trigger_offset)!;
     let offset_type = "after";
     if (
-      (typeof this.trigger.offset === "object" && duration.hours < 0) ||
-      (typeof this.trigger.offset === "string" &&
-        this.trigger.offset.startsWith("-"))
+      (typeof trigger_offset === "object" && duration!.hours! < 0) ||
+      (typeof trigger_offset === "string" && trigger_offset.startsWith("-"))
     ) {
-      duration.hours = Math.abs(duration.hours);
+      duration.hours = Math.abs(duration.hours!);
       offset_type = "before";
     }
     const data = {
