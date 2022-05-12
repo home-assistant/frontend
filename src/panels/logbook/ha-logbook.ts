@@ -181,7 +181,10 @@ class HaLogbook extends LitElement {
                     >`
                   : ""}
                 ${item.message
-                  ? html`${this._formatMessageWithPossibleEntity(item.message)}`
+                  ? html`${this._formatMessageWithPossibleEntity(
+                      item.message,
+                      item.entity_id
+                    )}`
                   : item.source
                   ? html` ${this.hass.localize("ui.components.logbook.by")}
                     ${this._formatMessageWithPossibleEntity(item.source)}`
