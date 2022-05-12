@@ -269,6 +269,9 @@ class HUIRoot extends LitElement {
                   ${!this.narrow
                     ? html`
                         <ha-icon-button
+                          .label=${this.hass!.localize(
+                            "ui.panel.lovelace.menu.search"
+                          )}
                           .path=${mdiMagnify}
                           @click=${this._showQuickBar}
                         ></ha-icon-button>
