@@ -124,9 +124,6 @@ class HaLogbook extends LitElement {
     }
 
     const seenEntityIds: string[] = [];
-    if (item.entity_id && !this.noName) {
-      seenEntityIds.push(item.entity_id);
-    }
     const previous = this.entries[index - 1];
     const stateObj = item.entity_id
       ? this.hass.states[item.entity_id]
