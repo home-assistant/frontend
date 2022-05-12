@@ -844,6 +844,10 @@
               "curtain": "Curtain",
               "damper": "Damper",
               "shutter": "Shutter"
+            },
+            "switch": {
+              "outlet": "Outlet",
+              "switch": "Switch"
             }
           },
           "unavailable": "This entity is unavailable.",

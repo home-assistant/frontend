@@ -340,8 +340,19 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @selected=${this._switchAsChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item value="switch" selected>
+              <mwc-list-item
+                value="switch"
+                .selected=${this._deviceClass === "switch"}
+              >
                 ${domainToName(this.hass.localize, "switch")}</mwc-list-item
+              >
+              <mwc-list-item
+                value="outlet"
+                .selected=${this._deviceClass === "outlet"}
+              >
+                ${this.hass.localize(
+                  `ui.dialogs.entity_registry.editor.device_classes.switch.outlet`
+                )}</mwc-list-item
               >
               <li divider role="separator"></li>
               ${this._switchAsDomainsSorted(
@@ -570,7 +581,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (ev.target.value === "") {
       return;
     }
-    this._switchAs = ev.target.value;
+
+    // If value is "outlet" that means we kept the "switch" domain, but actually changed
+    // the device_class of the switch to "outlet".
+    if (ev.target.value !== "outlet") {
+      this._switchAs = ev.target.value;
+    }
+
+    if (ev.target.value === "outlet" || ev.target.value === "switch") {
+      this._deviceClass = ev.target.value;
+    }
   }
 
   private _areaPicked(ev: CustomEvent) {
