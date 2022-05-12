@@ -173,12 +173,7 @@ class HaLogbook extends LitElement {
             <div class="message-relative_time">
               <div class="message">
                 ${!this.noName
-                  ? html`<a
-                      href="#"
-                      @click=${this._entityClicked}
-                      .entityId=${item.entity_id}
-                      ><span class="name">${item.name}</span></a
-                    >`
+                  ? this._renderEntity(item.entity_id, item.name)
                   : ""}
                 ${item.message
                   ? html`${this._formatMessageWithPossibleEntity(
@@ -214,13 +209,10 @@ class HaLogbook extends LitElement {
                 !seenEntityIds.includes(item.context_entity_id)
                   ? // Another entity such as an automation or script
                     html` ${this.hass.localize("ui.components.logbook.for")}
-                      <a
-                        href="#"
-                        @click=${this._entityClicked}
-                        .entityId=${item.context_entity_id}
-                        class="name"
-                        >${item.context_entity_id_name}</a
-                      >`
+                    ${this._renderEntity(
+                      item.context_entity_id,
+                      item.context_entity_id_name
+                    )}`
                   : ""}
               </div>
               <div class="secondary">
@@ -288,13 +280,7 @@ class HaLogbook extends LitElement {
       }
       seenEntities.push(item.context_entity_id);
       return html`${this.hass.localize("ui.components.logbook.from_automation")}
-        <a
-          href="#"
-          @click=${this._entityClicked}
-          .entityId=${item.context_entity_id}
-          class="name"
-          >${item.context_name}</a
-        >`;
+      ${this._renderEntity(item.context_entity_id, item.context_name)}`;
     }
     if (item.context_name) {
       return `${this.hass.localize("ui.components.logbook.from")} ${
@@ -316,6 +302,19 @@ class HaLogbook extends LitElement {
     }`;
   };
 
+  private _renderEntity(
+    entityId: string | undefined,
+    entityName: string | undefined
+  ) {
+    return html`<a
+      href="#"
+      @click=${this._entityClicked}
+      .entityId=${entityId}
+      class="name"
+      >${entityName || entityId}</a
+    >`;
+  }
+
   private _formatMessageWithPossibleEntity(
     message: string,
     seenEntities: string[],
@@ -331,15 +330,12 @@ class HaLogbook extends LitElement {
       seenEntities.push(entityId);
       const parts = message.split(entityId);
       return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
-        ${parts[0]}
-        <a
-          href="#"
-          @click=${this._entityClicked}
-          .entityId=${entityId}
-          class="name"
-          >${this.hass.states[entityId].attributes.friendly_name || entityId}</a
-        >
-        ${parts[1]}`;
+      ${parts[0]}
+      ${this._renderEntity(
+        entityId,
+        this.hass.states[entityId].attributes.friendly_name
+      )}
+      ${parts[1]}`;
     }
     if (forEntityId) {
       const forEntityName =
@@ -351,14 +347,7 @@ class HaLogbook extends LitElement {
         seenEntities.push(forEntityId);
         message = message.substring(0, message.length - forEntityName.length);
         return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
-          ${message}
-          <a
-            href="#"
-            @click=${this._entityClicked}
-            .entityId=${forEntityId}
-            class="name"
-            >${forEntityName}</a
-          >`;
+        ${message} ${this._renderEntity(forEntityId, forEntityName)}`;
       }
     }
     return message;
