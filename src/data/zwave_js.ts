@@ -227,6 +227,20 @@ export interface ZWaveJSHealNetworkStatusMessage {
   heal_node_status: { [key: number]: string };
 }
 
+export interface ZWaveJSControllerStatisticsUpdatedMessage {
+  event: "statistics updated";
+  source: "controller";
+  messages_tx: number;
+  messages_rx: number;
+  messages_dropped_tx: number;
+  messages_dropped_rx: number;
+  nak: number;
+  can: number;
+  timeout_ack: number;
+  timout_response: number;
+  timeout_callback: number;
+}
+
 export interface ZWaveJSRemovedNode {
   node_id: number;
   manufacturer: string;
@@ -543,6 +557,19 @@ export const subscribeHealZwaveNetworkProgress = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/subscribe_heal_network_progress",
+      entry_id,
+    }
+  );
+
+export const subscribeZwaveControllerStatistics = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: ZWaveJSControllerStatisticsUpdatedMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_controller_statistics",
       entry_id,
     }
   );

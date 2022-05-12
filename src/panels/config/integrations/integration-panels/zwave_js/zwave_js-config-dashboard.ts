@@ -14,6 +14,8 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-help-tooltip";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
@@ -22,7 +24,9 @@ import {
   setZwaveDataCollectionPreference,
   stopZwaveExclusion,
   stopZwaveInclusion,
+  subscribeZwaveControllerStatistics,
   ZWaveJSClient,
+  ZWaveJSControllerStatisticsUpdatedMessage,
   ZWaveJSNetwork,
   ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
@@ -41,9 +45,10 @@ import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node"
 import { configTabs } from "./zwave_js-config-router";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 
 @customElement("zwave_js-config-dashboard")
-class ZWaveJSConfigDashboard extends LitElement {
+class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ type: Object }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public route!: Route;
@@ -52,7 +57,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public configEntryId?: string;
+  @property() public configEntryId!: string;
 
   @state() private _configEntry?: ConfigEntry;
 
@@ -66,10 +71,28 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _dataCollectionOptIn?: boolean;
 
+  @state()
+  private _statistics?: ZWaveJSControllerStatisticsUpdatedMessage;
+
   protected firstUpdated() {
     if (this.hass) {
       this._fetchData();
     }
+  }
+
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    return [
+      subscribeZwaveControllerStatistics(
+        this.hass,
+        this.configEntryId,
+        (message) => {
+          if (!this.hasUpdated) {
+            return;
+          }
+          this._statistics = message;
+        }
+      ),
+    ];
   }
 
   protected render(): TemplateResult {
@@ -211,22 +234,164 @@ class ZWaveJSConfigDashboard extends LitElement {
                 </ha-card>
                 <ha-card header="Diagnostics">
                   <div class="card-content">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.driver_version"
-                    )}:
-                    ${this._network.client.driver_version}<br />
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.server_version"
-                    )}:
-                    ${this._network.client.server_version}<br />
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.home_id"
-                    )}:
-                    ${this._network.controller.home_id}<br />
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.server_url"
-                    )}:
-                    ${this._network.client.ws_server_url}<br />
+                    <table>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.driver_version"
+                          )}:
+                        </td>
+                        <td>${this._network.client.driver_version}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.server_version"
+                          )}:
+                        </td>
+                        <td>${this._network.client.server_version}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.home_id"
+                          )}:
+                        </td>
+                        <td>${this._network.controller.home_id}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.server_url"
+                          )}:
+                        </td>
+                        <td>${this._network.client.ws_server_url}</td>
+                      </tr>
+                    </table>
+                    <h2>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.statistics.title"
+                      )}
+                    </h2>
+                    <table>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.messages_tx ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.messages_rx ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.messages_dropped_tx ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.messages_dropped_rx ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.nak ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.can.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.can ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.timeout_ack ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timout_response.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timout_response.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.timout_response ?? 0}</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
+                          )}:<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip>
+                        </td>
+                        <td>${this._statistics?.timeout_callback ?? 0}</td>
+                      </tr>
+                    </table>
                   </div>
                   <div class="card-actions">
                     <mwc-button
@@ -383,7 +548,7 @@ class ZWaveJSConfigDashboard extends LitElement {
       domain: "zwave_js",
     });
     this._configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId!
+      (entry) => entry.entry_id === this.configEntryId
     );
 
     if (ERROR_STATES.includes(this._configEntry!.state)) {
