@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 
 @customElement("ha-automation-trigger-calendar")
 export class HaCalendarTrigger extends LitElement implements TriggerElement {
@@ -39,7 +40,26 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
         ],
       ],
     },
-    { name: "offset", selector: { text: {} } },
+    { name: "offset", selector: { duration: {} } },
+    {
+      name: "offset_type",
+      type: "select",
+      required: true,
+      options: [
+        [
+          "before",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.calendar.before"
+          ),
+        ],
+        [
+          "after",
+          localize(
+            "ui.panel.config.automation.editor.triggers.type.calendar.after"
+          ),
+        ],
+      ],
+    },
   ]);
 
   public static get defaultConfig() {
@@ -51,10 +71,26 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   protected render() {
     const schema = this._schema(this.hass.localize);
+    // Convert from string representation to ha form duration representation
+    const duration = createDurationData(this.trigger.offset);
+    let offset_type = "after";
+    if (
+      (typeof this.trigger.offset === "object" && duration.hours < 0) ||
+      (typeof this.trigger.offset === "string" &&
+        this.trigger.offset.startsWith("-"))
+    ) {
+      duration.hours = Math.abs(duration.hours);
+      offset_type = "before";
+    }
+    const data = {
+      ...this.trigger,
+      offset: duration,
+      offset_type: offset_type,
+    };
     return html`
       <ha-form
         .schema=${schema}
-        .data=${this.trigger}
+        .data=${data}
         .hass=${this.hass}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -64,7 +100,14 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    // Convert back to duration string representation
+    const duration = ev.detail.value.offset;
+    const offsetType = ev.detail.value.offset_type === "before" ? "-" : "";
+    const newTrigger = {
+      ...ev.detail.value,
+      offset: `${offsetType}${duration.hours}:${duration.minutes}:${duration.seconds}`,
+    };
+    delete newTrigger.offset_type;
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 

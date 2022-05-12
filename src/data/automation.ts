@@ -157,7 +157,7 @@ export interface CalendarTrigger extends BaseTrigger {
   platform: "calendar";
   event: "start" | "end";
   entity_id: string;
-  offset: number;
+  offset: string | DurationDict;
 }
 
 export type Trigger =

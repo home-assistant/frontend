@@ -1782,7 +1782,9 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "start": "Event Start",
                   "end": "Event End",
-                  "offset": "Offset (optional)"
+                  "offset": "Offset (optional)",
+                  "before": "Before",
+                  "after": "After"
                 },
                 "device": {
                   "label": "Device",
