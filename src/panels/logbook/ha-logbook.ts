@@ -27,7 +27,6 @@ import { HomeAssistant } from "../../types";
 
 const EVENT_LOCALIZE_MAP = {
   script_started: "from_script",
-  state_changed: "from",
 };
 
 @customElement("ha-logbook")
@@ -124,7 +123,10 @@ class HaLogbook extends LitElement {
       return html``;
     }
 
-    const seenEntityIds = [];
+    const seenEntityIds: string[] = [];
+    if (item.entity_id && !this.noName) {
+      seenEntityIds.push(item.entity_id);
+    }
     const previous = this.entries[index - 1];
     const stateObj = item.entity_id
       ? this.hass.states[item.entity_id]
@@ -200,7 +202,9 @@ class HaLogbook extends LitElement {
                       "ui.components.logbook.by_user"
                     )} ${item_username}`
                   : ``}
-                ${!item.context_event_type ? "" : this._formatEventBy(item)}
+                ${item.context_event_type
+                  ? this._formatEventBy(item, seenEntityIds)
+                  : ""}
                 ${item.context_message
                   ? html` ${this._formatMessageWithPossibleEntity(
                       item.context_message,
@@ -209,7 +213,8 @@ class HaLogbook extends LitElement {
                       "ui.components.logbook.for"
                     )}`
                   : ""}
-                ${item.context_entity_id
+                ${item.context_entity_id &&
+                !seenEntityIds.includes(item.context_entity_id)
                   ? // Another entity such as an automation or script
                     html` ${this.hass.localize("ui.components.logbook.for")}
                       <a
@@ -271,13 +276,20 @@ class HaLogbook extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _formatEventBy = (item: LogbookEntry) => {
+  private _formatEventBy = (item: LogbookEntry, seenEntities: string[]) => {
     if (item.context_event_type === "call_service") {
       return `${this.hass.localize("ui.components.logbook.from_service")} ${
         item.context_domain
       }.${item.context_service}`;
     }
-    if (item.context_event_type === "automation_triggered") {
+    if (
+      item.context_event_type === "automation_triggered" &&
+      item.context_entity_id
+    ) {
+      if (seenEntities.includes(item.context_entity_id)) {
+        return ``;
+      }
+      seenEntities.push(item.context_entity_id);
       return html`${this.hass.localize("ui.components.logbook.from_automation")}
         <a
           href="#"
@@ -291,6 +303,9 @@ class HaLogbook extends LitElement {
       return `${this.hass.localize("ui.components.logbook.from")} ${
         item.context_name
       }`;
+    }
+    if (item.context_event_type === "state_changed") {
+      return ``;
     }
     if (item.context_event_type! in EVENT_LOCALIZE_MAP) {
       return `${this.hass.localize(
@@ -313,7 +328,7 @@ class HaLogbook extends LitElement {
     const matches = message.match(/state of ([^ ]+)/);
     if (matches) {
       const entityId = matches[1];
-      if (entityId in seenEntities) {
+      if (seenEntities.includes(entityId)) {
         return ``;
       }
       seenEntities.push(entityId);
@@ -333,7 +348,7 @@ class HaLogbook extends LitElement {
       const forEntityName =
         this.hass.states[forEntityId].attributes.friendly_name;
       if (forEntityName && message.endsWith(forEntityName)) {
-        if (forEntityId in seenEntities) {
+        if (seenEntities.includes(forEntityId)) {
           return ``;
         }
         seenEntities.push(forEntityId);
