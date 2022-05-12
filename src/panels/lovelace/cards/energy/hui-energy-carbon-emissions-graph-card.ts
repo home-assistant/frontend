@@ -290,11 +290,12 @@ export class HuiEnergyCarbonEmissionsGraphCard
       ),
     };
 
-    const carbonDioxideEquivalentElectricityEmissions = energyData.emissions.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentElectricityAvoided = energyData.emissions.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentElectricityOffsets = energyData.emissions.carbonDioxideEquivalentElectricityOffsets;
-    const carbonDioxideEquivalentGasEmissions = energyData.emissions.carbonDioxideEquivalentGasEmissions;
-    const carbonDioxideEquivalentGasOffsets = energyData.emissions.carbonDioxideEquivalentGasOffsets;
+
+    const carbonDioxideEquivalentElectricityEmissions = energyData.emissions.emission_array[0].carbonDioxideEquivalent;
+    const carbonDioxideEquivalentElectricityAvoided = energyData.emissions.emission_array[1].carbonDioxideEquivalent;
+    const carbonDioxideEquivalentElectricityOffsets = energyData.emissions.emission_array[2].carbonDioxideEquivalent;
+    const carbonDioxideEquivalentGasEmissions = energyData.emissions.emission_array[3].carbonDioxideEquivalent;
+    const carbonDioxideEquivalentGasOffsets = energyData.emissions.emission_array[4].carbonDioxideEquivalent;
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
     let allKeys: string[] = [];
@@ -432,10 +433,6 @@ export class HuiEnergyCarbonEmissionsGraphCard
     Array.prototype.push.apply(datasets, dataGO);
 
 
-
-    // TODO: Remove this
-    // eslint-disable-next-line no-console
-    // console.log({ datasets });
 
     this._chartData = {
       datasets,

@@ -24,10 +24,12 @@ import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   CarbonDioxideEquivalent,
+  CarbonDioxideEquivalent_Emission,
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
   getEnergyGasUnit,
+  sumEmissions,
 } from "../../../../data/energy";
 import { calculateStatisticSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -112,12 +114,11 @@ export class HuiEnergyCarbonEmissionsTableCard
     const borderColorEmissionsGas = colors.emissions_gas;
     const borderColorOffsetsGas = colors.offsets_gas;
    
-    const electricityEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentElectricityEmissions);
-    const electricityOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityOffsets);
-    const electricityAvoided = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityAvoided);
-
-    const gasEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentGasEmissions);
-    const gasOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentGasOffsets);
+    const electricityEmissions = sumEmissions( this._data.emissions.emission_array[0] );
+    const electricityOffsets = sumEmissions(this._data.emissions.emission_array[1]);
+    const electricityAvoided = sumEmissions(this._data.emissions.emission_array[2]);
+    const gasEmissions = sumEmissions(this._data.emissions.emission_array[3]);
+    const gasOffsets = sumEmissions(this._data.emissions.emission_array[4]);
 
     netEmissions += electricityEmissions;
     absoluteEmissions += electricityEmissions;
@@ -303,16 +304,6 @@ export class HuiEnergyCarbonEmissionsTableCard
         </div>
       </div>
     </ha-card>`;
-  }
-
-  // TODO: Move this up
-  private calculateEmissions( isEmission: boolean, carbonDioxideEquivalent: CarbonDioxideEquivalent ) {
-    return (isEmission ? 1.0 : -1.0) * (carbonDioxideEquivalent 
-      ? Object.values(carbonDioxideEquivalent).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-      : 0);
   }
 
   static get styles(): CSSResultGroup {
