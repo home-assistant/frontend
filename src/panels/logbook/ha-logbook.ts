@@ -124,6 +124,7 @@ class HaLogbook extends LitElement {
       return html``;
     }
 
+    const seenEntityIds = [];
     const previous = this.entries[index - 1];
     const stateObj = item.entity_id
       ? this.hass.states[item.entity_id]
@@ -183,11 +184,16 @@ class HaLogbook extends LitElement {
                 ${item.message
                   ? html`${this._formatMessageWithPossibleEntity(
                       item.message,
+                      seenEntityIds,
                       item.entity_id
                     )}`
                   : item.source
-                  ? html` ${this.hass.localize("ui.components.logbook.by")}
-                    ${this._formatMessageWithPossibleEntity(item.source)}`
+                  ? html` ${this._formatMessageWithPossibleEntity(
+                      item.source,
+                      seenEntityIds,
+                      null,
+                      "ui.components.logbook.by"
+                    )}`
                   : ""}
                 ${item_username
                   ? ` ${this.hass.localize(
@@ -196,10 +202,11 @@ class HaLogbook extends LitElement {
                   : ``}
                 ${!item.context_event_type ? "" : this._formatEventBy(item)}
                 ${item.context_message
-                  ? html` ${this.hass.localize("ui.components.logbook.for")}
-                    ${this._formatMessageWithPossibleEntity(
+                  ? html` ${this._formatMessageWithPossibleEntity(
                       item.context_message,
-                      item.context_entity_id
+                      seenEntityIds,
+                      item.context_entity_id,
+                      "ui.components.logbook.for"
                     )}`
                   : ""}
                 ${item.context_entity_id
@@ -299,13 +306,20 @@ class HaLogbook extends LitElement {
 
   private _formatMessageWithPossibleEntity(
     message: string,
-    forEntityId?: string
+    seenEntities: string[],
+    forEntityId?: string,
+    localizePrefix?: string
   ) {
     const matches = message.match(/state of ([^ ]+)/);
     if (matches) {
       const entityId = matches[1];
+      if (entityId in seenEntities) {
+        return ``;
+      }
+      seenEntities.push(entityId);
       const parts = message.split(entityId);
-      return html` ${parts[0]}
+      return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
+        ${parts[0]}
         <a
           href="#"
           @click=${this._entityClicked}
@@ -319,8 +333,13 @@ class HaLogbook extends LitElement {
       const forEntityName =
         this.hass.states[forEntityId].attributes.friendly_name;
       if (forEntityName && message.endsWith(forEntityName)) {
+        if (forEntityId in seenEntities) {
+          return ``;
+        }
+        seenEntities.push(forEntityId);
         message = message.substring(0, message.length - forEntityName.length);
-        return html` ${message}
+        return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
+          ${message}
           <a
             href="#"
             @click=${this._entityClicked}
