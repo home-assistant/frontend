@@ -11,6 +11,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
 import {
+  CarbonDioxideEquivalent,
   EnergyData,
   // energySourcesByType,
   getEnergyDataCollection,
@@ -60,6 +61,16 @@ class HuiEnergyCarbonEmissionsGaugeCard
     ];
   }
 
+    // TODO: Move this up
+    private calculateEmissions( isEmission: boolean, carbonDioxideEquivalent: CarbonDioxideEquivalent ) {
+      return (isEmission ? 1.0 : -1.0) * (carbonDioxideEquivalent 
+        ? Object.values(carbonDioxideEquivalent).reduce(
+          (sum, a) => sum + a,
+          0
+        )
+        : 0);
+    }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -86,47 +97,18 @@ class HuiEnergyCarbonEmissionsGaugeCard
     let netEmissions = 0;
     let absoluteEmissions = 0;
 
-    const electricityEmissions = this._data.emissions.carbonDioxideEquivalentElectricityEmissions
-    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityEmissions).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-    : 0;
+    const electricityEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentElectricityEmissions);
+    const electricityOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityOffsets);
+    const electricityAvoided = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityAvoided);
 
-    const electricityAvoided = this._data.emissions.carbonDioxideEquivalentElectricityAvoided
-    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityAvoided).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-    : 0;
-
-    const electricityOffsets = this._data.emissions.carbonDioxideEquivalentElectricityOffsets
-    ? Object.values(this._data.emissions.carbonDioxideEquivalentElectricityOffsets).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-    : 0;
-
-    const gasEmissions = this._data.emissions.carbonDioxideEquivalentGasEmissions
-    ? Object.values(this._data.emissions.carbonDioxideEquivalentGasEmissions).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-    : 0;
-
-    const gasOffsets = this._data.emissions.carbonDioxideEquivalentGasOffsets
-    ? Object.values(this._data.emissions.carbonDioxideEquivalentGasOffsets).reduce(
-        (sum, a) => sum + a,
-        0
-      )
-    : 0;
+    const gasEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentGasEmissions);
+    const gasOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentGasOffsets);
 
 
     netEmissions += electricityEmissions;
     absoluteEmissions += electricityEmissions;
     netEmissions +=  electricityOffsets;
     netEmissions +=  electricityAvoided;
-
     netEmissions += gasEmissions;
     absoluteEmissions += gasEmissions;
     netEmissions +=  gasOffsets;

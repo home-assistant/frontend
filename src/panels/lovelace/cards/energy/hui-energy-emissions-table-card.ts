@@ -23,6 +23,7 @@ import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
+  CarbonDioxideEquivalent,
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
@@ -100,63 +101,28 @@ export class HuiEnergyEmissionsTableCard
     };
  
 
-    const carbonDioxideEquivalentElectricityEmissions = this._data.emissions.carbonDioxideEquivalentElectricityEmissions;
-    const carbonDioxideEquivalentElectricityAvoided = this._data.emissions.carbonDioxideEquivalentElectricityAvoided;
-    const carbonDioxideEquivalentElectricityOffsets = this._data.emissions.carbonDioxideEquivalentElectricityOffsets;
-    const carbonDioxideEquivalentGasEmissions = this._data.emissions.carbonDioxideEquivalentGasEmissions;
-    const carbonDioxideEquivalentGasOffsets = this._data.emissions.carbonDioxideEquivalentGasOffsets;
-
-
-
-
 
     // TODO: Move this to an array to loop over (need to capture the sign of the carbon also in that)
-    let allKeys: string[] = [];
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityEmissions ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityAvoided ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentElectricityOffsets ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasEmissions ));
-    allKeys = allKeys.concat(Object.keys( carbonDioxideEquivalentGasOffsets ));
 
-    const uniqueKeys = Array.from(new Set(allKeys));
 
     // Not supporting dark mode as yet...... see usage graphs
     const borderColorEmissionsElectrical = colors.emissions_electrical;
-    let electricityEmissions = 0;
-    for (const key of uniqueKeys) {
-      electricityEmissions += carbonDioxideEquivalentElectricityEmissions[key] || 0;
-    }
-
     const borderColorOffsetsElectrical = colors.offsets_electrical;
-    let electricityOffsets = 0;
-    for (const key of uniqueKeys) {
-      electricityOffsets += carbonDioxideEquivalentElectricityOffsets[key] || 0;    }
-
-
     const borderColorAvoidedElectrical = colors.avoided_electrical;
-    let electricityAvoided = 0;
-    for (const key of uniqueKeys) {
-      electricityAvoided -= carbonDioxideEquivalentElectricityAvoided[key] || 0;    }
-
-
     const borderColorEmissionsGas = colors.emissions_gas;
-    let gasEmissions = 0;
-    for (const key of uniqueKeys) {
-      gasEmissions += carbonDioxideEquivalentGasEmissions[key] || 0;
-    }
-
     const borderColorOffsetsGas = colors.offsets_gas;
-    let gasOffsets = 0;
-    for (const key of uniqueKeys) {
-      gasOffsets += carbonDioxideEquivalentGasOffsets[key] || 0;
-    }
+   
+    const electricityEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentElectricityEmissions);
+    const electricityOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityOffsets);
+    const electricityAvoided = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentElectricityAvoided);
 
-    
+    const gasEmissions = this.calculateEmissions(true, this._data.emissions.carbonDioxideEquivalentGasEmissions);
+    const gasOffsets = this.calculateEmissions(false, this._data.emissions.carbonDioxideEquivalentGasOffsets);
+
     netEmissions += electricityEmissions;
     absoluteEmissions += electricityEmissions;
     netEmissions +=  electricityOffsets;
     netEmissions +=  electricityAvoided;
-
     netEmissions += gasEmissions;
     absoluteEmissions += gasEmissions;
     netEmissions +=  gasOffsets;
@@ -337,6 +303,16 @@ export class HuiEnergyEmissionsTableCard
         </div>
       </div>
     </ha-card>`;
+  }
+
+  // TODO: Move this up
+  private calculateEmissions( isEmission: boolean, carbonDioxideEquivalent: CarbonDioxideEquivalent ) {
+    return (isEmission ? 1.0 : -1.0) * (carbonDioxideEquivalent 
+      ? Object.values(carbonDioxideEquivalent).reduce(
+        (sum, a) => sum + a,
+        0
+      )
+      : 0);
   }
 
   static get styles(): CSSResultGroup {
