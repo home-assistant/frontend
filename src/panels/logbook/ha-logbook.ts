@@ -191,7 +191,7 @@ class HaLogbook extends LitElement {
                   ? html` ${this._formatMessageWithPossibleEntity(
                       item.source,
                       seenEntityIds,
-                      null,
+                      undefined,
                       "ui.components.logbook.by"
                     )}`
                   : ""}
