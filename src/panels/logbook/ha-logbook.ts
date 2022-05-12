@@ -287,9 +287,11 @@ class HaLogbook extends LitElement {
         `ui.components.logbook.${EVENT_LOCALIZE_MAP[item.context_event_type!]}`
       )}`;
     }
-    return `${this.hass.localize("ui.components.logbook.from")} ${hass.localize(
-      "ui.components.logbook.event"
-    )} ${item.context_event_type}`;
+    return `${this.hass.localize(
+      "ui.components.logbook.from"
+    )} ${this.hass.localize("ui.components.logbook.event")} ${
+      item.context_event_type
+    }`;
   };
 
   private _formatMessageWithPossibleEntity(
