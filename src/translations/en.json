@@ -347,6 +347,7 @@
         "by_user": "by user",
         "by": "by",
         "from": "from",
+        "for": "for",
         "event": "event",
         "from_service": "from service",
         "from_automation": "from automation",
