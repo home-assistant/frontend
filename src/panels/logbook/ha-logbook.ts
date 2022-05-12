@@ -135,11 +135,11 @@ class HaLogbook extends LitElement {
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
-          new Date(item.when).toDateString() !==
-            new Date(previous.when).toDateString())
+          new Date(item.when * 1000).toDateString() !==
+            new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when), this.hass.locale)}
+                ${formatDate(new Date(item.when * 1000), this.hass.locale)}
               </h4>
             `
           : html``}
@@ -207,14 +207,14 @@ class HaLogbook extends LitElement {
               <div class="secondary">
                 <span
                   >${formatTimeWithSeconds(
-                    new Date(item.when),
+                    new Date(item.when * 1000),
                     this.hass.locale
                   )}</span
                 >
                 -
                 <ha-relative-time
                   .hass=${this.hass}
-                  .datetime=${item.when}
+                  .datetime=${item.when * 1000}
                   capitalize
                 ></ha-relative-time>
                 ${["script", "automation"].includes(item.domain!) &&
