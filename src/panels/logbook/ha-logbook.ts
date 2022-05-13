@@ -321,9 +321,15 @@ class HaLogbook extends LitElement {
     possibleEntity?: string,
     localizePrefix?: string
   ) {
-    // If there is an entity_id in the string that is also in the
-    // state machine, we search the string for the entity_id and
+    //
+    // As we are looking at a log(book), we are doing entity_id
+    // "highlighting"/"colorizing". The goal is to make it easy for
+    // the user to access the to entity that caused the event.
+    //
+    // If there is an entity_id in the message that is also in the
+    // state machine, we search the message for the entity_id and
     // replace it with _renderEntity
+    //
     if (message.indexOf(".") !== -1) {
       const messageParts = message.split(" ");
       for (let i = 0, size = messageParts.length; i < size; i++) {
@@ -344,10 +350,13 @@ class HaLogbook extends LitElement {
         }
       }
     }
-    // If we know the message has a specific entity attached to
+    //
+    // When we have a message has a specific entity_id attached to
     // it, and the entity_id is not in the message, we look
     // for the friendly name of the entity and replace that with
-    // _renderEntity
+    // _renderEntity if its there so the user can quickly get to
+    // that entity.
+    //
     if (possibleEntity) {
       const possibleEntityName =
         this.hass.states[possibleEntity].attributes.friendly_name;
