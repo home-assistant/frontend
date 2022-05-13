@@ -336,7 +336,6 @@ class HaLogbook extends LitElement {
           const messageEnd = messageParts.splice(i);
           messageEnd.shift(); // remove the entity
           return html` ${messageParts.join(" ")}
-          ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
           ${this._renderEntity(
             entityId,
             this.hass.states[entityId].attributes.friendly_name
