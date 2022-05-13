@@ -318,36 +318,42 @@ class HaLogbook extends LitElement {
   private _formatMessageWithPossibleEntity(
     message: string,
     seenEntities: string[],
-    forEntityId?: string,
+    possibleEntity?: string,
     localizePrefix?: string
   ) {
-    const matches = message.match(/state of ([^ ]+)/);
-    if (matches) {
-      const entityId = matches[1];
-      if (seenEntities.includes(entityId)) {
-        return ``;
+    if (message.indexOf(".") !== -1) {
+      const messageParts = message.split(" ");
+      for (let i = 0, size = messageParts.length; i < size; i++) {
+        if (messageParts[i] in this.hass.states) {
+          const entityId = messageParts[i];
+          if (seenEntities.includes(entityId)) {
+            return ``;
+          }
+          seenEntities.push(entityId);
+          const messageEnd = messageParts.splice(i); // splice off everything after the entitiy.
+          messageEnd.shift(); // remove the entity
+          return html` ${messageParts.join(" ")}
+          ${localizePrefix
+            ? this.hass.localize(localizePrefix)
+            : ""}${this._renderEntity(
+            entityId,
+            this.hass.states[entityId].attributes.friendly_name
+          )}
+          ${messageEnd.join(" ")}`;
+        }
       }
-      seenEntities.push(entityId);
-      const parts = message.split(entityId);
-      return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
-      ${parts[0]}
-      ${this._renderEntity(
-        entityId,
-        this.hass.states[entityId].attributes.friendly_name
-      )}
-      ${parts[1]}`;
     }
-    if (forEntityId) {
+    if (possibleEntity) {
       const forEntityName =
-        this.hass.states[forEntityId].attributes.friendly_name;
+        this.hass.states[possibleEntity].attributes.friendly_name;
       if (forEntityName && message.endsWith(forEntityName)) {
-        if (seenEntities.includes(forEntityId)) {
+        if (seenEntities.includes(possibleEntity)) {
           return ``;
         }
-        seenEntities.push(forEntityId);
+        seenEntities.push(possibleEntity);
         message = message.substring(0, message.length - forEntityName.length);
         return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
-        ${message} ${this._renderEntity(forEntityId, forEntityName)}`;
+        ${message} ${this._renderEntity(possibleEntity, forEntityName)}`;
       }
     }
     return message;
