@@ -357,7 +357,7 @@ class HaLogbook extends LitElement {
     // _renderEntity if its there so the user can quickly get to
     // that entity.
     //
-    if (possibleEntity) {
+    if (possibleEntity && possibleEntity in this.hass.states) {
       const possibleEntityName =
         this.hass.states[possibleEntity].attributes.friendly_name;
       if (possibleEntityName && message.endsWith(possibleEntityName)) {
