@@ -321,6 +321,9 @@ class HaLogbook extends LitElement {
     possibleEntity?: string,
     localizePrefix?: string
   ) {
+    // If there is an entity_id in the string that is also in the
+    // state machine, we search the string for the entity_id and
+    // replace it with _renderEntity
     if (message.indexOf(".") !== -1) {
       const messageParts = message.split(" ");
       for (let i = 0, size = messageParts.length; i < size; i++) {
@@ -330,7 +333,7 @@ class HaLogbook extends LitElement {
             return ``;
           }
           seenEntities.push(entityId);
-          const messageEnd = messageParts.splice(i); // splice off everything after the entitiy.
+          const messageEnd = messageParts.splice(i);
           messageEnd.shift(); // remove the entity
           return html` ${messageParts.join(" ")}
           ${localizePrefix
@@ -343,17 +346,24 @@ class HaLogbook extends LitElement {
         }
       }
     }
+    // If we know the message has a specific entity attached to
+    // it, and the entity_id is not in the message, we look
+    // for the friendly name of the entity and replace that with
+    // _renderEntity
     if (possibleEntity) {
-      const forEntityName =
+      const possibleEntityName =
         this.hass.states[possibleEntity].attributes.friendly_name;
-      if (forEntityName && message.endsWith(forEntityName)) {
+      if (possibleEntityName && message.endsWith(possibleEntityName)) {
         if (seenEntities.includes(possibleEntity)) {
           return ``;
         }
         seenEntities.push(possibleEntity);
-        message = message.substring(0, message.length - forEntityName.length);
+        message = message.substring(
+          0,
+          message.length - possibleEntityName.length
+        );
         return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
-        ${message} ${this._renderEntity(possibleEntity, forEntityName)}`;
+        ${message} ${this._renderEntity(possibleEntity, possibleEntityName)}`;
       }
     }
     return message;
