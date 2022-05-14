@@ -1,8 +1,9 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
+import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
-import type { HaDialog } from "../components/ha-dialog";
+import { nextRender } from "../common/util/render-status";
 
 declare global {
   // for fire event
@@ -44,8 +45,7 @@ export interface DialogState {
 
 interface LoadedDialogInfo {
   element: Promise<HassDialog>;
-  closedFocusTarget: Element | null;
-  closedFocusDialog: HaDialog | null;
+  closedFocusTargets: Set<Element>;
 }
 
 interface LoadedDialogsDict {
@@ -53,6 +53,7 @@ interface LoadedDialogsDict {
 }
 
 const LOADED: LoadedDialogsDict = {};
+export const FOCUS_TARGET = Symbol.for("HA focus target");
 
 export const showDialog = async (
   element: HTMLElement & ProvideHassElement,
@@ -78,21 +79,19 @@ export const showDialog = async (
         element.provideHass(dialogEl);
         return dialogEl;
       }),
-      closedFocusTarget: null,
-      closedFocusDialog: null,
+      closedFocusTargets: new Set(),
     };
   }
 
-  // Find the active element and possible underlay dialog,
-  // but keep the original focus target if dialog is being replaced
+  // Get the focus targets after the dialog closes, but keep the original if dialog is being replaced
   if (mainWindow.history.state?.replaced) {
-    LOADED[dialogTag].closedFocusTarget =
-      LOADED[mainWindow.history.state.dialog].closedFocusTarget;
-    LOADED[dialogTag].closedFocusDialog =
-      LOADED[mainWindow.history.state.dialog].closedFocusDialog;
+    LOADED[dialogTag].closedFocusTargets =
+      LOADED[mainWindow.history.state.dialog].closedFocusTargets;
   } else {
-    [LOADED[dialogTag].closedFocusTarget, LOADED[dialogTag].closedFocusDialog] =
-      deepActiveElement(document, "dialog");
+    LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
+      deepActiveElement(),
+      FOCUS_TARGET
+    );
   }
 
   if (addHistory) {
@@ -171,24 +170,29 @@ export const makeDialogManager = (
 };
 
 const _handleClosedFocus = async (ev: HASSDomEvent<DialogClosedParams>) => {
-  const focusTarget = LOADED[ev.detail.dialog].closedFocusTarget;
-  const focusDialog = LOADED[ev.detail.dialog].closedFocusDialog;
+  const closedFocusTargets = LOADED[ev.detail.dialog].closedFocusTargets;
 
-  // If target is in another dialog, make sure it is fully rendered before trying
-  await focusDialog?.updateComplete;
-  if (focusTarget instanceof HTMLElement) focusTarget.focus();
+  // Undo whatever the browser focused to provide easy checking
+  let focusedElement = deepActiveElement();
+  if (focusedElement instanceof HTMLElement) focusedElement.blur();
 
-  // Check if focusing was successful
-  if (!deepActiveElement(document, "check", focusTarget)) {
-    // Let dialog handle fallback if it exists
-    focusDialog?.focus();
+  // Make sure backdrop is fully updated before trying (especially needed for underlay dialogs)
+  await nextRender();
 
-    if (__DEV__) {
-      // eslint-disable-next-line
-      console.warn(
-        "Failed to focus target after closing dialog: %o",
-        focusTarget
-      );
+  // Try all targets in order and stop when one works
+  for (const focusTarget of closedFocusTargets) {
+    if (focusTarget instanceof HTMLElement) {
+      focusTarget.focus();
+      focusedElement = deepActiveElement();
+      if (focusedElement && focusedElement !== document.body) break;
     }
+  }
+
+  if (__DEV__ && (!focusedElement || focusedElement === document.body)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "Failed to focus any targets after closing dialog: %o",
+      closedFocusTargets
+    );
   }
 };

@@ -5,6 +5,7 @@ import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
+import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import "./ha-icon-button";
 
 export const createCloseHeading = (
@@ -23,6 +24,8 @@ export const createCloseHeading = (
 
 @customElement("ha-dialog")
 export class HaDialog extends DialogBase {
+  protected readonly [FOCUS_TARGET];
+
   public scrollToPos(x: number, y: number) {
     this.contentElement?.scrollTo(x, y);
   }

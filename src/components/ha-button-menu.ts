@@ -8,10 +8,13 @@ import {
   query,
   queryAssignedElements,
 } from "lit/decorators";
+import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
+  protected readonly [FOCUS_TARGET];
+
   @property() public corner: Corner = "TOP_START";
 
   @property() public menuCorner: MenuCorner = "START";
