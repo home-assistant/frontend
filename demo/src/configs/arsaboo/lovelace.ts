@@ -455,7 +455,9 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
         },
         {
           type: "entities",
-          title: "Doorbell",
+          title: localize(
+            "ui.panel.page-demo.config.arsaboo.labels.doorbell"
+          ),
           show_header_toggle: false,
           entities: [
             "binary_sensor.ring_front_door_ding",
