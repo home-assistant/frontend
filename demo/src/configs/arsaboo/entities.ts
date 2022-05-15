@@ -349,7 +349,9 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         access_token:
           "9381b2e4edd1bb21e868e2193f5d132a5fae153ce4f458451d979a02712b4642",
         motion_detection: true,
-        friendly_name: "Backyard",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.backyard"
+        ),
         entity_picture: "/assets/arsaboo/images/camera.backyard.jpg",
         supported_features: 0,
       },
