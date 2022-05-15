@@ -3,7 +3,6 @@ import { styles } from "@material/mwc-dialog/mwc-dialog.css";
 import { mdiClose } from "@mdi/js";
 import { css, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
-import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
@@ -17,7 +16,6 @@ export const createCloseHeading = (
     .path=${mdiClose}
     dialogAction="close"
     class="header_button"
-    dir=${computeRTLDirection(hass)}
   ></ha-icon-button>
 `;
 
@@ -88,19 +86,18 @@ export class HaDialog extends DialogBase {
         color: inherit;
       }
       .header_title {
-        margin-right: 40px;
+        margin-inline-end: 40px;
+        direction: var(--direction);
       }
-      [dir="rtl"].header_button {
-        right: auto;
-        left: 16px;
+      .header_button {
+        inset-inline-start: initial;
+        inset-inline-end: 16px;
+        direction: var(--direction);
       }
-      [dir="rtl"].header_title {
-        margin-left: 40px;
-        margin-right: 0px;
-      }
-      :host-context([style*="direction: rtl;"]) .dialog-actions {
-        left: 0px !important;
-        right: auto !important;
+      .dialog-actions {
+        inset-inline-start: initial !important;
+        inset-inline-end: 0px !important;
+        direction: var(--direction);
       }
     `,
   ];

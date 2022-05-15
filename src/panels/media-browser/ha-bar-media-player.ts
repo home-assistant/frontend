@@ -687,14 +687,15 @@ export class BarMediaPlayer extends LitElement {
         font-weight: bold;
       }
 
-      :host-context([style*="direction: rtl;"]) ha-svg-icon[slot="icon"] {
-        margin-left: 8px !important;
-        margin-right: 8px !important;
+      ha-svg-icon[slot="icon"] {
+        margin-inline-start: 8px !important;
+        margin-inline-end: 8px !important;
+        direction: var(--direction);
       }
-      :host-context([style*="direction: rtl;"])
-        ha-svg-icon[slot="trailingIcon"] {
-        margin-left: 0px !important;
-        margin-right: 8px !important;
+      ha-svg-icon[slot="trailingIcon"] {
+        margin-inline-start: 8px !important;
+        margin-inline-end: 0px !important;
+        direction: var(--direction);
       }
     `;
   }

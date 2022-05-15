@@ -60,15 +60,18 @@ export class HaClickableListItem extends ListItemBase {
           padding-right: var(--mdc-list-side-padding, 20px);
           overflow: hidden;
         }
-        :host-context([style*="direction: rtl;"])
-          span.material-icons:first-of-type {
-          margin-left: var(--mdc-list-item-graphic-margin, 16px) !important;
-          margin-right: 0px !important;
+        :host span.material-icons:first-of-type {
+          margin-inline-start: 0px !important;
+          margin-inline-end: var(
+            --mdc-list-item-graphic-margin,
+            16px
+          ) !important;
+          direction: var(--direction);
         }
-        :host-context([style*="direction: rtl;"])
-          span.material-icons:last-of-type {
-          margin-left: 0px !important;
-          margin-right: auto !important;
+        :host span.material-icons:last-of-type {
+          margin-inline-start: auto !important;
+          margin-inline-end: 0px !important;
+          direction: var(--direction);
         }
       `,
     ];

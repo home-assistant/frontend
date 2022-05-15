@@ -120,9 +120,10 @@ class MediaUploadButton extends LitElement {
       vertical-align: middle;
     }
 
-    :host-context([style*="direction: rtl;"]) ha-svg-icon[slot="icon"] {
-      margin-left: 8px;
-      margin-right: 0px;
+    ha-svg-icon[slot="icon"] {
+      margin-inline-start: 0px;
+      margin-inline-end: 8px;
+      direction: var(--direction);
     }
   `;
 }

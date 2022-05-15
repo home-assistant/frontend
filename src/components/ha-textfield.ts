@@ -92,17 +92,18 @@ export class HaTextField extends TextFieldBase {
         overflow: var(--text-field-overflow);
       }
 
-      :host-context([style*="direction: rtl;"]) .mdc-floating-label {
-        right: 10px !important;
-        left: initial !important;
+      .mdc-floating-label {
+        inset-inline-start: 16px !important;
+        inset-inline-end: initial !important;
+        direction: var(--direction);
       }
 
-      :host-context([style*="direction: rtl;"])
-        .mdc-text-field--with-leading-icon.mdc-text-field--filled
+      .mdc-text-field--with-leading-icon.mdc-text-field--filled
         .mdc-floating-label {
         max-width: calc(100% - 48px);
-        right: 48px !important;
-        left: initial !important;
+        inset-inline-start: 48px !important;
+        inset-inline-end: initial !important;
+        direction: var(--direction);
       }
     `,
   ];

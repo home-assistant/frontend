@@ -487,15 +487,12 @@ export default class HaAutomationTriggerRow extends LitElement {
           border-top-left-radius: var(--ha-card-border-radius);
         }
         .card-menu {
-          float: right;
+          float: var(--float-end, right);
           z-index: 3;
           margin: 4px;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
           display: flex;
           align-items: center;
-        }
-        :host-context([style*="direction: rtl;"]) .card-menu {
-          float: left;
         }
         .triggered {
           cursor: pointer;
