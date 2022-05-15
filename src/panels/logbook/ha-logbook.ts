@@ -306,9 +306,15 @@ class HaLogbook extends LitElement {
     entityId: string | undefined,
     entityName: string | undefined
   ) {
-    const displayName = entityName || (entityId && entityId in this.hass.states
-      ? this.hass.states[entityId].attributes.friendly_name || entityId
-      : entityId);
+    const hasState = entityId && entityId in this.hass.states;
+    const displayName =
+      entityName ||
+      (hasState
+        ? this.hass.states[entityId].attributes.friendly_name || entityId
+        : entityId);
+    if (!hasState) {
+      return displayName;
+    }
     return html`<a
       href="#"
       @click=${this._entityClicked}
