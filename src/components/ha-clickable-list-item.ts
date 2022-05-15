@@ -60,7 +60,7 @@ export class HaClickableListItem extends ListItemBase {
           padding-right: var(--mdc-list-side-padding, 20px);
           overflow: hidden;
         }
-        :host span.material-icons:first-of-type {
+        span.material-icons:first-of-type {
           margin-inline-start: 0px !important;
           margin-inline-end: var(
             --mdc-list-item-graphic-margin,
@@ -68,7 +68,7 @@ export class HaClickableListItem extends ListItemBase {
           ) !important;
           direction: var(--direction);
         }
-        :host span.material-icons:last-of-type {
+        span.material-icons:last-of-type {
           margin-inline-start: auto !important;
           margin-inline-end: 0px !important;
           direction: var(--direction);
