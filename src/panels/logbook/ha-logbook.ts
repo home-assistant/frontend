@@ -172,7 +172,7 @@ class HaLogbook extends LitElement {
               : ""}
             <div class="message-relative_time">
               <div class="message">
-                ${!this.noName
+                ${!this.noName // Used for more-info panel (single entity case)
                   ? this._renderEntity(item.entity_id, item.name)
                   : ""}
                 ${item.message
@@ -306,12 +306,15 @@ class HaLogbook extends LitElement {
     entityId: string | undefined,
     entityName: string | undefined
   ) {
+    const displayName = entityName || (entityId && entityId in this.hass.states
+      ? this.hass.states[entityId].attributes.friendly_name || entityId
+      : entityId);
     return html`<a
       href="#"
       @click=${this._entityClicked}
       .entityId=${entityId}
       class="name"
-      >${entityName || entityId}</a
+      >${displayName}</a
     >`;
   }
 
