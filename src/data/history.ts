@@ -286,7 +286,7 @@ const processTimelineEntity = (
         state.s
       ),
       state: state.s,
-      last_changed: state.lc * 1000,
+      last_changed: (state.lc ? state.lc : state.lu) * 1000,
     });
   }
 
@@ -327,7 +327,7 @@ const processLineChartEntities = (
       } else {
         processedState = {
           state: state.s,
-          last_changed: state.lc * 1000,
+          last_changed: (state.lc ? state.lc : state.lu) * 1000,
           attributes: {},
         };
       }
