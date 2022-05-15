@@ -54,7 +54,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "21",
       attributes: {
         friendly_name: localize(
-          "ui.panel.page-demo.config.arsaboo.labels.total_tv_time"
+          "ui.panel.page-demo.config.arsaboo.labels.living_room_temperature"
         ),
         device_class: "temperature",
         unit_of_measurement: "°C",
