@@ -53,7 +53,9 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       entity_id: "sensor.livingroom_temp_rounded",
       state: "21",
       attributes: {
-        friendly_name: "Living room temperature",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.total_tv_time"
+        ),
         device_class: "temperature",
         unit_of_measurement: "°C",
       },
