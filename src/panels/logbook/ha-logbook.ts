@@ -22,7 +22,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
 import { TraceContexts } from "../../data/trace";
-import { haStyle, haStyleScrollbar } from "../../resources/styles";
+import { haStyle, haStyleScrollbar , buttonLinkStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 const EVENT_LOCALIZE_MAP = {
@@ -300,7 +300,7 @@ class HaLogbook extends LitElement {
     )} ${this.hass.localize("ui.components.logbook.event")} ${
       item.context_event_type
     }`;
-  };
+  }
 
   private _renderEntity(
     entityId: string | undefined,
@@ -315,13 +315,13 @@ class HaLogbook extends LitElement {
     if (!hasState) {
       return displayName;
     }
-    return html`<a
-      href="#"
+    return html`<button
+      class="link"
       @click=${this._entityClicked}
       .entityId=${entityId}
-      class="name"
-      >${displayName}</a
-    >`;
+    >
+      ${displayName}
+    </button>`;
   }
 
   private _formatMessageWithPossibleEntity(
@@ -406,6 +406,7 @@ class HaLogbook extends LitElement {
     return [
       haStyle,
       haStyleScrollbar,
+      buttonLinkStyle,
       css`
         :host([virtualize]) {
           display: block;
