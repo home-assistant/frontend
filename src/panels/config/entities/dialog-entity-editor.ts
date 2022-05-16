@@ -220,7 +220,7 @@ export class DialogEntityEditor extends LitElement {
   }
 
   private _openMoreInfo(): void {
-    replaceDialog();
+    replaceDialog(this);
     fireEvent(this, "hass-more-info", {
       entityId: this._params!.entity_id,
     });

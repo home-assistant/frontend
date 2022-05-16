@@ -295,7 +295,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _gotoSettings() {
-    replaceDialog();
+    replaceDialog(this);
     showEntityEditorDialog(this, {
       entity_id: this._entityId!,
     });
