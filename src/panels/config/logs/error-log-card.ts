@@ -16,7 +16,6 @@ import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { fetchErrorLog } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioLogs } from "../../../data/hassio/supervisor";
@@ -64,11 +63,7 @@ class ErrorLogCard extends LitElement {
           : ""}
         ${!this._logHTML
           ? html`
-              <mwc-button
-                raised
-                @click=${this._refreshLogs}
-                dir=${computeRTLDirection(this.hass)}
-              >
+              <mwc-button raised @click=${this._refreshLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `

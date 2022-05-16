@@ -47,9 +47,10 @@ export class HaSelect extends SelectBase {
       .mdc-select__anchor {
         width: var(--ha-select-min-width, 200px);
       }
-      :host-context([style*="direction: rtl;"]) .mdc-floating-label {
-        right: 16px !important;
-        left: initial !important;
+      .mdc-floating-label {
+        inset-inline-start: 16px !important;
+        inset-inline-end: initial !important;
+        direction: var(--direction);
       }
     `,
   ];

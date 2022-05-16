@@ -241,6 +241,9 @@ export class HaComboBox extends LitElement {
       .toggle-button {
         right: 12px;
         top: -10px;
+        inset-inline-start: initial;
+        inset-inline-end: 12px;
+        direction: var(--direction);
       }
       :host([opened]) .toggle-button {
         color: var(--primary-color);
@@ -249,18 +252,9 @@ export class HaComboBox extends LitElement {
         --mdc-icon-size: 20px;
         top: -7px;
         right: 36px;
-      }
-
-      :host-context([style*="direction: rtl;"]) .toggle-button {
-        left: 12px;
-        right: auto;
-        top: -10px;
-      }
-      :host-context([style*="direction: rtl;"]) .clear-button {
-        --mdc-icon-size: 20px;
-        top: -7px;
-        left: 36px;
-        right: auto;
+        inset-inline-start: initial;
+        inset-inline-end: 36px;
+        direction: var(--direction);
       }
     `;
   }

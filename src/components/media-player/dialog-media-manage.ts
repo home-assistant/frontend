@@ -314,9 +314,10 @@ class DialogMediaManage extends LitElement {
           vertical-align: middle;
         }
 
-        :host-context([style*="direction: rtl;"]) ha-svg-icon[slot="icon"] {
-          margin-left: 8px !important;
-          margin-right: 0px !important;
+        ha-svg-icon[slot="icon"] {
+          margin-inline-start: 0px !important;
+          margin-inline-end: 8px !important;
+          direction: var(--direction);
         }
 
         .refresh {
