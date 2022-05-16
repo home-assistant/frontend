@@ -333,7 +333,7 @@ class HaLogbook extends LitElement {
     //
     // As we are looking at a log(book), we are doing entity_id
     // "highlighting"/"colorizing". The goal is to make it easy for
-    // the user to access the to entity that caused the event.
+    // the user to access the entity that caused the event.
     //
     // If there is an entity_id in the message that is also in the
     // state machine, we search the message for the entity_id and
