@@ -86,6 +86,7 @@ export class HaDialog extends DialogBase {
         color: inherit;
       }
       .header_title {
+        margin-right: 40px;
         margin-inline-end: 40px;
         direction: var(--direction);
       }
