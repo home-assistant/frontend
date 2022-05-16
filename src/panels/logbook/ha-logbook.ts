@@ -265,7 +265,7 @@ class HaLogbook extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _formatEventBy = (item: LogbookEntry, seenEntities: string[]) => {
+  private _formatEventBy(item: LogbookEntry, seenEntities: string[]) {
     if (item.context_event_type === "call_service") {
       return `${this.hass.localize("ui.components.logbook.from_service")} ${
         item.context_domain
