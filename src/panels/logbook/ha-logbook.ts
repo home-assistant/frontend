@@ -22,7 +22,11 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
 import { TraceContexts } from "../../data/trace";
-import { haStyle, haStyleScrollbar , buttonLinkStyle } from "../../resources/styles";
+import {
+  haStyle,
+  haStyleScrollbar,
+  buttonLinkStyle,
+} from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 const EVENT_LOCALIZE_MAP = {
@@ -288,7 +292,7 @@ class HaLogbook extends LitElement {
       }`;
     }
     if (item.context_event_type === "state_changed") {
-      return ``;
+      return "";
     }
     if (item.context_event_type! in EVENT_LOCALIZE_MAP) {
       return `${this.hass.localize(
@@ -345,7 +349,7 @@ class HaLogbook extends LitElement {
         if (messageParts[i] in this.hass.states) {
           const entityId = messageParts[i];
           if (seenEntities.includes(entityId)) {
-            return ``;
+            return "";
           }
           seenEntities.push(entityId);
           const messageEnd = messageParts.splice(i);
@@ -371,7 +375,7 @@ class HaLogbook extends LitElement {
         this.hass.states[possibleEntity].attributes.friendly_name;
       if (possibleEntityName && message.endsWith(possibleEntityName)) {
         if (seenEntities.includes(possibleEntity)) {
-          return ``;
+          return "";
         }
         seenEntities.push(possibleEntity);
         message = message.substring(
