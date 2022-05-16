@@ -46,13 +46,11 @@ export class HaLogbook extends LitElement {
 
   @state() private _userIdToName = {};
 
+  @state() private _error?: string;
+
   private _lastLogbookDate?: Date;
 
-  private _fetchUserPromise?: Promise<void>;
-
-  private _error?: string;
-
-  private _fetching = false;
+  private _renderId = 1;
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -98,23 +96,25 @@ export class HaLogbook extends LitElement {
   }
 
   public refresh() {
-    if (!this._fetching) {
-      this._throttleGetLogbookEntries.cancel();
-      if ("range" in this.time) {
-        clearLogbookCache(
-          this.time.range[0].toISOString(),
-          this.time.range[1].toISOString()
-        );
-      }
+    this._throttleGetLogbookEntries.cancel();
+    this._updateTraceContexts.cancel();
+    this._updateUsers.cancel();
+
+    if ("range" in this.time) {
+      clearLogbookCache(
+        this.time.range[0].toISOString(),
+        this.time.range[1].toISOString()
+      );
     }
 
+    this._error = undefined;
     this._throttleGetLogbookEntries();
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (changedProps.has("target") || changedProps.has("time")) {
+    if (changedProps.has("time") || changedProps.has("entityId")) {
       this._lastLogbookDate = undefined;
       this._logbookEntries = undefined;
       this.refresh();
@@ -145,10 +145,8 @@ export class HaLogbook extends LitElement {
   }
 
   private async _getLogBookData() {
-    if (!this._fetchUserPromise) {
-      this._fetchUserPromise = this._fetchUserNames();
-    }
-
+    this._renderId += 1;
+    const renderId = this._renderId;
     let startTime: Date;
     let endTime: Date;
     let appendData = false;
@@ -164,56 +162,61 @@ export class HaLogbook extends LitElement {
       endTime = new Date();
     }
 
-    let newEntries;
-    let traceContexts;
+    let newEntries: LogbookEntry[];
+
+    const getEntriesPromise = getLogbookData(
+      this.hass,
+      startTime.toISOString(),
+      endTime.toISOString(),
+      this.entityId ? ensureArray(this.entityId).toString() : undefined
+    );
+
+    this._updateUsers();
+    if (this.hass.user?.is_admin) {
+      this._updateTraceContexts();
+    }
 
     try {
-      this._fetching = true;
-      [newEntries, traceContexts] = await Promise.all([
-        getLogbookData(
-          this.hass,
-          startTime.toISOString(),
-          endTime.toISOString(),
-          ensureArray(this.entityId).toString()
-        ),
-        this.hass.user?.is_admin ? loadTraceContexts(this.hass) : {},
-        this._fetchUserPromise,
-      ]);
+      newEntries = await getEntriesPromise;
     } catch (err: any) {
-      this._error = err.message;
-    } finally {
-      this._fetching = false;
+      if (renderId === this._renderId) {
+        this._error = err.message;
+      }
+      return;
+    }
+
+    // New render happening.
+    if (renderId !== this._renderId) {
+      return;
     }
 
     this._logbookEntries =
       appendData && this._logbookEntries
-        ? [
-            ...newEntries,
-            ...this._logbookEntries.filter(
-              (logEntry) => new Date(logEntry.when * 1000) > startTime
-            ),
-          ]
+        ? newEntries.concat(...this._logbookEntries)
         : newEntries;
     this._lastLogbookDate = endTime;
-    this._traceContexts = traceContexts;
   }
 
-  private async _fetchUserNames() {
+  private _updateTraceContexts = throttle(async () => {
+    this._traceContexts = await loadTraceContexts(this.hass);
+  }, 60000);
+
+  private _updateUsers = throttle(async () => {
     const userIdToName = {};
 
     // Start loading users
     const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
 
     // Process persons
-    Object.values(this.hass.states).forEach((entity) => {
+    for (const entity of Object.values(this.hass.states)) {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"
       ) {
-        this._userIdToName[entity.attributes.user_id] =
+        userIdToName[entity.attributes.user_id] =
           entity.attributes.friendly_name;
       }
-    });
+    }
 
     // Process users
     if (userProm) {
@@ -226,7 +229,7 @@ export class HaLogbook extends LitElement {
     }
 
     this._userIdToName = userIdToName;
-  }
+  }, 60000);
 
   static get styles() {
     return [

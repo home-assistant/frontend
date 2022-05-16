@@ -37,6 +37,8 @@ export const throttle = <T extends any[]>(
   };
   throttledFunc.cancel = () => {
     clearTimeout(timeout);
+    timeout = undefined;
+    previous = 0;
   };
   return throttledFunc;
 };

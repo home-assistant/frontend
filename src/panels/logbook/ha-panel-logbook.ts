@@ -15,7 +15,7 @@ import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
-  extractSearchParam,
+  extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
@@ -101,9 +101,11 @@ export class HaPanelLogbook extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this.hass.loadBackendTranslation("title");
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (this.hasUpdated) {
+      return;
+    }
 
     const today = new Date();
     const weekStart = startOfWeek(today);
@@ -122,10 +124,12 @@ export class HaPanelLogbook extends LitElement {
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
 
-    this._entityId = extractSearchParam("entity_id") ?? "";
+    const searchParams = new URLSearchParams(location.search);
 
-    const startDate = extractSearchParam("start_date");
-    const endDate = extractSearchParam("end_date");
+    this._entityId = searchParams.get("entity_id") ?? "";
+
+    const startDate = searchParams.get("start_date");
+    const endDate = searchParams.get("end_date");
 
     if (startDate || endDate) {
       this._time = {
@@ -135,6 +139,11 @@ export class HaPanelLogbook extends LitElement {
         ],
       };
     }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -158,30 +167,31 @@ export class HaPanelLogbook extends LitElement {
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
     this._time = { range: [startDate, endDate] };
-    this._updatePath();
+    this._updatePath({
+      start_date: this._time.range[0].toISOString(),
+      end_date: this._time.range[1].toISOString(),
+    });
   }
 
   private _entityPicked(ev) {
     this._entityId = ev.target.value;
-
-    this._updatePath();
+    this._updatePath({ entity_id: this._entityId });
   }
 
-  private _updatePath() {
-    const params: Record<string, string> = {
-      start_date: this._time.range[0].toISOString(),
-      end_date: this._time.range[1].toISOString(),
-    };
-
-    if (this._entityId) {
-      params.entity_id = this._entityId;
+  private _updatePath(update: Record<string, string>) {
+    const params = extractSearchParamsObject();
+    for (const [key, value] of Object.entries(update)) {
+      if (value === undefined) {
+        delete params[key];
+      } else {
+        params[key] = value;
+      }
     }
-
     navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
   }
 
   private _refreshLogbook() {
-    this.querySelector("ha-logbook")?.refresh();
+    this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
 
   static get styles() {

@@ -47,8 +47,8 @@ export class MoreInfoLogbook extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (changedProps.has("entityId") && this.entityId) {
       this._showMoreHref = `/logbook?entity_id=${
