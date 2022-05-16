@@ -276,7 +276,7 @@ class HaLogbook extends LitElement {
       item.context_entity_id
     ) {
       if (seenEntities.includes(item.context_entity_id)) {
-        return ``;
+        return "";
       }
       seenEntities.push(item.context_entity_id);
       return html`${this.hass.localize("ui.components.logbook.from_automation")}
