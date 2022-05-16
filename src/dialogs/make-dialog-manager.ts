@@ -45,7 +45,7 @@ export interface DialogState {
 
 interface LoadedDialogInfo {
   element: Promise<HassDialog>;
-  closedFocusTargets: Set<Element>;
+  closedFocusTargets?: Set<Element>;
 }
 
 interface LoadedDialogsDict {
@@ -79,7 +79,6 @@ export const showDialog = async (
         element.provideHass(dialogEl);
         return dialogEl;
       }),
-      closedFocusTargets: new Set(),
     };
   }
 
@@ -171,6 +170,8 @@ export const makeDialogManager = (
 
 const _handleClosedFocus = async (ev: HASSDomEvent<DialogClosedParams>) => {
   const closedFocusTargets = LOADED[ev.detail.dialog].closedFocusTargets;
+  delete LOADED[ev.detail.dialog].closedFocusTargets;
+  if (!closedFocusTargets) return;
 
   // Undo whatever the browser focused to provide easy checking
   let focusedElement = deepActiveElement();
@@ -184,11 +185,11 @@ const _handleClosedFocus = async (ev: HASSDomEvent<DialogClosedParams>) => {
     if (focusTarget instanceof HTMLElement) {
       focusTarget.focus();
       focusedElement = deepActiveElement();
-      if (focusedElement && focusedElement !== document.body) break;
+      if (focusedElement && focusedElement !== document.body) return;
     }
   }
 
-  if (__DEV__ && (!focusedElement || focusedElement === document.body)) {
+  if (__DEV__) {
     // eslint-disable-next-line no-console
     console.warn(
       "Failed to focus any targets after closing dialog: %o",
