@@ -275,14 +275,11 @@ class HaLogbook extends LitElement {
         item.context_domain
       }.${item.context_service}`;
     }
-    if (
-      item.context_event_type === "automation_triggered" &&
-      item.context_entity_id
-    ) {
-      if (seenEntities.includes(item.context_entity_id)) {
+    if (item.context_event_type === "automation_triggered") {
+      if (seenEntities.includes(item.context_entity_id!)) {
         return "";
       }
-      seenEntities.push(item.context_entity_id);
+      seenEntities.push(item.context_entity_id!);
       return html`${this.hass.localize("ui.components.logbook.from_automation")}
       ${this._renderEntity(item.context_entity_id, item.context_name)}`;
     }
