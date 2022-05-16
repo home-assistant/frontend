@@ -518,10 +518,9 @@ class DataEntryFlowDialog extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
-        }
-        :host-context([style*="direction: rtl;"]) .dialog-actions {
-          right: auto;
-          left: 0;
+          inset-inline-start: initial;
+          inset-inline-end: 0px;
+          direction: var(--direction);
         }
         .dialog-actions > * {
           color: var(--secondary-text-color);

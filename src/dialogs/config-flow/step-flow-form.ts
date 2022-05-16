@@ -192,11 +192,8 @@ class StepFlowForm extends LitElement {
         }
         h2 {
           word-break: break-word;
-          padding-right: 72px;
-        }
-        :host-context([style*="direction: rtl;"]) h2 {
-          padding-right: auto !important;
-          padding-left: 72px !important;
+          padding-inline-end: 72px;
+          direction: var(--direction);
         }
       `,
     ];
