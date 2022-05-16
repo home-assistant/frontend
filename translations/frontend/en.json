@@ -4433,6 +4433,7 @@
                             "activity": "Activity",
                             "air": "Air",
                             "commute_home": "Commute to Home",
+                            "doorbell": "Doorbell"
                             "entertainment": "Entertainment",
                             "hdmi_input": "HDMI Input",
                             "hdmi_switcher": "HDMI Switcher",
