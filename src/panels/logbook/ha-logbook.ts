@@ -162,22 +162,20 @@ export class HaLogbook extends LitElement {
       endTime = new Date();
     }
 
-    let newEntries: LogbookEntry[];
-
-    const getEntriesPromise = getLogbookData(
-      this.hass,
-      startTime.toISOString(),
-      endTime.toISOString(),
-      this.entityId ? ensureArray(this.entityId).toString() : undefined
-    );
-
     this._updateUsers();
     if (this.hass.user?.is_admin) {
       this._updateTraceContexts();
     }
 
+    let newEntries: LogbookEntry[];
+
     try {
-      newEntries = await getEntriesPromise;
+      newEntries = await getLogbookData(
+        this.hass,
+        startTime.toISOString(),
+        endTime.toISOString(),
+        this.entityId ? ensureArray(this.entityId).toString() : undefined
+      );
     } catch (err: any) {
       if (renderId === this._renderId) {
         this._error = err.message;
