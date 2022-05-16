@@ -57,7 +57,7 @@ class HassioSupervisorInfo extends LitElement {
       },
     ];
     return html`
-      <ha-card header="Supervisor">
+      <ha-card header="Supervisor" outlined>
         <div class="card-content">
           <div>
             <ha-settings-row>

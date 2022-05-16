@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -56,7 +57,7 @@ export default class HaAutomationCondition extends LitElement {
           ></ha-automation-condition-row>
         `
       )}
-      <ha-card>
+      <ha-card outlined>
         <div class="card-actions add-card">
           <mwc-button @click=${this._addCondition}>
             ${this.hass.localize(
@@ -96,7 +97,7 @@ export default class HaAutomationCondition extends LitElement {
     ev.stopPropagation();
     const index = (ev.target as any).index;
     fireEvent(this, "value-changed", {
-      value: this.conditions.concat(this.conditions[index]),
+      value: this.conditions.concat(deepClone(this.conditions[index])),
     });
   }
 

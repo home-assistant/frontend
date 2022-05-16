@@ -58,6 +58,7 @@ class HassioAddonNetwork extends LitElement {
 
     return html`
       <ha-card
+        outlined
         .header=${this.supervisor.localize(
           "addon.configuration.network.header"
         )}

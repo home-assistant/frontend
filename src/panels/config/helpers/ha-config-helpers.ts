@@ -35,6 +35,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
+import "../integrations/ha-integration-overflow-menu";
 import { HELPER_DOMAINS } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
@@ -210,10 +211,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           "ui.panel.config.helpers.picker.no_helpers"
         )}
       >
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
-            "ui.panel.config.helpers.picker.add_helper"
+            "ui.panel.config.helpers.picker.create_helper"
           )}
           extended
           @click=${this._createHelpler}

@@ -36,7 +36,7 @@ export class EnergyDeviceSettings extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card>
+      <ha-card outlined>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
           ${this.hass.localize(

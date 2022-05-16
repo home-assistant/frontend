@@ -2,7 +2,7 @@
   "panel": {
     "energy": "Energy",
     "calendar": "Calendar",
-    "config": "Configuration",
+    "config": "Settings",
     "states": "Overview",
     "map": "Map",
     "logbook": "Logbook",
@@ -344,8 +344,14 @@
       },
       "logbook": {
         "entries_not_found": "No logbook events found.",
+        "by_user": "by user",
         "by": "by",
-        "by_service": "by service",
+        "from": "from",
+        "for": "for",
+        "event": "event",
+        "from_service": "from service",
+        "from_automation": "from automation",
+        "from_script": "from script",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
         "messages": {
@@ -676,18 +682,30 @@
             "areas": "[%key:ui::panel::config::areas::caption%]",
             "scene": "[%key:ui::panel::config::scene::caption%]",
             "helpers": "[%key:ui::panel::config::helpers::caption%]",
-            "tag": "[%key:ui::panel::config::tag::caption%]",
+            "tags": "[%key:ui::panel::config::tag::caption%]",
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
             "energy": "Energy Configuration",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
-            "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
             "users": "[%key:ui::panel::config::users::caption%]",
             "info": "[%key:ui::panel::config::info::caption%]",
+            "network": "[%key:ui::panel::config::network::caption%]",
+            "updates": "[%key:ui::panel::config::updates::caption%]",
+            "hardware": "[%key:ui::panel::config::hardware::caption%]",
+            "storage": "[%key:ui::panel::config::storage::caption%]",
+            "general": "[%key:ui::panel::config::core::caption%]",
+            "backups": "[%key:ui::panel::config::backup::caption%]",
+            "backup": "[%key:ui::panel::config::backup::caption%]",
+            "analytics": "[%key:ui::panel::config::analytics::caption%]",
+            "system_health": "[%key:ui::panel::config::system_health::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]"
+            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
+            "system": "[%key:ui::panel::config::dashboard::system::main%]",
+            "addon_dashboard": "Add-on Dashboard",
+            "addon_store": "Add-on Store",
+            "addon_info": "{addon} Info"
           }
         },
         "filter_placeholder": "Entity Filter",
@@ -1132,7 +1150,7 @@
           },
           "tags": {
             "main": "Tags",
-            "secondary": "Manage NFC tags and QR codes"
+            "secondary": "Setup NFC tags and QR codes"
           },
           "people": {
             "main": "People",
@@ -1152,7 +1170,7 @@
           },
           "about": {
             "main": "About",
-            "secondary": "Version, loaded integrations and links to documentation"
+            "secondary": "Version information, credits and more"
           }
         },
         "common": {
@@ -1163,6 +1181,7 @@
         },
         "updates": {
           "caption": "Updates",
+          "description": "Manage updates of Home Assistant, add-ons and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -1170,7 +1189,7 @@
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
-          "updates_refreshed": "Updates refreshed",
+          "updates_refreshed": "{count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
@@ -1221,6 +1240,8 @@
         },
         "backup": {
           "caption": "Backups",
+          "description": "Last backup {relative_time}",
+          "description_no_backup": "Manage backups and restore Home Assistant to a previous state",
           "create_backup": "[%key:supervisor::backup::create_backup%]",
           "creating_backup": "Backup is currently being created",
           "download_backup": "[%key:supervisor::backup::download_backup%]",
@@ -1464,18 +1485,18 @@
               "type": "Type",
               "editable": "Editable"
             },
-            "add_helper": "Add helper",
+            "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
           },
           "dialog": {
             "create": "Create",
-            "add_helper": "Add helper",
-            "add_platform": "Add {platform}"
+            "create_helper": "Create helper",
+            "create_platform": "Create {platform}"
           }
         },
         "core": {
           "caption": "General",
-          "description": "Location, network and analytics",
+          "description": "Name, time zone and locale settings",
           "section": {
             "core": {
               "header": "General Configuration",
@@ -1517,6 +1538,7 @@
         },
         "hardware": {
           "caption": "Hardware",
+          "description": "Configure your hub and connected hardware",
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
@@ -1561,7 +1583,7 @@
         },
         "logs": {
           "caption": "Logs",
-          "description": "View the Home Assistant logs",
+          "description": "View and search logs to diagnose issues",
           "details": "Log Details ({level})",
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
@@ -1765,7 +1787,10 @@
                   "label": "Calendar",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "start": "Event Start",
-                  "end": "Event End"
+                  "end": "Event End",
+                  "offset": "Offset (optional)",
+                  "before": "Before",
+                  "after": "After"
                 },
                 "device": {
                   "label": "Device",
@@ -2230,7 +2255,7 @@
           }
         },
         "cloud": {
-          "description_login": "Logged in as {email}",
+          "description_login": "Logged in and connected",
           "description_not_login": "Not logged in",
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
@@ -2839,6 +2864,30 @@
             "create": "Create"
           }
         },
+        "application_credentials": {
+          "caption": "Application Credentials",
+          "description": "Manage the OAuth Application Credentials used by Integrations",
+          "editor": {
+            "caption": "Add Application Credential",
+            "create": "Create",
+            "domain": "Integration",
+            "client_id": "OAuth Client ID",
+            "client_secret": "OAuth Client Secret"
+          },
+          "picker": {
+            "add_application_credential": "Add Application Credential",
+            "headers": {
+              "client_id": "OAuth Client ID",
+              "application": "Integration"
+            },
+            "remove_selected": {
+              "button": "Remove selected",
+              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentialss}\n}?",
+              "confirm_text": "Application Credentials in use by an integration may not be removed."
+            },
+            "selected": "{number} selected"
+          }
+        },
         "mqtt": {
           "title": "MQTT",
           "description_publish": "Publish a packet",
@@ -3122,10 +3171,14 @@
           "join": "Join the community on our {forums}, {twitter}, {discord}, {blog} or {newsletter}"
         },
         "analytics": {
-          "caption": "Analytics"
+          "caption": "Analytics",
+          "description": "Learn how to share data to improve Home Assistant"
         },
         "network": {
           "caption": "Network",
+          "description": "External access {state}",
+          "enabled": "enabled",
+          "disabled": "disabled",
           "supervisor": {
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
@@ -3146,6 +3199,7 @@
         },
         "storage": {
           "caption": "Storage",
+          "description": "{percent_used} used - {free_space} free",
           "used_space": "Used Space",
           "emmc_lifetime_used": "eMMC Lifetime Used",
           "datadisk": {
@@ -3163,11 +3217,12 @@
         },
         "system_health": {
           "caption": "System Health",
+          "description": "Status, metrics and integration startup time",
           "cpu_usage": "Processor Usage",
           "ram_usage": "Memory Usage",
-          "core_stats": "Core Stats",
-          "supervisor_stats": "Supervisor Stats",
-          "long_loading_integrations": "Long Loading Integrations"
+          "core_stats": "Core Metrics",
+          "supervisor_stats": "Supervisor Metrics",
+          "integration_start_time": "Integration Startup Time"
         },
         "system_dashboard": {
           "confirm_restart_text": "Restarting Home Assistant will stop all your active dashboards, automations and scripts.",
@@ -3314,6 +3369,7 @@
         "menu": {
           "configure_ui": "Edit Dashboard",
           "help": "Help",
+          "search": "Search",
           "start_conversation": "Start conversation",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
@@ -4155,7 +4211,7 @@
             "adjust_sum": "Adjust sum"
           },
           "yaml": {
-            "title": "YAML Configuration",
+            "title": "YAML",
             "section": {
               "validation": {
                 "heading": "Configuration validation",

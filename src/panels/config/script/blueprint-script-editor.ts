@@ -51,7 +51,7 @@ export class HaBlueprintScriptEditor extends LitElement {
           "ui.panel.config.automation.editor.blueprint.header"
         )}</span
       >
-      <ha-card>
+      <ha-card outlined>
         <div class="blueprint-picker-container">
           ${this._blueprints
             ? Object.keys(this._blueprints).length

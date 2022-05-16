@@ -128,6 +128,7 @@ class UpdateAvailableCard extends LitElement {
 
     return html`
       <ha-card
+        outlined
         .header=${this.supervisor.localize("update_available.update_name", {
           name: this._name,
         })}

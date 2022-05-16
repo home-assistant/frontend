@@ -13,21 +13,20 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import "../../../components/search-input";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-check-list-item";
-
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/search-input";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   getConfigFlowHandlers,
@@ -40,6 +39,7 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
+import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -62,12 +62,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import { HELPER_DOMAINS } from "../helpers/const";
 import "./ha-config-flow-card";
 import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
-import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
-import { HELPER_DOMAINS } from "../helpers/const";
+import "./ha-integration-overflow-menu";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -302,36 +302,46 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._filter
     );
 
-    const filterMenu = html`<div
-      slot=${ifDefined(this.narrow ? "toolbar-icon" : "suffix")}
-    >
-      ${!this._showDisabled && this.narrow && disabledCount
-        ? html`<span class="badge">${disabledCount}</span>`
-        : ""}
-      <ha-button-menu
-        corner="BOTTOM_START"
-        multi
-        @action=${this._handleMenuAction}
-        @click=${this._preventDefault}
-      >
-        <ha-icon-button
-          slot="trigger"
-          .label=${this.hass.localize("ui.common.menu")}
-          .path=${mdiFilterVariant}
-        >
-        </ha-icon-button>
-        <ha-check-list-item left .selected=${this._showIgnored}>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.ignore.show_ignored"
-          )}
-        </ha-check-list-item>
-        <ha-check-list-item left .selected=${this._showDisabled}>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.disable.show_disabled"
-          )}
-        </ha-check-list-item>
-      </ha-button-menu>
-    </div>`;
+    const filterMenu = html`
+      <div slot=${ifDefined(this.narrow ? "toolbar-icon" : "suffix")}>
+        <div class="menu-badge-container">
+          ${!this._showDisabled && this.narrow && disabledCount
+            ? html`<span class="badge">${disabledCount}</span>`
+            : ""}
+          <ha-button-menu
+            corner="BOTTOM_START"
+            multi
+            @action=${this._handleMenuAction}
+            @click=${this._preventDefault}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiFilterVariant}
+            >
+            </ha-icon-button>
+            <ha-check-list-item left .selected=${this._showIgnored}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.ignore.show_ignored"
+              )}
+            </ha-check-list-item>
+            <ha-check-list-item left .selected=${this._showDisabled}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.disable.show_disabled"
+              )}
+            </ha-check-list-item>
+          </ha-button-menu>
+        </div>
+        ${this.narrow
+          ? html`
+              <ha-integration-overflow-menu
+                .hass=${this.hass}
+                slot="toolbar-icon"
+              ></ha-integration-overflow-menu>
+            `
+          : ""}
+      </div>
+    `;
 
     return html`
       <hass-tabs-subpage
@@ -357,6 +367,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               ${filterMenu}
             `
           : html`
+              <ha-integration-overflow-menu
+                .hass=${this.hass}
+                slot="toolbar-icon"
+              ></ha-integration-overflow-menu>
               <div class="search">
                 <search-input
                   .hass=${this.hass}
@@ -797,9 +811,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 0px 4px;
           color: var(--text-primary-color);
           position: absolute;
-          right: 14px;
-          top: 8px;
+          right: 0px;
+          top: 4px;
           font-size: 0.65em;
+        }
+        .menu-badge-container {
+          position: relative;
         }
         ha-button-menu {
           color: var(--primary-text-color);

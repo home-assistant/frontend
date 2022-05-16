@@ -22,8 +22,16 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
 import { LogbookEntry } from "../../data/logbook";
 import { TraceContexts } from "../../data/trace";
-import { haStyle, haStyleScrollbar } from "../../resources/styles";
+import {
+  haStyle,
+  haStyleScrollbar,
+  buttonLinkStyle,
+} from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+
+const EVENT_LOCALIZE_MAP = {
+  script_started: "from_script",
+};
 
 @customElement("ha-logbook")
 class HaLogbook extends LitElement {
@@ -119,6 +127,7 @@ class HaLogbook extends LitElement {
       return html``;
     }
 
+    const seenEntityIds: string[] = [];
     const previous = this.entries[index - 1];
     const stateObj = item.entity_id
       ? this.hass.states[item.entity_id]
@@ -135,11 +144,11 @@ class HaLogbook extends LitElement {
         ${index === 0 ||
         (item?.when &&
           previous?.when &&
-          new Date(item.when).toDateString() !==
-            new Date(previous.when).toDateString())
+          new Date(item.when * 1000).toDateString() !==
+            new Date(previous.when * 1000).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when), this.hass.locale)}
+                ${formatDate(new Date(item.when * 1000), this.hass.locale)}
               </h4>
             `
           : html``}
@@ -167,63 +176,76 @@ class HaLogbook extends LitElement {
               : ""}
             <div class="message-relative_time">
               <div class="message">
-                ${!this.noName
-                  ? html`<a
-                      href="#"
-                      @click=${this._entityClicked}
-                      .entityId=${item.entity_id}
-                      ><span class="name">${item.name}</span></a
-                    >`
+                ${!this.noName // Used for more-info panel (single entity case)
+                  ? this._renderEntity(item.entity_id, item.name)
                   : ""}
-                ${item.message}
+                ${item.message
+                  ? html`${this._formatMessageWithPossibleEntity(
+                      item.message,
+                      seenEntityIds,
+                      item.entity_id
+                    )}`
+                  : item.source
+                  ? html` ${this._formatMessageWithPossibleEntity(
+                      item.source,
+                      seenEntityIds,
+                      undefined,
+                      "ui.components.logbook.by"
+                    )}`
+                  : ""}
                 ${item_username
                   ? ` ${this.hass.localize(
-                      "ui.components.logbook.by"
+                      "ui.components.logbook.by_user"
                     )} ${item_username}`
-                  : !item.context_event_type
-                  ? ""
-                  : item.context_event_type === "call_service"
-                  ? // Service Call
-                    ` ${this.hass.localize("ui.components.logbook.by_service")}
-                  ${item.context_domain}.${item.context_service}`
-                  : item.context_entity_id === item.entity_id
-                  ? // HomeKit or something that self references
-                    ` ${this.hass.localize("ui.components.logbook.by")}
-                  ${
-                    item.context_name
-                      ? item.context_name
-                      : item.context_event_type
-                  }`
-                  : // Another entity such as an automation or script
-                    html` ${this.hass.localize("ui.components.logbook.by")}
-                      <a
-                        href="#"
-                        @click=${this._entityClicked}
-                        .entityId=${item.context_entity_id}
-                        class="name"
-                        >${item.context_entity_id_name}</a
-                      >`}
+                  : ``}
+                ${item.context_event_type
+                  ? this._formatEventBy(item, seenEntityIds)
+                  : ""}
+                ${item.context_message
+                  ? html` ${this._formatMessageWithPossibleEntity(
+                      item.context_message,
+                      seenEntityIds,
+                      item.context_entity_id,
+                      "ui.components.logbook.for"
+                    )}`
+                  : ""}
+                ${item.context_entity_id &&
+                !seenEntityIds.includes(item.context_entity_id)
+                  ? // Another entity such as an automation or script
+                    html` ${this.hass.localize("ui.components.logbook.for")}
+                    ${this._renderEntity(
+                      item.context_entity_id,
+                      item.context_entity_id_name
+                    )}`
+                  : ""}
               </div>
               <div class="secondary">
                 <span
                   >${formatTimeWithSeconds(
-                    new Date(item.when),
+                    new Date(item.when * 1000),
                     this.hass.locale
                   )}</span
                 >
                 -
                 <ha-relative-time
                   .hass=${this.hass}
-                  .datetime=${item.when}
+                  .datetime=${item.when * 1000}
                   capitalize
                 ></ha-relative-time>
-                ${item.domain === "automation" &&
+                ${["script", "automation"].includes(item.domain!) &&
                 item.context_id! in this.traceContexts
                   ? html`
                       -
                       <a
-                        href=${`/config/automation/trace/${
-                          this.traceContexts[item.context_id!].item_id
+                        href=${`/config/${
+                          this.traceContexts[item.context_id!].domain
+                        }/trace/${
+                          this.traceContexts[item.context_id!].domain ===
+                          "script"
+                            ? `script.${
+                                this.traceContexts[item.context_id!].item_id
+                              }`
+                            : this.traceContexts[item.context_id!].item_id
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
@@ -247,6 +269,123 @@ class HaLogbook extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
+  private _formatEventBy(item: LogbookEntry, seenEntities: string[]) {
+    if (item.context_event_type === "call_service") {
+      return `${this.hass.localize("ui.components.logbook.from_service")} ${
+        item.context_domain
+      }.${item.context_service}`;
+    }
+    if (item.context_event_type === "automation_triggered") {
+      if (seenEntities.includes(item.context_entity_id!)) {
+        return "";
+      }
+      seenEntities.push(item.context_entity_id!);
+      return html`${this.hass.localize("ui.components.logbook.from_automation")}
+      ${this._renderEntity(item.context_entity_id, item.context_name)}`;
+    }
+    if (item.context_name) {
+      return `${this.hass.localize("ui.components.logbook.from")} ${
+        item.context_name
+      }`;
+    }
+    if (item.context_event_type === "state_changed") {
+      return "";
+    }
+    if (item.context_event_type! in EVENT_LOCALIZE_MAP) {
+      return `${this.hass.localize(
+        `ui.components.logbook.${EVENT_LOCALIZE_MAP[item.context_event_type!]}`
+      )}`;
+    }
+    return `${this.hass.localize(
+      "ui.components.logbook.from"
+    )} ${this.hass.localize("ui.components.logbook.event")} ${
+      item.context_event_type
+    }`;
+  }
+
+  private _renderEntity(
+    entityId: string | undefined,
+    entityName: string | undefined
+  ) {
+    const hasState = entityId && entityId in this.hass.states;
+    const displayName =
+      entityName ||
+      (hasState
+        ? this.hass.states[entityId].attributes.friendly_name || entityId
+        : entityId);
+    if (!hasState) {
+      return displayName;
+    }
+    return html`<button
+      class="link"
+      @click=${this._entityClicked}
+      .entityId=${entityId}
+    >
+      ${displayName}
+    </button>`;
+  }
+
+  private _formatMessageWithPossibleEntity(
+    message: string,
+    seenEntities: string[],
+    possibleEntity?: string,
+    localizePrefix?: string
+  ) {
+    //
+    // As we are looking at a log(book), we are doing entity_id
+    // "highlighting"/"colorizing". The goal is to make it easy for
+    // the user to access the entity that caused the event.
+    //
+    // If there is an entity_id in the message that is also in the
+    // state machine, we search the message for the entity_id and
+    // replace it with _renderEntity
+    //
+    if (message.indexOf(".") !== -1) {
+      const messageParts = message.split(" ");
+      for (let i = 0, size = messageParts.length; i < size; i++) {
+        if (messageParts[i] in this.hass.states) {
+          const entityId = messageParts[i];
+          if (seenEntities.includes(entityId)) {
+            return "";
+          }
+          seenEntities.push(entityId);
+          const messageEnd = messageParts.splice(i);
+          messageEnd.shift(); // remove the entity
+          return html` ${messageParts.join(" ")}
+          ${this._renderEntity(
+            entityId,
+            this.hass.states[entityId].attributes.friendly_name
+          )}
+          ${messageEnd.join(" ")}`;
+        }
+      }
+    }
+    //
+    // When we have a message has a specific entity_id attached to
+    // it, and the entity_id is not in the message, we look
+    // for the friendly name of the entity and replace that with
+    // _renderEntity if its there so the user can quickly get to
+    // that entity.
+    //
+    if (possibleEntity && possibleEntity in this.hass.states) {
+      const possibleEntityName =
+        this.hass.states[possibleEntity].attributes.friendly_name;
+      if (possibleEntityName && message.endsWith(possibleEntityName)) {
+        if (seenEntities.includes(possibleEntity)) {
+          return "";
+        }
+        seenEntities.push(possibleEntity);
+        message = message.substring(
+          0,
+          message.length - possibleEntityName.length
+        );
+        return html` ${localizePrefix ? this.hass.localize(localizePrefix) : ""}
+        ${message} ${this._renderEntity(possibleEntity, possibleEntityName)}`;
+      }
+    }
+    return message;
+  }
+
   private _entityClicked(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
     if (!entityId) {
@@ -268,6 +407,7 @@ class HaLogbook extends LitElement {
     return [
       haStyle,
       haStyleScrollbar,
+      buttonLinkStyle,
       css`
         :host([virtualize]) {
           display: block;

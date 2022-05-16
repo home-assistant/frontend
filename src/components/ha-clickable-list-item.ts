@@ -12,6 +12,8 @@ export class HaClickableListItem extends ListItemBase {
   // property used only in css
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
+  @property({ type: Boolean, reflect: true }) public openNewTab = false;
+
   @query("a") private _anchor!: HTMLAnchorElement;
 
   public render() {
@@ -20,7 +22,12 @@ export class HaClickableListItem extends ListItemBase {
 
     return html`${this.disableHref
       ? html`<a aria-role="option">${r}</a>`
-      : html`<a aria-role="option" href=${href}>${r}</a>`}`;
+      : html`<a
+          aria-role="option"
+          target=${this.openNewTab ? "_blank" : ""}
+          href=${href}
+          >${r}</a
+        >`}`;
   }
 
   firstUpdated() {
@@ -40,10 +47,6 @@ export class HaClickableListItem extends ListItemBase {
           padding-left: 0px;
           padding-right: 0px;
         }
-        :host([rtl]) span {
-          margin-left: var(--mdc-list-item-graphic-margin, 20px) !important;
-          margin-right: 0px !important;
-        }
         :host([graphic="avatar"]:not([twoLine])),
         :host([graphic="icon"]:not([twoLine])) {
           height: 48px;
@@ -56,6 +59,16 @@ export class HaClickableListItem extends ListItemBase {
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
           overflow: hidden;
+        }
+        :host-context([style*="direction: rtl;"])
+          span.material-icons:first-of-type {
+          margin-left: var(--mdc-list-item-graphic-margin, 16px) !important;
+          margin-right: 0px !important;
+        }
+        :host-context([style*="direction: rtl;"])
+          span.material-icons:last-of-type {
+          margin-left: 0px !important;
+          margin-right: auto !important;
         }
       `,
     ];

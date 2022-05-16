@@ -1,9 +1,11 @@
 import "@material/mwc-button";
+import { mdiContentCopy } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -13,6 +15,7 @@ import {
   disconnectCloudRemote,
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
@@ -34,6 +37,7 @@ export class CloudRemotePref extends LitElement {
     if (!remote_certificate) {
       return html`
         <ha-card
+          outlined
           header=${this.hass.localize(
             "ui.panel.config.cloud.account.remote.title"
           )}
@@ -47,8 +51,14 @@ export class CloudRemotePref extends LitElement {
       `;
     }
 
+    const urlParts = remote_domain!.split(".");
+    const hiddenURL = `https://${urlParts[0].substring(0, 5)}***.${
+      urlParts[1]
+    }.${urlParts[2]}.${urlParts[3]}`;
+
     return html`
       <ha-card
+        outlined
         header=${this.hass.localize(
           "ui.panel.config.cloud.account.remote.title"
         )}
@@ -83,8 +93,13 @@ export class CloudRemotePref extends LitElement {
             class="break-word"
             rel="noreferrer"
           >
-            https://${remote_domain}</a
+            ${hiddenURL}</a
           >.
+          <ha-svg-icon
+            .url=${`https://${remote_domain}`}
+            .path=${mdiContentCopy}
+            @click=${this._copyURL}
+          ></ha-svg-icon>
         </div>
         <div class="card-actions">
           <a
@@ -131,6 +146,14 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
+  private async _copyURL(ev): Promise<void> {
+    const url = ev.currentTarget.url;
+    await copyToClipboard(url);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       .preparing {
@@ -152,9 +175,6 @@ export class CloudRemotePref extends LitElement {
         font-weight: bold;
         margin-bottom: 1em;
       }
-      .warning ha-svg-icon {
-        color: var(--warning-color);
-      }
       .break-word {
         overflow-wrap: break-word;
       }
@@ -175,6 +195,11 @@ export class CloudRemotePref extends LitElement {
       }
       .spacer {
         flex-grow: 1;
+      }
+      ha-svg-icon {
+        --mdc-icon-size: 18px;
+        color: var(--secondary-text-color);
+        cursor: pointer;
       }
     `;
   }

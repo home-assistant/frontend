@@ -1,7 +1,8 @@
-import { assert, expect } from "chai";
+import { assert } from "chai";
 
 import {
-  fuzzySortFilterSort,
+  fuzzyFilterSort,
+  fuzzySequentialMatch,
   ScorableTextItem,
 } from "../../../src/common/string/filter/sequence-matching";
 
@@ -10,34 +11,45 @@ describe("fuzzySequentialMatch", () => {
     strings: ["automation.ticker", "Stocks"],
   };
 
+  const createExpectation: (
+    pattern,
+    expected
+  ) => {
+    pattern: string;
+    expected: string | number | undefined;
+  } = (pattern, expected) => ({
+    pattern,
+    expected,
+  });
+
   const shouldMatchEntity = [
-    "",
-    " ",
-    "automation.ticker",
-    "stocks",
-    "automation.ticke",
-    "automation. ticke",
-    "automation.",
-    "automationticker",
-    "automation.r",
-    "aumatick",
-    "tion.tick",
-    "aion.tck",
-    "s",
-    "au.tce",
-    "au",
-    "ticker",
-    "tick",
-    "ioticker",
-    "sks",
-    "tomaontkr",
-    "atmto.ikr",
-    "uoaintce",
+    createExpectation("automation.ticker", 131),
+    createExpectation("automation.ticke", 121),
+    createExpectation("automation.", 82),
+    createExpectation("au", 10),
+    createExpectation("automationticker", 85),
+    createExpectation("tion.tick", 8),
+    createExpectation("ticker", -4),
+    createExpectation("automation.r", 73),
+    createExpectation("tick", -8),
+    createExpectation("aumatick", 9),
+    createExpectation("aion.tck", 4),
+    createExpectation("ioticker", -4),
+    createExpectation("atmto.ikr", -34),
+    createExpectation("uoaintce", -39),
+    createExpectation("au.tce", -3),
+    createExpectation("tomaontkr", -19),
+    createExpectation("s", 1),
+    createExpectation("stocks", 42),
+    createExpectation("sks", -5),
   ];
 
   const shouldNotMatchEntity = [
+    "",
+    " ",
     "abcdefghijklmnopqrstuvwxyz",
     "automation.tickerz",
+    "automation. ticke",
     "1",
     "noitamotua",
     "autostocks",
@@ -45,23 +57,23 @@ describe("fuzzySequentialMatch", () => {
   ];
 
   describe(`Entity '${item.strings[0]}'`, () => {
-    for (const filter of shouldMatchEntity) {
-      it(`Should matches ${filter}`, () => {
-        const res = fuzzySortFilterSort(filter, [item]);
-        assert.lengthOf(res, 1);
+    for (const expectation of shouldMatchEntity) {
+      it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
+        const res = fuzzySequentialMatch(expectation.pattern, item);
+        assert.equal(res, expectation.expected);
       });
     }
 
     for (const badFilter of shouldNotMatchEntity) {
       it(`fails to match with '${badFilter}'`, () => {
-        const res = fuzzySortFilterSort(badFilter, [item]);
-        assert.lengthOf(res, 0);
+        const res = fuzzySequentialMatch(badFilter, item);
+        assert.equal(res, undefined);
       });
     }
   });
 });
 
-describe("fuzzyFilterSort original tests", () => {
+describe("fuzzyFilterSort", () => {
   const filter = "ticker";
   const automationTicker = {
     strings: ["automation.ticker", "Stocks"],
@@ -93,137 +105,14 @@ describe("fuzzyFilterSort original tests", () => {
 
   it(`filters and sorts correctly`, () => {
     const expectedItemsAfterFilter = [
-      { ...ticker, score: 0 },
-      { ...sensorTicker, score: -14 },
-      { ...automationTicker, score: -22 },
-      { ...timerCheckRouter, score: -32012 },
+      { ...ticker, score: 44 },
+      { ...sensorTicker, score: 1 },
+      { ...automationTicker, score: -4 },
+      { ...timerCheckRouter, score: -8 },
     ];
 
-    const res = fuzzySortFilterSort(filter, itemsBeforeFilter);
+    const res = fuzzyFilterSort(filter, itemsBeforeFilter);
 
     assert.deepEqual(res, expectedItemsAfterFilter);
-  });
-});
-
-describe("Fuzzy filter new tests", () => {
-  const testEntities = [
-    {
-      id: "binary_sensor.garage_door_opened",
-      name: "Garage Door Opened (Sensor, Binary)",
-    },
-    {
-      id: "sensor.garage_door_status",
-      name: "Garage Door Opened (Sensor)",
-    },
-    {
-      id: "sensor.temperature_living_room",
-      name: "[Living room] temperature",
-    },
-    {
-      id: "sensor.temperature_parents_bedroom",
-      name: "[Parents bedroom] temperature",
-    },
-    {
-      id: "sensor.temperature_children_bedroom",
-      name: "[Children bedroom] temperature",
-    },
-  ];
-
-  function testEntitySearch(
-    searchInput: string | null,
-    expectedResults: string[]
-  ) {
-    const sortableEntities = testEntities.map((entity) => ({
-      strings: [entity.id, entity.name],
-      entity: entity,
-    }));
-    const sortedEntities = fuzzySortFilterSort(
-      searchInput || "",
-      sortableEntities
-    );
-    // console.log(sortedEntities);
-    expect(sortedEntities.map((it) => it.entity.id)).to.have.ordered.members(
-      expectedResults
-    );
-  }
-
-  it(`test empty or null query`, () => {
-    testEntitySearch(
-      "",
-      testEntities.map((it) => it.id)
-    );
-    testEntitySearch(
-      null,
-      testEntities.map((it) => it.id)
-    );
-  });
-
-  it(`test single word search`, () => {
-    testEntitySearch("bedroom", [
-      "sensor.temperature_parents_bedroom",
-      "sensor.temperature_children_bedroom",
-    ]);
-  });
-
-  it(`test no result`, () => {
-    testEntitySearch("does not exist", []);
-    testEntitySearch("betroom", []);
-  });
-
-  it(`test single word search with typo`, () => {
-    testEntitySearch("bedorom", [
-      "sensor.temperature_parents_bedroom",
-      "sensor.temperature_children_bedroom",
-    ]);
-  });
-
-  it(`test multi word search`, () => {
-    testEntitySearch("bedroom children", [
-      "sensor.temperature_children_bedroom",
-    ]);
-  });
-
-  it(`test partial word search`, () => {
-    testEntitySearch("room", [
-      "sensor.temperature_living_room",
-      "sensor.temperature_parents_bedroom",
-      "sensor.temperature_children_bedroom",
-    ]);
-  });
-
-  it(`test mixed cased word search`, () => {
-    testEntitySearch("garage binary", ["binary_sensor.garage_door_opened"]);
-  });
-
-  it(`test mixed id and name search`, () => {
-    testEntitySearch("status opened", ["sensor.garage_door_status"]);
-  });
-
-  it(`test special chars in query`, () => {
-    testEntitySearch("sensor.temperature", [
-      "sensor.temperature_living_room",
-      "sensor.temperature_parents_bedroom",
-      "sensor.temperature_children_bedroom",
-    ]);
-
-    testEntitySearch("sensor.temperature parents", [
-      "sensor.temperature_parents_bedroom",
-    ]);
-    testEntitySearch("parents_Bedroom", ["sensor.temperature_parents_bedroom"]);
-  });
-
-  it(`test search in name`, () => {
-    testEntitySearch("Binary)", ["binary_sensor.garage_door_opened"]);
-
-    testEntitySearch("Binary)NotExists", []);
-  });
-
-  it(`test regex special chars`, () => {
-    // Should return an empty result, but no error
-    testEntitySearch("\\{}()*+?.,[])", []);
-
-    testEntitySearch("[Children bedroom]", [
-      "sensor.temperature_children_bedroom",
-    ]);
   });
 });

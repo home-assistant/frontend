@@ -269,8 +269,8 @@ export class HaDataTable extends LitElement {
                       @change=${this._handleHeaderRowCheckboxClick}
                       .indeterminate=${this._checkedRows.length &&
                       this._checkedRows.length !== this._checkableRowsCount}
-                      .checked=${this._checkedRows.length ===
-                      this._checkableRowsCount}
+                      .checked=${this._checkedRows.length &&
+                      this._checkedRows.length === this._checkableRowsCount}
                     >
                     </ha-checkbox>
                   </div>

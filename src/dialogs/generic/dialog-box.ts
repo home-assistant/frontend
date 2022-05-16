@@ -1,12 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlertOutline } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
-import "../../components/ha-textfield";
+import { HaTextField } from "../../components/ha-textfield";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogBoxParams } from "./show-dialog-box";
@@ -17,13 +18,10 @@ class DialogBox extends LitElement {
 
   @state() private _params?: DialogBoxParams;
 
-  @state() private _value?: string;
+  @query("ha-textfield") private _textField?: HaTextField;
 
   public async showDialog(params: DialogBoxParams): Promise<void> {
     this._params = params;
-    if (params.prompt) {
-      this._value = params.defaultValue;
-    }
   }
 
   public closeDialog(): boolean {
@@ -75,9 +73,7 @@ class DialogBox extends LitElement {
             ? html`
                 <ha-textfield
                   dialogInitialFocus
-                  .value=${this._value || ""}
-                  @keyup=${this._handleKeyUp}
-                  @input=${this._valueChanged}
+                  value=${ifDefined(this._params.defaultValue)}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -109,10 +105,6 @@ class DialogBox extends LitElement {
     `;
   }
 
-  private _valueChanged(ev) {
-    this._value = ev.target.value;
-  }
-
   private _dismiss(): void {
     if (this._params?.cancel) {
       this._params.cancel();
@@ -120,15 +112,9 @@ class DialogBox extends LitElement {
     this._close();
   }
 
-  private _handleKeyUp(ev: KeyboardEvent) {
-    if (ev.keyCode === 13) {
-      this._confirm();
-    }
-  }
-
   private _confirm(): void {
     if (this._params!.confirm) {
-      this._params!.confirm(this._value);
+      this._params!.confirm(this._textField?.value);
     }
     this._close();
   }

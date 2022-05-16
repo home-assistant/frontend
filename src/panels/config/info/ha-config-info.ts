@@ -13,7 +13,6 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "./integrations-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -21,13 +20,13 @@ const JS_VERSION = __VERSION__;
 class HaConfigInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public showAdvanced!: boolean;
+  @property({ type: Boolean }) public showAdvanced!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _hostInfo?: HassioHostInfo;
 
@@ -61,18 +60,22 @@ class HaConfigInfo extends LitElement {
             </ha-logo-svg>
           </a>
           <br />
-          <h2>Home Assistant Core ${hass.connection.haVersion}</h2>
+          <h3>Home Assistant Core ${hass.connection.haVersion}</h3>
           ${this._hassioInfo
-            ? html`<h2>
-                Home Assistant Supervisor ${this._hassioInfo.supervisor}
-              </h2>`
+            ? html`
+                <h3>
+                  Home Assistant Supervisor ${this._hassioInfo.supervisor}
+                </h3>
+              `
             : ""}
           ${this._osInfo?.version
-            ? html`<h2>Home Assistant OS ${this._osInfo.version}</h2>`
+            ? html`<h3>Home Assistant OS ${this._osInfo.version}</h3>`
             : ""}
           ${this._hostInfo
-            ? html`<h4>Kernel version ${this._hostInfo.kernel}</h4>
-                <h4>Agent version ${this._hostInfo.agent_version}</h4>`
+            ? html`
+                <h4>Kernel version ${this._hostInfo.kernel}</h4>
+                <h4>Agent version ${this._hostInfo.agent_version}</h4>
+              `
             : ""}
           <p>
             ${this.hass.localize(
@@ -211,17 +214,14 @@ class HaConfigInfo extends LitElement {
         .about a {
           color: var(--primary-color);
         }
-
-        integrations-card {
-          display: block;
-          max-width: 600px;
-          margin: 0 auto;
-          padding-bottom: 16px;
-        }
         ha-logo-svg {
           padding: 12px;
           height: 180px;
           width: 180px;
+        }
+
+        h4 {
+          font-weight: 400;
         }
       `,
     ];

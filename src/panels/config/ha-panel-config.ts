@@ -256,68 +256,68 @@ export const configSections: { [name: string]: PageNavigation[] } = {
   general: [
     {
       path: "/config/general",
-      translationKey: "ui.panel.config.core.caption",
+      translationKey: "core",
       iconPath: mdiCog,
       iconColor: "#653249",
       core: true,
     },
     {
       path: "/config/updates",
-      translationKey: "ui.panel.config.updates.caption",
+      translationKey: "updates",
       iconPath: mdiUpdate,
       iconColor: "#3B808E",
     },
     {
       component: "logs",
       path: "/config/logs",
-      translationKey: "ui.panel.config.logs.caption",
+      translationKey: "logs",
       iconPath: mdiMathLog,
       iconColor: "#C65326",
       core: true,
     },
     {
       path: "/config/backup",
-      translationKey: "ui.panel.config.backup.caption",
+      translationKey: "backup",
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
     },
     {
       path: "/hassio/backups",
-      translationKey: "ui.panel.config.backup.caption",
+      translationKey: "backup",
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "hassio",
     },
     {
       path: "/config/analytics",
-      translationKey: "ui.panel.config.analytics.caption",
+      translationKey: "analytics",
       iconPath: mdiShape,
       iconColor: "#f1c447",
     },
     {
       path: "/config/network",
-      translationKey: "ui.panel.config.network.caption",
+      translationKey: "network",
       iconPath: mdiNetwork,
       iconColor: "#B1345C",
     },
     {
       path: "/config/storage",
-      translationKey: "ui.panel.config.storage.caption",
+      translationKey: "storage",
       iconPath: mdiDatabase,
       iconColor: "#518C43",
       component: "hassio",
     },
     {
       path: "/config/hardware",
-      translationKey: "ui.panel.config.hardware.caption",
+      translationKey: "hardware",
       iconPath: mdiMemory,
       iconColor: "#301A8E",
       component: "hassio",
     },
     {
       path: "/config/system_health",
-      translationKey: "ui.panel.config.system_health.caption",
+      translationKey: "system_health",
       iconPath: mdiHeart,
       iconColor: "#507FfE",
       components: ["system_health", "hassio"],
@@ -478,6 +478,11 @@ class HaPanelConfig extends HassRouterPage {
           import(
             "./integrations/integration-panels/zwave_js/zwave_js-config-router"
           ),
+      },
+      application_credentials: {
+        tag: "ha-config-application-credentials",
+        load: () =>
+          import("./application_credentials/ha-config-application-credentials"),
       },
     },
   };

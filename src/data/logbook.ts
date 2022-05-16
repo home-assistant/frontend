@@ -10,7 +10,7 @@ const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
-  when: string;
+  when: number;
   name: string;
   message?: string;
   entity_id?: string;
@@ -25,6 +25,7 @@ export interface LogbookEntry {
   context_entity_id?: string;
   context_entity_id_name?: string;
   context_name?: string;
+  context_message?: string;
   state?: string;
 }
 
@@ -46,7 +47,6 @@ export const getLogbookDataForContext = async (
       startDate,
       undefined,
       undefined,
-      undefined,
       contextId
     )
   );
@@ -56,20 +56,13 @@ export const getLogbookData = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string,
-  entity_matches_only?: boolean
+  entityId?: string
 ): Promise<LogbookEntry[]> => {
   const localize = await hass.loadBackendTranslation("device_class");
   return addLogbookMessage(
     hass,
     localize,
-    await getLogbookDataCache(
-      hass,
-      startDate,
-      endDate,
-      entityId,
-      entity_matches_only
-    )
+    await getLogbookDataCache(hass, startDate, endDate, entityId)
   );
 };
 
@@ -97,8 +90,7 @@ export const getLogbookDataCache = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string,
-  entity_matches_only?: boolean
+  entityId?: string
 ) => {
   const ALL_ENTITIES = "*";
 
@@ -125,39 +117,31 @@ export const getLogbookDataCache = async (
     hass,
     startDate,
     endDate,
-    entityId !== ALL_ENTITIES ? entityId : undefined,
-    entity_matches_only
+    entityId !== ALL_ENTITIES ? entityId : undefined
   ).then((entries) => entries.reverse());
   return DATA_CACHE[cacheKey][entityId];
 };
 
-const getLogbookDataFromServer = async (
+export const getLogbookDataFromServer = (
   hass: HomeAssistant,
   startDate: string,
   endDate?: string,
   entityId?: string,
-  entitymatchesOnly?: boolean,
   contextId?: string
 ) => {
-  const params = new URLSearchParams();
-
+  let params: any = {
+    type: "logbook/get_events",
+    start_time: startDate,
+  };
   if (endDate) {
-    params.append("end_time", endDate);
+    params = { ...params, end_time: endDate };
   }
   if (entityId) {
-    params.append("entity", entityId);
+    params = { ...params, entity_ids: entityId.split(",") };
+  } else if (contextId) {
+    params = { ...params, context_id: contextId };
   }
-  if (entitymatchesOnly) {
-    params.append("entity_matches_only", "");
-  }
-  if (contextId) {
-    params.append("context_id", contextId);
-  }
-
-  return hass.callApi<LogbookEntry[]>(
-    "GET",
-    `logbook/${startDate}?${params.toString()}`
-  );
+  return hass.callWS<LogbookEntry[]>(params);
 };
 
 export const clearLogbookCache = (startDate: string, endDate: string) => {
