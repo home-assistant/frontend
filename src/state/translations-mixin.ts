@@ -191,7 +191,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.style.direction = direction;
       document.dir = direction;
       this.style.setProperty("--direction", direction);
-      this.style.setProperty("--float-end", "left");
+      this.style.setProperty(
+        "--float-end",
+        direction === "ltr" ? "right" : "left"
+      );
     }
 
     /**
