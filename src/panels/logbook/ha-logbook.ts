@@ -243,8 +243,11 @@ export class HaLogbook extends LitElement {
   static get styles() {
     return [
       css`
-        :host([virtualize]) {
+        :host {
           display: block;
+        }
+
+        :host([virtualize]) {
           height: 100%;
         }
 
