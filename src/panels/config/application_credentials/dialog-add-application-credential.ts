@@ -51,7 +51,8 @@ export class DialogAddApplicationCredential extends LitElement {
 
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
-    this._domain = "";
+    this._domain =
+      params.selectedDomain !== undefined ? params.selectedDomain : "";
     this._name = "";
     this._clientId = "";
     this._clientSecret = "";
@@ -90,6 +91,7 @@ export class DialogAddApplicationCredential extends LitElement {
           <ha-combo-box
             name="domain"
             .hass=${this.hass}
+            .disabled=${!!this._params.selectedDomain}
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.domain"
             )}
