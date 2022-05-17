@@ -241,8 +241,7 @@ export interface HomeAssistant {
   loadBackendTranslation(
     category: Parameters<typeof getHassTranslations>[2],
     integration?: Parameters<typeof getHassTranslations>[3],
-    configFlow?: Parameters<typeof getHassTranslations>[4],
-    integrations?: Parameters<typeof getHassTranslations>[5]
+    configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
 }

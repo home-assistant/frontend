@@ -56,12 +56,7 @@ class OnboardingIntegrations extends LitElement {
           integrations.add(flow.handler);
         }
       }
-      this.hass.loadBackendTranslation(
-        "config",
-        undefined,
-        undefined,
-        Array.from(integrations)
-      );
+      this.hass.loadBackendTranslation("config", Array.from(integrations));
     });
   }
 

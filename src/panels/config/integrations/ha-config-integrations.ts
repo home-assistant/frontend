@@ -166,8 +166,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         });
         await this.hass.loadBackendTranslation(
           "config",
-          undefined,
-          undefined,
           Array.from(integrations)
         );
         await nextRender();

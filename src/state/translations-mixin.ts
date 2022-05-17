@@ -207,7 +207,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       category: Parameters<typeof getHassTranslations>[2],
       integration?: Parameters<typeof getHassTranslations>[3],
       configFlow?: Parameters<typeof getHassTranslations>[4],
-      integrations?: Parameters<typeof getHassTranslations>[5],
       force = false
     ): Promise<LocalizeFunc> {
       if (
@@ -270,8 +269,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         language,
         category,
         integration,
-        configFlow,
-        integrations
+        configFlow
       );
 
       // Ignore the repsonse if user switched languages before we got response
@@ -383,7 +381,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
             category as TranslationCategory,
             undefined,
             includeConfigFlow && cache.configFlow,
-            undefined,
             true
           );
         }
