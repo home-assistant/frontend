@@ -11,7 +11,6 @@ import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   DOMAINS_WITH_DYNAMIC_PICTURE,
-  DEFAULT_DOMAIN_ICON,
 } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
@@ -143,7 +142,7 @@ class HaLogbookRenderer extends LitElement {
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
         item.domain!;
-    let overrideIcon =
+    const overrideIcon =
       item.icon ||
       (item.domain && !stateObj
         ? domainIconWithoutDefault(item.domain!)
@@ -163,9 +162,6 @@ class HaLogbookRenderer extends LitElement {
             })
           : undefined)
       : undefined;
-    if (!stateObj && !overrideIcon && !overrideImage) {
-      overrideIcon = DEFAULT_DOMAIN_ICON;
-    }
 
     return html`
       <div class="entry-container">
