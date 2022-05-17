@@ -1529,6 +1529,7 @@
           "internal_url_label": "Local Network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
+          "manage_ha_cloud": "Manage Home Assistant Cloud",
           "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
