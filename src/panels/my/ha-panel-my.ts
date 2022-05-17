@@ -13,6 +13,9 @@ import { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
+  application_credentials: {
+    redirect: "/config/application_credentials",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
