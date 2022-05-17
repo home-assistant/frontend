@@ -2821,7 +2821,7 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_creds": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
+            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
           }
         },
         "users": {

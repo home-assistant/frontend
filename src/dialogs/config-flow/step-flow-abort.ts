@@ -1,5 +1,11 @@
 import "@material/mwc-button";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  PropertyValues,
+} from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
@@ -13,7 +19,7 @@ import { showConfigFlowDialog } from "./show-dialog-config-flow";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
-  @property({ attribute: false }) public params: DataEntryFlowDialogParams;
+  @property({ attribute: false }) public params!: DataEntryFlowDialogParams;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -23,13 +29,13 @@ class StepFlowAbort extends LitElement {
 
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
-    if (this.step.reason === "missing_configuration") {
+    if (this.step.reason === "missing_credentials") {
       this._handleMissingCreds();
     }
   }
 
   protected render(): TemplateResult {
-    if (this.step.reason === "missing_configuration") {
+    if (this.step.reason === "missing_credentials") {
       return html``;
     }
     return html`
@@ -51,7 +57,7 @@ class StepFlowAbort extends LitElement {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.integrations.config_flow.missing_creds",
+          "ui.panel.config.integrations.config_flow.missing_credentials",
           {
             integration: domainToName(this.hass.localize, this.domain),
           }

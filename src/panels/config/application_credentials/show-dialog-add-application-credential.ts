@@ -6,7 +6,7 @@ export interface AddApplicationCredentialDialogParams {
     applicationCredential: ApplicationCredential
   ) => void;
   dialogAbortedCallback?: () => void;
-  selectedDomain: string;
+  selectedDomain?: string;
 }
 
 export const loadAddApplicationCredentialDialog = () =>
