@@ -266,9 +266,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       // Add to cache
       if (integrationsToLoad.length) {
-        integrationsToLoad.forEach((i) => {
-          alreadyLoaded.integrations.push(i);
-        });
+        alreadyLoaded.integrations.push(...integrationsToLoad);
       } else {
         alreadyLoaded.setup = true;
         if (configFlow) {
