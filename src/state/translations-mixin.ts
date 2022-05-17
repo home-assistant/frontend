@@ -265,16 +265,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // Add to cache
-      if (integration && Array.isArray(integration)) {
-        integration.forEach((i) => {
-          if (!alreadyLoaded.integrations.includes(i)) {
-            alreadyLoaded.integrations.push(i);
-          }
+      if (integrationsToLoad.length) {
+        integrationsToLoad.forEach((i) => {
+          alreadyLoaded.integrations.push(i);
         });
-      } else if (integration) {
-        if (!alreadyLoaded.integrations.includes(integration)) {
-          alreadyLoaded.integrations.push(integration);
-        }
       } else {
         alreadyLoaded.setup = true;
         if (configFlow) {
