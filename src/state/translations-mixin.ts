@@ -239,12 +239,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         };
       }
 
+      const integrationsToLoad: string[] = [];
+
       // Check if already loaded
       if (!force) {
-        if (integration) {
+        if (integration && Array.isArray(integration)) {
+          integration.forEach((i) => {
+            if (!alreadyLoaded.integrations.includes(i)) {
+              integrationsToLoad.push(i);
+            }
+          });
+        } else if (integration) {
           if (alreadyLoaded.integrations.includes(integration)) {
             return this.hass!.localize;
           }
+          integrationsToLoad.push(integration);
         } else if (
           configFlow ? alreadyLoaded.configFlow : alreadyLoaded.setup
         ) {
@@ -253,7 +262,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // Add to cache
-      if (integration) {
+      if (integration && Array.isArray(integration)) {
+        integration.forEach((i) => {
+          if (!alreadyLoaded.integrations.includes(i)) {
+            alreadyLoaded.integrations.push(i);
+          }
+        });
+      } else if (integration) {
         if (!alreadyLoaded.integrations.includes(integration)) {
           alreadyLoaded.integrations.push(integration);
         }
@@ -268,7 +283,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.hass!,
         language,
         category,
-        integration,
+        integrationsToLoad.length ? integrationsToLoad : undefined,
         configFlow
       );
 
