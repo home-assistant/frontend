@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -19,6 +20,7 @@ import {
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
@@ -87,6 +89,7 @@ export class HaPanelLogbook extends LitElement {
             .label=${this.hass.localize(
               "ui.components.entity.entity-picker.entity"
             )}
+            .entityFilter=${this._entityFilter}
             @change=${this._entityPicked}
           ></ha-entity-picker>
         </div>
@@ -103,6 +106,7 @@ export class HaPanelLogbook extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+
     if (this.hasUpdated) {
       return;
     }
@@ -124,21 +128,7 @@ export class HaPanelLogbook extends LitElement {
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
 
-    const searchParams = new URLSearchParams(location.search);
-
-    this._entityId = searchParams.get("entity_id") ?? "";
-
-    const startDate = searchParams.get("start_date");
-    const endDate = searchParams.get("end_date");
-
-    if (startDate || endDate) {
-      this._time = {
-        range: [
-          startDate ? new Date(startDate) : this._time.range[0],
-          endDate ? new Date(endDate) : this._time.range[1],
-        ],
-      };
-    }
+    this._applyURLParams();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -146,15 +136,58 @@ export class HaPanelLogbook extends LitElement {
     this.hass.loadBackendTranslation("title");
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
-    if (changedProps.has("_time") || changedProps.has("_entityId")) {
-      this._refreshLogbook();
-    }
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+  }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+  }
+
+  private _locationChanged = () => {
+    this._applyURLParams();
+  };
+
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.language !== this.hass.language) {
         this.rtl = computeRTL(this.hass);
+      }
+    }
+
+    this._applyURLParams();
+  }
+
+  private _applyURLParams() {
+    const searchParams = new URLSearchParams(location.search);
+
+    if (searchParams.has("entity_id")) {
+      this._entityId = searchParams.get("entity_id") ?? "";
+    }
+
+    const startDateStr = searchParams.get("start_date");
+    const endDateStr = searchParams.get("end_date");
+
+    if (startDateStr || endDateStr) {
+      const startDate = startDateStr
+        ? new Date(startDateStr)
+        : this._time.range[0];
+      const endDate = endDateStr ? new Date(endDateStr) : this._time.range[1];
+
+      // Only set if date has changed.
+      if (
+        startDate.getTime() !== this._time.range[0].getTime() ||
+        endDate.getTime() !== this._time.range[1].getTime()
+      ) {
+        this._time = {
+          range: [
+            startDateStr ? new Date(startDateStr) : this._time.range[0],
+            endDateStr ? new Date(endDateStr) : this._time.range[1],
+          ],
+        };
       }
     }
   }
@@ -194,17 +227,26 @@ export class HaPanelLogbook extends LitElement {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
 
+  private _entityFilter: HaEntityPickerEntityFilterFunc = (entity) => {
+    if (computeStateDomain(entity) !== "sensor") {
+      return true;
+    }
+
+    return (
+      entity.attributes.unit_of_measurement === undefined &&
+      entity.attributes.state_class === undefined
+    );
+  };
+
   static get styles() {
     return [
       haStyle,
       css`
-        ha-logbook,
-        .progress-wrapper {
+        ha-logbook {
           height: calc(100vh - 136px);
         }
 
-        :host([narrow]) ha-logbook,
-        :host([narrow]) .progress-wrapper {
+        :host([narrow]) ha-logbook {
           height: calc(100vh - 198px);
         }
 
@@ -215,10 +257,6 @@ export class HaPanelLogbook extends LitElement {
 
         :host([narrow]) ha-date-range-picker {
           margin-right: 0;
-        }
-
-        .progress-wrapper {
-          position: relative;
         }
 
         .filters {

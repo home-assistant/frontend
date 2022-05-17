@@ -52,50 +52,61 @@ export class HaLogbook extends LitElement {
 
   private _renderId = 1;
 
-  private _throttleGetLogbookEntries = throttle(() => {
-    this._getLogBookData();
-  }, 10000);
+  private _throttleGetLogbookEntries = throttle(
+    () => this._getLogBookData(),
+    10000
+  );
 
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "logbook")) {
       return html``;
     }
 
+    if (this._error) {
+      return html`<div class="no-entries">
+        ${`${this.hass.localize("ui.components.logbook.retrieval_error")}: ${
+          this._error
+        }`}
+      </div>`;
+    }
+
+    if (this._logbookEntries === undefined) {
+      return html`
+        <div class="progress-wrapper">
+          <ha-circular-progress
+            active
+            alt=${this.hass.localize("ui.common.loading")}
+          ></ha-circular-progress>
+        </div>
+      `;
+    }
+
+    if (this._logbookEntries.length === 0) {
+      return html`<div class="no-entries">
+        ${this.hass.localize("ui.components.logbook.entries_not_found")}
+      </div>`;
+    }
+
     return html`
-      ${this._error
-        ? html`<div class="no-entries">
-            ${`${this.hass.localize(
-              "ui.components.logbook.retrieval_error"
-            )}: ${this._error}`}
-          </div>`
-        : !this._logbookEntries
-        ? html`
-            <ha-circular-progress
-              active
-              alt=${this.hass.localize("ui.common.loading")}
-            ></ha-circular-progress>
-          `
-        : this._logbookEntries.length
-        ? html`
-            <ha-logbook-renderer
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .virtualize=${this.virtualize}
-              .noIcon=${this.noIcon}
-              .noName=${this.noName}
-              .relativeTime=${this.relativeTime}
-              .entries=${this._logbookEntries}
-              .traceContexts=${this._traceContexts}
-              .userIdToName=${this._userIdToName}
-            ></ha-logbook-renderer>
-          `
-        : html`<div class="no-entries">
-            ${this.hass.localize("ui.components.logbook.entries_not_found")}
-          </div>`}
+      <ha-logbook-renderer
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .virtualize=${this.virtualize}
+        .noIcon=${this.noIcon}
+        .noName=${this.noName}
+        .relativeTime=${this.relativeTime}
+        .entries=${this._logbookEntries}
+        .traceContexts=${this._traceContexts}
+        .userIdToName=${this._userIdToName}
+      ></ha-logbook-renderer>
     `;
   }
 
-  public refresh() {
+  public async refresh(force = false) {
+    if (!force && this._logbookEntries === undefined) {
+      return;
+    }
+
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -107,6 +118,8 @@ export class HaLogbook extends LitElement {
       );
     }
 
+    this._lastLogbookDate = undefined;
+    this._logbookEntries = undefined;
     this._error = undefined;
     this._throttleGetLogbookEntries();
   }
@@ -115,9 +128,7 @@ export class HaLogbook extends LitElement {
     super.updated(changedProps);
 
     if (changedProps.has("time") || changedProps.has("entityId")) {
-      this._lastLogbookDate = undefined;
-      this._logbookEntries = undefined;
-      this.refresh();
+      this.refresh(true);
       return;
     }
 
@@ -242,9 +253,12 @@ export class HaLogbook extends LitElement {
           padding: 16px;
           color: var(--secondary-text-color);
         }
-        ha-circular-progress {
+
+        .progress-wrapper {
           display: flex;
           justify-content: center;
+          height: 100%;
+          align-items: center;
         }
       `,
     ];
