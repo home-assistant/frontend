@@ -9,7 +9,7 @@ import {
   startOfToday,
   startOfWeek,
   startOfYesterday,
-} from "date-fns";
+} from "date-fns/esm";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
