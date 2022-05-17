@@ -16,6 +16,7 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../logbook/ha-logbook";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
@@ -72,6 +73,8 @@ class HaConfigAreaPage extends LitElement {
 
   @state() private _related?: RelatedResult;
 
+  private _logbookTime = { recent: 86400 };
+
   private _area = memoizeOne(
     (
       areaId: string,
@@ -115,6 +118,16 @@ class HaConfigAreaPage extends LitElement {
     }
   );
 
+  private _allEntities = memoizeOne(
+    (memberships: {
+      entities: EntityRegistryEntry[];
+      indirectEntities: EntityRegistryEntry[];
+    }) =>
+      memberships.entities
+        .map((entry) => entry.entity_id)
+        .concat(memberships.indirectEntities.map((entry) => entry.entity_id))
+  );
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
@@ -139,11 +152,12 @@ class HaConfigAreaPage extends LitElement {
       `;
     }
 
-    const { devices, entities } = this._memberships(
+    const memberships = this._memberships(
       this.areaId,
       this.devices,
       this.entities
     );
+    const { devices, entities } = memberships;
 
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
@@ -359,8 +373,6 @@ class HaConfigAreaPage extends LitElement {
                   </ha-card>
                 `
               : ""}
-          </div>
-          <div class="column">
             ${isComponentLoaded(this.hass, "scene")
               ? html`
                   <ha-card
@@ -438,6 +450,25 @@ class HaConfigAreaPage extends LitElement {
                           >
                         `
                       : ""}
+                  </ha-card>
+                `
+              : ""}
+          </div>
+          <div class="column">
+            ${isComponentLoaded(this.hass, "logbook")
+              ? html`
+                  <ha-card
+                    outlined
+                    .header=${this.hass.localize("panel.logbook")}
+                  >
+                    <ha-logbook
+                      .hass=${this.hass}
+                      .time=${this._logbookTime}
+                      .entityIds=${this._allEntities(memberships)}
+                      virtualize
+                      narrow
+                      no-icon
+                    ></ha-logbook>
                   </ha-card>
                 `
               : ""}
@@ -698,6 +729,13 @@ class HaConfigAreaPage extends LitElement {
           background-color: var(--card-background-color);
           opacity: 0.5;
           border-radius: 50%;
+        }
+        ha-logbook {
+          height: 800px;
+        }
+        :host([narrow]) ha-logbook {
+          height: 400px;
+          overflow: auto;
         }
       `,
     ];
