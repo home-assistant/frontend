@@ -46,7 +46,6 @@ import {
 } from "../../../data/entity_registry";
 import {
   domainToName,
-  fetchIntegrationManifest,
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
@@ -157,17 +156,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       }),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
         const integrations: Set<string> = new Set();
+        const manifests: Set<string> = new Set();
         flowsInProgress.forEach((flow) => {
           // To render title placeholders
           if (flow.context.title_placeholders) {
             integrations.add(flow.handler);
           }
-          this._fetchManifest(flow.handler);
+          manifests.add(flow.handler);
         });
         await this.hass.loadBackendTranslation(
           "config",
           Array.from(integrations)
         );
+        this._fetchIntegrationManifests(manifests);
         await nextRender();
         this._configEntriesInProgress = flowsInProgress.map((flow) => ({
           ...flow,
@@ -566,8 +567,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     await scanUSBDevices(this.hass);
   }
 
-  private async _fetchManifests() {
-    const fetched = await fetchIntegrationManifests(this.hass);
+  private async _fetchManifests(integrations?: string[]) {
+    const fetched = await fetchIntegrationManifests(this.hass, integrations);
     // Make a copy so we can keep track of previously loaded manifests
     // for discovered flows (which are not part of these results)
     const manifests = { ...this._manifests };
@@ -575,23 +576,23 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     this._manifests = manifests;
   }
 
-  private async _fetchManifest(domain: string) {
-    if (domain in this._manifests) {
-      return;
-    }
-    if (this._extraFetchedManifests) {
-      if (this._extraFetchedManifests.has(domain)) {
-        return;
+  private async _fetchIntegrationManifests(integrations: Set<string>) {
+    const manifestsToFetch: string[] = [];
+    for (const integration of integrations) {
+      if (integration in this._manifests) {
+        continue;
       }
-    } else {
-      this._extraFetchedManifests = new Set();
+      if (this._extraFetchedManifests) {
+        if (this._extraFetchedManifests.has(integration)) {
+          continue;
+        }
+      } else {
+        this._extraFetchedManifests = new Set();
+      }
+      this._extraFetchedManifests.add(integration);
+      manifestsToFetch.push(integration);
     }
-    this._extraFetchedManifests.add(domain);
-    const manifest = await fetchIntegrationManifest(this.hass, domain);
-    this._manifests = {
-      ...this._manifests,
-      [domain]: manifest,
-    };
+    await this._fetchManifests(manifestsToFetch);
   }
 
   private _handleEntryRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
