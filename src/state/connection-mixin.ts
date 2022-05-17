@@ -144,13 +144,19 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           }
           return resp;
         },
-        loadBackendTranslation: (category, integration?, configFlow?) =>
+        loadBackendTranslation: (
+          category,
+          integration?,
+          configFlow?,
+          integrations?
+        ) =>
           // @ts-ignore
           this._loadHassTranslations(
             this.hass?.language,
             category,
             integration,
-            configFlow
+            configFlow,
+            integrations
           ),
         loadFragmentTranslation: (fragment) =>
           // @ts-ignore
