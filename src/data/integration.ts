@@ -45,8 +45,15 @@ export const domainToName = (
 export const fetchIntegrationManifests = (
   hass: HomeAssistant,
   integrations?: string[]
-) =>
-  hass.callWS<IntegrationManifest[]>({ type: "manifest/list", integrations });
+) => {
+  let params: any = {
+    type: "manifest/list",
+  };
+  if (integrations) {
+    params = { ...params, integrations: integrations };
+  }
+  return hass.callWS<IntegrationManifest[]>(params);
+};
 
 export const fetchIntegrationManifest = (
   hass: HomeAssistant,
