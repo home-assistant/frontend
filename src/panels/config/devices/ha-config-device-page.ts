@@ -63,6 +63,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import "../../logbook/ha-logbook";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -99,6 +100,8 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deleteButtons?: (TemplateResult | string)[];
 
+  private _logbookTime = { recent: 86400 };
+
   private _device = memoizeOne(
     (
       deviceId: string,
@@ -129,6 +132,11 @@ export class HaConfigDevicePage extends LitElement {
             ent2.stateName || `zzz${ent2.entity_id}`
           )
         )
+  );
+
+  private _entityIds = memoizeOne(
+    (entries: EntityRegistryStateEntry[]): string[] =>
+      entries.map((entry) => entry.entity_id)
   );
 
   private _entitiesByCategory = memoizeOne(
@@ -574,6 +582,24 @@ export class HaConfigDevicePage extends LitElement {
                   `
                 : ""
             )}
+            ${
+              isComponentLoaded(this.hass, "logbook")
+                ? html`
+                    <ha-card outlined>
+                      <h1 class="card-header">
+                        ${this.hass.localize("panel.logbook")}
+                      </h1>
+                      <ha-logbook
+                        .hass=${this.hass}
+                        .time=${this._logbookTime}
+                        .entityId=${this._entityIds(entities)}
+                        narrow
+                        no-icon
+                      ></ha-logbook>
+                    </ha-card>
+                  `
+                : ""
+            }
           </div>
           <div class="column">
             ${
@@ -1227,6 +1253,14 @@ export class HaConfigDevicePage extends LitElement {
 
         .items {
           padding-bottom: 16px;
+        }
+
+        ha-logbook {
+          max-height: 400px;
+          overflow: scroll;
+        }
+        :host([narrow]) ha-logbook {
+          max-height: 200px;
         }
       `,
     ];
