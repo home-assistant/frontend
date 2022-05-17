@@ -173,25 +173,34 @@ export class HaLogbook extends LitElement {
       endTime = new Date();
     }
 
-    this._updateUsers();
-    if (this.hass.user?.is_admin) {
-      this._updateTraceContexts();
-    }
+    const entityIdFilter = this.entityId
+      ? ensureArray(this.entityId)
+      : undefined;
 
     let newEntries: LogbookEntry[];
 
-    try {
-      newEntries = await getLogbookData(
-        this.hass,
-        startTime.toISOString(),
-        endTime.toISOString(),
-        this.entityId ? ensureArray(this.entityId).toString() : undefined
-      );
-    } catch (err: any) {
-      if (renderId === this._renderId) {
-        this._error = err.message;
+    if (entityIdFilter?.length === 0) {
+      // filtering by 0 entities, means we never can have any results
+      newEntries = [];
+    } else {
+      this._updateUsers();
+      if (this.hass.user?.is_admin) {
+        this._updateTraceContexts();
       }
-      return;
+
+      try {
+        newEntries = await getLogbookData(
+          this.hass,
+          startTime.toISOString(),
+          endTime.toISOString(),
+          entityIdFilter ? entityIdFilter.toString() : undefined
+        );
+      } catch (err: any) {
+        if (renderId === this._renderId) {
+          this._error = err.message;
+        }
+        return;
+      }
     }
 
     // New render happening.
