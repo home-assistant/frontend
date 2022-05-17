@@ -20,7 +20,7 @@ interface HassEntityWithCachedName extends HassEntity {
   friendly_name: string;
 }
 
-export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
+export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>

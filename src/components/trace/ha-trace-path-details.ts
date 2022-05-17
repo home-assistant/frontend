@@ -13,7 +13,7 @@ import {
   getDataFromPath,
   TraceExtended,
 } from "../../data/trace";
-import "../../panels/logbook/ha-logbook";
+import "../../panels/logbook/ha-logbook-renderer";
 import { traceTabStyles } from "./trace-tab-styles";
 import { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
@@ -224,12 +224,12 @@ export class HaTracePathDetails extends LitElement {
 
     return entries.length
       ? html`
-          <ha-logbook
+          <ha-logbook-renderer
             relative-time
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}
-          ></ha-logbook>
+          ></ha-logbook-renderer>
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
