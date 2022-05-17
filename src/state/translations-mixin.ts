@@ -249,6 +249,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               integrationsToLoad.push(i);
             }
           });
+          if (!integrationsToLoad.length) {
+            return this.hass!.localize;
+          }
         } else if (integration) {
           if (alreadyLoaded.integrations.includes(integration)) {
             return this.hass!.localize;
