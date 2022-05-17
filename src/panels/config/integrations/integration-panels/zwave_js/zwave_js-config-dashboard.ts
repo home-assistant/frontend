@@ -278,7 +278,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
                             )}
@@ -291,7 +292,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
                             )}
@@ -304,7 +306,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
                             )}
@@ -317,7 +320,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
                             )}
@@ -330,7 +334,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
                             )}
@@ -343,7 +348,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.can.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
                             )}
@@ -356,7 +362,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
                             )}
@@ -369,7 +376,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timout_response.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.timout_response.tooltip"
                             )}
@@ -382,7 +390,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <td>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
-                          )}:<ha-help-tooltip
+                          )}:
+                          <ha-help-tooltip
                             .label=${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
                             )}
