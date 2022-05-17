@@ -76,7 +76,7 @@ export class DialogAddApplicationCredential extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        @closed=${this._abortDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -181,6 +181,13 @@ export class DialogAddApplicationCredential extends LitElement {
     const name = (ev.target as any).name;
     const value = (ev.target as any).value;
     this[`_${name}`] = value;
+  }
+
+  private _abortDialog() {
+    if (this._params && this._params.dialogAbortedCallback) {
+      this._params.dialogAbortedCallback();
+    }
+    this.closeDialog();
   }
 
   private async _createApplicationCredential(ev) {

@@ -5,17 +5,15 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 import { showAddApplicationCredentialDialog } from "../../panels/config/application_credentials/show-dialog-add-application-credential";
-import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import {
-  showConfirmationDialog,
-} from "../generic/show-dialog-box";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { domainToName } from "../../data/integration";
+import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import { showConfigFlowDialog } from "./show-dialog-config-flow";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
-  @property({ attribute: false }) public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public params: DataEntryFlowDialogParams;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -37,7 +35,7 @@ class StepFlowAbort extends LitElement {
     return html`
       <h2>${this.hass.localize(`component.${this.domain}.title`)}</h2>
       <div class="content">
-        ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
+        ${this.params.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
         <mwc-button @click=${this._flowDone}
@@ -64,14 +62,14 @@ class StepFlowAbort extends LitElement {
       return;
     }
 
-    // Gap:  Need to check application credentials eligibility
     showAddApplicationCredentialDialog(this, {
       selectedDomain: this.domain,
-      applicationCredentialAddedCallback: async (_: ApplicationCredential) => {
+      dialogAbortedCallback: () => {
+        this._flowDone();
+      },
+      applicationCredentialAddedCallback: () => {
         showConfigFlowDialog(this, {
-          dialogClosedCallback: () => {
-            this._flowDone();
-          },
+          dialogClosedCallback: this.params.dialogClosedCallback,
           startFlowHandler: this.domain,
           showAdvanced: this.hass.userData?.showAdvanced,
         });

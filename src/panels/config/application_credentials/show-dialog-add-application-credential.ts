@@ -5,6 +5,7 @@ export interface AddApplicationCredentialDialogParams {
   applicationCredentialAddedCallback: (
     applicationCredential: ApplicationCredential
   ) => void;
+  dialogAbortedCallback?: () => void;
   selectedDomain: string;
 }
 

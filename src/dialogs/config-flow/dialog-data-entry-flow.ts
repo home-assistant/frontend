@@ -309,10 +309,12 @@ class DataEntryFlowDialog extends LitElement {
                   : this._step.type === "abort"
                   ? html`
                       <step-flow-abort
-                        .flowConfig=${this._params.flowConfig}
+                        .params=${this._params}
                         .step=${this._step}
                         .hass=${this.hass}
                         .domain=${this._step.handler}
+                        @restart-close-callback=${this._params
+                          .dialogClosedCallback}
                       ></step-flow-abort>
                     `
                   : this._step.type === "progress"
