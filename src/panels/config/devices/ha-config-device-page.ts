@@ -593,6 +593,7 @@ export class HaConfigDevicePage extends LitElement {
                         .hass=${this.hass}
                         .time=${this._logbookTime}
                         .entityId=${this._entityIds(entities)}
+                        virtualize
                         narrow
                         no-icon
                       ></ha-logbook>
@@ -1256,11 +1257,10 @@ export class HaConfigDevicePage extends LitElement {
         }
 
         ha-logbook {
-          max-height: 400px;
-          overflow: scroll;
+          height: 400px;
         }
         :host([narrow]) ha-logbook {
-          max-height: 200px;
+          height: 235px;
         }
       `,
     ];
