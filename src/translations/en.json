@@ -1079,9 +1079,9 @@
           "learn_more": "Learn more"
         },
         "updates": {
-          "check_unavailable": {
+          "no_update_entities": {
             "title": "Unable to check for updates",
-            "description": "You need to run the Home Assistant operating system to be able to check and install updates from the Home Assistant user interface."
+            "description": "You do not have any integrations that provide updates."
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",

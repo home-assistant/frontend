@@ -50,6 +50,12 @@ export interface FlowConfig {
     field: HaFormSchema
   ): string;
 
+  renderShowFormStepFieldHelper(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    field: HaFormSchema
+  ): string;
+
   renderShowFormStepFieldError(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
@@ -82,6 +88,11 @@ export interface FlowConfig {
   ): TemplateResult | "";
 
   renderMenuHeader(hass: HomeAssistant, step: DataEntryFlowStepMenu): string;
+
+  renderMenuDescription(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepMenu
+  ): TemplateResult | "";
 
   renderMenuOption(
     hass: HomeAssistant,

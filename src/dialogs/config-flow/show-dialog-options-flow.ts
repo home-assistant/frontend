@@ -89,6 +89,12 @@ export const showOptionsFlowDialog = (
         );
       },
 
+      renderShowFormStepFieldHelper(hass, step, field) {
+        return hass.localize(
+          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`
+        );
+      },
+
       renderShowFormStepFieldError(hass, step, error) {
         return hass.localize(
           `component.${configEntry.domain}.options.error.${error}`,
@@ -140,6 +146,22 @@ export const showOptionsFlowDialog = (
             `component.${step.handler}.option.step.${step.step_id}.title`
           ) || hass.localize(`component.${step.handler}.title`)
         );
+      },
+
+      renderMenuDescription(hass, step) {
+        const description = hass.localize(
+          `component.${step.handler}.option.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
       },
 
       renderMenuOption(hass, step, option) {

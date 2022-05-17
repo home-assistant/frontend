@@ -14,6 +14,8 @@ export class HaTimeDuration extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -22,9 +24,11 @@ export class HaTimeDuration extends LitElement {
     return html`
       <ha-duration-input
         .label=${this.label}
+        .helper=${this.helper}
         .data=${this.value}
         .disabled=${this.disabled}
         .required=${this.required}
+        .enableDay=${this.selector.duration.enable_day}
       ></ha-duration-input>
     `;
   }
