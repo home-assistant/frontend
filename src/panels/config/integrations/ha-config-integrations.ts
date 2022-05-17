@@ -592,7 +592,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._extraFetchedManifests.add(integration);
       manifestsToFetch.push(integration);
     }
-    await this._fetchManifests(manifestsToFetch);
+    if (manifestsToFetch) {
+      await this._fetchManifests(manifestsToFetch);
+    }
   }
 
   private _handleEntryRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
