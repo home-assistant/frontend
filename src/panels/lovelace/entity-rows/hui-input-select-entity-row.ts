@@ -92,9 +92,14 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
   `;
 
   private _selectedChanged(ev): void {
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this.hass!.states[
+      this._config!.entity
+    ] as InputSelectEntity;
     const option = ev.target.value;
-    if (option === stateObj.state) {
+    if (
+      option === stateObj.state ||
+      !stateObj.attributes.options.includes(option)
+    ) {
       return;
     }
 
