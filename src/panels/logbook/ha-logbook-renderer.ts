@@ -9,13 +9,17 @@ import {
 } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
+import {
+  DOMAINS_WITH_DYNAMIC_PICTURE,
+  DEFAULT_DOMAIN_ICON,
+} from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIcon } from "../../common/entity/domain_icon";
+import { domainIconWithoutDefault } from "../../common/entity/domain_icon";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
@@ -28,6 +32,7 @@ import {
   buttonLinkStyle,
 } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 
 const EVENT_LOCALIZE_MAP = {
   script_started: "from_script",
@@ -138,6 +143,29 @@ class HaLogbookRenderer extends LitElement {
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
         item.domain!;
+    let overrideIcon =
+      item.icon ||
+      (item.domain && !stateObj
+        ? domainIconWithoutDefault(item.domain!)
+        : undefined);
+    const overrideImage = !DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+      ? stateObj?.attributes.entity_picture_local ||
+        stateObj?.attributes.entity_picture ||
+        (!stateObj &&
+        !overrideIcon &&
+        item.domain &&
+        isComponentLoaded(this.hass, item.domain)
+          ? brandsUrl({
+              domain: item.domain!,
+              type: "icon",
+              useFallback: true,
+              darkOptimized: this.hass.themes?.darkMode,
+            })
+          : undefined)
+      : undefined;
+    if (!stateObj && !overrideIcon && !overrideImage) {
+      overrideIcon = DEFAULT_DOMAIN_ICON;
+    }
 
     return html`
       <div class="entry-container">
@@ -161,14 +189,8 @@ class HaLogbookRenderer extends LitElement {
                 html`
                   <state-badge
                     .hass=${this.hass}
-                    .overrideIcon=${item.icon ||
-                    (item.domain && !stateObj
-                      ? domainIcon(item.domain!)
-                      : undefined)}
-                    .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
-                      ? ""
-                      : stateObj?.attributes.entity_picture_local ||
-                        stateObj?.attributes.entity_picture}
+                    .overrideIcon=${overrideIcon}
+                    .overrideImage=${overrideImage}
                     .stateObj=${stateObj}
                     .stateColor=${false}
                   ></state-badge>
