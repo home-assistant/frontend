@@ -616,7 +616,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
       }
-      .mdc-chip__icon {
+      .mdc-chip.mdc-chip--selected .mdc-chip__checkmark,
+      .mdc-chip .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
         margin-inline-start: -14px !important;
         margin-inline-end: 4px !important;
         direction: var(--direction);
