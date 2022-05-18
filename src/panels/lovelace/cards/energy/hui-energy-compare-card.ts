@@ -59,15 +59,20 @@ export class HuiEnergyCompareCard
     return html`
       <ha-alert dismissable>
         You are comparing the period
-        ${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
-          ? ` -
+        <b
+          >${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
+            ? ` -
         ${formatDate(this._end || endOfDay(new Date()), this.hass.locale)}`
-          : ""}
+            : ""}</b
+        >
         with period
-        ${formatDate(this._startCompare, this.hass.locale)}${dayDifference > 0
-          ? ` -
+        <b
+          >${formatDate(this._startCompare, this.hass.locale)}${dayDifference >
+          0
+            ? ` -
         ${formatDate(this._endCompare, this.hass.locale)}`
-          : ""}
+            : ""}</b
+        >
         <mwc-button slot="action" @click=${this._stopCompare}>
           Stop comparing
         </mwc-button>
