@@ -134,6 +134,8 @@ class HaLogbookRenderer extends LitElement {
     const currentStateObj = item.entity_id
       ? this.hass.states[item.entity_id]
       : undefined;
+    const item_username =
+      item.context_user_id && this.userIdToName[item.context_user_id];
     const domain = item.entity_id
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
@@ -157,8 +159,6 @@ class HaLogbookRenderer extends LitElement {
               : currentStateObj?.attributes.entity_picture,
           },
         }) : currentStateObj;
-    const item_username =
-      item.context_user_id && this.userIdToName[item.context_user_id];
     const overrideImage =
       !historicStateObj &&
       !item.icon &&
