@@ -1,7 +1,8 @@
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
+import { mdiDotsVertical } from "@mdi/js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
   CSSResultGroup,
@@ -12,14 +13,16 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
-import "../../layouts/ha-app-layout";
-
-import { haStyle } from "../../resources/styles";
-import "../lovelace/views/hui-view";
-import { HomeAssistant } from "../../types";
-import { Lovelace } from "../lovelace/types";
+import "../../components/ha-button-menu";
+import "../../components/ha-check-list-item";
 import { LovelaceConfig } from "../../data/lovelace";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
+import { Lovelace } from "../lovelace/types";
+import "../lovelace/views/hui-view";
+import { getEnergyDataCollection } from "../../data/energy";
 
 const LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -40,6 +43,8 @@ class PanelEnergy extends LitElement {
   @state() private _viewIndex = 0;
 
   @state() private _lovelace?: Lovelace;
+
+  @state() private _compare = false;
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
@@ -81,6 +86,19 @@ class PanelEnergy extends LitElement {
                     collectionKey="energy_dashboard"
                   ></hui-energy-period-selector>
                 `}
+            <ha-button-menu
+              corner="BOTTOM_START"
+              @action=${this._toggleCompare}
+            >
+              <ha-icon-button
+                .label=${this.hass.localize("panel.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
+              <ha-check-list-item left .selected=${this._compare}>
+                Compare with previous period
+              </ha-check-list-item>
+            </ha-button-menu>
           </app-toolbar>
         </app-header>
         <hui-view
@@ -116,6 +134,15 @@ class PanelEnergy extends LitElement {
       ...this._lovelace!,
       config: { ...config, views: [{ ...config.views[0] }] },
     };
+  }
+
+  private _toggleCompare() {
+    this._compare = !this._compare;
+    const energyCollection = getEnergyDataCollection(this.hass, {
+      key: "energy_dashboard",
+    });
+    energyCollection.setCompare(this._compare);
+    energyCollection.refresh();
   }
 
   static get styles(): CSSResultGroup {

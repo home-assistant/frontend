@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-switch/mwc-switch";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import {
   addDays,
@@ -29,6 +30,7 @@ import {
 } from "../../../common/datetime/format_date";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-button-toggle-group";
+import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -257,9 +259,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         --mdc-button-outline-color: currentColor;
         --primary-color: currentColor;
         --mdc-theme-primary: currentColor;
+        --mdc-theme-text-primary-on-background: currentColor;
         --mdc-button-disabled-outline-color: var(--disabled-text-color);
         --mdc-button-disabled-ink-color: var(--disabled-text-color);
         --mdc-icon-button-ripple-opacity: 0.2;
+      }
+      ha-formfield {
+        margin-right: 16px;
+      }
+      :host([narrow]) ha-formfield {
+        margin-right: 0;
+        margin-left: auto;
+        margin-top: 16px;
       }
       ha-icon-button {
         --mdc-icon-button-size: 28px;

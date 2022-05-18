@@ -1,5 +1,8 @@
 import {
+  addDays,
   addHours,
+  addMilliseconds,
+  addMonths,
   differenceInDays,
   endOfToday,
   endOfYesterday,
@@ -14,9 +17,9 @@ import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import {
   fetchStatistics,
+  getStatisticMetadata,
   Statistics,
   StatisticsMetaData,
-  getStatisticMetadata,
 } from "./history";
 
 const energyCollectionKeys: (string | undefined)[] = [];
@@ -232,19 +235,24 @@ export const energySourcesByType = (prefs: EnergyPreferences) =>
 export interface EnergyData {
   start: Date;
   end?: Date;
+  startCompare?: Date;
+  endCompare?: Date;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
+  statsCompare: Statistics;
   co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
+  fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
 }
 
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   start: Date,
-  end?: Date
+  end?: Date,
+  compare?: boolean
 ): Promise<EnergyData> => {
   const [configEntries, entityRegistryEntries, info] = await Promise.all([
     getConfigEntries(hass, { domain: "co2signal" }),
@@ -350,6 +358,8 @@ const getEnergyData = async (
   }
 
   const dayDifference = differenceInDays(end || new Date(), start);
+  const period =
+    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 
   // Subtract 1 hour from start to get starting point data
   const startMinHour = addHours(start, -1);
@@ -359,10 +369,34 @@ const getEnergyData = async (
     startMinHour,
     end,
     statIDs,
-    dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+    period
   );
 
+  let statsCompare;
+  let startCompare;
+  let endCompare;
+  if (compare) {
+    if (dayDifference > 27 && dayDifference < 32) {
+      // When comparing a month, we want to start at the begining of the month
+      startCompare = addMonths(start, -1);
+    } else {
+      startCompare = addDays(start, (dayDifference + 1) * -1);
+    }
+
+    const compareStartMinHour = addHours(startCompare, -1);
+    endCompare = addMilliseconds(start, -1);
+
+    statsCompare = await fetchStatistics(
+      hass!,
+      compareStartMinHour,
+      endCompare,
+      statIDs,
+      period
+    );
+  }
+
   let fossilEnergyConsumption: FossilEnergyConsumption | undefined;
+  let fossilEnergyConsumptionCompare: FossilEnergyConsumption | undefined;
 
   if (co2SignalEntity !== undefined) {
     fossilEnergyConsumption = await getFossilEnergyConsumption(
@@ -373,6 +407,16 @@ const getEnergyData = async (
       end,
       dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
     );
+    if (compare) {
+      fossilEnergyConsumptionCompare = await getFossilEnergyConsumption(
+        hass!,
+        startCompare,
+        consumptionStatIDs,
+        co2SignalEntity,
+        endCompare,
+        dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+      );
+    }
   }
 
   Object.values(stats).forEach((stat) => {
@@ -388,15 +432,19 @@ const getEnergyData = async (
     }
   });
 
-  const data = {
+  const data: EnergyData = {
     start,
     end,
+    startCompare,
+    endCompare,
     info,
     prefs,
     stats,
+    statsCompare,
     co2SignalConfigEntry,
     co2SignalEntity,
     fossilEnergyConsumption,
+    fossilEnergyConsumptionCompare,
   };
 
   return data;
@@ -405,9 +453,11 @@ const getEnergyData = async (
 export interface EnergyCollection extends Collection<EnergyData> {
   start: Date;
   end?: Date;
+  compare?: boolean;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
+  setCompare(compare: boolean): void;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -478,7 +528,8 @@ export const getEnergyDataCollection = (
         hass,
         collection.prefs,
         collection.start,
-        collection.end
+        collection.end,
+        collection.compare
       );
     }
   ) as EnergyCollection;
@@ -533,6 +584,9 @@ export const getEnergyDataCollection = (
       clearTimeout(collection._updatePeriodTimeout);
       collection._updatePeriodTimeout = undefined;
     }
+  };
+  collection.setCompare = (compare: boolean) => {
+    collection.compare = compare;
   };
   return collection;
 };

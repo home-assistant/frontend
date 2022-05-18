@@ -1,9 +1,3 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
-import { classMap } from "lit/directives/class-map";
-import "../../../../components/ha-card";
 import {
   ChartData,
   ChartDataset,
@@ -13,13 +7,16 @@ import {
 import {
   addHours,
   differenceInDays,
+  differenceInHours,
   endOfToday,
   isToday,
   startOfToday,
 } from "date-fns";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergyGasGraphCardConfig } from "../types";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import {
   hex2rgb,
   lab2rgb,
@@ -27,21 +24,27 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
-import {
-  EnergyData,
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-  GasSourceTypeEnergyPreference,
-} from "../../../../data/energy";
+import { formatDateShort } from "../../../../common/datetime/format_date";
+import { formatTime } from "../../../../common/datetime/format_time";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/chart/ha-chart-base";
 import {
   formatNumber,
   numberFormatToLocale,
 } from "../../../../common/number/format_number";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
+import {
+  EnergyData,
+  GasSourceTypeEnergyPreference,
+  getEnergyDataCollection,
+  getEnergyGasUnit,
+} from "../../../../data/energy";
+import { Statistics } from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
-import { formatTime } from "../../../../common/datetime/format_time";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyGasGraphCardConfig } from "../types";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -59,6 +62,10 @@ export class HuiEnergyGasGraphCard
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
+
+  @state() private _compareStart?: Date;
+
+  @state() private _compareEnd?: Date;
 
   @state() private _unit?: string;
 
@@ -101,7 +108,9 @@ export class HuiEnergyGasGraphCard
               this._start,
               this._end,
               this.hass.locale,
-              this._unit
+              this._unit,
+              this._compareStart,
+              this._compareEnd
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -124,10 +133,24 @@ export class HuiEnergyGasGraphCard
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
-      unit?: string
+      unit?: string,
+      compareStart?: Date,
+      compareEnd?: Date
     ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
-      return {
+      const compare = compareStart !== undefined && compareEnd !== undefined;
+      if (compare) {
+        const difference = differenceInHours(end, start);
+        const differenceCompare = differenceInHours(compareEnd!, compareStart!);
+        // If the compare period doesn't match the main period, adjust them to match
+        if (differenceCompare > difference) {
+          end = addHours(end, differenceCompare - difference);
+        } else if (difference > differenceCompare) {
+          compareEnd = addHours(compareEnd!, difference - differenceCompare);
+        }
+      }
+
+      const options: ChartOptions = {
         parsing: false,
         animation: false,
         scales: {
@@ -193,7 +216,9 @@ export class HuiEnergyGasGraphCard
                   return datasets[0].label;
                 }
                 const date = new Date(datasets[0].parsed.x);
-                return `${formatTime(date, locale)} – ${formatTime(
+                return `${
+                  compare ? `${formatDateShort(date, locale)}: ` : ""
+                }${formatTime(date, locale)} – ${formatTime(
                   addHours(date, 1),
                   locale
                 )}`;
@@ -227,6 +252,15 @@ export class HuiEnergyGasGraphCard
         // @ts-expect-error
         locale: numberFormatToLocale(locale),
       };
+      if (compare) {
+        options.scales!.xAxisCompare = {
+          ...(options.scales!.x as Record<string, any>),
+          suggestedMin: compareStart!.getTime(),
+          suggestedMax: compareEnd!.getTime(),
+          display: false,
+        };
+      }
+      return options;
     }
   );
 
@@ -245,8 +279,53 @@ export class HuiEnergyGasGraphCard
       .getPropertyValue("--energy-gas-color")
       .trim();
 
+    Array.prototype.push.apply(
+      datasets,
+      this._processDataSet(energyData.stats, gasSources, gasColor)
+    );
+
+    if (energyData.statsCompare) {
+      // Add empty dataset to align the bars
+      datasets.push({
+        order: 0,
+        data: [],
+      });
+      datasets.push({
+        order: 999,
+        data: [],
+        xAxisID: "xAxisCompare",
+      });
+
+      Array.prototype.push.apply(
+        datasets,
+        this._processDataSet(
+          energyData.statsCompare,
+          gasSources,
+          gasColor,
+          true
+        )
+      );
+    }
+
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
+    this._compareStart = energyData.startCompare;
+    this._compareEnd = energyData.endCompare;
+
+    this._chartData = {
+      datasets,
+    };
+  }
+
+  private _processDataSet(
+    statistics: Statistics,
+    gasSources: GasSourceTypeEnergyPreference[],
+    gasColor: string,
+    compare = false
+  ) {
+    const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
     gasSources.forEach((source, idx) => {
-      const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
       const modifiedColor =
@@ -265,8 +344,8 @@ export class HuiEnergyGasGraphCard
       const gasConsumptionData: ScatterDataPoint[] = [];
 
       // Process gas consumption data.
-      if (source.stat_energy_from in energyData.stats) {
-        const stats = energyData.stats[source.stat_energy_from];
+      if (source.stat_energy_from in statistics) {
+        const stats = statistics[source.stat_energy_from];
 
         for (const point of stats) {
           if (point.sum === null) {
@@ -290,26 +369,17 @@ export class HuiEnergyGasGraphCard
         }
       }
 
-      if (gasConsumptionData.length) {
-        data.push({
-          label: entity ? computeStateName(entity) : source.stat_energy_from,
-          borderColor,
-          backgroundColor: borderColor + "7F",
-          data: gasConsumptionData,
-          stack: "gas",
-        });
-      }
-
-      // Concat two arrays
-      Array.prototype.push.apply(datasets, data);
+      data.push({
+        label: entity ? computeStateName(entity) : source.stat_energy_from,
+        borderColor: compare ? borderColor + "7F" : borderColor,
+        backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
+        data: gasConsumptionData,
+        order: 1,
+        stack: "gas",
+        xAxisID: compare ? "xAxisCompare" : undefined,
+      });
     });
-
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
-
-    this._chartData = {
-      datasets,
-    };
+    return data;
   }
 
   static get styles(): CSSResultGroup {
