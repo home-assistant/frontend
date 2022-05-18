@@ -3,11 +3,9 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
-import "../../components/hui-energy-period-selector";
 import { LovelaceCard } from "../../types";
 import { EnergyCardBaseConfig } from "../types";
 
@@ -57,7 +55,7 @@ export class HuiEnergyCompareCard
     );
 
     return html`
-      <ha-alert dismissable>
+      <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
         You are comparing the period
         <b
           >${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
@@ -73,9 +71,6 @@ export class HuiEnergyCompareCard
         ${formatDate(this._endCompare, this.hass.locale)}`
             : ""}</b
         >
-        <mwc-button slot="action" @click=${this._stopCompare}>
-          Stop comparing
-        </mwc-button>
       </ha-alert>
     `;
   }
@@ -92,8 +87,6 @@ export class HuiEnergyCompareCard
       key: this._config!.collection_key,
     });
     energyCollection.setCompare(false);
-    // @ts-ignore
-    fireEvent(this, "energy-compare-stopped");
     energyCollection.refresh();
   }
 
