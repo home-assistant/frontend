@@ -94,10 +94,16 @@ export class EnergyGasSettings extends LitElement {
                     : source.stat_energy_from}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.gas.edit_gas_source"
+                  )}
                   @click=${this._editSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.gas.delete_gas_source"
+                  )}
                   @click=${this._deleteSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>
