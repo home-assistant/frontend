@@ -26,6 +26,11 @@ export class StateBadge extends LitElement {
 
   @property() public overrideImage?: string;
 
+  // If we are displaying a historical state
+  // we need to override the state string
+  // to the value it had a the point in time
+  @property() public overrideState?: string;
+
   @property({ type: Boolean }) public stateColor?: boolean;
 
   @property({ type: Boolean, reflect: true, attribute: "icon" })
@@ -57,6 +62,7 @@ export class StateBadge extends LitElement {
           : undefined
       )}
       data-state=${stateObj ? computeActiveState(stateObj) : ""}
+      .overrideState=${this.overrideState}
       .icon=${this.overrideIcon}
       .state=${stateObj}
     ></ha-state-icon>`;

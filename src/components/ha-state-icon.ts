@@ -11,13 +11,20 @@ export class HaStateIcon extends LitElement {
 
   @property() public icon?: string;
 
+  // If we are displaying a historical state
+  // we need to override the state string
+  // to the value it had a the point in time
+  @property() public overrideState?: string;
+
   protected render(): TemplateResult {
     if (this.icon || this.state?.attributes.icon) {
       return html`<ha-icon
         .icon=${this.icon || this.state?.attributes.icon}
       ></ha-icon>`;
     }
-    return html`<ha-svg-icon .path=${stateIconPath(this.state)}></ha-svg-icon>`;
+    return html`<ha-svg-icon
+      .path=${stateIconPath(this.state, this.overrideState)}
+    ></ha-svg-icon>`;
   }
 }
 declare global {

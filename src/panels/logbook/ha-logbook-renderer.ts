@@ -15,7 +15,6 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIconWithoutDefault } from "../../common/entity/domain_icon";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
@@ -140,18 +139,14 @@ class HaLogbookRenderer extends LitElement {
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
         item.domain!;
-    const overrideIcon =
-      item.icon ||
-      (item.domain && item.state
-        ? // Use the state from the logbook to compute the icon
-          // instead of the current state of the entity
-          domainIconWithoutDefault(item.domain!, undefined, item.state)
-        : undefined);
-    const overrideImage = !DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
-      ? stateObj?.attributes.entity_picture_local ||
+    // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+    // as they would present a false state in the log (played media right now vs actual historic data).
+    const overrideImage = DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+      ? undefined
+      : stateObj?.attributes.entity_picture_local ||
         stateObj?.attributes.entity_picture ||
         (!stateObj &&
-        !overrideIcon &&
+        !item.icon &&
         item.domain &&
         isComponentLoaded(this.hass, item.domain)
           ? brandsUrl({
@@ -160,8 +155,7 @@ class HaLogbookRenderer extends LitElement {
               useFallback: true,
               darkOptimized: this.hass.themes?.darkMode,
             })
-          : undefined)
-      : undefined;
+          : undefined);
 
     return html`
       <div class="entry-container">
@@ -180,13 +174,12 @@ class HaLogbookRenderer extends LitElement {
         <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
             ${!this.noIcon
-              ? // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
-                // as they would present a false state in the log (played media right now vs actual historic data).
-                html`
+              ? html`
                   <state-badge
                     .hass=${this.hass}
-                    .overrideIcon=${overrideIcon}
+                    .overrideIcon=${item.icon}
                     .overrideImage=${overrideImage}
+                    .overrideState=${item.state}
                     .stateObj=${stateObj}
                     .stateColor=${false}
                   ></state-badge>
