@@ -1,4 +1,4 @@
-import { addHours } from "date-fns";
+import { addHours } from "date-fns/esm";
 import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
