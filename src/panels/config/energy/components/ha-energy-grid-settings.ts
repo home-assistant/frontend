@@ -132,10 +132,16 @@ export class EnergyGridSettings extends LitElement {
                     : flow.stat_energy_from}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_consumption"
+                  )}
                   @click=${this._editFromSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.delete_consumption"
+                  )}
                   @click=${this._deleteFromSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>
@@ -171,10 +177,16 @@ export class EnergyGridSettings extends LitElement {
                     : flow.stat_energy_to}</span
                 >
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_return"
+                  )}
                   @click=${this._editToSource}
                   .path=${mdiPencil}
                 ></ha-icon-button>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.delete_return"
+                  )}
                   @click=${this._deleteToSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>
@@ -212,6 +224,9 @@ export class EnergyGridSettings extends LitElement {
                   <ha-icon-button .path=${mdiPencil}></ha-icon-button>
                 </a>
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.remove_co2_signal"
+                  )}
                   @click=${this._removeCO2Sensor}
                   .path=${mdiDelete}
                 ></ha-icon-button>
