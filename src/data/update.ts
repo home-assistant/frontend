@@ -7,7 +7,10 @@ import type {
 import { BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { supportsFeature } from "../common/entity/supports-feature";
+import {
+  supportsFeature,
+  supportsFeatureFromAttributes,
+} from "../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../types";
@@ -35,8 +38,13 @@ export interface UpdateEntity extends HassEntityBase {
 }
 
 export const updateUsesProgress = (entity: UpdateEntity): boolean =>
-  supportsFeature(entity, UPDATE_SUPPORT_PROGRESS) &&
-  typeof entity.attributes.in_progress === "number";
+  updateUsesProgressFromAttributes(entity.attributes);
+
+export const updateUsesProgressFromAttributes = (attributes: {
+  [key: string]: any;
+}): boolean =>
+  supportsFeatureFromAttributes(attributes, UPDATE_SUPPORT_PROGRESS) &&
+  typeof attributes.in_progress === "number";
 
 export const updateCanInstall = (
   entity: UpdateEntity,
@@ -48,6 +56,11 @@ export const updateCanInstall = (
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   updateUsesProgress(entity) || !!entity.attributes.in_progress;
+
+export const updateIsInstallingFromAttributes = (attributes: {
+  [key: string]: any;
+}): boolean =>
+  updateUsesProgressFromAttributes(attributes) || !!attributes.in_progress;
 
 export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<string | null>({
