@@ -46,11 +46,11 @@ export const fetchIntegrationManifests = (
   hass: HomeAssistant,
   integrations?: string[]
 ) => {
-  let params: any = {
+  const params: any = {
     type: "manifest/list",
   };
   if (integrations) {
-    params = { ...params, integrations: integrations };
+    params.integrations = integrations;
   }
   return hass.callWS<IntegrationManifest[]>(params);
 };
