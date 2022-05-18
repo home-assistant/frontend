@@ -46,15 +46,14 @@ export class HaConfigApplicationCredentials extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<ApplicationCredential> = {
-        displayName: {
+        name: {
           title: localize(
-            "ui.panel.config.application_credentials.picker.headers.display_name"
+            "ui.panel.config.application_credentials.picker.headers.name"
           ),
           width: "40%",
           direction: "asc",
           grows: true,
-          template: (_, entry: ApplicationCredential) =>
-            html`${entry.display_name}`,
+          template: (_, entry: ApplicationCredential) => html`${entry.name}`,
         },
         clientId: {
           title: localize(

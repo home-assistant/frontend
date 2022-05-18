@@ -2865,14 +2865,14 @@
             "caption": "Add Application Credential",
             "create": "Create",
             "domain": "Integration",
-            "display_name": "Name for Display",
+            "name": "Name for display",
             "client_id": "OAuth Client ID",
             "client_secret": "OAuth Client Secret"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
             "headers": {
-              "display_name": "Name",
+              "name": "Name",
               "client_id": "OAuth Client ID",
               "application": "Integration"
             },

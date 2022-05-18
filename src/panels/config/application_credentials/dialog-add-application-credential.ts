@@ -41,7 +41,7 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _domain?: string;
 
-  @state() private _displayName?: string;
+  @state() private _name?: string;
 
   @state() private _clientId?: string;
 
@@ -52,7 +52,7 @@ export class DialogAddApplicationCredential extends LitElement {
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
     this._domain = "";
-    this._displayName = "";
+    this._name = "";
     this._clientId = "";
     this._clientSecret = "";
     this._error = undefined;
@@ -103,12 +103,12 @@ export class DialogAddApplicationCredential extends LitElement {
             @value-changed=${this._handleDomainPicked}
           ></ha-combo-box>
           <ha-textfield
-            class="displayName"
-            name="displayName"
+            class="name"
+            name="name"
             .label=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.display_name"
+              "ui.panel.config.application_credentials.editor.name"
             )}
-            .value=${this._displayName}
+            .value=${this._name}
             required
             @input=${this._handleValueChanged}
             error-message=${this.hass.localize("ui.common.error_required")}
@@ -197,7 +197,7 @@ export class DialogAddApplicationCredential extends LitElement {
         this._domain,
         this._clientId,
         this._clientSecret,
-        this._displayName
+        this._name
       );
     } catch (err: any) {
       this._loading = false;
