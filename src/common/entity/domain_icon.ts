@@ -46,6 +46,20 @@ export const domainIcon = (
   stateObj?: HassEntity,
   state?: string
 ): string => {
+  const icon = domainIconWithoutDefault(domain, stateObj, state);
+  if (icon) {
+    return icon;
+  }
+  // eslint-disable-next-line
+  console.warn(`Unable to find icon for domain ${domain}`);
+  return DEFAULT_DOMAIN_ICON;
+};
+
+export const domainIconWithoutDefault = (
+  domain: string,
+  stateObj?: HassEntity,
+  state?: string
+): string | undefined => {
   const compareState = state !== undefined ? state : stateObj?.state;
 
   switch (domain) {
@@ -150,7 +164,5 @@ export const domainIcon = (
     return FIXED_DOMAIN_ICONS[domain];
   }
 
-  // eslint-disable-next-line
-  console.warn(`Unable to find icon for domain ${domain}`);
-  return DEFAULT_DOMAIN_ICON;
+  return undefined;
 };
