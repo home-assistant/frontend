@@ -31,6 +31,7 @@ export class HaDeviceActionsZWaveJS extends LitElement {
   @state() private _node?: ZWaveJSNodeStatus;
 
   public willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();
     }
