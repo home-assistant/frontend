@@ -9,7 +9,7 @@ export interface ApplicationCredential {
   domain: string;
   client_id: string;
   client_secret: string;
-  display_name?: string;
+  display_name: string;
 }
 
 export const fetchApplicationCredentialsConfig = async (hass: HomeAssistant) =>
@@ -27,7 +27,7 @@ export const createApplicationCredential = async (
   domain: string,
   clientId: string,
   clientSecret: string,
-  displayName: string
+  displayName?: string
 ) =>
   hass.callWS<ApplicationCredential>({
     type: "application_credentials/create",
