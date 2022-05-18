@@ -29,6 +29,8 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @state() private _configEntry?: ConfigEntry;
 
+  @state() private _multipleConfigEntries = false;
+
   @state() private _node?: ZWaveJSNodeStatus;
 
   public willUpdate(changedProperties: PropertyValues) {
@@ -45,6 +47,8 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
+
+    this._multipleConfigEntries = configEntries.length > 1;
 
     const configEntry = configEntries.find((entry) =>
       this.device.config_entries.includes(entry.entry_id)
@@ -67,11 +71,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       <h4>
         ${this.hass.localize("ui.panel.config.zwave_js.device_info.zwave_info")}
       </h4>
-      ${this._configEntry
+      ${this._multipleConfigEntries
         ? html`
             <div>
               ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
-              ${this._configEntry.title}
+              ${this._configEntry!.title}
             </div>
           `
         : ""}
