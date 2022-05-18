@@ -86,6 +86,7 @@ export const showDialog = async (
   if (mainWindow.history.state?.replaced) {
     LOADED[dialogTag].closedFocusTargets =
       LOADED[mainWindow.history.state.dialog].closedFocusTargets;
+    delete LOADED[mainWindow.history.state.dialog].closedFocusTargets;
   } else {
     LOADED[dialogTag].closedFocusTargets = ancestorsWithProperty(
       deepActiveElement(),
