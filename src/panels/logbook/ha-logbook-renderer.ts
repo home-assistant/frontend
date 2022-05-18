@@ -134,36 +134,43 @@ class HaLogbookRenderer extends LitElement {
     const currentStateObj = item.entity_id
       ? this.hass.states[item.entity_id]
       : undefined;
-    const historicStateObj = item.entity_id
-      ? <HassEntity>{
-          entity_id: item.entity_id,
-          state: item.state,
-          attributes: {},
-        }
-      : currentStateObj;
-    const item_username =
-      item.context_user_id && this.userIdToName[item.context_user_id];
     const domain = item.entity_id
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
         item.domain!;
-    // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
-    // as they would present a false state in the log (played media right now vs actual historic data).
-    const overrideImage = DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
-      ? undefined
-      : currentStateObj?.attributes.entity_picture_local ||
-        currentStateObj?.attributes.entity_picture ||
-        (!historicStateObj &&
-        !item.icon &&
-        item.domain &&
-        isComponentLoaded(this.hass, item.domain)
-          ? brandsUrl({
-              domain: item.domain!,
-              type: "icon",
-              useFallback: true,
-              darkOptimized: this.hass.themes?.darkMode,
-            })
-          : undefined);
+    const historicStateObj = item.entity_id ? <HassEntity>(<unknown>{
+          entity_id: item.entity_id,
+          state: item.state,
+          attributes: {
+            // Rebuild the historical state by copying static attributes only
+            device_class: currentStateObj?.attributes.device_class,
+            source_type: currentStateObj?.attributes.source_type,
+            has_date: currentStateObj?.attributes.has_date,
+            has_time: currentStateObj?.attributes.has_time,
+            // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+            // as they would present a false state in the log (played media right now vs actual historic data).
+            entity_picture_local: DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+              ? undefined
+              : currentStateObj?.attributes.entity_picture_local,
+            entity_picture: DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+              ? undefined
+              : currentStateObj?.attributes.entity_picture,
+          },
+        }) : currentStateObj;
+    const item_username =
+      item.context_user_id && this.userIdToName[item.context_user_id];
+    const overrideImage =
+      !historicStateObj &&
+      !item.icon &&
+      domain &&
+      isComponentLoaded(this.hass, domain)
+        ? brandsUrl({
+            domain: domain!,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })
+        : undefined;
 
     return html`
       <div class="entry-container">
@@ -187,7 +194,7 @@ class HaLogbookRenderer extends LitElement {
                     .hass=${this.hass}
                     .overrideIcon=${item.icon}
                     .overrideImage=${overrideImage}
-                    .stateObj=${historicStateObj}
+                    .stateObj=${!item.icon ? historicStateObj : undefined}
                     .stateColor=${false}
                   ></state-badge>
                 `
