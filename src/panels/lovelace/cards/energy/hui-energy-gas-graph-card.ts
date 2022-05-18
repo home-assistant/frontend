@@ -16,7 +16,7 @@ import {
   endOfToday,
   isToday,
   startOfToday,
-} from "date-fns";
+} from "date-fns/esm";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
