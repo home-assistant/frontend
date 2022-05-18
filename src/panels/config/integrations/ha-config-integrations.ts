@@ -156,17 +156,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         this._deviceRegistryEntries = entries;
       }),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
-        const translationsPromisses: Promise<LocalizeFunc>[] = [];
+        const integrations: Set<string> = new Set();
         flowsInProgress.forEach((flow) => {
           // To render title placeholders
           if (flow.context.title_placeholders) {
-            translationsPromisses.push(
-              this.hass.loadBackendTranslation("config", flow.handler)
-            );
+            integrations.add(flow.handler);
           }
           this._fetchManifest(flow.handler);
         });
-        await Promise.all(translationsPromisses);
+        await this.hass.loadBackendTranslation(
+          "config",
+          Array.from(integrations)
+        );
         await nextRender();
         this._configEntriesInProgress = flowsInProgress.map((flow) => ({
           ...flow,
