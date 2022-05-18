@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
@@ -130,9 +131,16 @@ class HaLogbookRenderer extends LitElement {
 
     const seenEntityIds: string[] = [];
     const previous = this.entries[index - 1];
-    const stateObj = item.entity_id
+    const currentStateObj = item.entity_id
       ? this.hass.states[item.entity_id]
       : undefined;
+    const historicStateObj = item.entity_id
+      ? <HassEntity>{
+          entity_id: item.entity_id,
+          state: item.state,
+          attributes: {},
+        }
+      : currentStateObj;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
     const domain = item.entity_id
@@ -143,9 +151,9 @@ class HaLogbookRenderer extends LitElement {
     // as they would present a false state in the log (played media right now vs actual historic data).
     const overrideImage = DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
       ? undefined
-      : stateObj?.attributes.entity_picture_local ||
-        stateObj?.attributes.entity_picture ||
-        (!stateObj &&
+      : currentStateObj?.attributes.entity_picture_local ||
+        currentStateObj?.attributes.entity_picture ||
+        (!historicStateObj &&
         !item.icon &&
         item.domain &&
         isComponentLoaded(this.hass, item.domain)
@@ -179,8 +187,7 @@ class HaLogbookRenderer extends LitElement {
                     .hass=${this.hass}
                     .overrideIcon=${item.icon}
                     .overrideImage=${overrideImage}
-                    .overrideState=${item.state}
-                    .stateObj=${stateObj}
+                    .stateObj=${historicStateObj}
                     .stateColor=${false}
                   ></state-badge>
                 `
