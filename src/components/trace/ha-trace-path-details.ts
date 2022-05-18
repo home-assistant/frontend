@@ -194,7 +194,7 @@ export class HaTracePathDetails extends LitElement {
       // it's the last entry. Find all logbook entries after start.
       const startTime = new Date(startTrace[0].timestamp);
       const idx = this.logbookEntries.findIndex(
-        (entry) => new Date(entry.when) >= startTime
+        (entry) => new Date(entry.when * 1000) >= startTime
       );
       if (idx === -1) {
         entries = [];
@@ -210,7 +210,7 @@ export class HaTracePathDetails extends LitElement {
       entries = [];
 
       for (const entry of this.logbookEntries || []) {
-        const entryDate = new Date(entry.when);
+        const entryDate = new Date(entry.when * 1000);
         if (entryDate >= startTime) {
           if (entryDate < endTime) {
             entries.push(entry);
