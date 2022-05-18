@@ -49,12 +49,14 @@ class OnboardingIntegrations extends LitElement {
     this.hass.loadBackendTranslation("title", undefined, true);
     this._unsubEvents = subscribeConfigFlowInProgress(this.hass, (flows) => {
       this._discovered = flows;
+      const integrations: Set<string> = new Set();
       for (const flow of flows) {
         // To render title placeholders
         if (flow.context.title_placeholders) {
-          this.hass.loadBackendTranslation("config", flow.handler);
+          integrations.add(flow.handler);
         }
       }
+      this.hass.loadBackendTranslation("config", Array.from(integrations));
     });
   }
 
