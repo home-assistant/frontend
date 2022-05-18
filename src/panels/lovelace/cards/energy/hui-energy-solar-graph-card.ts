@@ -423,8 +423,8 @@ export class HuiEnergySolarGraphCard
     const dayDifference = differenceInDays(end || new Date(), start);
 
     // Process solar forecast data.
-    solarSources.forEach((source, _idx) => {
-      if (forecasts && source.config_entry_solar_forecast) {
+    solarSources.forEach((source) => {
+      if (source.config_entry_solar_forecast) {
         const entity = this.hass.states[source.stat_energy_from];
 
         const forecastsData: Record<string, number> | undefined = {};
