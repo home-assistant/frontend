@@ -1,13 +1,13 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import {
   computeHistory,
-  fetchRecent,
+  HistoryStates,
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
   entityIdHistoryNeedsAttributes,
+  fetchRecentWS,
 } from "./history";
 
 export interface CacheConfig {
@@ -55,7 +55,7 @@ export const getRecent = (
   }
 
   const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
-  const prom = fetchRecent(
+  const prom = fetchRecentWS(
     hass,
     entityId,
     startTime,
@@ -134,12 +134,12 @@ export const getRecentWithCache = (
   const noAttributes = !entityIdHistoryNeedsAttributes(hass, entityId);
 
   const genProm = async () => {
-    let fetchedHistory: HassEntity[][];
+    let fetchedHistory: HistoryStates;
 
     try {
       const results = await Promise.all([
         curCacheProm,
-        fetchRecent(
+        fetchRecentWS(
           hass,
           entityId,
           toFetchStartTime,
