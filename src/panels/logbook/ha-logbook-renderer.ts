@@ -142,8 +142,10 @@ class HaLogbookRenderer extends LitElement {
         item.domain!;
     const overrideIcon =
       item.icon ||
-      (item.domain && !stateObj
-        ? domainIconWithoutDefault(item.domain!)
+      (item.domain && item.state
+        ? // Use the state from the logbook to compute the icon
+          // instead of the current state of the entity
+          domainIconWithoutDefault(item.domain!, undefined, item.state)
         : undefined);
     const overrideImage = !DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
       ? stateObj?.attributes.entity_picture_local ||
