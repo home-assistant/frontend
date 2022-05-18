@@ -2678,7 +2678,7 @@
                         "warning": "WARNING"
                     },
                     "load_full_log": "Load Full Home Assistant Log",
-                    "loading_log": "Loading error log…",
+                    "loading_log": "Loading full log…",
                     "multiple_messages": "message first occurred at {time} and shows up {counter} times",
                     "no_errors": "No errors have been reported",
                     "no_issues": "There are no new issues!",
