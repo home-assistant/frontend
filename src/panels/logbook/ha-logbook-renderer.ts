@@ -194,7 +194,7 @@ class HaLogbookRenderer extends LitElement {
                     .hass=${this.hass}
                     .overrideIcon=${item.icon}
                     .overrideImage=${overrideImage}
-                    .stateObj=${!item.icon ? historicStateObj : undefined}
+                    .stateObj=${item.icon ? undefined : historicStateObj}
                     .stateColor=${false}
                   ></state-badge>
                 `
