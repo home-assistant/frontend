@@ -44,11 +44,14 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _compare = false;
+  @state() private _compare? = false;
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+      this._compare = getEnergyDataCollection(this.hass, {
+        key: "energy_dashboard",
+      }).compare;
     }
     if (!changedProps.has("hass")) {
       return;
@@ -107,6 +110,7 @@ class PanelEnergy extends LitElement {
           .lovelace=${this._lovelace}
           .index=${this._viewIndex}
           @reload-energy-panel=${this._reloadView}
+          @energy-compare-stopped=${this._compareStopped}
         ></hui-view>
       </ha-app-layout>
     `;
@@ -134,6 +138,10 @@ class PanelEnergy extends LitElement {
       ...this._lovelace!,
       config: { ...config, views: [{ ...config.views[0] }] },
     };
+  }
+
+  private _compareStopped() {
+    this._compare = false;
   }
 
   private _toggleCompare() {

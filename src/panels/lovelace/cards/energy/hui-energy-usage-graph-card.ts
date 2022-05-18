@@ -286,7 +286,7 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const datasets: ChartDataset<"bar">[] = [];
+    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     const statIds: {
       to_grid?: string[];
@@ -377,9 +377,8 @@ export class HuiEnergyUsageGraphCard
     this._compareStart = energyData.startCompare;
     this._compareEnd = energyData.endCompare;
 
-    Array.prototype.push.apply(
-      datasets,
-      this._processDataSet(energyData.stats, statIds, colors, labels, false)
+    datasets.push(
+      ...this._processDataSet(energyData.stats, statIds, colors, labels, false)
     );
 
     if (energyData.statsCompare) {
@@ -394,9 +393,8 @@ export class HuiEnergyUsageGraphCard
         xAxisID: "xAxisCompare",
       });
 
-      Array.prototype.push.apply(
-        datasets,
-        this._processDataSet(
+      datasets.push(
+        ...this._processDataSet(
           energyData.statsCompare,
           statIds,
           colors,

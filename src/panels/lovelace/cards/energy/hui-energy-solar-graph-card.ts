@@ -288,9 +288,8 @@ export class HuiEnergySolarGraphCard
       .getPropertyValue("--energy-solar-color")
       .trim();
 
-    Array.prototype.push.apply(
-      datasets,
-      this._processDataSet(energyData.stats, solarSources, solarColor)
+    datasets.push(
+      ...this._processDataSet(energyData.stats, solarSources, solarColor)
     );
 
     if (energyData.statsCompare) {
@@ -305,9 +304,8 @@ export class HuiEnergySolarGraphCard
         xAxisID: "xAxisCompare",
       });
 
-      Array.prototype.push.apply(
-        datasets,
-        this._processDataSet(
+      datasets.push(
+        ...this._processDataSet(
           energyData.statsCompare,
           solarSources,
           solarColor,
@@ -317,9 +315,8 @@ export class HuiEnergySolarGraphCard
     }
 
     if (forecasts) {
-      Array.prototype.push.apply(
-        datasets,
-        this._processForecast(
+      datasets.push(
+        ...this._processForecast(
           forecasts,
           solarSources,
           computedStyles.getPropertyValue("--primary-text-color"),

@@ -272,16 +272,15 @@ export class HuiEnergyGasGraphCard
 
     this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
 
-    const datasets: ChartDataset<"bar">[] = [];
+    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     const computedStyles = getComputedStyle(this);
     const gasColor = computedStyles
       .getPropertyValue("--energy-gas-color")
       .trim();
 
-    Array.prototype.push.apply(
-      datasets,
-      this._processDataSet(energyData.stats, gasSources, gasColor)
+    datasets.push(
+      ...this._processDataSet(energyData.stats, gasSources, gasColor)
     );
 
     if (energyData.statsCompare) {
@@ -296,9 +295,8 @@ export class HuiEnergyGasGraphCard
         xAxisID: "xAxisCompare",
       });
 
-      Array.prototype.push.apply(
-        datasets,
-        this._processDataSet(
+      datasets.push(
+        ...this._processDataSet(
           energyData.statsCompare,
           gasSources,
           gasColor,

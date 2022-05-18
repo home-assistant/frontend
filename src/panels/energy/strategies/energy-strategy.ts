@@ -52,6 +52,11 @@ export class EnergyStrategy {
     );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
 
+    view.cards!.push({
+      type: "energy-compare",
+      collection_key: "energy_dashboard",
+    });
+
     if (info.narrow) {
       view.cards!.push({
         type: "energy-date-selection",
