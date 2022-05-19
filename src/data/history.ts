@@ -307,7 +307,7 @@ const processLineChartEntities = (
 
   Object.keys(entities).forEach((entityId) => {
     const states = entities[entityId];
-    const last: EntityHistoryState = states[states.length - 1];
+    const first: EntityHistoryState = states[0];
     const domain = computeDomain(entityId);
     const processedStates: LineChartState[] = [];
 
@@ -352,7 +352,7 @@ const processLineChartEntities = (
 
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, last.a),
+      name: computeStateNameFromEntityAttributes(entityId, first.a),
       entity_id: entityId,
       states: processedStates,
     });
