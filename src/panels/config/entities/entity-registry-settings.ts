@@ -12,10 +12,12 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
@@ -25,7 +27,16 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-switch";
+import "../../../components/ha-settings-row";
+import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import {
+  CameraPreferences,
+  CAMERA_SUPPORT_STREAM,
+  fetchCameraPrefs,
+  STREAM_TYPE_HLS,
+  updateCameraPrefs,
+} from "../../../data/camera";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -133,6 +144,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _submitting?: boolean;
 
+  @state() private _cameraPrefs?: CameraPreferences;
+
   private _origEntityId!: string;
 
   private _deviceLookup?: Record<string, DeviceRegistryEntry>;
@@ -189,6 +202,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         : undefined;
 
     const domain = computeDomain(this.entry.entity_id);
+
+    if (domain === "camera" && isComponentLoaded(this.hass, "stream")) {
+      const stateObj: HassEntity | undefined =
+        this.hass.states[this.entry.entity_id];
+      if (
+        stateObj &&
+        supportsFeature(stateObj, CAMERA_SUPPORT_STREAM) &&
+        // The stream component for HLS streams supports a server-side pre-load
+        // option that client initiated WebRTC streams do not
+        stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS
+      ) {
+        this._fetchCameraPrefs();
+      }
+    }
 
     if (domain === "sensor") {
       const stateObj: HassEntity | undefined =
@@ -392,7 +419,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               @value-changed=${this._areaPicked}
             ></ha-area-picker>`
           : ""}
-
+        ${this._cameraPrefs
+          ? html`
+              <ha-settings-row>
+                <span slot="heading">Preload camera stream</span>
+                <span slot="description"
+                  >This keeps the camera stream open in the background so it
+                  shows quicker. Warning! This can slow down your instance
+                  drastically.</span
+                >
+                <ha-switch
+                  .checked=${this._cameraPrefs.preload_stream}
+                  @change=${this._handleCameraPrefsChanged}
+                >
+                </ha-switch>
+              </ha-settings-row>
+            `
+          : ""}
         <ha-expansion-panel
           .header=${this.hass.localize(
             "ui.dialogs.entity_registry.editor.advanced"
@@ -576,6 +619,26 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   private _areaPicked(ev: CustomEvent) {
     this._error = undefined;
     this._areaId = ev.detail.value;
+  }
+
+  private async _fetchCameraPrefs() {
+    this._cameraPrefs = await fetchCameraPrefs(this.hass, this.entry.entity_id);
+  }
+
+  private async _handleCameraPrefsChanged(ev) {
+    const checkbox = ev.currentTarget as HaSwitch;
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass,
+        this.entry.entity_id,
+        {
+          preload_stream: checkbox.checked!,
+        }
+      );
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
+      checkbox.checked = !checkbox.checked;
+    }
   }
 
   private _viewStatusChanged(ev: CustomEvent): void {
@@ -793,6 +856,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         }
         ha-switch {
           margin-right: 16px;
+        }
+        ha-settings-row {
+          padding: 0;
+        }
+        ha-settings-row ha-switch {
+          margin-right: 0;
         }
         ha-textfield {
           display: block;
