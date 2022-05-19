@@ -34,7 +34,7 @@ export const createApplicationCredential = async (
     domain,
     client_id: clientId,
     client_secret: clientSecret,
-    name: name,
+    name,
   });
 
 export const deleteApplicationCredential = async (
