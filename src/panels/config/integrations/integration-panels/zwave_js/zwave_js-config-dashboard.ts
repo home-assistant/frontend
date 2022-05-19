@@ -288,7 +288,7 @@ class ZWaveJSConfigDashboard extends LitElement {
                       data collected, can be found in the
                       <a
                         target="_blank"
-                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection?id=usage-statistics"
+                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
                         >Z-Wave JS data collection documentation</a
                       >.
                     </p>
