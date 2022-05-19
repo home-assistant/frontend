@@ -158,7 +158,7 @@ class HaLogbookRenderer extends LitElement {
               ? undefined
               : currentStateObj?.attributes.entity_picture,
           },
-        }) : currentStateObj;
+        }) : undefined;
     const overrideImage =
       !historicStateObj &&
       !item.icon &&
