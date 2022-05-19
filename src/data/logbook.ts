@@ -56,13 +56,24 @@ export const getLogbookData = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string
+  entityIds?: string[],
+  deviceIds?: string[]
 ): Promise<LogbookEntry[]> => {
   const localize = await hass.loadBackendTranslation("device_class");
   return addLogbookMessage(
     hass,
     localize,
-    await getLogbookDataCache(hass, startDate, endDate, entityId)
+    // bypass cache if we have a device ID
+    deviceIds?.length
+      ? await getLogbookDataFromServer(
+          hass,
+          startDate,
+          endDate,
+          entityIds,
+          undefined,
+          deviceIds
+        )
+      : await getLogbookDataCache(hass, startDate, endDate, entityIds)
   );
 };
 
@@ -86,60 +97,64 @@ export const addLogbookMessage = (
   return logbookData;
 };
 
-export const getLogbookDataCache = async (
+const getLogbookDataCache = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
-  entityId?: string
+  entityId?: string[]
 ) => {
   const ALL_ENTITIES = "*";
 
-  if (!entityId) {
-    entityId = ALL_ENTITIES;
-  }
-
+  const entityIdKey = entityId ? entityId.toString() : ALL_ENTITIES;
   const cacheKey = `${startDate}${endDate}`;
 
   if (!DATA_CACHE[cacheKey]) {
     DATA_CACHE[cacheKey] = {};
   }
 
-  if (entityId in DATA_CACHE[cacheKey]) {
-    return DATA_CACHE[cacheKey][entityId];
+  if (entityIdKey in DATA_CACHE[cacheKey]) {
+    return DATA_CACHE[cacheKey][entityIdKey];
   }
 
-  if (entityId !== ALL_ENTITIES && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
+  if (entityId && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
     const entities = await DATA_CACHE[cacheKey][ALL_ENTITIES];
-    return entities.filter((entity) => entity.entity_id === entityId);
+    return entities.filter(
+      (entity) => entity.entity_id && entityId.includes(entity.entity_id)
+    );
   }
 
-  DATA_CACHE[cacheKey][entityId] = getLogbookDataFromServer(
+  DATA_CACHE[cacheKey][entityIdKey] = getLogbookDataFromServer(
     hass,
     startDate,
     endDate,
-    entityId !== ALL_ENTITIES ? entityId : undefined
+    entityId
   ).then((entries) => entries.reverse());
-  return DATA_CACHE[cacheKey][entityId];
+  return DATA_CACHE[cacheKey][entityIdKey];
 };
 
-export const getLogbookDataFromServer = (
+const getLogbookDataFromServer = (
   hass: HomeAssistant,
   startDate: string,
   endDate?: string,
-  entityId?: string,
-  contextId?: string
+  entityIds?: string[],
+  contextId?: string,
+  deviceIds?: string[]
 ) => {
-  let params: any = {
+  const params: any = {
     type: "logbook/get_events",
     start_time: startDate,
   };
   if (endDate) {
-    params = { ...params, end_time: endDate };
+    params.end_time = endDate;
   }
-  if (entityId) {
-    params = { ...params, entity_ids: entityId.split(",") };
-  } else if (contextId) {
-    params = { ...params, context_id: contextId };
+  if (entityIds) {
+    params.entity_ids = entityIds;
+  }
+  if (deviceIds) {
+    params.device_ids = deviceIds;
+  }
+  if (contextId) {
+    params.context_id = contextId;
   }
   return hass.callWS<LogbookEntry[]>(params);
 };
@@ -148,7 +163,7 @@ export const clearLogbookCache = (startDate: string, endDate: string) => {
   DATA_CACHE[`${startDate}${endDate}`] = {};
 };
 
-export const getLogbookMessage = (
+const getLogbookMessage = (
   hass: HomeAssistant,
   localize: LocalizeFunc,
   state: string,
