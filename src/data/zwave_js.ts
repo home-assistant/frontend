@@ -447,13 +447,11 @@ export const fetchZwaveNodeMetadata = (
 
 export const fetchZwaveNodeComments = (
   hass: HomeAssistant,
-  entry_id: string,
-  node_id: number
+  device_id: string
 ): Promise<ZwaveJSNodeComments> =>
   hass.callWS({
     type: "zwave_js/node_comments",
-    entry_id,
-    node_id,
+    device_id,
   });
 
 export const fetchZwaveNodeConfigParameters = (

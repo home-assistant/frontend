@@ -1,10 +1,7 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { getConfigEntries } from "../../../../../../data/config_entries";
 import {
-  getZwaveJsIdentifiersFromDevice,
-  ZWaveJSNodeIdentifiers,
   ZwaveJSNodeComments,
   fetchZwaveNodeComments,
 } from "../../../../../../data/zwave_js";
@@ -26,30 +23,9 @@ export class HaDeviceAlertsZWaveJS extends LitElement {
   }
 
   private async _fetchNodeDetails() {
-    this._nodeComments = undefined;
-
-    const identifiers: ZWaveJSNodeIdentifiers | undefined =
-      getZwaveJsIdentifiersFromDevice(this.device);
-    if (!identifiers) {
-      return;
-    }
-
-    const configEntries = await getConfigEntries(this.hass, {
-      domain: "zwave_js",
-    });
-
-    const configEntry = configEntries.find((entry) =>
-      this.device.config_entries.includes(entry.entry_id)
-    );
-
-    if (!configEntry) {
-      return;
-    }
-
     this._nodeComments = await fetchZwaveNodeComments(
       this.hass,
-      configEntry.entry_id,
-      identifiers.node_id
+      this.device.id
     );
   }
 
