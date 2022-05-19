@@ -223,6 +223,10 @@ export class HaLogbook extends LitElement {
       return;
     }
 
+    // Put newest ones on top. Reverse works in-place so
+    // make a copy first.
+    newEntries = [...newEntries].reverse();
+
     this._logbookEntries =
       appendData && this._logbookEntries
         ? newEntries.concat(...this._logbookEntries)

@@ -77,7 +77,7 @@ export const getLogbookData = async (
   );
 };
 
-export const addLogbookMessage = (
+const addLogbookMessage = (
   hass: HomeAssistant,
   localize: LocalizeFunc,
   logbookData: LogbookEntry[]
@@ -128,7 +128,7 @@ const getLogbookDataCache = async (
     startDate,
     endDate,
     entityId
-  ).then((entries) => entries.reverse());
+  );
   return DATA_CACHE[cacheKey][entityIdKey];
 };
 
