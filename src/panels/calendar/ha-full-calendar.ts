@@ -336,6 +336,9 @@ export class HAFullCalendar extends LitElement {
 
         .today {
           margin-right: 20px;
+          margin-inline-end: 20px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         .prev,
