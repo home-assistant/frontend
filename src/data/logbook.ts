@@ -139,7 +139,16 @@ const getLogbookDataFromServer = (
   entityIds?: string[],
   contextId?: string,
   deviceIds?: string[]
-) => {
+): Promise<LogbookEntry[]> => {
+  // If all specified filters are empty lists, we can return an empty list.
+  if (
+    (entityIds || deviceIds) &&
+    (!entityIds || entityIds.length === 0) &&
+    (!deviceIds || deviceIds.length === 0)
+  ) {
+    return Promise.resolve([]);
+  }
+
   const params: any = {
     type: "logbook/get_events",
     start_time: startDate,
@@ -147,10 +156,10 @@ const getLogbookDataFromServer = (
   if (endDate) {
     params.end_time = endDate;
   }
-  if (entityIds) {
+  if (entityIds?.length) {
     params.entity_ids = entityIds;
   }
-  if (deviceIds) {
+  if (deviceIds?.length) {
     params.device_ids = deviceIds;
   }
   if (contextId) {
