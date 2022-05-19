@@ -922,13 +922,12 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _renderIntegrationInfo(
-    device,
+    device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
     deviceActions: (string | TemplateResult)[]
-  ): TemplateResult[] {
+  ) {
     const domains = integrations.map((int) => int.domain);
-    const templates: TemplateResult[] = [];
     if (domains.includes("mqtt")) {
       import(
         "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
@@ -976,7 +975,6 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-actions-zwave_js>
       `);
     }
-    return templates;
   }
 
   private async _showSettings() {
