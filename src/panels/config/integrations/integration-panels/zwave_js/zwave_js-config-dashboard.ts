@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
@@ -234,48 +235,46 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </ha-card>
                 <ha-card header="Diagnostics">
                   <div class="card-content">
-                    <table>
-                      <tr>
-                        <td>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.driver_version"
-                          )}:
-                        </td>
-                        <td>${this._network.client.driver_version}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.server_version"
-                          )}:
-                        </td>
-                        <td>${this._network.client.server_version}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.home_id"
-                          )}:
-                        </td>
-                        <td>${this._network.controller.home_id}</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.server_url"
-                          )}:
-                        </td>
-                        <td>${this._network.client.ws_server_url}</td>
-                      </tr>
-                    </table>
-                    <h2>
-                      ${this.hass.localize(
+                    <div class="row">
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.driver_version"
+                        )}:
+                      </span>
+                      <span>${this._network.client.driver_version}</span>
+                    </div>
+                    <div class="row">
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.server_version"
+                        )}:
+                      </span>
+                      <span>${this._network.client.server_version}</span>
+                    </div>
+                    <div class="row">
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.home_id"
+                        )}:
+                      </span>
+                      <span>${this._network.controller.home_id}</span>
+                    </div>
+                    <div class="row">
+                      <span>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.server_url"
+                        )}:
+                      </span>
+                      <span>${this._network.client.ws_server_url}</span>
+                    </div>
+                    <br />
+                    <ha-expansion-panel
+                      .header=${this.hass.localize(
                         "ui.panel.config.zwave_js.dashboard.statistics.title"
                       )}
-                    </h2>
-                    <table>
-                      <tr>
-                        <td>
+                    >
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
                           )}:
@@ -285,11 +284,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.messages_tx ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.messages_tx ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
                           )}:
@@ -299,11 +298,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.messages_rx ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.messages_rx ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
                           )}:
@@ -313,11 +312,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.messages_dropped_tx ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span
+                          >${this._statistics?.messages_dropped_tx ?? 0}</span
+                        >
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
                           )}:
@@ -327,11 +328,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.messages_dropped_rx ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span
+                          >${this._statistics?.messages_dropped_rx ?? 0}</span
+                        >
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
                           )}:
@@ -341,11 +344,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.nak ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.nak ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.can.label"
                           )}:
@@ -355,11 +358,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.can ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.can ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
                           )}:
@@ -369,11 +372,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.timeout_ack ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.timeout_ack ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timout_response.label"
                           )}:
@@ -383,11 +386,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.timout_response ?? 0}</td>
-                      </tr>
-                      <tr>
-                        <td>
+                        </span>
+                        <span>${this._statistics?.timout_response ?? 0}</span>
+                      </div>
+                      <div class="row">
+                        <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
                           )}:
@@ -397,10 +400,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             )}
                           >
                           </ha-help-tooltip>
-                        </td>
-                        <td>${this._statistics?.timeout_callback ?? 0}</td>
-                      </tr>
-                    </table>
+                        </span>
+                        <span>${this._statistics?.timeout_callback ?? 0}</span>
+                      </div>
+                    </ha-expansion-panel>
                   </div>
                   <div class="card-actions">
                     <mwc-button
@@ -680,6 +683,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .sectionHeader {
           position: relative;
           padding-right: 40px;
+        }
+
+        .row {
+          display: flex;
+          justify-content: space-between;
         }
 
         .network-status div.heading {
