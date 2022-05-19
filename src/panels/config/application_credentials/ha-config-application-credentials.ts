@@ -19,7 +19,10 @@ import {
   fetchApplicationCredentials,
 } from "../../../data/application_credential";
 import { domainToName } from "../../../data/integration";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
@@ -171,11 +174,24 @@ export class HaConfigApplicationCredentials extends LitElement {
       confirmText: this.hass.localize("ui.common.remove"),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: async () => {
-        await Promise.all(
-          this._selected.map(async (applicationCredential) => {
-            await deleteApplicationCredential(this.hass, applicationCredential);
-          })
-        );
+        try {
+          await Promise.all(
+            this._selected.map(async (applicationCredential) => {
+              await deleteApplicationCredential(
+                this.hass,
+                applicationCredential
+              );
+            })
+          );
+        } catch (err: any) {
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.application_credentials.picker.remove_selected.error_title"
+            ),
+            text: err.message,
+          });
+          return;
+        }
         this._dataTable.clearSelection();
         this._fetchApplicationCredentials();
       },
