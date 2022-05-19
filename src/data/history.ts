@@ -272,7 +272,7 @@ const processTimelineEntity = (
   states: EntityHistoryState[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
-  const last: EntityHistoryState = states[states.length - 1];
+  const first: EntityHistoryState = states[0];
   for (const state of states) {
     if (data.length > 0 && state.s === data[data.length - 1].state) {
       continue;
@@ -282,7 +282,7 @@ const processTimelineEntity = (
         localize,
         language,
         entityId,
-        state.a || last.a,
+        state.a || first.a,
         state.s
       ),
       state: state.s,
