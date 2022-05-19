@@ -2865,7 +2865,7 @@
             "caption": "Add Application Credential",
             "create": "Create",
             "domain": "Integration",
-            "name": "Name for display",
+            "name": "Name",
             "client_id": "OAuth Client ID",
             "client_secret": "OAuth Client Secret"
           },
