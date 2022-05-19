@@ -122,7 +122,6 @@ export class HaLogbook extends LitElement {
 
     this._lastLogbookDate = undefined;
     this._logbookEntries = undefined;
-    this._error = undefined;
     this._throttleGetLogbookEntries();
   }
 
@@ -155,6 +154,10 @@ export class HaLogbook extends LitElement {
       return;
     }
 
+    if (this._filterAlwaysEmptyResults) {
+      return;
+    }
+
     // We only need to fetch again if we track recent entries for an entity
     if (
       !("recent" in this.time) ||
@@ -178,14 +181,34 @@ export class HaLogbook extends LitElement {
     }
   }
 
+  private get _filterAlwaysEmptyResults(): boolean {
+    const entityIds = ensureArray(this.entityIds);
+    const deviceIds = ensureArray(this.deviceIds);
+
+    // If all specified filters are empty lists, we can return an empty list.
+    return (
+      (entityIds || deviceIds) &&
+      (!entityIds || entityIds.length === 0) &&
+      (!deviceIds || deviceIds.length === 0)
+    );
+  }
+
   private async _getLogBookData() {
+    this._renderId += 1;
+    const renderId = this._renderId;
+    this._error = undefined;
+
+    if (this._filterAlwaysEmptyResults) {
+      this._logbookEntries = [];
+      this._lastLogbookDate = undefined;
+      return;
+    }
+
     this._updateUsers();
     if (this.hass.user?.is_admin) {
       this._updateTraceContexts();
     }
 
-    this._renderId += 1;
-    const renderId = this._renderId;
     let startTime: Date;
     let endTime: Date;
     let appendData = false;
