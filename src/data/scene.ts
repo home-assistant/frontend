@@ -47,12 +47,15 @@ export interface SceneConfig {
   name: string;
   icon?: string;
   entities: SceneEntities;
+  metadata?: SceneMetaData;
 }
 
 export interface SceneEntities {
-  [entityId: string]:
-    | string
-    | { state: string; [key: string]: any; entity_only?: boolean | undefined };
+  [entityId: string]: string | { state: string; [key: string]: any };
+}
+
+export interface SceneMetaData {
+  [entityId: string]: { entity_only?: boolean | undefined };
 }
 
 export const activateScene = (

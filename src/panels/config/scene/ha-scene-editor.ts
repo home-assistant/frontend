@@ -55,6 +55,7 @@ import {
   SceneConfig,
   SceneEntities,
   SceneEntity,
+  SceneMetaData,
   SCENE_IGNORED_DOMAINS,
   showSceneEditor,
 } from "../../../data/scene";
@@ -635,10 +636,13 @@ export class HaSceneEditor extends SubscribeMixin(
         continue;
       }
       const entity = config.entities[entityReg.entity_id];
+      const entityMetaData = config.metadata?.[entityReg.entity_id];
       if (
         !this._devices.includes(entityReg.device_id) &&
         !(typeof entity === "string") &&
-        !entity.entity_only
+        entityMetaData
+          ? !entityMetaData.entity_only
+          : false
       ) {
         this._devices = [...this._devices, entityReg.device_id];
       }
@@ -810,8 +814,8 @@ export class HaSceneEditor extends SubscribeMixin(
     );
   }
 
-  private _calculateStates(): SceneEntities {
-    const output: SceneEntities = {};
+  private _calculateMetaData(): SceneMetaData {
+    const output: SceneMetaData = {};
     const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
       this._entities.includes(entityReg.entity_id)
     );
@@ -820,13 +824,23 @@ export class HaSceneEditor extends SubscribeMixin(
       const entityState = this._getCurrentState(entityReg.entity_id);
       if (entityState) {
         output[entityReg.entity_id] = {
-          ...entityState,
           entity_only: !!(
             entityReg.device_id && !this._devices.includes(entityReg.device_id)
           ),
         };
       }
     }
+    return output;
+  }
+
+  private _calculateStates(): SceneEntities {
+    const output: SceneEntities = {};
+    this._entities.forEach((entityId) => {
+      const entityState = this._getCurrentState(entityId);
+      if (entityState) {
+        output[entityId] = entityState;
+      }
+    });
     return output;
   }
 
@@ -851,7 +865,11 @@ export class HaSceneEditor extends SubscribeMixin(
 
   private async _saveScene(): Promise<void> {
     const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
-    this._config = { ...this._config!, entities: this._calculateStates() };
+    this._config = {
+      ...this._config!,
+      entities: this._calculateStates(),
+      metadata: this._calculateMetaData(),
+    };
     try {
       this._saving = true;
       await saveScene(this.hass, id, this._config);
