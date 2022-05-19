@@ -140,6 +140,9 @@ export class HaDateRangePicker extends LitElement {
     return css`
       ha-svg-icon {
         margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
+        direction: var(--direction);
       }
 
       .date-range-inputs {
@@ -166,6 +169,9 @@ export class HaDateRangePicker extends LitElement {
 
       ha-textfield:last-child {
         margin-left: 8px;
+        margin-inline-start: 8px;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
 
       @media only screen and (max-width: 800px) {
