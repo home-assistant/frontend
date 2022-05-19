@@ -198,6 +198,9 @@ export class HuiActionEditor extends LitElement {
         position: absolute;
         right: 40px;
         top: 16px;
+        inset-inline-start: initial;
+        inset-inline-end: 40px;
+        direction: var(--direction);
       }
       ha-select,
       ha-textfield {
