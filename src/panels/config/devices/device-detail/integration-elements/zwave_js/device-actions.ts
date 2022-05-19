@@ -52,7 +52,6 @@ export const getZwaveDeviceActions = async (
       label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
       action: () =>
         showZWaveJSHealNodeDialog(el, {
-          entry_id: entryId,
           device: device,
         }),
     },

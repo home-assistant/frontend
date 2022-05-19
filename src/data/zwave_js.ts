@@ -301,11 +301,13 @@ export const migrateZwave = (
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
-  entry_id: string
+  device_or_entry_id: string,
+  id_type: "entry_id" | "device_id" = "entry_id"
 ): Promise<ZWaveJSNetwork> =>
   hass.callWS({
     type: "zwave_js/network_status",
-    entry_id,
+    device_or_entry_id,
+    id_type,
   });
 
 export const fetchZwaveDataCollectionStatus = (

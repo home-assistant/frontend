@@ -204,7 +204,8 @@ class DialogZWaveJSHealNetwork extends LitElement {
     }
     const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
       this.hass!,
-      this.entry_id!
+      this.entry_id!,
+      "entry_id"
     );
     if (network.controller.is_heal_network_active) {
       this._status = "started";
