@@ -3,7 +3,6 @@ import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 export interface ZWaveJSHealNodeDialogParams {
   entry_id: string;
-  node_id: number;
   device: DeviceRegistryEntry;
 }
 
