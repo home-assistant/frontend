@@ -17,7 +17,6 @@ import "../../../../../components/ha-svg-icon";
 import {
   fetchZwaveDataCollectionStatus,
   fetchZwaveNetworkStatus,
-  fetchZwaveNodeStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
   setZwaveDataCollectionPreference,
@@ -25,7 +24,6 @@ import {
   stopZwaveInclusion,
   ZWaveJSClient,
   ZWaveJSNetwork,
-  ZWaveJSNodeStatus,
   ZwaveJSProvisioningEntry,
 } from "../../../../../data/zwave_js";
 import {
@@ -60,8 +58,6 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _network?: ZWaveJSNetwork;
 
-  @state() private _nodes?: ZWaveJSNodeStatus[];
-
   @state() private _provisioningEntries?: ZwaveJSProvisioningEntry[];
 
   @state() private _status?: ZWaveJSClient["state"];
@@ -84,9 +80,8 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
-
     const notReadyDevices =
-      this._nodes?.filter((node) => !node.ready).length ?? 0;
+      this._network?.controller.nodes.filter((node) => !node.ready).length ?? 0;
 
     return html`
       <hass-tabs-subpage
@@ -288,7 +283,7 @@ class ZWaveJSConfigDashboard extends LitElement {
                       data collected, can be found in the
                       <a
                         target="_blank"
-                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection?id=usage-statistics"
+                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
                         >Z-Wave JS data collection documentation</a
                       >.
                     </p>
@@ -414,18 +409,6 @@ class ZWaveJSConfigDashboard extends LitElement {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-
-    this._fetchNodeStatus();
-  }
-
-  private async _fetchNodeStatus() {
-    if (!this._network) {
-      return;
-    }
-    const nodeStatePromisses = this._network.controller.nodes.map((nodeId) =>
-      fetchZwaveNodeStatus(this.hass, this.configEntryId!, nodeId)
-    );
-    this._nodes = await Promise.all(nodeStatePromisses);
   }
 
   private async _addNodeClicked() {

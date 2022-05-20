@@ -4,7 +4,7 @@ import {
   addMonths,
   differenceInHours,
   endOfDay,
-} from "date-fns";
+} from "date-fns/esm";
 import { HassEntity } from "home-assistant-js-websocket";
 import { StatisticValue } from "../../../src/data/history";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";

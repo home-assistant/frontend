@@ -8,7 +8,7 @@ import {
   endOfYesterday,
   startOfToday,
   startOfYesterday,
-} from "date-fns";
+} from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";

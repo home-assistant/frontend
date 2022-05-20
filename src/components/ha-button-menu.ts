@@ -1,17 +1,27 @@
+import type { Button } from "@material/mwc-button";
 import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAssignedElements,
+} from "lit/decorators";
+import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import type { HaIconButton } from "./ha-icon-button";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
+  protected readonly [FOCUS_TARGET];
+
   @property() public corner: Corner = "TOP_START";
 
   @property() public menuCorner: MenuCorner = "START";
 
-  @property({ type: Number }) public x?: number;
+  @property({ type: Number }) public x: number | null = null;
 
-  @property({ type: Number }) public y?: number;
+  @property({ type: Number }) public y: number | null = null;
 
   @property({ type: Boolean }) public multi = false;
 
@@ -23,12 +33,26 @@ export class HaButtonMenu extends LitElement {
 
   @query("mwc-menu", true) private _menu?: Menu;
 
+  @queryAssignedElements({
+    slot: "trigger",
+    selector: "ha-icon-button, mwc-button",
+  })
+  private _triggerButton!: Array<HaIconButton | Button>;
+
   public get items() {
     return this._menu?.items;
   }
 
   public get selected() {
     return this._menu?.selected;
+  }
+
+  public override focus() {
+    if (this._menu?.open) {
+      this._menu.focusItemAtIndex(0);
+    } else {
+      this._triggerButton[0]?.focus();
+    }
   }
 
   protected render(): TemplateResult {

@@ -47,10 +47,18 @@ export class HaSelect extends SelectBase {
       .mdc-select__anchor {
         width: var(--ha-select-min-width, 200px);
       }
-      .mdc-floating-label {
-        inset-inline-start: 16px !important;
-        inset-inline-end: initial !important;
+      .mdc-select--filled .mdc-floating-label {
+        inset-inline-start: 12px;
+        inset-inline-end: initial;
         direction: var(--direction);
+      }
+      .mdc-select .mdc-select__anchor {
+        padding-inline-start: 12px;
+        padding-inline-end: 0px;
+        direction: var(--direction);
+      }
+      .mdc-select__anchor .mdc-floating-label--float-above {
+        transform-origin: var(--float-start);
       }
     `,
   ];

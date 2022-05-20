@@ -104,12 +104,18 @@ export class EnergySolarSettings extends LitElement {
                 ${this.info
                   ? html`
                       <ha-icon-button
+                        .label=${this.hass.localize(
+                          "ui.panel.config.energy.solar.edit_solar_production"
+                        )}
                         @click=${this._editSource}
                         .path=${mdiPencil}
                       ></ha-icon-button>
                     `
                   : ""}
                 <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.solar.delete_solar_production"
+                  )}
                   @click=${this._deleteSource}
                   .path=${mdiDelete}
                 ></ha-icon-button>

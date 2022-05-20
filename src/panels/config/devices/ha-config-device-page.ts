@@ -63,6 +63,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import "../../logbook/ha-logbook";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -99,6 +100,8 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deleteButtons?: (TemplateResult | string)[];
 
+  private _logbookTime = { recent: 86400 };
+
   private _device = memoizeOne(
     (
       deviceId: string,
@@ -129,6 +132,13 @@ export class HaConfigDevicePage extends LitElement {
             ent2.stateName || `zzz${ent2.entity_id}`
           )
         )
+  );
+
+  private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
+
+  private _entityIds = memoizeOne(
+    (entries: EntityRegistryStateEntry[]): string[] =>
+      entries.map((entry) => entry.entity_id)
   );
 
   private _entitiesByCategory = memoizeOne(
@@ -574,6 +584,26 @@ export class HaConfigDevicePage extends LitElement {
                   `
                 : ""
             )}
+            ${
+              isComponentLoaded(this.hass, "logbook")
+                ? html`
+                    <ha-card outlined>
+                      <h1 class="card-header">
+                        ${this.hass.localize("panel.logbook")}
+                      </h1>
+                      <ha-logbook
+                        .hass=${this.hass}
+                        .time=${this._logbookTime}
+                        .entityIds=${this._entityIds(entities)}
+                        .deviceIds=${this._deviceIdInList(this.deviceId)}
+                        virtualize
+                        narrow
+                        no-icon
+                      ></ha-logbook>
+                    </ha-card>
+                  `
+                : ""
+            }
           </div>
           <div class="column">
             ${
@@ -895,13 +925,12 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _renderIntegrationInfo(
-    device,
+    device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
     deviceActions: (string | TemplateResult)[]
-  ): TemplateResult[] {
+  ) {
     const domains = integrations.map((int) => int.domain);
-    const templates: TemplateResult[] = [];
     if (domains.includes("mqtt")) {
       import(
         "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
@@ -949,7 +978,6 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-actions-zwave_js>
       `);
     }
-    return templates;
   }
 
   private async _showSettings() {
@@ -1227,6 +1255,13 @@ export class HaConfigDevicePage extends LitElement {
 
         .items {
           padding-bottom: 16px;
+        }
+
+        ha-logbook {
+          height: 400px;
+        }
+        :host([narrow]) ha-logbook {
+          height: 235px;
         }
       `,
     ];

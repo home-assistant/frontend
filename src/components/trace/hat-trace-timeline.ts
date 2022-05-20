@@ -116,7 +116,7 @@ class LogbookRenderer {
   maybeRenderItem() {
     const logbookEntry = this.curItem;
     this.curIndex++;
-    const entryDate = new Date(logbookEntry.when);
+    const entryDate = new Date(logbookEntry.when * 1000);
 
     if (this.pendingItems.length === 0) {
       this.pendingItems.push([entryDate, logbookEntry]);
@@ -248,7 +248,7 @@ class ActionRenderer {
     // Render all logbook items that are in front of this item.
     while (
       this.logbookRenderer.hasNext &&
-      new Date(this.logbookRenderer.curItem.when) < timestamp
+      new Date(this.logbookRenderer.curItem.when * 1000) < timestamp
     ) {
       this.logbookRenderer.maybeRenderItem();
     }

@@ -17,7 +17,7 @@ import {
   startOfToday,
   startOfWeek,
   startOfYear,
-} from "date-fns";
+} from "date-fns/esm";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";

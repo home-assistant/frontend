@@ -1308,10 +1308,15 @@
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
             "grid_consumption": "Grid consumption",
+            "edit_consumption": "Edit consumption",
+            "delete_consumption": "Delete consumption",
             "add_consumption": "Add consumption",
             "return_to_grid": "Return to grid",
+            "edit_return": "Edit return",
+            "delete_return": "Delete return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
+            "remove_co2_signal": "Remove CO2 signal integration",
             "add_co2_signal": "Add CO2 signal integration",
             "flow_dialog": {
               "from": {
@@ -1349,6 +1354,8 @@
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started.",
             "solar_production": "Solar production",
+            "edit_solar_production": "Edit solar production",
+            "delete_solar_production": "Delete solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
@@ -1368,6 +1375,8 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started.",
             "battery_systems": "Battery systems",
+            "edit_battery_system": "Edit battery system",
+            "delete_battery_system": "Delete battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
@@ -1380,6 +1389,8 @@
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started.",
             "gas_consumption": "Gas consumption",
+            "edit_gas_source": "Edit gas source",
+            "delete_gas_source": "Delete gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
@@ -1529,6 +1540,7 @@
           "internal_url_label": "Local Network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
+          "manage_ha_cloud": "Manage Home Assistant Cloud",
           "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
@@ -1589,7 +1601,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "load_logs": "Load Full Logs",
-          "loading_log": "Loading error log…",
+          "loading_log": "Loading full log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -2883,7 +2895,8 @@
             "remove_selected": {
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentialss}\n}?",
-              "confirm_text": "Application Credentials in use by an integration may not be removed."
+              "confirm_text": "Application Credentials in use by an integration may not be removed.",
+              "error_title": "Removing Application Credential failed"
             },
             "selected": "{number} selected"
           }

@@ -1,8 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
-import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
+import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { FrontendLocaleData } from "./translation";
@@ -27,7 +26,7 @@ const LINE_ATTRIBUTES_TO_KEEP = [
 
 export interface LineChartState {
   state: string;
-  last_changed: string;
+  last_changed: number;
   attributes?: Record<string, any>;
 }
 
@@ -47,7 +46,7 @@ export interface LineChartUnit {
 export interface TimelineState {
   state_localize: string;
   state: string;
-  last_changed: string;
+  last_changed: number;
 }
 
 export interface TimelineEntity {
@@ -141,6 +140,21 @@ export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
 
+export interface HistoryStates {
+  [entityId: string]: EntityHistoryState[];
+}
+
+interface EntityHistoryState {
+  /** state */
+  s: string;
+  /** attributes */
+  a: { [key: string]: any };
+  /** last_changed; if set, also applies to lu */
+  lc: number;
+  /** last_updated */
+  lu: number;
+}
+
 export const entityIdHistoryNeedsAttributes = (
   hass: HomeAssistant,
   entityId: string
@@ -181,6 +195,27 @@ export const fetchRecent = (
   return hass.callApi("GET", url);
 };
 
+export const fetchRecentWS = (
+  hass: HomeAssistant,
+  entityId: string,
+  startTime: Date,
+  endTime: Date,
+  skipInitialState = false,
+  significantChangesOnly?: boolean,
+  minimalResponse = true,
+  noAttributes?: boolean
+) =>
+  hass.callWS<HistoryStates>({
+    type: "history/history_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    significant_changes_only: significantChangesOnly || false,
+    include_start_time_state: !skipInitialState,
+    minimal_response: minimalResponse,
+    no_attributes: noAttributes || false,
+    entity_ids: [entityId],
+  });
+
 export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
@@ -198,6 +233,27 @@ export const fetchDate = (
     }`
   );
 
+export const fetchDateWS = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime: Date,
+  entityId?: string
+) => {
+  const params = {
+    type: "history/history_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    minimal_response: true,
+    no_attributes: !!(
+      entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
+  };
+  if (entityId) {
+    return hass.callWS<HistoryStates>({ ...params, entity_ids: [entityId] });
+  }
+  return hass.callWS<HistoryStates>(params);
+};
+
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
   // Only compare attributes if both states have an attributes object.
@@ -212,46 +268,47 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 const processTimelineEntity = (
   localize: LocalizeFunc,
   language: FrontendLocaleData,
-  states: HassEntity[]
+  entityId: string,
+  states: EntityHistoryState[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
-  const last_element = states.length - 1;
-
+  const first: EntityHistoryState = states[0];
   for (const state of states) {
-    if (data.length > 0 && state.state === data[data.length - 1].state) {
+    if (data.length > 0 && state.s === data[data.length - 1].state) {
       continue;
     }
-
-    // Copy the data from the last element as its the newest
-    // and is only needed to localize the data
-    if (!state.entity_id) {
-      state.attributes = states[last_element].attributes;
-      state.entity_id = states[last_element].entity_id;
-    }
-
     data.push({
-      state_localize: computeStateDisplay(localize, state, language),
-      state: state.state,
-      last_changed: state.last_changed,
+      state_localize: computeStateDisplayFromEntityAttributes(
+        localize,
+        language,
+        entityId,
+        state.a || first.a,
+        state.s
+      ),
+      state: state.s,
+      // lc (last_changed) may be omitted if its the same
+      // as lu (last_updated).
+      last_changed: (state.lc ? state.lc : state.lu) * 1000,
     });
   }
 
   return {
-    name: computeStateName(states[0]),
-    entity_id: states[0].entity_id,
+    name: computeStateNameFromEntityAttributes(entityId, states[0].a),
+    entity_id: entityId,
     data,
   };
 };
 
 const processLineChartEntities = (
   unit,
-  entities: HassEntity[][]
+  entities: HistoryStates
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
-  for (const states of entities) {
-    const last: HassEntity = states[states.length - 1];
-    const domain = computeStateDomain(last);
+  Object.keys(entities).forEach((entityId) => {
+    const states = entities[entityId];
+    const first: EntityHistoryState = states[0];
+    const domain = computeDomain(entityId);
     const processedStates: LineChartState[] = [];
 
     for (const state of states) {
@@ -259,18 +316,24 @@ const processLineChartEntities = (
 
       if (DOMAINS_USE_LAST_UPDATED.includes(domain)) {
         processedState = {
-          state: state.state,
-          last_changed: state.last_updated,
+          state: state.s,
+          last_changed: state.lu * 1000,
           attributes: {},
         };
 
         for (const attr of LINE_ATTRIBUTES_TO_KEEP) {
-          if (attr in state.attributes) {
-            processedState.attributes![attr] = state.attributes[attr];
+          if (attr in state.a) {
+            processedState.attributes![attr] = state.a[attr];
           }
         }
       } else {
-        processedState = state;
+        processedState = {
+          state: state.s,
+          // lc (last_changed) may be omitted if its the same
+          // as lu (last_updated).
+          last_changed: (state.lc ? state.lc : state.lu) * 1000,
+          attributes: {},
+        };
       }
 
       if (
@@ -289,52 +352,53 @@ const processLineChartEntities = (
 
     data.push({
       domain,
-      name: computeStateName(last),
-      entity_id: last.entity_id,
+      name: computeStateNameFromEntityAttributes(entityId, first.a),
+      entity_id: entityId,
       states: processedStates,
     });
-  }
+  });
 
   return {
     unit,
-    identifier: entities.map((states) => states[0].entity_id).join(""),
+    identifier: Object.keys(entities).join(""),
     data,
   };
 };
 
 const stateUsesUnits = (state: HassEntity) =>
-  "unit_of_measurement" in state.attributes ||
-  "state_class" in state.attributes;
+  attributesHaveUnits(state.attributes);
+
+const attributesHaveUnits = (attributes: { [key: string]: any }) =>
+  "unit_of_measurement" in attributes || "state_class" in attributes;
 
 export const computeHistory = (
   hass: HomeAssistant,
-  stateHistory: HassEntity[][],
+  stateHistory: HistoryStates,
   localize: LocalizeFunc
 ): HistoryResult => {
-  const lineChartDevices: { [unit: string]: HassEntity[][] } = {};
+  const lineChartDevices: { [unit: string]: HistoryStates } = {};
   const timelineDevices: TimelineEntity[] = [];
   if (!stateHistory) {
     return { line: [], timeline: [] };
   }
-
-  stateHistory.forEach((stateInfo) => {
+  Object.keys(stateHistory).forEach((entityId) => {
+    const stateInfo = stateHistory[entityId];
     if (stateInfo.length === 0) {
       return;
     }
 
-    const entityId = stateInfo[0].entity_id;
     const currentState =
       entityId in hass.states ? hass.states[entityId] : undefined;
     const stateWithUnitorStateClass =
       !currentState &&
-      stateInfo.find((state) => state.attributes && stateUsesUnits(state));
+      stateInfo.find((state) => state.a && attributesHaveUnits(state.a));
 
     let unit: string | undefined;
 
     if (currentState && stateUsesUnits(currentState)) {
       unit = currentState.attributes.unit_of_measurement || " ";
     } else if (stateWithUnitorStateClass) {
-      unit = stateWithUnitorStateClass.attributes.unit_of_measurement || " ";
+      unit = stateWithUnitorStateClass.a.unit_of_measurement || " ";
     } else {
       unit = {
         climate: hass.config.unit_system.temperature,
@@ -348,12 +412,15 @@ export const computeHistory = (
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, hass.locale, stateInfo)
+        processTimelineEntity(localize, hass.locale, entityId, stateInfo)
       );
-    } else if (unit in lineChartDevices) {
-      lineChartDevices[unit].push(stateInfo);
+    } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
+      lineChartDevices[unit][entityId].push(...stateInfo);
     } else {
-      lineChartDevices[unit] = [stateInfo];
+      if (!(unit in lineChartDevices)) {
+        lineChartDevices[unit] = {};
+      }
+      lineChartDevices[unit][entityId] = stateInfo;
     }
   });
 
