@@ -716,6 +716,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           font-size: 1rem;
         }
 
+        mwc-list-item {
+          height: 60px;
+        }
+
         .card-header {
           display: flex;
         }
