@@ -272,7 +272,7 @@ const processTimelineEntity = (
   states: EntityHistoryState[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
-  const last: EntityHistoryState = states[states.length - 1];
+  const first: EntityHistoryState = states[0];
   for (const state of states) {
     if (data.length > 0 && state.s === data[data.length - 1].state) {
       continue;
@@ -282,7 +282,7 @@ const processTimelineEntity = (
         localize,
         language,
         entityId,
-        state.a || last.a,
+        state.a || first.a,
         state.s
       ),
       state: state.s,
@@ -307,7 +307,7 @@ const processLineChartEntities = (
 
   Object.keys(entities).forEach((entityId) => {
     const states = entities[entityId];
-    const last: EntityHistoryState = states[states.length - 1];
+    const first: EntityHistoryState = states[0];
     const domain = computeDomain(entityId);
     const processedStates: LineChartState[] = [];
 
@@ -352,7 +352,7 @@ const processLineChartEntities = (
 
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, last.a),
+      name: computeStateNameFromEntityAttributes(entityId, first.a),
       entity_id: entityId,
       states: processedStates,
     });
