@@ -1,4 +1,5 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
   mdiCheckCircle,
@@ -273,136 +274,139 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         "ui.panel.config.zwave_js.dashboard.statistics.title"
                       )}
                     >
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                      <mwc-list noninteractive>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.messages_tx ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.messages_tx ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.messages_rx ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.messages_rx ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.messages_dropped_tx ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span
-                          >${this._statistics?.messages_dropped_tx ?? 0}</span
-                        >
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.messages_dropped_rx ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span
-                          >${this._statistics?.messages_dropped_rx ?? 0}</span
-                        >
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
                             )}
-                          >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.nak ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.can.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                          </span>
+                          <span slot="meta">${this._statistics?.nak ?? 0}</span>
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.can.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
                             )}
-                          >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.can ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                          </span>
+                          <span slot="meta">${this._statistics?.can ?? 0}</span>
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.timeout_ack ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.timeout_ack ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.timout_response.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
-                              "ui.panel.config.zwave_js.dashboard.statistics.timout_response.tooltip"
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
                             )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.tooltip"
+                            )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.timeout_response ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.timout_response ?? 0}</span>
-                      </div>
-                      <div class="row">
-                        <span>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
-                          )}:
-                          <ha-help-tooltip
-                            .label=${this.hass.localize(
+                        </mwc-list-item>
+                        <mwc-list-item twoline hasmeta>
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
+                            )}
+                          </span>
+                          <span slot="secondary">
+                            ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
                             )}
+                          </span>
+                          <span slot="meta"
+                            >${this._statistics?.timeout_callback ?? 0}</span
                           >
-                          </ha-help-tooltip>
-                        </span>
-                        <span>${this._statistics?.timeout_callback ?? 0}</span>
-                      </div>
+                        </mwc-list-item>
+                      </mwc-list>
                     </ha-expansion-panel>
                   </div>
                   <div class="card-actions">
@@ -726,12 +730,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         ha-card {
           margin: 0px auto 24px;
           max-width: 600px;
-        }
-
-        button.dump {
-          width: 100%;
-          text-align: center;
-          color: var(--secondary-text-color);
         }
 
         [hidden] {

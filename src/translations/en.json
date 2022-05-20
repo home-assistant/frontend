@@ -3065,7 +3065,7 @@
                 "label": "Timeout ACK",
                 "tooltip": "Number of transmission attempts where an ACK was missing from the controller"
               },
-              "timout_response": {
+              "timeout_response": {
                 "label": "Timeout Response",
                 "tooltip": "Number of transmission attempts where the controller response did not come in time"
               },

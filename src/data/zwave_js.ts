@@ -237,7 +237,7 @@ export interface ZWaveJSControllerStatisticsUpdatedMessage {
   nak: number;
   can: number;
   timeout_ack: number;
-  timout_response: number;
+  timeout_response: number;
   timeout_callback: number;
 }
 
