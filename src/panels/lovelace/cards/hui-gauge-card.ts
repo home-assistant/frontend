@@ -129,11 +129,16 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .min=${this._config.min!}
           .max=${this._config.max!}
           .value=${stateObj.state}
+          .valueText=${this._config.entity_display
+            ? this.hass.states[this._config.entity_display].state
+            : ""}
           .locale=${this.hass!.locale}
-          .label=${this._config!.unit ||
-          this.hass?.states[this._config!.entity].attributes
-            .unit_of_measurement ||
-          ""}
+          .label=${this._config.entity_display
+            ? ""
+            : this._config!.unit ||
+              this.hass?.states[this._config!.entity].attributes
+                .unit_of_measurement ||
+              ""}
           style=${styleMap({
             "--gauge-color": this._computeSeverity(entityState),
           })}
@@ -145,8 +150,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  protected hasEntityDisplayChanged(
+    element: any,
+    changedProps: PropertyValues
+  ): boolean {
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+
+    return (
+      oldHass.states[element._config!.entity_display] !==
+      element.hass!.states[element._config!.entity_display]
+    );
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      this.hasEntityDisplayChanged(this, changedProps)
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {

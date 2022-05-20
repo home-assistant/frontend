@@ -189,6 +189,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   unit?: string;
+  entity_display?: string;
   min?: number;
   max?: number;
   severity?: SeverityConfig;

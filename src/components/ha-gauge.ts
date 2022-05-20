@@ -50,7 +50,10 @@ export class Gauge extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    if (!this._updated || !changedProperties.has("value")) {
+    if (
+      !this._updated ||
+      !(changedProperties.has("value") || changedProperties.has("valueText"))
+    ) {
       return;
     }
     this._angle = getAngle(this.value, this.min, this.max);

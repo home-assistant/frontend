@@ -3607,6 +3607,7 @@
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge?",
+              "entity_display": "Display entity",
               "severity": {
                 "define": "Define Severity?",
                 "green": "Green",

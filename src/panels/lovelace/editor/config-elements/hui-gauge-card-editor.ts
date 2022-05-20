@@ -36,6 +36,7 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     needle: optional(boolean()),
     segments: optional(array(gaugeSegmentStruct)),
+    entity_display: optional(string()),
   })
 );
 
@@ -70,6 +71,21 @@ export class HuiGaugeCardEditor
           { name: "name", selector: { text: {} } },
           { name: "unit", selector: { text: {} } },
         ],
+      },
+      {
+        name: "entity_display",
+        selector: {
+          entity: {
+            domain: [
+              "counter",
+              "input_number",
+              "input_text",
+              "input_select",
+              "number",
+              "sensor",
+            ],
+          },
+        },
       },
       { name: "theme", selector: { theme: {} } },
       {
@@ -182,6 +198,12 @@ export class HuiGaugeCardEditor
       case "theme":
         return `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      case "entity_display":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.gauge.entity_display"
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
