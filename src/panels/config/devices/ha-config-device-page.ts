@@ -594,8 +594,8 @@ export class HaConfigDevicePage extends LitElement {
                       <ha-logbook
                         .hass=${this.hass}
                         .time=${this._logbookTime}
-                        .entityId=${this._entityIds(entities)}
-                        .deviceId=${this._deviceIdInList(this.deviceId)}
+                        .entityIds=${this._entityIds(entities)}
+                        .deviceIds=${this._deviceIdInList(this.deviceId)}
                         virtualize
                         narrow
                         no-icon
