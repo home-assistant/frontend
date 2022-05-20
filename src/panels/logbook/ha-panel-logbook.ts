@@ -38,7 +38,7 @@ export class HaPanelLogbook extends LitElement {
 
   @state() _time: { range: [Date, Date] };
 
-  @state() _entityId = "";
+  @state() _entityIds?: string[];
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
@@ -85,7 +85,7 @@ export class HaPanelLogbook extends LitElement {
 
           <ha-entity-picker
             .hass=${this.hass}
-            .value=${this._entityId}
+            .value=${this._entityIds ? this._entityIds[0] : undefined}
             .label=${this.hass.localize(
               "ui.components.entity.entity-picker.entity"
             )}
@@ -97,7 +97,7 @@ export class HaPanelLogbook extends LitElement {
         <ha-logbook
           .hass=${this.hass}
           .time=${this._time}
-          .entityId=${this._entityId}
+          .entityIds=${this._entityIds}
           virtualize
         ></ha-logbook>
       </ha-app-layout>
@@ -157,15 +157,30 @@ export class HaPanelLogbook extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
-
-    this._applyURLParams();
   }
 
   private _applyURLParams() {
     const searchParams = new URLSearchParams(location.search);
 
     if (searchParams.has("entity_id")) {
-      this._entityId = searchParams.get("entity_id") ?? "";
+      const entityIdsRaw = searchParams.get("entity_id");
+
+      if (!entityIdsRaw) {
+        this._entityIds = undefined;
+      } else {
+        const entityIds = entityIdsRaw.split(",").sort();
+
+        // Check if different
+        if (
+          !this._entityIds ||
+          entityIds.length !== this._entityIds.length ||
+          this._entityIds.every((val, idx) => val === entityIds[idx])
+        ) {
+          this._entityIds = entityIds;
+        }
+      }
+    } else {
+      this._entityIds = undefined;
     }
 
     const startDateStr = searchParams.get("start_date");
@@ -199,19 +214,19 @@ export class HaPanelLogbook extends LitElement {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
-    this._time = { range: [startDate, endDate] };
     this._updatePath({
-      start_date: this._time.range[0].toISOString(),
-      end_date: this._time.range[1].toISOString(),
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
     });
   }
 
   private _entityPicked(ev) {
-    this._entityId = ev.target.value;
-    this._updatePath({ entity_id: this._entityId });
+    this._updatePath({
+      entity_id: ev.target.value || undefined,
+    });
   }
 
-  private _updatePath(update: Record<string, string>) {
+  private _updatePath(update: Record<string, string | undefined>) {
     const params = extractSearchParamsObject();
     for (const [key, value] of Object.entries(update)) {
       if (value === undefined) {

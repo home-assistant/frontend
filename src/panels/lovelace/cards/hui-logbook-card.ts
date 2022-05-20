@@ -120,7 +120,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           <ha-logbook
             .hass=${this.hass}
             .time=${this._time}
-            .entityId=${this._entityId}
+            .entityIds=${this._entityId}
             narrow
             relative-time
             virtualize

@@ -134,6 +134,8 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
+  private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
+
   private _entityIds = memoizeOne(
     (entries: EntityRegistryStateEntry[]): string[] =>
       entries.map((entry) => entry.entity_id)
@@ -592,7 +594,8 @@ export class HaConfigDevicePage extends LitElement {
                       <ha-logbook
                         .hass=${this.hass}
                         .time=${this._logbookTime}
-                        .entityId=${this._entityIds(entities)}
+                        .entityIds=${this._entityIds(entities)}
+                        .deviceIds=${this._deviceIdInList(this.deviceId)}
                         virtualize
                         narrow
                         no-icon
