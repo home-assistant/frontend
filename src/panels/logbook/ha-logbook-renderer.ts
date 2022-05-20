@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
@@ -15,7 +16,6 @@ import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { domainIconWithoutDefault } from "../../common/entity/domain_icon";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
@@ -131,7 +131,7 @@ class HaLogbookRenderer extends LitElement {
 
     const seenEntityIds: string[] = [];
     const previous = this.entries[index - 1];
-    const stateObj = item.entity_id
+    const currentStateObj = item.entity_id
       ? this.hass.states[item.entity_id]
       : undefined;
     const item_username =
@@ -140,26 +140,37 @@ class HaLogbookRenderer extends LitElement {
       ? computeDomain(item.entity_id)
       : // Domain is there if there is no entity ID.
         item.domain!;
-    const overrideIcon =
-      item.icon ||
-      (item.domain && !stateObj
-        ? domainIconWithoutDefault(item.domain!)
-        : undefined);
-    const overrideImage = !DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
-      ? stateObj?.attributes.entity_picture_local ||
-        stateObj?.attributes.entity_picture ||
-        (!stateObj &&
-        !overrideIcon &&
-        item.domain &&
-        isComponentLoaded(this.hass, item.domain)
-          ? brandsUrl({
-              domain: item.domain!,
-              type: "icon",
-              useFallback: true,
-              darkOptimized: this.hass.themes?.darkMode,
-            })
-          : undefined)
-      : undefined;
+    const historicStateObj = item.entity_id ? <HassEntity>(<unknown>{
+          entity_id: item.entity_id,
+          state: item.state,
+          attributes: {
+            // Rebuild the historical state by copying static attributes only
+            device_class: currentStateObj?.attributes.device_class,
+            source_type: currentStateObj?.attributes.source_type,
+            has_date: currentStateObj?.attributes.has_date,
+            has_time: currentStateObj?.attributes.has_time,
+            // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+            // as they would present a false state in the log (played media right now vs actual historic data).
+            entity_picture_local: DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+              ? undefined
+              : currentStateObj?.attributes.entity_picture_local,
+            entity_picture: DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+              ? undefined
+              : currentStateObj?.attributes.entity_picture,
+          },
+        }) : undefined;
+    const overrideImage =
+      !historicStateObj &&
+      !item.icon &&
+      domain &&
+      isComponentLoaded(this.hass, domain)
+        ? brandsUrl({
+            domain: domain!,
+            type: "icon",
+            useFallback: true,
+            darkOptimized: this.hass.themes?.darkMode,
+          })
+        : undefined;
 
     return html`
       <div class="entry-container">
@@ -178,14 +189,12 @@ class HaLogbookRenderer extends LitElement {
         <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
             ${!this.noIcon
-              ? // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
-                // as they would present a false state in the log (played media right now vs actual historic data).
-                html`
+              ? html`
                   <state-badge
                     .hass=${this.hass}
-                    .overrideIcon=${overrideIcon}
+                    .overrideIcon=${item.icon}
                     .overrideImage=${overrideImage}
-                    .stateObj=${stateObj}
+                    .stateObj=${item.icon ? undefined : historicStateObj}
                     .stateColor=${false}
                   ></state-badge>
                 `
