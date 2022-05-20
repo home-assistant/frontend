@@ -10,6 +10,7 @@ const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
+  // Python timestamp. Do *1000 to get JS timestamp.
   when: number;
   name: string;
   message?: string;
