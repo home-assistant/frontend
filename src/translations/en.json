@@ -344,14 +344,10 @@
       },
       "logbook": {
         "entries_not_found": "No logbook events found.",
-        "by_user": "by user",
-        "by": "by",
-        "from": "from",
-        "for": "for",
-        "event": "event",
-        "from_service": "from service",
-        "from_automation": "from automation",
-        "from_script": "from script",
+        "service": "[%key:ui::components::service-picker::service%]",
+        "triggered_by": "triggered by",
+        "state_of": "state of",
+        "send_command": "send command",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
         "messages": {

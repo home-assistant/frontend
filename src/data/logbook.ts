@@ -1,12 +1,16 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
-import { computeDomain } from "../common/entity/compute_domain";
+import {
+  BINARY_STATE_OFF,
+  BINARY_STATE_ON,
+  DOMAINS_WITH_DYNAMIC_PICTURE,
+} from "../common/const";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
+import { computeDomain } from "../common/entity/compute_domain";
 
-const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
+export const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
@@ -26,6 +30,7 @@ export interface LogbookEntry {
   context_entity_id?: string;
   context_entity_id_name?: string;
   context_name?: string;
+  context_state?: string;
   context_message?: string;
   state?: string;
 }
@@ -82,21 +87,7 @@ const addLogbookMessage = (
   hass: HomeAssistant,
   localize: LocalizeFunc,
   logbookData: LogbookEntry[]
-): LogbookEntry[] => {
-  for (const entry of logbookData) {
-    const stateObj = hass!.states[entry.entity_id!];
-    if (entry.state && stateObj) {
-      entry.message = getLogbookMessage(
-        hass,
-        localize,
-        entry.state,
-        stateObj,
-        computeDomain(entry.entity_id!)
-      );
-    }
-  }
-  return logbookData;
-};
+): LogbookEntry[] => logbookData;
 
 const getLogbookDataCache = async (
   hass: HomeAssistant,
@@ -173,7 +164,34 @@ export const clearLogbookCache = (startDate: string, endDate: string) => {
   DATA_CACHE[`${startDate}${endDate}`] = {};
 };
 
-const getLogbookMessage = (
+export const createHistoricState = (
+  currentStateObj: HassEntity,
+  state?: string
+): HassEntity => <HassEntity>(<unknown>{
+    entity_id: currentStateObj.entity_id,
+    state: state,
+    attributes: {
+      // Rebuild the historical state by copying static attributes only
+      device_class: currentStateObj?.attributes.device_class,
+      source_type: currentStateObj?.attributes.source_type,
+      has_date: currentStateObj?.attributes.has_date,
+      has_time: currentStateObj?.attributes.has_time,
+      // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+      // as they would present a false state in the log (played media right now vs actual historic data).
+      entity_picture_local: DOMAINS_WITH_DYNAMIC_PICTURE.has(
+        computeDomain(currentStateObj.entity_id)
+      )
+        ? undefined
+        : currentStateObj?.attributes.entity_picture_local,
+      entity_picture: DOMAINS_WITH_DYNAMIC_PICTURE.has(
+        computeDomain(currentStateObj.entity_id)
+      )
+        ? undefined
+        : currentStateObj?.attributes.entity_picture,
+    },
+  });
+
+export const localizeStateMessage = (
   hass: HomeAssistant,
   localize: LocalizeFunc,
   state: string,
