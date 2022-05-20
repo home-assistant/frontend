@@ -2883,12 +2883,14 @@
             "caption": "Add Application Credential",
             "create": "Create",
             "domain": "Integration",
+            "name": "Name",
             "client_id": "OAuth Client ID",
             "client_secret": "OAuth Client Secret"
           },
           "picker": {
             "add_application_credential": "Add Application Credential",
             "headers": {
+              "name": "Name",
               "client_id": "OAuth Client ID",
               "application": "Integration"
             },
