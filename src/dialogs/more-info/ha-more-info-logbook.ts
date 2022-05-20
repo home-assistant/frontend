@@ -1,6 +1,7 @@
 import { startOfYesterday } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../panels/logbook/ha-logbook";
@@ -15,6 +16,8 @@ export class MoreInfoLogbook extends LitElement {
   private _showMoreHref = "";
 
   private _time = { recent: 86400 };
+
+  private _entityIdAsList = memoizeOne((entityId: string) => [entityId]);
 
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "logbook") || !this.entityId) {
@@ -38,7 +41,7 @@ export class MoreInfoLogbook extends LitElement {
       <ha-logbook
         .hass=${this.hass}
         .time=${this._time}
-        .entityId=${this.entityId}
+        .entityIds=${this._entityIdAsList(this.entityId)}
         narrow
         no-icon
         no-name

@@ -21,7 +21,9 @@ export class HaLogbook extends LitElement {
 
   @property() public time!: { range: [Date, Date] } | { recent: number };
 
-  @property() public entityId?: string | string[];
+  @property() public entityIds?: string[];
+
+  @property() public deviceIds?: string[];
 
   @property({ type: Boolean, attribute: "narrow" })
   public narrow = false;
@@ -120,15 +122,39 @@ export class HaLogbook extends LitElement {
 
     this._lastLogbookDate = undefined;
     this._logbookEntries = undefined;
-    this._error = undefined;
     this._throttleGetLogbookEntries();
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (changedProps.has("time") || changedProps.has("entityId")) {
+    let changed = changedProps.has("time");
+
+    for (const key of ["entityIds", "deviceIds"]) {
+      if (!changedProps.has(key)) {
+        continue;
+      }
+
+      const oldValue = changedProps.get(key) as string[] | undefined;
+      const curValue = this[key] as string[] | undefined;
+
+      if (
+        !oldValue ||
+        !curValue ||
+        oldValue.length !== curValue.length ||
+        !oldValue.every((val) => curValue.includes(val))
+      ) {
+        changed = true;
+        break;
+      }
+    }
+
+    if (changed) {
       this.refresh(true);
+      return;
+    }
+
+    if (this._filterAlwaysEmptyResults) {
       return;
     }
 
@@ -136,7 +162,7 @@ export class HaLogbook extends LitElement {
     if (
       !("recent" in this.time) ||
       !changedProps.has("hass") ||
-      !this.entityId
+      !this.entityIds
     ) {
       return;
     }
@@ -146,7 +172,7 @@ export class HaLogbook extends LitElement {
     // Refresh data if we know the entity has changed.
     if (
       !oldHass ||
-      ensureArray(this.entityId).some(
+      ensureArray(this.entityIds).some(
         (entityId) => this.hass.states[entityId] !== oldHass?.states[entityId]
       )
     ) {
@@ -155,9 +181,34 @@ export class HaLogbook extends LitElement {
     }
   }
 
+  private get _filterAlwaysEmptyResults(): boolean {
+    const entityIds = ensureArray(this.entityIds);
+    const deviceIds = ensureArray(this.deviceIds);
+
+    // If all specified filters are empty lists, we can return an empty list.
+    return (
+      (entityIds || deviceIds) &&
+      (!entityIds || entityIds.length === 0) &&
+      (!deviceIds || deviceIds.length === 0)
+    );
+  }
+
   private async _getLogBookData() {
     this._renderId += 1;
     const renderId = this._renderId;
+    this._error = undefined;
+
+    if (this._filterAlwaysEmptyResults) {
+      this._logbookEntries = [];
+      this._lastLogbookDate = undefined;
+      return;
+    }
+
+    this._updateUsers();
+    if (this.hass.user?.is_admin) {
+      this._updateTraceContexts();
+    }
+
     let startTime: Date;
     let endTime: Date;
     let appendData = false;
@@ -173,40 +224,31 @@ export class HaLogbook extends LitElement {
       endTime = new Date();
     }
 
-    const entityIdFilter = this.entityId
-      ? ensureArray(this.entityId)
-      : undefined;
-
     let newEntries: LogbookEntry[];
 
-    if (entityIdFilter?.length === 0) {
-      // filtering by 0 entities, means we never can have any results
-      newEntries = [];
-    } else {
-      this._updateUsers();
-      if (this.hass.user?.is_admin) {
-        this._updateTraceContexts();
+    try {
+      newEntries = await getLogbookData(
+        this.hass,
+        startTime.toISOString(),
+        endTime.toISOString(),
+        ensureArray(this.entityIds),
+        ensureArray(this.deviceIds)
+      );
+    } catch (err: any) {
+      if (renderId === this._renderId) {
+        this._error = err.message;
       }
-
-      try {
-        newEntries = await getLogbookData(
-          this.hass,
-          startTime.toISOString(),
-          endTime.toISOString(),
-          entityIdFilter ? entityIdFilter.toString() : undefined
-        );
-      } catch (err: any) {
-        if (renderId === this._renderId) {
-          this._error = err.message;
-        }
-        return;
-      }
+      return;
     }
 
     // New render happening.
     if (renderId !== this._renderId) {
       return;
     }
+
+    // Put newest ones on top. Reverse works in-place so
+    // make a copy first.
+    newEntries = [...newEntries].reverse();
 
     this._logbookEntries =
       appendData && this._logbookEntries
