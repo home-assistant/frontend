@@ -70,7 +70,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       ...config,
     };
     this._time = {
-      recent: this._config!.hours_to_show! * 60 * 60 * 1000,
+      recent: this._config!.hours_to_show! * 60 * 60,
     };
     this._entityId = processConfigEntities<EntityConfig>(config.entities).map(
       (entity) => entity.entity
