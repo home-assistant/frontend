@@ -67,10 +67,10 @@ class StepFlowAbort extends LitElement {
       return;
     }
     // Prompt to enter credentials and restart integration setup
-    showAddApplicationCredentialDialog(this.params.dialogParentElement, {
+    showAddApplicationCredentialDialog(this.params.dialogParentElement!, {
       selectedDomain: this.domain,
       applicationCredentialAddedCallback: () => {
-        showConfigFlowDialog(this.params.dialogParentElement, {
+        showConfigFlowDialog(this.params.dialogParentElement!, {
           dialogClosedCallback: this.params.dialogClosedCallback,
           startFlowHandler: this.domain,
           showAdvanced: this.hass.userData?.showAdvanced,

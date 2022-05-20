@@ -131,7 +131,7 @@ export interface DataEntryFlowDialogParams {
   }) => void;
   flowConfig: FlowConfig;
   showAdvanced?: boolean;
-  dialogParentElement: HTMLElement;
+  dialogParentElement?: HTMLElement;
 }
 
 export const loadDataEntryFlowDialog = () => import("./dialog-data-entry-flow");
