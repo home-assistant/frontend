@@ -97,6 +97,10 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
+export interface EnergyCardBaseConfig extends LovelaceCardConfig {
+  collection_key?: string;
+}
+
 export interface EnergySummaryCardConfig extends LovelaceCardConfig {
   type: "energy-summary";
   title?: string;

@@ -1,7 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import {
   css,
   CSSResultGroup,
@@ -12,14 +10,13 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
-import "../../layouts/ha-app-layout";
-
-import { haStyle } from "../../resources/styles";
-import "../lovelace/views/hui-view";
-import { HomeAssistant } from "../../types";
-import { Lovelace } from "../lovelace/types";
 import { LovelaceConfig } from "../../data/lovelace";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-energy-period-selector";
+import { Lovelace } from "../lovelace/types";
+import "../lovelace/views/hui-view";
 
 const LOVELACE_CONFIG: LovelaceConfig = {
   views: [

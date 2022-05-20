@@ -46,6 +46,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() private _period?: "day" | "week" | "month" | "year";
 
+  @state() private _compare? = false;
+
   public connectedCallback() {
     super.connectedCallback();
     toggleAttribute(this, "narrow", this.offsetWidth < 600);
@@ -134,6 +136,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             dense
             @value-changed=${this._handleView}
           ></ha-button-toggle-group>
+          <mwc-button
+            class="compare ${this._compare ? "active" : ""}"
+            @click=${this._toggleCompare}
+            dense
+            outlined
+          >
+            Compare data
+          </mwc-button>
         </div>
       </div>
     `;
@@ -216,6 +226,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _updateDates(energyData: EnergyData): void {
+    this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
     const dayDifference = differenceInDays(this._endDate, this._startDate);
@@ -229,6 +240,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         : dayDifference === 364 || dayDifference === 365 // Leap year
         ? "year"
         : undefined;
+  }
+
+  private _toggleCompare() {
+    this._compare = !this._compare;
+    const energyCollection = getEnergyDataCollection(this.hass, {
+      key: "energy_dashboard",
+    });
+    energyCollection.setCompare(this._compare);
+    energyCollection.refresh();
   }
 
   static get styles(): CSSResultGroup {
@@ -251,12 +271,37 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       .period {
         display: flex;
+        flex-wrap: wrap;
         justify-content: flex-end;
+        align-items: flex-end;
+      }
+      mwc-button.active::before {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-color: currentColor;
+        opacity: 0;
+        pointer-events: none;
+        content: "";
+        transition: opacity 15ms linear, background-color 15ms linear;
+        opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
+      }
+      .compare {
+        position: relative;
+        margin-left: 8px;
+        width: max-content;
+      }
+      :host([narrow]) .compare {
+        margin-left: auto;
+        margin-top: 8px;
       }
       :host {
         --mdc-button-outline-color: currentColor;
         --primary-color: currentColor;
         --mdc-theme-primary: currentColor;
+        --mdc-theme-on-primary: currentColor;
         --mdc-button-disabled-outline-color: var(--disabled-text-color);
         --mdc-button-disabled-ink-color: var(--disabled-text-color);
         --mdc-icon-button-ripple-opacity: 0.2;
