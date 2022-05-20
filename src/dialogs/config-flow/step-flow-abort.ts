@@ -54,27 +54,23 @@ class StepFlowAbort extends LitElement {
   }
 
   private async _handleMissingCreds() {
-    if (
-      !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.integrations.config_flow.missing_credentials",
-          {
-            integration: domainToName(this.hass.localize, this.domain),
-          }
-        ),
-      }))
-    ) {
-      this._flowDone();
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.missing_credentials",
+        {
+          integration: domainToName(this.hass.localize, this.domain),
+        }
+      ),
+    });
+    this._flowDone();
+    if (!confirm) {
       return;
     }
-
-    showAddApplicationCredentialDialog(this, {
+    // Prompt to enter credentials and restart integration setup
+    showAddApplicationCredentialDialog(this.params.dialogParentElement, {
       selectedDomain: this.domain,
-      dialogAbortedCallback: () => {
-        this._flowDone();
-      },
       applicationCredentialAddedCallback: () => {
-        showConfigFlowDialog(this, {
+        showConfigFlowDialog(this.params.dialogParentElement, {
           dialogClosedCallback: this.params.dialogClosedCallback,
           startFlowHandler: this.domain,
           showAdvanced: this.hass.userData?.showAdvanced,
