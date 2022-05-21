@@ -48,10 +48,10 @@ export class HaPanelLogbook extends LitElement {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2, 0, 0, 0);
+    start.setHours(start.getHours() - 1, 0, 0, 0);
 
     const end = new Date();
-    end.setHours(end.getHours() + 1, 0, 0, 0);
+    end.setHours(end.getHours() + 2, 0, 0, 0);
 
     this._time = { range: [start, end] };
   }
