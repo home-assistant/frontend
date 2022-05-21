@@ -223,7 +223,7 @@ export class HaLogbook extends LitElement {
           // eslint-disable-next-line no-console
           console.log(message);
         },
-        new Date(new Date().getTime() - 60 * 60).toISOString()
+        new Date(new Date().getTime() - 5 * 60 * 1000).toISOString()
       );
     }
     this._renderId += 1;
