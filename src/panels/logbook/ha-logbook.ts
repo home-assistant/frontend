@@ -180,6 +180,10 @@ export class HaLogbook extends LitElement {
       const oldValue = changedProps.get(key) as string[] | undefined;
       const curValue = this[key] as string[] | undefined;
 
+      // If they make the filter more specific we want
+      // to change the subscription since it will reduce
+      // the overhead on the backend as the event stream
+      // can be a firehose for all events.
       if (idsChanged(oldValue, curValue)) {
         changed = true;
         break;
