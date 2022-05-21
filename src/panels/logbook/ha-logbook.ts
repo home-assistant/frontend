@@ -138,10 +138,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    if (this._subscribed) {
-      this._unsubscribe();
-    }
-
+    this._unsubscribe();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -199,7 +196,6 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscriptionInfo = undefined;
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
@@ -211,9 +207,7 @@ export class HaLogbook extends LitElement {
   }
 
   private _unsubscribeAndEmptyEntries() {
-    if (this._subscribed) {
-      this._unsubscribe();
-    }
+    this._unsubscribe();
     this._logbookEntries = [];
   }
 
@@ -280,9 +274,7 @@ export class HaLogbook extends LitElement {
     // We are only fetching in the past
     // with a time window that does not
     // extend into the future
-    if (this._subscribed) {
-      this._unsubscribe();
-    }
+    this._unsubscribe();
 
     let newEntries: LogbookEntry[];
 
