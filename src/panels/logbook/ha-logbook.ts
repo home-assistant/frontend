@@ -126,15 +126,8 @@ export class HaLogbook extends LitElement {
     `;
   }
 
-  public async refresh() {
-    if (this._subscribed) {
-      return;
-    }
-    this._refresh(false);
-  }
-
-  private async _refresh(force = false) {
-    if (!force && this._logbookEntries === undefined) {
+  public async refresh(force = false) {
+    if (!force && (this._subscribed || this._logbookEntries === undefined)) {
       return;
     }
 
