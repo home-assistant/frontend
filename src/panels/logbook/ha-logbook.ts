@@ -21,7 +21,12 @@ import "./ha-logbook-renderer";
 export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public time!: { range: [Date, Date] } | { recent: number };
+  @property() public time!:
+    | { range: [Date, Date] }
+    | {
+        // Seconds
+        recent: number;
+      };
 
   @property() public entityIds?: string[];
 
@@ -238,17 +243,19 @@ export class HaLogbook extends LitElement {
 
     let startTime: Date;
     let endTime: Date;
-    let appendData = false;
+    let purgeBeforePythonTime: number | undefined;
 
     if ("range" in this.time) {
       [startTime, endTime] = this.time.range;
-    } else {
-      // Recent data
-      appendData = true;
+    } else if ("recent" in this.time) {
+      purgeBeforePythonTime =
+        new Date(new Date().getTime() - this.time.recent * 1000).getTime() /
+        1000;
       startTime =
-        this._lastLogbookDate ||
-        new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+        this._lastLogbookDate || new Date(purgeBeforePythonTime * 1000);
       endTime = new Date();
+    } else {
+      throw new Error("Unexpected time specified");
     }
 
     let newEntries: LogbookEntry[];
@@ -278,8 +285,13 @@ export class HaLogbook extends LitElement {
     newEntries = [...newEntries].reverse();
 
     this._logbookEntries =
-      appendData && this._logbookEntries
-        ? newEntries.concat(...this._logbookEntries)
+      // If we have a purgeBeforeTime, it means we're in recent-mode and fetch batches
+      purgeBeforePythonTime && this._logbookEntries
+        ? newEntries.concat(
+            ...this._logbookEntries.filter(
+              (entry) => entry.when > purgeBeforePythonTime!
+            )
+          )
         : newEntries;
     this._lastLogbookDate = endTime;
   }
