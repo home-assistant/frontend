@@ -181,13 +181,13 @@ export const subscribeLogbook = (
   deviceIds?: string[]
 ): Promise<UnsubscribeFunc> => {
   // If all specified filters are empty lists, we can return an empty list.
-  // if (
-  //  (entityIds || deviceIds) &&
-  //  (!entityIds || entityIds.length === 0) &&
-  //  (!deviceIds || deviceIds.length === 0)
-  // ) {
-  //  return Promise.resolve([]);
-  // }
+  if (
+    (entityIds || deviceIds) &&
+    (!entityIds || entityIds.length === 0) &&
+    (!deviceIds || deviceIds.length === 0)
+  ) {
+    return Promise.reject("No entities or devices");
+  }
   const params: any = {
     type: "logbook/event_stream",
     start_time: startDate,

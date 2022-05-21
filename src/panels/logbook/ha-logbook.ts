@@ -245,6 +245,8 @@ export class HaLogbook extends LitElement {
     }
 
     if (endTime >= now) {
+      // TODO: handle when the subscription changes with
+      // different entityIds or deviceIds
       if (!this._subscribed) {
         this._subscribed = subscribeLogbook(
           this.hass,
