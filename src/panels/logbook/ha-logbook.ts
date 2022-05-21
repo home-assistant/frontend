@@ -83,7 +83,7 @@ export class HaLogbook extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  public subscriptionInfo?: LogbookSubscriptionInfo;
+  private _subscriptionInfo?: LogbookSubscriptionInfo;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -209,7 +209,7 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this.subscriptionInfo = undefined;
+      this._subscriptionInfo = undefined;
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
@@ -265,7 +265,7 @@ export class HaLogbook extends LitElement {
 
     if (endTime >= now) {
       if (!this._subscribed) {
-        this.subscriptionInfo = {
+        this._subscriptionInfo = {
           startTime: startTime,
           endTime: endTime,
           entityIds: this.entityIds,
