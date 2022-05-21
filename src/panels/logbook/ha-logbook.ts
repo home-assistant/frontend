@@ -215,17 +215,6 @@ export class HaLogbook extends LitElement {
   }
 
   private async _getLogBookData() {
-    if (!this._subscribed) {
-      this._subscribed = subscribeLogbook(
-        this.hass,
-
-        (message) => {
-          // eslint-disable-next-line no-console
-          console.log(message);
-        },
-        new Date(new Date().getTime() - 5 * 60 * 1000).toISOString()
-      );
-    }
     this._renderId += 1;
     const renderId = this._renderId;
     this._error = undefined;
@@ -244,18 +233,42 @@ export class HaLogbook extends LitElement {
     let startTime: Date;
     let endTime: Date;
     let purgeBeforePythonTime: number | undefined;
+    const now = new Date();
 
     if ("range" in this.time) {
       [startTime, endTime] = this.time.range;
     } else if ("recent" in this.time) {
       purgeBeforePythonTime =
-        new Date(new Date().getTime() - this.time.recent * 1000).getTime() /
-        1000;
+        new Date(now.getTime() - this.time.recent * 1000).getTime() / 1000;
       startTime =
         this._lastLogbookDate || new Date(purgeBeforePythonTime * 1000);
-      endTime = new Date();
+      endTime = now;
     } else {
       throw new Error("Unexpected time specified");
+    }
+
+    if (endTime >= now) {
+      if (!this._subscribed) {
+        this._subscribed = subscribeLogbook(
+          this.hass,
+
+          (newEntries) => {
+            // eslint-disable-next-line no-console
+            console.log(newEntries);
+            if (newEntries.length) {
+              this._processNewEntries(newEntries);
+            }
+          },
+          startTime.toISOString(),
+          ensureArray(this.entityIds),
+          ensureArray(this.deviceIds)
+        );
+      }
+      return;
+    }
+
+    if (this._subscribed) {
+      this._unsubscribe();
     }
 
     let newEntries: LogbookEntry[];
@@ -280,9 +293,23 @@ export class HaLogbook extends LitElement {
       return;
     }
 
+    if (newEntries.length) {
+      this._processNewEntries(newEntries);
+    }
+  }
+
+  private _processNewEntries = (newEntries: LogbookEntry[]) => {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
+    const endTime = new Date(newEntries[-1].when);
     newEntries = [...newEntries].reverse();
+
+    let purgeBeforePythonTime: number | undefined;
+    if ("recent" in this.time) {
+      const now = new Date();
+      purgeBeforePythonTime =
+        new Date(now.getTime() - this.time.recent * 1000).getTime() / 1000;
+    }
 
     this._logbookEntries =
       // If we have a purgeBeforeTime, it means we're in recent-mode and fetch batches
@@ -293,8 +320,9 @@ export class HaLogbook extends LitElement {
             )
           )
         : newEntries;
+
     this._lastLogbookDate = endTime;
-  }
+  };
 
   private _updateTraceContexts = throttle(async () => {
     this._traceContexts = await loadTraceContexts(this.hass);

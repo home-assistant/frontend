@@ -175,7 +175,7 @@ const getLogbookDataFromServer = (
 
 export const subscribeLogbook = (
   hass: HomeAssistant,
-  callbackFunction: (message: any) => void,
+  callbackFunction: (message: LogbookEntry[]) => void,
   startDate: string,
   entityIds?: string[],
   deviceIds?: string[]
@@ -198,7 +198,7 @@ export const subscribeLogbook = (
   if (deviceIds?.length) {
     params.device_ids = deviceIds;
   }
-  return hass.connection.subscribeMessage(
+  return hass.connection.subscribeMessage<LogbookEntry[]>(
     (message) => callbackFunction(message),
     params
   );
