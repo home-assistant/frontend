@@ -218,7 +218,7 @@ export class HaLogbook extends LitElement {
           // eslint-disable-next-line no-console
           console.log(message);
         },
-        new Date().toISOString()
+        new Date(new Date().getTime() - 60 * 60).toISOString()
       );
     }
     this._renderId += 1;
