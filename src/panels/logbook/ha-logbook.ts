@@ -1,3 +1,4 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -9,6 +10,7 @@ import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
+  subscribeLogbook,
 } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
@@ -53,6 +55,8 @@ export class HaLogbook extends LitElement {
   private _lastLogbookDate?: Date;
 
   private _renderId = 1;
+
+  private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -193,7 +197,30 @@ export class HaLogbook extends LitElement {
     );
   }
 
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
   private async _getLogBookData() {
+    if (!this._subscribed) {
+      this._subscribed = subscribeLogbook(
+        this.hass,
+
+        (message) => {
+          // eslint-disable-next-line no-console
+          console.log(message);
+        },
+        new Date().toISOString()
+      );
+    }
     this._renderId += 1;
     const renderId = this._renderId;
     this._error = undefined;
