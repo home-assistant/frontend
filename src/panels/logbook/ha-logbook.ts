@@ -17,6 +17,9 @@ import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
+const findStartOfRecentTime = (now: Date, recentTime: number) =>
+  new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
+
 @customElement("ha-logbook")
 export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -56,8 +59,6 @@ export class HaLogbook extends LitElement {
   @state() private _userIdToName = {};
 
   @state() private _error?: string;
-
-  private _lastLogbookDate?: Date;
 
   private _renderId = 1;
 
@@ -129,7 +130,6 @@ export class HaLogbook extends LitElement {
       );
     }
 
-    this._lastLogbookDate = undefined;
     this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
@@ -221,7 +221,6 @@ export class HaLogbook extends LitElement {
 
     if (this._filterAlwaysEmptyResults) {
       this._logbookEntries = [];
-      this._lastLogbookDate = undefined;
       return;
     }
 
@@ -238,10 +237,8 @@ export class HaLogbook extends LitElement {
     if ("range" in this.time) {
       [startTime, endTime] = this.time.range;
     } else if ("recent" in this.time) {
-      purgeBeforePythonTime =
-        new Date(now.getTime() - this.time.recent * 1000).getTime() / 1000;
-      startTime =
-        this._lastLogbookDate || new Date(purgeBeforePythonTime * 1000);
+      purgeBeforePythonTime = findStartOfRecentTime(now, this.time.recent);
+      startTime = new Date(purgeBeforePythonTime * 1000);
       endTime = now;
     } else {
       throw new Error("Unexpected time specified");
@@ -251,12 +248,16 @@ export class HaLogbook extends LitElement {
       if (!this._subscribed) {
         this._subscribed = subscribeLogbook(
           this.hass,
-
           (newEntries) => {
-            // eslint-disable-next-line no-console
-            console.log(newEntries);
-            if (newEntries.length) {
-              this._processNewEntries(newEntries);
+            if ("recent" in this.time) {
+              // start time is a sliding window purge old ones
+              this._processNewEntriesEvictExpired(
+                newEntries,
+                findStartOfRecentTime(new Date(), this.time.recent)
+              );
+            } else if ("range" in this.time) {
+              // start time is fixed, we can just append
+              this._appendNewEntries(newEntries);
             }
           },
           startTime.toISOString(),
@@ -267,6 +268,9 @@ export class HaLogbook extends LitElement {
       return;
     }
 
+    // We are only fetching in the past
+    // with a time window that does not
+    // extend into the future
     if (this._subscribed) {
       this._unsubscribe();
     }
@@ -293,35 +297,32 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    if (newEntries.length) {
-      this._processNewEntries(newEntries);
-    }
+    this._logbookEntries = [...newEntries].reverse();
   }
 
-  private _processNewEntries = (newEntries: LogbookEntry[]) => {
+  private _appendNewEntries = (newEntries: LogbookEntry[]) => {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
-    const endTime = new Date(newEntries[-1].when);
     newEntries = [...newEntries].reverse();
+    this._logbookEntries = this._logbookEntries
+      ? newEntries.concat(...this._logbookEntries)
+      : newEntries;
+  };
 
-    let purgeBeforePythonTime: number | undefined;
-    if ("recent" in this.time) {
-      const now = new Date();
-      purgeBeforePythonTime =
-        new Date(now.getTime() - this.time.recent * 1000).getTime() / 1000;
-    }
-
-    this._logbookEntries =
-      // If we have a purgeBeforeTime, it means we're in recent-mode and fetch batches
-      purgeBeforePythonTime && this._logbookEntries
-        ? newEntries.concat(
-            ...this._logbookEntries.filter(
-              (entry) => entry.when > purgeBeforePythonTime!
-            )
+  private _processNewEntriesEvictExpired = (
+    newEntries: LogbookEntry[],
+    purgeBeforePythonTime: number
+  ) => {
+    // Put newest ones on top. Reverse works in-place so
+    // make a copy first.
+    newEntries = [...newEntries].reverse();
+    this._logbookEntries = this._logbookEntries
+      ? newEntries.concat(
+          ...this._logbookEntries.filter(
+            (entry) => entry.when > purgeBeforePythonTime!
           )
-        : newEntries;
-
-    this._lastLogbookDate = endTime;
+        )
+      : newEntries;
   };
 
   private _updateTraceContexts = throttle(async () => {
