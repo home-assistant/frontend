@@ -131,6 +131,7 @@ export interface CallServiceActionConfig extends BaseActionConfig {
   action: "call-service";
   service: string;
   target?: HassServiceTarget;
+  // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, unknown>;
   data?: Record<string, unknown>;
 }

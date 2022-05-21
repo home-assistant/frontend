@@ -51,6 +51,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
 export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
   title?: string;
   service?: string;
+  // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, unknown>;
   data?: Record<string, unknown>;
 }

@@ -45,7 +45,7 @@ export class HuiActionEditor extends LitElement {
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
       service: this._service,
-      data: config.service_data ?? config.data,
+      data: config.data ?? config.service_data,
       target: config.target,
     })
   );

@@ -23,7 +23,7 @@ export class HuiCallServiceRow extends HuiButtonRow {
       tap_action: {
         action: "call-service",
         service: callServiceConfig.service,
-        data: callServiceConfig.service_data ?? callServiceConfig.data,
+        data: callServiceConfig.data ?? callServiceConfig.service_data,
       },
       ...callServiceConfig,
       type: "button",
