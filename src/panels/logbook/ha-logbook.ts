@@ -183,7 +183,7 @@ export class HaLogbook extends LitElement {
       // If they make the filter more specific we want
       // to change the subscription since it will reduce
       // the overhead on the backend as the event stream
-      // can be a firehose for all events.
+      // can be a firehose for all state events.
       if (idsChanged(oldValue, curValue)) {
         changed = true;
         break;
