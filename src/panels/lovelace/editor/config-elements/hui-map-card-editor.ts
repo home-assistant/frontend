@@ -161,6 +161,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       css`
         .geo_location_sources {
           padding-left: 20px;
+          padding-inline-start: 20px;
+          direction: var(--direction);
         }
       `,
     ];
