@@ -9,10 +9,6 @@ import { UNAVAILABLE_STATES } from "./entity";
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
-// type LogBookUpdatedEvent = HassEventBase & {
-//   data: LogbookEntry[];
-// };
-
 export interface LogbookEntry {
   // Python timestamp. Do *1000 to get JS timestamp.
   when: number;
@@ -199,7 +195,7 @@ export const subscribeLogbook = (
     params.device_ids = deviceIds;
   }
   return hass.connection.subscribeMessage<LogbookEntry[]>(
-    (message) => callbackFunction(message),
+    (message?) => callbackFunction(message),
     params
   );
 };

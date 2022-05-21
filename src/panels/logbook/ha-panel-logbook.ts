@@ -174,7 +174,7 @@ export class HaPanelLogbook extends LitElement {
         if (
           !this._entityIds ||
           entityIds.length !== this._entityIds.length ||
-          this._entityIds.every((val, idx) => val === entityIds[idx])
+          !this._entityIds.every((val, idx) => val === entityIds[idx])
         ) {
           this._entityIds = entityIds;
         }

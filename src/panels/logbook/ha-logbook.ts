@@ -17,8 +17,27 @@ import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
+interface LogbookSubscriptionInfo {
+  startTime: Date;
+  endTime: Date;
+  entityIds?: string[];
+  deviceIds?: string[];
+}
+
 const findStartOfRecentTime = (now: Date, recentTime: number) =>
   new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
+
+const idsChanged = (oldIds?: string[], newIds?: string[]) => {
+  if (oldIds === undefined && newIds === undefined) {
+    return false;
+  }
+  return (
+    !oldIds ||
+    !newIds ||
+    oldIds.length !== newIds.length ||
+    !oldIds.every((val) => newIds.includes(val))
+  );
+};
 
 @customElement("ha-logbook")
 export class HaLogbook extends LitElement {
@@ -63,6 +82,8 @@ export class HaLogbook extends LitElement {
   private _renderId = 1;
 
   private _subscribed?: Promise<UnsubscribeFunc>;
+
+  public subscriptionInfo?: LogbookSubscriptionInfo;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -115,8 +136,20 @@ export class HaLogbook extends LitElement {
   }
 
   public async refresh(force = false) {
+    if (this._subscribed) {
+      return;
+    }
+    this._refresh(force);
+  }
+
+  private async _refresh(force = false) {
     if (!force && this._logbookEntries === undefined) {
       return;
+    }
+
+    if (this._subscribed) {
+      // Subscription does not match request
+      this._unsubscribe();
     }
 
     this._throttleGetLogbookEntries.cancel();
@@ -147,46 +180,14 @@ export class HaLogbook extends LitElement {
       const oldValue = changedProps.get(key) as string[] | undefined;
       const curValue = this[key] as string[] | undefined;
 
-      if (
-        !oldValue ||
-        !curValue ||
-        oldValue.length !== curValue.length ||
-        !oldValue.every((val) => curValue.includes(val))
-      ) {
+      if (idsChanged(oldValue, curValue)) {
         changed = true;
         break;
       }
     }
 
     if (changed) {
-      this.refresh(true);
-      return;
-    }
-
-    if (this._filterAlwaysEmptyResults) {
-      return;
-    }
-
-    // We only need to fetch again if we track recent entries for an entity
-    if (
-      !("recent" in this.time) ||
-      !changedProps.has("hass") ||
-      !this.entityIds
-    ) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    // Refresh data if we know the entity has changed.
-    if (
-      !oldHass ||
-      ensureArray(this.entityIds).some(
-        (entityId) => this.hass.states[entityId] !== oldHass?.states[entityId]
-      )
-    ) {
-      // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleGetLogbookEntries, 1000);
+      this._refresh(true);
     }
   }
 
@@ -204,6 +205,7 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
+      this.subscriptionInfo = undefined;
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
@@ -214,13 +216,20 @@ export class HaLogbook extends LitElement {
     this._unsubscribe();
   }
 
+  private _unsubscribeAndEmptyEntries() {
+    if (this._subscribed) {
+      this._unsubscribe();
+    }
+    this._logbookEntries = [];
+  }
+
   private async _getLogBookData() {
     this._renderId += 1;
     const renderId = this._renderId;
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._logbookEntries = [];
+      this._unsubscribeAndEmptyEntries();
       return;
     }
 
@@ -244,13 +253,23 @@ export class HaLogbook extends LitElement {
       throw new Error("Unexpected time specified");
     }
 
+    if (startTime > now) {
+      // Time Travel not yet invented
+      this._unsubscribeAndEmptyEntries();
+      return;
+    }
+
     if (endTime >= now) {
-      // TODO: handle when the subscription changes with
-      // different entityIds or deviceIds
       if (!this._subscribed) {
+        this.subscriptionInfo = {
+          startTime: startTime,
+          endTime: endTime,
+          entityIds: this.entityIds,
+          deviceIds: this.deviceIds,
+        };
         this._subscribed = subscribeLogbook(
           this.hass,
-          (newEntries) => {
+          (newEntries?) => {
             if ("recent" in this.time) {
               // start time is a sliding window purge old ones
               this._processNewEntriesEvictExpired(
