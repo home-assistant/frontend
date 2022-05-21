@@ -40,7 +40,7 @@ const CONFIGS = [
         left: 90%
         padding: 0px
       service: light.turn_off
-      service_data:
+      data:
         entity_id: group.all_lights
     - type: icon
       icon: mdi:cctv
@@ -88,7 +88,7 @@ const CONFIGS = [
         left: 90%
         padding: 0px
       service: light.turn_off
-      service_data:
+      data:
         entity_id: group.all_lights
     - type: icon
       icon: mdi:cctv

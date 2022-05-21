@@ -119,7 +119,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_4"],
               },
@@ -164,7 +164,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_2"],
               },
@@ -182,7 +182,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_3"],
               },
@@ -200,7 +200,7 @@ export const basicTrace: DemoTrace = {
             params: {
               domain: "input_boolean",
               service: "toggle",
-              service_data: {},
+              data: {},
               target: {
                 entity_id: ["input_boolean.toggle_4"],
               },
