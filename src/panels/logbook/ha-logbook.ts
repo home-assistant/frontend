@@ -17,13 +17,6 @@ import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
-interface LogbookSubscriptionInfo {
-  startTime: Date;
-  endTime: Date;
-  entityIds?: string[];
-  deviceIds?: string[];
-}
-
 const findStartOfRecentTime = (now: Date, recentTime: number) =>
   new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
 
@@ -83,8 +76,6 @@ export class HaLogbook extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  private _subscriptionInfo?: LogbookSubscriptionInfo;
-
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
     10000
@@ -135,11 +126,11 @@ export class HaLogbook extends LitElement {
     `;
   }
 
-  public async refresh(force = false) {
+  public async refresh() {
     if (this._subscribed) {
       return;
     }
-    this._refresh(force);
+    this._refresh(false);
   }
 
   private async _refresh(force = false) {
@@ -148,7 +139,6 @@ export class HaLogbook extends LitElement {
     }
 
     if (this._subscribed) {
-      // Subscription does not match request
       this._unsubscribe();
     }
 
@@ -265,12 +255,6 @@ export class HaLogbook extends LitElement {
 
     if (endTime >= now) {
       if (!this._subscribed) {
-        this._subscriptionInfo = {
-          startTime: startTime,
-          endTime: endTime,
-          entityIds: this.entityIds,
-          deviceIds: this.deviceIds,
-        };
         this._subscribed = subscribeLogbook(
           this.hass,
           (newEntries?) => {
