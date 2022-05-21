@@ -171,7 +171,7 @@ export class HaLogbook extends LitElement {
     }
 
     if (changed) {
-      this._refresh(true);
+      this.refresh(true);
     }
   }
 
