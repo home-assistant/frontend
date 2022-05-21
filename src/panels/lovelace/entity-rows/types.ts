@@ -41,6 +41,7 @@ export interface TextConfig {
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
   service: string;
+  // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data?: Record<string, any>;
   data?: Record<string, any>;
   action_name?: string;
