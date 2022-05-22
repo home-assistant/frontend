@@ -218,29 +218,27 @@ export class HaLogbook extends LitElement {
 
   private _calculateLogbookPeriod() {
     const now = new Date();
-    let logbookPeriod: LogbookTimePeriod;
     if ("range" in this.time) {
-      logbookPeriod = {
+      return <LogbookTimePeriod>{
         now: now,
         startTime: this.time.range[0],
         endTime: this.time.range[1],
         purgeBeforePythonTime: undefined,
       };
-    } else if ("recent" in this.time) {
+    }
+    if ("recent" in this.time) {
       const purgeBeforePythonTime = findStartOfRecentTime(
         now,
         this.time.recent
       );
-      logbookPeriod = {
+      return <LogbookTimePeriod>{
         now: now,
         startTime: new Date(purgeBeforePythonTime * 1000),
         endTime: now,
         purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
       };
-    } else {
-      throw new Error("Unexpected time specified");
     }
-    return logbookPeriod;
+    throw new Error("Unexpected time specified");
   }
 
   private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
