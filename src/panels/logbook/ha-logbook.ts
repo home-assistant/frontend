@@ -253,13 +253,13 @@ export class HaLogbook extends LitElement {
       (newEntries?) => {
         if ("recent" in this.time) {
           // start time is a sliding window purge old ones
-          this._processNewEntriesEvictExpired(
+          this._processNewEntries(
             newEntries,
             findStartOfRecentTime(new Date(), this.time.recent)
           );
         } else if ("range" in this.time) {
           // start time is fixed, we can just append
-          this._appendNewEntries(newEntries);
+          this._processNewEntries(newEntries, undefined);
         }
       },
       logbookPeriod.startTime.toISOString(),
@@ -327,29 +327,35 @@ export class HaLogbook extends LitElement {
     this._logbookEntries = [...newEntries].reverse();
   }
 
-  private _appendNewEntries = (newEntries: LogbookEntry[]) => {
-    // Put newest ones on top. Reverse works in-place so
-    // make a copy first.
-    newEntries = [...newEntries].reverse();
-    this._logbookEntries = this._logbookEntries
-      ? newEntries.concat(...this._logbookEntries)
-      : newEntries;
-  };
+  private _nonExpiredRecords = (purgeBeforePythonTime: number | undefined) =>
+    !this._logbookEntries
+      ? []
+      : purgeBeforePythonTime
+      ? this._logbookEntries.filter(
+          (entry) => entry.when > purgeBeforePythonTime!
+        )
+      : this._logbookEntries;
 
-  private _processNewEntriesEvictExpired = (
+  private _processNewEntries = (
     newEntries: LogbookEntry[],
-    purgeBeforePythonTime: number
+    purgeBeforePythonTime: number | undefined
   ) => {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
     newEntries = [...newEntries].reverse();
-    this._logbookEntries = this._logbookEntries
-      ? newEntries.concat(
-          ...this._logbookEntries.filter(
-            (entry) => entry.when > purgeBeforePythonTime!
-          )
-        )
-      : newEntries;
+    if (!this._logbookEntries) {
+      this._logbookEntries = newEntries;
+      return;
+    }
+    const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
+    this._logbookEntries =
+      newEntries[0].when >= this._logbookEntries[0].when
+        ? // The new records are newer than the old records
+          // append the old records to the end of the new records
+          newEntries.concat(...nonExpiredRecords)
+        : // The new records are older than the old records
+          // append the new records to the end of the old records
+          nonExpiredRecords.concat(...newEntries);
   };
 
   private _updateTraceContexts = throttle(async () => {
