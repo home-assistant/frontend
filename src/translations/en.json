@@ -344,8 +344,10 @@
       },
       "logbook": {
         "entries_not_found": "No logbook events found.",
-        "service": "[%key:ui::components::service-picker::service%]",
         "triggered_by": "triggered by",
+        "triggered_by_automation": "triggered by automation",
+        "triggered_by_script": "triggered by script",
+        "triggered_by_service": "triggered by service",
         "triggered_by_numeric_state_of": "triggered by numeric state of",
         "triggered_by_state_of": "triggered by state of",
         "triggered_by_event": "triggered by event",

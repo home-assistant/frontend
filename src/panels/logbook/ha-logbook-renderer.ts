@@ -358,7 +358,9 @@ class HaLogbookRenderer extends LitElement {
               item.context_state
             )
           : undefined;
-      return html`${this.hass.localize("ui.components.logbook.triggered_by")}
+      return html`${this.hass.localize(
+        "ui.components.logbook.triggered_by_state_of"
+      )}
       ${this._renderEntity(item.context_entity_id, item.context_entity_id_name)}
       ${historicStateObj
         ? localizeStateMessage(
@@ -372,8 +374,9 @@ class HaLogbookRenderer extends LitElement {
     }
     // Service call
     if (item.context_event_type === "call_service") {
-      return html`${this.hass.localize("ui.components.logbook.triggered_by")}
-      ${this.hass.localize("ui.components.logbook.service")}
+      return html`${this.hass.localize(
+        "ui.components.logbook.triggered_by_service"
+      )}
       ${item.context_domain}.${item.context_service}`;
     }
     if (
@@ -392,7 +395,11 @@ class HaLogbookRenderer extends LitElement {
         ? item.context_source
         : item.context_message.replace("triggered by ", "");
       const contextTriggerSource = localizeTriggerSource(this.hass, triggerMsg);
-      return html`${this.hass.localize("ui.components.logbook.triggered_by")}
+      return html`${this.hass.localize(
+        item.context_event_type === "automation_triggered"
+          ? "ui.components.logbook.triggered_by_automation"
+          : "ui.components.logbook.triggered_by_script"
+      )}
       ${this._renderEntity(item.context_entity_id, item.context_entity_id_name)}
       ${item.context_message
         ? this._formatMessageWithPossibleEntity(
@@ -402,6 +409,7 @@ class HaLogbookRenderer extends LitElement {
         : ""}`;
     }
     // Generic externally described logbook platform
+    // These are not localizable
     return html` ${this.hass.localize("ui.components.logbook.triggered_by")}
     ${item.context_name}
     ${this._formatMessageWithPossibleEntity(
