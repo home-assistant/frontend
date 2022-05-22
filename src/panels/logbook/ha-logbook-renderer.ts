@@ -349,6 +349,7 @@ class HaLogbookRenderer extends LitElement {
   }
 
   private _renderContextMessage(item: LogbookEntry, seenEntityIds: string[]) {
+    // State change
     if (item.context_state) {
       const historicStateObj =
         item.context_entity_id && item.context_entity_id in this.hass.states
@@ -369,6 +370,7 @@ class HaLogbookRenderer extends LitElement {
           )
         : item.context_state}`;
     }
+    // Service call
     if (item.context_event_type === "call_service") {
       return html`${this.hass.localize("ui.components.logbook.triggered_by")}
       ${this.hass.localize("ui.components.logbook.service")}
@@ -380,10 +382,10 @@ class HaLogbookRenderer extends LitElement {
     ) {
       return "";
     }
-
+    // Automation or script
     if (
-      item.context_event_type &&
-      triggerDomains.includes(item.context_event_type)
+      item.context_event_type === "automation_triggered" ||
+      item.context_event_type === "script_started"
     ) {
       // context_source is available in 2022.6 and later
       const triggerMsg = item.context_source
@@ -399,7 +401,7 @@ class HaLogbookRenderer extends LitElement {
           )
         : ""}`;
     }
-
+    // Generic externally described logbook platform
     return html` ${this.hass.localize("ui.components.logbook.triggered_by")}
     ${item.context_name}
     ${this._formatMessageWithPossibleEntity(
