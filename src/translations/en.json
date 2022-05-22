@@ -354,7 +354,7 @@
         "triggered_by_time": "triggered by time",
         "triggered_by_time_pattern": "triggered by time pattern",
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
-        "triggered_by_homeassistant_started": "triggered by Home Assistant started",
+        "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
         "messages": {
