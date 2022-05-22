@@ -10,7 +10,7 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
-export const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
+const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
@@ -36,6 +36,20 @@ export interface LogbookEntry {
   context_source?: string; // The trigger source
   context_message?: string;
 }
+
+//
+// Localization mapping for all the triggers in core
+// in homeassistant.components.homeassistant.triggers
+//
+const triggerPhrases = {
+  "numeric state of": "triggered_by_numeric_state_of", // number state trigger
+  "state of": "triggered_by_state_of", // state trigger
+  event: "triggered_by_event", // event trigger
+  time: "triggered_by_time", // time trigger
+  "time pattern": "triggered_by_time_pattern", // time trigger
+  "Home Assistant stopping": "triggered_by_homeassistant_stopping", // stop event
+  "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
+};
 
 const DATA_CACHE: {
   [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
@@ -177,6 +191,21 @@ export const createHistoricState = (
         : currentStateObj?.attributes.entity_picture,
     },
   });
+
+export const localizeTriggerSource = (
+  localize: LocalizeFunc,
+  source: string
+) => {
+  for (const triggerPhrase in triggerPhrases) {
+    if (source.startsWith(triggerPhrase)) {
+      return source.replace(
+        triggerPhrase,
+        `${localize(`ui.components.logbook.${triggerPhrases[triggerPhrase]}`)}`
+      );
+    }
+  }
+  return source;
+};
 
 export const localizeStateMessage = (
   hass: HomeAssistant,

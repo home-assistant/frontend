@@ -22,6 +22,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
 import {
   createHistoricState,
+  localizeTriggerSource,
   localizeStateMessage,
   LogbookEntry,
 } from "../../data/logbook";
@@ -36,33 +37,6 @@ import { brandsUrl } from "../../util/brands-url";
 
 const triggerDomains = ["script", "automation"];
 
-//
-// Localization mapping for all the triggers in core
-// in homeassistant.components.homeassistant.triggers
-//
-const triggerPhrases = {
-  "numeric state of": "triggered_by_numeric_state_of", // number state trigger
-  "state of": "triggered_by_state_of", // state trigger
-  event: "triggered_by_event", // event trigger
-  time: "triggered_by_time", // time trigger
-  "time pattern": "triggered_by_time_pattern", // time trigger
-  "Home Assistant stopping": "triggered_by_homeassistant_stopping", // stop event
-  "Home Assistant starting": "triggered_by_homeassistant_starting", // start event
-};
-
-const localizeTriggerSource = (hass: HomeAssistant, source: string) => {
-  for (const triggerPhrase in triggerPhrases) {
-    if (source.startsWith(triggerPhrase)) {
-      return source.replace(
-        triggerPhrase,
-        `${hass.localize(
-          `ui.components.logbook.${triggerPhrases[triggerPhrase]}`
-        )}`
-      );
-    }
-  }
-  return source;
-};
 const hasContext = (item: LogbookEntry) =>
   item.context_event_type || item.context_state || item.context_message;
 const stripEntityId = (message: string, entityId?: string) =>
@@ -307,7 +281,7 @@ class HaLogbookRenderer extends LitElement {
         // as otherwise we display duplicate triggers
         return "";
       }
-      message = localizeTriggerSource(this.hass, item.source);
+      message = localizeTriggerSource(this.hass.localize, item.source);
     }
     return message
       ? this._formatMessageWithPossibleEntity(
@@ -394,7 +368,10 @@ class HaLogbookRenderer extends LitElement {
       const triggerMsg = item.context_source
         ? item.context_source
         : item.context_message.replace("triggered by ", "");
-      const contextTriggerSource = localizeTriggerSource(this.hass, triggerMsg);
+      const contextTriggerSource = localizeTriggerSource(
+        this.hass.localize,
+        triggerMsg
+      );
       return html`${this.hass.localize(
         item.context_event_type === "automation_triggered"
           ? "ui.components.logbook.triggered_by_automation"
