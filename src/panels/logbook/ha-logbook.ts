@@ -17,6 +17,13 @@ import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 
+interface LogbookTimePeriod {
+  now: Date;
+  startTime: Date;
+  endTime: Date;
+  purgeBeforePythonTime: number | undefined;
+}
+
 const findStartOfRecentTime = (now: Date, recentTime: number) =>
   new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
 
@@ -194,6 +201,11 @@ export class HaLogbook extends LitElement {
     }
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribe();
@@ -202,6 +214,61 @@ export class HaLogbook extends LitElement {
   private _unsubscribeAndEmptyEntries() {
     this._unsubscribe();
     this._logbookEntries = [];
+  }
+
+  private _calculateLogbookPeriod() {
+    const now = new Date();
+    let logbookPeriod: LogbookTimePeriod;
+    if ("range" in this.time) {
+      logbookPeriod = {
+        now: now,
+        startTime: this.time.range[0],
+        endTime: this.time.range[1],
+        purgeBeforePythonTime: undefined,
+      };
+    } else if ("recent" in this.time) {
+      const purgeBeforePythonTime = findStartOfRecentTime(
+        now,
+        this.time.recent
+      );
+      logbookPeriod = {
+        now: now,
+        startTime: new Date(purgeBeforePythonTime * 1000),
+        endTime: now,
+        purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
+      };
+    } else {
+      throw new Error("Unexpected time specified");
+    }
+    return logbookPeriod;
+  }
+
+  private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+    if (logbookPeriod.endTime < logbookPeriod.now) {
+      return false;
+    }
+    if (this._subscribed) {
+      return true;
+    }
+    this._subscribed = subscribeLogbook(
+      this.hass,
+      (newEntries?) => {
+        if ("recent" in this.time) {
+          // start time is a sliding window purge old ones
+          this._processNewEntriesEvictExpired(
+            newEntries,
+            findStartOfRecentTime(new Date(), this.time.recent)
+          );
+        } else if ("range" in this.time) {
+          // start time is fixed, we can just append
+          this._appendNewEntries(newEntries);
+        }
+      },
+      logbookPeriod.startTime.toISOString(),
+      ensureArray(this.entityIds),
+      ensureArray(this.deviceIds)
+    );
+    return true;
   }
 
   private async _getLogBookData() {
@@ -219,48 +286,16 @@ export class HaLogbook extends LitElement {
       this._updateTraceContexts();
     }
 
-    let startTime: Date;
-    let endTime: Date;
-    let purgeBeforePythonTime: number | undefined;
-    const now = new Date();
+    const logbookPeriod = this._calculateLogbookPeriod();
 
-    if ("range" in this.time) {
-      [startTime, endTime] = this.time.range;
-    } else if ("recent" in this.time) {
-      purgeBeforePythonTime = findStartOfRecentTime(now, this.time.recent);
-      startTime = new Date(purgeBeforePythonTime * 1000);
-      endTime = now;
-    } else {
-      throw new Error("Unexpected time specified");
-    }
-
-    if (startTime > now) {
+    if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
       this._unsubscribeAndEmptyEntries();
       return;
     }
 
-    if (endTime >= now) {
-      if (!this._subscribed) {
-        this._subscribed = subscribeLogbook(
-          this.hass,
-          (newEntries?) => {
-            if ("recent" in this.time) {
-              // start time is a sliding window purge old ones
-              this._processNewEntriesEvictExpired(
-                newEntries,
-                findStartOfRecentTime(new Date(), this.time.recent)
-              );
-            } else if ("range" in this.time) {
-              // start time is fixed, we can just append
-              this._appendNewEntries(newEntries);
-            }
-          },
-          startTime.toISOString(),
-          ensureArray(this.entityIds),
-          ensureArray(this.deviceIds)
-        );
-      }
+    if (this._subscribeLogbookPeriod(logbookPeriod)) {
+      // We can go live
       return;
     }
 
@@ -274,8 +309,8 @@ export class HaLogbook extends LitElement {
     try {
       newEntries = await getLogbookData(
         this.hass,
-        startTime.toISOString(),
-        endTime.toISOString(),
+        logbookPeriod.startTime.toISOString(),
+        logbookPeriod.endTime.toISOString(),
         ensureArray(this.entityIds),
         ensureArray(this.deviceIds)
       );
