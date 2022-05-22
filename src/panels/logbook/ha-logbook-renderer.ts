@@ -35,24 +35,33 @@ import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 
 const triggerDomains = ["script", "automation"];
+
+//
+// Localization mapping for all the triggers in core
+// in homeassistant.components.homeassistant.triggers
+//
 const triggerPhrases = {
-  "triggered by ": "triggered_by",
-  "state of ": "state_of",
-  "send command ": "send_command",
+  "numeric state of": "triggered_by_numeric_state_of", // number state trigger
+  "state of": "triggered_by_state_of", // state trigger
+  event: "triggered_by_event", // event trigger
+  time: "triggered_by_time", // time trigger
+  "time pattern": "triggered_by_time_pattern", // time trigger
+  "Home Assistant stopping": "triggered_by_homeassistant_stopping", // stop event
+  "Home Assistant started": "triggered_by_homeassistant_started", // start event
 };
 
-const localizeTriggerMessages = (hass: HomeAssistant, message: string) => {
+const localizeTriggerSource = (hass: HomeAssistant, source: string) => {
   for (const triggerPhrase in triggerPhrases) {
-    if (message.startsWith(triggerPhrase)) {
-      message = message.replace(
+    if (source.startsWith(triggerPhrase)) {
+      return source.replace(
         triggerPhrase,
         `${hass.localize(
           `ui.components.logbook.${triggerPhrases[triggerPhrase]}`
-        )} `
+        )}`
       );
     }
   }
-  return message;
+  return source;
 };
 const hasContext = (item: LogbookEntry) =>
   item.context_event_type || item.context_state || item.context_message;
@@ -288,15 +297,23 @@ class HaLogbookRenderer extends LitElement {
           : item.state;
       }
     }
-    // These domains include the trigger source in the message
-    // but if we have the context we want to display that instead
-    // as otherwise we display duplicate triggers
-    if (triggerDomains.includes(domain!) && hasContext(item)) {
-      return "";
+
+    const itemHasContext = hasContext(item);
+    let message = item.message;
+    if (triggerDomains.includes(domain!) && item.source) {
+      if (itemHasContext) {
+        // These domains include the trigger source in the message
+        // but if we have the context we want to display that instead
+        // as otherwise we display duplicate triggers
+        return "";
+      }
+      message = localizeTriggerSource(this.hass, item.source);
     }
-    return item.message
+    return message
       ? this._formatMessageWithPossibleEntity(
-          stripEntityId(item.message, item.context_entity_id),
+          itemHasContext
+            ? stripEntityId(message, item.context_entity_id)
+            : message,
           seenEntityIds,
           undefined
         )
@@ -363,21 +380,30 @@ class HaLogbookRenderer extends LitElement {
     ) {
       return "";
     }
-    const contextMessage = localizeTriggerMessages(
-      this.hass,
-      item.context_message
-    );
-    if (item.context_event_type === "automation_triggered") {
+
+    if (
+      item.context_event_type &&
+      triggerDomains.includes(item.context_event_type)
+    ) {
+      // context_source is available in 2022.6 and later
+      const triggerMsg = item.context_source
+        ? item.context_source
+        : item.context_message.replace("triggered by ", "");
+      const contextTriggerSource = localizeTriggerSource(this.hass, triggerMsg);
       return html`${this.hass.localize("ui.components.logbook.triggered_by")}
       ${this._renderEntity(item.context_entity_id, item.context_entity_id_name)}
       ${item.context_message
-        ? this._formatMessageWithPossibleEntity(contextMessage, seenEntityIds)
+        ? this._formatMessageWithPossibleEntity(
+            contextTriggerSource,
+            seenEntityIds
+          )
         : ""}`;
     }
+
     return html` ${this.hass.localize("ui.components.logbook.triggered_by")}
     ${item.context_name}
     ${this._formatMessageWithPossibleEntity(
-      contextMessage,
+      item.context_message,
       seenEntityIds,
       item.context_entity_id
     )}

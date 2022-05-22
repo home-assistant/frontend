@@ -14,25 +14,27 @@ export const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
 export interface LogbookEntry {
-  // Python timestamp. Do *1000 to get JS timestamp.
-  when: number;
+  // Base data
+  when: number; // Python timestamp. Do *1000 to get JS timestamp.
   name: string;
   message?: string;
   entity_id?: string;
   icon?: string;
-  source?: string;
+  source?: string; // The trigger source
   domain?: string;
+  state?: string; // The state of the entity
+  // Context data
   context_id?: string;
   context_user_id?: string;
   context_event_type?: string;
   context_domain?: string;
-  context_service?: string;
+  context_service?: string; // Service calls only
   context_entity_id?: string;
-  context_entity_id_name?: string;
+  context_entity_id_name?: string; // Legacy, not longer sent
   context_name?: string;
-  context_state?: string;
+  context_state?: string; // The state of the entity
+  context_source?: string; // The trigger source
   context_message?: string;
-  state?: string;
 }
 
 const DATA_CACHE: {
