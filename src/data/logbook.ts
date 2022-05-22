@@ -4,11 +4,11 @@ import {
   BINARY_STATE_ON,
   DOMAINS_WITH_DYNAMIC_PICTURE,
 } from "../common/const";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
-import { computeDomain } from "../common/entity/compute_domain";
 
 export const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
@@ -44,17 +44,13 @@ export const getLogbookDataForContext = async (
   startDate: string,
   contextId?: string
 ): Promise<LogbookEntry[]> => {
-  const localize = await hass.loadBackendTranslation("device_class");
-  return addLogbookMessage(
+  await hass.loadBackendTranslation("device_class");
+  return getLogbookDataFromServer(
     hass,
-    localize,
-    await getLogbookDataFromServer(
-      hass,
-      startDate,
-      undefined,
-      undefined,
-      contextId
-    )
+    startDate,
+    undefined,
+    undefined,
+    contextId
   );
 };
 
@@ -65,29 +61,18 @@ export const getLogbookData = async (
   entityIds?: string[],
   deviceIds?: string[]
 ): Promise<LogbookEntry[]> => {
-  const localize = await hass.loadBackendTranslation("device_class");
-  return addLogbookMessage(
-    hass,
-    localize,
-    // bypass cache if we have a device ID
-    deviceIds?.length
-      ? await getLogbookDataFromServer(
-          hass,
-          startDate,
-          endDate,
-          entityIds,
-          undefined,
-          deviceIds
-        )
-      : await getLogbookDataCache(hass, startDate, endDate, entityIds)
-  );
+  await hass.loadBackendTranslation("device_class");
+  return deviceIds?.length
+    ? getLogbookDataFromServer(
+        hass,
+        startDate,
+        endDate,
+        entityIds,
+        undefined,
+        deviceIds
+      )
+    : getLogbookDataCache(hass, startDate, endDate, entityIds);
 };
-
-const addLogbookMessage = (
-  hass: HomeAssistant,
-  localize: LocalizeFunc,
-  logbookData: LogbookEntry[]
-): LogbookEntry[] => logbookData;
 
 const getLogbookDataCache = async (
   hass: HomeAssistant,
