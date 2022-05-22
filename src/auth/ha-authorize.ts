@@ -9,6 +9,7 @@ import {
   fetchAuthProviders,
 } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { translationMetadata } from "../resources/translations-metadata";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
 
@@ -66,33 +67,35 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     );
 
     return html`
-      <p>
-        ${this.localize(
-          "ui.panel.page-authorize.authorizing_client",
-          "clientId",
-          this.clientId ? punycode.toASCII(this.clientId) : this.clientId
-        )}
-      </p>
-      ${loggingInWith}
+      <div style=${this.computeStyleDirection()}>
+        <p>
+          ${this.localize(
+            "ui.panel.page-authorize.authorizing_client",
+            "clientId",
+            this.clientId ? punycode.toASCII(this.clientId) : this.clientId
+          )}
+        </p>
+        ${loggingInWith}
 
-      <ha-auth-flow
-        .resources=${this.resources}
-        .clientId=${this.clientId}
-        .redirectUri=${this.redirectUri}
-        .oauth2State=${this.oauth2State}
-        .authProvider=${this._authProvider}
-      ></ha-auth-flow>
+        <ha-auth-flow
+          .resources=${this.resources}
+          .clientId=${this.clientId}
+          .redirectUri=${this.redirectUri}
+          .oauth2State=${this.oauth2State}
+          .authProvider=${this._authProvider}
+        ></ha-auth-flow>
 
-      ${inactiveProviders.length > 0
-        ? html`
-            <ha-pick-auth-provider
-              .resources=${this.resources}
-              .clientId=${this.clientId}
-              .authProviders=${inactiveProviders}
-              @pick-auth-provider=${this._handleAuthProviderPick}
-            ></ha-pick-auth-provider>
-          `
-        : ""}
+        ${inactiveProviders.length > 0
+          ? html`
+              <ha-pick-auth-provider
+                .resources=${this.resources}
+                .clientId=${this.clientId}
+                .authProviders=${inactiveProviders}
+                @pick-auth-provider=${this._handleAuthProviderPick}
+              ></ha-pick-auth-provider>
+            `
+          : ""}
+      </div>
     `;
   }
 
@@ -168,6 +171,12 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   private async _handleAuthProviderPick(ev) {
     this._authProvider = ev.detail;
+  }
+
+  private computeStyleDirection() {
+    return !translationMetadata.translations[this.language!].isRTL
+      ? "direction: ltr"
+      : "direction: rtl";
   }
 
   static get styles(): CSSResultGroup {
