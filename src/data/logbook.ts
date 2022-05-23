@@ -1,10 +1,11 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
   DOMAINS_WITH_DYNAMIC_PICTURE,
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
+import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
@@ -159,6 +160,37 @@ const getLogbookDataFromServer = (
     params.context_id = contextId;
   }
   return hass.callWS<LogbookEntry[]>(params);
+};
+
+export const subscribeLogbook = (
+  hass: HomeAssistant,
+  callbackFunction: (message: LogbookEntry[]) => void,
+  startDate: string,
+  entityIds?: string[],
+  deviceIds?: string[]
+): Promise<UnsubscribeFunc> => {
+  // If all specified filters are empty lists, we can return an empty list.
+  if (
+    (entityIds || deviceIds) &&
+    (!entityIds || entityIds.length === 0) &&
+    (!deviceIds || deviceIds.length === 0)
+  ) {
+    return Promise.reject("No entities or devices");
+  }
+  const params: any = {
+    type: "logbook/event_stream",
+    start_time: startDate,
+  };
+  if (entityIds?.length) {
+    params.entity_ids = entityIds;
+  }
+  if (deviceIds?.length) {
+    params.device_ids = deviceIds;
+  }
+  return hass.connection.subscribeMessage<LogbookEntry[]>(
+    (message?) => callbackFunction(message),
+    params
+  );
 };
 
 export const clearLogbookCache = (startDate: string, endDate: string) => {

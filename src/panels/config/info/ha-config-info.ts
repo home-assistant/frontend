@@ -4,9 +4,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-logo-svg";
 import {
   fetchHassioHassOsInfo,
-  fetchHassioHostInfo,
   HassioHassOSInfo,
-  HassioHostInfo,
 } from "../../../data/hassio/host";
 import { fetchHassioInfo, HassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
@@ -27,8 +25,6 @@ class HaConfigInfo extends LitElement {
   @property({ type: Boolean }) public showAdvanced!: boolean;
 
   @property({ attribute: false }) public route!: Route;
-
-  @state() private _hostInfo?: HassioHostInfo;
 
   @state() private _osInfo?: HassioHassOSInfo;
 
@@ -70,12 +66,6 @@ class HaConfigInfo extends LitElement {
             : ""}
           ${this._osInfo?.version
             ? html`<h3>Home Assistant OS ${this._osInfo.version}</h3>`
-            : ""}
-          ${this._hostInfo
-            ? html`
-                <h4>Kernel version ${this._hostInfo.kernel}</h4>
-                <h4>Agent version ${this._hostInfo.agent_version}</h4>
-              `
             : ""}
           <p>
             ${this.hass.localize(
@@ -177,15 +167,13 @@ class HaConfigInfo extends LitElement {
   }
 
   private async _loadSupervisorInfo(): Promise<void> {
-    const [hostInfo, osInfo, hassioInfo] = await Promise.all([
-      fetchHassioHostInfo(this.hass),
+    const [osInfo, hassioInfo] = await Promise.all([
       fetchHassioHassOsInfo(this.hass),
       fetchHassioInfo(this.hass),
     ]);
 
     this._hassioInfo = hassioInfo;
     this._osInfo = osInfo;
-    this._hostInfo = hostInfo;
   }
 
   static get styles(): CSSResultGroup {
