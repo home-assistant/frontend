@@ -26,8 +26,8 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
-import "../../../components/ha-switch";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
@@ -422,11 +422,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ${this._cameraPrefs
           ? html`
               <ha-settings-row>
-                <span slot="heading">Preload camera stream</span>
+                <span slot="heading"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.preload_stream"
+                  )}</span
+                >
                 <span slot="description"
-                  >This keeps the camera stream open in the background so it
-                  shows quicker. Warning! This can slow down your instance
-                  drastically.</span
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.preload_stream_description"
+                  )}</span
                 >
                 <ha-switch
                   .checked=${this._cameraPrefs.preload_stream}
