@@ -3,6 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 import "../../../components/ha-select";
@@ -97,7 +98,7 @@ class MoveDatadiskDialog extends LitElement {
                   "ui.panel.config.storage.datadisk.moving_desc"
                 )}
               </p>`
-          : html` ${this._devices?.length
+          : html`${this._devices?.length
                 ? html`
                     ${this.hass.localize(
                       "ui.panel.config.storage.datadisk.description",
@@ -113,6 +114,7 @@ class MoveDatadiskDialog extends LitElement {
                         "ui.panel.config.storage.datadisk.select_device"
                       )}
                       @selected=${this._select_device}
+                      @closed=${stopPropagation}
                       dialogInitialFocus
                     >
                       ${this._devices.map(
