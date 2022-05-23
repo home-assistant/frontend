@@ -1,3 +1,4 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -9,11 +10,34 @@ import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
+  subscribeLogbook,
 } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
+
+interface LogbookTimePeriod {
+  now: Date;
+  startTime: Date;
+  endTime: Date;
+  purgeBeforePythonTime: number | undefined;
+}
+
+const findStartOfRecentTime = (now: Date, recentTime: number) =>
+  new Date(now.getTime() - recentTime * 1000).getTime() / 1000;
+
+const idsChanged = (oldIds?: string[], newIds?: string[]) => {
+  if (oldIds === undefined && newIds === undefined) {
+    return false;
+  }
+  return (
+    !oldIds ||
+    !newIds ||
+    oldIds.length !== newIds.length ||
+    !oldIds.every((val) => newIds.includes(val))
+  );
+};
 
 @customElement("ha-logbook")
 export class HaLogbook extends LitElement {
@@ -49,19 +73,19 @@ export class HaLogbook extends LitElement {
 
   @state() private _logbookEntries?: LogbookEntry[];
 
-  @state() private _traceContexts?: TraceContexts;
+  @state() private _traceContexts: TraceContexts = {};
 
   @state() private _userIdToName = {};
 
   @state() private _error?: string;
 
-  private _lastLogbookDate?: Date;
-
   private _renderId = 1;
+
+  private _subscribed?: Promise<UnsubscribeFunc>;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
-    10000
+    1000
   );
 
   protected render(): TemplateResult {
@@ -110,10 +134,11 @@ export class HaLogbook extends LitElement {
   }
 
   public async refresh(force = false) {
-    if (!force && this._logbookEntries === undefined) {
+    if (!force && (this._subscribed || this._logbookEntries === undefined)) {
       return;
     }
 
+    this._unsubscribe();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -125,7 +150,6 @@ export class HaLogbook extends LitElement {
       );
     }
 
-    this._lastLogbookDate = undefined;
     this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
@@ -143,12 +167,11 @@ export class HaLogbook extends LitElement {
       const oldValue = changedProps.get(key) as string[] | undefined;
       const curValue = this[key] as string[] | undefined;
 
-      if (
-        !oldValue ||
-        !curValue ||
-        oldValue.length !== curValue.length ||
-        !oldValue.every((val) => curValue.includes(val))
-      ) {
+      // If they make the filter more specific we want
+      // to change the subscription since it will reduce
+      // the overhead on the backend as the event stream
+      // can be a firehose for all state events.
+      if (idsChanged(oldValue, curValue)) {
         changed = true;
         break;
       }
@@ -156,33 +179,6 @@ export class HaLogbook extends LitElement {
 
     if (changed) {
       this.refresh(true);
-      return;
-    }
-
-    if (this._filterAlwaysEmptyResults) {
-      return;
-    }
-
-    // We only need to fetch again if we track recent entries for an entity
-    if (
-      !("recent" in this.time) ||
-      !changedProps.has("hass") ||
-      !this.entityIds
-    ) {
-      return;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    // Refresh data if we know the entity has changed.
-    if (
-      !oldHass ||
-      ensureArray(this.entityIds).some(
-        (entityId) => this.hass.states[entityId] !== oldHass?.states[entityId]
-      )
-    ) {
-      // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleGetLogbookEntries, 1000);
     }
   }
 
@@ -198,14 +194,98 @@ export class HaLogbook extends LitElement {
     );
   }
 
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub());
+      this._subscribed = undefined;
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
+  private _unsubscribeAndEmptyEntries() {
+    this._unsubscribe();
+    this._logbookEntries = [];
+  }
+
+  private _calculateLogbookPeriod() {
+    const now = new Date();
+    if ("range" in this.time) {
+      return <LogbookTimePeriod>{
+        now: now,
+        startTime: this.time.range[0],
+        endTime: this.time.range[1],
+        purgeBeforePythonTime: undefined,
+      };
+    }
+    if ("recent" in this.time) {
+      const purgeBeforePythonTime = findStartOfRecentTime(
+        now,
+        this.time.recent
+      );
+      return <LogbookTimePeriod>{
+        now: now,
+        startTime: new Date(purgeBeforePythonTime * 1000),
+        endTime: now,
+        purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
+      };
+    }
+    throw new Error("Unexpected time specified");
+  }
+
+  private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
+    if (logbookPeriod.endTime < logbookPeriod.now) {
+      return false;
+    }
+    if (this._subscribed) {
+      return true;
+    }
+    this._subscribed = subscribeLogbook(
+      this.hass,
+      (newEntries?) => {
+        if ("recent" in this.time) {
+          // start time is a sliding window purge old ones
+          this._processNewEntries(
+            newEntries,
+            findStartOfRecentTime(new Date(), this.time.recent)
+          );
+        } else if ("range" in this.time) {
+          // start time is fixed, we can just append
+          this._processNewEntries(newEntries, undefined);
+        }
+      },
+      logbookPeriod.startTime.toISOString(),
+      ensureArray(this.entityIds),
+      ensureArray(this.deviceIds)
+    );
+    return true;
+  }
+
   private async _getLogBookData() {
     this._renderId += 1;
     const renderId = this._renderId;
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._logbookEntries = [];
-      this._lastLogbookDate = undefined;
+      this._unsubscribeAndEmptyEntries();
+      return;
+    }
+
+    const logbookPeriod = this._calculateLogbookPeriod();
+
+    if (logbookPeriod.startTime > logbookPeriod.now) {
+      // Time Travel not yet invented
+      this._unsubscribeAndEmptyEntries();
       return;
     }
 
@@ -214,30 +294,23 @@ export class HaLogbook extends LitElement {
       this._updateTraceContexts();
     }
 
-    let startTime: Date;
-    let endTime: Date;
-    let purgeBeforePythonTime: number | undefined;
-
-    if ("range" in this.time) {
-      [startTime, endTime] = this.time.range;
-    } else if ("recent" in this.time) {
-      purgeBeforePythonTime =
-        new Date(new Date().getTime() - this.time.recent * 1000).getTime() /
-        1000;
-      startTime =
-        this._lastLogbookDate || new Date(purgeBeforePythonTime * 1000);
-      endTime = new Date();
-    } else {
-      throw new Error("Unexpected time specified");
+    if (this._subscribeLogbookPeriod(logbookPeriod)) {
+      // We can go live
+      return;
     }
+
+    // We are only fetching in the past
+    // with a time window that does not
+    // extend into the future
+    this._unsubscribe();
 
     let newEntries: LogbookEntry[];
 
     try {
       newEntries = await getLogbookData(
         this.hass,
-        startTime.toISOString(),
-        endTime.toISOString(),
+        logbookPeriod.startTime.toISOString(),
+        logbookPeriod.endTime.toISOString(),
         ensureArray(this.entityIds),
         ensureArray(this.deviceIds)
       );
@@ -253,21 +326,39 @@ export class HaLogbook extends LitElement {
       return;
     }
 
+    this._logbookEntries = [...newEntries].reverse();
+  }
+
+  private _nonExpiredRecords = (purgeBeforePythonTime: number | undefined) =>
+    !this._logbookEntries
+      ? []
+      : purgeBeforePythonTime
+      ? this._logbookEntries.filter(
+          (entry) => entry.when > purgeBeforePythonTime!
+        )
+      : this._logbookEntries;
+
+  private _processNewEntries = (
+    newEntries: LogbookEntry[],
+    purgeBeforePythonTime: number | undefined
+  ) => {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
     newEntries = [...newEntries].reverse();
-
+    if (!this._logbookEntries) {
+      this._logbookEntries = newEntries;
+      return;
+    }
+    const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
     this._logbookEntries =
-      // If we have a purgeBeforeTime, it means we're in recent-mode and fetch batches
-      purgeBeforePythonTime && this._logbookEntries
-        ? newEntries.concat(
-            ...this._logbookEntries.filter(
-              (entry) => entry.when > purgeBeforePythonTime!
-            )
-          )
-        : newEntries;
-    this._lastLogbookDate = endTime;
-  }
+      newEntries[0].when >= this._logbookEntries[0].when
+        ? // The new records are newer than the old records
+          // append the old records to the end of the new records
+          newEntries.concat(nonExpiredRecords)
+        : // The new records are older than the old records
+          // append the new records to the end of the old records
+          nonExpiredRecords.concat(newEntries);
+  };
 
   private _updateTraceContexts = throttle(async () => {
     this._traceContexts = await loadTraceContexts(this.hass);
