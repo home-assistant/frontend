@@ -2252,15 +2252,14 @@
             "area": "Area",
             "devices": {
               "header": "Devices",
-              "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
+              "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
               "add": "Add a device",
               "delete": "Delete device"
             },
             "entities": {
               "header": "Entities",
-              "introduction": "Entities that do not belong to a device can be set here.",
-              "without_device": "Entities without device",
-              "device_entities": "If you add an entity that belongs to a device, the device will be added.",
+              "introduction": "Individual entities and entities that do not belong to a device can be added here.",
+              "without_device": "Entities",
               "add": "Add an entity",
               "delete": "Delete entity"
             }
