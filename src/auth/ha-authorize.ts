@@ -67,35 +67,33 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     );
 
     return html`
-      <div style=${this.computeStyleDirection()}>
-        <p>
-          ${this.localize(
-            "ui.panel.page-authorize.authorizing_client",
-            "clientId",
-            this.clientId ? punycode.toASCII(this.clientId) : this.clientId
-          )}
-        </p>
-        ${loggingInWith}
+      <p>
+        ${this.localize(
+          "ui.panel.page-authorize.authorizing_client",
+          "clientId",
+          this.clientId ? punycode.toASCII(this.clientId) : this.clientId
+        )}
+      </p>
+      ${loggingInWith}
 
-        <ha-auth-flow
-          .resources=${this.resources}
-          .clientId=${this.clientId}
-          .redirectUri=${this.redirectUri}
-          .oauth2State=${this.oauth2State}
-          .authProvider=${this._authProvider}
-        ></ha-auth-flow>
+      <ha-auth-flow
+        .resources=${this.resources}
+        .clientId=${this.clientId}
+        .redirectUri=${this.redirectUri}
+        .oauth2State=${this.oauth2State}
+        .authProvider=${this._authProvider}
+      ></ha-auth-flow>
 
-        ${inactiveProviders.length > 0
-          ? html`
-              <ha-pick-auth-provider
-                .resources=${this.resources}
-                .clientId=${this.clientId}
-                .authProviders=${inactiveProviders}
-                @pick-auth-provider=${this._handleAuthProviderPick}
-              ></ha-pick-auth-provider>
-            `
-          : ""}
-      </div>
+      ${inactiveProviders.length > 0
+        ? html`
+            <ha-pick-auth-provider
+              .resources=${this.resources}
+              .clientId=${this.clientId}
+              .authProviders=${inactiveProviders}
+              @pick-auth-provider=${this._handleAuthProviderPick}
+            ></ha-pick-auth-provider>
+          `
+        : ""}
     `;
   }
 
@@ -118,6 +116,8 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         true
       );
     }
+
+    this._computeDirection();
 
     if (!this.redirectUri) {
       return;
@@ -173,8 +173,8 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this._authProvider = ev.detail;
   }
 
-  private computeStyleDirection() {
-    return !translationMetadata.translations[this.language!].isRTL
+  private _computeDirection() {
+    this.style.cssText = !translationMetadata.translations[this.language!].isRTL
       ? "direction: ltr; --float-start: left;"
       : "direction: rtl; --float-start: right";
   }
