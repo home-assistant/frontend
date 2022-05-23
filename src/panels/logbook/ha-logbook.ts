@@ -8,7 +8,6 @@ import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import {
   clearLogbookCache,
-  getLogbookData,
   LogbookEntry,
   subscribeLogbook,
 } from "../../data/logbook";
@@ -236,7 +235,8 @@ export class HaLogbook extends LitElement {
       return <LogbookTimePeriod>{
         now: now,
         startTime: new Date(purgeBeforePythonTime * 1000),
-        endTime: now,
+        // end streaming one year from now
+        endTime: new Date(now.getTime() + 86400 * 365 * 1000),
         purgeBeforePythonTime: findStartOfRecentTime(now, this.time.recent),
       };
     }
@@ -244,9 +244,6 @@ export class HaLogbook extends LitElement {
   }
 
   private _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
-    if (logbookPeriod.endTime < logbookPeriod.now) {
-      return false;
-    }
     if (this._subscribed) {
       return true;
     }
@@ -265,6 +262,7 @@ export class HaLogbook extends LitElement {
         }
       },
       logbookPeriod.startTime.toISOString(),
+      logbookPeriod.endTime.toISOString(),
       ensureArray(this.entityIds),
       ensureArray(this.deviceIds)
     );
@@ -272,8 +270,6 @@ export class HaLogbook extends LitElement {
   }
 
   private async _getLogBookData() {
-    this._renderId += 1;
-    const renderId = this._renderId;
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
@@ -294,39 +290,7 @@ export class HaLogbook extends LitElement {
       this._updateTraceContexts();
     }
 
-    if (this._subscribeLogbookPeriod(logbookPeriod)) {
-      // We can go live
-      return;
-    }
-
-    // We are only fetching in the past
-    // with a time window that does not
-    // extend into the future
-    this._unsubscribe();
-
-    let newEntries: LogbookEntry[];
-
-    try {
-      newEntries = await getLogbookData(
-        this.hass,
-        logbookPeriod.startTime.toISOString(),
-        logbookPeriod.endTime.toISOString(),
-        ensureArray(this.entityIds),
-        ensureArray(this.deviceIds)
-      );
-    } catch (err: any) {
-      if (renderId === this._renderId) {
-        this._error = err.message;
-      }
-      return;
-    }
-
-    // New render happening.
-    if (renderId !== this._renderId) {
-      return;
-    }
-
-    this._logbookEntries = [...newEntries].reverse();
+    this._subscribeLogbookPeriod(logbookPeriod);
   }
 
   private _nonExpiredRecords = (purgeBeforePythonTime: number | undefined) =>
