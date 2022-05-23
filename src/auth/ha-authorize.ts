@@ -175,8 +175,8 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   private computeStyleDirection() {
     return !translationMetadata.translations[this.language!].isRTL
-      ? "direction: ltr"
-      : "direction: rtl";
+      ? "direction: ltr; --float-start: left;"
+      : "direction: rtl; --float-start: right";
   }
 
   static get styles(): CSSResultGroup {

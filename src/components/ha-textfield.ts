@@ -96,6 +96,7 @@ export class HaTextField extends TextFieldBase {
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
         direction: var(--direction);
+        transform-origin: var(--float-start);
       }
 
       .mdc-text-field--with-leading-icon.mdc-text-field--filled
