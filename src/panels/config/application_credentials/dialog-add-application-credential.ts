@@ -51,7 +51,8 @@ export class DialogAddApplicationCredential extends LitElement {
 
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
-    this._domain = "";
+    this._domain =
+      params.selectedDomain !== undefined ? params.selectedDomain : "";
     this._name = "";
     this._clientId = "";
     this._clientSecret = "";
@@ -75,7 +76,7 @@ export class DialogAddApplicationCredential extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        @closed=${this._abortDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -90,6 +91,7 @@ export class DialogAddApplicationCredential extends LitElement {
           <ha-combo-box
             name="domain"
             .hass=${this.hass}
+            .disabled=${!!this._params.selectedDomain}
             .label=${this.hass.localize(
               "ui.panel.config.application_credentials.editor.domain"
             )}
@@ -179,6 +181,13 @@ export class DialogAddApplicationCredential extends LitElement {
     const name = (ev.target as any).name;
     const value = (ev.target as any).value;
     this[`_${name}`] = value;
+  }
+
+  private _abortDialog() {
+    if (this._params && this._params.dialogAbortedCallback) {
+      this._params.dialogAbortedCallback();
+    }
+    this.closeDialog();
   }
 
   private async _createApplicationCredential(ev) {
