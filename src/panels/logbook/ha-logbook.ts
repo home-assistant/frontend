@@ -157,7 +157,7 @@ export class HaLogbook extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    let changed = changedProps.has("time") && changedProps.get("time");
+    let changed = changedProps.has("time");
 
     for (const key of ["entityIds", "deviceIds"]) {
       if (!changedProps.has(key)) {
@@ -203,7 +203,9 @@ export class HaLogbook extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+    if (this.hasUpdated) {
+      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+    }
   }
 
   public disconnectedCallback() {
