@@ -78,9 +78,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _renderId = 1;
-
-  private _subscribed?: Promise<UnsubscribeFunc>;
+  private _subscribed?: Promise<UnsubscribeFunc | void>;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -195,7 +193,7 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
       this._subscribed = undefined;
     }
   }
@@ -265,7 +263,10 @@ export class HaLogbook extends LitElement {
       logbookPeriod.endTime.toISOString(),
       ensureArray(this.entityIds),
       ensureArray(this.deviceIds)
-    );
+    ).catch((reason) => {
+      this._error = reason;
+      this._subscribed = undefined;
+    });
     return true;
   }
 
