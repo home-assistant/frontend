@@ -85,7 +85,7 @@ export class HaLogbook extends LitElement {
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
-    10000
+    1000
   );
 
   protected render(): TemplateResult {
