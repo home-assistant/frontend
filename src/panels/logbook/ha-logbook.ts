@@ -9,6 +9,7 @@ import "../../components/ha-circular-progress";
 import {
   clearLogbookCache,
   LogbookEntry,
+  LogbookStreamMessage,
   subscribeLogbook,
 } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
@@ -247,17 +248,16 @@ export class HaLogbook extends LitElement {
     }
     this._subscribed = subscribeLogbook(
       this.hass,
-      (newEntries?) => {
-        if ("recent" in this.time) {
-          // start time is a sliding window purge old ones
-          this._processNewEntries(
-            newEntries,
-            findStartOfRecentTime(new Date(), this.time.recent)
-          );
-        } else if ("range" in this.time) {
-          // start time is fixed, we can just append
-          this._processNewEntries(newEntries, undefined);
-        }
+      (streamMessage) => {
+        // "recent" means start time is a sliding window
+        // so we need to calculate an expireTime to
+        // purge old events
+        this._processStreamMessage(
+          streamMessage,
+          "recent" in this.time
+            ? findStartOfRecentTime(new Date(), this.time.recent)
+            : undefined
+        );
       },
       logbookPeriod.startTime.toISOString(),
       logbookPeriod.endTime.toISOString(),
@@ -303,15 +303,20 @@ export class HaLogbook extends LitElement {
         )
       : this._logbookEntries;
 
-  private _processNewEntries = (
-    newEntries: LogbookEntry[],
+  private _processStreamMessage = (
+    streamMessage: LogbookStreamMessage,
     purgeBeforePythonTime: number | undefined
   ) => {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
-    newEntries = [...newEntries].reverse();
+    const newEntries = [...streamMessage.events].reverse();
     if (!this._logbookEntries) {
       this._logbookEntries = newEntries;
+      return;
+    }
+    if (!newEntries.length) {
+      // Empty messages are still sent to
+      // indicate no more historical events
       return;
     }
     const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
