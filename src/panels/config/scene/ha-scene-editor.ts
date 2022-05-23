@@ -635,12 +635,9 @@ export class HaSceneEditor extends SubscribeMixin(
       if (!entityReg.device_id) {
         continue;
       }
-      const entity = config.entities[entityReg.entity_id];
       const entityMetaData = config.metadata?.[entityReg.entity_id];
       if (
-        !this._devices.includes(entityReg.device_id) &&
-        !(typeof entity === "string") &&
-        entityMetaData
+        !this._devices.includes(entityReg.device_id) && entityMetaData
           ? !entityMetaData.entity_only
           : false
       ) {
