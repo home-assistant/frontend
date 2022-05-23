@@ -157,7 +157,7 @@ export class HaLogbook extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    let changed = changedProps.has("time");
+    let changed = changedProps.has("time") && changedProps.get("time");
 
     for (const key of ["entityIds", "deviceIds"]) {
       if (!changedProps.has(key)) {
@@ -279,17 +279,17 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._updateUsers();
-    if (this.hass.user?.is_admin) {
-      this._updateTraceContexts();
-    }
-
     const logbookPeriod = this._calculateLogbookPeriod();
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
       this._unsubscribeAndEmptyEntries();
       return;
+    }
+
+    this._updateUsers();
+    if (this.hass.user?.is_admin) {
+      this._updateTraceContexts();
     }
 
     if (this._subscribeLogbookPeriod(logbookPeriod)) {
