@@ -342,18 +342,22 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
             >
               <mwc-list-item
                 value="switch"
-                .selected=${this._deviceClass === "switch"}
-              >
-                ${domainToName(this.hass.localize, "switch")}</mwc-list-item
-              >
-              <mwc-list-item
-                value="outlet"
-                .selected=${this._deviceClass === "outlet"}
+                .selected=${!this._deviceClass ||
+                this._deviceClass === "switch"}
               >
                 ${this.hass.localize(
-                  `ui.dialogs.entity_registry.editor.device_classes.switch.outlet`
-                )}</mwc-list-item
+                  "ui.dialogs.entity_registry.editor.device_classes.switch.switch"
+                )}
+              </mwc-list-item>
+              <mwc-list-item
+                value="outlet"
+                .selected=${!this._deviceClass ||
+                this._deviceClass === "outlet"}
               >
+                ${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
+                )}
+              </mwc-list-item>
               <li divider role="separator"></li>
               ${this._switchAsDomainsSorted(
                 SWITCH_AS_DOMAINS,
