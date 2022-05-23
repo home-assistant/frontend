@@ -263,8 +263,8 @@ export class HaLogbook extends LitElement {
       logbookPeriod.endTime.toISOString(),
       ensureArray(this.entityIds),
       ensureArray(this.deviceIds)
-    ).catch((reason) => {
-      this._error = reason;
+    ).catch((err) => {
+      this._error = err.message;
       this._subscribed = undefined;
     });
     return true;
