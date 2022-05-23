@@ -73,7 +73,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _logbookEntries?: LogbookEntry[];
 
-  @state() private _traceContexts?: TraceContexts;
+  @state() private _traceContexts: TraceContexts = {};
 
   @state() private _userIdToName = {};
 
@@ -352,10 +352,10 @@ export class HaLogbook extends LitElement {
       newEntries[0].when >= this._logbookEntries[0].when
         ? // The new records are newer than the old records
           // append the old records to the end of the new records
-          newEntries.concat(...nonExpiredRecords)
+          newEntries.concat(nonExpiredRecords)
         : // The new records are older than the old records
           // append the new records to the end of the old records
-          nonExpiredRecords.concat(...newEntries);
+          nonExpiredRecords.concat(newEntries);
   };
 
   private _updateTraceContexts = throttle(async () => {
