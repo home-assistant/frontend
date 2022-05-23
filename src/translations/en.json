@@ -2258,7 +2258,7 @@
             },
             "entities": {
               "header": "Entities",
-              "introduction": "Individual entities and entities that do not belong to a device can be added here.",
+              "introduction": "Individual entities can be added here.",
               "without_device": "Entities",
               "add": "Add an entity",
               "delete": "Delete entity"
