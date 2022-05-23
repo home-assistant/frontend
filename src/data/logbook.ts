@@ -5,7 +5,6 @@ import {
   DOMAINS_WITH_DYNAMIC_PICTURE,
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
-import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
