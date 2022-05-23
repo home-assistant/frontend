@@ -165,6 +165,7 @@ export const subscribeLogbook = (
   hass: HomeAssistant,
   callbackFunction: (message: LogbookEntry[]) => void,
   startDate: string,
+  endDate: string,
   entityIds?: string[],
   deviceIds?: string[]
 ): Promise<UnsubscribeFunc> => {
@@ -179,6 +180,7 @@ export const subscribeLogbook = (
   const params: any = {
     type: "logbook/event_stream",
     start_time: startDate,
+    end_time: endDate,
   };
   if (entityIds?.length) {
     params.entity_ids = entityIds;
