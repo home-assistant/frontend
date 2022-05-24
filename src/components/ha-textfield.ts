@@ -57,6 +57,9 @@ export class HaTextField extends TextFieldBase {
       .mdc-text-field__affix--suffix {
         padding-left: var(--text-field-suffix-padding-left, 12px);
         padding-right: var(--text-field-suffix-padding-right, 0px);
+        padding-inline-start: var(--text-field-suffix-padding-left, 12px);
+        padding-inline-end: var(--text-field-suffix-padding-right, 0px);
+        direction: var(--direction);
       }
 
       .mdc-text-field:not(.mdc-text-field--disabled)

@@ -1179,6 +1179,8 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           align-items: center;
           padding-left: 8px;
+          padding-inline-start: 8px;
+          direction: var(--direction);
         }
 
         .column,
