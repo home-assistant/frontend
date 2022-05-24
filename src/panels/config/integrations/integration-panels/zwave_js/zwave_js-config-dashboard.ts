@@ -546,12 +546,6 @@ class ZWaveJSConfigDashboard extends LitElement {
           max-width: 600px;
         }
 
-        button.dump {
-          width: 100%;
-          text-align: center;
-          color: var(--secondary-text-color);
-        }
-
         [hidden] {
           display: none;
         }

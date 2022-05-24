@@ -546,16 +546,12 @@ export class HaConfigDevicePage extends LitElement {
 
                 </div>
           </div>
-          ${
-            deviceAlerts.length
-              ? html`
-                  <div class="fullwidth">
-                    ${deviceAlerts}
-                  </div>
-                `
-              : ""
-          }
           <div class="column">
+              ${
+                deviceAlerts.length
+                  ? html` <div class="fullwidth">${deviceAlerts}</div> `
+                  : ""
+              }
               <ha-device-info-card
                 .hass=${this.hass}
                 .areas=${this.areas}
