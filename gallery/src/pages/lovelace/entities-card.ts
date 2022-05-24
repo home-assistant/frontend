@@ -249,7 +249,7 @@ const CONFIGS = [
       name: Bed light
       action_name: Toggle light
       service: light.toggle
-      service_data:
+      data:
         entity_id: light.bed_light
     - type: section
       label: Links

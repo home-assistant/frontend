@@ -521,7 +521,7 @@
         "required": "This field is required",
         "target": "Targets",
         "target_description": "What should this service use as targeted areas, devices or entities.",
-        "service_data": "Service data",
+        "data": "Service data",
         "integration_doc": "Integration documentation"
       },
       "related-items": {

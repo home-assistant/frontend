@@ -76,7 +76,9 @@ const callServiceEntitiesRowConfigStruct = object({
   service: string(),
   icon: optional(string()),
   action_name: optional(string()),
+  // "service_data" is kept for backwards compatibility. Replaced by "data".
   service_data: optional(any()),
+  data: optional(any()),
 });
 
 const conditionalEntitiesRowConfigStruct = object({
