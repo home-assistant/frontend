@@ -32,6 +32,7 @@ const actionConfigStructService = object({
   action: literal("call-service"),
   service: string(),
   service_data: optional(object()),
+  data: optional(object()),
   target: optional(
     object({
       entity_id: optional(union([string(), array(string())])),

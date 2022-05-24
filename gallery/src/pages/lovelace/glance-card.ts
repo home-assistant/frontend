@@ -199,7 +199,7 @@ const CONFIGS = [
       tap_action:
         action: call-service
         service: light.turn_on
-        service_data:
+        data:
           entity_id: light.ceiling_lights
     - entity: sun.sun
       name: Regular

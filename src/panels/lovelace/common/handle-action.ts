@@ -148,7 +148,7 @@ export const handleAction = async (
       hass.callService(
         domain,
         service,
-        actionConfig.service_data,
+        actionConfig.data ?? actionConfig.service_data,
         actionConfig.target
       );
       forwardHaptic("light");
