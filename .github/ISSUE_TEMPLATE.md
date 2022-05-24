@@ -51,7 +51,7 @@ DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed w
 <!--
   Provide details about the versions you are using, which helps us reproducing
   and finding the issue quicker. Version information is found in the
-  Home Assistant frontend: Configuration -> Info.
+  Home Assistant frontend: Settings -> About.
 
   Browser version and operating system is important! Please try to replicate
   your issue in a different browser and be sure to include your findings.
