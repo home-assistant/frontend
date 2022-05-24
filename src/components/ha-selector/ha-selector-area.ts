@@ -152,7 +152,7 @@ export class HaAreaSelector extends SubscribeMixin(LitElement) {
 
   private _deviceIntegrations = memoizeOne(
     (entitySources: EntitySources, entities: EntityRegistryEntry[]) => {
-      const deviceIntegrations: { [key: string]: string[] } = {};
+      const deviceIntegrations: Record<string, string[]> = {};
 
       for (const entity of entities) {
         const source = entitySources[entity.entity_id];
