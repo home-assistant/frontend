@@ -99,7 +99,9 @@ export class HaButtonMenu extends LitElement {
 
   private _setTriggerAria() {
     const triggerButton = this._triggerButton.shift();
-    if (triggerButton) triggerButton.ariaHasPopup = "menu";
+    if (triggerButton) {
+    	triggerButton.ariaHasPopup = "menu";
+    }
   }
 
   static get styles(): CSSResultGroup {
