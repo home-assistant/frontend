@@ -976,6 +976,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .selected-txt {
           font-weight: bold;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          direction: var(--direction);
         }
         .table-header .selected-txt {
           margin-top: 20px;
@@ -985,6 +987,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
+          margin-inline-end: -12px;
+          direction: var(--direction);
         }
         .header-btns {
           display: flex;
@@ -999,7 +1003,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .clear {
           color: var(--primary-color);
           padding-left: 8px;
+          padding-inline-start: 8px;
           text-transform: uppercase;
+          direction: var(--direction);
         }
       `,
     ];

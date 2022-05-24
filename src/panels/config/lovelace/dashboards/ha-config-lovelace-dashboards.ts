@@ -87,7 +87,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
               ${dashboard.default
                 ? html`
                     <ha-svg-icon
-                      style="padding-left: 10px;"
+                      style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
                       .path=${mdiCheckCircleOutline}
                     ></ha-svg-icon>
                     <paper-tooltip animation-delay="0">

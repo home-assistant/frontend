@@ -311,6 +311,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       }
       ha-button-toggle-group {
         padding-left: 8px;
+        padding-inline-start: 8px;
+        direction: var(--direction);
       }
       mwc-button {
         flex-shrink: 0;

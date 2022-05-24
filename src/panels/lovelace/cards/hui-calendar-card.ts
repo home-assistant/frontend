@@ -215,6 +215,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         line-height: 1.2;
         padding-top: 16px;
         padding-left: 8px;
+        padding-inline-start: 8px;
+        direction: var(--direction);
       }
     `;
   }

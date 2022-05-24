@@ -126,7 +126,9 @@ class PanelEnergy extends LitElement {
         hui-energy-period-selector {
           width: 100%;
           padding-left: 16px;
+          padding-inline-start: 16px;
           --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
+          direction: var(--direction);
         }
       `,
     ];
