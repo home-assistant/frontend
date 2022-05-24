@@ -549,7 +549,7 @@ export class HaConfigDevicePage extends LitElement {
           ${
             deviceAlerts.length
               ? html`
-                  <div class="alerts fullwidth" slot="alerts">
+                  <div class="fullwidth">
                     ${deviceAlerts}
                   </div>
                 `
