@@ -95,6 +95,7 @@ export class HaTextField extends TextFieldBase {
       .mdc-floating-label {
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
+        transform-origin: var(--float-start);
         direction: var(--direction);
       }
 
