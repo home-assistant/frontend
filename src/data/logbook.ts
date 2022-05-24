@@ -13,6 +13,13 @@ import { UNAVAILABLE_STATES } from "./entity";
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
 
+export interface LogbookStreamMessage {
+  events: LogbookEntry[];
+  start_time?: number; // Start time of this historical chunk
+  end_time?: number; // End time of this historical chunk
+  partial?: boolean; // Indiciates more historical chunks are coming
+}
+
 export interface LogbookEntry {
   // Base data
   when: number; // Python timestamp. Do *1000 to get JS timestamp.
@@ -163,7 +170,7 @@ const getLogbookDataFromServer = (
 
 export const subscribeLogbook = (
   hass: HomeAssistant,
-  callbackFunction: (message: LogbookEntry[]) => void,
+  callbackFunction: (message: LogbookStreamMessage) => void,
   startDate: string,
   endDate: string,
   entityIds?: string[],
@@ -188,8 +195,8 @@ export const subscribeLogbook = (
   if (deviceIds?.length) {
     params.device_ids = deviceIds;
   }
-  return hass.connection.subscribeMessage<LogbookEntry[]>(
-    (message?) => callbackFunction(message),
+  return hass.connection.subscribeMessage<LogbookStreamMessage>(
+    (message) => callbackFunction(message),
     params
   );
 };
