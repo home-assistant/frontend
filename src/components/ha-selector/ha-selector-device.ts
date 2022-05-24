@@ -137,12 +137,14 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
 
       for (const entity of entities) {
         const source = entitySources[entity.entity_id];
-        if (source?.domain) {
-          deviceIntegrations[entity.device_id!] = [
-            ...(deviceIntegrations[entity.device_id!] || []),
-            source.domain,
-          ];
+        if (!source?.domain) {
+          continue;
         }
+
+        if (!deviceIntegrations[entity.device_id!]) {
+          deviceIntegrations[entity.device_id!] = [];
+        }
+        deviceIntegrations[entity.device_id!].push(source.domain);
       }
       return deviceIntegrations;
     }
