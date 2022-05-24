@@ -76,6 +76,15 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
 }
 
+export interface DeviceAction {
+  href?: string;
+  action?: any;
+  label: string;
+  trailingIcon?: string;
+  entryId?: string;
+  classes?: string;
+}
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -101,11 +110,11 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _related?: RelatedResult;
 
   // If a number, it's the request ID so we make sure we don't show older info
-  @state() private _diagnosticDownloadLinks?:
-    | number
-    | (TemplateResult | string)[];
+  @state() private _diagnosticDownloadLinks?: number | DeviceAction[];
 
-  @state() private _deleteButtons?: (TemplateResult | string)[];
+  @state() private _deleteButtons?: DeviceAction[];
+
+  @state() private _deviceActions?: DeviceAction[];
 
   private _logbookTime = { recent: 86400 };
 
@@ -273,27 +282,21 @@ export class HaConfigDevicePage extends LitElement {
     if (links.length > 0) {
       this._diagnosticDownloadLinks = (
         links as { link: string; domain: string }[]
-      ).map(
-        (link) => html`
-          <a href=${link.link} @click=${this._signUrl}>
-            <mwc-list-item>
-              ${links.length > 1
-                ? this.hass.localize(
-                    `ui.panel.config.devices.download_diagnostics_integration`,
-                    {
-                      integration: domainToName(
-                        this.hass.localize,
-                        link.domain
-                      ),
-                    }
-                  )
-                : this.hass.localize(
-                    `ui.panel.config.devices.download_diagnostics`
-                  )}
-            </mwc-list-item>
-          </a>
-        `
-      );
+      ).map((link) => ({
+        href: link.link,
+        action: this._signUrl,
+        label:
+          links.length > 1
+            ? this.hass.localize(
+                `ui.panel.config.devices.download_diagnostics_integration`,
+                {
+                  integration: domainToName(this.hass.localize, link.domain),
+                }
+              )
+            : this.hass.localize(
+                `ui.panel.config.devices.download_diagnostics`
+              ),
+      }));
     }
   }
 
@@ -304,27 +307,25 @@ export class HaConfigDevicePage extends LitElement {
       return;
     }
 
-    const buttons: TemplateResult[] = [];
+    const buttons: DeviceAction[] = [];
     this._integrations(device, this.entries).forEach((entry) => {
       if (entry.state !== "loaded" || !entry.supports_remove_device) {
         return;
       }
-      buttons.push(html`
-        <mwc-list-item
-          class="warning"
-          .entryId=${entry.entry_id}
-          @request-selected=${this._confirmDeleteEntry}
-        >
-          ${buttons.length > 1
+      buttons.push({
+        action: this._confirmDeleteEntry,
+        entryId: entry.entry_id,
+        classes: "warning",
+        label:
+          buttons.length > 1
             ? this.hass.localize(
                 `ui.panel.config.devices.delete_device_integration`,
                 {
                   integration: domainToName(this.hass.localize, entry.domain),
                 }
               )
-            : this.hass.localize(`ui.panel.config.devices.delete_device`)}
-        </mwc-list-item>
-      `);
+            : this.hass.localize(`ui.panel.config.devices.delete_device`),
+      });
     });
 
     if (buttons.length > 0) {
@@ -431,8 +432,23 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceButtonActions: (TemplateResult | string)[] = [];
     const deviceOverflowActions: (TemplateResult | string)[] = [];
+    const deviceActions: {
+      href?: string;
+      action?: any;
+      label: string;
+      trailingIcon?: string;
+    }[] = [];
 
     if (configurationUrl) {
+      deviceActions.push({
+        href: configurationUrl,
+        label: this.hass.localize(
+          `ui.panel.config.devices.open_configuration_url_${
+            device.entry_type || "device"
+          }`
+        ),
+        trailingIcon: mdiOpenInNew,
+      });
       deviceButtonActions.push(html`
         <a
           href=${configurationUrl}
@@ -462,10 +478,10 @@ export class HaConfigDevicePage extends LitElement {
     );
 
     if (Array.isArray(this._diagnosticDownloadLinks)) {
-      deviceOverflowActions.push(...this._diagnosticDownloadLinks);
+      deviceActions.push(...this._diagnosticDownloadLinks);
     }
     if (this._deleteButtons) {
-      deviceOverflowActions.push(...this._deleteButtons);
+      deviceActions.push(...this._deleteButtons);
     }
 
     return html`

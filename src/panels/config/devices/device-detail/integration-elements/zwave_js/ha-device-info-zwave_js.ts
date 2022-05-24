@@ -154,6 +154,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
           word-break: break-all;
           margin-top: 2px;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0;
+          --expansion-panel-content-padding: 0;
+          padding-top: 4px;
+        }
       `,
     ];
   }

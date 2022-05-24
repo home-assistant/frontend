@@ -137,3 +137,9 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     ];
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-actions-zwave_js": HaDeviceActionsZWaveJS;
+  }
+}

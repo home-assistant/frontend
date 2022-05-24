@@ -41,7 +41,7 @@ export class HaDeviceActionsZha extends LitElement {
       return html``;
     }
     return html`
-      <ha-expansion-panel .header=${"Zigbee info"}>
+      <ha-expansion-panel header="Zigbee info">
         <div>IEEE: ${this._zhaDevice.ieee}</div>
         <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
         <div>Device Type: ${this._zhaDevice.device_type}</div>
@@ -87,6 +87,11 @@ export class HaDeviceActionsZha extends LitElement {
         div {
           word-break: break-all;
           margin-top: 2px;
+        }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0;
+          --expansion-panel-content-padding: 0;
+          padding-top: 4px;
         }
       `,
     ];
