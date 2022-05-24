@@ -51,14 +51,14 @@ export class HaButtonMenu extends LitElement {
     if (this._menu?.open) {
       this._menu.focusItemAtIndex(0);
     } else {
-      this._triggerButton[0]?.focus();
+      this._triggerButton.shift()?.focus();
     }
   }
 
   protected render(): TemplateResult {
     return html`
       <div @click=${this._handleClick}>
-        <slot name="trigger"></slot>
+        <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
       <mwc-menu
         .corner=${this.corner}
@@ -95,6 +95,11 @@ export class HaButtonMenu extends LitElement {
     }
     this._menu!.anchor = this;
     this._menu!.show();
+  }
+
+  private _setTriggerAria() {
+    const triggerButton = this._triggerButton.shift();
+    if (triggerButton) triggerButton.ariaHasPopup = "menu";
   }
 
   static get styles(): CSSResultGroup {
