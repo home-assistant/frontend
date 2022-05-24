@@ -123,7 +123,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
-  callback: {
+  oauth: {
     redirect: "/auth/external/callback",
     navigate_outside_spa: true,
     params: {
