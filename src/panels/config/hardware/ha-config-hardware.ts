@@ -42,6 +42,8 @@ class HaConfigHardware extends LitElement {
 
   @state() private _hostData?: HassioHostInfo;
 
+  @state() private _hardwareData?: any;
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     if (isComponentLoaded(this.hass, "hassio")) {
@@ -85,13 +87,17 @@ class HaConfigHardware extends LitElement {
                         <div class="card-content">
                           <ha-settings-row>
                             <span slot="heading"
-                              >${BOARD_NAMES[this._OSData.board] ||
+                              >${this._hardwareData.name ||
+                              BOARD_NAMES[this._OSData.board] ||
                               this.hass.localize(
                                 "ui.panel.config.hardware.board"
                               )}</span
                             >
                             <div slot="description">
-                              <span class="value">${this._OSData.board}</span>
+                              <span class="value"
+                                >${this._hardwareData.board.name ||
+                                this._OSData.board}</span
+                              >
                             </div>
                           </ha-settings-row>
                         </div>
@@ -139,6 +145,7 @@ class HaConfigHardware extends LitElement {
     try {
       this._OSData = await fetchHassioHassOsInfo(this.hass);
       this._hostData = await fetchHassioHostInfo(this.hass);
+      this._hardwareData = await this.hass.callWS({ type: "hardware/info" });
     } catch (err: any) {
       this._error = err.message || err;
     }
