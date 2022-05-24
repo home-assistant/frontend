@@ -1,4 +1,9 @@
-import { mdiOpenInNew, mdiPencil, mdiPlusCircle } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiOpenInNew,
+  mdiPencil,
+  mdiPlusCircle,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,11 +13,13 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
@@ -26,14 +33,14 @@ import {
 import {
   computeDeviceName,
   DeviceRegistryEntry,
-  updateDeviceRegistryEntry,
   removeConfigEntryFromDevice,
+  updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
-  fetchDiagnosticHandler,
-  getDeviceDiagnosticsDownloadUrl,
-  getConfigEntryDiagnosticsDownloadUrl,
   DiagnosticInfo,
+  fetchDiagnosticHandler,
+  getConfigEntryDiagnosticsDownloadUrl,
+  getDeviceDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -51,9 +58,10 @@ import {
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
+import "../../logbook/ha-logbook";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
@@ -63,7 +71,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import "../../logbook/ha-logbook";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -215,7 +222,7 @@ export class HaConfigDevicePage extends LitElement {
     this._diagnosticDownloadLinks = Math.random();
     this._deleteButtons = []; // To prevent re-rendering if no delete buttons
     this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
-    this._renderDeleteButtons();
+    this._renderDeleteActions();
   }
 
   private async _renderDiagnosticButtons(requestId: number): Promise<void> {
@@ -269,7 +276,7 @@ export class HaConfigDevicePage extends LitElement {
       ).map(
         (link) => html`
           <a href=${link.link} @click=${this._signUrl}>
-            <mwc-button>
+            <mwc-list-item>
               ${links.length > 1
                 ? this.hass.localize(
                     `ui.panel.config.devices.download_diagnostics_integration`,
@@ -283,14 +290,14 @@ export class HaConfigDevicePage extends LitElement {
                 : this.hass.localize(
                     `ui.panel.config.devices.download_diagnostics`
                   )}
-            </mwc-button>
+            </mwc-list-item>
           </a>
         `
       );
     }
   }
 
-  private _renderDeleteButtons() {
+  private _renderDeleteActions() {
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
@@ -303,10 +310,10 @@ export class HaConfigDevicePage extends LitElement {
         return;
       }
       buttons.push(html`
-        <mwc-button
+        <mwc-list-item
           class="warning"
           .entryId=${entry.entry_id}
-          @click=${this._confirmDeleteEntry}
+          @request-selected=${this._confirmDeleteEntry}
         >
           ${buttons.length > 1
             ? this.hass.localize(
@@ -316,7 +323,7 @@ export class HaConfigDevicePage extends LitElement {
                 }
               )
             : this.hass.localize(`ui.panel.config.devices.delete_device`)}
-        </mwc-button>
+        </mwc-list-item>
       `);
     });
 
@@ -325,8 +332,11 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
-    const entryId = (e.currentTarget as any).entryId;
+  private async _confirmDeleteEntry(ev): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    const entryId = (ev.currentTarget as any).entryId;
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
@@ -407,20 +417,23 @@ export class HaConfigDevicePage extends LitElement {
             )}
           </ha-alert>
           ${device.disabled_by === "user"
-            ? html` <div class="card-actions" slot="actions">
-                <mwc-button unelevated @click=${this._enableDevice}>
-                  ${this.hass.localize("ui.common.enable")}
-                </mwc-button>
-              </div>`
+            ? html`
+                <div class="card-actions" slot="actions">
+                  <mwc-button unelevated @click=${this._enableDevice}>
+                    ${this.hass.localize("ui.common.enable")}
+                  </mwc-button>
+                </div>
+              `
             : ""}
         `
       );
     }
 
-    const deviceActions: (TemplateResult | string)[] = [];
+    const deviceButtonActions: (TemplateResult | string)[] = [];
+    const deviceOverflowActions: (TemplateResult | string)[] = [];
 
     if (configurationUrl) {
-      deviceActions.push(html`
+      deviceButtonActions.push(html`
         <a
           href=${configurationUrl}
           rel="noopener noreferrer"
@@ -445,14 +458,14 @@ export class HaConfigDevicePage extends LitElement {
       device,
       integrations,
       deviceInfo,
-      deviceActions
+      deviceOverflowActions
     );
 
     if (Array.isArray(this._diagnosticDownloadLinks)) {
-      deviceActions.push(...this._diagnosticDownloadLinks);
+      deviceOverflowActions.push(...this._diagnosticDownloadLinks);
     }
     if (this._deleteButtons) {
-      deviceActions.push(...this._deleteButtons);
+      deviceOverflowActions.push(...this._deleteButtons);
     }
 
     return html`
@@ -477,10 +490,6 @@ export class HaConfigDevicePage extends LitElement {
               `
             : ""
         }
-
-
-
-
         <div class="container">
           <div class="header fullwidth">
             ${
@@ -555,57 +564,31 @@ export class HaConfigDevicePage extends LitElement {
               >
                 ${deviceInfo}
                 ${
-                  deviceActions.length
+                  deviceButtonActions.length || deviceOverflowActions.length
                     ? html`
                         <div class="card-actions" slot="actions">
-                          ${deviceActions}
+                          <div>${deviceButtonActions}</div>
+
+                          ${deviceOverflowActions.length
+                            ? html`
+                                <ha-button-menu corner="BOTTOM_START">
+                                  <ha-icon-button
+                                    slot="trigger"
+                                    .label=${this.hass.localize(
+                                      "ui.common.menu"
+                                    )}
+                                    .path=${mdiDotsVertical}
+                                  ></ha-icon-button>
+                                  ${deviceOverflowActions}
+                                </ha-button-menu>
+                              `
+                            : ""}
                         </div>
                       `
                     : ""
                 }
               </ha-device-info-card>
-          </div>
-          <div class="column">
-            ${["control", "sensor", "config", "diagnostic"].map((category) =>
-              // Make sure we render controls if no other cards will be rendered
-              entitiesByCategory[category].length > 0 ||
-              (entities.length === 0 && category === "control")
-                ? html`
-                    <ha-device-entities-card
-                      .hass=${this.hass}
-                      .header=${this.hass.localize(
-                        `ui.panel.config.devices.entities.${category}`
-                      )}
-                      .deviceName=${deviceName}
-                      .entities=${entitiesByCategory[category]}
-                      .showHidden=${device.disabled_by !== null}
-                    >
-                    </ha-device-entities-card>
-                  `
-                : ""
-            )}
-            ${
-              isComponentLoaded(this.hass, "logbook")
-                ? html`
-                    <ha-card outlined>
-                      <h1 class="card-header">
-                        ${this.hass.localize("panel.logbook")}
-                      </h1>
-                      <ha-logbook
-                        .hass=${this.hass}
-                        .time=${this._logbookTime}
-                        .entityIds=${this._entityIds(entities)}
-                        .deviceIds=${this._deviceIdInList(this.deviceId)}
-                        virtualize
-                        narrow
-                        no-icon
-                      ></ha-logbook>
-                    </ha-card>
-                  `
-                : ""
-            }
-          </div>
-          <div class="column">
+
             ${
               isComponentLoaded(this.hass, "automation")
                 ? html`
@@ -874,6 +857,49 @@ export class HaConfigDevicePage extends LitElement {
                     `
                   : ""
               }
+          </div>
+          <div class="column">
+            ${["control", "sensor", "config", "diagnostic"].map((category) =>
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (entities.length === 0 && category === "control")
+                ? html`
+                    <ha-device-entities-card
+                      .hass=${this.hass}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .deviceName=${deviceName}
+                      .entities=${entitiesByCategory[category]}
+                      .showHidden=${device.disabled_by !== null}
+                    >
+                    </ha-device-entities-card>
+                  `
+                : ""
+            )}
+          </div>
+          <div class="column">
+
+            ${
+              isComponentLoaded(this.hass, "logbook")
+                ? html`
+                    <ha-card outlined>
+                      <h1 class="card-header">
+                        ${this.hass.localize("panel.logbook")}
+                      </h1>
+                      <ha-logbook
+                        .hass=${this.hass}
+                        .time=${this._logbookTime}
+                        .entityIds=${this._entityIds(entities)}
+                        .deviceIds=${this._deviceIdInList(this.deviceId)}
+                        virtualize
+                        narrow
+                        no-icon
+                      ></ha-logbook>
+                    </ha-card>
+                  `
+                : ""
+            }
             </div>
           </div>
         </ha-config-section>
@@ -928,14 +954,14 @@ export class HaConfigDevicePage extends LitElement {
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
-    deviceActions: (string | TemplateResult)[]
+    deviceOverflowActions: (string | TemplateResult)[]
   ) {
     const domains = integrations.map((int) => int.domain);
     if (domains.includes("mqtt")) {
       import(
         "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
       );
-      deviceActions.push(html`
+      deviceOverflowActions.push(html`
         <ha-device-actions-mqtt
           .hass=${this.hass}
           .device=${device}
@@ -951,7 +977,7 @@ export class HaConfigDevicePage extends LitElement {
           .device=${device}
         ></ha-device-info-zha>
       `);
-      deviceActions.push(html`
+      deviceOverflowActions.push(html`
         <ha-device-actions-zha
           .hass=${this.hass}
           .device=${device}
@@ -971,7 +997,7 @@ export class HaConfigDevicePage extends LitElement {
           .device=${device}
         ></ha-device-info-zwave_js>
       `);
-      deviceActions.push(html`
+      deviceOverflowActions.push(html`
         <ha-device-actions-zwave_js
           .hass=${this.hass}
           .device=${device}
@@ -1154,9 +1180,6 @@ export class HaConfigDevicePage extends LitElement {
           padding: 16px;
         }
 
-        .show-more {
-        }
-
         h1 {
           margin: 0;
           font-family: var(--paper-font-headline_-_font-family);
@@ -1263,7 +1286,19 @@ export class HaConfigDevicePage extends LitElement {
         :host([narrow]) ha-logbook {
           height: 235px;
         }
+
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-device-page": HaConfigDevicePage;
   }
 }

@@ -1,7 +1,8 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-list/mwc-list-item";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { shouldHandleRequestSelectedEvent } from "../../../../../../common/mwc/handle-request-selected-event";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
 
@@ -13,24 +14,23 @@ export class HaDeviceActionsMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-button @click=${this._showDebugInfo}> MQTT Info </mwc-button>
+      <mwc-list-item @request-selected=${this._showDebugInfo}>
+        MQTT Info
+      </mwc-list-item>
     `;
   }
 
-  private async _showDebugInfo(): Promise<void> {
+  private async _showDebugInfo(ev): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     const device = this.device;
     await showMQTTDeviceDebugInfoDialog(this, { device });
   }
+}
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        :host {
-          display: flex;
-          justify-content: space-between;
-        }
-      `,
-    ];
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-actions-mqtt": HaDeviceActionsMqtt;
   }
 }

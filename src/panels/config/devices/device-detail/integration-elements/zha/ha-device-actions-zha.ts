@@ -1,17 +1,11 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import "@material/mwc-list/mwc-list-item";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { shouldHandleRequestSelectedEvent } from "../../../../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
 import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
@@ -47,82 +41,107 @@ export class HaDeviceActionsZha extends LitElement {
     return html`
       ${this._zhaDevice.device_type !== "Coordinator"
         ? html`
-            <mwc-button @click=${this._onReconfigureNodeClick}>
+            <mwc-list-item @request-selected=${this._onReconfigureNodeClick}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.reconfigure"
               )}
-            </mwc-button>
+            </mwc-list-item>
           `
         : ""}
       ${this._zhaDevice.power_source === "Mains" &&
       (this._zhaDevice.device_type === "Router" ||
         this._zhaDevice.device_type === "Coordinator")
         ? html`
-            <mwc-button @click=${this._onAddDevicesClick}>
+            <mwc-list-item @request-selected=${this._onAddDevicesClick}>
               ${this.hass!.localize("ui.dialogs.zha_device_info.buttons.add")}
-            </mwc-button>
-            <mwc-button @click=${this._handleDeviceChildrenClicked}>
+            </mwc-list-item>
+            <mwc-list-item
+              @request-selected=${this._handleDeviceChildrenClicked}
+            >
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.device_children"
               )}
-            </mwc-button>
+            </mwc-list-item>
           `
         : ""}
       ${this._zhaDevice.device_type !== "Coordinator"
         ? html`
-            <mwc-button @click=${this._handleZigbeeInfoClicked}>
+            <mwc-list-item @request-selected=${this._handleZigbeeInfoClicked}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.zigbee_information"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._showClustersDialog}>
+            </mwc-list-item>
+            <mwc-list-item @request-selected=${this._showClustersDialog}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.clusters"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._onViewInVisualizationClick}>
+            </mwc-list-item>
+            <mwc-list-item
+              @request-selected=${this._onViewInVisualizationClick}
+            >
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.view_in_visualization"
               )}
-            </mwc-button>
-            <mwc-button class="warning" @click=${this._removeDevice}>
+            </mwc-list-item>
+            <mwc-list-item
+              class="warning"
+              @request-selected=${this._removeDevice}
+            >
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.remove"
               )}
-            </mwc-button>
+            </mwc-list-item>
           `
         : ""}
     `;
   }
 
-  private async _showClustersDialog(): Promise<void> {
+  private async _showClustersDialog(ev): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     await showZHAClusterDialog(this, { device: this._zhaDevice! });
   }
 
-  private async _onReconfigureNodeClick(): Promise<void> {
-    if (!this.hass) {
+  private async _onReconfigureNodeClick(ev): Promise<void> {
+    if (!this.hass || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
     showZHAReconfigureDeviceDialog(this, { device: this._zhaDevice! });
   }
 
-  private _onAddDevicesClick() {
+  private _onAddDevicesClick(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     navigate(`/config/zha/add/${this._zhaDevice!.ieee}`);
   }
 
-  private _onViewInVisualizationClick() {
+  private _onViewInVisualizationClick(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     navigate(`/config/zha/visualization/${this._zhaDevice!.device_reg_id}`);
   }
 
-  private async _handleZigbeeInfoClicked() {
+  private async _handleZigbeeInfoClicked(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     showZHADeviceZigbeeInfoDialog(this, { device: this._zhaDevice! });
   }
 
-  private async _handleDeviceChildrenClicked() {
+  private async _handleDeviceChildrenClicked(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     showZHADeviceChildrenDialog(this, { device: this._zhaDevice! });
   }
 
-  private async _removeDevice() {
+  private async _removeDevice(ev) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize(
         "ui.dialogs.zha_device_info.confirmations.remove"
@@ -138,18 +157,5 @@ export class HaDeviceActionsZha extends LitElement {
     });
 
     history.back();
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        :host {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-      `,
-    ];
   }
 }

@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
 import {
   css,
   CSSResultGroup,
@@ -8,6 +8,8 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { shouldHandleRequestSelectedEvent } from "../../../../../../common/mwc/handle-request-selected-event";
+import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveNodeStatus,
@@ -15,10 +17,9 @@ import {
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
-import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
+import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
-import { getConfigEntries } from "../../../../../../data/config_entries";
 
 @customElement("ha-device-actions-zwave_js")
 export class HaDeviceActionsZWaveJS extends LitElement {
@@ -71,34 +72,34 @@ export class HaDeviceActionsZWaveJS extends LitElement {
             <a
               .href=${`/config/zwave_js/node_config/${this.device.id}?config_entry=${this._entryId}`}
             >
-              <mwc-button>
+              <mwc-list-item>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.device_info.device_config"
                 )}
-              </mwc-button>
+              </mwc-list-item>
             </a>
-            <mwc-button @click=${this._reinterviewClicked}>
+            <mwc-list-item @request-selected=${this._reinterviewClicked}>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.device_info.reinterview_device"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._healNodeClicked}>
+            </mwc-list-item>
+            <mwc-list-item @request-selected=${this._healNodeClicked}>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.device_info.heal_node"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._removeFailedNode}>
+            </mwc-list-item>
+            <mwc-list-item @request-selected=${this._removeFailedNode}>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.device_info.remove_failed"
               )}
-            </mwc-button>
+            </mwc-list-item>
           `
         : ""}
     `;
   }
 
-  private async _reinterviewClicked() {
-    if (!this.device) {
+  private async _reinterviewClicked(ev) {
+    if (!this.device || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
     showZWaveJSReinterviewNodeDialog(this, {
@@ -106,8 +107,8 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     });
   }
 
-  private async _healNodeClicked() {
-    if (!this.device) {
+  private async _healNodeClicked(ev) {
+    if (!this.device || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
     showZWaveJSHealNodeDialog(this, {
@@ -116,8 +117,8 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     });
   }
 
-  private async _removeFailedNode() {
-    if (!this.device) {
+  private async _removeFailedNode(ev) {
+    if (!this.device || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
     showZWaveJSRemoveFailedNodeDialog(this, {
