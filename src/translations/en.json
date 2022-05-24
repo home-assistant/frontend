@@ -3326,6 +3326,8 @@
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
+              "previous_energy": "Previous Energy",
+              "previous_cost": "Previous Cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"
             },
