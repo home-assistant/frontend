@@ -301,14 +301,24 @@ export const migrateZwave = (
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
-  device_or_entry_id: string,
-  id_type: "entry_id" | "device_id" = "entry_id"
-): Promise<ZWaveJSNetwork> =>
-  hass.callWS({
+  device_or_entry_id: {
+    device_id?: string;
+    entry_id?: string;
+  }
+): Promise<ZWaveJSNetwork> => {
+  if (device_or_entry_id.device_id && device_or_entry_id.entry_id) {
+    throw new Error("Only one of device or entry ID should be supplied.");
+  }
+  if (!device_or_entry_id.device_id && !device_or_entry_id.entry_id) {
+    throw new Error("Either device or entry ID should be supplied.");
+  }
+  return hass.callWS({
     type: "zwave_js/network_status",
-    device_or_entry_id,
-    id_type,
+    device_or_entry_id:
+      device_or_entry_id.device_id || device_or_entry_id.entry_id,
+    id_type: device_or_entry_id.device_id ? "device_id" : "entry_id",
   });
+};
 
 export const fetchZwaveDataCollectionStatus = (
   hass: HomeAssistant,
