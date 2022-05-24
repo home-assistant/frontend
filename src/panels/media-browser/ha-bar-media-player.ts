@@ -33,9 +33,7 @@ import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import { UNAVAILABLE_STATES } from "../../data/entity";
-import {
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
   BROWSER_PLAYER,
   cleanupMediaTitle,
