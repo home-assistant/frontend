@@ -32,6 +32,8 @@ import {
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { hardwareBrandsUrl } from "../../../util/brands-url";
+import { showToast } from "../../../util/toast";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 
 @customElement("ha-config-hardware")
@@ -50,31 +52,29 @@ class HaConfigHardware extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._load();
-    }
+    this._load();
   }
 
   protected render(): TemplateResult {
-    let board: string | undefined;
-    let hostName: string | undefined;
+    let boardId: string | undefined;
+    let boardName: string | undefined;
     let imageURL: string | undefined;
     let documentationURL: string | undefined;
 
-    if (
-      isComponentLoaded(this.hass, "hardware") &&
-      this._hardwareInfo?.hardware.length
-    ) {
+    if (this._hardwareInfo?.hardware.length) {
       const boardData = this._hardwareInfo!.hardware[0];
 
-      board = boardData.board.model;
-      hostName = boardData.name;
+      boardId = boardData.board.hassio_board_id;
+      boardName = boardData.name;
       documentationURL = boardData.url;
-      imageURL =
-        "https://raw.githubusercontent.com/home-assistant/brands/2d3cd2eb7dbd1b8daa756a885755a88a1b6bd160/core_integrations/_homeassistant/icon.png";
+      imageURL = hardwareBrandsUrl({
+        domain: "boards",
+        name: `${boardData.board.manufacturer}_${boardData.board.model}`,
+        darkOptimized: this.hass.themes?.darkMode,
+      });
     } else if (this._OSData?.board) {
-      board = this._OSData.board;
-      hostName = BOARD_NAMES[this._OSData.board];
+      boardId = this._OSData.board;
+      boardName = BOARD_NAMES[this._OSData.board];
     }
 
     return html`
@@ -117,11 +117,11 @@ class HaConfigHardware extends LitElement {
               >
             `
           : ""}
-        ${board
+        ${boardName
           ? html`
               <div class="content">
                 <ha-card outlined>
-                  ${board
+                  ${boardId
                     ? html`
                         <div class="card-content">
                           <mwc-list>
@@ -129,33 +129,49 @@ class HaConfigHardware extends LitElement {
                               graphic=${ifDefined(
                                 imageURL ? "medium" : undefined
                               )}
-                              twoline
+                              .twoline=${Boolean(boardId)}
                             >
                               ${imageURL
                                 ? html`<img slot="graphic" src=${imageURL} />`
                                 : ""}
                               <span class="primary-text">
-                                ${hostName ||
+                                ${boardName ||
                                 this.hass.localize(
                                   "ui.panel.config.hardware.board"
                                 )}
                               </span>
-                              <span class="secondary-text" slot="secondary"
-                                >${board}</span
-                              >
+                              ${boardId
+                                ? html`
+                                    <span
+                                      class="secondary-text"
+                                      slot="secondary"
+                                      >${boardId}</span
+                                    >
+                                  `
+                                : ""}
                             </mwc-list-item>
-                            <ha-clickable-list-item
-                              .href=${documentationURL}
-                              openNewTab
-                              twoline
-                              hasMeta
-                            >
-                              <span>Documentation</span>
-                              <span slot="secondary"
-                                >Find extra information on your device</span
-                              >
-                              <ha-icon-next slot="meta"></ha-icon-next>
-                            </ha-clickable-list-item>
+                            ${documentationURL
+                              ? html`
+                                  <ha-clickable-list-item
+                                    .href=${documentationURL}
+                                    openNewTab
+                                    twoline
+                                    hasMeta
+                                  >
+                                    <span
+                                      >${this.hass.localize(
+                                        "ui.panel.config.hardware.documentation"
+                                      )}</span
+                                    >
+                                    <span slot="secondary"
+                                      >${this.hass.localize(
+                                        "ui.panel.config.hardware.documentation_description"
+                                      )}</span
+                                    >
+                                    <ha-icon-next slot="meta"></ha-icon-next>
+                                  </ha-clickable-list-item>
+                                `
+                              : ""}
                           </mwc-list>
                         </div>
                       `
@@ -175,7 +191,9 @@ class HaConfigHardware extends LitElement {
       } else {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
-      this._hostData = await fetchHassioHostInfo(this.hass);
+      if (isComponentLoaded(this.hass, "hassio")) {
+        this._hostData = await fetchHassioHostInfo(this.hass);
+      }
     } catch (err: any) {
       this._error = err.message || err;
     }
@@ -185,10 +203,7 @@ class HaConfigHardware extends LitElement {
     showhardwareAvailableDialog(this);
   }
 
-  private async _hostReboot(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
+  private async _hostReboot(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.hardware.reboot_host"),
       text: this.hass.localize("ui.panel.config.hardware.reboot_host_confirm"),
@@ -197,9 +212,12 @@ class HaConfigHardware extends LitElement {
     });
 
     if (!confirmed) {
-      button.progress = false;
       return;
     }
+
+    showToast(this, {
+      message: this.hass.localize("ui.panel.config.hardware.rebooting_host"),
+    });
 
     try {
       await rebootHost(this.hass);
@@ -214,13 +232,9 @@ class HaConfigHardware extends LitElement {
         });
       }
     }
-    button.progress = false;
   }
 
-  private async _hostShutdown(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
+  private async _hostShutdown(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.hardware.shutdown_host"),
       text: this.hass.localize(
@@ -231,9 +245,14 @@ class HaConfigHardware extends LitElement {
     });
 
     if (!confirmed) {
-      button.progress = false;
       return;
     }
+
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.hardware.host_shutting_down"
+      ),
+    });
 
     try {
       await shutdownHost(this.hass);
@@ -248,7 +267,6 @@ class HaConfigHardware extends LitElement {
         });
       }
     }
-    button.progress = false;
   }
 
   static styles = [

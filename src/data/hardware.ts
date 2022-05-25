@@ -35,4 +35,5 @@ export interface HardwareInfoBoardInfo {
   manufacturer: string;
   model?: string;
   revision?: string;
+  hassio_board_id?: string;
 }
