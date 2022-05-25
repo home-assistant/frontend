@@ -119,7 +119,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deviceActions?: DeviceAction[];
 
-  @state() private _deviceAlerts?: any[];
+  @state() private _deviceAlerts?: DeviceAlert[];
 
   private _logbookTime = { recent: 86400 };
 
