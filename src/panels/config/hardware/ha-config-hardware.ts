@@ -121,61 +121,51 @@ class HaConfigHardware extends LitElement {
           ? html`
               <div class="content">
                 <ha-card outlined>
-                  ${boardId
-                    ? html`
-                        <div class="card-content">
-                          <mwc-list>
-                            <mwc-list-item
-                              graphic=${ifDefined(
-                                imageURL ? "medium" : undefined
-                              )}
-                              .twoline=${Boolean(boardId)}
+                  <div class="card-content">
+                    <mwc-list>
+                      <mwc-list-item
+                        graphic=${ifDefined(imageURL ? "medium" : undefined)}
+                        .twoline=${Boolean(boardId)}
+                      >
+                        ${imageURL
+                          ? html`<img slot="graphic" src=${imageURL} />`
+                          : ""}
+                        <span class="primary-text">
+                          ${boardName ||
+                          this.hass.localize("ui.panel.config.hardware.board")}
+                        </span>
+                        ${boardId
+                          ? html`
+                              <span class="secondary-text" slot="secondary"
+                                >${boardId}</span
+                              >
+                            `
+                          : ""}
+                      </mwc-list-item>
+                      ${documentationURL
+                        ? html`
+                            <ha-clickable-list-item
+                              .href=${documentationURL}
+                              openNewTab
+                              twoline
+                              hasMeta
                             >
-                              ${imageURL
-                                ? html`<img slot="graphic" src=${imageURL} />`
-                                : ""}
-                              <span class="primary-text">
-                                ${boardName ||
-                                this.hass.localize(
-                                  "ui.panel.config.hardware.board"
-                                )}
-                              </span>
-                              ${boardId
-                                ? html`
-                                    <span
-                                      class="secondary-text"
-                                      slot="secondary"
-                                      >${boardId}</span
-                                    >
-                                  `
-                                : ""}
-                            </mwc-list-item>
-                            ${documentationURL
-                              ? html`
-                                  <ha-clickable-list-item
-                                    .href=${documentationURL}
-                                    openNewTab
-                                    twoline
-                                    hasMeta
-                                  >
-                                    <span
-                                      >${this.hass.localize(
-                                        "ui.panel.config.hardware.documentation"
-                                      )}</span
-                                    >
-                                    <span slot="secondary"
-                                      >${this.hass.localize(
-                                        "ui.panel.config.hardware.documentation_description"
-                                      )}</span
-                                    >
-                                    <ha-icon-next slot="meta"></ha-icon-next>
-                                  </ha-clickable-list-item>
-                                `
-                              : ""}
-                          </mwc-list>
-                        </div>
-                      `
-                    : ""}
+                              <span
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.documentation"
+                                )}</span
+                              >
+                              <span slot="secondary"
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.documentation_description"
+                                )}</span
+                              >
+                              <ha-icon-next slot="meta"></ha-icon-next>
+                            </ha-clickable-list-item>
+                          `
+                        : ""}
+                    </mwc-list>
+                  </div>
                 </ha-card>
               </div>
             `
