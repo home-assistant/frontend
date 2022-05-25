@@ -9,7 +9,6 @@ import {
   fetchAuthProviders,
 } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { translationMetadata } from "../resources/translations-metadata";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
 
@@ -171,12 +170,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   private async _handleAuthProviderPick(ev) {
     this._authProvider = ev.detail;
-  }
-
-  private _computeDirection() {
-    this.style.cssText = !translationMetadata.translations[this.language!].isRTL
-      ? "direction: ltr; --float-start: left;"
-      : "direction: rtl; --float-start: right";
   }
 
   static get styles(): CSSResultGroup {

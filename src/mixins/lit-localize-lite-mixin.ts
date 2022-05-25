@@ -3,6 +3,7 @@ import { property } from "lit/decorators";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
+import { translationMetadata } from "../resources/translations-metadata";
 
 const empty = () => "";
 
@@ -23,6 +24,11 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
+    }
+
+    protected firstUpdated(changedProps: PropertyValues) {
+      super.firstUpdated(changedProps);
+      this._computeDirection();
     }
 
     protected updated(changedProperties: PropertyValues) {
@@ -77,6 +83,13 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       this.resources = {
         [language]: data,
       };
+    }
+
+    private _computeDirection() {
+      this.style.cssText = !translationMetadata.translations[this.language!]
+        .isRTL
+        ? "direction: ltr; --direction: ltr; --float-start: left;"
+        : "direction: rtl; --direction: rtl; --float-start: right";
     }
   }
   return LitLocalizeLiteClass;
