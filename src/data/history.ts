@@ -197,7 +197,7 @@ export const fetchRecent = (
 
 export const fetchRecentWS = (
   hass: HomeAssistant,
-  entityId: string, // This may be comma seperate entities
+  entityId: string, // This may be CSV
   startTime: Date,
   endTime: Date,
   skipInitialState = false,
