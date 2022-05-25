@@ -28,7 +28,7 @@ export const getZwaveDeviceActions = async (
 
   const node = await fetchZwaveNodeStatus(hass, device.id);
 
-  if (!node || !node.is_controller_node) {
+  if (!node || node.is_controller_node) {
     return [];
   }
 

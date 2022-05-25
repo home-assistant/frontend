@@ -232,9 +232,9 @@ export class HaConfigDevicePage extends LitElement {
     this._diagnosticDownloadLinks = Math.random();
     this._deleteButtons = []; // To prevent re-rendering if no delete buttons
     this._deviceActions = [];
-    this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
-    this._renderDeleteActions();
-    this._renderDeviceActions();
+    this._getDiagnosticButtons(this._diagnosticDownloadLinks);
+    this._getDeleteActions();
+    this._getDeviceActions();
   }
 
   protected firstUpdated(changedProps) {
@@ -800,7 +800,7 @@ export class HaConfigDevicePage extends LitElement {
       </hass-tabs-subpage>    `;
   }
 
-  private async _renderDiagnosticButtons(requestId: number): Promise<void> {
+  private async _getDiagnosticButtons(requestId: number): Promise<void> {
     if (!isComponentLoaded(this.hass, "diagnostics")) {
       return;
     }
@@ -866,7 +866,7 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private _renderDeleteActions() {
+  private _getDeleteActions() {
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
@@ -912,7 +912,7 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private async _renderDeviceActions() {
+  private async _getDeviceActions() {
     const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
@@ -950,13 +950,15 @@ export class HaConfigDevicePage extends LitElement {
       );
       const actions = mqtt.getMQTTDeviceActions(this, device);
       deviceActions.push(...actions);
-    } else if (domains.includes("zha")) {
+    }
+    if (domains.includes("zha")) {
       const zha = await import(
         "./device-detail/integration-elements/zha/device-actions"
       );
       const actions = await zha.getZHADeviceActions(this, this.hass, device);
       deviceActions.push(...actions);
-    } else if (domains.includes("zwave_js")) {
+    }
+    if (domains.includes("zwave_js")) {
       const zwave = await import(
         "./device-detail/integration-elements/zwave_js/device-actions"
       );
