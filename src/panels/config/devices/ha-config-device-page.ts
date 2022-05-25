@@ -83,6 +83,11 @@ export interface DeviceAction {
   classes?: string;
 }
 
+export interface DeviceAlert {
+  level: "warning" | "error" | "info";
+  text: string;
+}
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -113,6 +118,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deleteButtons?: DeviceAction[];
 
   @state() private _deviceActions?: DeviceAction[];
+
+  @state() private _deviceAlerts?: any[];
 
   private _logbookTime = { recent: 86400 };
 
@@ -215,12 +222,14 @@ export class HaConfigDevicePage extends LitElement {
       this._diagnosticDownloadLinks = undefined;
       this._deleteButtons = undefined;
       this._deviceActions = undefined;
+      this._deviceAlerts = undefined;
     }
 
     if (
       (this._diagnosticDownloadLinks &&
         this._deleteButtons &&
-        this._deviceActions) ||
+        this._deviceActions &&
+        this._deviceAlerts) ||
       !this.devices ||
       !this.deviceId ||
       !this.entries
@@ -231,9 +240,11 @@ export class HaConfigDevicePage extends LitElement {
     this._diagnosticDownloadLinks = Math.random();
     this._deleteButtons = []; // To prevent re-rendering if no delete buttons
     this._deviceActions = [];
+    this._deviceAlerts = [];
     this._getDiagnosticButtons(this._diagnosticDownloadLinks);
     this._getDeleteActions();
     this._getDeviceActions();
+    this._getDeviceAlerts();
   }
 
   protected firstUpdated(changedProps) {
@@ -279,7 +290,6 @@ export class HaConfigDevicePage extends LitElement {
     const area = this._computeArea(this.areas, device);
 
     const deviceInfo: TemplateResult[] = [];
-    const deviceAlerts: TemplateResult[] = [];
 
     const actions = [...(this._deviceActions || [])];
     if (Array.isArray(this._diagnosticDownloadLinks)) {
@@ -320,7 +330,7 @@ export class HaConfigDevicePage extends LitElement {
       );
     }
 
-    this._renderIntegrationInfo(device, integrations, deviceInfo, deviceAlerts);
+    this._renderIntegrationInfo(device, integrations, deviceInfo);
 
     return html`
       <hass-tabs-subpage
@@ -411,8 +421,19 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="column">
               ${
-                deviceAlerts.length
-                  ? html` <div class="fullwidth">${deviceAlerts}</div> `
+                this._deviceAlerts?.length
+                  ? html`
+                      <div class="fullwidth">
+                        ${this._deviceAlerts.map(
+                          (alert) =>
+                            html`
+                              <ha-alert .alertType=${alert.level}
+                                >${alert.text}</ha-alert
+                              >
+                            `
+                        )}
+                      </div>
+                    `
                   : ""
               }
               <ha-device-info-card
@@ -976,6 +997,31 @@ export class HaConfigDevicePage extends LitElement {
     this._deviceActions = deviceActions;
   }
 
+  private async _getDeviceAlerts() {
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+    const deviceAlerts: DeviceAlert[] = [];
+
+    const domains = this._integrations(device, this.entries).map(
+      (int) => int.domain
+    );
+
+    if (domains.includes("zwave_js")) {
+      const zwave = await import(
+        "./device-detail/integration-elements/zwave_js/device-alerts"
+      );
+
+      const alerts = await zwave.getZwaveDeviceAlerts(this.hass, device);
+      deviceAlerts.push(...alerts);
+    }
+
+    this._deviceAlerts = deviceAlerts;
+  }
+
   private _computeEntityName(entity: EntityRegistryEntry) {
     if (entity.name) {
       return entity.name;
@@ -1023,8 +1069,7 @@ export class HaConfigDevicePage extends LitElement {
   private _renderIntegrationInfo(
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
-    deviceInfo: TemplateResult[],
-    deviceAlerts: TemplateResult[]
+    deviceInfo: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
     if (domains.includes("zha")) {
@@ -1038,17 +1083,8 @@ export class HaConfigDevicePage extends LitElement {
     }
     if (domains.includes("zwave_js")) {
       import(
-        "./device-detail/integration-elements/zwave_js/ha-device-alerts-zwave_js"
-      );
-      import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
       );
-      deviceAlerts.push(html`
-        <ha-device-alerts-zwave_js
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-alerts-zwave_js>
-      `);
       deviceInfo.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
