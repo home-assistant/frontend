@@ -2,12 +2,7 @@ import type { Button } from "@material/mwc-button";
 import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import {
-  customElement,
-  property,
-  query,
-  queryAssignedElements,
-} from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
 
@@ -33,12 +28,6 @@ export class HaButtonMenu extends LitElement {
 
   @query("mwc-menu", true) private _menu?: Menu;
 
-  @queryAssignedElements({
-    slot: "trigger",
-    selector: "ha-icon-button, mwc-button",
-  })
-  private _triggerButton!: Array<HaIconButton | Button>;
-
   public get items() {
     return this._menu?.items;
   }
@@ -51,14 +40,14 @@ export class HaButtonMenu extends LitElement {
     if (this._menu?.open) {
       this._menu.focusItemAtIndex(0);
     } else {
-      this._triggerButton[0]?.focus();
+      this._triggerButton?.focus();
     }
   }
 
   protected render(): TemplateResult {
     return html`
       <div @click=${this._handleClick}>
-        <slot name="trigger"></slot>
+        <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
       <mwc-menu
         .corner=${this.corner}
@@ -95,6 +84,18 @@ export class HaButtonMenu extends LitElement {
     }
     this._menu!.anchor = this;
     this._menu!.show();
+  }
+
+  private get _triggerButton() {
+    return this.querySelector(
+      'ha-icon-button[slot="trigger"], mwc-button[slot="trigger"]'
+    ) as HaIconButton | Button | null;
+  }
+
+  private _setTriggerAria() {
+    if (this._triggerButton) {
+      this._triggerButton.ariaHasPopup = "menu";
+    }
   }
 
   static get styles(): CSSResultGroup {
