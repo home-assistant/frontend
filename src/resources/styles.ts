@@ -158,6 +158,7 @@ export const buttonLinkStyle = css`
     text-align: left;
     text-decoration: underline;
     cursor: pointer;
+    outline: none;
   }
 `;
 

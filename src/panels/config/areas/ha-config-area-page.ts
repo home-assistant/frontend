@@ -19,7 +19,6 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../logbook/ha-logbook";
 import {
   AreaRegistryEntry,
   deleteAreaRegistryEntry,
@@ -43,15 +42,16 @@ import { SceneEntity } from "../../../data/scene";
 import { ScriptEntity } from "../../../data/script";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "../../logbook/ha-logbook";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 declare type NameAndEntity<EntityType extends HassEntity> = {
   name: string;
@@ -761,10 +761,10 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           border-radius: 50%;
         }
         ha-logbook {
-          height: 800px;
+          height: 400px;
         }
         :host([narrow]) ha-logbook {
-          height: 400px;
+          height: 235px;
           overflow: auto;
         }
       `,

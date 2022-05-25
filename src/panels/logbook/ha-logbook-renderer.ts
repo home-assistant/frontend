@@ -556,10 +556,6 @@ class HaLogbookRenderer extends LitElement {
           padding: 0 16px;
         }
 
-        .narrow .date {
-          padding: 0 8px;
-        }
-
         .rtl .date {
           direction: rtl;
         }
@@ -590,6 +586,12 @@ class HaLogbookRenderer extends LitElement {
 
         a {
           color: var(--primary-color);
+          text-decoration: none;
+        }
+
+        button.link {
+          color: var(--paper-item-icon-color);
+          text-decoration: none;
         }
 
         .container {
@@ -607,7 +609,6 @@ class HaLogbookRenderer extends LitElement {
 
         .narrow .entry {
           line-height: 1.5;
-          padding: 8px;
         }
 
         .narrow .icon-message state-badge {

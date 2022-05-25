@@ -1,4 +1,9 @@
-import { mdiOpenInNew, mdiPencil, mdiPlusCircle } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiOpenInNew,
+  mdiPencil,
+  mdiPlusCircle,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,6 +18,7 @@ import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
@@ -26,14 +32,14 @@ import {
 import {
   computeDeviceName,
   DeviceRegistryEntry,
-  updateDeviceRegistryEntry,
   removeConfigEntryFromDevice,
+  updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
-  fetchDiagnosticHandler,
-  getDeviceDiagnosticsDownloadUrl,
-  getConfigEntryDiagnosticsDownloadUrl,
   DiagnosticInfo,
+  fetchDiagnosticHandler,
+  getConfigEntryDiagnosticsDownloadUrl,
+  getDeviceDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
 import {
   EntityRegistryEntry,
@@ -51,9 +57,10 @@ import {
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
+import "../../logbook/ha-logbook";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./device-detail/ha-device-entities-card";
@@ -63,10 +70,17 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import "../../logbook/ha-logbook";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
+}
+
+export interface DeviceAction {
+  href?: string;
+  action?: (ev: any) => void;
+  label: string;
+  trailingIcon?: string;
+  classes?: string;
 }
 
 @customElement("ha-config-device-page")
@@ -94,11 +108,11 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _related?: RelatedResult;
 
   // If a number, it's the request ID so we make sure we don't show older info
-  @state() private _diagnosticDownloadLinks?:
-    | number
-    | (TemplateResult | string)[];
+  @state() private _diagnosticDownloadLinks?: number | DeviceAction[];
 
-  @state() private _deleteButtons?: (TemplateResult | string)[];
+  @state() private _deleteButtons?: DeviceAction[];
+
+  @state() private _deviceActions?: DeviceAction[];
 
   private _logbookTime = { recent: 86400 };
 
@@ -196,15 +210,17 @@ export class HaConfigDevicePage extends LitElement {
     if (
       changedProps.has("deviceId") ||
       changedProps.has("devices") ||
-      changedProps.has("deviceId") ||
       changedProps.has("entries")
     ) {
       this._diagnosticDownloadLinks = undefined;
       this._deleteButtons = undefined;
+      this._deviceActions = undefined;
     }
 
     if (
-      (this._diagnosticDownloadLinks && this._deleteButtons) ||
+      (this._diagnosticDownloadLinks &&
+        this._deleteButtons &&
+        this._deviceActions) ||
       !this.devices ||
       !this.deviceId ||
       !this.entries
@@ -214,129 +230,10 @@ export class HaConfigDevicePage extends LitElement {
 
     this._diagnosticDownloadLinks = Math.random();
     this._deleteButtons = []; // To prevent re-rendering if no delete buttons
-    this._renderDiagnosticButtons(this._diagnosticDownloadLinks);
-    this._renderDeleteButtons();
-  }
-
-  private async _renderDiagnosticButtons(requestId: number): Promise<void> {
-    if (!isComponentLoaded(this.hass, "diagnostics")) {
-      return;
-    }
-
-    const device = this._device(this.deviceId, this.devices);
-
-    if (!device) {
-      return;
-    }
-
-    let links = await Promise.all(
-      this._integrations(device, this.entries).map(
-        async (entry): Promise<boolean | { link: string; domain: string }> => {
-          if (entry.state !== "loaded") {
-            return false;
-          }
-          let info: DiagnosticInfo;
-          try {
-            info = await fetchDiagnosticHandler(this.hass, entry.domain);
-          } catch (err: any) {
-            if (err.code === "not_found") {
-              return false;
-            }
-            throw err;
-          }
-
-          if (!info.handlers.device && !info.handlers.config_entry) {
-            return false;
-          }
-          return {
-            link: info.handlers.device
-              ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
-              : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
-            domain: entry.domain,
-          };
-        }
-      )
-    );
-
-    links = links.filter(Boolean);
-
-    if (this._diagnosticDownloadLinks !== requestId) {
-      return;
-    }
-    if (links.length > 0) {
-      this._diagnosticDownloadLinks = (
-        links as { link: string; domain: string }[]
-      ).map(
-        (link) => html`
-          <a href=${link.link} @click=${this._signUrl}>
-            <mwc-button>
-              ${links.length > 1
-                ? this.hass.localize(
-                    `ui.panel.config.devices.download_diagnostics_integration`,
-                    {
-                      integration: domainToName(
-                        this.hass.localize,
-                        link.domain
-                      ),
-                    }
-                  )
-                : this.hass.localize(
-                    `ui.panel.config.devices.download_diagnostics`
-                  )}
-            </mwc-button>
-          </a>
-        `
-      );
-    }
-  }
-
-  private _renderDeleteButtons() {
-    const device = this._device(this.deviceId, this.devices);
-
-    if (!device) {
-      return;
-    }
-
-    const buttons: TemplateResult[] = [];
-    this._integrations(device, this.entries).forEach((entry) => {
-      if (entry.state !== "loaded" || !entry.supports_remove_device) {
-        return;
-      }
-      buttons.push(html`
-        <mwc-button
-          class="warning"
-          .entryId=${entry.entry_id}
-          @click=${this._confirmDeleteEntry}
-        >
-          ${buttons.length > 1
-            ? this.hass.localize(
-                `ui.panel.config.devices.delete_device_integration`,
-                {
-                  integration: domainToName(this.hass.localize, entry.domain),
-                }
-              )
-            : this.hass.localize(`ui.panel.config.devices.delete_device`)}
-        </mwc-button>
-      `);
-    });
-
-    if (buttons.length > 0) {
-      this._deleteButtons = buttons;
-    }
-  }
-
-  private async _confirmDeleteEntry(e: MouseEvent): Promise<void> {
-    const entryId = (e.currentTarget as any).entryId;
-
-    const confirmed = await showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
-    await removeConfigEntryFromDevice(this.hass!, this.deviceId, entryId);
+    this._deviceActions = [];
+    this._getDiagnosticButtons(this._diagnosticDownloadLinks);
+    this._getDeleteActions();
+    this._getDeviceActions();
   }
 
   protected firstUpdated(changedProps) {
@@ -381,15 +278,18 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
-    const configurationUrlIsHomeAssistant =
-      device.configuration_url?.startsWith("homeassistant://") || false;
-
-    const configurationUrl = configurationUrlIsHomeAssistant
-      ? device.configuration_url!.replace("homeassistant://", "/")
-      : device.configuration_url;
-
     const deviceInfo: TemplateResult[] = [];
     const deviceAlerts: TemplateResult[] = [];
+
+    const actions = [...(this._deviceActions || [])];
+    if (Array.isArray(this._diagnosticDownloadLinks)) {
+      actions.push(...this._diagnosticDownloadLinks);
+    }
+    if (this._deleteButtons) {
+      actions.push(...this._deleteButtons);
+    }
+
+    const firstDeviceAction = actions.shift();
 
     if (device.disabled_by) {
       deviceInfo.push(
@@ -408,54 +308,19 @@ export class HaConfigDevicePage extends LitElement {
             )}
           </ha-alert>
           ${device.disabled_by === "user"
-            ? html` <div class="card-actions" slot="actions">
-                <mwc-button unelevated @click=${this._enableDevice}>
-                  ${this.hass.localize("ui.common.enable")}
-                </mwc-button>
-              </div>`
+            ? html`
+                <div class="card-actions" slot="actions">
+                  <mwc-button unelevated @click=${this._enableDevice}>
+                    ${this.hass.localize("ui.common.enable")}
+                  </mwc-button>
+                </div>
+              `
             : ""}
         `
       );
     }
 
-    const deviceActions: (TemplateResult | string)[] = [];
-
-    if (configurationUrl) {
-      deviceActions.push(html`
-        <a
-          href=${configurationUrl}
-          rel="noopener noreferrer"
-          .target=${configurationUrlIsHomeAssistant ? "_self" : "_blank"}
-        >
-          <mwc-button>
-            ${this.hass.localize(
-              `ui.panel.config.devices.open_configuration_url_${
-                device.entry_type || "device"
-              }`
-            )}
-            <ha-svg-icon
-              .path=${mdiOpenInNew}
-              slot="trailingIcon"
-            ></ha-svg-icon>
-          </mwc-button>
-        </a>
-      `);
-    }
-
-    this._renderIntegrationInfo(
-      device,
-      integrations,
-      deviceInfo,
-      deviceActions,
-      deviceAlerts
-    );
-
-    if (Array.isArray(this._diagnosticDownloadLinks)) {
-      deviceActions.push(...this._diagnosticDownloadLinks);
-    }
-    if (this._deleteButtons) {
-      deviceActions.push(...this._deleteButtons);
-    }
+    this._renderIntegrationInfo(device, integrations, deviceInfo, deviceAlerts);
 
     return html`
       <hass-tabs-subpage
@@ -479,10 +344,6 @@ export class HaConfigDevicePage extends LitElement {
               `
             : ""
         }
-
-
-
-
         <div class="container">
           <div class="header fullwidth">
             ${
@@ -562,57 +423,70 @@ export class HaConfigDevicePage extends LitElement {
               >
                 ${deviceInfo}
                 ${
-                  deviceActions.length
+                  firstDeviceAction || actions.length
                     ? html`
                         <div class="card-actions" slot="actions">
-                          ${deviceActions}
+                          <div>
+                            <a href=${ifDefined(firstDeviceAction!.href)}>
+                              <mwc-button
+                                class=${ifDefined(firstDeviceAction!.classes)}
+                                .action=${firstDeviceAction!.action}
+                                @click=${this._deviceActionClicked}
+                              >
+                                ${firstDeviceAction!.label}
+                                ${firstDeviceAction!.trailingIcon
+                                  ? html`
+                                      <ha-svg-icon
+                                        .path=${firstDeviceAction!.trailingIcon}
+                                        slot="trailingIcon"
+                                      ></ha-svg-icon>
+                                    `
+                                  : ""}
+                              </mwc-button>
+                            </a>
+                          </div>
+
+                          ${actions.length
+                            ? html`
+                                <ha-button-menu corner="BOTTOM_START">
+                                  <ha-icon-button
+                                    slot="trigger"
+                                    .label=${this.hass.localize(
+                                      "ui.common.menu"
+                                    )}
+                                    .path=${mdiDotsVertical}
+                                  ></ha-icon-button>
+                                  ${actions.map(
+                                    (deviceAction) => html`
+                                      <a href=${ifDefined(deviceAction.href)}>
+                                        <mwc-list-item
+                                          class=${ifDefined(
+                                            deviceAction.classes
+                                          )}
+                                          .action=${deviceAction.action}
+                                          @click=${this._deviceActionClicked}
+                                        >
+                                          ${deviceAction.label}
+                                          ${deviceAction.trailingIcon
+                                            ? html`
+                                                <ha-svg-icon
+                                                  .path=${deviceAction.trailingIcon}
+                                                ></ha-svg-icon>
+                                              `
+                                            : ""}
+                                        </mwc-list-item>
+                                      </a>
+                                    `
+                                  )}
+                                </ha-button-menu>
+                              `
+                            : ""}
                         </div>
                       `
                     : ""
                 }
               </ha-device-info-card>
-          </div>
-          <div class="column">
-            ${["control", "sensor", "config", "diagnostic"].map((category) =>
-              // Make sure we render controls if no other cards will be rendered
-              entitiesByCategory[category].length > 0 ||
-              (entities.length === 0 && category === "control")
-                ? html`
-                    <ha-device-entities-card
-                      .hass=${this.hass}
-                      .header=${this.hass.localize(
-                        `ui.panel.config.devices.entities.${category}`
-                      )}
-                      .deviceName=${deviceName}
-                      .entities=${entitiesByCategory[category]}
-                      .showHidden=${device.disabled_by !== null}
-                    >
-                    </ha-device-entities-card>
-                  `
-                : ""
-            )}
-            ${
-              isComponentLoaded(this.hass, "logbook")
-                ? html`
-                    <ha-card outlined>
-                      <h1 class="card-header">
-                        ${this.hass.localize("panel.logbook")}
-                      </h1>
-                      <ha-logbook
-                        .hass=${this.hass}
-                        .time=${this._logbookTime}
-                        .entityIds=${this._entityIds(entities)}
-                        .deviceIds=${this._deviceIdInList(this.deviceId)}
-                        virtualize
-                        narrow
-                        no-icon
-                      ></ha-logbook>
-                    </ha-card>
-                  `
-                : ""
-            }
-          </div>
-          <div class="column">
+
             ${
               isComponentLoaded(this.hass, "automation")
                 ? html`
@@ -881,10 +755,225 @@ export class HaConfigDevicePage extends LitElement {
                     `
                   : ""
               }
+          </div>
+          <div class="column">
+            ${["control", "sensor", "config", "diagnostic"].map((category) =>
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (entities.length === 0 && category === "control")
+                ? html`
+                    <ha-device-entities-card
+                      .hass=${this.hass}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .deviceName=${deviceName}
+                      .entities=${entitiesByCategory[category]}
+                      .showHidden=${device.disabled_by !== null}
+                    >
+                    </ha-device-entities-card>
+                  `
+                : ""
+            )}
+          </div>
+          <div class="column">
+            ${
+              isComponentLoaded(this.hass, "logbook")
+                ? html`
+                    <ha-card outlined>
+                      <h1 class="card-header">
+                        ${this.hass.localize("panel.logbook")}
+                      </h1>
+                      <ha-logbook
+                        .hass=${this.hass}
+                        .time=${this._logbookTime}
+                        .entityIds=${this._entityIds(entities)}
+                        .deviceIds=${this._deviceIdInList(this.deviceId)}
+                        virtualize
+                        narrow
+                        no-icon
+                      ></ha-logbook>
+                    </ha-card>
+                  `
+                : ""
+            }
             </div>
           </div>
         </ha-config-section>
       </hass-tabs-subpage>    `;
+  }
+
+  private async _getDiagnosticButtons(requestId: number): Promise<void> {
+    if (!isComponentLoaded(this.hass, "diagnostics")) {
+      return;
+    }
+
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+    let links = await Promise.all(
+      this._integrations(device, this.entries).map(
+        async (entry): Promise<boolean | { link: string; domain: string }> => {
+          if (entry.state !== "loaded") {
+            return false;
+          }
+          let info: DiagnosticInfo;
+          try {
+            info = await fetchDiagnosticHandler(this.hass, entry.domain);
+          } catch (err: any) {
+            if (err.code === "not_found") {
+              return false;
+            }
+            throw err;
+          }
+
+          if (!info.handlers.device && !info.handlers.config_entry) {
+            return false;
+          }
+          return {
+            link: info.handlers.device
+              ? getDeviceDiagnosticsDownloadUrl(entry.entry_id, this.deviceId)
+              : getConfigEntryDiagnosticsDownloadUrl(entry.entry_id),
+            domain: entry.domain,
+          };
+        }
+      )
+    );
+
+    links = links.filter(Boolean);
+
+    if (this._diagnosticDownloadLinks !== requestId) {
+      return;
+    }
+    if (links.length > 0) {
+      this._diagnosticDownloadLinks = (
+        links as { link: string; domain: string }[]
+      ).map((link) => ({
+        href: link.link,
+        action: (ev) => this._signUrl(ev),
+        label:
+          links.length > 1
+            ? this.hass.localize(
+                `ui.panel.config.devices.download_diagnostics_integration`,
+                {
+                  integration: domainToName(this.hass.localize, link.domain),
+                }
+              )
+            : this.hass.localize(
+                `ui.panel.config.devices.download_diagnostics`
+              ),
+      }));
+    }
+  }
+
+  private _getDeleteActions() {
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+    const buttons: DeviceAction[] = [];
+    this._integrations(device, this.entries).forEach((entry) => {
+      if (entry.state !== "loaded" || !entry.supports_remove_device) {
+        return;
+      }
+      buttons.push({
+        action: async () => {
+          const confirmed = await showConfirmationDialog(this, {
+            text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
+          });
+
+          if (!confirmed) {
+            return;
+          }
+
+          await removeConfigEntryFromDevice(
+            this.hass!,
+            this.deviceId,
+            entry.entry_id
+          );
+        },
+        classes: "warning",
+        label:
+          buttons.length > 1
+            ? this.hass.localize(
+                `ui.panel.config.devices.delete_device_integration`,
+                {
+                  integration: domainToName(this.hass.localize, entry.domain),
+                }
+              )
+            : this.hass.localize(`ui.panel.config.devices.delete_device`),
+      });
+    });
+
+    if (buttons.length > 0) {
+      this._deleteButtons = buttons;
+    }
+  }
+
+  private async _getDeviceActions() {
+    const device = this._device(this.deviceId, this.devices);
+
+    if (!device) {
+      return;
+    }
+
+    const deviceActions: DeviceAction[] = [];
+
+    const configurationUrlIsHomeAssistant =
+      device.configuration_url?.startsWith("homeassistant://") || false;
+
+    const configurationUrl = configurationUrlIsHomeAssistant
+      ? device.configuration_url!.replace("homeassistant://", "/")
+      : device.configuration_url;
+
+    if (configurationUrl) {
+      deviceActions.push({
+        href: configurationUrl,
+        label: this.hass.localize(
+          `ui.panel.config.devices.open_configuration_url_${
+            device.entry_type || "device"
+          }`
+        ),
+        trailingIcon: mdiOpenInNew,
+      });
+    }
+
+    const domains = this._integrations(device, this.entries).map(
+      (int) => int.domain
+    );
+
+    if (domains.includes("mqtt")) {
+      const mqtt = await import(
+        "./device-detail/integration-elements/mqtt/device-actions"
+      );
+      const actions = mqtt.getMQTTDeviceActions(this, device);
+      deviceActions.push(...actions);
+    }
+    if (domains.includes("zha")) {
+      const zha = await import(
+        "./device-detail/integration-elements/zha/device-actions"
+      );
+      const actions = await zha.getZHADeviceActions(this, this.hass, device);
+      deviceActions.push(...actions);
+    }
+    if (domains.includes("zwave_js")) {
+      const zwave = await import(
+        "./device-detail/integration-elements/zwave_js/device-actions"
+      );
+      const actions = await zwave.getZwaveDeviceActions(
+        this,
+        this.hass,
+        device
+      );
+      deviceActions.push(...actions);
+    }
+
+    this._deviceActions = deviceActions;
   }
 
   private _computeEntityName(entity: EntityRegistryEntry) {
@@ -935,35 +1024,16 @@ export class HaConfigDevicePage extends LitElement {
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
     deviceInfo: TemplateResult[],
-    deviceActions: (string | TemplateResult)[],
     deviceAlerts: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
-    if (domains.includes("mqtt")) {
-      import(
-        "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
-      );
-      deviceActions.push(html`
-        <ha-device-actions-mqtt
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-mqtt>
-      `);
-    }
     if (domains.includes("zha")) {
-      import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
       deviceInfo.push(html`
         <ha-device-info-zha
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zha>
-      `);
-      deviceActions.push(html`
-        <ha-device-actions-zha
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-zha>
       `);
     }
     if (domains.includes("zwave_js")) {
@@ -972,9 +1042,6 @@ export class HaConfigDevicePage extends LitElement {
       );
       import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
-      );
-      import(
-        "./device-detail/integration-elements/zwave_js/ha-device-actions-zwave_js"
       );
       deviceAlerts.push(html`
         <ha-device-alerts-zwave_js
@@ -987,12 +1054,6 @@ export class HaConfigDevicePage extends LitElement {
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zwave_js>
-      `);
-      deviceActions.push(html`
-        <ha-device-actions-zwave_js
-          .hass=${this.hass}
-          .device=${device}
-        ></ha-device-actions-zwave_js>
       `);
     }
   }
@@ -1132,13 +1193,22 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.target.closest("a");
-    ev.preventDefault();
+    const anchor = ev.currentTarget.closest("a");
     const signedUrl = await getSignedPath(
       this.hass,
       anchor.getAttribute("href")
     );
     fileDownload(signedUrl.path);
+  }
+
+  private _deviceActionClicked(ev) {
+    if (!ev.currentTarget.action) {
+      return;
+    }
+
+    ev.preventDefault();
+
+    (ev.currentTarget as any).action(ev);
   }
 
   static get styles(): CSSResultGroup {
@@ -1169,9 +1239,6 @@ export class HaConfigDevicePage extends LitElement {
 
         .device-info {
           padding: 16px;
-        }
-
-        .show-more {
         }
 
         h1 {
@@ -1282,7 +1349,19 @@ export class HaConfigDevicePage extends LitElement {
         :host([narrow]) ha-logbook {
           height: 235px;
         }
+
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-device-page": HaConfigDevicePage;
   }
 }
