@@ -28,8 +28,6 @@ jobs:
 
       - name: Verify version
         uses: home-assistant/actions/helpers/verify-version@master
-        with:
-          metadata-file: pyproject.toml
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v2

@@ -51,7 +51,7 @@ async function main(args) {
   }
 
   const setup = fs.readFileSync("pyproject.toml", "utf8");
-  const version = setup.match(/\d{8}\.\d+/)[0];
+  const version = setup.match(/version\W+=\W"(\d{8}\.\d)"/)[1];
   const newVersion = method(version);
 
   console.log("Current version:", version);
