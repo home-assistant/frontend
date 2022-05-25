@@ -176,11 +176,15 @@ class HaConfigHardware extends LitElement {
   }
 
   private async _load() {
+    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
     try {
       if (isComponentLoaded(this.hass, "hardware")) {
         this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
-      } else if (isComponentLoaded(this.hass, "hassio")) {
+      } else if (isHassioLoaded) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
+      }
+
+      if (isHassioLoaded) {
         this._hostData = await fetchHassioHostInfo(this.hass);
       }
     } catch (err: any) {
