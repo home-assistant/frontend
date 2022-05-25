@@ -28,10 +28,15 @@ export class HaFormfield extends FormfieldBase {
     css`
       :host(:not([alignEnd])) ::slotted(ha-switch) {
         margin-right: 10px;
+        margin-inline-end: 10px;
+        margin-inline-start: inline;
       }
-      :host([dir="rtl"]:not([alignEnd])) ::slotted(ha-switch) {
-        margin-left: 10px;
-        margin-right: auto;
+      .mdc-form-field > label {
+        direction: var(--direction);
+        margin-inline-start: 0;
+        margin-inline-end: auto;
+        padding-inline-start: 4px;
+        padding-inline-end: 0;
       }
     `,
   ];
