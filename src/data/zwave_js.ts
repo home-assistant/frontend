@@ -314,9 +314,8 @@ export const fetchZwaveNetworkStatus = (
   }
   return hass.callWS({
     type: "zwave_js/network_status",
-    device_or_entry_id:
-      device_or_entry_id.device_id || device_or_entry_id.entry_id,
-    id_type: device_or_entry_id.device_id ? "device_id" : "entry_id",
+    device_id: device_or_entry_id.device_id,
+    entry_id: device_or_entry_id.entry_id,
   });
 };
 
