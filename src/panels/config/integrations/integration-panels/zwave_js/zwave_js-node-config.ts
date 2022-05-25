@@ -166,17 +166,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${this._nodeMetadata.comments?.length > 0
-            ? html`
-                <div>
-                  ${this._nodeMetadata.comments.map(
-                    (comment) => html`<ha-alert .alertType=${comment.level}>
-                      ${comment.text}
-                    </ha-alert>`
-                  )}
-                </div>
-              `
-            : ``}
           <ha-card>
             ${Object.entries(this._config).map(
               ([id, item]) => html` <ha-settings-row
