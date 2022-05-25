@@ -29,7 +29,8 @@ import {
   mdiWeatherNight,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { updateIsInstalling, UpdateEntity } from "../../data/update";
+import { UpdateEntity, updateIsInstalling } from "../../data/update";
+import { weatherIcon } from "../../data/weather";
 /**
  * Return the icon to be used for a domain.
  *
@@ -101,6 +102,15 @@ export const domainIconWithoutDefault = (
         ? mdiCheckCircleOutline
         : mdiCloseCircleOutline;
 
+    case "input_datetime":
+      if (!stateObj?.attributes.has_date) {
+        return mdiClock;
+      }
+      if (!stateObj.attributes.has_time) {
+        return mdiCalendar;
+      }
+      break;
+
     case "lock":
       switch (compareState) {
         case "unlocked":
@@ -138,15 +148,6 @@ export const domainIconWithoutDefault = (
       break;
     }
 
-    case "input_datetime":
-      if (!stateObj?.attributes.has_date) {
-        return mdiClock;
-      }
-      if (!stateObj.attributes.has_time) {
-        return mdiCalendar;
-      }
-      break;
-
     case "sun":
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
@@ -158,6 +159,9 @@ export const domainIconWithoutDefault = (
           ? mdiPackageDown
           : mdiPackageUp
         : mdiPackage;
+
+    case "weather":
+      return weatherIcon(stateObj?.state);
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

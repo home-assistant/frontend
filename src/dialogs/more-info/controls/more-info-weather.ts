@@ -1,23 +1,9 @@
 import {
-  mdiAlertCircleOutline,
   mdiEye,
   mdiGauge,
   mdiThermometer,
   mdiWaterPercent,
-  mdiWeatherCloudy,
-  mdiWeatherFog,
-  mdiWeatherHail,
-  mdiWeatherLightning,
-  mdiWeatherLightningRainy,
-  mdiWeatherNight,
-  mdiWeatherPartlyCloudy,
-  mdiWeatherPouring,
-  mdiWeatherRainy,
-  mdiWeatherSnowy,
-  mdiWeatherSnowyRainy,
-  mdiWeatherSunny,
   mdiWeatherWindy,
-  mdiWeatherWindyVariant,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -37,26 +23,9 @@ import {
   getWeatherUnit,
   getWind,
   isForecastHourly,
+  weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
-
-const weatherIcons = {
-  "clear-night": mdiWeatherNight,
-  cloudy: mdiWeatherCloudy,
-  exceptional: mdiAlertCircleOutline,
-  fog: mdiWeatherFog,
-  hail: mdiWeatherHail,
-  lightning: mdiWeatherLightning,
-  "lightning-rainy": mdiWeatherLightningRainy,
-  partlycloudy: mdiWeatherPartlyCloudy,
-  pouring: mdiWeatherPouring,
-  rainy: mdiWeatherRainy,
-  snowy: mdiWeatherSnowy,
-  "snowy-rainy": mdiWeatherSnowyRainy,
-  sunny: mdiWeatherSunny,
-  windy: mdiWeatherWindy,
-  "windy-variant": mdiWeatherWindyVariant,
-};
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -235,6 +204,7 @@ class MoreInfoWeather extends LitElement {
     return css`
       ha-svg-icon {
         color: var(--paper-item-icon-color);
+        margin-left: 8px;
       }
       .section {
         margin: 16px 0 8px 0;
