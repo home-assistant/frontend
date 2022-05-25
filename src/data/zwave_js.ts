@@ -167,6 +167,9 @@ export interface ZwaveJSNodeMetadata {
   wakeup: string;
   reset: string;
   device_database_url: string;
+}
+
+export interface ZwaveJSNodeComments {
   comments: ZWaveJSNodeComment[];
 }
 
@@ -225,6 +228,20 @@ export interface ZWaveJSRefreshNodeStatusMessage {
 export interface ZWaveJSHealNetworkStatusMessage {
   event: string;
   heal_node_status: { [key: number]: string };
+}
+
+export interface ZWaveJSControllerStatisticsUpdatedMessage {
+  event: "statistics updated";
+  source: "controller";
+  messages_tx: number;
+  messages_rx: number;
+  messages_dropped_tx: number;
+  messages_dropped_rx: number;
+  nak: number;
+  can: number;
+  timeout_ack: number;
+  timeout_response: number;
+  timeout_callback: number;
 }
 
 export interface ZWaveJSRemovedNode {
@@ -442,6 +459,15 @@ export const fetchZwaveNodeMetadata = (
     device_id,
   });
 
+export const fetchZwaveNodeComments = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<ZwaveJSNodeComments> =>
+  hass.callWS({
+    type: "zwave_js/node_comments",
+    device_id,
+  });
+
 export const fetchZwaveNodeConfigParameters = (
   hass: HomeAssistant,
   device_id: string
@@ -543,6 +569,19 @@ export const subscribeHealZwaveNetworkProgress = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/subscribe_heal_network_progress",
+      entry_id,
+    }
+  );
+
+export const subscribeZwaveControllerStatistics = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: ZWaveJSControllerStatisticsUpdatedMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_controller_statistics",
       entry_id,
     }
   );

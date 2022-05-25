@@ -194,7 +194,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                     type: "state-icon",
                     tap_action: {
                       action: "call-service",
-                      service_data: {
+                      data: {
                         entity_id: "group.downstairs_lights",
                       },
                       service: "homeassistant.toggle",

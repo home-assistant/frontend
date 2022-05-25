@@ -292,6 +292,8 @@ export class HaConfigDevicePage extends LitElement {
     const firstDeviceAction = actions[0];
     const overflowDeviceActions = actions.slice(1);
 
+    const deviceAlerts: TemplateResult[] = [];
+
     if (device.disabled_by) {
       deviceInfo.push(
         html`
@@ -322,6 +324,44 @@ export class HaConfigDevicePage extends LitElement {
     }
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
+    const deviceActions: (TemplateResult | string)[] = [];
+
+    if (configurationUrl) {
+      deviceActions.push(html`
+        <a
+          href=${configurationUrl}
+          rel="noopener noreferrer"
+          .target=${configurationUrlIsHomeAssistant ? "_self" : "_blank"}
+        >
+          <mwc-button>
+            ${this.hass.localize(
+              `ui.panel.config.devices.open_configuration_url_${
+                device.entry_type || "device"
+              }`
+            )}
+            <ha-svg-icon
+              .path=${mdiOpenInNew}
+              slot="trailingIcon"
+            ></ha-svg-icon>
+          </mwc-button>
+        </a>
+      `);
+    }
+
+    this._renderIntegrationInfo(
+      device,
+      integrations,
+      deviceInfo,
+      deviceActions,
+      deviceAlerts
+    );
+
+    if (Array.isArray(this._diagnosticDownloadLinks)) {
+      deviceActions.push(...this._diagnosticDownloadLinks);
+    }
+    if (this._deleteButtons) {
+      deviceActions.push(...this._deleteButtons);
+    }
 
     return html`
       <hass-tabs-subpage
@@ -411,6 +451,11 @@ export class HaConfigDevicePage extends LitElement {
                 </div>
           </div>
           <div class="column">
+              ${
+                deviceAlerts.length
+                  ? html` <div class="fullwidth">${deviceAlerts}</div> `
+                  : ""
+              }
               <ha-device-info-card
                 .hass=${this.hass}
                 .areas=${this.areas}
@@ -1020,7 +1065,9 @@ export class HaConfigDevicePage extends LitElement {
   private _renderIntegrationInfo(
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
-    deviceInfo: TemplateResult[]
+    deviceInfo: TemplateResult[],
+    deviceActions: (string | TemplateResult)[],
+    deviceAlerts: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
     if (domains.includes("zha")) {
@@ -1034,8 +1081,20 @@ export class HaConfigDevicePage extends LitElement {
     }
     if (domains.includes("zwave_js")) {
       import(
+        "./device-detail/integration-elements/zwave_js/ha-device-alerts-zwave_js"
+      );
+      import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
       );
+      import(
+        "./device-detail/integration-elements/zwave_js/ha-device-actions-zwave_js"
+      );
+      deviceAlerts.push(html`
+        <ha-device-alerts-zwave_js
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-alerts-zwave_js>
+      `);
       deviceInfo.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
@@ -1249,6 +1308,8 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           align-items: center;
           padding-left: 8px;
+          padding-inline-start: 8px;
+          direction: var(--direction);
         }
 
         .column,

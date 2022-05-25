@@ -541,7 +541,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         .clear {
           color: var(--primary-color);
           padding-left: 8px;
+          padding-inline-start: 8px;
           text-transform: uppercase;
+          direction: var(--direction);
         }
       `,
       haStyle,

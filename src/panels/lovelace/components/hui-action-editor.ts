@@ -45,7 +45,7 @@ export class HuiActionEditor extends LitElement {
   private _serviceAction = memoizeOne(
     (config: CallServiceActionConfig): ServiceAction => ({
       service: this._service,
-      data: config.service_data,
+      data: config.data ?? config.service_data,
       target: config.target,
     })
   );
@@ -179,14 +179,18 @@ export class HuiActionEditor extends LitElement {
 
   private _serviceValueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        ...this.config!,
-        service: ev.detail.value.service || "",
-        service_data: ev.detail.value.data || {},
-        target: ev.detail.value.target || {},
-      },
-    });
+    const value = {
+      ...this.config!,
+      service: ev.detail.value.service || "",
+      data: ev.detail.value.data || {},
+      target: ev.detail.value.target || {},
+    };
+    // "service_data" is allowed for backwards compatibility but replaced with "data" on write
+    if ("service_data" in value) {
+      delete value.service_data;
+    }
+
+    fireEvent(this, "value-changed", { value });
   }
 
   static get styles(): CSSResultGroup {

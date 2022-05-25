@@ -252,6 +252,8 @@ export class HaConfigApplicationCredentials extends LitElement {
       .selected-txt {
         font-weight: bold;
         padding-left: 16px;
+        padding-inline-start: 16px;
+        direction: var(--direction);
       }
       .table-header .selected-txt {
         margin-top: 20px;
