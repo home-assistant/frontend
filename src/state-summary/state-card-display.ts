@@ -90,6 +90,8 @@ export class StateCardDisplay extends LitElement {
           text-align: right;
           flex: 0 0 auto;
           overflow-wrap: break-word;
+          display: flex;
+          align-items: center;
         }
         :host([rtl]) .state {
           margin-right: 16px;
