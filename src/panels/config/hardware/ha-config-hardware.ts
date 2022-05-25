@@ -1,14 +1,18 @@
+import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import { BOARD_NAMES } from "../../../data/hardware";
+import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -28,6 +32,8 @@ import {
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { hardwareBrandsUrl } from "../../../util/brands-url";
+import { showToast } from "../../../util/toast";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 
 @customElement("ha-config-hardware")
@@ -42,14 +48,36 @@ class HaConfigHardware extends LitElement {
 
   @state() private _hostData?: HassioHostInfo;
 
+  @state() private _hardwareInfo?: HardwareInfo;
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
-      this._load();
-    }
+    this._load();
   }
 
   protected render(): TemplateResult {
+    let boardId: string | undefined;
+    let boardName: string | undefined;
+    let imageURL: string | undefined;
+    let documentationURL: string | undefined;
+
+    if (this._hardwareInfo?.hardware.length) {
+      const boardData = this._hardwareInfo!.hardware[0];
+
+      boardId = boardData.board.hassio_board_id;
+      boardName = boardData.name;
+      documentationURL = boardData.url;
+      imageURL = hardwareBrandsUrl({
+        category: "boards",
+        manufacturer: boardData.board.manufacturer,
+        model: boardData.board.model,
+        darkOptimized: this.hass.themes?.darkMode,
+      });
+    } else if (this._OSData?.board) {
+      boardId = this._OSData.board;
+      boardName = BOARD_NAMES[this._OSData.board];
+    }
+
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -68,6 +96,20 @@ class HaConfigHardware extends LitElement {
               "ui.panel.config.hardware.available_hardware.title"
             )}</mwc-list-item
           >
+          ${this._hostData
+            ? html`
+                <mwc-list-item class="warning" @click=${this._hostReboot}
+                  >${this.hass.localize(
+                    "ui.panel.config.hardware.reboot_host"
+                  )}</mwc-list-item
+                >
+                <mwc-list-item class="warning" @click=${this._hostShutdown}
+                  >${this.hass.localize(
+                    "ui.panel.config.hardware.shutdown_host"
+                  )}</mwc-list-item
+                >
+              `
+            : ""}
         </ha-button-menu>
         ${this._error
           ? html`
@@ -76,57 +118,55 @@ class HaConfigHardware extends LitElement {
               >
             `
           : ""}
-        ${this._OSData || this._hostData
+        ${boardName
           ? html`
               <div class="content">
                 <ha-card outlined>
-                  ${this._OSData?.board
-                    ? html`
-                        <div class="card-content">
-                          <ha-settings-row>
-                            <span slot="heading"
-                              >${BOARD_NAMES[this._OSData.board] ||
-                              this.hass.localize(
-                                "ui.panel.config.hardware.board"
-                              )}</span
+                  <div class="card-content">
+                    <mwc-list>
+                      <mwc-list-item
+                        graphic=${ifDefined(imageURL ? "medium" : undefined)}
+                        .twoline=${Boolean(boardId)}
+                      >
+                        ${imageURL
+                          ? html`<img slot="graphic" src=${imageURL} />`
+                          : ""}
+                        <span class="primary-text">
+                          ${boardName ||
+                          this.hass.localize("ui.panel.config.hardware.board")}
+                        </span>
+                        ${boardId
+                          ? html`
+                              <span class="secondary-text" slot="secondary"
+                                >${boardId}</span
+                              >
+                            `
+                          : ""}
+                      </mwc-list-item>
+                      ${documentationURL
+                        ? html`
+                            <ha-clickable-list-item
+                              .href=${documentationURL}
+                              openNewTab
+                              twoline
+                              hasMeta
                             >
-                            <div slot="description">
-                              <span class="value">${this._OSData.board}</span>
-                            </div>
-                          </ha-settings-row>
-                        </div>
-                      `
-                    : ""}
-                  ${this._hostData
-                    ? html`
-                        <div class="card-actions">
-                          ${this._hostData.features.includes("reboot")
-                            ? html`
-                                <ha-progress-button
-                                  class="warning"
-                                  @click=${this._hostReboot}
-                                >
-                                  ${this.hass.localize(
-                                    "ui.panel.config.hardware.reboot_host"
-                                  )}
-                                </ha-progress-button>
-                              `
-                            : ""}
-                          ${this._hostData.features.includes("shutdown")
-                            ? html`
-                                <ha-progress-button
-                                  class="warning"
-                                  @click=${this._hostShutdown}
-                                >
-                                  ${this.hass.localize(
-                                    "ui.panel.config.hardware.shutdown_host"
-                                  )}
-                                </ha-progress-button>
-                              `
-                            : ""}
-                        </div>
-                      `
-                    : ""}
+                              <span
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.documentation"
+                                )}</span
+                              >
+                              <span slot="secondary"
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.documentation_description"
+                                )}</span
+                              >
+                              <ha-icon-next slot="meta"></ha-icon-next>
+                            </ha-clickable-list-item>
+                          `
+                        : ""}
+                    </mwc-list>
+                  </div>
                 </ha-card>
               </div>
             `
@@ -136,9 +176,17 @@ class HaConfigHardware extends LitElement {
   }
 
   private async _load() {
+    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
     try {
-      this._OSData = await fetchHassioHassOsInfo(this.hass);
-      this._hostData = await fetchHassioHostInfo(this.hass);
+      if (isComponentLoaded(this.hass, "hardware")) {
+        this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
+      } else if (isHassioLoaded) {
+        this._OSData = await fetchHassioHassOsInfo(this.hass);
+      }
+
+      if (isHassioLoaded) {
+        this._hostData = await fetchHassioHostInfo(this.hass);
+      }
     } catch (err: any) {
       this._error = err.message || err;
     }
@@ -148,10 +196,7 @@ class HaConfigHardware extends LitElement {
     showhardwareAvailableDialog(this);
   }
 
-  private async _hostReboot(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
+  private async _hostReboot(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.hardware.reboot_host"),
       text: this.hass.localize("ui.panel.config.hardware.reboot_host_confirm"),
@@ -160,9 +205,13 @@ class HaConfigHardware extends LitElement {
     });
 
     if (!confirmed) {
-      button.progress = false;
       return;
     }
+
+    showToast(this, {
+      message: this.hass.localize("ui.panel.config.hardware.rebooting_host"),
+      duration: 0,
+    });
 
     try {
       await rebootHost(this.hass);
@@ -177,13 +226,9 @@ class HaConfigHardware extends LitElement {
         });
       }
     }
-    button.progress = false;
   }
 
-  private async _hostShutdown(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
-    button.progress = true;
-
+  private async _hostShutdown(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.hardware.shutdown_host"),
       text: this.hass.localize(
@@ -194,9 +239,15 @@ class HaConfigHardware extends LitElement {
     });
 
     if (!confirmed) {
-      button.progress = false;
       return;
     }
+
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.hardware.host_shutting_down"
+      ),
+      duration: 0,
+    });
 
     try {
       await shutdownHost(this.hass);
@@ -211,7 +262,6 @@ class HaConfigHardware extends LitElement {
         });
       }
     }
-    button.progress = false;
   }
 
   static styles = [
@@ -234,17 +284,18 @@ class HaConfigHardware extends LitElement {
         display: flex;
         justify-content: space-between;
         flex-direction: column;
-        padding: 16px 16px 0 16px;
+        padding: 16px;
       }
       ha-button-menu {
         color: var(--secondary-text-color);
         --mdc-menu-min-width: 200px;
       }
-      .card-actions {
-        height: 48px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+
+      .primary-text {
+        font-size: 16px;
+      }
+      .secondary-text {
+        font-size: 14px;
       }
     `,
   ];

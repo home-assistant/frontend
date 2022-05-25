@@ -20,3 +20,20 @@ export const BOARD_NAMES: Record<string, string> = {
   "intel-nuc": "Intel NUC",
   yellow: "Home Assistant Yellow",
 };
+
+export interface HardwareInfo {
+  hardware: HardwareInfoEntry[];
+}
+
+export interface HardwareInfoEntry {
+  board: HardwareInfoBoardInfo;
+  name: string;
+  url?: string;
+}
+
+export interface HardwareInfoBoardInfo {
+  manufacturer: string;
+  model?: string;
+  revision?: string;
+  hassio_board_id?: string;
+}

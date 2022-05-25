@@ -1569,12 +1569,16 @@
             "attributes": "Attributes"
           },
           "reboot_host": "Reboot host",
+          "rebooting_host": "Rebooting host",
           "reboot_host_confirm": "Are you sure you want to reboot your host?",
           "failed_to_reboot_host": "Failed to reboot host",
           "shutdown_host": "Shutdown host",
+          "host_shutting_down": "Host shutting down",
           "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
           "failed_to_shutdown_host": "Failed to shutdown host",
-          "board": "Board"
+          "board": "Board",
+          "documentation": "Documentation",
+          "documentation_description": "Find extra information about your device"
         },
         "info": {
           "caption": "About",
