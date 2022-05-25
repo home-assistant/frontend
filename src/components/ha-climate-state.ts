@@ -15,7 +15,7 @@ class HaClimateState extends LitElement {
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
 
-    return html` <div class="target">
+    return html`<div class="target">
         ${!UNAVAILABLE_STATES.includes(this.stateObj.state)
           ? html`<span class="state-label">
                 ${this._localizeState()}
