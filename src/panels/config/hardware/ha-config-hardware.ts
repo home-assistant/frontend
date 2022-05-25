@@ -68,8 +68,9 @@ class HaConfigHardware extends LitElement {
       boardName = boardData.name;
       documentationURL = boardData.url;
       imageURL = hardwareBrandsUrl({
-        domain: "boards",
-        name: `${boardData.board.manufacturer}_${boardData.board.model}`,
+        category: "boards",
+        manufacturer: boardData.board.manufacturer,
+        model: boardData.board.model,
         darkOptimized: this.hass.themes?.darkMode,
       });
     } else if (this._OSData?.board) {
@@ -178,10 +179,8 @@ class HaConfigHardware extends LitElement {
     try {
       if (isComponentLoaded(this.hass, "hardware")) {
         this._hardwareInfo = await this.hass.callWS({ type: "hardware/info" });
-      } else {
+      } else if (isComponentLoaded(this.hass, "hassio")) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
-      }
-      if (isComponentLoaded(this.hass, "hassio")) {
         this._hostData = await fetchHassioHostInfo(this.hass);
       }
     } catch (err: any) {
@@ -207,6 +206,7 @@ class HaConfigHardware extends LitElement {
 
     showToast(this, {
       message: this.hass.localize("ui.panel.config.hardware.rebooting_host"),
+      duration: 0,
     });
 
     try {
@@ -242,6 +242,7 @@ class HaConfigHardware extends LitElement {
       message: this.hass.localize(
         "ui.panel.config.hardware.host_shutting_down"
       ),
+      duration: 0,
     });
 
     try {

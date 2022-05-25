@@ -5,8 +5,11 @@ export interface BrandsOptions {
   darkOptimized?: boolean;
 }
 
-export interface HardwareBrandsOptions extends Partial<BrandsOptions> {
-  name: string;
+export interface HardwareBrandsOptions {
+  category: string;
+  model?: string;
+  manufacturer: string;
+  darkOptimized?: boolean;
 }
 
 export const brandsUrl = (options: BrandsOptions): string =>
@@ -15,8 +18,8 @@ export const brandsUrl = (options: BrandsOptions): string =>
   }/${options.darkOptimized ? "dark_" : ""}${options.type}.png`;
 
 export const hardwareBrandsUrl = (options: HardwareBrandsOptions): string =>
-  `https://brands.home-assistant.io/hardware/${options.domain}/${
+  `https://brands.home-assistant.io/hardware/${options.category}/${
     options.darkOptimized ? "dark_" : ""
-  }${options.name}.png`;
+  }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
 
 export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
