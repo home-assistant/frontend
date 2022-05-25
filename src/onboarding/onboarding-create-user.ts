@@ -17,6 +17,7 @@ import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
 import { translationMetadata } from "../resources/translations-metadata";
 import { PolymerChangedEvent } from "../polymer-types";
+import { computeDirectionStyles } from "../common/util/compute_rtl";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   { name: "name", required: true, selector: { text: {} } },
@@ -82,7 +83,10 @@ class OnboardingCreateUser extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._computeDirection();
+    computeDirectionStyles(
+      translationMetadata.translations[this.language!].isRTL,
+      this
+    );
     setTimeout(() => this._form?.focus(), 100);
     this.addEventListener("keypress", (ev) => {
       if (
@@ -155,12 +159,6 @@ class OnboardingCreateUser extends LitElement {
       this._loading = false;
       this._errorMsg = err.body.message;
     }
-  }
-
-  private _computeDirection() {
-    this.style.cssText = !translationMetadata.translations[this.language!].isRTL
-      ? "direction: ltr; --float-start: left;"
-      : "direction: rtl; --float-start: right";
   }
 
   static get styles(): CSSResultGroup {

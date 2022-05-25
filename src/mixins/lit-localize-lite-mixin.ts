@@ -4,6 +4,7 @@ import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { translationMetadata } from "../resources/translations-metadata";
+import { computeDirectionStyles } from "../common/util/compute_rtl";
 
 const empty = () => "";
 
@@ -28,7 +29,10 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
 
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
-      this._computeDirection();
+      computeDirectionStyles(
+        translationMetadata.translations[this.language!].isRTL,
+        this
+      );
     }
 
     protected updated(changedProperties: PropertyValues) {
@@ -83,13 +87,6 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       this.resources = {
         [language]: data,
       };
-    }
-
-    private _computeDirection() {
-      this.style.cssText = !translationMetadata.translations[this.language!]
-        .isRTL
-        ? "direction: ltr; --direction: ltr; --float-start: left;"
-        : "direction: rtl; --direction: rtl; --float-start: right";
     }
   }
   return LitLocalizeLiteClass;
