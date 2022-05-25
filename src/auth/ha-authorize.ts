@@ -116,8 +116,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       );
     }
 
-    this._computeDirection();
-
     if (!this.redirectUri) {
       return;
     }
