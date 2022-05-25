@@ -13,7 +13,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
@@ -78,7 +77,7 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 
 export interface DeviceAction {
   href?: string;
-  action?: any;
+  action?: (ev: any) => void;
   label: string;
   trailingIcon?: string;
   classes?: string;
@@ -290,8 +289,7 @@ export class HaConfigDevicePage extends LitElement {
       actions.push(...this._deleteButtons);
     }
 
-    const firstDeviceAction = actions[0];
-    const overflowDeviceActions = actions.slice(1);
+    const firstDeviceAction = actions.shift();
 
     if (device.disabled_by) {
       deviceInfo.push(
@@ -425,14 +423,15 @@ export class HaConfigDevicePage extends LitElement {
               >
                 ${deviceInfo}
                 ${
-                  actions.length
+                  firstDeviceAction || actions.length
                     ? html`
                         <div class="card-actions" slot="actions">
                           <div>
                             <a href=${ifDefined(firstDeviceAction!.href)}>
                               <mwc-button
                                 class=${ifDefined(firstDeviceAction!.classes)}
-                                @click=${firstDeviceAction!.action}
+                                .action=${firstDeviceAction!.action}
+                                @click=${this._deviceActionClicked}
                               >
                                 ${firstDeviceAction!.label}
                                 ${firstDeviceAction!.trailingIcon
@@ -447,7 +446,7 @@ export class HaConfigDevicePage extends LitElement {
                             </a>
                           </div>
 
-                          ${overflowDeviceActions!.length
+                          ${actions.length
                             ? html`
                                 <ha-button-menu corner="BOTTOM_START">
                                   <ha-icon-button
@@ -457,7 +456,7 @@ export class HaConfigDevicePage extends LitElement {
                                     )}
                                     .path=${mdiDotsVertical}
                                   ></ha-icon-button>
-                                  ${overflowDeviceActions.map(
+                                  ${actions.map(
                                     (deviceAction) => html`
                                       <a href=${ifDefined(deviceAction.href)}>
                                         <mwc-list-item
@@ -465,15 +464,13 @@ export class HaConfigDevicePage extends LitElement {
                                             deviceAction.classes
                                           )}
                                           .action=${deviceAction.action}
-                                          @request-selected=${this
-                                            ._deviceActionClicked}
+                                          @click=${this._deviceActionClicked}
                                         >
-                                          ${deviceAction!.label}
-                                          ${deviceAction!.trailingIcon
+                                          ${deviceAction.label}
+                                          ${deviceAction.trailingIcon
                                             ? html`
                                                 <ha-svg-icon
-                                                  .path=${deviceAction!
-                                                    .trailingIcon}
+                                                  .path=${deviceAction.trailingIcon}
                                                 ></ha-svg-icon>
                                               `
                                             : ""}
@@ -856,7 +853,7 @@ export class HaConfigDevicePage extends LitElement {
         links as { link: string; domain: string }[]
       ).map((link) => ({
         href: link.link,
-        action: this._signUrl,
+        action: (ev) => this._signUrl(ev),
         label:
           links.length > 1
             ? this.hass.localize(
@@ -1196,8 +1193,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.target.closest("a");
-    ev.preventDefault();
+    const anchor = ev.currentTarget.closest("a");
     const signedUrl = await getSignedPath(
       this.hass,
       anchor.getAttribute("href")
@@ -1206,11 +1202,13 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _deviceActionClicked(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
+    if (!ev.currentTarget.action) {
       return;
     }
 
-    (ev.currentTarget as any).action();
+    ev.preventDefault();
+
+    (ev.currentTarget as any).action(ev);
   }
 
   static get styles(): CSSResultGroup {
