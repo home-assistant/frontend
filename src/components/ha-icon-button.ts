@@ -18,7 +18,7 @@ export class HaIconButton extends LitElement {
   // These should always be set as properties, not attributes,
   // so that only the <button> element gets the attribute
   @property({ type: String, attribute: "aria-haspopup" })
-  override ariaHasPopup: IconButton["ariaHasPopup"] = "false";
+  override ariaHasPopup!: IconButton["ariaHasPopup"];
 
   @property({ type: Boolean }) hideTitle = false;
 
@@ -38,7 +38,7 @@ export class HaIconButton extends LitElement {
       <mwc-icon-button
         aria-label=${ifDefined(this.label)}
         title=${ifDefined(this.hideTitle ? undefined : this.label)}
-        .ariaHasPopup=${this.ariaHasPopup}
+        aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
       >
         ${this.path
