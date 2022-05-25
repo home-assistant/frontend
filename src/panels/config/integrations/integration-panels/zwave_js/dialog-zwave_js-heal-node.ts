@@ -22,8 +22,6 @@ import { ZWaveJSHealNodeDialogParams } from "./show-dialog-zwave_js-heal-node";
 class DialogZWaveJSHealNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private entry_id?: string;
-
   @state() private device?: DeviceRegistryEntry;
 
   @state() private _status?: string;
@@ -31,13 +29,11 @@ class DialogZWaveJSHealNode extends LitElement {
   @state() private _error?: string;
 
   public showDialog(params: ZWaveJSHealNodeDialogParams): void {
-    this.entry_id = params.entry_id;
     this.device = params.device;
     this._fetchData();
   }
 
   public closeDialog(): void {
-    this.entry_id = undefined;
     this._status = undefined;
     this.device = undefined;
     this._error = undefined;
@@ -46,7 +42,7 @@ class DialogZWaveJSHealNode extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.entry_id || !this.device) {
+    if (!this.device) {
       return html``;
     }
 
@@ -202,10 +198,9 @@ class DialogZWaveJSHealNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(
-      this.hass!,
-      this.entry_id!
-    );
+    const network: ZWaveJSNetwork = await fetchZwaveNetworkStatus(this.hass!, {
+      device_id: this.device!.id,
+    });
     if (network.controller.is_heal_network_active) {
       this._status = "network-healing";
     }
