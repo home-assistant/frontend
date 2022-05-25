@@ -3045,7 +3045,46 @@
             "server_url": "Server URL",
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
-            "not_ready": "{count} not ready"
+            "not_ready": "{count} not ready",
+            "statistics": {
+              "title": "Controller Statistics",
+              "messages_tx": {
+                "label": "Messages TX",
+                "tooltip": "Number of messages successfully sent to the controller"
+              },
+              "messages_rx": {
+                "label": "Messages RX",
+                "tooltip": "Number of messages successfully received by the controller"
+              },
+              "messages_dropped_tx": {
+                "label": "Dropped Messages TX",
+                "tooltip": "Number of messages from the controller that were dropped by the host"
+              },
+              "messages_dropped_rx": {
+                "label": "Dropped Messages RX",
+                "tooltip": "Number of outgoing messages that were dropped because they could not be sent"
+              },
+              "nak": {
+                "label": "NAK",
+                "tooltip": "Number of messages that the controller did not accept"
+              },
+              "can": {
+                "label": "CAN",
+                "tooltip": "Number of collisions while sending a message to the controller"
+              },
+              "timeout_ack": {
+                "label": "Timeout ACK",
+                "tooltip": "Number of transmission attempts where an ACK was missing from the controller"
+              },
+              "timeout_response": {
+                "label": "Timeout Response",
+                "tooltip": "Number of transmission attempts where the controller response did not come in time"
+              },
+              "timeout_callback": {
+                "label": "Timeout Callback",
+                "tooltip": "Number of transmission attempts where the controller callback did not come in time"
+              }
+            }
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
