@@ -2909,7 +2909,7 @@
             },
             "remove_selected": {
               "button": "Remove selected",
-              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentialss}\n}?",
+              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
               "confirm_text": "Application Credentials in use by an integration may not be removed.",
               "error_title": "Removing Application Credential failed"
             },
