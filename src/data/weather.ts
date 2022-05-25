@@ -2,9 +2,21 @@ import {
   mdiAlertCircleOutline,
   mdiGauge,
   mdiWaterPercent,
+  mdiWeatherCloudy,
   mdiWeatherFog,
+  mdiWeatherHail,
+  mdiWeatherLightning,
+  mdiWeatherLightningRainy,
+  mdiWeatherNight,
+  mdiWeatherNightPartlyCloudy,
+  mdiWeatherPartlyCloudy,
+  mdiWeatherPouring,
   mdiWeatherRainy,
+  mdiWeatherSnowy,
+  mdiWeatherSnowyRainy,
+  mdiWeatherSunny,
   mdiWeatherWindy,
+  mdiWeatherWindyVariant,
 } from "@mdi/js";
 import {
   HassEntityAttributeBase,
@@ -57,7 +69,21 @@ export const weatherSVGs = new Set<string>([
 ]);
 
 export const weatherIcons = {
+  "clear-night": mdiWeatherNight,
+  cloudy: mdiWeatherCloudy,
   exceptional: mdiAlertCircleOutline,
+  fog: mdiWeatherFog,
+  hail: mdiWeatherHail,
+  lightning: mdiWeatherLightning,
+  "lightning-rainy": mdiWeatherLightningRainy,
+  partlycloudy: mdiWeatherPartlyCloudy,
+  pouring: mdiWeatherPouring,
+  rainy: mdiWeatherRainy,
+  snowy: mdiWeatherSnowy,
+  "snowy-rainy": mdiWeatherSnowyRainy,
+  sunny: mdiWeatherSunny,
+  windy: mdiWeatherWindy,
+  "windy-variant": mdiWeatherWindyVariant,
 };
 
 export const weatherAttrIcons = {
@@ -436,6 +462,13 @@ export const getWeatherStateIcon = (
 
   return undefined;
 };
+
+export const weatherIcon = (state?: string, nightTime?: boolean): string =>
+  !state
+    ? undefined
+    : nightTime && state === "partlycloudy"
+    ? mdiWeatherNightPartlyCloudy
+    : weatherIcons[state];
 
 const DAY_IN_MILLISECONDS = 86400000;
 
