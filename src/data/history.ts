@@ -197,7 +197,7 @@ export const fetchRecent = (
 
 export const fetchRecentWS = (
   hass: HomeAssistant,
-  entityId: string,
+  entityId: string, // This may be CSV
   startTime: Date,
   endTime: Date,
   skipInitialState = false,
@@ -213,7 +213,7 @@ export const fetchRecentWS = (
     include_start_time_state: !skipInitialState,
     minimal_response: minimalResponse,
     no_attributes: noAttributes || false,
-    entity_ids: [entityId],
+    entity_ids: entityId.split(","),
   });
 
 export const fetchDate = (
