@@ -411,9 +411,10 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="column">
               ${
-                deviceAlerts.length
-                  ? html` <div class="fullwidth">${deviceAlerts}</div> `
-                  : ""
+                deviceAlerts.length &&
+                deviceAlerts.includes(html`<ha-alert></ha-alert>`)
+                  ? html`<div class="fullwidth">${deviceAlerts}</div>`
+                  : html``
               }
               <ha-device-info-card
                 .hass=${this.hass}
