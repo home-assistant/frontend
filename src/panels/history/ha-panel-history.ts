@@ -80,45 +80,43 @@ class HaPanelHistory extends LitElement {
           </app-toolbar>
         </app-header>
 
-        <div class="flex content">
-          <div class="filters">
-            <ha-date-range-picker
-              .hass=${this.hass}
-              ?disabled=${this._isLoading}
-              .startDate=${this._startDate}
-              .endDate=${this._endDate}
-              .ranges=${this._ranges}
-              @change=${this._dateRangeChanged}
-            ></ha-date-range-picker>
+        <div class="filters">
+          <ha-date-range-picker
+            .hass=${this.hass}
+            ?disabled=${this._isLoading}
+            .startDate=${this._startDate}
+            .endDate=${this._endDate}
+            .ranges=${this._ranges}
+            @change=${this._dateRangeChanged}
+          ></ha-date-range-picker>
 
-            <ha-entity-picker
-              .hass=${this.hass}
-              .value=${this._entityId}
-              .label=${this.hass.localize(
-                "ui.components.entity.entity-picker.entity"
-              )}
-              .disabled=${this._isLoading}
-              @change=${this._entityPicked}
-            ></ha-entity-picker>
-          </div>
-          ${this._isLoading
-            ? html`<div class="progress-wrapper">
-                <ha-circular-progress
-                  active
-                  alt=${this.hass.localize("ui.common.loading")}
-                ></ha-circular-progress>
-              </div>`
-            : html`
-                <state-history-charts
-                  virtualize
-                  .hass=${this.hass}
-                  .historyData=${this._stateHistory}
-                  .endTime=${this._endDate}
-                  no-single
-                >
-                </state-history-charts>
-              `}
+          <ha-entity-picker
+            .hass=${this.hass}
+            .value=${this._entityId}
+            .label=${this.hass.localize(
+              "ui.components.entity.entity-picker.entity"
+            )}
+            .disabled=${this._isLoading}
+            @change=${this._entityPicked}
+          ></ha-entity-picker>
         </div>
+        ${this._isLoading
+          ? html`<div class="progress-wrapper">
+              <ha-circular-progress
+                active
+                alt=${this.hass.localize("ui.common.loading")}
+              ></ha-circular-progress>
+            </div>`
+          : html`
+              <state-history-charts
+                virtualize
+                .hass=${this.hass}
+                .historyData=${this._stateHistory}
+                .endTime=${this._endDate}
+                no-single
+              >
+              </state-history-charts>
+            `}
       </ha-app-layout>
     `;
   }
@@ -236,12 +234,24 @@ class HaPanelHistory extends LitElement {
           padding: 0 16px 16px;
         }
 
+        state-history-charts {
+          height: calc(100vh - 136px);
+        }
+
+        :host([narrow]) state-history-charts {
+          height: calc(100vh - 198px);
+        }
+
         .progress-wrapper {
           height: calc(100vh - 136px);
         }
 
         :host([narrow]) .progress-wrapper {
           height: calc(100vh - 198px);
+        }
+
+        :host([virtualize]) {
+          height: 100%;
         }
 
         .progress-wrapper {

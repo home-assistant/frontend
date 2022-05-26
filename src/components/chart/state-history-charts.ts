@@ -7,7 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, eventOptions } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   HistoryResult,
@@ -17,6 +17,7 @@ import {
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {
@@ -41,6 +42,9 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _computedEndTime?: Date;
 
+  @restoreScroll(".container") private _savedScrollPos?: number;
+
+  @eventOptions({ passive: true })
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
       return html` <div class="info">
@@ -77,13 +81,18 @@ class StateHistoryCharts extends LitElement {
         [],
         [this.historyData.timeline, this.historyData.line]
       );
-      return html`<lit-virtualizer
-        scroller
-        class="ha-scrollbar"
-        .items=${combinedItems}
-        .renderItem=${this._renderHistoryItem}
+      return html`<div
+        class="container ha-scrollbar"
+        @scroll=${this._saveScrollPos}
       >
-      </lit-virtualizer>`;
+        <lit-virtualizer
+          scroller
+          class="ha-scrollbar"
+          .items=${combinedItems}
+          .renderItem=${this._renderHistoryItem}
+        >
+        </lit-virtualizer>
+      </div>`;
     }
 
     return html`
@@ -165,6 +174,10 @@ class StateHistoryCharts extends LitElement {
     return !this.isLoadingData && historyDataEmpty;
   }
 
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       :host {
@@ -172,10 +185,33 @@ class StateHistoryCharts extends LitElement {
         /* height of single timeline chart = 60px */
         min-height: 60px;
       }
+
+      :host([virtualize]) {
+        height: 100%;
+      }
+
       .info {
         text-align: center;
         line-height: 60px;
         color: var(--secondary-text-color);
+      }
+      .container {
+        max-height: var(--logbook-max-height);
+      }
+
+      .container,
+      lit-virtualizer {
+        height: 100%;
+        width: 100%;
+      }
+
+      lit-virtualizer {
+        contain: size layout !important;
+      }
+
+      state-history-chart-timeline,
+      state-history-chart-line {
+        width: 100%;
       }
     `;
   }
