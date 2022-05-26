@@ -34,7 +34,7 @@ const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE: { [cacheKey: string]: RecentCacheResults } = {};
 const stateHistoryCache: { [cacheKey: string]: CachedResults } = {};
 
-// Cached type 1 unction. Without cache config.
+// Cached type 1 function. Without cache config.
 export const getRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -103,13 +103,14 @@ export const getRecentWithCache = (
   language: string
 ) => {
   const cacheKey = cacheConfig.cacheKey;
+  const fullCacheKey = cacheKey + `_${cacheConfig.hoursToShow}`;
   const endTime = new Date();
   const startTime = new Date(endTime);
   startTime.setHours(startTime.getHours() - cacheConfig.hoursToShow);
   let toFetchStartTime = startTime;
   let appendingToCache = false;
 
-  let cache = stateHistoryCache[cacheKey + `_${cacheConfig.hoursToShow}`];
+  let cache = stateHistoryCache[fullCacheKey];
   if (
     cache &&
     toFetchStartTime >= cache.startTime &&
@@ -123,7 +124,7 @@ export const getRecentWithCache = (
       return cache.prom;
     }
   } else {
-    cache = stateHistoryCache[cacheKey] = getEmptyCache(
+    cache = stateHistoryCache[fullCacheKey] = getEmptyCache(
       language,
       startTime,
       endTime
@@ -152,7 +153,7 @@ export const getRecentWithCache = (
       ]);
       fetchedHistory = results[1];
     } catch (err: any) {
-      delete stateHistoryCache[cacheKey];
+      delete stateHistoryCache[fullCacheKey];
       throw err;
     }
     const stateHistory = computeHistory(hass, fetchedHistory, localize);
