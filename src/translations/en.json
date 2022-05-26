@@ -3101,7 +3101,73 @@
             "highest_security": "Highest Security",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
-            "zwave_plus_version": "Version {version}"
+            "zwave_plus_version": "Version {version}",
+            "node_statistics": "Show Device Statistics"
+          },
+          "node_statistics": {
+            "title": "Device Statistics",
+            "commands_tx": {
+              "label": "Commands TX",
+              "tooltip": "# of commands successfully sent to the node"
+            },
+            "commands_rx": {
+              "label": "Commands RX",
+              "tooltip": "# of commands received from the node, including responses to sent commands"
+            },
+            "commands_dropped_tx": {
+              "label": "Commands Dropped TX",
+              "tooltip": "# of outgoing commands that were dropped because they could not be sent"
+            },
+            "commands_dropped_rx": {
+              "label": "Commands Dropped RX",
+              "tooltip": "# of commands from the node that were dropped by the host"
+            },
+            "timeout_response": {
+              "label": "Timeout Response",
+              "tooltip": "# of Get-type commands where the node's response did not come in time"
+            },
+            "rtt": {
+              "label": "RTT",
+              "tooltip": "Average round-trip-time in ms of commands to this node"
+            },
+            "rssi": {
+              "label": "RSSI",
+              "tooltip": "Average RSSI in dBm of frames received by this node"
+            },
+            "lwr": "Last Working Route",
+            "nlwr": "Next to Last Working Route"
+          },
+          "route_statistics": {
+            "protocol_data_rate": {
+              "label": "Protocol Data Rate",
+              "tooltip": "The protocol and used data rate for this route"
+            },
+            "repeaters": {
+              "label": "Repeaters + RSSI",
+              "tooltip": "Which nodes are repeaters for this route and their RSSI"
+            },
+            "rssi": {
+              "label": "RSSI",
+              "tooltip": "The RSSI of the ACK frame received by the controller"
+            },
+            "route_failed_between": {
+              "label": "Route Failed Between",
+              "tooltip": "The nodes between which the transmission failed most recently"
+            }
+          },
+          "rssi": {
+            "unit": "dBm",
+            "rssi_error": {
+              "NotAvailable": "Not Available",
+              "ReceiverSaturated": "Receiver Saturated",
+              "NoSignalDetected": "No Signal Detected"
+            }
+          },
+          "protocol_data_rate": {
+            "ZWave_9k6": "Z-Wave 9600",
+            "ZWave_40k": "Z-Wave 40K",
+            "ZWave_100k": "Z-Wave 100K",
+            "LongRange_100k": "Long Range 100K"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
