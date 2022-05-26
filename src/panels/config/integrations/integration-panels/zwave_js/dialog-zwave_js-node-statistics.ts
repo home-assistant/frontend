@@ -279,12 +279,12 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         >
                         </ha-help-tooltip
                       ></span>
-                      <span
+                      <span class="table"
                         >${Object.entries(wrRepeaterRSSIMap).map(
                           ([repeaterName, rssi]) => html`
                             <div class="row">
-                              <span>${repeaterName}: </span>
-                              <span>${rssi}</span>
+                              <span class="key-cell">${repeaterName}: </span>
+                              <span class="value-cell">${rssi}</span>
                             </div>
                           `
                         )}</span
@@ -373,6 +373,20 @@ class DialogZWaveJSNodeStatistics extends LitElement {
         .row {
           display: flex;
           justify-content: space-between;
+        }
+
+        .table {
+          display: table;
+        }
+
+        .key-cell {
+          display: table-cell;
+          padding-right: 5px;
+        }
+
+        .value-cell {
+          display: table-cell;
+          padding-left: 5px;
         }
       `,
     ];
