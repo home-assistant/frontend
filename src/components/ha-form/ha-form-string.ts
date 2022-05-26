@@ -133,9 +133,10 @@ export class HaFormString extends LitElement implements HaFormElement {
         color: var(--secondary-text-color);
       }
 
-      :host-context([style*="direction: rtl;"]) ha-icon-button {
-        right: auto;
-        left: 12px;
+      ha-icon-button {
+        inset-inline-start: initial;
+        inset-inline-end: 12px;
+        direction: var(--direction);
       }
     `;
   }

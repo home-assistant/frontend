@@ -194,10 +194,13 @@ class PanelCalendar extends LitElement {
 
         .calendar-list {
           padding-right: 16px;
+          padding-inline-end: 16px;
+          padding-inline-start: initial;
           min-width: 170px;
           flex: 0 0 15%;
           overflow: hidden;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
+          direction: var(--direction);
         }
 
         .calendar-list > div {

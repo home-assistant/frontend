@@ -3,6 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatNumber } from "../common/number/format_number";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
+import { UNAVAILABLE_STATES } from "../data/entity";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-climate-state")
@@ -15,22 +16,22 @@ class HaClimateState extends LitElement {
     const currentStatus = this._computeCurrentStatus();
 
     return html`<div class="target">
-        ${this.stateObj.state !== "unknown"
+        ${!UNAVAILABLE_STATES.includes(this.stateObj.state)
           ? html`<span class="state-label">
-              ${this._localizeState()}
-              ${this.stateObj.attributes.preset_mode &&
-              this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
-                ? html`-
-                  ${this.hass.localize(
-                    `state_attributes.climate.preset_mode.${this.stateObj.attributes.preset_mode}`
-                  ) || this.stateObj.attributes.preset_mode}`
-                : ""}
-            </span>`
-          : ""}
-        <div class="unit">${this._computeTarget()}</div>
+                ${this._localizeState()}
+                ${this.stateObj.attributes.preset_mode &&
+                this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
+                  ? html`-
+                    ${this.hass.localize(
+                      `state_attributes.climate.preset_mode.${this.stateObj.attributes.preset_mode}`
+                    ) || this.stateObj.attributes.preset_mode}`
+                  : ""}
+              </span>
+              <div class="unit">${this._computeTarget()}</div>`
+          : this._localizeState()}
       </div>
 
-      ${currentStatus
+      ${currentStatus && !UNAVAILABLE_STATES.includes(this.stateObj.state)
         ? html`<div class="current">
             ${this.hass.localize("ui.card.climate.currently")}:
             <div class="unit">${currentStatus}</div>
@@ -108,6 +109,10 @@ class HaClimateState extends LitElement {
   }
 
   private _localizeState(): string {
+    if (UNAVAILABLE_STATES.includes(this.stateObj.state)) {
+      return this.hass.localize(`state.default.${this.stateObj.state}`);
+    }
+
     const stateString = this.hass.localize(
       `component.climate.state._.${this.stateObj.state}`
     );

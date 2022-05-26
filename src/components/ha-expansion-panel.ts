@@ -133,6 +133,9 @@ class HaExpansionPanel extends LitElement {
       .summary-icon {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
         margin-left: auto;
+        margin-inline-start: auto;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
 
       .summary-icon.expanded {

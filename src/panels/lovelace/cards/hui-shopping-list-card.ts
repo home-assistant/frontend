@@ -372,16 +372,22 @@ class HuiShoppingListCard
 
       .addButton {
         padding-right: 16px;
+        padding-inline-end: 16px;
         cursor: pointer;
+        direction: var(--direction);
       }
 
       .reorderButton {
         padding-left: 16px;
+        padding-inline-start: 16px;
         cursor: pointer;
+        direction: var(--direction);
       }
 
       ha-checkbox {
         margin-left: -12px;
+        margin-inline-start: -12px;
+        direction: var(--direction);
       }
 
       ha-textfield {

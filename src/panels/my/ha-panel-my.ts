@@ -13,6 +13,9 @@ import { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
+  application_credentials: {
+    redirect: "/config/application_credentials",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
@@ -120,6 +123,15 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
+  oauth: {
+    redirect: "/auth/external/callback",
+    navigate_outside_spa: true,
+    params: {
+      error: "string?",
+      code: "string?",
+      state: "string",
+    },
+  },
   people: {
     component: "person",
     redirect: "/config/person",
@@ -211,11 +223,13 @@ const getRedirect = (
   hasSupervisor: boolean
 ): Redirect | undefined => getMyRedirects(hasSupervisor)?.[path];
 
-export type ParamType = "url" | "string";
+export type ParamType = "url" | "string" | "string?";
 
 export type Redirects = { [key: string]: Redirect };
 export interface Redirect {
   redirect: string;
+  // Set to True to use browser redirect instead of frontend navigation
+  navigate_outside_spa?: boolean;
   component?: string;
   params?: {
     [key: string]: ParamType;
@@ -274,7 +288,11 @@ class HaPanelMy extends LitElement {
       return;
     }
 
-    navigate(url, { replace: true });
+    if (this._redirect.navigate_outside_spa) {
+      location.assign(url);
+    } else {
+      navigate(url, { replace: true });
+    }
   }
 
   protected render() {
@@ -342,17 +360,20 @@ class HaPanelMy extends LitElement {
       return "";
     }
     const resultParams = {};
-    Object.entries(this._redirect!.params || {}).forEach(([key, type]) => {
+    for (const [key, type] of Object.entries(this._redirect!.params || {})) {
+      if (!params[key] && type.endsWith("?")) {
+        continue;
+      }
       if (!params[key] || !this._checkParamType(type, params[key])) {
         throw Error();
       }
       resultParams[key] = params[key];
-    });
+    }
     return `?${createSearchParam(resultParams)}`;
   }
 
   private _checkParamType(type: ParamType, value: string) {
-    if (type === "string") {
+    if (type === "string" || type === "string?") {
       return true;
     }
     if (type === "url") {

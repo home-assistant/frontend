@@ -9,31 +9,22 @@ import {
   startOfToday,
   startOfWeek,
   startOfYesterday,
-} from "date-fns";
+} from "date-fns/esm";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
-  extractSearchParam,
+  extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
-import "../../components/ha-circular-progress";
+import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import {
-  clearLogbookCache,
-  getLogbookData,
-  LogbookEntry,
-} from "../../data/logbook";
-import { loadTraceContexts, TraceContexts } from "../../data/trace";
-import { fetchUsers } from "../../data/user";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -45,36 +36,24 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
 
-  @property() _startDate: Date;
+  @state() _time: { range: [Date, Date] };
 
-  @property() _endDate: Date;
-
-  @property() _entityId = "";
-
-  @property() _isLoading = false;
-
-  @property() _entries: LogbookEntry[] = [];
+  @state() _entityIds?: string[];
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  private _fetchUserPromise?: Promise<void>;
-
-  @state() private _userIdToName = {};
-
-  @state() private _traceContexts: TraceContexts = {};
-
   public constructor() {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2, 0, 0, 0);
-    this._startDate = start;
+    start.setHours(start.getHours() - 1, 0, 0, 0);
 
     const end = new Date();
-    end.setHours(end.getHours() + 1, 0, 0, 0);
-    this._endDate = end;
+    end.setHours(end.getHours() + 2, 0, 0, 0);
+
+    this._time = { range: [start, end] };
   }
 
   protected render() {
@@ -91,61 +70,46 @@ export class HaPanelLogbook extends LitElement {
               @click=${this._refreshLogbook}
               .path=${mdiRefresh}
               .label=${this.hass!.localize("ui.common.refresh")}
-              .disabled=${this._isLoading}
             ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
-        ${this._isLoading ? html`` : ""}
-
         <div class="filters">
           <ha-date-range-picker
             .hass=${this.hass}
-            ?disabled=${this._isLoading}
-            .startDate=${this._startDate}
-            .endDate=${this._endDate}
+            .startDate=${this._time.range[0]}
+            .endDate=${this._time.range[1]}
             .ranges=${this._ranges}
             @change=${this._dateRangeChanged}
           ></ha-date-range-picker>
 
           <ha-entity-picker
             .hass=${this.hass}
-            .value=${this._entityId}
+            .value=${this._entityIds ? this._entityIds[0] : undefined}
             .label=${this.hass.localize(
               "ui.components.entity.entity-picker.entity"
             )}
-            .disabled=${this._isLoading}
+            .entityFilter=${this._entityFilter}
             @change=${this._entityPicked}
           ></ha-entity-picker>
         </div>
 
-        ${this._isLoading
-          ? html`
-              <div class="progress-wrapper">
-                <ha-circular-progress
-                  active
-                  alt=${this.hass.localize("ui.common.loading")}
-                ></ha-circular-progress>
-              </div>
-            `
-          : html`
-              <ha-logbook
-                .hass=${this.hass}
-                .entries=${this._entries}
-                .userIdToName=${this._userIdToName}
-                .traceContexts=${this._traceContexts}
-                virtualize
-              ></ha-logbook>
-            `}
+        <ha-logbook
+          .hass=${this.hass}
+          .time=${this._time}
+          .entityIds=${this._entityIds}
+          virtualize
+        ></ha-logbook>
       </ha-app-layout>
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this.hass.loadBackendTranslation("title");
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
-    this._fetchUserPromise = this._fetchUserNames();
+    if (this.hasUpdated) {
+      return;
+    }
 
     const today = new Date();
     const weekStart = startOfWeek(today);
@@ -164,27 +128,29 @@ export class HaPanelLogbook extends LitElement {
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
 
-    this._entityId = extractSearchParam("entity_id") ?? "";
-
-    const startDate = extractSearchParam("start_date");
-    if (startDate) {
-      this._startDate = new Date(startDate);
-    }
-    const endDate = extractSearchParam("end_date");
-    if (endDate) {
-      this._endDate = new Date(endDate);
-    }
+    this._applyURLParams();
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
-    if (
-      changedProps.has("_startDate") ||
-      changedProps.has("_endDate") ||
-      changedProps.has("_entityId")
-    ) {
-      this._getData();
-    }
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
+  }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+  }
+
+  private _locationChanged = () => {
+    this._applyURLParams();
+  };
+
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.language !== this.hass.language) {
@@ -193,143 +159,125 @@ export class HaPanelLogbook extends LitElement {
     }
   }
 
-  private async _fetchUserNames() {
-    const userIdToName = {};
+  private _applyURLParams() {
+    const searchParams = new URLSearchParams(location.search);
 
-    // Start loading users
-    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+    if (searchParams.has("entity_id")) {
+      const entityIdsRaw = searchParams.get("entity_id");
 
-    // Process persons
-    Object.values(this.hass.states).forEach((entity) => {
-      if (
-        entity.attributes.user_id &&
-        computeStateDomain(entity) === "person"
-      ) {
-        this._userIdToName[entity.attributes.user_id] =
-          entity.attributes.friendly_name;
-      }
-    });
+      if (!entityIdsRaw) {
+        this._entityIds = undefined;
+      } else {
+        const entityIds = entityIdsRaw.split(",").sort();
 
-    // Process users
-    if (userProm) {
-      const users = await userProm;
-      for (const user of users) {
-        if (!(user.id in userIdToName)) {
-          userIdToName[user.id] = user.name;
+        // Check if different
+        if (
+          !this._entityIds ||
+          entityIds.length !== this._entityIds.length ||
+          !this._entityIds.every((val, idx) => val === entityIds[idx])
+        ) {
+          this._entityIds = entityIds;
         }
       }
+    } else {
+      this._entityIds = undefined;
     }
 
-    this._userIdToName = userIdToName;
+    const startDateStr = searchParams.get("start_date");
+    const endDateStr = searchParams.get("end_date");
+
+    if (startDateStr || endDateStr) {
+      const startDate = startDateStr
+        ? new Date(startDateStr)
+        : this._time.range[0];
+      const endDate = endDateStr ? new Date(endDateStr) : this._time.range[1];
+
+      // Only set if date has changed.
+      if (
+        startDate.getTime() !== this._time.range[0].getTime() ||
+        endDate.getTime() !== this._time.range[1].getTime()
+      ) {
+        this._time = {
+          range: [
+            startDateStr ? new Date(startDateStr) : this._time.range[0],
+            endDateStr ? new Date(endDateStr) : this._time.range[1],
+          ],
+        };
+      }
+    }
   }
 
   private _dateRangeChanged(ev) {
-    this._startDate = ev.detail.startDate;
+    const startDate = ev.detail.startDate;
     const endDate = ev.detail.endDate;
     if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
     }
-    this._endDate = endDate;
-
-    this._updatePath();
+    this._updatePath({
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+    });
   }
 
   private _entityPicked(ev) {
-    this._entityId = ev.target.value;
-
-    this._updatePath();
+    this._updatePath({
+      entity_id: ev.target.value || undefined,
+    });
   }
 
-  private _updatePath() {
-    const params: Record<string, string> = {};
-
-    if (this._entityId) {
-      params.entity_id = this._entityId;
+  private _updatePath(update: Record<string, string | undefined>) {
+    const params = extractSearchParamsObject();
+    for (const [key, value] of Object.entries(update)) {
+      if (value === undefined) {
+        delete params[key];
+      } else {
+        params[key] = value;
+      }
     }
-
-    if (this._startDate) {
-      params.start_date = this._startDate.toISOString();
-    }
-
-    if (this._endDate) {
-      params.end_date = this._endDate.toISOString();
-    }
-
     navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
   }
 
   private _refreshLogbook() {
-    this._entries = [];
-    clearLogbookCache(
-      this._startDate.toISOString(),
-      this._endDate.toISOString()
-    );
-    this._getData();
+    this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
 
-  private async _getData() {
-    this._isLoading = true;
-    let entries;
-    let traceContexts;
-
-    try {
-      [entries, traceContexts] = await Promise.all([
-        getLogbookData(
-          this.hass,
-          this._startDate.toISOString(),
-          this._endDate.toISOString(),
-          this._entityId
-        ),
-        isComponentLoaded(this.hass, "trace") && this.hass.user?.is_admin
-          ? loadTraceContexts(this.hass)
-          : {},
-        this._fetchUserPromise,
-      ]);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.components.logbook.retrieval_error"),
-        text: err.message,
-      });
+  private _entityFilter: HaEntityPickerEntityFilterFunc = (entity) => {
+    if (computeStateDomain(entity) !== "sensor") {
+      return true;
     }
 
-    this._entries = entries;
-    this._traceContexts = traceContexts;
-    this._isLoading = false;
-  }
+    return (
+      entity.attributes.unit_of_measurement === undefined &&
+      entity.attributes.state_class === undefined
+    );
+  };
 
   static get styles() {
     return [
       haStyle,
       css`
-        ha-logbook,
-        .progress-wrapper {
+        ha-logbook {
           height: calc(100vh - 136px);
         }
 
-        :host([narrow]) ha-logbook,
-        :host([narrow]) .progress-wrapper {
+        :host([narrow]) ha-logbook {
           height: calc(100vh - 198px);
         }
 
         ha-date-range-picker {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           max-width: 100%;
+          direction: var(--direction);
         }
 
         :host([narrow]) ha-date-range-picker {
           margin-right: 0;
-        }
-
-        .progress-wrapper {
-          position: relative;
-        }
-
-        ha-circular-progress {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
+          margin-inline-end: 0;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         .filters {

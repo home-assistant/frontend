@@ -29,7 +29,8 @@ import {
   mdiWeatherNight,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { updateIsInstalling, UpdateEntity } from "../../data/update";
+import { UpdateEntity, updateIsInstalling } from "../../data/update";
+import { weatherIcon } from "../../data/weather";
 /**
  * Return the icon to be used for a domain.
  *
@@ -46,6 +47,20 @@ export const domainIcon = (
   stateObj?: HassEntity,
   state?: string
 ): string => {
+  const icon = domainIconWithoutDefault(domain, stateObj, state);
+  if (icon) {
+    return icon;
+  }
+  // eslint-disable-next-line
+  console.warn(`Unable to find icon for domain ${domain}`);
+  return DEFAULT_DOMAIN_ICON;
+};
+
+export const domainIconWithoutDefault = (
+  domain: string,
+  stateObj?: HassEntity,
+  state?: string
+): string | undefined => {
   const compareState = state !== undefined ? state : stateObj?.state;
 
   switch (domain) {
@@ -87,6 +102,15 @@ export const domainIcon = (
         ? mdiCheckCircleOutline
         : mdiCloseCircleOutline;
 
+    case "input_datetime":
+      if (!stateObj?.attributes.has_date) {
+        return mdiClock;
+      }
+      if (!stateObj.attributes.has_time) {
+        return mdiCalendar;
+      }
+      break;
+
     case "lock":
       switch (compareState) {
         case "unlocked":
@@ -124,15 +148,6 @@ export const domainIcon = (
       break;
     }
 
-    case "input_datetime":
-      if (!stateObj?.attributes.has_date) {
-        return mdiClock;
-      }
-      if (!stateObj.attributes.has_time) {
-        return mdiCalendar;
-      }
-      break;
-
     case "sun":
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
@@ -144,13 +159,14 @@ export const domainIcon = (
           ? mdiPackageDown
           : mdiPackageUp
         : mdiPackage;
+
+    case "weather":
+      return weatherIcon(stateObj?.state);
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {
     return FIXED_DOMAIN_ICONS[domain];
   }
 
-  // eslint-disable-next-line
-  console.warn(`Unable to find icon for domain ${domain}`);
-  return DEFAULT_DOMAIN_ICON;
+  return undefined;
 };

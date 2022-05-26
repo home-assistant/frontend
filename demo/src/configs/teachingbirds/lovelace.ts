@@ -377,7 +377,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
               name: "AC bed",
               tap_action: {
                 action: "call-service",
-                service_data: {
+                data: {
                   entity_id: "script.air_cleaner_quiet",
                 },
                 service: "script.turn_on",
@@ -390,7 +390,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
               name: "AC bed",
               tap_action: {
                 action: "call-service",
-                service_data: {
+                data: {
                   entity_id: "script.air_cleaner_auto",
                 },
                 service: "script.turn_on",
@@ -403,7 +403,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
               name: "AC bed",
               tap_action: {
                 action: "call-service",
-                service_data: {
+                data: {
                   entity_id: "script.air_cleaner_turbo",
                 },
                 service: "script.turn_on",
@@ -416,7 +416,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
               name: "AC",
               tap_action: {
                 action: "call-service",
-                service_data: {
+                data: {
                   entity_id: "script.ac_off",
                 },
                 service: "script.turn_on",
@@ -429,7 +429,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
               name: "AC",
               tap_action: {
                 action: "call-service",
-                service_data: {
+                data: {
                   entity_id: "script.ac_on",
                 },
                 service: "script.turn_on",
@@ -629,7 +629,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                   entity: "scene.morning_lights",
                   tap_action: {
                     action: "call-service",
-                    service_data: {
+                    data: {
                       entity_id: "scene.morning_lights",
                     },
                     service: "scene.turn_on",
@@ -641,7 +641,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                   entity: "scene.movie_time",
                   tap_action: {
                     action: "call-service",
-                    service_data: {
+                    data: {
                       entity_id: "scene.movie_time",
                     },
                     service: "scene.turn_on",
@@ -702,7 +702,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                   entity: "light.downstairs_lights",
                   tap_action: {
                     action: "call-service",
-                    service_data: {
+                    data: {
                       entity_id: "light.downstairs_lights",
                     },
                     service: "light.toggle",
@@ -714,7 +714,7 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
                   entity: "light.upstairs_lights",
                   tap_action: {
                     action: "call-service",
-                    service_data: {
+                    data: {
                       entity_id: "light.upstairs_lights",
                     },
                     service: "light.toggle",

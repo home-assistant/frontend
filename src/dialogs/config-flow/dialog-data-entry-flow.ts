@@ -309,7 +309,7 @@ class DataEntryFlowDialog extends LitElement {
                   : this._step.type === "abort"
                   ? html`
                       <step-flow-abort
-                        .flowConfig=${this._params.flowConfig}
+                        .params=${this._params}
                         .step=${this._step}
                         .hass=${this.hass}
                         .domain=${this._step.handler}
@@ -518,10 +518,9 @@ class DataEntryFlowDialog extends LitElement {
           position: absolute;
           top: 0;
           right: 0;
-        }
-        :host-context([style*="direction: rtl;"]) .dialog-actions {
-          right: auto;
-          left: 0;
+          inset-inline-start: initial;
+          inset-inline-end: 0px;
+          direction: var(--direction);
         }
         .dialog-actions > * {
           color: var(--secondary-text-color);

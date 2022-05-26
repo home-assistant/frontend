@@ -20,7 +20,7 @@ interface HassEntityWithCachedName extends HassEntity {
   friendly_name: string;
 }
 
-export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
+export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
@@ -31,6 +31,7 @@ const rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (item) =>
     <span>${item.friendly_name}</span>
     <span slot="secondary">${item.entity_id}</span>
   </mwc-list-item>`;
+
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

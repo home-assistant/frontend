@@ -35,6 +35,7 @@ const LAZY_LOAD_TYPES = {
   calendar: () => import("../cards/hui-calendar-card"),
   conditional: () => import("../cards/hui-conditional-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  "energy-compare": () => import("../cards/energy/hui-energy-compare-card"),
   "energy-carbon-consumed-gauge": () =>
     import("../cards/energy/hui-energy-carbon-consumed-gauge-card"),
   "energy-date-selection": () =>

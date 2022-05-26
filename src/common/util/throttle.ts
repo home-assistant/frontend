@@ -13,7 +13,7 @@ export const throttle = <T extends any[]>(
 ) => {
   let timeout: number | undefined;
   let previous = 0;
-  return (...args: T): void => {
+  const throttledFunc = (...args: T): void => {
     const later = () => {
       previous = leading === false ? 0 : Date.now();
       timeout = undefined;
@@ -35,4 +35,10 @@ export const throttle = <T extends any[]>(
       timeout = window.setTimeout(later, remaining);
     }
   };
+  throttledFunc.cancel = () => {
+    clearTimeout(timeout);
+    timeout = undefined;
+    previous = 0;
+  };
+  return throttledFunc;
 };

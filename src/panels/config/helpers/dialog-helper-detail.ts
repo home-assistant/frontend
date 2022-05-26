@@ -6,8 +6,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import "../../../components/ha-dialog";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-dialog";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -16,10 +16,12 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
+import { domainToName } from "../../../data/integration";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { Helper } from "./const";
 import "./forms/ha-counter-form";
 import "./forms/ha-input_boolean-form";
@@ -29,9 +31,7 @@ import "./forms/ha-input_number-form";
 import "./forms/ha-input_select-form";
 import "./forms/ha-input_text-form";
 import "./forms/ha-timer-form";
-import { domainToName } from "../../../data/integration";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { brandsUrl } from "../../../util/brands-url";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -187,13 +187,13 @@ export class DialogHelperDetail extends LitElement {
         escapeKeyAction
         .heading=${this._domain
           ? this.hass.localize(
-              "ui.panel.config.helpers.dialog.add_platform",
+              "ui.panel.config.helpers.dialog.create_platform",
               "platform",
               this.hass.localize(
                 `ui.panel.config.helpers.types.${this._domain}`
               ) || this._domain
             )
-          : this.hass.localize("ui.panel.config.helpers.dialog.add_helper")}
+          : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")}
       >
         ${content}
       </ha-dialog>

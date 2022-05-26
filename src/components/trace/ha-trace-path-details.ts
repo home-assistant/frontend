@@ -13,7 +13,7 @@ import {
   getDataFromPath,
   TraceExtended,
 } from "../../data/trace";
-import "../../panels/logbook/ha-logbook";
+import "../../panels/logbook/ha-logbook-renderer";
 import { traceTabStyles } from "./trace-tab-styles";
 import { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
@@ -194,7 +194,7 @@ export class HaTracePathDetails extends LitElement {
       // it's the last entry. Find all logbook entries after start.
       const startTime = new Date(startTrace[0].timestamp);
       const idx = this.logbookEntries.findIndex(
-        (entry) => new Date(entry.when) >= startTime
+        (entry) => new Date(entry.when * 1000) >= startTime
       );
       if (idx === -1) {
         entries = [];
@@ -210,7 +210,7 @@ export class HaTracePathDetails extends LitElement {
       entries = [];
 
       for (const entry of this.logbookEntries || []) {
-        const entryDate = new Date(entry.when);
+        const entryDate = new Date(entry.when * 1000);
         if (entryDate >= startTime) {
           if (entryDate < endTime) {
             entries.push(entry);
@@ -224,12 +224,12 @@ export class HaTracePathDetails extends LitElement {
 
     return entries.length
       ? html`
-          <ha-logbook
+          <ha-logbook-renderer
             relative-time
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}
-          ></ha-logbook>
+          ></ha-logbook-renderer>
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">

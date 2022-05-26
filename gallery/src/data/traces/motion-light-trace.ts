@@ -185,11 +185,11 @@ export const motionLightTrace: DemoTrace = {
         "has been triggered by state of binary_sensor.pauluss_macbook_pro_camera_in_use",
       source: "state of binary_sensor.pauluss_macbook_pro_camera_in_use",
       entity_id: "automation.auto_elgato",
-      when: "2021-03-14T06:07:01.768492+00:00",
+      when: 1615702021.768492,
       domain: "automation",
     },
     {
-      when: "2021-03-14T06:07:01.872187+00:00",
+      when: 1615702021.872187,
       name: "Elgato Key Light Air",
       state: "on",
       entity_id: "light.elgato_key_light_air",
@@ -200,7 +200,7 @@ export const motionLightTrace: DemoTrace = {
       context_name: "Auto Elgato",
     },
     {
-      when: "2021-03-14T06:07:53.284505+00:00",
+      when: 1615702073.284505,
       name: "Elgato Key Light Air",
       state: "off",
       entity_id: "light.elgato_key_light_air",

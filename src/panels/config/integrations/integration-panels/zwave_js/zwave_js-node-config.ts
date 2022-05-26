@@ -61,19 +61,6 @@ const getDevice = memoizeOne(
     entries?.find((device) => device.id === deviceId)
 );
 
-const getNodeId = memoizeOne(
-  (device: DeviceRegistryEntry): number | undefined => {
-    const identifier = device.identifiers.find(
-      (ident) => ident[0] === "zwave_js"
-    );
-    if (!identifier) {
-      return undefined;
-    }
-
-    return parseInt(identifier[1].split("-")[1]);
-  }
-);
-
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -179,17 +166,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               </em>
             </p>
           </div>
-          ${this._nodeMetadata.comments?.length > 0
-            ? html`
-                <div>
-                  ${this._nodeMetadata.comments.map(
-                    (comment) => html`<ha-alert .alertType=${comment.level}>
-                      ${comment.text}
-                    </ha-alert>`
-                  )}
-                </div>
-              `
-            : ``}
           <ha-card>
             ${Object.entries(this._config).map(
               ([id, item]) => html` <ha-settings-row
@@ -382,12 +358,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private async _updateConfigParameter(target, value) {
-    const nodeId = getNodeId(this._device!);
     try {
       const result = await setZwaveNodeConfigParameter(
         this.hass,
-        this.configEntryId!,
-        nodeId!,
+        this._device!.id,
         target.property,
         value,
         target.propertyKey ? target.propertyKey : undefined
@@ -429,15 +403,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const nodeId = getNodeId(device);
-    if (!nodeId) {
-      this._error = "device_not_found";
-      return;
-    }
-
     [this._nodeMetadata, this._config] = await Promise.all([
-      fetchZwaveNodeMetadata(this.hass, this.configEntryId, nodeId!),
-      fetchZwaveNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+      fetchZwaveNodeMetadata(this.hass, device.id),
+      fetchZwaveNodeConfigParameters(this.hass, device.id),
     ]);
   }
 
