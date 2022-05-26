@@ -791,9 +791,7 @@ export class HaConfigDevicePage extends LitElement {
             )}
           </div>
           <div class="column">
-            ${this.narrow ? automationCard : ""}
-            ${this.narrow ? sceneCard : ""}
-            ${this.narrow ? scriptCard : ""}
+            ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
             ${
               isComponentLoaded(this.hass, "logbook")
                 ? html`
