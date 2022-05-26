@@ -96,6 +96,8 @@ export class HaComboBox extends LitElement {
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
+  private _overlayMutationObserver?: MutationObserver;
+
   public open() {
     this.updateComplete.then(() => {
       this._comboBox?.open();
@@ -106,6 +108,14 @@ export class HaComboBox extends LitElement {
     this.updateComplete.then(() => {
       this._comboBox?.inputElement?.focus();
     });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._overlayMutationObserver) {
+      this._overlayMutationObserver.disconnect();
+      this._overlayMutationObserver = undefined;
+    }
   }
 
   public get selectedItem() {
@@ -194,12 +204,54 @@ export class HaComboBox extends LitElement {
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+    const opened = ev.detail.value;
     // delay this so we can handle click event before setting _opened
     setTimeout(() => {
-      this._opened = ev.detail.value;
+      this._opened = opened;
     }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
+
+    if (opened && "MutationObserver" in window) {
+      const overlay = document.querySelector<HTMLElement>(
+        "vaadin-combo-box-overlay"
+      );
+
+      if (!overlay) {
+        return;
+      }
+
+      this._overlayMutationObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "inert" &&
+            // @ts-expect-error
+            overlay.inert === true
+          ) {
+            // @ts-expect-error
+            overlay.inert = false;
+            this._overlayMutationObserver?.disconnect();
+            this._overlayMutationObserver = undefined;
+          }
+          if (mutation.type === "childList") {
+            mutation.removedNodes.forEach((node) => {
+              if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
+                this._overlayMutationObserver?.disconnect();
+                this._overlayMutationObserver = undefined;
+              }
+            });
+          }
+        });
+      });
+
+      this._overlayMutationObserver.observe(overlay, {
+        attributes: true,
+      });
+      this._overlayMutationObserver.observe(document.body, {
+        childList: true,
+      });
+    }
   }
 
   private _filterChanged(ev: PolymerChangedEvent<string>) {
