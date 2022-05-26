@@ -1019,7 +1019,9 @@ export class HaConfigDevicePage extends LitElement {
       deviceAlerts.push(...alerts);
     }
 
+if (deviceAlerts.length) {
     this._deviceAlerts = deviceAlerts;
+}
   }
 
   private _computeEntityName(entity: EntityRegistryEntry) {
