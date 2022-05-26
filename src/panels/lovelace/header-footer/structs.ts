@@ -7,8 +7,8 @@ import {
   union,
   string,
 } from "superstruct";
-import { buttonsEntitiesConfigStruct } from "../editor/config-elements/hui-entities-card-editor";
 import { actionConfigStruct } from "../editor/structs/action-struct";
+import { buttonEntityConfigStruct } from "../editor/structs/button-entity-struct";
 import { LovelaceHeaderFooterConfig } from "./types";
 
 export const pictureHeaderFooterConfigStruct = object({
@@ -21,7 +21,7 @@ export const pictureHeaderFooterConfigStruct = object({
 
 export const buttonsHeaderFooterConfigStruct = object({
   type: string(),
-  entities: array(buttonsEntitiesConfigStruct),
+  entities: array(buttonEntityConfigStruct),
 });
 
 export const graphHeaderFooterConfigStruct = object({

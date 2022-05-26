@@ -49,6 +49,7 @@ import {
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -110,24 +111,9 @@ const webLinkEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
-export const buttonsEntitiesConfigStruct = union([
-  object({
-    entity: string(),
-    name: optional(string()),
-    icon: optional(string()),
-    image: optional(string()),
-    show_name: optional(boolean()),
-    show_icon: optional(boolean()),
-    tap_action: optional(actionConfigStruct),
-    hold_action: optional(actionConfigStruct),
-    double_tap_action: optional(actionConfigStruct),
-  }),
-  string(),
-]);
-
 const buttonsEntitiesRowConfigStruct = object({
   type: literal("buttons"),
-  entities: array(buttonsEntitiesConfigStruct),
+  entities: array(buttonEntityConfigStruct),
 });
 
 const attributeEntitiesRowConfigStruct = object({
