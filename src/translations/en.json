@@ -609,7 +609,8 @@
           "tv_show": "TV Show",
           "url": "URL",
           "video": "Video"
-        }
+        },
+        "media_player_unavailable": "The selected media player is unavailable."
       },
       "calendar": {
         "my_calendars": "My Calendars",
