@@ -283,7 +283,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         >${Object.entries(wrRepeaterRSSIMap).map(
                           ([repeaterName, rssi]) => html`
                             <div class="row">
-                              <span class="key-cell">${repeaterName}: </span>
+                              <span class="key-cell">${repeaterName}:</span>
                               <span class="value-cell">${rssi}</span>
                             </div>
                           `
