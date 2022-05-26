@@ -423,13 +423,13 @@ export class HaConfigDevicePage extends LitElement {
               ${
                 this._deviceAlerts?.length
                   ? html`
-                      <div class="fullwidth">
+                      <div>
                         ${this._deviceAlerts.map(
                           (alert) =>
                             html`
-                              <ha-alert .alertType=${alert.level}
-                                >${alert.text}</ha-alert
-                              >
+                              <ha-alert .alertType=${alert.level}>
+                                ${alert.text}
+                              </ha-alert>
                             `
                         )}
                       </div>
