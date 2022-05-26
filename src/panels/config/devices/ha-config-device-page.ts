@@ -768,9 +768,7 @@ export class HaConfigDevicePage extends LitElement {
                     : ""
                 }
               </ha-device-info-card>
-            ${!this.narrow ? automationCard : ""} 
-            ${!this.narrow ? sceneCard : ""}
-            ${!this.narrow ? scriptCard : ""}
+            ${!this.narrow ? [automationCard, sceneCard, scriptCard] : ""} 
           </div>
           <div class="column">
             ${["control", "sensor", "config", "diagnostic"].map((category) =>
