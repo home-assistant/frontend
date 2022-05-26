@@ -193,17 +193,36 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 <div class="row">
                   <span>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.route_statistics.protocol_data_rate.label"
+                      "ui.panel.config.zwave_js.route_statistics.protocol.label"
                     )}<ha-help-tooltip
                       .label=${this.hass.localize(
-                        "ui.panel.config.zwave_js.route_statistics.protocol_data_rate.tooltip"
+                        "ui.panel.config.zwave_js.route_statistics.protocol.tooltip"
                       )}
                     >
                     </ha-help-tooltip
                   ></span>
                   <span
                     >${this.hass.localize(
-                      `ui.panel.config.zwave_js.protocol_data_rate.${
+                      `ui.panel.config.zwave_js.route_statistics.protocol.protocol_data_rate.${
+                        ProtocolDataRate[wrValue.protocol_data_rate]
+                      }`
+                    )}</span
+                  >
+                </div>
+                <div class="row">
+                  <span>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.route_statistics.data_rate.label"
+                    )}<ha-help-tooltip
+                      .label=${this.hass.localize(
+                        "ui.panel.config.zwave_js.route_statistics.data_rate.tooltip"
+                      )}
+                    >
+                    </ha-help-tooltip
+                  ></span>
+                  <span
+                    >${this.hass.localize(
+                      `ui.panel.config.zwave_js.route_statistics.data_rate.protocol_data_rate.${
                         ProtocolDataRate[wrValue.protocol_data_rate]
                       }`
                     )}</span

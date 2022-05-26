@@ -3138,9 +3138,25 @@
             "nlwr": "Next to Last Working Route"
           },
           "route_statistics": {
-            "protocol_data_rate": {
-              "label": "Protocol Data Rate",
-              "tooltip": "The protocol and used data rate for this route"
+            "protocol": {
+              "label": "Protocol",
+              "tooltip": "The protocol for this route",
+              "protocol_data_rate": {
+                "ZWave_9k6": "Z-Wave",
+                "ZWave_40k": "Z-Wave",
+                "ZWave_100k": "Z-Wave",
+                "LongRange_100k": "Z-Wave Long Range"
+              }
+            },
+            "data_rate": {
+              "label": "Data Rate",
+              "tooltip": "The used data rate for this route",
+              "protocol_data_rate": {
+                "ZWave_9k6": "9600",
+                "ZWave_40k": "40K",
+                "ZWave_100k": "100K",
+                "LongRange_100k": "100K"
+              }
             },
             "repeaters": {
               "label": "Repeaters + RSSI",
