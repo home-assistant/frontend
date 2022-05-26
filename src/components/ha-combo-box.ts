@@ -212,7 +212,11 @@ export class HaComboBox extends LitElement {
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
 
-    if (opened && "MutationObserver" in window) {
+    if (
+      opened &&
+      "MutationObserver" in window &&
+      !this._overlayMutationObserver
+    ) {
       const overlay = document.querySelector<HTMLElement>(
         "vaadin-combo-box-overlay"
       );
