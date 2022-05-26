@@ -14,7 +14,6 @@ import {
   ApplicationCredential,
 } from "../../../data/application_credential";
 import { domainToName } from "../../../data/integration";
-import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
@@ -169,11 +168,9 @@ export class DialogAddApplicationCredential extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private async _handleDomainPicked(ev: PolymerChangedEvent<string>) {
-    const target = ev.target as any;
-    if (target.selectedItem) {
-      this._domain = target.selectedItem.id;
-    }
+  private async _handleDomainPicked(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._domain = ev.detail.value;
   }
 
   private _handleValueChanged(ev: CustomEvent) {
