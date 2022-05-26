@@ -1,14 +1,16 @@
 import {
-  object,
-  string,
-  union,
-  boolean,
-  optional,
   array,
-  literal,
+  boolean,
+  dynamic,
   enums,
+  literal,
+  object,
+  optional,
+  string,
   type,
+  union,
 } from "superstruct";
+import { BaseActionConfig } from "../../../../data/lovelace";
 
 const actionConfigStructUser = object({
   user: string(),
@@ -65,10 +67,23 @@ export const actionConfigStructType = object({
   confirmation: optional(actionConfigStructConfirmation),
 });
 
-export const actionConfigStruct = union([
-  actionConfigStructType,
-  actionConfigStructUrl,
-  actionConfigStructNavigate,
-  actionConfigStructService,
-  actionConfigStructCustom,
-]);
+export const actionConfigStruct = dynamic<any>((value) => {
+  if (value && typeof value === "object" && "action" in value) {
+    switch ((value as BaseActionConfig).action!) {
+      case "call-service": {
+        return actionConfigStructService;
+      }
+      case "fire-dom-event": {
+        return actionConfigStructCustom;
+      }
+      case "navigate": {
+        return actionConfigStructNavigate;
+      }
+      case "url": {
+        return actionConfigStructUrl;
+      }
+    }
+  }
+
+  return actionConfigStructType;
+});
