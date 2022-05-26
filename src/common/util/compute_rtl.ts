@@ -19,10 +19,10 @@ export function emitRTLDirection(rtl: boolean) {
 
 export function computeDirectionStyles(isRTL: boolean, element: LitElement) {
   const direction: string = emitRTLDirection(isRTL);
-  emitDirectionStyles(direction, element);
+  setDirectionStyles(direction, element);
 }
 
-export function emitDirectionStyles(direction: string, element: LitElement) {
+export function setDirectionStyles(direction: string, element: LitElement) {
   element.style.direction = direction;
   element.style.setProperty("--direction", direction);
   element.style.setProperty(

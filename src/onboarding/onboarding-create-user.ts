@@ -15,9 +15,7 @@ import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
 import { HaFormDataContainer, HaFormSchema } from "../components/ha-form/types";
 import { onboardUserStep } from "../data/onboarding";
-import { translationMetadata } from "../resources/translations-metadata";
 import { PolymerChangedEvent } from "../polymer-types";
-import { computeDirectionStyles } from "../common/util/compute_rtl";
 
 const CREATE_USER_SCHEMA: HaFormSchema[] = [
   { name: "name", required: true, selector: { text: {} } },
@@ -83,10 +81,6 @@ class OnboardingCreateUser extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    computeDirectionStyles(
-      translationMetadata.translations[this.language!].isRTL,
-      this
-    );
     setTimeout(() => this._form?.focus(), 100);
     this.addEventListener("keypress", (ev) => {
       if (

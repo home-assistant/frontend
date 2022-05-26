@@ -24,6 +24,8 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
+import { translationMetadata } from "../resources/translations-metadata";
+import { computeDirectionStyles } from "../common/util/compute_rtl";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
@@ -147,6 +149,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         true
       );
     }
+    computeDirectionStyles(
+      translationMetadata.translations[this.language!].isRTL,
+      this
+    );
   }
 
   protected updated(changedProps: PropertyValues) {
