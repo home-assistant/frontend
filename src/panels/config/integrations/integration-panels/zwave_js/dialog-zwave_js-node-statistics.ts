@@ -25,15 +25,31 @@ import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSNodeStatisticsDialogParams } from "./show-dialog-zwave_js-node-statistics";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 
+type WorkingRouteStatistics =
+  | (ZWaveJSRouteStatistics & {
+      repeater_rssi_table?: TemplateResult;
+      rssi_translated?: TemplateResult | string;
+      route_failed_between_translated?: [string, string];
+    })
+  | undefined;
+
 @customElement("dialog-zwave_js-node-statistics")
 class DialogZWaveJSNodeStatistics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private device?: DeviceRegistryEntry;
 
-  @state() private _nodeStatistics?: ZWaveJSNodeStatisticsUpdatedMessage;
+  @state() private _nodeStatistics?: ZWaveJSNodeStatisticsUpdatedMessage & {
+    rssi_translated?: TemplateResult | string;
+  };
 
-  @state() private _devices?: DeviceRegistryEntry[];
+  @state() private _deviceIDsToDevices: { [key: string]: DeviceRegistryEntry } =
+    {};
+
+  @state() private _workingRoutes: {
+    lwr: WorkingRouteStatistics;
+    nlwr: WorkingRouteStatistics;
+  } = { lwr: undefined, nlwr: undefined };
 
   private _subscribedNodeStatistics?: Promise<UnsubscribeFunc>;
 
@@ -41,8 +57,8 @@ class DialogZWaveJSNodeStatistics extends LitElement {
 
   public showDialog(params: ZWaveJSNodeStatisticsDialogParams): void {
     this.device = params.device;
-    this._subscribeNodeStatistics();
     this._subscribeDeviceRegistry();
+    this._subscribeNodeStatistics();
   }
 
   public closeDialog(): void {
@@ -58,12 +74,6 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     if (!this.device) {
       return html``;
     }
-
-    const workingRoutes: [ZWaveJSRouteStatistics | null | undefined, string][] =
-      [
-        [this._nodeStatistics?.lwr, "lwr"],
-        [this._nodeStatistics?.nlwr, "nlwr"],
-      ];
 
     return html`
       <ha-dialog
@@ -156,10 +166,10 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                     "ui.panel.config.zwave_js.node_statistics.rtt.tooltip"
                   )}
                 </span>
-                <span slot="meta">${this._nodeStatistics?.rtt}</span>
+                <span slot="meta">${this._nodeStatistics.rtt}</span>
               </mwc-list-item>`
             : ``}
-          ${this._nodeStatistics?.rssi
+          ${this._nodeStatistics?.rssi_translated
             ? html`<mwc-list-item twoline hasmeta>
                 <span>
                   ${this.hass.localize(
@@ -171,25 +181,16 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                     "ui.panel.config.zwave_js.node_statistics.rssi.tooltip"
                   )}
                 </span>
-                <span slot="meta"
-                  >${this._computeRSSI(this._nodeStatistics?.rssi, false)}</span
-                >
+                <span slot="meta">${this._nodeStatistics.rssi_translated}</span>
               </mwc-list-item>`
             : ``}
         </mwc-list>
-        ${workingRoutes.map(([wrValue, wrLabel]) => {
+        ${Object.entries(this._workingRoutes).map(([wrKey, wrValue]) => {
           if (wrValue) {
-            const wrRepeaterRSSIMap: { [key: string]: string } = {};
-            for (let idx = 0; idx < wrValue.repeaters.length; idx++) {
-              wrRepeaterRSSIMap[
-                this._computeDeviceNameById(wrValue.repeaters[idx])
-              ] = this._computeRSSI(wrValue.repeater_rssi[idx], true);
-            }
-
             return html`
               <ha-expansion-panel
                 .header=${this.hass.localize(
-                  `ui.panel.config.zwave_js.node_statistics.${wrLabel}`
+                  `ui.panel.config.zwave_js.node_statistics.${wrKey}`
                 )}
               >
                 <div class="row">
@@ -230,7 +231,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                     )}</span
                   >
                 </div>
-                ${wrValue.rssi
+                ${wrValue.rssi_translated
                   ? html`<div class="row">
                       <span>
                         ${this.hass.localize(
@@ -242,10 +243,10 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         >
                         </ha-help-tooltip
                       ></span>
-                      <span>${this._computeRSSI(wrValue.rssi, true)}</span>
+                      <span>${wrValue.rssi_translated}</span>
                     </div>`
                   : ``}
-                ${wrValue.route_failed_between
+                ${wrValue.route_failed_between_translated
                   ? html`<div class="row">
                       <span>
                         ${this.hass.localize(
@@ -258,16 +259,15 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         </ha-help-tooltip
                       ></span>
                       <span
-                        >${this._computeDeviceNameById(
-                          wrValue.route_failed_between[0]
-                        )}<ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon
-                        >${this._computeDeviceNameById(
-                          wrValue.route_failed_between[1]
-                        )}</span
+                        >${wrValue
+                          .route_failed_between_translated[0]}<ha-svg-icon
+                          .path=${mdiSwapHorizontal}
+                        ></ha-svg-icon
+                        >${wrValue.route_failed_between_translated[1]}</span
                       >
                     </div>`
                   : ``}
-                ${wrValue.repeaters.length > 0
+                ${wrValue.repeater_rssi_table
                   ? html`<div class="row">
                       <span>
                         ${this.hass.localize(
@@ -279,15 +279,24 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         >
                         </ha-help-tooltip
                       ></span>
-                      <span class="table"
-                        >${Object.entries(wrRepeaterRSSIMap).map(
-                          ([repeaterName, rssi]) => html`
-                            <div class="row">
-                              <span class="key-cell">${repeaterName}:</span>
-                              <span class="value-cell">${rssi}</span>
-                            </div>
-                          `
-                        )}</span
+                      <span
+                        ><div class="row">
+                          <span class="key-cell"
+                            ><b
+                              >${this.hass.localize(
+                                "ui.panel.config.zwave_js.route_statistics.repeaters.repeaters"
+                              )}:</b
+                            ></span
+                          >
+                          <span class="value-cell"
+                            ><b
+                              >${this.hass.localize(
+                                "ui.panel.config.zwave_js.route_statistics.repeaters.rssi"
+                              )}:</b
+                            ></span
+                          >
+                        </div>
+                        ${wrValue.repeater_rssi_table}</span
                       >
                     </div>`
                   : ``}
@@ -300,27 +309,31 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     `;
   }
 
-  private _computeRSSI(rssi: number, includeUnit: boolean): string {
+  private _computeRSSI(
+    rssi: number,
+    includeUnit: boolean
+  ): TemplateResult | string {
     if (Object.values(RssiError).includes(rssi)) {
-      return this.hass.localize(
-        `ui.panel.config.zwave_js.rssi.rssi_error.${RssiError[rssi]}`
-      );
+      return html`<ha-help-tooltip
+        .label=${this.hass.localize(
+          `ui.panel.config.zwave_js.rssi.rssi_error.${RssiError[rssi]}`
+        )}
+      ></ha-help-tooltip>`;
     }
     if (includeUnit) {
-      return `${rssi} ${this.hass.localize(
-        "ui.panel.config.zwave_js.rssi.unit"
-      )}`;
+      return `${rssi}
+      ${this.hass.localize("ui.panel.config.zwave_js.rssi.unit")}`;
     }
     return rssi.toString();
   }
 
-  private _computeDeviceNameById(device_id: string): string {
-    if (!this._devices) {
-      return device_id;
+  private _computeDeviceNameById(device_id: string): "unknown device" | string {
+    if (!this._deviceIDsToDevices) {
+      return "unknown device";
     }
-    const device = this._devices.find((dev) => dev.id === device_id);
+    const device = this._deviceIDsToDevices[device_id];
     if (!device) {
-      return device_id;
+      return "unknown device";
     }
 
     return computeDeviceName(device, this.hass);
@@ -335,6 +348,62 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       this.device!.id,
       (message: ZWaveJSNodeStatisticsUpdatedMessage) => {
         this._nodeStatistics = message;
+        this._nodeStatistics.rssi_translated = undefined;
+        if (this._nodeStatistics.rssi) {
+          this._nodeStatistics.rssi_translated = this._computeRSSI(
+            this._nodeStatistics.rssi,
+            false
+          );
+        }
+
+        const workingRoutes: [
+          string,
+          ZWaveJSRouteStatistics | null | undefined
+        ][] = [
+          ["lwr", this._nodeStatistics?.lwr],
+          ["nlwr", this._nodeStatistics?.nlwr],
+        ];
+
+        workingRoutes.forEach(([wrKey, wrValue]) => {
+          this._workingRoutes[wrKey] = wrValue;
+
+          if (wrValue) {
+            if (wrValue.rssi) {
+              this._workingRoutes[wrKey].rssi_translated = this._computeRSSI(
+                wrValue.rssi,
+                true
+              );
+            }
+
+            if (wrValue.route_failed_between) {
+              this._workingRoutes[wrKey].route_failed_between_translated = [
+                this._computeDeviceNameById(wrValue.route_failed_between[0]),
+                this._computeDeviceNameById(wrValue.route_failed_between[1]),
+              ];
+            }
+
+            if (wrValue.repeaters) {
+              this._workingRoutes[
+                wrKey
+              ].repeater_rssi_table = html` ${wrValue.repeaters.map(
+                (_, idx) =>
+                  html`<div class="row">
+                    <span class="key-cell"
+                      >${this._computeDeviceNameById(
+                        wrValue.repeaters[idx]
+                      )}:</span
+                    >
+                    <span class="value-cell"
+                      >${this._computeRSSI(
+                        wrValue.repeater_rssi[idx],
+                        true
+                      )}</span
+                    >
+                  </div>`
+              )}`;
+            }
+          }
+        });
       }
     );
   }
@@ -346,7 +415,13 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     this._subscribedDeviceRegistry = subscribeDeviceRegistry(
       this.hass.connection,
       (devices: DeviceRegistryEntry[]) => {
-        this._devices = devices;
+        Object.entries(this._deviceIDsToDevices).forEach(([_, device]) => {
+          if (!devices.includes(device))
+            delete this._deviceIDsToDevices[device.id];
+        });
+        devices.forEach((device) => {
+          this._deviceIDsToDevices[device.id] = device;
+        });
       }
     );
   }

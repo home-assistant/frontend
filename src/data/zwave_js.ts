@@ -266,7 +266,7 @@ export interface ZWaveJSNodeStatisticsUpdatedMessage {
   commands_dropped_rx: number;
   timeout_response: number;
   rtt: number | null;
-  rssi: number | null;
+  rssi: RssiError | number | null;
   lwr: ZWaveJSRouteStatistics | null;
   nlwr: ZWaveJSRouteStatistics | null;
 }
@@ -274,8 +274,8 @@ export interface ZWaveJSNodeStatisticsUpdatedMessage {
 export interface ZWaveJSRouteStatistics {
   protocol_data_rate: number;
   repeaters: string[];
-  rssi: number | null;
-  repeater_rssi: number[];
+  rssi: RssiError | number | null;
+  repeater_rssi: (RssiError | number)[];
   route_failed_between: [string, string] | null;
 }
 
