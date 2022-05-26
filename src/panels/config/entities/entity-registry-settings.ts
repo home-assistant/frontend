@@ -378,8 +378,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </mwc-list-item>
               <mwc-list-item
                 value="outlet"
-                .selected=${!this._deviceClass ||
-                this._deviceClass === "outlet"}
+                .selected=${this._deviceClass === "outlet"}
               >
                 ${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
