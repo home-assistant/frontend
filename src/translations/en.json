@@ -3153,9 +3153,9 @@
               "tooltip": "The used data rate for this route",
               "protocol_data_rate": {
                 "ZWave_9k6": "9600",
-                "ZWave_40k": "40K",
-                "ZWave_100k": "100K",
-                "LongRange_100k": "100K"
+                "ZWave_40k": "40k",
+                "ZWave_100k": "100k",
+                "LongRange_100k": "100k"
               }
             },
             "repeaters": {
