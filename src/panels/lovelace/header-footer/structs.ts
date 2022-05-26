@@ -1,6 +1,14 @@
-import { array, dynamic, number, object, optional, string } from "superstruct";
+import {
+  array,
+  dynamic,
+  number,
+  object,
+  optional,
+  union,
+  string,
+} from "superstruct";
+import { buttonsEntitiesConfigStruct } from "../editor/config-elements/hui-entities-card-editor";
 import { actionConfigStruct } from "../editor/structs/action-struct";
-import { entitiesConfigStruct } from "../editor/structs/entities-struct";
 import { LovelaceHeaderFooterConfig } from "./types";
 
 export const pictureHeaderFooterConfigStruct = object({
@@ -13,7 +21,7 @@ export const pictureHeaderFooterConfigStruct = object({
 
 export const buttonsHeaderFooterConfigStruct = object({
   type: string(),
-  entities: array(entitiesConfigStruct),
+  entities: array(buttonsEntitiesConfigStruct),
 });
 
 export const graphHeaderFooterConfigStruct = object({
@@ -38,7 +46,10 @@ export const headerFooterConfigStructs = dynamic<any>((value) => {
     }
   }
 
-  // No "type" property => we fallback to one random variant, which ensure that user gets informed
-  // about missing "type", as all variants have that marked as required.
-  return pictureHeaderFooterConfigStruct;
+  // No "type" property => we fallback to a union of all potential types
+  return union([
+    buttonsHeaderFooterConfigStruct,
+    graphHeaderFooterConfigStruct,
+    pictureHeaderFooterConfigStruct,
+  ]);
 });

@@ -110,24 +110,24 @@ const webLinkEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
+export const buttonsEntitiesConfigStruct = union([
+  object({
+    entity: string(),
+    name: optional(string()),
+    icon: optional(string()),
+    image: optional(string()),
+    show_name: optional(boolean()),
+    show_icon: optional(boolean()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+  }),
+  string(),
+]);
+
 const buttonsEntitiesRowConfigStruct = object({
   type: literal("buttons"),
-  entities: array(
-    union([
-      object({
-        entity: string(),
-        name: optional(string()),
-        icon: optional(string()),
-        image: optional(string()),
-        show_name: optional(boolean()),
-        show_icon: optional(boolean()),
-        tap_action: optional(actionConfigStruct),
-        hold_action: optional(actionConfigStruct),
-        double_tap_action: optional(actionConfigStruct),
-      }),
-      string(),
-    ])
-  ),
+  entities: array(buttonsEntitiesConfigStruct),
 });
 
 const attributeEntitiesRowConfigStruct = object({
