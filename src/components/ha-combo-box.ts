@@ -237,8 +237,7 @@ export class HaComboBox extends LitElement {
             overlay.inert = false;
             this._overlayMutationObserver?.disconnect();
             this._overlayMutationObserver = undefined;
-          }
-          if (mutation.type === "childList") {
+          } else if (mutation.type === "childList") {
             mutation.removedNodes.forEach((node) => {
               if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
                 this._overlayMutationObserver?.disconnect();
