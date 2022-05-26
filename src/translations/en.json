@@ -3152,17 +3152,18 @@
               "label": "Data Rate",
               "tooltip": "The used data rate for this route",
               "protocol_data_rate": {
-                "ZWave_9k6": "9600",
-                "ZWave_40k": "40k",
-                "ZWave_100k": "100k",
-                "LongRange_100k": "100k"
+                "ZWave_9k6": "9.6 kbps",
+                "ZWave_40k": "40 kbps",
+                "ZWave_100k": "100 kbps",
+                "LongRange_100k": "100 kbps"
               }
             },
             "repeaters": {
               "label": "Repeaters + RSSI",
               "tooltip": "Which nodes are repeaters for this route and their RSSI",
               "repeaters": "Repeater Devices",
-              "rssi": "RSSI"
+              "rssi": "RSSI",
+              "direct": "None, direct connection"
             },
             "rssi": {
               "label": "RSSI",
@@ -3170,22 +3171,17 @@
             },
             "route_failed_between": {
               "label": "Route Failed Between",
-              "tooltip": "The nodes between which the transmission failed most recently"
+              "tooltip": "The nodes between which the transmission failed most recently",
+              "not_applicable": "N/A"
             }
           },
           "rssi": {
             "unit": "dBm",
             "rssi_error": {
-              "NotAvailable": "Not Available",
-              "ReceiverSaturated": "Receiver Saturated",
-              "NoSignalDetected": "No Signal Detected"
+              "NotAvailable": "Not available",
+              "ReceiverSaturated": "Receiver saturated",
+              "NoSignalDetected": "No signal detected"
             }
-          },
-          "protocol_data_rate": {
-            "ZWave_9k6": "Z-Wave 9600",
-            "ZWave_40k": "Z-Wave 40K",
-            "ZWave_100k": "Z-Wave 100K",
-            "LongRange_100k": "Long Range 100K"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",

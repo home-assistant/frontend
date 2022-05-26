@@ -185,126 +185,131 @@ class DialogZWaveJSNodeStatistics extends LitElement {
               </mwc-list-item>`
             : ``}
         </mwc-list>
-        ${Object.entries(this._workingRoutes).map(([wrKey, wrValue]) => {
-          if (wrValue) {
-            return html`
-              <ha-expansion-panel
-                .header=${this.hass.localize(
-                  `ui.panel.config.zwave_js.node_statistics.${wrKey}`
-                )}
-              >
-                <div class="row">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.route_statistics.protocol.label"
-                    )}<ha-help-tooltip
-                      .label=${this.hass.localize(
-                        "ui.panel.config.zwave_js.route_statistics.protocol.tooltip"
-                      )}
-                    >
-                    </ha-help-tooltip
-                  ></span>
-                  <span
-                    >${this.hass.localize(
-                      `ui.panel.config.zwave_js.route_statistics.protocol.protocol_data_rate.${
-                        ProtocolDataRate[wrValue.protocol_data_rate]
-                      }`
-                    )}</span
-                  >
-                </div>
-                <div class="row">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.route_statistics.data_rate.label"
-                    )}<ha-help-tooltip
-                      .label=${this.hass.localize(
-                        "ui.panel.config.zwave_js.route_statistics.data_rate.tooltip"
-                      )}
-                    >
-                    </ha-help-tooltip
-                  ></span>
-                  <span
-                    >${this.hass.localize(
-                      `ui.panel.config.zwave_js.route_statistics.data_rate.protocol_data_rate.${
-                        ProtocolDataRate[wrValue.protocol_data_rate]
-                      }`
-                    )}</span
-                  >
-                </div>
-                ${wrValue.rssi_translated
-                  ? html`<div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.route_statistics.rssi.label"
-                        )}<ha-help-tooltip
-                          .label=${this.hass.localize(
-                            "ui.panel.config.zwave_js.route_statistics.rssi.tooltip"
-                          )}
-                        >
-                        </ha-help-tooltip
-                      ></span>
-                      <span>${wrValue.rssi_translated}</span>
-                    </div>`
-                  : ``}
-                ${wrValue.route_failed_between_translated
-                  ? html`<div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.route_statistics.route_failed_between.label"
-                        )}<ha-help-tooltip
-                          .label=${this.hass.localize(
-                            "ui.panel.config.zwave_js.route_statistics.route_failed_between.tooltip"
-                          )}
-                        >
-                        </ha-help-tooltip
-                      ></span>
-                      <span
-                        >${wrValue
-                          .route_failed_between_translated[0]}<ha-svg-icon
-                          .path=${mdiSwapHorizontal}
-                        ></ha-svg-icon
-                        >${wrValue.route_failed_between_translated[1]}</span
+        ${Object.entries(this._workingRoutes).map(([wrKey, wrValue]) =>
+          wrValue
+            ? html`
+                <ha-expansion-panel
+                  .header=${this.hass.localize(
+                    `ui.panel.config.zwave_js.node_statistics.${wrKey}`
+                  )}
+                >
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.route_statistics.protocol.label"
+                      )}<ha-help-tooltip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.route_statistics.protocol.tooltip"
+                        )}
                       >
-                    </div>`
-                  : ``}
-                ${wrValue.repeater_rssi_table
-                  ? html`<div class="row">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.zwave_js.route_statistics.repeaters.label"
-                        )}<ha-help-tooltip
-                          .label=${this.hass.localize(
-                            "ui.panel.config.zwave_js.route_statistics.repeaters.tooltip"
-                          )}
-                        >
-                        </ha-help-tooltip
-                      ></span>
-                      <span
-                        ><div class="row">
-                          <span class="key-cell"
-                            ><b
-                              >${this.hass.localize(
-                                "ui.panel.config.zwave_js.route_statistics.repeaters.repeaters"
-                              )}:</b
-                            ></span
-                          >
-                          <span class="value-cell"
-                            ><b
-                              >${this.hass.localize(
-                                "ui.panel.config.zwave_js.route_statistics.repeaters.rssi"
-                              )}:</b
-                            ></span
-                          >
-                        </div>
-                        ${wrValue.repeater_rssi_table}</span
+                      </ha-help-tooltip
+                    ></span>
+                    <span
+                      >${this.hass.localize(
+                        `ui.panel.config.zwave_js.route_statistics.protocol.protocol_data_rate.${
+                          ProtocolDataRate[wrValue.protocol_data_rate]
+                        }`
+                      )}</span
+                    >
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.route_statistics.data_rate.label"
+                      )}<ha-help-tooltip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.route_statistics.data_rate.tooltip"
+                        )}
                       >
-                    </div>`
-                  : ``}
-              </ha-expansion-panel>
-            `;
-          }
-          return ``;
-        })}
+                      </ha-help-tooltip
+                    ></span>
+                    <span
+                      >${this.hass.localize(
+                        `ui.panel.config.zwave_js.route_statistics.data_rate.protocol_data_rate.${
+                          ProtocolDataRate[wrValue.protocol_data_rate]
+                        }`
+                      )}</span
+                    >
+                  </div>
+                  ${wrValue.rssi_translated
+                    ? html`<div class="row">
+                        <span>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.route_statistics.rssi.label"
+                          )}<ha-help-tooltip
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.route_statistics.rssi.tooltip"
+                            )}
+                          >
+                          </ha-help-tooltip
+                        ></span>
+                        <span>${wrValue.rssi_translated}</span>
+                      </div>`
+                    : ``}
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.route_statistics.route_failed_between.label"
+                      )}<ha-help-tooltip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.route_statistics.route_failed_between.tooltip"
+                        )}
+                      >
+                      </ha-help-tooltip
+                    ></span>
+                    <span>
+                      ${wrValue.route_failed_between_translated
+                        ? html`${wrValue
+                              .route_failed_between_translated[0]}<ha-svg-icon
+                              .path=${mdiSwapHorizontal}
+                            ></ha-svg-icon
+                            >${wrValue.route_failed_between_translated[1]}`
+                        : this.hass.localize(
+                            "ui.panel.config.zwave_js.route_statistics.route_failed_between.not_applicable"
+                          )}
+                    </span>
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.route_statistics.repeaters.label"
+                      )}<ha-help-tooltip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.route_statistics.repeaters.tooltip"
+                        )}
+                      >
+                      </ha-help-tooltip
+                    ></span>
+                    ${wrValue.repeater_rssi_table
+                      ? html`<span
+                          ><div class="row">
+                            <span class="key-cell"
+                              ><b
+                                >${this.hass.localize(
+                                  "ui.panel.config.zwave_js.route_statistics.repeaters.repeaters"
+                                )}:</b
+                              ></span
+                            >
+                            <span class="value-cell"
+                              ><b
+                                >${this.hass.localize(
+                                  "ui.panel.config.zwave_js.route_statistics.repeaters.rssi"
+                                )}:</b
+                              ></span
+                            >
+                          </div>
+                          ${wrValue.repeater_rssi_table}</span
+                        >`
+                      : html`<span
+                          >${this.hass.localize(
+                            "ui.panel.config.zwave_js.route_statistics.repeaters.direct"
+                          )}</span
+                        >`}
+                  </div>
+                </ha-expansion-panel>
+              `
+            : ``
+        )}
       </ha-dialog>
     `;
   }
@@ -382,7 +387,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
               ];
             }
 
-            if (wrValue.repeaters) {
+            if (wrValue.repeaters && wrValue.repeaters.length) {
               this._workingRoutes[
                 wrKey
               ].repeater_rssi_table = html` ${wrValue.repeaters.map(
