@@ -1,3 +1,4 @@
+import "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -6,9 +7,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { HistoryResult } from "../../data/history";
+import {
+  HistoryResult,
+  LineChartUnit,
+  TimelineEntity,
+} from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -21,6 +26,9 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public names = false;
 
+  @property({ type: Boolean, attribute: "virtualize", reflect: true })
+  public virtualize = false;
+
   @property({ attribute: false }) public endTime?: Date;
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
@@ -28,6 +36,10 @@ class StateHistoryCharts extends LitElement {
   @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
 
   @property({ type: Boolean }) public isLoadingData = false;
+
+  @state() private _computedStartTime?: Date;
+
+  @state() private _computedEndTime?: Date;
 
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
@@ -48,9 +60,31 @@ class StateHistoryCharts extends LitElement {
       </div>`;
     }
 
-    const computedEndTime = this.upToNow
+    this._computedEndTime = this.upToNow
       ? new Date()
       : this.endTime || new Date();
+
+    this._computedStartTime = new Date(
+      this.historyData.timeline.reduce(
+        (minTime, stateInfo) =>
+          Math.min(minTime, new Date(stateInfo.data[0].last_changed).getTime()),
+        new Date().getTime()
+      )
+    );
+
+    if (this.virtualize) {
+      const combinedItems = Array.prototype.concat.apply(
+        [],
+        [this.historyData.timeline, this.historyData.line]
+      );
+      return html`<lit-virtualizer
+        scroller
+        class="ha-scrollbar"
+        .items=${combinedItems}
+        .renderItem=${this._renderHistoryItem}
+      >
+      </lit-virtualizer>`;
+    }
 
     return html`
       ${this.historyData.timeline.length
@@ -58,7 +92,8 @@ class StateHistoryCharts extends LitElement {
             <state-history-chart-timeline
               .hass=${this.hass}
               .data=${this.historyData.timeline}
-              .endTime=${computedEndTime}
+              .startTime=${this._computedStartTime}
+              .endTime=${this._computedEndTime}
               .noSingle=${this.noSingle}
               .names=${this.names}
             ></state-history-chart-timeline>
@@ -74,13 +109,47 @@ class StateHistoryCharts extends LitElement {
             .isSingleDevice=${!this.noSingle &&
             line.data &&
             line.data.length === 1}
-            .endTime=${computedEndTime}
+            .endTime=${this._computedEndTime}
             .names=${this.names}
           ></state-history-chart-line>
         `
       )}
     `;
   }
+
+  private _renderHistoryItem = (
+    item: TimelineEntity | LineChartUnit,
+    index: number
+  ): TemplateResult => {
+    if (!item || index === undefined) {
+      return html``;
+    }
+    if ("unit" in item) {
+      return html`
+        <state-history-chart-line
+          .hass=${this.hass}
+          .unit=${item.unit}
+          .data=${item.data}
+          .identifier=${item.identifier}
+          .isSingleDevice=${!this.noSingle &&
+          item.data &&
+          item.data.length === 1}
+          .endTime=${this._computedEndTime}
+          .names=${this.names}
+        ></state-history-chart-line>
+      `;
+    }
+    return html`
+      <state-history-chart-timeline
+        .hass=${this.hass}
+        .data=${[item]}
+        .startTime=${this._computedStartTime}
+        .endTime=${this._computedEndTime}
+        .noSingle=${this.noSingle}
+        .names=${this.names}
+      ></state-history-chart-timeline>
+    `;
+  };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));

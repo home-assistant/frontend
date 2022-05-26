@@ -91,6 +91,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
+  @property({ attribute: false }) public startTime?: Date;
+
   @property({ attribute: false }) public endTime?: Date;
 
   @state() private _chartData?: ChartData<"timeline">;
@@ -208,13 +210,18 @@ export class StateHistoryChartTimeline extends LitElement {
       stateHistory = [];
     }
 
-    const startTime = new Date(
-      stateHistory.reduce(
-        (minTime, stateInfo) =>
-          Math.min(minTime, new Date(stateInfo.data[0].last_changed).getTime()),
-        new Date().getTime()
-      )
-    );
+    const startTime =
+      this.startTime ||
+      new Date(
+        stateHistory.reduce(
+          (minTime, stateInfo) =>
+            Math.min(
+              minTime,
+              new Date(stateInfo.data[0].last_changed).getTime()
+            ),
+          new Date().getTime()
+        )
+      );
 
     // end time is Math.max(startTime, last_event)
     let endTime =

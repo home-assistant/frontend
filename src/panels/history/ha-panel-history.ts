@@ -110,6 +110,7 @@ class HaPanelHistory extends LitElement {
               </div>`
             : html`
                 <state-history-charts
+                  virtualize
                   .hass=${this.hass}
                   .historyData=${this._stateHistory}
                   .endTime=${this._endDate}
