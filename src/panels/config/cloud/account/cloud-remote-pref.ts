@@ -52,9 +52,7 @@ export class CloudRemotePref extends LitElement {
     }
 
     const urlParts = remote_domain!.split(".");
-    const hiddenURL = `https://${urlParts[0].substring(0, 5)}***.${
-      urlParts[1]
-    }.${urlParts[2]}.${urlParts[3]}`;
+    const hiddenURL = `https://***.${urlParts[1]}.${urlParts[2]}.${urlParts[3]}`;
 
     return html`
       <ha-card
