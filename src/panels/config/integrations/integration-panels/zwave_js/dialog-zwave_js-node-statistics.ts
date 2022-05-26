@@ -3,6 +3,8 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-help-tooltip";
+import "../../../../../components/ha-svg-icon";
+import { mdiSwapHorizontal } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -256,11 +258,12 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                         </ha-help-tooltip
                       ></span>
                       <span
-                        >${`${this._computeDeviceNameById(
+                        >${this._computeDeviceNameById(
                           wrValue.route_failed_between[0]
-                        )} <-> ${this._computeDeviceNameById(
+                        )}<ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon
+                        >${this._computeDeviceNameById(
                           wrValue.route_failed_between[1]
-                        )}`}</span
+                        )}</span
                       >
                     </div>`
                   : ``}
