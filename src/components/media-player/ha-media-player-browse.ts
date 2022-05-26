@@ -249,11 +249,14 @@ export class HaMediaPlayerBrowse extends LitElement {
             replace: true,
           });
         } else if (
+          err.code === "entity_not_found" &&
           UNAVAILABLE_STATES.includes(this.hass.states[this.entityId]?.state)
         ) {
           this._setError({
-            message: "Entity unavailable",
-            code: "entity_unavailable",
+            message: this.hass.localize(
+              `ui.components.media-browser.media_player_unavailable`
+            ),
+            code: "entity_not_found",
           });
         } else {
           this._setError(err);
@@ -315,9 +318,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (this._error) {
       return html`
         <div class="container">
-          <ha-alert alert-type="error"
-            >${this._renderError(this._error)}</ha-alert
-          >
+          <ha-alert alert-type="error">
+            ${this._renderError(this._error)}
+          </ha-alert>
         </div>
       `;
     }
@@ -433,9 +436,9 @@ export class HaMediaPlayerBrowse extends LitElement {
               this._error
                 ? html`
                     <div class="container">
-                      <ha-alert alert-type="error"
-                        >${this._renderError(this._error)}</ha-alert
-                      >
+                      <ha-alert alert-type="error">
+                        ${this._renderError(this._error)}
+                      </ha-alert>
                     </div>
                   `
                 : isTTSMediaSource(currentItem.media_content_id)
