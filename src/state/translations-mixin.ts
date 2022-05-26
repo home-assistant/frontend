@@ -2,7 +2,7 @@ import { atLeastVersion } from "../common/config/version";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import {
   computeRTLDirection,
-  emitDirectionStyles,
+  setDirectionStyles,
 } from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
@@ -192,7 +192,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private _applyDirection(hass: HomeAssistant) {
       const direction = computeRTLDirection(hass);
       document.dir = direction;
-      emitDirectionStyles(direction, this);
+      setDirectionStyles(direction, this);
     }
 
     /**
