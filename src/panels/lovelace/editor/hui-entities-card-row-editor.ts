@@ -261,6 +261,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           display: block;
           margin-left: 31px;
           margin-right: 71px;
+          margin-inline-start: 31px;
+          margin-inline-end: 71px;
+          direction: var(--direction);
         }
         .entity {
           display: flex;
@@ -270,6 +273,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         .entity .handle {
           padding-right: 8px;
           cursor: move;
+          padding-inline-end: 8px;
+          padding-inline-start: initial;
+          direction: var(--direction);
         }
 
         .entity ha-entity-picker {
