@@ -3,7 +3,11 @@ import { css } from "lit";
 export const configFlowContentStyles = css`
   h2 {
     margin: 24px 38px 0 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 38px;
     padding: 0 24px;
+    padding-inline-start: 24px;
+    padding-inline-end: 24px;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     font-family: var(

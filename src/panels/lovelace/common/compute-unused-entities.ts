@@ -6,16 +6,20 @@ export const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];
 const addFromAction = (entities: Set<string>, actionConfig: ActionConfig) => {
   if (
     actionConfig.action !== "call-service" ||
-    !actionConfig.service_data ||
-    !actionConfig.service_data.entity_id
+    (!actionConfig.target?.entity_id &&
+      !actionConfig.service_data?.entity_id &&
+      !actionConfig.data?.entity_id)
   ) {
     return;
   }
-  let entityIds = actionConfig.service_data.entity_id;
+  let entityIds =
+    actionConfig.service_data?.entity_id ??
+    actionConfig.data?.entity_id ??
+    actionConfig.target?.entity_id;
   if (!Array.isArray(entityIds)) {
     entityIds = [entityIds];
   }
-  for (const entityId of entityIds) {
+  for (const entityId of entityIds as Array<string>) {
     entities.add(entityId);
   }
 };

@@ -28,6 +28,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { getSignedPath } from "../../data/auth";
+import { UNAVAILABLE_STATES } from "../../data/entity";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   browseMediaPlayer,
@@ -45,6 +46,7 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
+import "../ha-alert";
 import "../ha-button-menu";
 import "../ha-card";
 import "../ha-circular-progress";
@@ -246,6 +248,16 @@ export class HaMediaPlayerBrowse extends LitElement {
             ],
             replace: true,
           });
+        } else if (
+          err.code === "entity_not_found" &&
+          UNAVAILABLE_STATES.includes(this.hass.states[this.entityId]?.state)
+        ) {
+          this._setError({
+            message: this.hass.localize(
+              `ui.components.media-browser.media_player_unavailable`
+            ),
+            code: "entity_not_found",
+          });
         } else {
           this._setError(err);
         }
@@ -305,7 +317,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   protected render(): TemplateResult {
     if (this._error) {
       return html`
-        <div class="container">${this._renderError(this._error)}</div>
+        <div class="container">
+          <ha-alert alert-type="error">
+            ${this._renderError(this._error)}
+          </ha-alert>
+        </div>
       `;
     }
 
@@ -420,7 +436,9 @@ export class HaMediaPlayerBrowse extends LitElement {
               this._error
                 ? html`
                     <div class="container">
-                      ${this._renderError(this._error)}
+                      <ha-alert alert-type="error">
+                        ${this._renderError(this._error)}
+                      </ha-alert>
                     </div>
                   `
                 : isTTSMediaSource(currentItem.media_content_id)

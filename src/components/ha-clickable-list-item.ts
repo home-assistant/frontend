@@ -47,10 +47,6 @@ export class HaClickableListItem extends ListItemBase {
           padding-left: 0px;
           padding-right: 0px;
         }
-        :host([rtl]) span {
-          margin-left: var(--mdc-list-item-graphic-margin, 20px) !important;
-          margin-right: 0px !important;
-        }
         :host([graphic="avatar"]:not([twoLine])),
         :host([graphic="icon"]:not([twoLine])) {
           height: 48px;
@@ -63,6 +59,19 @@ export class HaClickableListItem extends ListItemBase {
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);
           overflow: hidden;
+        }
+        span.material-icons:first-of-type {
+          margin-inline-start: 0px !important;
+          margin-inline-end: var(
+            --mdc-list-item-graphic-margin,
+            16px
+          ) !important;
+          direction: var(--direction);
+        }
+        span.material-icons:last-of-type {
+          margin-inline-start: auto !important;
+          margin-inline-end: 0px !important;
+          direction: var(--direction);
         }
       `,
     ];

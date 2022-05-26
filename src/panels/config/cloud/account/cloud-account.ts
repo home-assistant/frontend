@@ -88,7 +88,10 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
             >
               <div class="account-row">
                 <paper-item-body two-line>
-                  ${this.cloudStatus.email}
+                  ${this.cloudStatus.email.replace(
+                    /(\w{3})[\w.-]+@([\w.]+\w)/,
+                    "$1***@$2"
+                  )}
                   <div secondary class="wrap">
                     ${this._subscription
                       ? this._subscription.human_description.replace(

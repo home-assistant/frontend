@@ -55,6 +55,7 @@ import {
   SceneConfig,
   SceneEntities,
   SceneEntity,
+  SceneMetaData,
   SCENE_IGNORED_DOMAINS,
   showSceneEditor,
 } from "../../../data/scene";
@@ -628,16 +629,22 @@ export class HaSceneEditor extends SubscribeMixin(
     const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
       this._entities.includes(entityReg.entity_id)
     );
-    this._devices = [];
+    const newDevices: string[] = [];
 
     for (const entityReg of filteredEntityReg) {
       if (!entityReg.device_id) {
         continue;
       }
-      if (!this._devices.includes(entityReg.device_id)) {
-        this._devices = [...this._devices, entityReg.device_id];
+      const entityMetaData = config.metadata?.[entityReg.entity_id];
+      if (
+        !newDevices.includes(entityReg.device_id) &&
+        !entityMetaData?.entity_only
+      ) {
+        newDevices.push(entityReg.device_id);
       }
     }
+
+    this._devices = newDevices;
   }
 
   private _entityPicked(ev: CustomEvent) {
@@ -646,18 +653,8 @@ export class HaSceneEditor extends SubscribeMixin(
     if (this._entities.includes(entityId)) {
       return;
     }
-    const entityRegistry = this._entityRegistryEntries.find(
-      (entityReg) => entityReg.entity_id === entityId
-    );
-    if (
-      entityRegistry?.device_id &&
-      !this._devices.includes(entityRegistry.device_id)
-    ) {
-      this._pickDevice(entityRegistry.device_id);
-    } else {
-      this._entities = [...this._entities, entityId];
-      this._storeState(entityId);
-    }
+    this._entities = [...this._entities, entityId];
+    this._storeState(entityId);
     this._dirty = true;
   }
 
@@ -815,6 +812,28 @@ export class HaSceneEditor extends SubscribeMixin(
     );
   }
 
+  private _calculateMetaData(): SceneMetaData {
+    const output: SceneMetaData = {};
+
+    for (const entityReg of this._entityRegistryEntries) {
+      if (!this._entities.includes(entityReg.entity_id)) {
+        continue;
+      }
+
+      const entityState = this._getCurrentState(entityReg.entity_id);
+
+      if (!entityState) {
+        continue;
+      }
+
+      output[entityReg.entity_id] = {
+        entity_only: !this._devices.includes(entityReg.device_id!),
+      };
+    }
+
+    return output;
+  }
+
   private _calculateStates(): SceneEntities {
     const output: SceneEntities = {};
     this._entities.forEach((entityId) => {
@@ -847,7 +866,11 @@ export class HaSceneEditor extends SubscribeMixin(
 
   private async _saveScene(): Promise<void> {
     const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
-    this._config = { ...this._config!, entities: this._calculateStates() };
+    this._config = {
+      ...this._config!,
+      entities: this._calculateStates(),
+      metadata: this._calculateMetaData(),
+    };
     try {
       this._saving = true;
       await saveScene(this.hass, id, this._config);

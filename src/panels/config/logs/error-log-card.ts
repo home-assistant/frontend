@@ -16,7 +16,6 @@ import "../../../components/ha-ansi-to-html";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { fetchErrorLog } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioLogs } from "../../../data/hassio/supervisor";
@@ -64,11 +63,7 @@ class ErrorLogCard extends LitElement {
           : ""}
         ${!this._logHTML
           ? html`
-              <mwc-button
-                raised
-                @click=${this._refreshLogs}
-                dir=${computeRTLDirection(this.hass)}
-              >
+              <mwc-button raised @click=${this._refreshLogs}>
                 ${this.hass.localize("ui.panel.config.logs.load_logs")}
               </mwc-button>
             `
@@ -124,7 +119,7 @@ class ErrorLogCard extends LitElement {
     this._logHTML = this.hass.localize("ui.panel.config.logs.loading_log");
     let log: string;
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.provider !== "core" && isComponentLoaded(this.hass, "hassio")) {
       try {
         log = await fetchHassioLogs(this.hass, this.provider);
         if (this.filter) {
@@ -235,8 +230,8 @@ class ErrorLogCard extends LitElement {
       color: var(--warning-color);
     }
 
-    :host-context([style*="direction: rtl;"]) mwc-button {
-      direction: rtl;
+    mwc-button {
+      direction: var(--direction);
     }
   `;
 }

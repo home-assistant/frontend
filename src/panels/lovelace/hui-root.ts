@@ -269,6 +269,9 @@ class HUIRoot extends LitElement {
                   ${!this.narrow
                     ? html`
                         <ha-icon-button
+                          .label=${this.hass!.localize(
+                            "ui.panel.lovelace.menu.search"
+                          )}
                           .path=${mdiMagnify}
                           @click=${this._showQuickBar}
                         ></ha-icon-button>
@@ -943,8 +946,10 @@ class HUIRoot extends LitElement {
         .edit-icon {
           color: var(--accent-color);
           padding-left: 8px;
+          padding-inline-start: 8px;
           vertical-align: middle;
           --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+          direction: var(--direction);
         }
         .edit-icon.view {
           display: none;

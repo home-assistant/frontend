@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
 import "./hat-logbook-note";
-import "../../panels/logbook/ha-logbook";
+import "../../panels/logbook/ha-logbook-renderer";
 import { TraceExtended } from "../../data/trace";
 
 @customElement("ha-trace-logbook")
@@ -19,12 +19,12 @@ export class HaTraceLogbook extends LitElement {
   protected render(): TemplateResult {
     return this.logbookEntries.length
       ? html`
-          <ha-logbook
+          <ha-logbook-renderer
             relative-time
             .hass=${this.hass}
             .entries=${this.logbookEntries}
             .narrow=${this.narrow}
-          ></ha-logbook>
+          ></ha-logbook-renderer>
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">

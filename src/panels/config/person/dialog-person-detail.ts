@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entities-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -159,7 +158,6 @@ class DialogPersonDetail extends LitElement {
                     .label=${this.hass.localize(
                       "ui.panel.config.person.detail.local_only"
                     )}
-                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .checked=${this._localOnly}
@@ -171,7 +169,6 @@ class DialogPersonDetail extends LitElement {
                     .label=${this.hass.localize(
                       "ui.panel.config.person.detail.admin"
                     )}
-                    .dir=${computeRTLDirection(this.hass)}
                   >
                     <ha-switch
                       .disabled=${this._user.system_generated ||

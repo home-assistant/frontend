@@ -61,6 +61,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import "../integrations/ha-integration-overflow-menu";
 import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
   loadEntityEditorDialog,
@@ -526,6 +527,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         id="entity_id"
         .hasFab=${includeZHAFab}
       >
+        <ha-integration-overflow-menu
+          .hass=${this.hass}
+          slot="toolbar-icon"
+        ></ha-integration-overflow-menu>
         ${this._selectedEntities.length
           ? html`
               <div
@@ -971,6 +976,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .selected-txt {
           font-weight: bold;
           padding-left: 16px;
+          padding-inline-start: 16px;
+          direction: var(--direction);
         }
         .table-header .selected-txt {
           margin-top: 20px;
@@ -980,6 +987,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .header-toolbar .header-btns {
           margin-right: -12px;
+          margin-inline-end: -12px;
+          direction: var(--direction);
         }
         .header-btns {
           display: flex;
@@ -994,7 +1003,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .clear {
           color: var(--primary-color);
           padding-left: 8px;
+          padding-inline-start: 8px;
           text-transform: uppercase;
+          direction: var(--direction);
         }
       `,
     ];

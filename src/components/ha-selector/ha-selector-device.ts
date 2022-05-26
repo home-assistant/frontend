@@ -1,17 +1,32 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
+import memoizeOne from "memoize-one";
+import { ConfigEntry } from "../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
+import {
+  EntitySources,
+  fetchEntitySourcesWithCache,
+} from "../../data/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
 import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
-export class HaDeviceSelector extends LitElement {
+export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
   @property() public selector!: DeviceSelector;
+
+  @state() private _entitySources?: EntitySources;
+
+  @state() private _entities?: EntityRegistryEntry[];
 
   @property() public value?: any;
 
@@ -25,20 +40,32 @@ export class HaDeviceSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  protected updated(changedProperties) {
-    if (changedProperties.has("selector")) {
-      const oldSelector = changedProperties.get("selector");
-      if (oldSelector !== this.selector && this.selector.device?.integration) {
-        getConfigEntries(this.hass, {
-          domain: this.selector.device.integration,
-        }).then((entries) => {
-          this._configEntries = entries;
-        });
-      }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entities = entities.filter((entity) => entity.device_id !== null);
+      }),
+    ];
+  }
+
+  protected updated(changedProperties): void {
+    super.updated(changedProperties);
+    if (
+      changedProperties.has("selector") &&
+      this.selector.device.integration &&
+      !this._entitySources
+    ) {
+      fetchEntitySourcesWithCache(this.hass).then((sources) => {
+        this._entitySources = sources;
+      });
     }
   }
 
   protected render() {
+    if (this.selector.device.integration && !this._entitySources) {
+      return html``;
+    }
+
     if (!this.selector.device.multiple) {
       return html`
         <ha-device-picker
@@ -80,30 +107,48 @@ export class HaDeviceSelector extends LitElement {
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (
-      this.selector.device?.manufacturer &&
-      device.manufacturer !== this.selector.device.manufacturer
-    ) {
+    const {
+      manufacturer: filterManufacturer,
+      model: filterModel,
+      integration: filterIntegration,
+    } = this.selector.device;
+
+    if (filterManufacturer && device.manufacturer !== filterManufacturer) {
       return false;
     }
-    if (
-      this.selector.device?.model &&
-      device.model !== this.selector.device.model
-    ) {
+    if (filterModel && device.model !== filterModel) {
       return false;
     }
-    if (this.selector.device?.integration) {
-      if (
-        this._configEntries &&
-        !this._configEntries.some((entry) =>
-          device.config_entries.includes(entry.entry_id)
-        )
-      ) {
+    if (filterIntegration && this._entitySources && this._entities) {
+      const deviceIntegrations = this._deviceIntegrations(
+        this._entitySources,
+        this._entities
+      );
+      if (!deviceIntegrations?.[device.id]?.includes(filterIntegration)) {
         return false;
       }
     }
     return true;
   };
+
+  private _deviceIntegrations = memoizeOne(
+    (entitySources: EntitySources, entities: EntityRegistryEntry[]) => {
+      const deviceIntegrations: Record<string, string[]> = {};
+
+      for (const entity of entities) {
+        const source = entitySources[entity.entity_id];
+        if (!source?.domain) {
+          continue;
+        }
+
+        if (!deviceIntegrations[entity.device_id!]) {
+          deviceIntegrations[entity.device_id!] = [];
+        }
+        deviceIntegrations[entity.device_id!].push(source.domain);
+      }
+      return deviceIntegrations;
+    }
+  );
 }
 
 declare global {

@@ -344,8 +344,17 @@
       },
       "logbook": {
         "entries_not_found": "No logbook events found.",
-        "by": "by",
-        "by_service": "by service",
+        "triggered_by": "triggered by",
+        "triggered_by_automation": "triggered by automation",
+        "triggered_by_script": "triggered by script",
+        "triggered_by_service": "triggered by service",
+        "triggered_by_numeric_state_of": "triggered by numeric state of",
+        "triggered_by_state_of": "triggered by state of",
+        "triggered_by_event": "triggered by event",
+        "triggered_by_time": "triggered by time",
+        "triggered_by_time_pattern": "triggered by time pattern",
+        "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
+        "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
         "messages": {
@@ -512,7 +521,7 @@
         "required": "This field is required",
         "target": "Targets",
         "target_description": "What should this service use as targeted areas, devices or entities.",
-        "service_data": "Service data",
+        "data": "Service data",
         "integration_doc": "Integration documentation"
       },
       "related-items": {
@@ -600,7 +609,8 @@
           "tv_show": "TV Show",
           "url": "URL",
           "video": "Video"
-        }
+        },
+        "media_player_unavailable": "The selected media player is unavailable."
       },
       "calendar": {
         "my_calendars": "My Calendars",
@@ -844,6 +854,10 @@
               "curtain": "Curtain",
               "damper": "Damper",
               "shutter": "Shutter"
+            },
+            "switch": {
+              "outlet": "Outlet",
+              "switch": "Switch"
             }
           },
           "unavailable": "This entity is unavailable.",
@@ -870,7 +884,9 @@
           "area_note": "By default the entities of a device are in the same area as the device. If you change the area of this entity, it will no longer follow the area of the device.",
           "follow_device_area": "Follow device area",
           "change_device_area": "Change device area",
-          "configure_state": "{integration} options"
+          "configure_state": "{integration} options",
+          "preload_stream": "Preload camera stream",
+          "preload_stream_description": "This keeps the camera stream open in the background so it shows quicker. Warning! This is device intensive."
         }
       },
       "helper_settings": {
@@ -1302,10 +1318,15 @@
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
             "grid_consumption": "Grid consumption",
+            "edit_consumption": "Edit consumption",
+            "delete_consumption": "Delete consumption",
             "add_consumption": "Add consumption",
             "return_to_grid": "Return to grid",
+            "edit_return": "Edit return",
+            "delete_return": "Delete return",
             "add_return": "Add return",
             "grid_carbon_footprint": "Grid carbon footprint",
+            "remove_co2_signal": "Remove CO2 signal integration",
             "add_co2_signal": "Add CO2 signal integration",
             "flow_dialog": {
               "from": {
@@ -1343,6 +1364,8 @@
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started.",
             "solar_production": "Solar production",
+            "edit_solar_production": "Edit solar production",
+            "delete_solar_production": "Delete solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
@@ -1362,6 +1385,8 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started.",
             "battery_systems": "Battery systems",
+            "edit_battery_system": "Edit battery system",
+            "delete_battery_system": "Delete battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
@@ -1374,6 +1399,8 @@
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started.",
             "gas_consumption": "Gas consumption",
+            "edit_gas_source": "Edit gas source",
+            "delete_gas_source": "Delete gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
@@ -1479,13 +1506,13 @@
               "type": "Type",
               "editable": "Editable"
             },
-            "add_helper": "Add helper",
+            "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!"
           },
           "dialog": {
             "create": "Create",
-            "add_helper": "Add helper",
-            "add_platform": "Add {platform}"
+            "create_helper": "Create helper",
+            "create_platform": "Create {platform}"
           }
         },
         "core": {
@@ -1523,6 +1550,7 @@
           "internal_url_label": "Local Network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
+          "manage_ha_cloud": "Manage Home Assistant Cloud",
           "external_get_ha_cloud": "Access from anywhere, add Google & Alexa easily",
           "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
@@ -1542,12 +1570,16 @@
             "attributes": "Attributes"
           },
           "reboot_host": "Reboot host",
+          "rebooting_host": "Rebooting host",
           "reboot_host_confirm": "Are you sure you want to reboot your host?",
           "failed_to_reboot_host": "Failed to reboot host",
           "shutdown_host": "Shutdown host",
+          "host_shutting_down": "Host shutting down",
           "shutdown_host_confirm": "Are you sure you want to shutdown your host?",
           "failed_to_shutdown_host": "Failed to shutdown host",
-          "board": "Board"
+          "board": "Board",
+          "documentation": "Documentation",
+          "documentation_description": "Find extra information about your device"
         },
         "info": {
           "caption": "About",
@@ -1583,7 +1615,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "load_logs": "Load Full Logs",
-          "loading_log": "Loading error log…",
+          "loading_log": "Loading full log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -1781,7 +1813,10 @@
                   "label": "Calendar",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
                   "start": "Event Start",
-                  "end": "Event End"
+                  "end": "Event End",
+                  "offset": "Offset (optional)",
+                  "before": "Before",
+                  "after": "After"
                 },
                 "device": {
                   "label": "Device",
@@ -2231,15 +2266,14 @@
             "area": "Area",
             "devices": {
               "header": "Devices",
-              "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
+              "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
               "add": "Add a device",
               "delete": "Delete device"
             },
             "entities": {
               "header": "Entities",
-              "introduction": "Entities that do not belong to a device can be set here.",
-              "without_device": "Entities without device",
-              "device_entities": "If you add an entity that belongs to a device, the device will be added.",
+              "introduction": "Individual entities can be added here.",
+              "without_device": "Entities",
               "add": "Add an entity",
               "delete": "Delete entity"
             }
@@ -2339,8 +2373,8 @@
               "reconnecting": "Not connected. Trying to reconnect.",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
-              "instance_is_available": "Your instance is available at",
-              "instance_will_be_available": "Your instance will be available at",
+              "instance_is_available": "Your instance is available at your",
+              "instance_will_be_available": "Your instance will be available at your",
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
@@ -2799,7 +2833,8 @@
             },
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
-            "not_loaded": "The integration could not be loaded, try to restart Home Assistant."
+            "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
+            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
           }
         },
         "users": {
@@ -2853,6 +2888,33 @@
             "password_not_match": "Passwords don't match",
             "local_only": "Local only",
             "create": "Create"
+          }
+        },
+        "application_credentials": {
+          "caption": "Application Credentials",
+          "description": "Manage the OAuth Application Credentials used by Integrations",
+          "editor": {
+            "caption": "Add Application Credential",
+            "create": "Create",
+            "domain": "Integration",
+            "name": "Name",
+            "client_id": "OAuth Client ID",
+            "client_secret": "OAuth Client Secret"
+          },
+          "picker": {
+            "add_application_credential": "Add Application Credential",
+            "headers": {
+              "name": "Name",
+              "client_id": "OAuth Client ID",
+              "application": "Integration"
+            },
+            "remove_selected": {
+              "button": "Remove selected",
+              "confirm_title": "Do you want to remove {number} {number, plural,\n  one {credential}\n  other {credentials}\n}?",
+              "confirm_text": "Application Credentials in use by an integration may not be removed.",
+              "error_title": "Removing Application Credential failed"
+            },
+            "selected": "{number} selected"
           }
         },
         "mqtt": {
@@ -2988,7 +3050,46 @@
             "server_url": "Server URL",
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
-            "not_ready": "{count} not ready"
+            "not_ready": "{count} not ready",
+            "statistics": {
+              "title": "Controller Statistics",
+              "messages_tx": {
+                "label": "Messages TX",
+                "tooltip": "Number of messages successfully sent to the controller"
+              },
+              "messages_rx": {
+                "label": "Messages RX",
+                "tooltip": "Number of messages successfully received by the controller"
+              },
+              "messages_dropped_tx": {
+                "label": "Dropped Messages TX",
+                "tooltip": "Number of messages from the controller that were dropped by the host"
+              },
+              "messages_dropped_rx": {
+                "label": "Dropped Messages RX",
+                "tooltip": "Number of outgoing messages that were dropped because they could not be sent"
+              },
+              "nak": {
+                "label": "NAK",
+                "tooltip": "Number of messages that the controller did not accept"
+              },
+              "can": {
+                "label": "CAN",
+                "tooltip": "Number of collisions while sending a message to the controller"
+              },
+              "timeout_ack": {
+                "label": "Timeout ACK",
+                "tooltip": "Number of transmission attempts where an ACK was missing from the controller"
+              },
+              "timeout_response": {
+                "label": "Timeout Response",
+                "tooltip": "Number of transmission attempts where the controller response did not come in time"
+              },
+              "timeout_callback": {
+                "label": "Timeout Callback",
+                "tooltip": "Number of transmission attempts where the controller callback did not come in time"
+              }
+            }
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
@@ -3269,6 +3370,8 @@
               "source": "Source",
               "energy": "Energy",
               "cost": "Cost",
+              "previous_energy": "Previous Energy",
+              "previous_cost": "Previous Cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"
             },

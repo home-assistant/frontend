@@ -569,6 +569,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         height: 16px;
         --mdc-icon-size: 14px;
         color: var(--secondary-text-color);
+        margin-inline-start: 4px !important;
+        margin-inline-end: -4px !important;
+        direction: var(--direction);
       }
       .mdc-chip__icon--leading {
         display: flex;
@@ -578,6 +581,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         border-radius: 50%;
         padding: 6px;
         margin-left: -14px !important;
+        margin-inline-start: -14px !important;
+        margin-inline-end: 4px !important;
+        direction: var(--direction);
       }
       .expand-btn {
         margin-right: 0;
@@ -615,10 +621,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       :host([disabled]) .mdc-chip {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
-      }
-      :host-context([style*="direction: rtl;"]) .mdc-chip__icon {
-        margin-right: -14px !important;
-        margin-left: 4px !important;
       }
     `;
   }

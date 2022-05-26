@@ -1,4 +1,4 @@
-import { format, startOfToday, startOfTomorrow } from "date-fns";
+import { format, startOfToday, startOfTomorrow } from "date-fns/esm";
 import { EnergySolarForecasts } from "../../../src/data/energy";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 

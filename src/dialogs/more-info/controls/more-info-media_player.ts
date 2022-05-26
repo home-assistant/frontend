@@ -211,6 +211,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
       .controls {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         --mdc-theme-primary: currentColor;
       }
