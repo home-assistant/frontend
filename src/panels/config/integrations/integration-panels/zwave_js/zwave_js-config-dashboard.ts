@@ -694,6 +694,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           justify-content: space-between;
         }
 
+        span[slot="meta"] {
+          font-size: 0.95em;
+          color: var(--primary-text-color);
+        }
+
         .network-status div.heading {
           display: flex;
           align-items: center;
