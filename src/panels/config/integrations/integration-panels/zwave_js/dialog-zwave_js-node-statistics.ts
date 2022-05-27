@@ -96,9 +96,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 "ui.panel.config.zwave_js.node_statistics.commands_tx.tooltip"
               )}
             </span>
-            <span slot="meta" class="statistics"
-              >${this._nodeStatistics?.commands_tx}</span
-            >
+            <span slot="meta">${this._nodeStatistics?.commands_tx}</span>
           </mwc-list-item>
           <mwc-list-item twoline hasmeta>
             <span>
@@ -111,9 +109,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 "ui.panel.config.zwave_js.node_statistics.commands_rx.tooltip"
               )}
             </span>
-            <span slot="meta" class="statistics"
-              >${this._nodeStatistics?.commands_rx}</span
-            >
+            <span slot="meta">${this._nodeStatistics?.commands_rx}</span>
           </mwc-list-item>
           <mwc-list-item twoline hasmeta>
             <span>
@@ -126,7 +122,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 "ui.panel.config.zwave_js.node_statistics.commands_dropped_tx.tooltip"
               )}
             </span>
-            <span slot="meta" class="statistics"
+            <span slot="meta"
               >${this._nodeStatistics?.commands_dropped_tx}</span
             >
           </mwc-list-item>
@@ -141,7 +137,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 "ui.panel.config.zwave_js.node_statistics.commands_dropped_rx.tooltip"
               )}
             </span>
-            <span slot="meta" class="statistics"
+            <span slot="meta"
               >${this._nodeStatistics?.commands_dropped_rx}</span
             >
           </mwc-list-item>
@@ -156,9 +152,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                 "ui.panel.config.zwave_js.node_statistics.timeout_response.tooltip"
               )}
             </span>
-            <span slot="meta" class="statistics"
-              >${this._nodeStatistics?.timeout_response}</span
-            >
+            <span slot="meta">${this._nodeStatistics?.timeout_response}</span>
           </mwc-list-item>
           ${this._nodeStatistics?.rtt
             ? html`<mwc-list-item twoline hasmeta>
@@ -172,9 +166,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                     "ui.panel.config.zwave_js.node_statistics.rtt.tooltip"
                   )}
                 </span>
-                <span slot="meta" class="statistics"
-                  >${this._nodeStatistics.rtt}</span
-                >
+                <span slot="meta">${this._nodeStatistics.rtt}</span>
               </mwc-list-item>`
             : ``}
           ${this._nodeStatistics?.rssi_translated
@@ -189,9 +181,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                     "ui.panel.config.zwave_js.node_statistics.rssi.tooltip"
                   )}
                 </span>
-                <span slot="meta" class="statistics"
-                  >${this._nodeStatistics.rssi_translated}</span
-                >
+                <span slot="meta">${this._nodeStatistics.rssi_translated}</span>
               </mwc-list-item>`
             : ``}
         </mwc-list>
@@ -472,7 +462,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
           padding-left: 5px;
         }
 
-        .statistics {
+        span[slot="meta"] {
           font-size: 0.95em;
           color: var(--primary-text-color);
         }
