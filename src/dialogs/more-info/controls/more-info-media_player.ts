@@ -78,6 +78,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 @click=${this._showBrowseMedia}
               >
                 <ha-svg-icon
+                  class="browse-media-icon"
                   .path=${mdiPlayBoxMultiple}
                   slot="icon"
                 ></ha-svg-icon>
@@ -242,6 +243,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
       mwc-button > ha-svg-icon {
         vertical-align: text-bottom;
+      }
+
+      .browse-media-icon {
+        margin-left: 8px;
       }
     `;
   }
