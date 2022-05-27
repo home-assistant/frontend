@@ -288,33 +288,30 @@ class DialogZWaveJSNodeStatistics extends LitElement {
                           "ui.panel.config.zwave_js.route_statistics.repeaters.tooltip"
                         )}
                       >
-                      </ha-help-tooltip
-                    ></span>
-                    ${wrValue.repeater_rssi_table
-                      ? html`<span
-                          ><div class="row">
-                            <span class="key-cell"
-                              ><b
-                                >${this.hass.localize(
-                                  "ui.panel.config.zwave_js.route_statistics.repeaters.repeaters"
-                                )}:</b
-                              ></span
-                            >
-                            <span class="value-cell"
-                              ><b
-                                >${this.hass.localize(
-                                  "ui.panel.config.zwave_js.route_statistics.repeaters.rssi"
-                                )}:</b
-                              ></span
-                            >
-                          </div>
-                          ${wrValue.repeater_rssi_table}</span
-                        >`
-                      : html`<span
-                          >${this.hass.localize(
+                      </ha-help-tooltip></span
+                    ><span>
+                      ${wrValue.repeater_rssi_table
+                        ? html`<div class="row">
+                              <span class="key-cell"
+                                ><b
+                                  >${this.hass.localize(
+                                    "ui.panel.config.zwave_js.route_statistics.repeaters.repeaters"
+                                  )}:</b
+                                ></span
+                              >
+                              <span class="value-cell"
+                                ><b
+                                  >${this.hass.localize(
+                                    "ui.panel.config.zwave_js.route_statistics.repeaters.rssi"
+                                  )}:</b
+                                ></span
+                              >
+                            </div>
+                            ${wrValue.repeater_rssi_table}`
+                        : html`${this.hass.localize(
                             "ui.panel.config.zwave_js.route_statistics.repeaters.direct"
-                          )}</span
-                        >`}
+                          )}`}</span
+                    >
                   </div>
                 </ha-expansion-panel>
               `
