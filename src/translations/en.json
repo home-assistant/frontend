@@ -3161,7 +3161,7 @@
             "repeaters": {
               "label": "Repeaters + RSSI",
               "tooltip": "Which nodes are repeaters for this route and their RSSI",
-              "repeaters": "Repeater Devices",
+              "repeaters": "Repeater Device",
               "rssi": "RSSI",
               "direct": "None, direct connection"
             },
