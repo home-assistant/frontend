@@ -47,9 +47,9 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     {};
 
   @state() private _workingRoutes: {
-    lwr: WorkingRouteStatistics;
-    nlwr: WorkingRouteStatistics;
-  } = { lwr: undefined, nlwr: undefined };
+    lwr?: WorkingRouteStatistics;
+    nlwr?: WorkingRouteStatistics;
+  } = {};
 
   private _subscribedNodeStatistics?: Promise<UnsubscribeFunc>;
 
@@ -360,7 +360,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       this.device!.id,
       (message: ZWaveJSNodeStatisticsUpdatedMessage) => {
         this._nodeStatistics = message;
-        this._nodeStatistics.rssi_translated = undefined;
+
         if (this._nodeStatistics.rssi) {
           this._nodeStatistics.rssi_translated = this._computeRSSI(
             this._nodeStatistics.rssi,
@@ -370,34 +370,30 @@ class DialogZWaveJSNodeStatistics extends LitElement {
 
         const workingRoutes: [
           string,
-          ZWaveJSRouteStatistics | null | undefined
+          WorkingRouteStatistics | null | undefined
         ][] = [
           ["lwr", this._nodeStatistics?.lwr],
           ["nlwr", this._nodeStatistics?.nlwr],
         ];
 
+        this._workingRoutes = {};
         workingRoutes.forEach(([wrKey, wrValue]) => {
           this._workingRoutes[wrKey] = wrValue;
 
           if (wrValue) {
             if (wrValue.rssi) {
-              this._workingRoutes[wrKey].rssi_translated = this._computeRSSI(
-                wrValue.rssi,
-                true
-              );
+              wrValue.rssi_translated = this._computeRSSI(wrValue.rssi, true);
             }
 
             if (wrValue.route_failed_between) {
-              this._workingRoutes[wrKey].route_failed_between_translated = [
+              wrValue.route_failed_between_translated = [
                 this._computeDeviceNameById(wrValue.route_failed_between[0]),
                 this._computeDeviceNameById(wrValue.route_failed_between[1]),
               ];
             }
 
             if (wrValue.repeaters && wrValue.repeaters.length) {
-              this._workingRoutes[
-                wrKey
-              ].repeater_rssi_table = html` ${wrValue.repeaters.map(
+              wrValue.repeater_rssi_table = html`${wrValue.repeaters.map(
                 (_, idx) =>
                   html`<div class="row">
                     <span class="key-cell"
