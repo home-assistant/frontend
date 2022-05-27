@@ -480,7 +480,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
         }
 
         .statistics {
-          font-size: 1em;
+          font-size: 0.95em;
           color: var(--primary-text-color);
         }
       `,
