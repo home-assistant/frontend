@@ -72,13 +72,13 @@ class MoreInfoMediaPlayer extends LitElement {
         ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
           ? html`
               <mwc-button
-                class="browse-media"
                 .label=${this.hass.localize(
                   "ui.card.media_player.browse_media"
                 )}
                 @click=${this._showBrowseMedia}
               >
                 <ha-svg-icon
+                  class="browse-media-icon"
                   .path=${mdiPlayBoxMultiple}
                   slot="icon"
                 ></ha-svg-icon>
@@ -245,7 +245,7 @@ class MoreInfoMediaPlayer extends LitElement {
         vertical-align: text-bottom;
       }
 
-      .browse-media {
+      .browse-media-icon {
         margin-left: 8px;
       }
     `;
