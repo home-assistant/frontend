@@ -286,7 +286,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.messages_tx ?? 0}</span
                           >
                         </mwc-list-item>
@@ -301,7 +301,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.messages_rx ?? 0}</span
                           >
                         </mwc-list-item>
@@ -316,7 +316,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.messages_dropped_tx ?? 0}</span
                           >
                         </mwc-list-item>
@@ -331,7 +331,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.messages_dropped_rx ?? 0}</span
                           >
                         </mwc-list-item>
@@ -346,7 +346,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.nak.tooltip"
                             )}
                           </span>
-                          <span slot="meta">${this._statistics?.nak ?? 0}</span>
+                          <span slot="meta" class="statistics"
+                            >${this._statistics?.nak ?? 0}</span
+                          >
                         </mwc-list-item>
                         <mwc-list-item twoline hasmeta>
                           <span>
@@ -359,7 +361,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.can.tooltip"
                             )}
                           </span>
-                          <span slot="meta">${this._statistics?.can ?? 0}</span>
+                          <span slot="meta" class="statistics"
+                            >${this._statistics?.can ?? 0}</span
+                          >
                         </mwc-list-item>
                         <mwc-list-item twoline hasmeta>
                           <span>
@@ -372,7 +376,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.timeout_ack ?? 0}</span
                           >
                         </mwc-list-item>
@@ -387,7 +391,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.timeout_response ?? 0}</span
                           >
                         </mwc-list-item>
@@ -402,7 +406,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.tooltip"
                             )}
                           </span>
-                          <span slot="meta"
+                          <span slot="meta" class="statistics"
                             >${this._statistics?.timeout_callback ?? 0}</span
                           >
                         </mwc-list-item>
@@ -692,6 +696,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .row {
           display: flex;
           justify-content: space-between;
+        }
+
+        .statistics {
+          font-size: 1em;
+          color: var(--primary-text-color);
         }
 
         .network-status div.heading {
