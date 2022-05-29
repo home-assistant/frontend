@@ -189,6 +189,7 @@ class StateHistoryCharts extends LitElement {
         max-height: var(--logbook-max-height);
       }
 
+      .entry-container-spaced,
       .entry-container {
         width: 100%;
         padding-left: 2px;
@@ -201,9 +202,6 @@ class StateHistoryCharts extends LitElement {
         / timeline tooltips overflowing the canvas
         / and not rendering correctly
         */
-        width: 100%;
-        padding-left: 2px;
-        padding-right: 2px;
         padding-bottom: 140px;
       }
 
