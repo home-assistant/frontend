@@ -43,7 +43,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
+import { brandsUrl, extractDomainFromBrandUrl, isBrandUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
@@ -564,7 +564,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
                       : ""} image"
-                    style="background-image: ${until(backgroundImage, "")}"
+                    style="background-image: ${until(backgroundImage, "")}${isBrandUrl(child.thumbnail) ? "; background-size: 40%" : ""}"
                   ></div>
                 `
               : html`
@@ -661,7 +661,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       return (await getSignedPath(this.hass, thumbnailUrl)).path;
     }
 
-    if (thumbnailUrl.startsWith("https://brands.home-assistant.io")) {
+    if (isBrandUrl(thumbnailUrl)) {
       // The backend is not aware of the theme used by the users,
       // so we rewrite the URL to show a proper icon
       thumbnailUrl = brandsUrl({
