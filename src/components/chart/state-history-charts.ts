@@ -31,6 +31,8 @@ class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public historyData!: HistoryResult;
 
+  @property() public narrow!: boolean;
+
   @property({ type: Boolean }) public names = false;
 
   @property({ attribute: false }) public endTime?: Date;
@@ -74,6 +76,7 @@ class StateHistoryCharts extends LitElement {
                 .endTime=${computedEndTime}
                 .noSingle=${this.noSingle}
                 .names=${this.names}
+                .narrow=${this.narrow}
               ></state-history-chart-timeline>
             `
           )
