@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 
-const MAX_CANVAS_TIMELINE_ROWS = 128;
+const MAX_CANVAS_TIMELINE_ROWS = 64;
 
 const chunkData = (inputArray: any[], chunks: number) =>
   inputArray.reduce((results, item, idx) => {
