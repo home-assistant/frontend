@@ -564,7 +564,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
                       : ""} image"
-                    style="background-image: ${until(backgroundImage, "")}"
+                    style="background-image: ${until(backgroundImage, "")} ${this._isBrandUrl(child.thumbnail) ? "; background-size: 40%" : ""}"
                   ></div>
                 `
               : html`
@@ -649,6 +649,12 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   };
 
+  private _isBrandUrl(
+    thumbnailUrl: string | ""
+  ): boolean {
+    return thumbnailUrl.startsWith("https://brands.home-assistant.io");
+  }
+
   private async _getSignedThumbnail(
     thumbnailUrl: string | undefined
   ): Promise<string> {
@@ -661,7 +667,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       return (await getSignedPath(this.hass, thumbnailUrl)).path;
     }
 
-    if (thumbnailUrl.startsWith("https://brands.home-assistant.io")) {
+    if (this._isBrandUrl(thumbnailUrl)) {
       // The backend is not aware of the theme used by the users,
       // so we rewrite the URL to show a proper icon
       thumbnailUrl = brandsUrl({
