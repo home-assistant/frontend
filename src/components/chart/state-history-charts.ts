@@ -19,7 +19,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 
-const CANVAS_TIMELINE_ROWS_CHUNK = 256; // Split up the canvases to avoid hitting the render limit
+const CANVAS_TIMELINE_ROWS_CHUNK = 100; // Split up the canvases to avoid hitting the render limit
 
 const chunkData = (inputArray: any[], chunks: number) =>
   inputArray.reduce((results, item, idx) => {
