@@ -83,6 +83,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public data: TimelineEntity[] = [];
 
+  @property() public narrow!: boolean;
+
   @property() public names: boolean | Record<string, string> = false;
 
   @property() public unit?: string;
@@ -112,6 +114,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
+      const narrow = this.narrow;
       this._chartOptions = {
         maintainAspectRatio: false,
         parsing: false,
@@ -159,6 +162,10 @@ export class StateHistoryChartTimeline extends LitElement {
             },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
+            },
+            afterFit: function (scaleInstance) {
+              // ensure all the chart labels are the same with
+              scaleInstance.width = narrow ? 90 : 180;
             },
             position: computeRTL(this.hass) ? "right" : "left",
           },

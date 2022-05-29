@@ -19,11 +19,25 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 
+const CANVAS_TIMELINE_ROWS_CHUNK = 16; // Split up the canvases to avoid hitting the render limit
+
+const chunkData = (inputArray: any[], chunks: number) =>
+  inputArray.reduce((results, item, idx) => {
+    const chunkIdx = Math.floor(idx / chunks);
+    if (!results[chunkIdx]) {
+      results[chunkIdx] = [];
+    }
+    results[chunkIdx].push(item);
+    return results;
+  }, []);
+
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public historyData!: HistoryResult;
+
+  @property() public narrow!: boolean;
 
   @property({ type: Boolean }) public names = false;
 
@@ -78,7 +92,10 @@ class StateHistoryCharts extends LitElement {
 
     const combinedItems = Array.prototype.concat.apply(
       [],
-      [this.historyData.timeline, this.historyData.line]
+      [
+        this.historyData.timeline,
+        chunkData(this.historyData.line, CANVAS_TIMELINE_ROWS_CHUNK),
+      ]
     );
 
     if (this.virtualize) {
@@ -102,7 +119,7 @@ class StateHistoryCharts extends LitElement {
   }
 
   private _renderHistoryItem = (
-    item: TimelineEntity | LineChartUnit,
+    item: TimelineEntity[] | LineChartUnit,
     index: number
   ): TemplateResult => {
     if (!item || index === undefined) {
@@ -126,7 +143,7 @@ class StateHistoryCharts extends LitElement {
     return html`
       <state-history-chart-timeline
         .hass=${this.hass}
-        .data=${[item]}
+        .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
         .noSingle=${this.noSingle}

@@ -50,6 +50,7 @@ export class MoreInfoHistory extends LitElement {
             .hass=${this.hass}
             .historyData=${this._stateHistory}
             .isLoadingData=${!this._stateHistory}
+            .narrow=${this.narrow}
           ></state-history-charts>`
       : ""}`;
   }
