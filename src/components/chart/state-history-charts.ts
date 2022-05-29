@@ -76,11 +76,12 @@ class StateHistoryCharts extends LitElement {
       )
     );
 
+    const combinedItems = Array.prototype.concat.apply(
+      [],
+      [this.historyData.timeline, this.historyData.line]
+    );
+
     if (this.virtualize) {
-      const combinedItems = Array.prototype.concat.apply(
-        [],
-        [this.historyData.timeline, this.historyData.line]
-      );
       return html`<div
         class="container ha-scrollbar"
         @scroll=${this._saveScrollPos}
@@ -95,35 +96,9 @@ class StateHistoryCharts extends LitElement {
       </div>`;
     }
 
-    return html`
-      ${this.historyData.timeline.length
-        ? html`
-            <state-history-chart-timeline
-              .hass=${this.hass}
-              .data=${this.historyData.timeline}
-              .startTime=${this._computedStartTime}
-              .endTime=${this._computedEndTime}
-              .noSingle=${this.noSingle}
-              .names=${this.names}
-            ></state-history-chart-timeline>
-          `
-        : html``}
-      ${this.historyData.line.map(
-        (line) => html`
-          <state-history-chart-line
-            .hass=${this.hass}
-            .unit=${line.unit}
-            .data=${line.data}
-            .identifier=${line.identifier}
-            .isSingleDevice=${!this.noSingle &&
-            line.data &&
-            line.data.length === 1}
-            .endTime=${this._computedEndTime}
-            .names=${this.names}
-          ></state-history-chart-line>
-        `
-      )}
-    `;
+    return html`${combinedItems.map((item, index) =>
+      this._renderHistoryItem(item, index)
+    )}`;
   }
 
   private _renderHistoryItem = (
