@@ -70,7 +70,9 @@ export const iconColorCSS = css`
     }
   }
 
-  ha-state-icon[data-domain="plant"][data-state="problem"],
+  ha-state-icon[data-domain="plant"][data-state="problem"] {
+    color: var(--state-icon-error-color);
+  }
 
   /* Color the icon if unavailable */
   ha-state-icon[data-state="unavailable"] {
