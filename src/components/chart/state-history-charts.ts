@@ -56,6 +56,7 @@ class StateHistoryCharts extends LitElement {
 
   @state() private _computedEndTime?: Date;
 
+  // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   @eventOptions({ passive: true })
