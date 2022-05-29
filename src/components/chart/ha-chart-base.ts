@@ -50,13 +50,6 @@ export default class HaChartBase extends LitElement {
     super.disconnectedCallback();
   }
 
-  connectedCallback() {
-    if (!this.chart?.attached) {
-      this._setupChart();
-    }
-    super.connectedCallback();
-  }
-
   protected firstUpdated() {
     this._setupChart();
     this.data.datasets.forEach((dataset, index) => {

@@ -19,7 +19,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 
-const CANVAS_TIMELINE_ROWS_CHUNK = 2; // Split up the canvases to avoid hitting the render limit
+const CANVAS_TIMELINE_ROWS_CHUNK = 25; // Split up the canvases to avoid hitting the render limit
 
 const chunkData = (inputArray: any[], chunks: number) =>
   inputArray.reduce((results, item, idx) => {
@@ -135,7 +135,7 @@ class StateHistoryCharts extends LitElement {
         ></state-history-chart-line>
       </div> `;
     }
-    return html`<div class="entry-container-spaced">
+    return html`<div class="entry-container">
       <state-history-chart-timeline
         .hass=${this.hass}
         .data=${item}
@@ -190,20 +190,10 @@ class StateHistoryCharts extends LitElement {
         max-height: var(--logbook-max-height);
       }
 
-      .entry-container-spaced,
       .entry-container {
         width: 100%;
         padding-left: 2px;
         padding-right: 2px;
-      }
-
-      .entry-container-spaced {
-        /*
-        / This is a workaround for a long standing issue with the
-        / timeline tooltips overflowing the canvas
-        / and not rendering correctly
-        */
-        // padding-bottom: 110px;
       }
 
       .container,
