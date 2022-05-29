@@ -1,4 +1,3 @@
-import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
@@ -47,14 +46,14 @@ export class HaSelectSelector extends LitElement {
             ${this.label}
             ${options.map(
               (item: SelectOption) => html`
-                <mwc-formfield .label=${item.label}>
+                <ha-formfield .label=${item.label}>
                   <ha-radio
                     .checked=${item.value === this.value}
                     .value=${item.value}
                     .disabled=${this.disabled}
                     @change=${this._valueChanged}
                   ></ha-radio>
-                </mwc-formfield>
+                </ha-formfield>
               `
             )}
           </div>

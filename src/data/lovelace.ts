@@ -159,6 +159,7 @@ export interface CustomActionConfig extends BaseActionConfig {
 }
 
 export interface BaseActionConfig {
+  action: string;
   confirmation?: ConfirmationRestrictionConfig;
 }
 

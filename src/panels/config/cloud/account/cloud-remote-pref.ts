@@ -51,11 +51,6 @@ export class CloudRemotePref extends LitElement {
       `;
     }
 
-    const urlParts = remote_domain!.split(".");
-    const hiddenURL = `https://${urlParts[0].substring(0, 5)}***.${
-      urlParts[1]
-    }.${urlParts[2]}.${urlParts[3]}`;
-
     return html`
       <ha-card
         outlined
@@ -92,8 +87,9 @@ export class CloudRemotePref extends LitElement {
             target="_blank"
             class="break-word"
             rel="noreferrer"
-          >
-            ${hiddenURL}</a
+            >${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.nabu_casa_url"
+            )}</a
           >.
           <ha-svg-icon
             .url=${`https://${remote_domain}`}

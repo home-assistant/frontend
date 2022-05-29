@@ -1,13 +1,17 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
-import type { ComboBoxLight } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type {
+  ComboBoxLight,
+  ComboBoxLightFilterChangedEvent,
+  ComboBoxLightOpenedChangedEvent,
+  ComboBoxLightValueChangedEvent,
+} from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
@@ -96,6 +100,8 @@ export class HaComboBox extends LitElement {
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
+  private _overlayMutationObserver?: MutationObserver;
+
   public open() {
     this.updateComplete.then(() => {
       this._comboBox?.open();
@@ -106,6 +112,14 @@ export class HaComboBox extends LitElement {
     this.updateComplete.then(() => {
       this._comboBox?.inputElement?.focus();
     });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._overlayMutationObserver) {
+      this._overlayMutationObserver.disconnect();
+      this._overlayMutationObserver = undefined;
+    }
   }
 
   public get selectedItem() {
@@ -193,21 +207,64 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
+    const opened = ev.detail.value;
     // delay this so we can handle click event before setting _opened
     setTimeout(() => {
-      this._opened = ev.detail.value;
+      this._opened = opened;
     }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
+
+    if (
+      opened &&
+      "MutationObserver" in window &&
+      !this._overlayMutationObserver
+    ) {
+      const overlay = document.querySelector<HTMLElement>(
+        "vaadin-combo-box-overlay"
+      );
+
+      if (!overlay) {
+        return;
+      }
+
+      this._overlayMutationObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "inert"
+          ) {
+            this._overlayMutationObserver?.disconnect();
+            this._overlayMutationObserver = undefined;
+            // @ts-expect-error
+            overlay.inert = false;
+          } else if (mutation.type === "childList") {
+            mutation.removedNodes.forEach((node) => {
+              if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
+                this._overlayMutationObserver?.disconnect();
+                this._overlayMutationObserver = undefined;
+              }
+            });
+          }
+        });
+      });
+
+      this._overlayMutationObserver.observe(overlay, {
+        attributes: true,
+      });
+      this._overlayMutationObserver.observe(document.body, {
+        childList: true,
+      });
+    }
   }
 
-  private _filterChanged(ev: PolymerChangedEvent<string>) {
+  private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail, { composed: false });
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 

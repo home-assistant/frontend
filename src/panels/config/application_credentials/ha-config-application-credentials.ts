@@ -53,7 +53,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           title: localize(
             "ui.panel.config.application_credentials.picker.headers.name"
           ),
-          width: "40%",
           direction: "asc",
           grows: true,
           template: (_, entry: ApplicationCredential) => html`${entry.name}`,

@@ -193,6 +193,9 @@ export class HuiEntityEditor extends LitElement {
         .add-entity {
           display: block;
           margin-left: 31px;
+          margin-inline-start: 31px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
         .entity {
           display: flex;
