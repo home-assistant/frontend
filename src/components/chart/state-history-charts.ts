@@ -13,6 +13,18 @@ import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 
+const maxCanvasRows = 256;
+
+const chunkData = (inputArray: any[], chunks: number) =>
+  inputArray.reduce((results, item, idx) => {
+    const chunkIdx = Math.floor(idx / chunks);
+    if (!results[chunkIdx]) {
+      results[chunkIdx] = [];
+    }
+    results[chunkIdx].push(item);
+    return results;
+  }, []);
+
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -54,15 +66,17 @@ class StateHistoryCharts extends LitElement {
 
     return html`
       ${this.historyData.timeline.length
-        ? html`
-            <state-history-chart-timeline
-              .hass=${this.hass}
-              .data=${this.historyData.timeline}
-              .endTime=${computedEndTime}
-              .noSingle=${this.noSingle}
-              .names=${this.names}
-            ></state-history-chart-timeline>
-          `
+        ? chunkData(this.historyData.timeline, maxCanvasRows).map(
+            (timeline) => html`
+              <state-history-chart-timeline
+                .hass=${this.hass}
+                .data=${timeline}
+                .endTime=${computedEndTime}
+                .noSingle=${this.noSingle}
+                .names=${this.names}
+              ></state-history-chart-timeline>
+            `
+          )
         : html``}
       ${this.historyData.line.map(
         (line) => html`
