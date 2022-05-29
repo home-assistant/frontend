@@ -164,6 +164,7 @@ class StateHistoryCharts extends LitElement {
     return !this.isLoadingData && historyDataEmpty;
   }
 
+  @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
