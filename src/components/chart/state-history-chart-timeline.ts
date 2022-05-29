@@ -117,6 +117,7 @@ export class StateHistoryChartTimeline extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       const narrow = this.narrow;
+      const multipleRows = this.data.length !== 1 || this.alwaysShowTicks;
       this._chartOptions = {
         maintainAspectRatio: false,
         parsing: false,
@@ -160,12 +161,15 @@ export class StateHistoryChartTimeline extends LitElement {
               drawTicks: false,
             },
             ticks: {
-              display: this.data.length !== 1 || this.alwaysShowTicks,
+              display: multipleRows,
             },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
             },
             afterFit: function (scaleInstance) {
+              if (!multipleRows) {
+                return;
+              }
               // ensure all the chart labels are the same width
               scaleInstance.width = narrow ? 90 : 180;
             },
