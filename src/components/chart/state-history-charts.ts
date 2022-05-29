@@ -121,7 +121,7 @@ class StateHistoryCharts extends LitElement {
       return html``;
     }
     if ("unit" in item) {
-      return html`
+      return html`<div class="entry-container">
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -133,9 +133,9 @@ class StateHistoryCharts extends LitElement {
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
-      `;
+      </div> `;
     }
-    return html`
+    return html`<div class="entry-container">
       <state-history-chart-timeline
         .hass=${this.hass}
         .data=${item}
@@ -145,7 +145,7 @@ class StateHistoryCharts extends LitElement {
         .names=${this.names}
         .narrow=${this.narrow}
       ></state-history-chart-timeline>
-    `;
+    </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -185,6 +185,12 @@ class StateHistoryCharts extends LitElement {
       }
       .container {
         max-height: var(--logbook-max-height);
+      }
+
+      .entry-container {
+        width: 100%;
+        padding-left: 2px;
+        padding-right: 2px;
       }
 
       .container,
