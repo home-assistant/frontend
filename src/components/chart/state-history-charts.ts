@@ -196,11 +196,11 @@ class StateHistoryCharts extends LitElement {
       }
 
       .entry-container-spaced {
-        //
-        // This is a workaround for a long standing issue with the
-        // timeline tooltips overflowing the canvas
-        // and not rendering correctly
-        //
+        /*
+        / This is a workaround for a long standing issue with the
+        / timeline tooltips overflowing the canvas
+        / and not rendering correctly
+        */
         width: 100%;
         padding-left: 2px;
         padding-right: 2px;
