@@ -98,24 +98,19 @@ class StateHistoryCharts extends LitElement {
       ]
     );
 
-    if (this.virtualize) {
-      return html`<div
-        class="container ha-scrollbar"
-        @scroll=${this._saveScrollPos}
-      >
-        <lit-virtualizer
-          scroller
-          class="ha-scrollbar"
-          .items=${combinedItems}
-          .renderItem=${this._renderHistoryItem}
-        >
-        </lit-virtualizer>
-      </div>`;
-    }
-
-    return html`${combinedItems.map((item, index) =>
-      this._renderHistoryItem(item, index)
-    )}`;
+    return this.virtualize
+      ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
+          <lit-virtualizer
+            scroller
+            class="ha-scrollbar"
+            .items=${combinedItems}
+            .renderItem=${this._renderHistoryItem}
+          >
+          </lit-virtualizer>
+        </div>`
+      : html`${combinedItems.map((item, index) =>
+          this._renderHistoryItem(item, index)
+        )}`;
   }
 
   private _renderHistoryItem = (
