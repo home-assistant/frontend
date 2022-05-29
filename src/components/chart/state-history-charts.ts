@@ -202,7 +202,7 @@ class StateHistoryCharts extends LitElement {
         / timeline tooltips overflowing the canvas
         / and not rendering correctly
         */
-        padding-bottom: 140px;
+        padding-bottom: 110px;
       }
 
       .container,
