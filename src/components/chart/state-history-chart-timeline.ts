@@ -93,7 +93,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ type: Boolean }) public alwaysShowTicks = false;
+  @property({ type: Boolean }) public dataHasMultipleRows = false;
 
   @property({ attribute: false }) public startTime?: Date;
 
@@ -117,7 +117,7 @@ export class StateHistoryChartTimeline extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       const narrow = this.narrow;
-      const multipleRows = this.data.length !== 1 || this.alwaysShowTicks;
+      const multipleRows = this.data.length !== 1 || this.dataHasMultipleRows;
       this._chartOptions = {
         maintainAspectRatio: false,
         parsing: false,

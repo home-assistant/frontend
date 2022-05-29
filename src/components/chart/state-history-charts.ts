@@ -145,7 +145,7 @@ class StateHistoryCharts extends LitElement {
         .noSingle=${this.noSingle}
         .names=${this.names}
         .narrow=${this.narrow}
-        .alwaysShowTicks=${this.historyData.timeline.length &&
+        .dataHasMultipleRows=${this.historyData.timeline.length &&
         this.historyData.timeline.length > 1}
       ></state-history-chart-timeline>
     </div> `;
