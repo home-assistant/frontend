@@ -40,20 +40,21 @@ export default class HaChartBase extends LitElement {
   private _releaseCanvas() {
     // release the canvas memory to prevent
     // safari from running out of memory.
-    const canvasEl = this.renderRoot.querySelector("canvas");
-    if (canvasEl) {
-      canvasEl.width = 1;
-      canvasEl.height = 1;
-      const ctx: CanvasRenderingContext2D = canvasEl!.getContext("2d")!;
-      if (ctx) {
-        ctx.clearRect(0, 0, 1, 1);
-      }
+    if (this.chart) {
+      this.chart.destroy();
     }
   }
 
   disconnectedCallback() {
     this._releaseCanvas();
     super.disconnectedCallback();
+  }
+
+  connectedCallback() {
+    if (!this.chart?.attached) {
+      this._setupChart();
+    }
+    super.connectedCallback();
   }
 
   protected firstUpdated() {
