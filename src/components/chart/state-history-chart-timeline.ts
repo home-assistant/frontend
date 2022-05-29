@@ -158,6 +158,11 @@ export class StateHistoryChartTimeline extends LitElement {
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
             },
+            afterFit: function (scaleInstance) {
+              // ensure all the chart labels
+              // are the same with
+              scaleInstance.width = 220;
+            },
             position: computeRTL(this.hass) ? "right" : "left",
           },
         },
