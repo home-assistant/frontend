@@ -93,6 +93,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
+  @property({ type: Boolean }) public alwaysShowTicks = false;
+
   @property({ attribute: false }) public startTime?: Date;
 
   @property({ attribute: false }) public endTime?: Date;
@@ -158,7 +160,7 @@ export class StateHistoryChartTimeline extends LitElement {
               drawTicks: false,
             },
             ticks: {
-              display: this.data.length !== 1,
+              display: this.data.length !== 1 || this.alwaysShowTicks,
             },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;

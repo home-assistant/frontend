@@ -19,7 +19,7 @@ import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 
-const CANVAS_TIMELINE_ROWS_CHUNK = 16; // Split up the canvases to avoid hitting the render limit
+const CANVAS_TIMELINE_ROWS_CHUNK = 32; // Split up the canvases to avoid hitting the render limit
 
 const chunkData = (inputArray: any[], chunks: number) =>
   inputArray.reduce((results, item, idx) => {
@@ -128,8 +128,8 @@ class StateHistoryCharts extends LitElement {
           .data=${item.data}
           .identifier=${item.identifier}
           .isSingleDevice=${!this.noSingle &&
-          item.data &&
-          item.data.length === 1}
+          this.historyData.timeline &&
+          this.historyData.timeline.length === 1}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
@@ -144,6 +144,8 @@ class StateHistoryCharts extends LitElement {
         .noSingle=${this.noSingle}
         .names=${this.names}
         .narrow=${this.narrow}
+        .alwaysShowTicks=${this.historyData.timeline.length &&
+        this.historyData.timeline.length > 1}
       ></state-history-chart-timeline>
     </div> `;
   };
