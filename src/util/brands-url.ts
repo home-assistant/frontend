@@ -26,3 +26,4 @@ export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
 
 export const isBrandUrl = (thumbnail: string | ""): boolean =>
   thumbnail.startsWith('https://brands.home-assistant.io/');
+  
