@@ -13,7 +13,7 @@ import type { HomeAssistant } from "../../types";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 
-const MAX_CANVAS_TIMELINE_ROWS = 32;
+const CANVAS_TIMELINE_ROWS_CHUNK = 25; // Split up the canvases to avoid hitting the render limit
 
 const chunkData = (inputArray: any[], chunks: number) =>
   inputArray.reduce((results, item, idx) => {
@@ -66,7 +66,7 @@ class StateHistoryCharts extends LitElement {
 
     return html`
       ${this.historyData.timeline.length
-        ? chunkData(this.historyData.timeline, MAX_CANVAS_TIMELINE_ROWS).map(
+        ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK).map(
             (timeline) => html`
               <state-history-chart-timeline
                 .hass=${this.hass}
