@@ -656,7 +656,7 @@ export const getEnergyGasUnit = (
 
 export const getEnergyLabel = (
   hass: HomeAssistant,
-  source_name: string,
+  statisticsId: string,
   statisticsMetaData: StatisticsMetaData[]
 ): string => {
   const entity = hass.states[source_name];
