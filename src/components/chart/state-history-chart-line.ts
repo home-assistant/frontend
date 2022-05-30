@@ -57,6 +57,8 @@ class StateHistoryChartLine extends LitElement {
                 locale: this.hass.locale,
               },
             },
+            suggestedMin: this.startTime,
+            suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
