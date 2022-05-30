@@ -37,6 +37,26 @@ export default class HaChartBase extends LitElement {
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
+  private _releaseCanvas() {
+    // release the canvas memory to prevent
+    // safari from running out of memory.
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+
+  public disconnectedCallback() {
+    this._releaseCanvas();
+    super.disconnectedCallback();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._setupChart();
+    }
+  }
+
   protected firstUpdated() {
     this._setupChart();
     this.data.datasets.forEach((dataset, index) => {
