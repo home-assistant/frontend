@@ -567,13 +567,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                   <div
                     class="${["app", "directory"].includes(child.media_class)
                       ? "centered-image"
+                      : ""} ${isBrandUrl(child.thumbnail)
+                      ? "brand-image"
                       : ""} image"
-                    style="background-image: ${until(
-                      backgroundImage,
-                      ""
-                    )}${isBrandUrl(child.thumbnail)
-                      ? "; background-size: 40%"
-                      : ""}"
+                    style="background-image: ${until(backgroundImage, "")}"
                   ></div>
                 `
               : html`
@@ -1057,6 +1054,10 @@ export class HaMediaPlayerBrowse extends LitElement {
         .centered-image {
           margin: 0 8px;
           background-size: contain;
+        }
+
+        .brand-image {
+          background-size: 40%;
         }
 
         .children ha-card .icon-holder {
