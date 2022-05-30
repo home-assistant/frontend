@@ -103,6 +103,9 @@ export class HaTextSelector extends LitElement {
         --mdc-icon-button-size: 24px;
         --mdc-icon-size: 20px;
         color: var(--secondary-text-color);
+        inset-inline-start: initial;
+        inset-inline-end: 16px;
+        direction: var(--direction);
       }
     `;
   }
