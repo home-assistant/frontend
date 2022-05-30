@@ -1,6 +1,9 @@
 import { atLeastVersion } from "../common/config/version";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
-import { computeRTLDirection } from "../common/util/compute_rtl";
+import {
+  computeRTLDirection,
+  setDirectionStyles,
+} from "../common/util/compute_rtl";
 import { debounce } from "../common/util/debounce";
 import {
   getHassTranslations,
@@ -188,17 +191,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _applyDirection(hass: HomeAssistant) {
       const direction = computeRTLDirection(hass);
-      this.style.direction = direction;
       document.dir = direction;
-      this.style.setProperty("--direction", direction);
-      this.style.setProperty(
-        "--float-start",
-        direction === "ltr" ? "left" : "right"
-      );
-      this.style.setProperty(
-        "--float-end",
-        direction === "ltr" ? "right" : "left"
-      );
+      setDirectionStyles(direction, this);
     }
 
     /**
