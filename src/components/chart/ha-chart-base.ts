@@ -52,7 +52,7 @@ export default class HaChartBase extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.renderRoot && this.renderRoot.querySelector("canvas")) {
+    if (this.hasUpdated) {
       this._setupChart();
     }
   }
