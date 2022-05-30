@@ -1,5 +1,10 @@
 import "@material/mwc-button/mwc-button";
-import { mdiChevronLeft, mdiChevronRight, mdiCompare } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiCompare,
+  mdiCompareRemove,
+} from "@mdi/js";
 import {
   addDays,
   addMonths,
