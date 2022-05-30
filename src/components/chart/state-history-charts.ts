@@ -188,7 +188,7 @@ class StateHistoryCharts extends LitElement {
         color: var(--secondary-text-color);
       }
       .container {
-        max-height: var(--logbook-max-height);
+        max-height: var(--history-max-height);
       }
 
       .entry-container {
