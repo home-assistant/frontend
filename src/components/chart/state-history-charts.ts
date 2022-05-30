@@ -52,9 +52,9 @@ class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
-  @state() private _computedStartTime?: Date;
+  @state() private _computedStartTime!: Date;
 
-  @state() private _computedEndTime?: Date;
+  @state() private _computedEndTime!: Date;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
