@@ -141,7 +141,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           ${this.narrow
             ? html`<ha-icon-button
                 class="compare ${this._compare ? "active" : ""}"
-                .path=${mdiCompare}
+                .path=${this._compare ? mdiCompareRemove : mdiCompare}
                 @click=${this._toggleCompare}
                 dense
                 outlined
