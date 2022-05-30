@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
+import { mdiChevronLeft, mdiChevronRight, mdiCompare } from "@mdi/js";
 import {
   addDays,
   addMonths,
@@ -40,13 +40,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property() public collectionKey?: string;
 
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
 
   @state() private _period?: "day" | "week" | "month" | "year";
 
-  @state() private _compare? = false;
+  @state() private _compare = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -136,14 +138,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             dense
             @value-changed=${this._handleView}
           ></ha-button-toggle-group>
-          <mwc-button
-            class="compare ${this._compare ? "active" : ""}"
-            @click=${this._toggleCompare}
-            dense
-            outlined
-          >
-            Compare data
-          </mwc-button>
+          ${this.narrow
+            ? html`<ha-icon-button
+                class="compare ${this._compare ? "active" : ""}"
+                .path=${mdiCompare}
+                @click=${this._toggleCompare}
+                dense
+                outlined
+              >
+                Compare data
+              </ha-icon-button>`
+            : html`<mwc-button
+                class="compare ${this._compare ? "active" : ""}"
+                @click=${this._toggleCompare}
+                dense
+                outlined
+              >
+                Compare data
+              </mwc-button>`}
         </div>
       </div>
     `;
@@ -260,9 +272,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       :host([narrow]) .row {
         flex-direction: column-reverse;
       }
-      :host([narrow]) .period {
-        margin-bottom: 8px;
-      }
       .label {
         display: flex;
         justify-content: flex-end;
@@ -275,6 +284,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         justify-content: flex-end;
         align-items: flex-end;
       }
+      :host([narrow]) .period {
+        margin-bottom: 8px;
+      }
+      mwc-button {
+        margin-left: 8px;
+      }
+      ha-icon-button {
+        margin-left: 4px;
+        --mdc-icon-size: 20px;
+      }
+      ha-icon-button.active::before,
       mwc-button.active::before {
         top: 0;
         left: 0;
@@ -288,14 +308,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         transition: opacity 15ms linear, background-color 15ms linear;
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
+      ha-icon-button.active::before {
+        border-radius: 50%;
+      }
       .compare {
         position: relative;
-        margin-left: 8px;
-        width: max-content;
-      }
-      :host([narrow]) .compare {
-        margin-left: auto;
-        margin-top: 8px;
       }
       :host {
         --mdc-button-outline-color: currentColor;

@@ -849,7 +849,9 @@ export class HuiEnergySourcesTableCard
                       )}
                     </th>
                     ${compare
-                      ? html`<td class="mdc-data-table__cell">
+                      ? html`<td
+                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                          >
                             ${formatNumber(
                               totalGasCostCompare + totalGridCostCompare,
                               this.hass.locale,
@@ -860,9 +862,7 @@ export class HuiEnergySourcesTableCard
                             )}
                           </td>
                           ${showCosts
-                            ? html`<td
-                                class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                              ></td>`
+                            ? html`<td class="mdc-data-table__cell"></td>`
                             : ""}`
                       : ""}
                     <td class="mdc-data-table__cell"></td>
