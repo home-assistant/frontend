@@ -39,7 +39,11 @@ import {
   getEnergyDataCollection,
   getEnergyGasUnit,
 } from "../../../../data/energy";
-import { Statistics } from "../../../../data/history";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticMetadata,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -270,6 +274,12 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
+    const gasStatisticIdsWithMeta: StatisticsMetaData[] =
+      await getStatisticMetadata(
+        this.hass,
+        gasSources.map((source) => source.stat_energy_from)
+      );
+
     this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
 
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
@@ -280,7 +290,12 @@ export class HuiEnergyGasGraphCard
       .trim();
 
     datasets.push(
-      ...this._processDataSet(energyData.stats, gasSources, gasColor)
+      ...this._processDataSet(
+        energyData.stats,
+        gasStatisticIdsWithMeta,
+        gasSources,
+        gasColor
+      )
     );
 
     if (energyData.statsCompare) {
@@ -298,6 +313,7 @@ export class HuiEnergyGasGraphCard
       datasets.push(
         ...this._processDataSet(
           energyData.statsCompare,
+          gasStatisticIdsWithMeta,
           gasSources,
           gasColor,
           true
@@ -318,11 +334,21 @@ export class HuiEnergyGasGraphCard
 
   private _processDataSet(
     statistics: Statistics,
+    statisticsMetaData: StatisticsMetaData[],
     gasSources: GasSourceTypeEnergyPreference[],
     gasColor: string,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
+
+    const getLabelForNoEntity = (stat_energy_from: string) => {
+      const { name } =
+        statisticsMetaData.find(
+          ({ statistic_id }) => statistic_id === stat_energy_from
+        ) || {};
+      return name || stat_energy_from;
+    };
+
     gasSources.forEach((source, idx) => {
       const entity = this.hass.states[source.stat_energy_from];
 
@@ -368,7 +394,9 @@ export class HuiEnergyGasGraphCard
       }
 
       data.push({
-        label: entity ? computeStateName(entity) : source.stat_energy_from,
+        label: entity
+          ? computeStateName(entity)
+          : getLabelForNoEntity(source.stat_energy_from),
         borderColor: compare ? borderColor + "7F" : borderColor,
         backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
         data: gasConsumptionData,
