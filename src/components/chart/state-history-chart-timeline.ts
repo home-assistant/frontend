@@ -131,6 +131,8 @@ export class StateHistoryChartTimeline extends LitElement {
                 locale: this.hass.locale,
               },
             },
+            suggestedMin: this.startTime,
+            suggestedMax: this.endTime,
             ticks: {
               autoSkip: true,
               maxRotation: 0,
