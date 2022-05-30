@@ -82,7 +82,7 @@ class StateHistoryCharts extends LitElement {
     const now = new Date();
 
     this._computedEndTime =
-      this.upToNow || this.endTime > now ? now : this.endTime || now;
+      this.upToNow || !this.endTime || this.endTime > now ? now : this.endTime;
 
     this._computedStartTime = new Date(
       this.historyData.timeline.reduce(
