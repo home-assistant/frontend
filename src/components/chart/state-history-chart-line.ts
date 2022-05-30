@@ -32,7 +32,7 @@ class StateHistoryChartLine extends LitElement {
 
   @state() private _chartData?: ChartData<"line">;
 
-  @state() private _chartOptions?: ChartOptions<"line">;
+  @state() private _chartOptions?: ChartOptions;
 
   protected render() {
     return html`
