@@ -358,7 +358,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
           );
         }
 
-        const workingRoutes: [
+        const workingRoutesValueMap: [
           string,
           WorkingRouteStatistics | null | undefined
         ][] = [
@@ -366,9 +366,12 @@ class DialogZWaveJSNodeStatistics extends LitElement {
           ["nlwr", this._nodeStatistics?.nlwr],
         ];
 
-        this._workingRoutes = {};
-        workingRoutes.forEach(([wrKey, wrValue]) => {
-          this._workingRoutes[wrKey] = wrValue;
+        const workingRoutes: {
+          lwr?: WorkingRouteStatistics;
+          nlwr?: WorkingRouteStatistics;
+        } = {};
+        workingRoutesValueMap.forEach(([wrKey, wrValue]) => {
+          workingRoutes[wrKey] = wrValue;
 
           if (wrValue) {
             if (wrValue.rssi) {
@@ -402,6 +405,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
             }
           }
         });
+        this._workingRoutes = workingRoutes;
       }
     );
   }
@@ -414,7 +418,9 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       this.hass.connection,
       (devices: DeviceRegistryEntry[]) => {
         const devicesIdToName = {};
-        devices.forEach(device => {devicesIdToName[device.id] = computeDeviceName(device, this.hass)});
+        devices.forEach((device) => {
+          devicesIdToName[device.id] = computeDeviceName(device, this.hass);
+        });
         this._deviceIDsToName = devicesIdToName;
       }
     );
