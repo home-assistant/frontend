@@ -193,6 +193,10 @@ class StateHistoryCharts extends LitElement {
         width: 100%;
       }
 
+      .entry-container:hover {
+        z-index: 1;
+      }
+
       :host([virtualize]) .entry-container {
         padding-left: 1px;
         padding-right: 1px;
