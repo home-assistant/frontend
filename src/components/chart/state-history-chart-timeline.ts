@@ -83,6 +83,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public data: TimelineEntity[] = [];
 
+  @property() public narrow!: boolean;
+
   @property() public names: boolean | Record<string, string> = false;
 
   @property() public unit?: string;
@@ -91,7 +93,11 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ attribute: false }) public endTime?: Date;
+  @property({ type: Boolean }) public dataHasMultipleRows = false;
+
+  @property({ attribute: false }) public startTime!: Date;
+
+  @property({ attribute: false }) public endTime!: Date;
 
   @state() private _chartData?: ChartData<"timeline">;
 
@@ -110,6 +116,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
+      const narrow = this.narrow;
+      const multipleRows = this.data.length !== 1 || this.dataHasMultipleRows;
       this._chartOptions = {
         maintainAspectRatio: false,
         parsing: false,
@@ -123,6 +131,8 @@ export class StateHistoryChartTimeline extends LitElement {
                 locale: this.hass.locale,
               },
             },
+            suggestedMin: this.startTime,
+            suggestedMax: this.endTime,
             ticks: {
               autoSkip: true,
               maxRotation: 0,
@@ -153,10 +163,16 @@ export class StateHistoryChartTimeline extends LitElement {
               drawTicks: false,
             },
             ticks: {
-              display: this.data.length !== 1,
+              display: multipleRows,
             },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
+            },
+            afterFit: function (scaleInstance) {
+              if (multipleRows) {
+                // ensure all the chart labels are the same width
+                scaleInstance.width = narrow ? 105 : 185;
+              }
             },
             position: computeRTL(this.hass) ? "right" : "left",
           },
@@ -208,34 +224,8 @@ export class StateHistoryChartTimeline extends LitElement {
       stateHistory = [];
     }
 
-    const startTime = new Date(
-      stateHistory.reduce(
-        (minTime, stateInfo) =>
-          Math.min(minTime, new Date(stateInfo.data[0].last_changed).getTime()),
-        new Date().getTime()
-      )
-    );
-
-    // end time is Math.max(startTime, last_event)
-    let endTime =
-      this.endTime ||
-      new Date(
-        stateHistory.reduce(
-          (maxTime, stateInfo) =>
-            Math.max(
-              maxTime,
-              new Date(
-                stateInfo.data[stateInfo.data.length - 1].last_changed
-              ).getTime()
-            ),
-          startTime.getTime()
-        )
-      );
-
-    if (endTime > new Date()) {
-      endTime = new Date();
-    }
-
+    const startTime = this.startTime;
+    const endTime = this.endTime;
     const labels: string[] = [];
     const datasets: ChartDataset<"timeline">[] = [];
     const names = this.names || {};
