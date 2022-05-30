@@ -169,7 +169,7 @@ export class StateHistoryChartTimeline extends LitElement {
             afterFit: function (scaleInstance) {
               if (multipleRows) {
                 // ensure all the chart labels are the same width
-                scaleInstance.width = narrow ? 90 : 180;
+                scaleInstance.width = narrow ? 100 : 200;
               }
             },
             position: computeRTL(this.hass) ? "right" : "left",
