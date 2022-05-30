@@ -413,13 +413,9 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     this._subscribedDeviceRegistry = subscribeDeviceRegistry(
       this.hass.connection,
       (devices: DeviceRegistryEntry[]) => {
-        Object.entries(this._deviceIDsToDevices).forEach(([_, device]) => {
-          if (!devices.includes(device))
-            delete this._deviceIDsToDevices[device.id];
-        });
-        devices.forEach((device) => {
-          this._deviceIDsToDevices[device.id] = device;
-        });
+        const devicesIdToName = {};
+        devices.forEach(device => {devicesIdToName[device.id] = computeDeviceName(device, this.hass)});
+        this._deviceIDsToName = devicesIdToName;
       }
     );
   }
