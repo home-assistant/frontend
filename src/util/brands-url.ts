@@ -23,3 +23,6 @@ export const hardwareBrandsUrl = (options: HardwareBrandsOptions): string =>
   }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
 
 export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
+
+export const isBrandUrl = (thumbnail: string | ""): boolean =>
+  thumbnail.startsWith("https://brands.home-assistant.io/");
