@@ -51,11 +51,15 @@ function initialize(
   const style = document.createElement("style");
 
   style.innerHTML = `
-  body { margin:0; }
+  body {
+    margin:0;
+    background-color: var(--primary-background-color, #fafafa);
+    color: var(--primary-text-color, #212121);
+  }
   @media (prefers-color-scheme: dark) {
     body {
-      background-color: #111111;
-      color: #e1e1e1;
+      background-color: var(--primary-background-color, #111111);
+      color: var(--primary-text-color, #e1e1e1);
     }
   }`;
   document.head.appendChild(style);
