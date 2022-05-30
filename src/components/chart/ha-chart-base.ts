@@ -45,9 +45,16 @@ export default class HaChartBase extends LitElement {
     }
   }
 
-  disconnectedCallback() {
+  public disconnectedCallback() {
     this._releaseCanvas();
     super.disconnectedCallback();
+  }
+
+  public connectedCallback() {
+    if (this.renderRoot) {
+      this._setupChart();
+    }
+    super.connectedCallback();
   }
 
   protected firstUpdated() {
