@@ -3404,7 +3404,8 @@
               "go_to_energy_dashboard": "Go to the energy dashboard"
             },
             "energy_devices_graph": {
-              "energy_usage": "Energy usage"
+              "energy_usage": "Energy usage",
+              "previous_energy_usage": "Previous energy usage"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
