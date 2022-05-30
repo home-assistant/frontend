@@ -91,12 +91,8 @@ class StateHistoryCharts extends LitElement {
       )
     );
 
-    const combinedItems = Array.prototype.concat.apply(
-      [],
-      [
-        chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK),
-        this.historyData.line,
-      ]
+    const combinedItems = chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK).concat(
+        this.historyData.line
     );
 
     return this.virtualize
