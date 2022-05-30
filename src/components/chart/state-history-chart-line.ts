@@ -28,7 +28,7 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ attribute: false }) public endTime?: Date;
+  @property({ attribute: false }) public endTime: Date;
 
   @state() private _chartData?: ChartData<"line">;
 
@@ -133,28 +133,11 @@ class StateHistoryChartLine extends LitElement {
     const computedStyles = getComputedStyle(this);
     const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
-    let endTime: Date;
-
     if (entityStates.length === 0) {
       return;
     }
 
-    endTime =
-      this.endTime ||
-      // Get the highest date from the last date of each device
-      new Date(
-        Math.max(
-          ...entityStates.map((devSts) =>
-            new Date(
-              devSts.states[devSts.states.length - 1].last_changed
-            ).getTime()
-          )
-        )
-      );
-    if (endTime > new Date()) {
-      endTime = new Date();
-    }
-
+    const endTime = this.endTime;
     const names = this.names || {};
     entityStates.forEach((states) => {
       const domain = states.domain;

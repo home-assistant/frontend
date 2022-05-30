@@ -95,9 +95,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public dataHasMultipleRows = false;
 
-  @property({ attribute: false }) public startTime?: Date;
+  @property({ attribute: false }) public startTime!: Date;
 
-  @property({ attribute: false }) public endTime?: Date;
+  @property({ attribute: false }) public endTime!: Date;
 
   @state() private _chartData?: ChartData<"timeline">;
 
@@ -226,39 +226,8 @@ export class StateHistoryChartTimeline extends LitElement {
       stateHistory = [];
     }
 
-    const startTime =
-      this.startTime ||
-      new Date(
-        stateHistory.reduce(
-          (minTime, stateInfo) =>
-            Math.min(
-              minTime,
-              new Date(stateInfo.data[0].last_changed).getTime()
-            ),
-          new Date().getTime()
-        )
-      );
-
-    // end time is Math.max(startTime, last_event)
-    let endTime =
-      this.endTime ||
-      new Date(
-        stateHistory.reduce(
-          (maxTime, stateInfo) =>
-            Math.max(
-              maxTime,
-              new Date(
-                stateInfo.data[stateInfo.data.length - 1].last_changed
-              ).getTime()
-            ),
-          startTime.getTime()
-        )
-      );
-
-    if (endTime > new Date()) {
-      endTime = new Date();
-    }
-
+    const startTime = this.startTime;
+    const endTime = this.endTime;
     const labels: string[] = [];
     const datasets: ChartDataset<"timeline">[] = [];
     const names = this.names || {};
