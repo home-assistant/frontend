@@ -116,8 +116,6 @@ export class StateHistoryChartTimeline extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
-      const clampedEndTime =
-        this.endTime && this.endTime > new Date() ? new Date() : this.endTime;
       const narrow = this.narrow;
       const multipleRows = this.data.length !== 1 || this.dataHasMultipleRows;
       this._chartOptions = {
@@ -134,7 +132,7 @@ export class StateHistoryChartTimeline extends LitElement {
               },
             },
             suggestedMin: this.startTime,
-            suggestedMax: clampedEndTime,
+            suggestedMax: this.endTime,
             ticks: {
               autoSkip: true,
               maxRotation: 0,

@@ -28,7 +28,7 @@ class StateHistoryChartLine extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ attribute: false }) public endTime: Date;
+  @property({ attribute: false }) public endTime!: Date;
 
   @state() private _chartData?: ChartData<"line">;
 
@@ -46,8 +46,6 @@ class StateHistoryChartLine extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
-      const clampedEndTime =
-        this.endTime && this.endTime > new Date() ? new Date() : this.endTime;
       this._chartOptions = {
         parsing: false,
         animation: false,
@@ -59,7 +57,7 @@ class StateHistoryChartLine extends LitElement {
                 locale: this.hass.locale,
               },
             },
-            suggestedMax: clampedEndTime,
+            suggestedMax: this.endTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,
