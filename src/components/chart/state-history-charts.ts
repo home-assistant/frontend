@@ -129,8 +129,8 @@ class StateHistoryCharts extends LitElement {
           .data=${item.data}
           .identifier=${item.identifier}
           .isSingleDevice=${!this.noSingle &&
-          this.historyData.timeline &&
-          this.historyData.timeline.length === 1}
+          this.historyData.line &&
+          this.historyData.line.length === 1}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
