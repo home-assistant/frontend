@@ -481,7 +481,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .layout=${grid({
                         itemSize: {
                           width: "175px",
-                          height: childrenMediaClass.thumbnail_ratio == "portrait" ? "312px" : "225px",
+                          height:
+                            childrenMediaClass.thumbnail_ratio === "portrait"
+                              ? "312px"
+                              : "225px",
                         },
                         gap: "16px",
                         flex: { preserve: "aspect-ratio" },
