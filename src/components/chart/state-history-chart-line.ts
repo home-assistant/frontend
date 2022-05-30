@@ -46,6 +46,8 @@ class StateHistoryChartLine extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
+      const clampedEndTime =
+        this.endTime && this.endTime > new Date() ? new Date() : this.endTime;
       this._chartOptions = {
         parsing: false,
         animation: false,
@@ -57,8 +59,7 @@ class StateHistoryChartLine extends LitElement {
                 locale: this.hass.locale,
               },
             },
-            suggestedMin: this.startTime,
-            suggestedMax: this.endTime,
+            suggestedMax: clampedEndTime,
             ticks: {
               maxRotation: 0,
               sampleSize: 5,

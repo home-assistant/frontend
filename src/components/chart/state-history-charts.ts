@@ -128,7 +128,6 @@ class StateHistoryCharts extends LitElement {
           .isSingleDevice=${!this.noSingle &&
           this.historyData.line &&
           this.historyData.line.length === 1}
-          .startTime=${this._computedStartTime}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
