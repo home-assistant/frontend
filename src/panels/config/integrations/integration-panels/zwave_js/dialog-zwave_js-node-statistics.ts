@@ -43,7 +43,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     rssi_translated?: TemplateResult | string;
   };
 
-  @state() private _deviceIDsToDevices: { [key: string]: DeviceRegistryEntry } =
+  @state() private _deviceIDsToName: { [key: string]: DeviceRegistryEntry } =
     {};
 
   @state() private _workingRoutes: {
@@ -330,10 +330,10 @@ class DialogZWaveJSNodeStatistics extends LitElement {
   }
 
   private _computeDeviceNameById(device_id: string): "unknown device" | string {
-    if (!this._deviceIDsToDevices) {
+    if (!this._deviceIDsToName) {
       return "unknown device";
     }
-    const device = this._deviceIDsToDevices[device_id];
+    const device = this._deviceIDsToName[device_id];
     if (!device) {
       return "unknown device";
     }
