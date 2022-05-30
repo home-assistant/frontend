@@ -39,8 +39,9 @@ import {
   getEnergyDataCollection,
   getEnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
+  getEnergyLabel,
 } from "../../../../data/energy";
-import { Statistics } from "../../../../data/history";
+import { Statistics, StatisticsMetaData } from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -289,7 +290,12 @@ export class HuiEnergySolarGraphCard
       .trim();
 
     datasets.push(
-      ...this._processDataSet(energyData.stats, solarSources, solarColor)
+      ...this._processDataSet(
+        energyData.stats,
+        energyData.statsMetadata,
+        solarSources,
+        solarColor
+      )
     );
 
     if (energyData.statsCompare) {
@@ -307,6 +313,7 @@ export class HuiEnergySolarGraphCard
       datasets.push(
         ...this._processDataSet(
           energyData.statsCompare,
+          energyData.statsMetadata,
           solarSources,
           solarColor,
           true
@@ -339,6 +346,7 @@ export class HuiEnergySolarGraphCard
 
   private _processDataSet(
     statistics: Statistics,
+    statisticsMetaData: StatisticsMetaData[],
     solarSources: SolarSourceTypeEnergyPreference[],
     solarColor: string,
     compare = false
@@ -346,8 +354,6 @@ export class HuiEnergySolarGraphCard
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
     solarSources.forEach((source, idx) => {
-      const entity = this.hass.states[source.stat_energy_from];
-
       const modifiedColor =
         idx > 0
           ? this.hass.themes.darkMode
@@ -393,7 +399,11 @@ export class HuiEnergySolarGraphCard
         label: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
           {
-            name: entity ? computeStateName(entity) : source.stat_energy_from,
+            name: getEnergyLabel(
+              this.hass,
+              source.stat_energy_from,
+              statisticsMetaData
+            ),
           }
         ),
         borderColor: compare ? borderColor + "7F" : borderColor,

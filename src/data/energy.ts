@@ -10,6 +10,7 @@ import {
   startOfYesterday,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -240,6 +241,7 @@ export interface EnergyData {
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
+  statsMetadata: StatisticsMetaData[];
   statsCompare: Statistics;
   co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
@@ -432,6 +434,8 @@ const getEnergyData = async (
     }
   });
 
+  const statsMetadata = await getStatisticMetadata(hass, statIDs);
+
   const data: EnergyData = {
     start,
     end,
@@ -440,6 +444,7 @@ const getEnergyData = async (
     info,
     prefs,
     stats,
+    statsMetadata,
     statsCompare,
     co2SignalConfigEntry,
     co2SignalEntity,
@@ -647,4 +652,22 @@ export const getEnergyGasUnit = (
     }
   }
   return undefined;
+};
+
+export const getEnergyLabel = (
+  hass: HomeAssistant,
+  source_name: string,
+  statisticsMetaData: StatisticsMetaData[]
+): string => {
+  const entity = hass.states[source_name];
+  if (entity) {
+    return computeStateName(entity);
+  }
+  const statisticMetaData = statisticsMetaData.find(
+    ({ statistic_id }) => statistic_id === source_name
+  );
+  if (statisticMetaData?.name) {
+    return statisticMetaData.name;
+  }
+  return source_name;
 };
