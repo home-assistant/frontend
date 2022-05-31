@@ -554,15 +554,13 @@ export const adjustStatisticsSum = (
 export const getStatisticLabel = (
   hass: HomeAssistant,
   statisticsId: string,
-  statisticsMetaData: StatisticsMetaData[]
+  statisticsMetaData: Record<string, StatisticsMetaData>
 ): string => {
   const entity = hass.states[statisticsId];
   if (entity) {
     return computeStateName(entity);
   }
-  const statisticMetaData = statisticsMetaData.find(
-    ({ statistic_id }) => statistic_id === statisticsId
-  );
+  const statisticMetaData = statisticsMetaData[statisticsId];
   if (statisticMetaData?.name) {
     return statisticMetaData.name;
   }

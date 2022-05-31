@@ -422,7 +422,7 @@ export class HuiEnergyUsageGraphCard
 
   private _processDataSet(
     statistics: Statistics,
-    statisticsMetaData: StatisticsMetaData[],
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     statIdsByCat: {
       to_grid?: string[] | undefined;
       from_grid?: string[] | undefined;

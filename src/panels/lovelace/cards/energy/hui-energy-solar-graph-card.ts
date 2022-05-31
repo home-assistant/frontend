@@ -349,7 +349,7 @@ export class HuiEnergySolarGraphCard
 
   private _processDataSet(
     statistics: Statistics,
-    statisticsMetaData: StatisticsMetaData[],
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     solarSources: SolarSourceTypeEnergyPreference[],
     solarColor: string,
     compare = false

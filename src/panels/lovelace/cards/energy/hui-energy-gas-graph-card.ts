@@ -273,7 +273,9 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
+    this._unit =
+      getEnergyGasUnit(this.hass, energyData.prefs, energyData.statsMetadata) ||
+      "m³";
 
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
@@ -327,7 +329,7 @@ export class HuiEnergyGasGraphCard
 
   private _processDataSet(
     statistics: Statistics,
-    statisticsMetaData: StatisticsMetaData[],
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     gasSources: GasSourceTypeEnergyPreference[],
     gasColor: string,
     compare = false
