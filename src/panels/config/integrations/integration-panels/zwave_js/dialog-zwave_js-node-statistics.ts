@@ -349,14 +349,12 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       this.hass,
       this.device!.id,
       (message: ZWaveJSNodeStatisticsUpdatedMessage) => {
-        this._nodeStatistics = message;
-
-        if (this._nodeStatistics.rssi) {
-          this._nodeStatistics.rssi_translated = this._computeRSSI(
-            this._nodeStatistics.rssi,
-            false
-          );
-        }
+        this._nodeStatistics = {
+          ...message,
+          rssi_translated: message.rssi
+            ? this._computeRSSI(message.rssi, false)
+            : undefined,
+        };
 
         const workingRoutesValueMap: [
           string,
