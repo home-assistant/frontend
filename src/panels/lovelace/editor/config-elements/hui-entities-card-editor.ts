@@ -408,10 +408,15 @@ export class HuiEntitiesCardEditor
 
   private _editDetailElement(ev: HASSDomEvent<EditSubElementEvent>): void {
     this._subElementEditorConfig = ev.detail.subElementConfig;
+
+    fireEvent(this, "edit-mode-changed", {
+      selectedRow: ev.detail.subElementConfig?.index,
+    });
   }
 
   private _goBack(): void {
     this._subElementEditorConfig = undefined;
+    fireEvent(this, "edit-mode-changed", true);
   }
 
   static get styles(): CSSResultGroup {

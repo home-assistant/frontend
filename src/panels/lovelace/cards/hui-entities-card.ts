@@ -6,7 +6,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -53,6 +54,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return { type: "entities", entities: foundEntities };
   }
+
+  @property() public editMode?: boolean | any;
 
   @state() private _config?: EntitiesCardConfig;
 
@@ -217,9 +220,15 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     `}
               </h1>
             `}
-        <div id="states" class="card-content">
-          ${this._configEntities!.map((entityConf) =>
-            this.renderEntity(entityConf)
+        <div
+          id="states"
+          class=${classMap({
+            "card-content": true,
+            highlight: this.editMode?.selectedRow !== undefined,
+          })}
+        >
+          ${this._configEntities!.map((entityConf, idx) =>
+            this.renderEntity(entityConf, idx)
           )}
         </div>
 
@@ -272,6 +281,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       #states > div {
         position: relative;
       }
+      #states.highlight > div.selected {
+        opacity: 1;
+      }
+      #states.highlight > div {
+        opacity: 0.5;
+      }
 
       .icon {
         padding: 0px 18px 0px 8px;
@@ -293,7 +308,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+  private renderEntity(
+    entityConf: LovelaceRowConfig,
+    idx: number
+  ): TemplateResult {
     const element = createRowElement(
       (!("type" in entityConf) || entityConf.type === "conditional") &&
         this._config!.state_color
@@ -307,7 +325,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
 
-    return html`<div>${element}</div>`;
+    return html`<div
+      class=${classMap({
+        selected: this.editMode?.selectedRow === idx,
+      })}
+    >
+      ${element}
+    </div>`;
   }
 }
 
