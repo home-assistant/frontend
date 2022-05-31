@@ -26,7 +26,6 @@ import {
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatDateShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -39,7 +38,11 @@ import {
   getEnergyDataCollection,
   getEnergyGasUnit,
 } from "../../../../data/energy";
-import { Statistics } from "../../../../data/history";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -270,7 +273,9 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
+    this._unit =
+      getEnergyGasUnit(this.hass, energyData.prefs, energyData.statsMetadata) ||
+      "m³";
 
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 
@@ -280,7 +285,12 @@ export class HuiEnergyGasGraphCard
       .trim();
 
     datasets.push(
-      ...this._processDataSet(energyData.stats, gasSources, gasColor)
+      ...this._processDataSet(
+        energyData.stats,
+        energyData.statsMetadata,
+        gasSources,
+        gasColor
+      )
     );
 
     if (energyData.statsCompare) {
@@ -298,6 +308,7 @@ export class HuiEnergyGasGraphCard
       datasets.push(
         ...this._processDataSet(
           energyData.statsCompare,
+          energyData.statsMetadata,
           gasSources,
           gasColor,
           true
@@ -318,14 +329,14 @@ export class HuiEnergyGasGraphCard
 
   private _processDataSet(
     statistics: Statistics,
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     gasSources: GasSourceTypeEnergyPreference[],
     gasColor: string,
     compare = false
   ) {
     const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
-    gasSources.forEach((source, idx) => {
-      const entity = this.hass.states[source.stat_energy_from];
 
+    gasSources.forEach((source, idx) => {
       const modifiedColor =
         idx > 0
           ? this.hass.themes.darkMode
@@ -368,7 +379,11 @@ export class HuiEnergyGasGraphCard
       }
 
       data.push({
-        label: entity ? computeStateName(entity) : source.stat_energy_from,
+        label: getStatisticLabel(
+          this.hass,
+          source.stat_energy_from,
+          statisticsMetaData
+        ),
         borderColor: compare ? borderColor + "7F" : borderColor,
         backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
         data: gasConsumptionData,

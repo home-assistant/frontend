@@ -26,7 +26,6 @@ import {
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatDateShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -34,7 +33,11 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
-import { Statistics } from "../../../../data/history";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -378,7 +381,14 @@ export class HuiEnergyUsageGraphCard
     this._compareEnd = energyData.endCompare;
 
     datasets.push(
-      ...this._processDataSet(energyData.stats, statIds, colors, labels, false)
+      ...this._processDataSet(
+        energyData.stats,
+        energyData.statsMetadata,
+        statIds,
+        colors,
+        labels,
+        false
+      )
     );
 
     if (energyData.statsCompare) {
@@ -396,6 +406,7 @@ export class HuiEnergyUsageGraphCard
       datasets.push(
         ...this._processDataSet(
           energyData.statsCompare,
+          energyData.statsMetadata,
           statIds,
           colors,
           labels,
@@ -411,6 +422,7 @@ export class HuiEnergyUsageGraphCard
 
   private _processDataSet(
     statistics: Statistics,
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     statIdsByCat: {
       to_grid?: string[] | undefined;
       from_grid?: string[] | undefined;
@@ -580,8 +592,6 @@ export class HuiEnergyUsageGraphCard
 
     Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source], idx) => {
-        const entity = this.hass.states[statId];
-
         const modifiedColor =
           idx > 0
             ? this.hass.themes.darkMode
@@ -610,9 +620,7 @@ export class HuiEnergyUsageGraphCard
           label:
             type in labels
               ? labels[type]
-              : entity
-              ? computeStateName(entity)
-              : statId,
+              : getStatisticLabel(this.hass, statId, statisticsMetaData),
           order:
             type === "used_solar"
               ? 1
