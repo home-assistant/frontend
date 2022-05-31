@@ -12,6 +12,8 @@ export class HuiCardPreview extends ReactiveElement {
 
   @property() public config?: LovelaceCardConfig;
 
+  @property() public editMode = true;
+
   private _element?: LovelaceCard;
 
   private get _error() {
@@ -81,6 +83,9 @@ export class HuiCardPreview extends ReactiveElement {
         this._element.hass = this.hass;
       }
     }
+    if (changedProperties.has("editMode")) {
+      this._element!.editMode = this.editMode;
+    }
   }
 
   private _createCard(configValue: LovelaceCardConfig): void {
@@ -90,6 +95,7 @@ export class HuiCardPreview extends ReactiveElement {
     if (this.hass) {
       this._element!.hass = this.hass;
     }
+    this._element!.editMode = this.editMode;
 
     this.appendChild(this._element!);
   }

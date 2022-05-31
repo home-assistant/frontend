@@ -43,6 +43,13 @@ declare global {
   interface HTMLElementEventMap {
     "reload-lovelace": HASSDomEvent<undefined>;
   }
+
+  interface HASSDomEvents {
+    "edit-mode-changed": any;
+  }
+  interface HTMLElementEventMap {
+    "edit-mode-changed": HASSDomEvent<any>;
+  }
 }
 
 @customElement("hui-dialog-edit-card")
@@ -77,10 +84,13 @@ export class HuiDialogEditCard
 
   @state() private _isEscapeEnabled = true;
 
+  @state() private _editMode = true;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
     this._guiModeAvailable = true;
+    this._editMode = true;
     const [view, card] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
@@ -205,6 +215,7 @@ export class HuiDialogEditCard
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
               @config-changed=${this._handleConfigChanged}
+              @edit-mode-changed=${this._handleEditModeChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
               dialogInitialFocus
@@ -214,6 +225,7 @@ export class HuiDialogEditCard
             <hui-card-preview
               .hass=${this.hass}
               .config=${this._cardConfig}
+              .editMode=${this._editMode}
               class=${this._error ? "blur" : ""}
             ></hui-card-preview>
             ${this._error
@@ -282,6 +294,10 @@ export class HuiDialogEditCard
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     this._dirty = true;
+  }
+
+  private _handleEditModeChanged(ev: HASSDomEvent<any>) {
+    this._editMode = ev.detail ?? true;
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {

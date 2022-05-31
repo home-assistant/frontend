@@ -38,7 +38,7 @@ export interface LovelaceBadge extends HTMLElement {
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
-  editMode?: boolean;
+  editMode?: any;
   getCardSize(): number | Promise<number>;
   setConfig(config: LovelaceCardConfig): void;
 }
