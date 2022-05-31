@@ -561,8 +561,5 @@ export const getStatisticLabel = (
     return computeStateName(entity);
   }
   const statisticMetaData = statisticsMetaData[statisticsId];
-  if (statisticMetaData?.name) {
-    return statisticMetaData.name;
-  }
-  return statisticsId;
+  return statisticMetaData?.name || statisticsId;
 };
