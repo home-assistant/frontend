@@ -125,6 +125,7 @@ class HaConfigHardware extends LitElement {
                   <div class="card-content">
                     <mwc-list>
                       <mwc-list-item
+                        noninteractive
                         graphic=${ifDefined(imageURL ? "medium" : undefined)}
                         .twoline=${Boolean(boardId)}
                       >

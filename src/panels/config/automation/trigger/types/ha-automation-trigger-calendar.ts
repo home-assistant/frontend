@@ -106,7 +106,9 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
     const offsetType = ev.detail.value.offset_type === "before" ? "-" : "";
     const newTrigger = {
       ...ev.detail.value,
-      offset: `${offsetType}${duration.hours}:${duration.minutes}:${duration.seconds}`,
+      offset: `${offsetType}${duration.hours ?? 0}:${duration.minutes ?? 0}:${
+        duration.seconds ?? 0
+      }`,
     };
     delete newTrigger.offset_type;
     fireEvent(this, "value-changed", { value: newTrigger });

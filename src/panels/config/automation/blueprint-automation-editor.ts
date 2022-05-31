@@ -315,7 +315,8 @@ export class HaBlueprintAutomationEditor extends LitElement {
           padding: 0 16px 16px;
         }
         ha-textarea,
-        ha-textfield {
+        ha-textfield,
+        ha-blueprint-picker {
           display: block;
         }
         h3 {
