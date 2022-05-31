@@ -338,7 +338,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       return "unknown device";
     }
 
-    return computeDeviceName(device, this.hass);
+    return this._deviceIDsToName[device_id] || "unknown device";
   }
 
   private _subscribeNodeStatistics(): void {
