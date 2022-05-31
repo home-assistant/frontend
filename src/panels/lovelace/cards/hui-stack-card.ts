@@ -7,6 +7,7 @@ import {
   TemplateResult,
 } from "lit";
 import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";
@@ -28,7 +29,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public editMode?: boolean;
+  @property() public editMode?: any;
 
   @property() protected _cards?: LovelaceCard[];
 
@@ -43,8 +44,16 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       throw new Error("Invalid configuration");
     }
     this._config = config;
-    this._cards = config.cards.map((card) => {
+    this._cards = config.cards.map((card, idx) => {
       const element = this._createCardElement(card) as LovelaceCard;
+      if (this.editMode !== undefined) {
+        if (this.editMode?.selected === idx) {
+          element.classList.add("selected");
+          element.editMode = this.editMode.data;
+        } else {
+          element.editMode = true;
+        }
+      }
       return element;
     });
   }
@@ -58,12 +67,18 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       return;
     }
 
-    for (const element of this._cards) {
+    for (const [idx, element] of this._cards.entries()) {
       if (this.hass) {
         element.hass = this.hass;
       }
       if (this.editMode !== undefined) {
-        element.editMode = this.editMode;
+        if (this.editMode.selected === idx) {
+          element.editMode = this.editMode.data ?? true;
+          element.classList.add("selected");
+        } else {
+          element.editMode = true;
+          element.classList.remove("selected");
+        }
       }
     }
   }
@@ -77,7 +92,12 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
-      <div id="root">${this._cards}</div>
+      <div
+        id="root"
+        class=${classMap({ highlight: this.editMode?.selected !== undefined })}
+      >
+        ${this._cards}
+      </div>
     `;
   }
 
@@ -94,6 +114,12 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         line-height: 32px;
         display: block;
         padding: 24px 16px 16px;
+      }
+      #root.highlight > *.selected {
+        opacity: 1;
+      }
+      #root.highlight > * {
+        opacity: 0.5;
       }
     `;
   }

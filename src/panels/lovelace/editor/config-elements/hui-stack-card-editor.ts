@@ -144,6 +144,7 @@ export class HuiStackCardEditor
                   .lovelace=${this.lovelace}
                   @config-changed=${this._handleConfigChanged}
                   @GUImode-changed=${this._handleGUIModeChanged}
+                  @edit-mode-changed=${this._handleEditModeChanged}
                 ></hui-card-element-editor>
               `
             : html`
@@ -226,6 +227,14 @@ export class HuiStackCardEditor
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
+  protected _handleEditModeChanged(ev: HASSDomEvent<any>) {
+    ev.stopPropagation();
+    fireEvent(this, "edit-mode-changed", {
+      selected: this._selectedCard,
+      data: ev.detail,
+    });
+  }
+
   protected _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
   }
@@ -235,6 +244,13 @@ export class HuiStackCardEditor
     if (this._cardEditorEl) {
       this._cardEditorEl!.GUImode = value;
     }
+  }
+
+  protected updated(changedProperties) {
+    if (changedProperties.has("_selectedCard"))
+      fireEvent(this, "edit-mode-changed", {
+        selected: this._selectedCard,
+      });
   }
 
   static get styles(): CSSResultGroup {
