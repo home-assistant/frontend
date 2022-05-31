@@ -39,9 +39,12 @@ import {
   getEnergyDataCollection,
   getEnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
-  getEnergyLabel,
 } from "../../../../data/energy";
-import { Statistics, StatisticsMetaData } from "../../../../data/history";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -399,7 +402,7 @@ export class HuiEnergySolarGraphCard
         label: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
           {
-            name: getEnergyLabel(
+            name: getStatisticLabel(
               this.hass,
               source.stat_energy_from,
               statisticsMetaData

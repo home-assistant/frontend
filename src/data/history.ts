@@ -1,7 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
-import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
+import {
+  computeStateName,
+  computeStateNameFromEntityAttributes,
+} from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
 import { FrontendLocaleData } from "./translation";
@@ -547,3 +550,21 @@ export const adjustStatisticsSum = (
     start_time,
     adjustment,
   });
+
+export const getStatisticLabel = (
+  hass: HomeAssistant,
+  statisticsId: string,
+  statisticsMetaData: StatisticsMetaData[]
+): string => {
+  const entity = hass.states[statisticsId];
+  if (entity) {
+    return computeStateName(entity);
+  }
+  const statisticMetaData = statisticsMetaData.find(
+    ({ statistic_id }) => statistic_id === statisticsId
+  );
+  if (statisticMetaData?.name) {
+    return statisticMetaData.name;
+  }
+  return statisticsId;
+};

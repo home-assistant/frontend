@@ -10,7 +10,6 @@ import {
   startOfYesterday,
 } from "date-fns/esm";
 import { Collection, getCollection } from "home-assistant-js-websocket";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -652,22 +651,4 @@ export const getEnergyGasUnit = (
     }
   }
   return undefined;
-};
-
-export const getEnergyLabel = (
-  hass: HomeAssistant,
-  statisticsId: string,
-  statisticsMetaData: StatisticsMetaData[]
-): string => {
-  const entity = hass.states[source_name];
-  if (entity) {
-    return computeStateName(entity);
-  }
-  const statisticMetaData = statisticsMetaData.find(
-    ({ statistic_id }) => statistic_id === source_name
-  );
-  if (statisticMetaData?.name) {
-    return statisticMetaData.name;
-  }
-  return source_name;
 };

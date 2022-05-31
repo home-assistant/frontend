@@ -37,9 +37,12 @@ import {
   GasSourceTypeEnergyPreference,
   getEnergyDataCollection,
   getEnergyGasUnit,
-  getEnergyLabel,
 } from "../../../../data/energy";
-import { Statistics, StatisticsMetaData } from "../../../../data/history";
+import {
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -374,7 +377,7 @@ export class HuiEnergyGasGraphCard
       }
 
       data.push({
-        label: getEnergyLabel(
+        label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
           statisticsMetaData

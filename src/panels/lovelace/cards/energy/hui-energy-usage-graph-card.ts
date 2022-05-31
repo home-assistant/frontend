@@ -32,12 +32,12 @@ import {
 } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
-  EnergyData,
-  getEnergyDataCollection,
-  getEnergyLabel,
-} from "../../../../data/energy";
-import { Statistics, StatisticsMetaData } from "../../../../data/history";
+  Statistics,
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -620,7 +620,7 @@ export class HuiEnergyUsageGraphCard
           label:
             type in labels
               ? labels[type]
-              : getEnergyLabel(this.hass, statId, statisticsMetaData),
+              : getStatisticLabel(this.hass, statId, statisticsMetaData),
           order:
             type === "used_solar"
               ? 1
