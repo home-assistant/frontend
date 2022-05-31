@@ -1,13 +1,17 @@
 import "@material/mwc-list/mwc-list-item";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@vaadin/combo-box/theme/material/vaadin-combo-box-light";
-import type { ComboBoxLight } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type {
+  ComboBoxLight,
+  ComboBoxLightFilterChangedEvent,
+  ComboBoxLightOpenedChangedEvent,
+  ComboBoxLightValueChangedEvent,
+} from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-textfield";
@@ -203,7 +207,7 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
     const opened = ev.detail.value;
     // delay this so we can handle click event before setting _opened
     setTimeout(() => {
@@ -229,14 +233,12 @@ export class HaComboBox extends LitElement {
         mutations.forEach((mutation) => {
           if (
             mutation.type === "attributes" &&
-            mutation.attributeName === "inert" &&
-            // @ts-expect-error
-            overlay.inert === true
+            mutation.attributeName === "inert"
           ) {
-            // @ts-expect-error
-            overlay.inert = false;
             this._overlayMutationObserver?.disconnect();
             this._overlayMutationObserver = undefined;
+            // @ts-expect-error
+            overlay.inert = false;
           } else if (mutation.type === "childList") {
             mutation.removedNodes.forEach((node) => {
               if (node.nodeName === "VAADIN-COMBO-BOX-OVERLAY") {
@@ -257,12 +259,12 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  private _filterChanged(ev: PolymerChangedEvent<string>) {
+  private _filterChanged(ev: ComboBoxLightFilterChangedEvent) {
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail, { composed: false });
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>) {
+  private _valueChanged(ev: ComboBoxLightValueChangedEvent) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
 
