@@ -167,6 +167,9 @@ export class HuiStackCardEditor
     this._setMode(true);
     this._guiModeAvailable = true;
     this._selectedCard = parseInt(ev.detail.selected, 10);
+    if (this._cardEditorEl) {
+      this._cardEditorEl.forceRebuild = true;
+    }
   }
 
   protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {

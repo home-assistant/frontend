@@ -53,6 +53,8 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
+  public forceRebuild = false;
+
   @state() private _yaml?: string;
 
   @state() private _config?: T;
@@ -292,7 +294,11 @@ export abstract class HuiElementEditor<T> extends LitElement {
       this._errors = undefined;
       this._warnings = undefined;
 
-      if (this._configElementType !== this.configElementType) {
+      if (
+        this._configElementType !== this.configElementType ||
+        this.forceRebuild
+      ) {
+        this.forceRebuild = false;
         // If the type has changed, we need to load a new GUI editor
         this._guiSupported = undefined;
         this._configElement = undefined;
