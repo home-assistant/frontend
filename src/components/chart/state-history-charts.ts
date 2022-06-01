@@ -92,11 +92,12 @@ class StateHistoryCharts extends LitElement {
       )
     );
 
-    const combinedItems = (
-      this.virtualize
-        ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
-        : [this.historyData.timeline]
-    ).concat(this.historyData.line);
+    const combinedItems = this.historyData.timeline.length
+      ? (this.virtualize
+          ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
+          : [this.historyData.timeline]
+        ).concat(this.historyData.line)
+      : this.historyData.line;
 
     return this.virtualize
       ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
