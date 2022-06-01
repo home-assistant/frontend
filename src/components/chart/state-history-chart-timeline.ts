@@ -93,7 +93,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ type: Boolean }) public isSingleDevice = false;
 
-  @property({ type: Boolean }) public dataHasMultipleRows = false;
+  @property({ type: Boolean }) public chunked = false;
 
   @property({ attribute: false }) public startTime!: Date;
 
@@ -117,7 +117,6 @@ export class StateHistoryChartTimeline extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       const narrow = this.narrow;
-      const multipleRows = this.data.length !== 1 || this.dataHasMultipleRows;
       this._chartOptions = {
         maintainAspectRatio: false,
         parsing: false,
@@ -163,13 +162,14 @@ export class StateHistoryChartTimeline extends LitElement {
               drawTicks: false,
             },
             ticks: {
-              display: multipleRows,
+              display:
+                this.chunked || !this.isSingleDevice || this.data.length !== 1,
             },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
             },
-            afterFit: function (scaleInstance) {
-              if (multipleRows) {
+            afterFit: (scaleInstance) => {
+              if (this.chunked) {
                 // ensure all the chart labels are the same width
                 scaleInstance.width = narrow ? 105 : 185;
               }
