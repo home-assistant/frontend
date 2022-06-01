@@ -92,9 +92,10 @@ class StateHistoryCharts extends LitElement {
       )
     );
 
-    const combinedItems = chunkData(
-      this.historyData.timeline,
-      CANVAS_TIMELINE_ROWS_CHUNK
+    const combinedItems = (
+      this.virtualize
+        ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
+        : [this.historyData.timeline]
     ).concat(this.historyData.line);
 
     return this.virtualize
@@ -127,8 +128,7 @@ class StateHistoryCharts extends LitElement {
           .data=${item.data}
           .identifier=${item.identifier}
           .isSingleDevice=${!this.noSingle &&
-          this.historyData.line &&
-          this.historyData.line.length === 1}
+          this.historyData.line?.length === 1}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
@@ -140,11 +140,11 @@ class StateHistoryCharts extends LitElement {
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
-        .noSingle=${this.noSingle}
+        .isSingleDevice=${!this.noSingle &&
+        this.historyData.timeline?.length === 1}
         .names=${this.names}
         .narrow=${this.narrow}
-        .dataHasMultipleRows=${this.historyData.timeline.length &&
-        this.historyData.timeline.length > 1}
+        .chunked=${this.virtualize}
       ></state-history-chart-timeline>
     </div> `;
   };
