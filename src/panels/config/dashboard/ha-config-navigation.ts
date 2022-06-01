@@ -60,24 +60,9 @@ class HaConfigNavigation extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}
-        @click=${this._entryClicked}
+        .label=${this.hass.localize("panel.config")}
       ></ha-navigation-list>
     `;
-  }
-
-  private _entryClicked(ev) {
-    const anchor = ev
-      .composedPath()
-      .find((n) => (n as HTMLElement).tagName === "A") as
-      | HTMLAnchorElement
-      | undefined;
-
-    if (anchor?.href?.endsWith("#external-app-configuration")) {
-      ev.preventDefault();
-      this.hass.auth.external!.fireMessage({
-        type: "config_screen/show",
-      });
-    }
   }
 
   static styles: CSSResultGroup = css`
