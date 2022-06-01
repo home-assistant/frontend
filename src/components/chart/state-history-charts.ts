@@ -62,19 +62,19 @@ class StateHistoryCharts extends LitElement {
   @eventOptions({ passive: true })
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
 
     if (this.isLoadingData && !this.historyData) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.loading_history")}
       </div>`;
     }
 
     if (this._isHistoryEmpty()) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
@@ -92,10 +92,12 @@ class StateHistoryCharts extends LitElement {
       )
     );
 
-    const combinedItems = chunkData(
-      this.historyData.timeline,
-      CANVAS_TIMELINE_ROWS_CHUNK
-    ).concat(this.historyData.line);
+    const combinedItems = this.historyData.timeline.length
+      ? (this.virtualize
+          ? chunkData(this.historyData.timeline, CANVAS_TIMELINE_ROWS_CHUNK)
+          : [this.historyData.timeline]
+        ).concat(this.historyData.line)
+      : this.historyData.line;
 
     return this.virtualize
       ? html`<div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
@@ -127,8 +129,7 @@ class StateHistoryCharts extends LitElement {
           .data=${item.data}
           .identifier=${item.identifier}
           .isSingleDevice=${!this.noSingle &&
-          this.historyData.line &&
-          this.historyData.line.length === 1}
+          this.historyData.line?.length === 1}
           .endTime=${this._computedEndTime}
           .names=${this.names}
         ></state-history-chart-line>
@@ -140,11 +141,11 @@ class StateHistoryCharts extends LitElement {
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
-        .noSingle=${this.noSingle}
+        .isSingleDevice=${!this.noSingle &&
+        this.historyData.timeline?.length === 1}
         .names=${this.names}
         .narrow=${this.narrow}
-        .dataHasMultipleRows=${this.historyData.timeline.length &&
-        this.historyData.timeline.length > 1}
+        .chunked=${this.virtualize}
       ></state-history-chart-timeline>
     </div> `;
   };
