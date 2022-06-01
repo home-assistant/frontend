@@ -62,19 +62,19 @@ class StateHistoryCharts extends LitElement {
   @eventOptions({ passive: true })
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
 
     if (this.isLoadingData && !this.historyData) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.loading_history")}
       </div>`;
     }
 
     if (this._isHistoryEmpty()) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
