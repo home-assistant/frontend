@@ -240,6 +240,7 @@ export interface EnergyData {
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
+  statsMetadata: Record<string, StatisticsMetaData>;
   statsCompare: Statistics;
   co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
@@ -285,15 +286,6 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   const statIDs: string[] = [];
-  const gasSources: GasSourceTypeEnergyPreference[] =
-    prefs.energy_sources.filter(
-      (source) => source.type === "gas"
-    ) as GasSourceTypeEnergyPreference[];
-  const gasStatisticIdsWithMeta: StatisticsMetaData[] =
-    await getStatisticMetadata(
-      hass,
-      gasSources.map((source) => source.stat_energy_from)
-    );
 
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
@@ -303,20 +295,6 @@ const getEnergyData = async (
 
     if (source.type === "gas") {
       statIDs.push(source.stat_energy_from);
-      const entity = hass.states[source.stat_energy_from];
-      if (!entity) {
-        for (const statisticIdWithMeta of gasStatisticIdsWithMeta) {
-          if (
-            statisticIdWithMeta?.statistic_id === source.stat_energy_from &&
-            statisticIdWithMeta?.unit_of_measurement
-          ) {
-            source.unit_of_measurement =
-              statisticIdWithMeta?.unit_of_measurement === "Wh"
-                ? "kWh"
-                : statisticIdWithMeta?.unit_of_measurement;
-          }
-        }
-      }
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
       }
@@ -432,6 +410,12 @@ const getEnergyData = async (
     }
   });
 
+  const statsMetadataArray = await getStatisticMetadata(hass, statIDs);
+  const statsMetadata: Record<string, StatisticsMetaData> = {};
+  statsMetadataArray.forEach((x) => {
+    statsMetadata[x.statistic_id] = x;
+  });
+
   const data: EnergyData = {
     start,
     end,
@@ -440,6 +424,7 @@ const getEnergyData = async (
     info,
     prefs,
     stats,
+    statsMetadata,
     statsCompare,
     co2SignalConfigEntry,
     co2SignalEntity,
@@ -628,13 +613,13 @@ export const getEnergyGasUnitCategory = (
 
 export const getEnergyGasUnit = (
   hass: HomeAssistant,
-  prefs: EnergyPreferences
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-
     const entity = hass.states[source.stat_energy_from];
     if (entity?.attributes.unit_of_measurement) {
       // Wh is normalized to kWh by stats generation
@@ -642,8 +627,11 @@ export const getEnergyGasUnit = (
         ? "kWh"
         : entity.attributes.unit_of_measurement;
     }
-    if (source.unit_of_measurement) {
-      return source.unit_of_measurement;
+    const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
+    if (statisticIdWithMeta?.unit_of_measurement) {
+      return statisticIdWithMeta.unit_of_measurement === "Wh"
+        ? "kWh"
+        : statisticIdWithMeta.unit_of_measurement;
     }
   }
   return undefined;

@@ -310,7 +310,7 @@ export class HaLogbook extends LitElement {
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
     const newEntries = [...streamMessage.events].reverse();
-    if (!this._logbookEntries) {
+    if (!this._logbookEntries || !this._logbookEntries.length) {
       this._logbookEntries = newEntries;
       return;
     }
@@ -320,14 +320,16 @@ export class HaLogbook extends LitElement {
       return;
     }
     const nonExpiredRecords = this._nonExpiredRecords(purgeBeforePythonTime);
-    this._logbookEntries =
-      newEntries[0].when >= this._logbookEntries[0].when
-        ? // The new records are newer than the old records
-          // append the old records to the end of the new records
-          newEntries.concat(nonExpiredRecords)
-        : // The new records are older than the old records
-          // append the new records to the end of the old records
-          nonExpiredRecords.concat(newEntries);
+    this._logbookEntries = !nonExpiredRecords.length
+      ? // All existing entries expired
+        newEntries
+      : newEntries[0].when >= nonExpiredRecords[0].when
+      ? // The new records are newer than the old records
+        // append the old records to the end of the new records
+        newEntries.concat(nonExpiredRecords)
+      : // The new records are older than the old records
+        // append the new records to the end of the old records
+        nonExpiredRecords.concat(newEntries);
   };
 
   private _updateTraceContexts = throttle(async () => {
