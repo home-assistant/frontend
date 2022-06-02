@@ -346,6 +346,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         margin: auto;
         width: 100%;
         max-width: 300px;
+        direction: ltr;
       }
 
       #keypad mwc-button {

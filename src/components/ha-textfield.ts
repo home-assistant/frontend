@@ -54,9 +54,17 @@ export class HaTextField extends TextFieldBase {
       .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
         padding: var(--text-field-padding, 0px 16px);
       }
+      .mdc-text-field--with-leading-icon {
+        padding-inline-start: initial;
+        padding-inline-end: 16px;
+        direction: var(--direction);
+      }
       .mdc-text-field__affix--suffix {
         padding-left: var(--text-field-suffix-padding-left, 12px);
         padding-right: var(--text-field-suffix-padding-right, 0px);
+      }
+      .mdc-text-field__affix--suffix,
+      .mdc-text-field--with-leading-icon {
         padding-inline-start: var(--text-field-suffix-padding-left, 12px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
         direction: var(--direction);
@@ -69,6 +77,12 @@ export class HaTextField extends TextFieldBase {
 
       .mdc-text-field__icon {
         color: var(--secondary-text-color);
+      }
+
+      .mdc-text-field__icon--leading {
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
+        direction: var(--direction);
       }
 
       input {

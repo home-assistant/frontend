@@ -67,8 +67,7 @@ export class HaChip extends LitElement {
         color: var(--ha-chip-icon-color, var(--ha-chip-text-color));
       }
       .mdc-chip.mdc-chip--selected .mdc-chip__checkmark,
-      .mdc-chip.no-text
-        .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
+      .mdc-chip .mdc-chip__icon--leading:not(.mdc-chip__icon--leading-hidden) {
         margin-right: -4px;
         margin-inline-start: -4px;
         margin-inline-end: 4px;
