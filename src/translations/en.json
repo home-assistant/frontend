@@ -3100,6 +3100,7 @@
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
             "remove_failed": "Remove Failed Device",
+            "update_firmware": "Update Device Firmware",
             "highest_security": "Highest Security",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
@@ -3306,6 +3307,32 @@
             "healing_complete": "{device} has been healed.",
             "in_progress": "{device} healing is in progress.",
             "network_heal_in_progress": "A Z-Wave network heal is already in progress. Please wait for it to finish before healing an individual device."
+          },
+          "update_firmware": {
+            "title": "Update Device Firmware",
+            "introduction": "Select the firmware file you would like to use to update {device}.",
+            "upload_firmware": "Upload Firmware",
+            "queued": "The firmware update for {device} has been accepted by the controller and is queued for update.",
+            "in_progress": "The firmware update on {device} is in progress. If you close this dialog, the update will continue in the background.",
+            "abort": "Abort Firmware Update",
+            "confirm_abort": "Are you sure you want to abort the firmware update on {device}?",
+            "finished_status": {
+              "ok": "Successfully updated firmware on {device}: {message}",
+              "error": "Unable to update firmware on {device}: {message}",
+              "Error_Timeout": "Timed Out",
+              "Error_Checksum": "Checksum Error",
+              "Error_TransmissionFailed": "Transmission Failed",
+              "Error_InvalidManufacturerID": "Invalid Manufacturer ID",
+              "Error_InvalidFirmwareID": "Invalid Firmware ID",
+              "Error_InvalidFirmwareTarget": "Invalid Firmware Target",
+              "Error_InvalidHeaderInformation": "Invalid Header Information",
+              "Error_InvalidHeaderFormat": "Invalid Header Format",
+              "Error_InsufficientMemory": "Insufficient Memory",
+              "Error_InvalidHardwareVersion": "Invalid Hardware Version",
+              "OK_WaitingForActivation": "Waiting for Activiation",
+              "OK_NoRestart": "No Restart",
+              "OK_RestartPending": "Restart Pending"
+            }
           },
           "logs": {
             "title": "Z-Wave JS Logs",

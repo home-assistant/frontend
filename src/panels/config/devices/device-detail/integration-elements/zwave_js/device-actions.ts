@@ -6,6 +6,7 @@ import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
+import { showZWaveJUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getZwaveDeviceActions = async (
@@ -73,6 +74,12 @@ export const getZwaveDeviceActions = async (
         showZWaveJSNodeStatisticsDialog(el, {
           device: device,
         }),
+    },
+    {
+      label: hass.localize(
+        "ui.panel.config.zwave_js.device_info.update_firmware"
+      ),
+      action: () => showZWaveJUpdateFirmwareNodeDialog(el, { device }),
     },
   ];
 };
