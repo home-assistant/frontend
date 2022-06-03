@@ -31,6 +31,7 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  mediaPlayerPlayMedia,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_SEEK,
   SUPPORT_TURN_ON,
@@ -489,18 +490,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       action: "play",
       entityId: this._config!.entity,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
-        this._playMedia(
+        mediaPlayerPlayMedia(
+          this.hass,
+          this._config!.entity,
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
         ),
-    });
-  }
-
-  private _playMedia(media_content_id: string, media_content_type: string) {
-    this.hass!.callService("media_player", "play_media", {
-      entity_id: this._config!.entity,
-      media_content_id,
-      media_content_type,
     });
   }
 

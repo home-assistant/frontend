@@ -26,6 +26,7 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  mediaPlayerPlayMedia,
   SUPPORT_BROWSE_MEDIA,
   SUPPORT_PLAY_MEDIA,
   SUPPORT_SELECT_SOUND_MODE,
@@ -305,18 +306,12 @@ class MoreInfoMediaPlayer extends LitElement {
       action: "play",
       entityId: this.stateObj!.entity_id,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
-        this._playMedia(
+        mediaPlayerPlayMedia(
+          this.hass,
+          this.stateObj!.entity_id,
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
         ),
-    });
-  }
-
-  private _playMedia(media_content_id: string, media_content_type: string) {
-    this.hass!.callService("media_player", "play_media", {
-      entity_id: this.stateObj!.entity_id,
-      media_content_id,
-      media_content_type,
     });
   }
 }
