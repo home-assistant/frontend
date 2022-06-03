@@ -605,6 +605,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         );
         height: 100%;
         right: 0;
+
         opacity: 1;
         transition: width 0.8s, opacity 0.8s linear 0.8s;
       }
@@ -673,6 +674,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition: padding, color;
         transition-duration: 0.4s;
         margin-left: -12px;
+        margin-inline-start: -12px;
+        margin-inline-end: initial;
+        padding-inline-start: 0;
+        padding-inline-end: 8px;
+        direction: var(--direction);
       }
 
       .controls > div {
@@ -698,6 +704,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       ha-icon-button.browse-media {
         position: absolute;
         right: 4px;
+        inset-inline-start: initial;
+        inset-inline-end: 4px;
+        direction: var(--direction);
         --mdc-icon-size: 24px;
       }
 
@@ -714,12 +723,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .icon-name ha-state-icon {
         padding-right: 8px;
+        padding-inline-start: initial;
+        padding-inline-end: 8px;
+        direction: var(--direction);
       }
 
       .more-info {
         position: absolute;
         top: 4px;
         right: 4px;
+        inset-inline-start: initial;
+        inset-inline-end: 4px;
+        direction: var(--direction);
       }
 
       .media-info {
