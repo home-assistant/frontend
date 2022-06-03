@@ -124,6 +124,10 @@ export class HaTextField extends TextFieldBase {
         inset-inline-end: initial !important;
         direction: var(--direction);
       }
+
+      .mdc-text-field__input[type="number"] {
+        direction: var(--direction);
+      }
     `,
   ];
 }
