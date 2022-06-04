@@ -206,7 +206,14 @@ export class HaLogbook extends LitElement {
   private _unsubscribeAndEmptyEntries() {
     this._logbookEntries = [];
     if (this._subscribed) {
-      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
+      this._subscribed
+        .then((unsub) => (unsub ? unsub() : undefined))
+        .catch(() => {
+          // The backend will cancel the subscription if
+          // we subscribe to entities that will all be
+          // filtered away
+          this._subscribed = undefined;
+        });
       this._subscribed = undefined;
     }
   }
