@@ -23,7 +23,7 @@ import { AddApplicationCredentialDialogParams } from "./show-dialog-add-applicat
 interface Domain {
   id: string;
   name: string;
-  description_placeholder: string;
+  description_placeholders: string;
 }
 
 const rowRenderer: ComboBoxLitRenderer<Domain> = (item) => html`<mwc-list-item>
@@ -189,7 +189,7 @@ export class DialogAddApplicationCredential extends LitElement {
   private async _handleDomainPicked(ev: CustomEvent) {
     ev.stopPropagation();
     this._domain = ev.detail.value;
-    const info = this._config.integrations[this._domain];
+    const info = this._config!.integrations[this._domain];
     this._description = this.hass.localize(
       `component.${this._domain}.application_credentials.description`,
       info.description_placeholders
