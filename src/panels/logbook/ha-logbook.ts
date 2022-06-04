@@ -136,7 +136,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._unsubscribe();
+    this._unsubscribeAndEmptyEntries();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -148,7 +148,6 @@ export class HaLogbook extends LitElement {
       );
     }
 
-    this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
 
@@ -192,13 +191,6 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private _unsubscribe(): void {
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
-      this._subscribed = undefined;
-    }
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
@@ -208,12 +200,15 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribe();
+    this._unsubscribeAndEmptyEntries();
   }
 
   private _unsubscribeAndEmptyEntries() {
-    this._unsubscribe();
     this._logbookEntries = [];
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
+      this._subscribed = undefined;
+    }
   }
 
   private _calculateLogbookPeriod() {
@@ -252,6 +247,10 @@ export class HaLogbook extends LitElement {
         // "recent" means start time is a sliding window
         // so we need to calculate an expireTime to
         // purge old events
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
         this._processStreamMessage(
           streamMessage,
           "recent" in this.time
