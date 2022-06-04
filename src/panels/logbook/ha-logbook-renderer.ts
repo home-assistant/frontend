@@ -20,7 +20,7 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
-import { serviceDescription } from "../../data/service";
+import { serviceName } from "../../data/service";
 import {
   createHistoricState,
   localizeTriggerSource,
@@ -352,11 +352,7 @@ class HaLogbookRenderer extends LitElement {
       return html`${this.hass.localize(
         "ui.components.logbook.triggered_by_service"
       )}
-      ${serviceDescription(
-        this.hass,
-        item.context_domain,
-        item.context_service
-      )}`;
+      ${serviceName(this.hass, item.context_domain, item.context_service)}`;
     }
     if (
       !item.context_message ||
