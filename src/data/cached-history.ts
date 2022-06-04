@@ -158,8 +158,14 @@ export const getRecentWithCache = (
     }
     const stateHistory = computeHistory(hass, fetchedHistory, localize);
     if (appendingToCache) {
-      mergeLine(stateHistory.line, cache.data.line);
-      mergeTimeline(stateHistory.timeline, cache.data.timeline);
+      if (stateHistory.line.length) {
+        mergeLine(stateHistory.line, cache.data.line);
+      }
+      if (stateHistory.timeline.length) {
+        mergeTimeline(stateHistory.timeline, cache.data.timeline);
+        // Replace the timeline array to force an update
+        cache.data.timeline = [...cache.data.timeline];
+      }
       pruneStartTime(startTime, cache.data);
     } else {
       cache.data = stateHistory;
@@ -191,6 +197,8 @@ const mergeLine = (
           oldLine.data.push(entity);
         }
       });
+      // Replace the cached line data to force an update
+      oldLine.data = [...oldLine.data];
     } else {
       cacheLines.push(line);
     }
