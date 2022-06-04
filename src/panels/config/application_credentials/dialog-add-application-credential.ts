@@ -7,10 +7,12 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-markdown";
 import "../../../components/ha-textfield";
 import {
   fetchApplicationCredentialsConfig,
   createApplicationCredential,
+  ApplicationCredentialsConfig,
   ApplicationCredential,
 } from "../../../data/application_credential";
 import { domainToName } from "../../../data/integration";
@@ -21,6 +23,7 @@ import { AddApplicationCredentialDialogParams } from "./show-dialog-add-applicat
 interface Domain {
   id: string;
   name: string;
+  description_placeholder: string;
 }
 
 const rowRenderer: ComboBoxLitRenderer<Domain> = (item) => html`<mwc-list-item>
@@ -42,17 +45,22 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _name?: string;
 
+  @state() private _description?: string;
+
   @state() private _clientId?: string;
 
   @state() private _clientSecret?: string;
 
   @state() private _domains?: Domain[];
 
+  @state() private _config?: ApplicationCredentialsConfig;
+
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
     this._domain =
       params.selectedDomain !== undefined ? params.selectedDomain : "";
     this._name = "";
+    this._description = "";
     this._clientId = "";
     this._clientSecret = "";
     this._error = undefined;
@@ -61,11 +69,15 @@ export class DialogAddApplicationCredential extends LitElement {
   }
 
   private async _fetchConfig() {
-    const config = await fetchApplicationCredentialsConfig(this.hass);
-    this._domains = config.domains.map((domain) => ({
-      id: domain,
-      name: domainToName(this.hass.localize, domain),
-    }));
+    this._config = await fetchApplicationCredentialsConfig(this.hass);
+    this._domains = Object.entries(this._config.integrations).map(
+      ([domain, info]) => ({
+        id: domain,
+        name: domainToName(this.hass.localize, domain),
+        description_placeholders: info.description_placeholders,
+      })
+    );
+    this.hass.loadBackendTranslation("application_credentials");
   }
 
   protected render(): TemplateResult {
@@ -103,6 +115,12 @@ export class DialogAddApplicationCredential extends LitElement {
             required
             @value-changed=${this._handleDomainPicked}
           ></ha-combo-box>
+          ${this._description
+            ? html`<ha-markdown
+                breaks
+                .content=${this._description}
+              ></ha-markdown>`
+            : ""}
           <ha-textfield
             class="name"
             name="name"
@@ -171,6 +189,11 @@ export class DialogAddApplicationCredential extends LitElement {
   private async _handleDomainPicked(ev: CustomEvent) {
     ev.stopPropagation();
     this._domain = ev.detail.value;
+    const info = this._config.integrations[this._domain];
+    this._description = this.hass.localize(
+      `component.${this._domain}.application_credentials.description`,
+      info.description_placeholders
+    );
   }
 
   private _handleValueChanged(ev: CustomEvent) {
