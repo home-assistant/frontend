@@ -6,7 +6,9 @@ import {
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../common/translations/localize";
+import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
@@ -423,5 +425,18 @@ export const localizeStateMessage = (
     stateObj
       ? computeStateDisplay(localize, stateObj, hass.locale, state)
       : state
+  );
+};
+
+export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (
+  entity
+) => {
+  if (computeStateDomain(entity) !== "sensor") {
+    return true;
+  }
+
+  return (
+    entity.attributes.unit_of_measurement === undefined &&
+    entity.attributes.state_class === undefined
   );
 };

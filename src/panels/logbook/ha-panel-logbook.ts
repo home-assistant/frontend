@@ -12,7 +12,6 @@ import {
 } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -20,11 +19,11 @@ import {
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
+import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -89,7 +88,7 @@ export class HaPanelLogbook extends LitElement {
             .label=${this.hass.localize(
               "ui.components.entity.entity-picker.entity"
             )}
-            .entityFilter=${this._entityFilter}
+            .entityFilter=${filterLogbookCompatibleEntities}
             @change=${this._entityPicked}
           ></ha-entity-picker>
         </div>
@@ -241,17 +240,6 @@ export class HaPanelLogbook extends LitElement {
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
-
-  private _entityFilter: HaEntityPickerEntityFilterFunc = (entity) => {
-    if (computeStateDomain(entity) !== "sensor") {
-      return true;
-    }
-
-    return (
-      entity.attributes.unit_of_measurement === undefined &&
-      entity.attributes.state_class === undefined
-    );
-  };
 
   static get styles() {
     return [
