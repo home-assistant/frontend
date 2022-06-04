@@ -3971,7 +3971,8 @@
               "state_not_equal": "State is not equal to",
               "current_state": "current",
               "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "change_type": "Change type",
+              "template": "Template"
             },
             "config": {
               "required": "required",
