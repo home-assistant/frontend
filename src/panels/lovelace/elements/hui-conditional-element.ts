@@ -58,7 +58,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       return;
     }
 
-    const visible = checkConditionsMet(this._config.conditions, this._hass);
+    const visible = checkConditionsMet(this._config.conditions, this._hass, {});
 
     this._elements.forEach((el: LovelaceElement) => {
       if (visible) {
