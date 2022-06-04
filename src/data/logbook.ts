@@ -430,13 +430,7 @@ export const localizeStateMessage = (
 
 export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (
   entity
-) => {
-  if (computeStateDomain(entity) !== "sensor") {
-    return true;
-  }
-
-  return (
-    entity.attributes.unit_of_measurement === undefined &&
-    entity.attributes.state_class === undefined
-  );
-};
+) =>
+  computeStateDomain(entity) !== "sensor" ||
+  (entity.attributes.unit_of_measurement === undefined &&
+    entity.attributes.state_class === undefined);
