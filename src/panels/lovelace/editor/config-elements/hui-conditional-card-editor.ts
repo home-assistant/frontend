@@ -399,6 +399,7 @@ export class HuiConditionalCardEditor
         .condition .template ha-code-editor,
         .condition .entity ha-entity-picker {
           flex-grow: 1;
+          min-width: 0; /* Avoid overflowing */
         }
         .remove-icon {
           --mdc-icon-button-size: 36px;
