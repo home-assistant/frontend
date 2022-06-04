@@ -212,7 +212,6 @@ export class HaLogbook extends LitElement {
           // The backend will cancel the subscription if
           // we subscribe to entities that will all be
           // filtered away
-          this._subscribed = undefined;
         });
       this._subscribed = undefined;
     }
