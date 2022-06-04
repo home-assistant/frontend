@@ -1,6 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues, ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import {
   RenderTemplateResult,
   subscribeRenderTemplate,
@@ -18,9 +18,9 @@ import { LovelaceCard } from "../types";
 export class HuiConditionalBase extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public editMode?: boolean;
+  @property({ type: Boolean }) public editMode?: boolean;
 
-  @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
+  @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _templateResults?: Record<string, RenderTemplateResult>;
 
