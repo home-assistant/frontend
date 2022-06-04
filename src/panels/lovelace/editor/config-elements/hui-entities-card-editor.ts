@@ -87,9 +87,10 @@ const conditionalEntitiesRowConfigStruct = object({
   row: any(),
   conditions: array(
     object({
-      entity: string(),
+      entity: optional(string()),
       state: optional(string()),
       state_not: optional(string()),
+      template: optional(string()),
     })
   ),
 });

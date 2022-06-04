@@ -13,6 +13,8 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
   public setConfig(config: ConditionalRowConfig): void {
     this.validateConfig(config);
 
+    this._updateTemplates();
+
     if (!config.row) {
       throw new Error("No row configured");
     }
