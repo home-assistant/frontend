@@ -56,14 +56,14 @@ export class HuiEnergyCompareCard
 
     return html`
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
-        You are comparing the period
+        ${this.hass.localize("ui.panel.energy.compare.alert_info_1")}
         <b
           >${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
             ? ` -
         ${formatDate(this._end || endOfDay(new Date()), this.hass.locale)}`
             : ""}</b
         >
-        with period
+        ${this.hass.localize("ui.panel.energy.compare.alert_info_2")}
         <b
           >${formatDate(this._startCompare, this.hass.locale)}${dayDifference >
           0
