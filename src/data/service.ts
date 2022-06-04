@@ -22,7 +22,8 @@ export const serviceName = (
   domain &&
   domain in hass.services &&
   service &&
-  service in hass.services[domain]
+  service in hass.services[domain] &&
+  hass.services[domain][service].name
     ? `${domainToName(hass.localize, domain)}: ${
         hass.services[domain][service].name
       }`
