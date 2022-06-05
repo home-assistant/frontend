@@ -216,19 +216,21 @@ export class HaLogbook extends LitElement {
     this._unsubscribeSetLoading();
   }
 
+  /** Unsubscribe because we are unloading
+   * or about to resubscribe.
+   * Setting this._logbookEntries to undefined
+   * will put the page in a loading state.
+   */
   private _unsubscribeSetLoading() {
-    // Unsubscribe because we are unloading
-    // or about to resubscribe.
-    // Setting this._logbookEntries to undefined
-    // will put the page in a loading state.
     this._logbookEntries = undefined;
     this._unsubscribe();
   }
 
+  /** Unsubscribe because there are no results.
+   * Setting this._logbookEntries to an empty
+   * list will show a no results message.
+   */
   private _unsubscribeNoResults() {
-    // Unsubscribe because there are no results.
-    // Setting this._logbookEntries to an empty
-    // list will show a no results message.
     this._logbookEntries = [];
     this._unsubscribe();
   }
