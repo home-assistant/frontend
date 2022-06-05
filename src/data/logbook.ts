@@ -11,7 +11,7 @@ import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
-export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
+export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor"];
 
 export interface LogbookStreamMessage {
   events: LogbookEntry[];
