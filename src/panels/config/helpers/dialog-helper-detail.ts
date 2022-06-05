@@ -133,45 +133,54 @@ export class DialogHelperDetail extends LitElement {
       items.sort((a, b) => a[1].localeCompare(b[1]));
 
       content = html`
-        ${items.map(([domain, label]) => {
-          // Only OG helpers need to be loaded prior adding one
-          const isLoaded =
-            !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
-          return html`
-            <mwc-list-item
-              .disabled=${!isLoaded}
-              .domain=${domain}
-              @click=${this._domainPicked}
-              @keydown=${this._handleEnter}
-              dialogInitialFocus
-              graphic="icon"
-            >
-              <img
-                slot="graphic"
-                loading="lazy"
-                src=${brandsUrl({
-                  domain,
-                  type: "icon",
-                  useFallback: true,
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                referrerpolicy="no-referrer"
-              />
-              <span class="item-text"> ${label} </span>
-            </mwc-list-item>
-            ${!isLoaded
-              ? html`
-                  <paper-tooltip animation-delay="0"
-                    >${this.hass.localize(
-                      "ui.dialogs.helper_settings.platform_not_loaded",
-                      "platform",
-                      domain
-                    )}</paper-tooltip
-                  >
-                `
-              : ""}
-          `;
-        })}
+        <mwc-list
+          innerRole="listbox"
+          itemRoles="option"
+          innerAriaLabel=${this.hass.localize(
+            "ui.panel.config.helpers.dialog.create_helper"
+          )}
+          rootTabbable
+          dialogInitialFocus
+        >
+          ${items.map(([domain, label]) => {
+            // Only OG helpers need to be loaded prior adding one
+            const isLoaded =
+              !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+            return html`
+              <mwc-list-item
+                .disabled=${!isLoaded}
+                .domain=${domain}
+                @request-selected=${this._domainPicked}
+                graphic="icon"
+              >
+                <img
+                  slot="graphic"
+                  loading="lazy"
+                  src=${brandsUrl({
+                    domain,
+                    type: "icon",
+                    useFallback: true,
+                    darkOptimized: this.hass.themes?.darkMode,
+                  })}
+                  aria-hidden="true"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="item-text"> ${label} </span>
+              </mwc-list-item>
+              ${!isLoaded
+                ? html`
+                    <paper-tooltip animation-delay="0"
+                      >${this.hass.localize(
+                        "ui.dialogs.helper_settings.platform_not_loaded",
+                        "platform",
+                        domain
+                      )}</paper-tooltip
+                    >
+                  `
+                : ""}
+            `;
+          })}
+        </mwc-list>
         <mwc-button slot="primaryAction" @click=${this.closeDialog}>
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
@@ -218,15 +227,6 @@ export class DialogHelperDetail extends LitElement {
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _handleEnter(ev: KeyboardEvent) {
-    if (ev.keyCode !== 13) {
-      return;
-    }
-    ev.stopPropagation();
-    ev.preventDefault();
-    this._domainPicked(ev);
   }
 
   private _domainPicked(ev: Event): void {
