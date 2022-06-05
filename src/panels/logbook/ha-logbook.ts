@@ -136,7 +136,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._unsubscribeAndEmptyEntries();
+    this._unsubscribeSetLoading();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -191,20 +191,7 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
-    }
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubscribeAndEmptyEntries();
-  }
-
-  private _unsubscribeAndEmptyEntries() {
-    this._logbookEntries = undefined;
+  private _unsubscribe(): void {
     if (this._subscribed) {
       this._subscribed
         .then((unsub) => (unsub ? unsub() : undefined))
@@ -215,6 +202,35 @@ export class HaLogbook extends LitElement {
         });
       this._subscribed = undefined;
     }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeSetLoading();
+  }
+
+  private _unsubscribeSetLoading() {
+    // Unsubscribe because we are unloading
+    // or about to resubscribe.
+    // Setting this._logbookEntries to undefined
+    // will put the page in a loading state.
+    this._logbookEntries = undefined;
+    this._unsubscribe();
+  }
+
+  private _unsubscribeNoResults() {
+    // Unsubscribe because there are no results.
+    // Setting this._logbookEntries to an empty
+    // list will show a no results message.
+    this._logbookEntries = [];
+    this._unsubscribe();
   }
 
   private _calculateLogbookPeriod() {
@@ -279,7 +295,7 @@ export class HaLogbook extends LitElement {
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._unsubscribeAndEmptyEntries();
+      this._unsubscribeNoResults();
       return;
     }
 
@@ -287,7 +303,7 @@ export class HaLogbook extends LitElement {
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
-      this._unsubscribeAndEmptyEntries();
+      this._unsubscribeNoResults();
       return;
     }
 
