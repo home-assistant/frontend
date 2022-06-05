@@ -136,7 +136,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._unsubscribeAndEmptyEntries();
+    this._unsubscribe();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -148,6 +148,7 @@ export class HaLogbook extends LitElement {
       );
     }
 
+    this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
 
@@ -189,6 +190,13 @@ export class HaLogbook extends LitElement {
       (!entityIds || entityIds.length === 0) &&
       (!deviceIds || deviceIds.length === 0)
     );
+  }
+
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
+      this._subscribed = undefined;
+    }
   }
 
   public connectedCallback() {
