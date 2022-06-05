@@ -136,7 +136,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._unsubscribe();
+    this._unsubscribeAndEmptyEntries();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -148,7 +148,6 @@ export class HaLogbook extends LitElement {
       );
     }
 
-    this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
 
@@ -192,13 +191,6 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private _unsubscribe(): void {
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
-      this._subscribed = undefined;
-    }
-  }
-
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
@@ -212,7 +204,7 @@ export class HaLogbook extends LitElement {
   }
 
   private _unsubscribeAndEmptyEntries() {
-    this._logbookEntries = [];
+    this._logbookEntries = undefined;
     if (this._subscribed) {
       this._subscribed
         .then((unsub) => (unsub ? unsub() : undefined))
