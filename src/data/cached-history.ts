@@ -162,10 +162,9 @@ export const getRecentWithCache = (
         mergeLine(stateHistory.line, cache.data.line);
       }
       if (stateHistory.timeline.length) {
-        cache.data.timeline = mergeTimeline(
-          stateHistory.timeline,
-          cache.data.timeline
-        );
+        mergeTimeline(stateHistory.timeline, cache.data.timeline);
+        // Replace the timeline array to force an update
+        cache.data.timeline = [...cache.data.timeline];
       }
       pruneStartTime(startTime, cache.data);
     } else {
@@ -210,18 +209,16 @@ const mergeTimeline = (
   historyTimelines: TimelineEntity[],
   cacheTimelines: TimelineEntity[]
 ) => {
-  const mergedTimelines: TimelineEntity[] = [];
   historyTimelines.forEach((timeline) => {
     const oldTimeline = cacheTimelines.find(
       (cacheTimeline) => cacheTimeline.entity_id === timeline.entity_id
     );
-    mergedTimelines.push(
-      oldTimeline
-        ? { ...oldTimeline, data: oldTimeline.data.concat(timeline.data) }
-        : timeline
-    );
+    if (oldTimeline) {
+      oldTimeline.data = oldTimeline.data.concat(timeline.data);
+    } else {
+      cacheTimelines.push(timeline);
+    }
   });
-  return mergedTimelines;
 };
 
 const pruneArray = (originalStartTime: Date, arr) => {
