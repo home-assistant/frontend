@@ -11,6 +11,8 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 
+export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
+
 interface Tooltip extends TooltipModel<any> {
   top: string;
   left: string;
