@@ -17,6 +17,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -81,6 +82,7 @@ export class HuiLogbookCardEditor
       <ha-entities-picker
         .hass=${this.hass}
         .value=${this._entities}
+        .entityFilter=${filterLogbookCompatibleEntities}
         @value-changed=${this._entitiesChanged}
       >
       </ha-entities-picker>
