@@ -803,6 +803,9 @@ export class QuickBar extends LitElement {
 
         span.command-text {
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
 
         mwc-list-item {

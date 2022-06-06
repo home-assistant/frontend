@@ -1265,8 +1265,11 @@ export class HaConfigDevicePage extends LitElement {
 
         .card-header ha-icon-button {
           margin-right: -8px;
+          margin-inline-end: -8px;
+          margin-inline-start: initial;
           color: var(--primary-color);
           height: auto;
+          direction: var(--direction);
         }
 
         .device-info {
@@ -1332,6 +1335,9 @@ export class HaConfigDevicePage extends LitElement {
 
         .header-right > *:not(:first-child) {
           margin-left: 16px;
+          margin-inline-start: 16px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
 
         .battery {
