@@ -151,9 +151,16 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries();
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("hass")) {
+      return true;
+    }
+    // We only respond to hass changes if the translations changed
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !oldHass || oldHass.localize !== this.hass.localize;
+  }
 
+  protected updated(changedProps: PropertyValues): void {
     let changed = changedProps.has("time");
 
     for (const key of ["entityIds", "deviceIds"]) {
@@ -287,8 +294,8 @@ export class HaLogbook extends LitElement {
       ensureArray(this.entityIds),
       ensureArray(this.deviceIds)
     ).catch((err) => {
-      this._error = err.message;
       this._subscribed = undefined;
+      this._error = err;
     });
     return true;
   }
