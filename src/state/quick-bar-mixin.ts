@@ -48,9 +48,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
     private _registerShortcut() {
       tinykeys(window, {
-        e: (ev) => this._showQuickBar(ev),
-        c: (ev) => this._showQuickBar(ev, true),
-        m: (ev) => this._createMyLink(ev),
+        KeyE: (ev) => this._showQuickBar(ev),
+        KeyC: (ev) => this._showQuickBar(ev, true),
+        KeyM: (ev) => this._createMyLink(ev),
       });
     }
 
