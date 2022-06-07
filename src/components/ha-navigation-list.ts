@@ -2,6 +2,7 @@ import { ActionDetail } from "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { navigate } from "../common/navigate";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
@@ -61,7 +62,7 @@ class HaNavigationList extends LitElement {
     if (path.endsWith("#external-app-configuration")) {
       this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
     } else {
-      window.location.href = path;
+      navigate(path);
     }
   }
 
