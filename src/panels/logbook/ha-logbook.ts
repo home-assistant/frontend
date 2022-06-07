@@ -1,4 +1,3 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -79,7 +78,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<UnsubscribeFunc | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -200,13 +199,15 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed
-        .then((unsub) => (unsub ? unsub() : undefined))
-        .catch(() => {
-          // The backend will cancel the subscription if
-          // we subscribe to entities that will all be
-          // filtered away
-        });
+      this._subscribed.then((unsub) =>
+        unsub
+          ? unsub().catch(() => {
+              // The backend will cancel the subscription if
+              // we subscribe to entities that will all be
+              // filtered away
+            })
+          : undefined
+      );
       this._subscribed = undefined;
     }
   }
