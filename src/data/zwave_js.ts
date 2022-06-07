@@ -244,6 +244,41 @@ export interface ZWaveJSControllerStatisticsUpdatedMessage {
   timeout_callback: number;
 }
 
+export enum RssiError {
+  NotAvailable = 127,
+  ReceiverSaturated = 126,
+  NoSignalDetected = 125,
+}
+
+export enum ProtocolDataRate {
+  ZWave_9k6 = 0x01,
+  ZWave_40k = 0x02,
+  ZWave_100k = 0x03,
+  LongRange_100k = 0x04,
+}
+
+export interface ZWaveJSNodeStatisticsUpdatedMessage {
+  event: "statistics updated";
+  source: "node";
+  commands_tx: number;
+  commands_rx: number;
+  commands_dropped_tx: number;
+  commands_dropped_rx: number;
+  timeout_response: number;
+  rtt: number | null;
+  rssi: RssiError | number | null;
+  lwr: ZWaveJSRouteStatistics | null;
+  nlwr: ZWaveJSRouteStatistics | null;
+}
+
+export interface ZWaveJSRouteStatistics {
+  protocol_data_rate: number;
+  repeaters: string[];
+  rssi: RssiError | number | null;
+  repeater_rssi: (RssiError | number)[];
+  route_failed_between: [string, string] | null;
+}
+
 export interface ZWaveJSRemovedNode {
   node_id: number;
   manufacturer: string;
@@ -594,6 +629,19 @@ export const subscribeZwaveControllerStatistics = (
     {
       type: "zwave_js/subscribe_controller_statistics",
       entry_id,
+    }
+  );
+
+export const subscribeZwaveNodeStatistics = (
+  hass: HomeAssistant,
+  device_id: string,
+  callbackFunction: (message: ZWaveJSNodeStatisticsUpdatedMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_node_statistics",
+      device_id,
     }
   );
 
