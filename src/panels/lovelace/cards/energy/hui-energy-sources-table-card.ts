@@ -851,7 +851,7 @@ export class HuiEnergySourcesTableCard
                       )}
                     </th>
                     ${compare
-                      ? html` ${showCosts
+                      ? html`${showCosts
                             ? html`<td class="mdc-data-table__cell"></td>`
                             : ""}
                           <td
