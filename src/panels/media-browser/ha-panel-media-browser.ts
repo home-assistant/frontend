@@ -27,6 +27,7 @@ import {
   BROWSER_PLAYER,
   MediaPickedEvent,
   MediaPlayerItem,
+  mediaPlayerPlayMedia,
 } from "../../data/media-player";
 import {
   ResolvedMediaSource,
@@ -208,11 +209,12 @@ class PanelMediaBrowser extends LitElement {
     if (this._entityId !== BROWSER_PLAYER) {
       this._player.showResolvingNewMediaPicked();
       try {
-        await this.hass!.callService("media_player", "play_media", {
-          entity_id: this._entityId,
-          media_content_id: item.media_content_id,
-          media_content_type: item.media_content_type,
-        });
+        await mediaPlayerPlayMedia(
+          this.hass,
+          this._entityId,
+          item.media_content_id,
+          item.media_content_type
+        );
       } catch (err) {
         this._player.hideResolvingNewMediaPicked();
       }
