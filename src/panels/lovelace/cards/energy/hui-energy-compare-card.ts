@@ -56,7 +56,6 @@ export class HuiEnergyCompareCard
 
     return html`
       <ha-alert dismissable @alert-dismissed-clicked=${this._stopCompare}>
-
         ${this.hass.localize("ui.panel.energy.compare.info", {start: 
         html`<b
           >${formatDate(this._start!, this.hass.locale)}${dayDifference > 0
