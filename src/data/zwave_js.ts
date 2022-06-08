@@ -1,6 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
-import { DeviceRegistryEntry } from "./device_registry";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -323,17 +322,6 @@ export interface ZWaveJsMigrationData {
   migrated: boolean;
 }
 
-export const migrateZwave = (
-  hass: HomeAssistant,
-  entry_id: string,
-  dry_run = true
-): Promise<ZWaveJsMigrationData> =>
-  hass.callWS({
-    type: "zwave_js/migrate_zwave",
-    entry_id,
-    dry_run,
-  });
-
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
   device_or_entry_id: {
@@ -593,19 +581,6 @@ export const stopHealZwaveNetwork = (
     entry_id,
   });
 
-export const subscribeZwaveNodeReady = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (message) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/node_ready",
-      device_id,
-    }
-  );
-
 export const subscribeHealZwaveNetworkProgress = (
   hass: HomeAssistant,
   entry_id: string,
@@ -644,27 +619,6 @@ export const subscribeZwaveNodeStatistics = (
       device_id,
     }
   );
-
-export const getZwaveJsIdentifiersFromDevice = (
-  device: DeviceRegistryEntry
-): ZWaveJSNodeIdentifiers | undefined => {
-  if (!device) {
-    return undefined;
-  }
-
-  const zwaveJSIdentifier = device.identifiers.find(
-    (identifier) => identifier[0] === "zwave_js"
-  );
-  if (!zwaveJSIdentifier) {
-    return undefined;
-  }
-
-  const identifiers = zwaveJSIdentifier[1].split("-");
-  return {
-    node_id: parseInt(identifiers[1]),
-    home_id: identifiers[0],
-  };
-};
 
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
 
