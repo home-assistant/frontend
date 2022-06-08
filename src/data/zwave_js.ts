@@ -108,10 +108,6 @@ export interface PlannedProvisioningEntry {
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
 
-export interface ZWaveJSNodeIdentifiers {
-  home_id: string;
-  node_id: number;
-}
 export interface ZWaveJSNetwork {
   client: ZWaveJSClient;
   controller: ZWaveJSController;
