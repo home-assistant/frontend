@@ -1,11 +1,11 @@
 import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { css, CSSResult } from "lit";
+import { css, CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-list-item")
 export class HaListItem extends ListItemBase {
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       styles,
       css`
