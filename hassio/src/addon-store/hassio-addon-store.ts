@@ -14,15 +14,15 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
-import "../../../src/components/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-icon-button";
+import "../../../src/components/search-input";
 import {
-  HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
+import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
@@ -66,10 +66,10 @@ class HassioAddonStore extends LitElement {
   protected render(): TemplateResult {
     let repos: TemplateResult[] = [];
 
-    if (this.supervisor.addon.repositories) {
+    if (this.supervisor.store.repositories) {
       repos = this.addonRepositories(
-        this.supervisor.addon.repositories,
-        this.supervisor.addon.addons,
+        this.supervisor.store.repositories,
+        this.supervisor.store.addons,
         this._filter
       );
     }
@@ -145,7 +145,7 @@ class HassioAddonStore extends LitElement {
   private addonRepositories = memoizeOne(
     (
       repositories: HassioAddonRepository[],
-      addons: HassioAddonInfo[],
+      addons: StoreAddon[],
       filter?: string
     ) =>
       repositories.sort(sortRepos).map((repo) => {

@@ -6,10 +6,8 @@ import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
 import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
-import {
-  HassioAddonInfo,
-  HassioAddonRepository,
-} from "../../../src/data/hassio/addon";
+import { HassioAddonRepository } from "../../../src/data/hassio/addon";
+import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
@@ -23,20 +21,16 @@ class HassioAddonRepositoryEl extends LitElement {
 
   @property({ attribute: false }) public repo!: HassioAddonRepository;
 
-  @property({ attribute: false }) public addons!: HassioAddonInfo[];
+  @property({ attribute: false }) public addons!: StoreAddon[];
 
   @property() public filter!: string;
 
-  private _getAddons = memoizeOne(
-    (addons: HassioAddonInfo[], filter?: string) => {
-      if (filter) {
-        return filterAndSort(addons, filter);
-      }
-      return addons.sort((a, b) =>
-        caseInsensitiveStringCompare(a.name, b.name)
-      );
+  private _getAddons = memoizeOne((addons: StoreAddon[], filter?: string) => {
+    if (filter) {
+      return filterAndSort(addons, filter);
     }
-  );
+    return addons.sort((a, b) => caseInsensitiveStringCompare(a.name, b.name));
+  });
 
   protected render(): TemplateResult {
     const repo = this.repo;
