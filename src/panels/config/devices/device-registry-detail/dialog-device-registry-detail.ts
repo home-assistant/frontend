@@ -181,6 +181,9 @@ class DialogDeviceRegistryDetail extends LitElement {
         }
         ha-switch {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
         .row {
           margin-top: 8px;
