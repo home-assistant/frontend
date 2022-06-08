@@ -8,6 +8,7 @@ import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
 import "../ha-select";
 import "./ha-user-badge";
+import "../ha-list-item";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;
@@ -48,14 +49,14 @@ class HaUserPicker extends LitElement {
           : ""}
         ${this._sortedUsers(this.users).map(
           (user) => html`
-            <mwc-list-item graphic="avatar" .value=${user.id}>
+            <ha-list-item graphic="avatar" .value=${user.id}>
               <ha-user-badge
                 .hass=${this.hass}
                 .user=${user}
                 slot="graphic"
               ></ha-user-badge>
               ${user.name}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>

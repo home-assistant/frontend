@@ -61,6 +61,11 @@ export class HaTextField extends TextFieldBase {
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
         direction: var(--direction);
       }
+      .mdc-text-field--with-leading-icon {
+        padding-inline-start: var(--text-field-suffix-padding-left, 0px);
+        padding-inline-end: var(--text-field-suffix-padding-right, 16px);
+        direction: var(--direction);
+      }
 
       .mdc-text-field:not(.mdc-text-field--disabled)
         .mdc-text-field__affix--suffix {
@@ -69,6 +74,12 @@ export class HaTextField extends TextFieldBase {
 
       .mdc-text-field__icon {
         color: var(--secondary-text-color);
+      }
+
+      .mdc-text-field__icon--leading {
+        margin-inline-start: 16px;
+        margin-inline-end: 8px;
+        direction: var(--direction);
       }
 
       input {
@@ -108,6 +119,10 @@ export class HaTextField extends TextFieldBase {
         max-width: calc(100% - 48px);
         inset-inline-start: 48px !important;
         inset-inline-end: initial !important;
+        direction: var(--direction);
+      }
+
+      .mdc-text-field__input[type="number"] {
         direction: var(--direction);
       }
     `,
