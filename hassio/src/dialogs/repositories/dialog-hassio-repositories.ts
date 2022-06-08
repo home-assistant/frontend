@@ -15,15 +15,18 @@ import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
 import {
-  fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import {
+  addStoreRepository,
+  fetchStoreRepositories,
+  removeStoreRepository,
+} from "../../../../src/data/supervisor/store";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -215,9 +218,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _loadData(): Promise<void> {
     try {
-      const addonsinfo = await fetchHassioAddonsInfo(this.hass);
-
-      this._repositories = addonsinfo.repositories;
+      this._repositories = await fetchStoreRepositories(this.hass);
 
       fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
     } catch (err: any) {
@@ -231,14 +232,9 @@ class HassioRepositoriesDialog extends LitElement {
       return;
     }
     this._processing = true;
-    const repositories = this._filteredRepositories(this._repositories!);
-    const newRepositories = repositories.map((repo) => repo.source);
-    newRepositories.push(input.value);
 
     try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
+      await addStoreRepository(this.hass, input.value);
       await this._loadData();
 
       input.value = "";
@@ -250,19 +246,8 @@ class HassioRepositoriesDialog extends LitElement {
 
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
-    const repositories = this._filteredRepositories(this._repositories!);
-    const repository = repositories.find((repo) => repo.slug === slug);
-    if (!repository) {
-      return;
-    }
-    const newRepositories = repositories
-      .map((repo) => repo.source)
-      .filter((repo) => repo !== repository.source);
-
     try {
-      await setSupervisorOption(this.hass, {
-        addons_repositories: newRepositories,
-      });
+      await removeStoreRepository(this.hass, slug);
       await this._loadData();
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);

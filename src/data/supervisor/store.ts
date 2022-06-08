@@ -49,3 +49,61 @@ export const fetchSupervisorStore = async (
     await hass.callApi<HassioResponse<SupervisorStore>>("GET", `hassio/store`)
   );
 };
+
+export const fetchStoreRepositories = async (
+  hass: HomeAssistant
+): Promise<StoreRepository[]> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/store/repositories",
+      method: "get",
+    });
+  }
+
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<StoreRepository[]>>(
+      "GET",
+      `hassio/store/repositories`
+    )
+  );
+};
+
+export const addStoreRepository = async (
+  hass: HomeAssistant,
+  repository: string
+): Promise<void> => {
+  const data = { repository };
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/store/repositories",
+      method: "post",
+      data,
+    });
+  }
+
+  await hass.callApi<HassioResponse<SupervisorStore>>(
+    "POST",
+    `hassio/store/repositories`,
+    data
+  );
+};
+
+export const removeStoreRepository = async (
+  hass: HomeAssistant,
+  repository: string
+): Promise<void> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/store/repositories/${repository}`,
+      method: "delete",
+    });
+  }
+
+  await hass.callApi<HassioResponse<SupervisorStore>>(
+    "DELETE",
+    `hassio/store/repositories/${repository}`
+  );
+};
