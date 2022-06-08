@@ -61,7 +61,12 @@ class HassioRepositoriesDialog extends LitElement {
 
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
-      .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
+      .filter(
+        (repo) =>
+          repo.slug !== "core" && // The core add-ons repository
+          repo.slug !== "local" && // Locally managed add-ons
+          repo.slug !== "5c53de3b" // The ESPHome repository
+      )
       .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
   );
 
