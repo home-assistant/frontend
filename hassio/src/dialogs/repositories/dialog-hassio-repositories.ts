@@ -65,6 +65,7 @@ class HassioRepositoriesDialog extends LitElement {
         (repo) =>
           repo.slug !== "core" && // The core add-ons repository
           repo.slug !== "local" && // Locally managed add-ons
+          repo.slug !== "a0d7b954" && // Home Assistant Community Add-ons
           repo.slug !== "5c53de3b" // The ESPHome repository
       )
       .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
