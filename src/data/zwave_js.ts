@@ -496,6 +496,19 @@ export const fetchZwaveNodeStatus = (
     device_id,
   });
 
+export const subscribeZwaveNodeStatus = (
+  hass: HomeAssistant,
+  device_id: string,
+  callbackFunction: (message) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_node_status",
+      device_id,
+    }
+  );
+
 export const fetchZwaveNodeMetadata = (
   hass: HomeAssistant,
   device_id: string
