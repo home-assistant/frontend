@@ -1,4 +1,3 @@
-import { styles } from "@material/mwc-list/mwc-list-item.css";
 import { css, CSSResult, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { HaListItem } from "./ha-list-item";
