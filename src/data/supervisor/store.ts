@@ -1,7 +1,6 @@
-import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { AddonRepository, AddonStage } from "../hassio/addon";
-import { hassioApiResultExtractor, HassioResponse } from "../hassio/common";
+import { supervisorApiCall } from "./common";
 
 export interface StoreAddon {
   advanced: boolean;
@@ -36,74 +35,25 @@ export interface SupervisorStore {
 
 export const fetchSupervisorStore = async (
   hass: HomeAssistant
-): Promise<SupervisorStore> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/store",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<SupervisorStore>>("GET", `hassio/store`)
-  );
-};
+): Promise<SupervisorStore> => supervisorApiCall(hass, "/store");
 
 export const fetchStoreRepositories = async (
   hass: HomeAssistant
-): Promise<StoreRepository[]> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/store/repositories",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<StoreRepository[]>>(
-      "GET",
-      `hassio/store/repositories`
-    )
-  );
-};
+): Promise<StoreRepository[]> => supervisorApiCall(hass, "/store/repositories");
 
 export const addStoreRepository = async (
   hass: HomeAssistant,
   repository: string
-): Promise<void> => {
-  const data = { repository };
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/store/repositories",
-      method: "post",
-      data,
-    });
-  }
-
-  await hass.callApi<HassioResponse<SupervisorStore>>(
-    "POST",
-    `hassio/store/repositories`,
-    data
-  );
-};
+): Promise<void> =>
+  supervisorApiCall(hass, "/store/repositories", {
+    method: "post",
+    data: { repository },
+  });
 
 export const removeStoreRepository = async (
   hass: HomeAssistant,
   repository: string
-): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/store/repositories/${repository}`,
-      method: "delete",
-    });
-  }
-
-  await hass.callApi<HassioResponse<SupervisorStore>>(
-    "DELETE",
-    `hassio/store/repositories/${repository}`
-  );
-};
+): Promise<void> =>
+  supervisorApiCall(hass, `/store/repositories/${repository}`, {
+    method: "delete",
+  });
