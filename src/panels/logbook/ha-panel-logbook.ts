@@ -17,7 +17,6 @@ import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
@@ -38,8 +37,6 @@ export class HaPanelLogbook extends LitElement {
   @state() _time: { range: [Date, Date] };
 
   @state() _entityIds?: string[];
-
-  @property({ reflect: true, type: Boolean }) rtl = false;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -148,15 +145,6 @@ export class HaPanelLogbook extends LitElement {
   private _locationChanged = () => {
     this._applyURLParams();
   };
-
-  protected updated(changedProps: PropertyValues<this>) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this.rtl = computeRTL(this.hass);
-      }
-    }
-  }
 
   private _applyURLParams() {
     const searchParams = new URLSearchParams(location.search);

@@ -332,6 +332,9 @@ export class HuiConditionalCardEditor
         }
         .condition .state ha-select {
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
         .condition .state ha-textfield {
           flex-grow: 1;
