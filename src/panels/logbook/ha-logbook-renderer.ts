@@ -16,7 +16,6 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
@@ -86,10 +85,7 @@ class HaLogbookRenderer extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div
-          class="container no-entries"
-          .dir=${computeRTLDirection(this.hass)}
-        >
+        <div class="container no-entries">
           ${this.hass.localize("ui.components.logbook.entries_not_found")}
         </div>
       `;
