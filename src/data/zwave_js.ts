@@ -84,6 +84,7 @@ enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
+
 export interface QRProvisioningInformation {
   version: QRCodeVersion;
   securityClasses: SecurityClass[];
@@ -309,14 +310,6 @@ export interface RequestedGrant {
 }
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
-
-export interface ZWaveJsMigrationData {
-  migration_device_map: Record<string, string>;
-  zwave_entity_ids: string[];
-  zwave_js_entity_ids: string[];
-  migration_entity_map: Record<string, string>;
-  migrated: boolean;
-}
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
