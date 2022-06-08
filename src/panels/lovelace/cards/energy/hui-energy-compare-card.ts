@@ -70,7 +70,6 @@ export class HuiEnergyCompareCard
           ${formatDate(this._endCompare, this.hass.locale)}`
           : ""}</b
           >`})}
-
       </ha-alert>
     `;
   }
