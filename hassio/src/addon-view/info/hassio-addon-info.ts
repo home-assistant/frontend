@@ -59,7 +59,10 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
-import { StoreAddon } from "../../../../src/data/supervisor/store";
+import {
+  StoreAddon,
+  StoreAddonDetails,
+} from "../../../../src/data/supervisor/store";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -100,7 +103,9 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public addon!:
+    | HassioAddonDetails
+    | StoreAddonDetails;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
@@ -143,7 +148,7 @@ class HassioAddonInfo extends LitElement {
             ></update-available-card>
           `
         : ""}
-      ${!this.addon.protected
+      ${(this.addon as HassioAddonDetails).protected === false
         ? html`
             <ha-alert
               alert-type="error"
@@ -407,7 +412,9 @@ class HassioAddonInfo extends LitElement {
                     <div
                       class=${classMap({
                         "addon-options": true,
-                        started: this.addon.state === "started",
+                        started:
+                          (this.addon as HassioAddonDetails).state ===
+                          "started",
                       })}
                     >
                       <ha-settings-row ?three-line=${this.narrow}>
@@ -423,12 +430,13 @@ class HassioAddonInfo extends LitElement {
                         </span>
                         <ha-switch
                           @change=${this._startOnBootToggled}
-                          .checked=${this.addon.boot === "auto"}
+                          .checked=${(this.addon as HassioAddonDetails).boot ===
+                          "auto"}
                           haptic
                         ></ha-switch>
                       </ha-settings-row>
 
-                      ${this.addon.startup !== "once"
+                      ${(this.addon as HassioAddonDetails).startup !== "once"
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
@@ -443,13 +451,14 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._watchdogToggled}
-                                .checked=${this.addon.watchdog}
+                                .checked=${(this.addon as HassioAddonDetails)
+                                  .watchdog}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
                         : ""}
-                      ${this.addon.auto_update ||
+                      ${(this.addon as HassioAddonDetails).auto_update ||
                       this.hass.userData?.showAdvanced
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -465,7 +474,8 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._autoUpdateToggled}
-                                .checked=${this.addon.auto_update}
+                                .checked=${(this.addon as HassioAddonDetails)
+                                  .auto_update}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -486,7 +496,8 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._panelToggled}
-                                .checked=${this.addon.ingress_panel}
+                                .checked=${(this.addon as HassioAddonDetails)
+                                  .ingress_panel}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -507,7 +518,8 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._protectionToggled}
-                                .checked=${this.addon.protected}
+                                .checked=${(this.addon as HassioAddonDetails)
+                                  .protected}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -518,12 +530,14 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
             <div>
-              ${this.addon.state === "started"
+              ${(this.addon as HassioAddonDetails).state === "started"
                 ? html`<ha-settings-row ?three-line=${this.narrow}>
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
-                      <code slot="description"> ${this.addon.hostname} </code>
+                      <code slot="description">
+                        ${(this.addon as HassioAddonDetails).hostname}
+                      </code>
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) =>
@@ -669,7 +683,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    if (this.addon.state === "started") {
+    if ((this.addon as HassioAddonDetails).state === "started") {
       this._metrics = await fetchHassioStats(
         this.hass,
         `addons/${this.addon.slug}`
@@ -717,18 +731,25 @@ class HassioAddonInfo extends LitElement {
   }
 
   private get _computeIsRunning(): boolean {
-    return this.addon?.state === "started";
+    return (this.addon as HassioAddonDetails)?.state === "started";
   }
 
   private get _pathWebui(): string | null {
     return (
-      this.addon.webui &&
-      this.addon.webui.replace("[HOST]", document.location.hostname)
+      (this.addon as HassioAddonDetails).webui &&
+      (this.addon as HassioAddonDetails).webui!.replace(
+        "[HOST]",
+        document.location.hostname
+      )
     );
   }
 
   private get _computeShowWebUI(): boolean | "" | null {
-    return !this.addon.ingress && this.addon.webui && this._computeIsRunning;
+    return (
+      !this.addon.ingress &&
+      (this.addon as HassioAddonDetails).webui &&
+      this._computeIsRunning
+    );
   }
 
   private _openIngress(): void {
@@ -754,7 +775,8 @@ class HassioAddonInfo extends LitElement {
   private async _startOnBootToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      boot: this.addon.boot === "auto" ? "manual" : "auto",
+      boot:
+        (this.addon as HassioAddonDetails).boot === "auto" ? "manual" : "auto",
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -776,7 +798,7 @@ class HassioAddonInfo extends LitElement {
   private async _watchdogToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      watchdog: !this.addon.watchdog,
+      watchdog: !(this.addon as HassioAddonDetails).watchdog,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -798,7 +820,7 @@ class HassioAddonInfo extends LitElement {
   private async _autoUpdateToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      auto_update: !this.addon.auto_update,
+      auto_update: !(this.addon as HassioAddonDetails).auto_update,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -820,7 +842,7 @@ class HassioAddonInfo extends LitElement {
   private async _protectionToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetSecurityParams = {
-      protected: !this.addon.protected,
+      protected: !(this.addon as HassioAddonDetails).protected,
     };
     try {
       await setHassioAddonSecurity(this.hass, this.addon.slug, data);
@@ -842,7 +864,7 @@ class HassioAddonInfo extends LitElement {
   private async _panelToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      ingress_panel: !this.addon.ingress_panel,
+      ingress_panel: !(this.addon as HassioAddonDetails).ingress_panel,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -870,7 +892,7 @@ class HassioAddonInfo extends LitElement {
 
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
-        content: extractChangelog(this.addon, content),
+        content: extractChangelog(this.addon as HassioAddonDetails, content),
       });
     } catch (err: any) {
       showAlertDialog(this, {

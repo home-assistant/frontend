@@ -12,7 +12,7 @@ import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
-  fetchHassioAddonInfo,
+  fetchAddonInfo,
   fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
@@ -21,6 +21,7 @@ import {
   fetchHassioSupervisorInfo,
   setSupervisorOption,
 } from "../../../src/data/hassio/supervisor";
+import { StoreAddonDetails } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
@@ -45,7 +46,9 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public addon?: HassioAddonDetails;
+  @property({ attribute: false }) public addon?:
+    | HassioAddonDetails
+    | StoreAddonDetails;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
@@ -262,8 +265,7 @@ class HassioAddonDashboard extends LitElement {
       return;
     }
     try {
-      const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
-      this.addon = addoninfo;
+      this.addon = await fetchAddonInfo(this.hass, this.supervisor, addon);
     } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
