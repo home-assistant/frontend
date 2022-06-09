@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -10,6 +9,7 @@ import "../../../components/ha-icon-next";
 import type { UpdateEntity } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-list-item";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -39,7 +39,7 @@ class HaConfigUpdates extends LitElement {
       <mwc-list>
         ${updates.map(
           (entity) => html`
-            <mwc-list-item
+            <ha-list-item
               twoline
               graphic="avatar"
               class=${entity.attributes.skipped_version ? "skipped" : ""}
@@ -87,7 +87,7 @@ class HaConfigUpdates extends LitElement {
                     ></ha-circular-progress>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </mwc-list>
@@ -135,7 +135,7 @@ class HaConfigUpdates extends LitElement {
           outline: none;
           text-decoration: underline;
         }
-        mwc-list-item {
+        ha-list-item {
           cursor: pointer;
           font-size: 16px;
         }
