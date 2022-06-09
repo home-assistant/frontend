@@ -13,6 +13,7 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchAddonInfo,
+  fetchHassioAddonInfo,
   fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
@@ -248,6 +249,8 @@ class HassioAddonDashboard extends LitElement {
 
     if (path === "uninstall") {
       window.history.back();
+    } else if (path === "install") {
+      this.addon = await fetchHassioAddonInfo(this.hass, this.addon!.slug);
     } else {
       await this._routeDataChanged();
     }
