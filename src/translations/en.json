@@ -741,6 +741,8 @@
         "details": "Details",
         "history": "History",
         "logbook": "Logbook",
+        "request_update": "Request update",
+        "update_requested": "An update for {name} has been requested.",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",

@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiCog, mdiPencil, mdiUpdate } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -23,7 +23,10 @@ import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../generic/show-dialog-box";
 import { replaceDialog } from "../make-dialog-manager";
 import "./controls/more-info-default";
 import "./ha-more-info-history";
@@ -127,6 +130,14 @@ export class MoreInfoDialog extends LitElement {
             >
               ${name}
             </div>
+            <ha-icon-button
+              slot="actionItems"
+              .label=${this.hass.localize(
+                "ui.dialogs.more_info_control.request_update"
+              )}
+              .path=${mdiUpdate}
+              @click=${this._updateEntity}
+            ></ha-icon-button>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-icon-button
@@ -291,6 +302,23 @@ export class MoreInfoDialog extends LitElement {
       confirm: () => {
         removeEntityRegistryEntry(this.hass, entityId);
       },
+    });
+  }
+
+  private _updateEntity() {
+    if (!this._entityId) {
+      return;
+    }
+    this.hass.callService("homeassistant", "update_entity", {
+      entity_id: this._entityId,
+    });
+    const stateObj = this.hass.states[this._entityId];
+    const name = computeStateName(stateObj);
+    showAlertDialog(this, {
+      text: this.hass.localize(
+        `ui.dialogs.more_info_control.update_requested`,
+        { name: name }
+      ),
     });
   }
 
