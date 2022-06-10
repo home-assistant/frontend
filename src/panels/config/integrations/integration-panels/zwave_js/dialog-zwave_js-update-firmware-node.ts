@@ -334,10 +334,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
           color: var(--error-color);
         }
 
-        .progress-text {
-          text-align: right;
-        }
-
         .flex-container {
           display: flex;
           align-items: center;
