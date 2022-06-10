@@ -1,6 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
-import { DeviceRegistryEntry } from "./device_registry";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -126,10 +125,6 @@ export interface PlannedProvisioningEntry {
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
 
-export interface ZWaveJSNodeIdentifiers {
-  home_id: string;
-  node_id: number;
-}
 export interface ZWaveJSNetwork {
   client: ZWaveJSClient;
   controller: ZWaveJSController;
@@ -349,25 +344,6 @@ export interface RequestedGrant {
 }
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
-
-export interface ZWaveJsMigrationData {
-  migration_device_map: Record<string, string>;
-  zwave_entity_ids: string[];
-  zwave_js_entity_ids: string[];
-  migration_entity_map: Record<string, string>;
-  migrated: boolean;
-}
-
-export const migrateZwave = (
-  hass: HomeAssistant,
-  entry_id: string,
-  dry_run = true
-): Promise<ZWaveJsMigrationData> =>
-  hass.callWS({
-    type: "zwave_js/migrate_zwave",
-    entry_id,
-    dry_run,
-  });
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
@@ -640,19 +616,6 @@ export const stopHealZwaveNetwork = (
     type: "zwave_js/stop_healing_network",
     entry_id,
   });
-
-export const subscribeZwaveNodeReady = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (message) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/node_ready",
-      device_id,
-    }
-  );
 
 export const subscribeHealZwaveNetworkProgress = (
   hass: HomeAssistant,
