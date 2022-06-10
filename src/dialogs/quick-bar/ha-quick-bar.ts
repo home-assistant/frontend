@@ -34,7 +34,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
-import { fetchHassioSupervisorInfo } from "../../data/hassio/supervisor";
+import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -586,7 +586,7 @@ export class QuickBar extends LitElement {
     const sectionItems = this._generateNavigationConfigSectionCommands();
     const supervisorItems: BaseNavigationCommand[] = [];
     if (isComponentLoaded(this.hass, "hassio")) {
-      const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
       supervisorItems.push({
         path: "/hassio/store",
         primaryText: this.hass.localize(
@@ -599,7 +599,7 @@ export class QuickBar extends LitElement {
           "ui.dialogs.quick-bar.commands.navigation.addon_dashboard"
         ),
       });
-      for (const addon of supervisorInfo.addons) {
+      for (const addon of addonsInfo.addons.filter((a) => a.version)) {
         supervisorItems.push({
           path: `/hassio/addon/${addon.slug}`,
           primaryText: this.hass.localize(
