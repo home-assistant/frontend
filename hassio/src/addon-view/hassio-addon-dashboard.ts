@@ -19,10 +19,10 @@ import {
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
-  fetchHassioSupervisorInfo,
-  setSupervisorOption,
-} from "../../../src/data/hassio/supervisor";
-import { StoreAddonDetails } from "../../../src/data/supervisor/store";
+  addStoreRepository,
+  fetchSupervisorStore,
+  StoreAddonDetails,
+} from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
@@ -177,10 +177,10 @@ class HassioAddonDashboard extends LitElement {
       const requestedAddon = extractSearchParam("addon");
       const requestedAddonRepository = extractSearchParam("repository_url");
       if (requestedAddonRepository) {
-        const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
+        const storeInfo = await fetchSupervisorStore(this.hass);
         if (
-          !supervisorInfo.addons_repositories.find(
-            (repo) => repo === requestedAddonRepository
+          !storeInfo.repositories.find(
+            (repo) => repo.source === requestedAddonRepository
           )
         ) {
           if (
@@ -201,12 +201,7 @@ class HassioAddonDashboard extends LitElement {
           }
 
           try {
-            await setSupervisorOption(this.hass, {
-              addons_repositories: [
-                ...supervisorInfo.addons_repositories,
-                requestedAddonRepository,
-              ],
-            });
+            await addStoreRepository(this.hass, requestedAddonRepository);
           } catch (err: any) {
             this._error = extractApiErrorMessage(err);
           }

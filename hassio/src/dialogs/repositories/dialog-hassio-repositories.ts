@@ -87,7 +87,7 @@ class HassioRepositoriesDialog extends LitElement {
     const repositories = this._filteredRepositories(this._repositories);
     const usedRepositories = this._filteredUsedRepositories(
       repositories,
-      this._dialogParams.supervisor.supervisor.addons
+      this._dialogParams.supervisor.addon.addons
     );
     return html`
       <ha-dialog
