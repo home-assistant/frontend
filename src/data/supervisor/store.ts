@@ -19,7 +19,7 @@ export interface StoreAddon {
   update_available: boolean;
   url: string;
   version_latest: string;
-  version: string | null;
+  version: null;
 }
 
 export interface StoreAddonDetails extends StoreAddon {

@@ -148,7 +148,7 @@ class HassioAddonInfo extends LitElement {
             ></update-available-card>
           `
         : ""}
-      ${(this.addon as HassioAddonDetails).protected === false
+      ${"protected" in this.addon && !this.addon.protected
         ? html`
             <ha-alert
               alert-type="error"
@@ -412,9 +412,7 @@ class HassioAddonInfo extends LitElement {
                     <div
                       class=${classMap({
                         "addon-options": true,
-                        started:
-                          (this.addon as HassioAddonDetails).state ===
-                          "started",
+                        started: this.addon.state === "started",
                       })}
                     >
                       <ha-settings-row ?three-line=${this.narrow}>
@@ -430,13 +428,12 @@ class HassioAddonInfo extends LitElement {
                         </span>
                         <ha-switch
                           @change=${this._startOnBootToggled}
-                          .checked=${(this.addon as HassioAddonDetails).boot ===
-                          "auto"}
+                          .checked=${this.addon.boot === "auto"}
                           haptic
                         ></ha-switch>
                       </ha-settings-row>
 
-                      ${(this.addon as HassioAddonDetails).startup !== "once"
+                      ${this.addon.startup !== "once"
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
@@ -451,14 +448,13 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._watchdogToggled}
-                                .checked=${(this.addon as HassioAddonDetails)
-                                  .watchdog}
+                                .checked=${this.addon.watchdog}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
                         : ""}
-                      ${(this.addon as HassioAddonDetails).auto_update ||
+                      ${this.addon.auto_update ||
                       this.hass.userData?.showAdvanced
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -474,8 +470,7 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._autoUpdateToggled}
-                                .checked=${(this.addon as HassioAddonDetails)
-                                  .auto_update}
+                                .checked=${this.addon.auto_update}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -496,8 +491,7 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._panelToggled}
-                                .checked=${(this.addon as HassioAddonDetails)
-                                  .ingress_panel}
+                                .checked=${this.addon.ingress_panel}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -518,8 +512,7 @@ class HassioAddonInfo extends LitElement {
                               </span>
                               <ha-switch
                                 @change=${this._protectionToggled}
-                                .checked=${(this.addon as HassioAddonDetails)
-                                  .protected}
+                                .checked=${this.addon.protected}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -530,14 +523,12 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
             <div>
-              ${(this.addon as HassioAddonDetails).state === "started"
+              ${this.addon.version && this.addon.state === "started"
                 ? html`<ha-settings-row ?three-line=${this.narrow}>
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
-                      <code slot="description">
-                        ${(this.addon as HassioAddonDetails).hostname}
-                      </code>
+                      <code slot="description"> ${this.addon.hostname} </code>
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) =>
@@ -683,7 +674,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    if ((this.addon as HassioAddonDetails).state === "started") {
+    if ("state" in this.addon && this.addon.state === "started") {
       this._metrics = await fetchHassioStats(
         this.hass,
         `addons/${this.addon.slug}`
@@ -735,12 +726,9 @@ class HassioAddonInfo extends LitElement {
   }
 
   private get _pathWebui(): string | null {
-    return (
-      (this.addon as HassioAddonDetails).webui &&
-      (this.addon as HassioAddonDetails).webui!.replace(
-        "[HOST]",
-        document.location.hostname
-      )
+    return (this.addon as HassioAddonDetails).webui!.replace(
+      "[HOST]",
+      document.location.hostname
     );
   }
 
