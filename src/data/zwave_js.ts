@@ -168,7 +168,7 @@ export interface ZWaveJSController {
 export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
-  status: number;
+  status: NodeStatus;
   is_secure: boolean | string;
   is_routing: boolean | null;
   zwave_plus_version: number | null;
