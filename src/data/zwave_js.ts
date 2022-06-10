@@ -85,6 +85,7 @@ enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
+
 export interface QRProvisioningInformation {
   version: QRCodeVersion;
   securityClasses: SecurityClass[];
@@ -277,6 +278,12 @@ export interface ZWaveJSRouteStatistics {
   rssi: RssiError | number | null;
   repeater_rssi: (RssiError | number)[];
   route_failed_between: [string, string] | null;
+}
+
+export interface ZWaveJSNodeStatusUpdatedMessage {
+  event: "ready" | "wake up" | "sleep" | "dead" | "alive";
+  ready: boolean;
+  status: NodeStatus;
 }
 
 export interface ZWaveJSRemovedNode {
@@ -499,7 +506,7 @@ export const fetchZwaveNodeStatus = (
 export const subscribeZwaveNodeStatus = (
   hass: HomeAssistant,
   device_id: string,
-  callbackFunction: (message) => void
+  callbackFunction: (message: ZWaveJSNodeStatusUpdatedMessage) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
