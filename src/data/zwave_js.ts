@@ -711,27 +711,6 @@ export const abortZwaveNodeFirmwareUpdate = (
     device_id,
   });
 
-export const getZwaveJsIdentifiersFromDevice = (
-  device: DeviceRegistryEntry
-): ZWaveJSNodeIdentifiers | undefined => {
-  if (!device) {
-    return undefined;
-  }
-
-  const zwaveJSIdentifier = device.identifiers.find(
-    (identifier) => identifier[0] === "zwave_js"
-  );
-  if (!zwaveJSIdentifier) {
-    return undefined;
-  }
-
-  const identifiers = zwaveJSIdentifier[1].split("-");
-  return {
-    node_id: parseInt(identifiers[1]),
-    home_id: identifiers[0],
-  };
-};
-
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
 
 interface ZWaveJSLogMessageUpdate {
