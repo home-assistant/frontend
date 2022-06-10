@@ -373,8 +373,7 @@ export const fetchAddonInfo = (
 ): Promise<HassioAddonDetails | StoreAddonDetails> =>
   supervisorApiCall(
     hass,
-    !supervisor.supervisor?.addons.find((addon) => addon.slug === addonSlug)
-      ?.version
+    !supervisor.addon?.addons.find((addon) => addon.slug === addonSlug)
       ? `/store/addons/${addonSlug}` // Use /store/addons when add-on is not installed
       : `/addons/${addonSlug}/info` // Use /addons when add-on is installed
   );
