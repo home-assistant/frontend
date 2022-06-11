@@ -58,8 +58,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private _deviceName?: TemplateResult;
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
-    this._deviceName = html`<em
-      >${computeDeviceName(params.device, this.hass!)}</em
+    this._deviceName = html`<strong
+      >${computeDeviceName(params.device, this.hass!)}</strong
     >`;
     this.device = params.device;
     this._getNodeStatus();
@@ -257,9 +257,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._unsubscribeNodeFirmwareUpdate();
       this._uploading = false;
       showAlertDialog(this, {
-        title: "Upload failed",
+        title: this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.upload_failed"
+        ),
         text: err.message,
-        confirmText: "ok",
+        confirmText: this.hass!.localize("ui.common.close"),
       });
     }
   }
@@ -278,7 +280,17 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       })
     ) {
       this._unsubscribeNodeFirmwareUpdate();
-      await abortZwaveNodeFirmwareUpdate(this.hass, this.device!.id);
+      try {
+        await abortZwaveNodeFirmwareUpdate(this.hass, this.device!.id);
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.zwave_js.update_firmware.abort_failed"
+          ),
+          text: err.message,
+          confirmText: this.hass!.localize("ui.common.close"),
+        });
+      }
       this._firmwareFile = undefined;
       this._updateFinished = undefined;
       this._updateProgress = undefined;

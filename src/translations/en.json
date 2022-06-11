@@ -3312,6 +3312,7 @@
             "title": "Update Device Firmware",
             "introduction": "Select the firmware file you would like to use to update {device}.",
             "upload_firmware": "Upload Firmware",
+            "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
             "queued": "The firmware update is ready to be sent to {device} but the device is asleep, wake the device to start the update.",
             "close_queued": "If you close this dialog, the update will continue to be queued in the background and start automatically once the device wakes up.",
@@ -3319,6 +3320,7 @@
             "close": "If you close this dialog, the update will continue in the background.",
             "in_progress": "The firmware update on {device} is in progress ({sent} / {total}).",
             "abort": "Abort Firmware Update",
+            "abort_failed": "Abort Failed",
             "confirm_abort": "Are you sure you want to abort the firmware update on {device}?",
             "finished_status": {
               "ok": "Successfully updated firmware on {device}: {message}",
