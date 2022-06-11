@@ -685,7 +685,7 @@ export const uploadFirmware = async (
   }
 };
 
-export const subscribeZwaveNodeUpdateFirmware = (
+export const subscribeZwaveNodeFirmwareUpdate = (
   hass: HomeAssistant,
   device_id: string,
   callbackFunction: (
