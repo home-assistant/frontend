@@ -2,6 +2,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 export interface HaDomainTogglerDialogParams {
   title?: string;
+  description?: string;
   domains: string[];
   exposedDomains: string[] | null;
   toggleDomain: (domain: string, turnOn: boolean) => void;
