@@ -44,6 +44,11 @@ export interface EntityRegistryEntryUpdateParams {
   options_domain?: string;
   options?: {
     unit_of_measurement?: string | null;
+    precipitation_unit_of_measurement?: string | null;
+    pressure_unit_of_measurement?: string | null;
+    temperature_unit_of_measurement?: string | null;
+    visibility_unit_of_measurement?: string | null;
+    wind_speed_unit_of_measurement?: string | null;
   };
 }
 
