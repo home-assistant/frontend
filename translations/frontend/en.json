@@ -2431,7 +2431,7 @@
                         }
                     },
                     "compare":{
-                        "info": "You are comparing the period {start} with period {end}"
+                        "info": "You are comparing the period {start} with {end}"
 
                     }
                 },
