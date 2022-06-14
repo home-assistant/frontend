@@ -333,7 +333,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
             `
           : ""}
-        ${this._deviceClass &&
+        ${domain === "sensor" &&
+        this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
         OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
           stateObj?.attributes.unit_of_measurement
