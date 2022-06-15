@@ -111,7 +111,7 @@ const OVERRIDE_SENSOR_UNITS = {
 };
 
 const OVERRIDE_WEATHER_UNITS = {
-  precipitation: ["°C", "°F", "K"],
+  precipitation: ["mm", "in"],
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
   temperature: ["°C", "°F"],
   visibility: ["km", "mi"],
