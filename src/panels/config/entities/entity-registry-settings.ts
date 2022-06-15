@@ -148,15 +148,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _unit_of_measurement?: string | null;
 
-  @state() private _precipitation_unit_of_measurement?: string | null;
+  @state() private _precipitation_unit?: string | null;
 
-  @state() private _pressure_unit_of_measurement?: string | null;
+  @state() private _pressure_unit?: string | null;
 
-  @state() private _temperature_unit_of_measurement?: string | null;
+  @state() private _temperature_unit?: string | null;
 
-  @state() private _visibility_unit_of_measurement?: string | null;
+  @state() private _visibility_unit?: string | null;
 
-  @state() private _wind_speed_unit_of_measurement?: string | null;
+  @state() private _wind_speed_unit?: string | null;
 
   @state() private _error?: string;
 
@@ -244,16 +244,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (domain === "weather") {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
-      this._precipitation_unit_of_measurement =
-        stateObj?.attributes?.precipitation_unit_of_measurement;
-      this._pressure_unit_of_measurement =
-        stateObj?.attributes?.pressure_unit_of_measurement;
-      this._temperature_unit_of_measurement =
-        stateObj?.attributes?.temperature_unit_of_measurement;
-      this._visibility_unit_of_measurement =
-        stateObj?.attributes?.visibility_unit_of_measurement;
-      this._wind_speed_unit_of_measurement =
-        stateObj?.attributes?.wind_speed_unit_of_measurement;
+      this._precipitation_unit = stateObj?.attributes?.precipitation_unit;
+      this._pressure_unit = stateObj?.attributes?.pressure_unit;
+      this._temperature_unit = stateObj?.attributes?.temperature_unit;
+      this._visibility_unit = stateObj?.attributes?.visibility_unit;
+      this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
     }
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
@@ -395,9 +390,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           ? html`
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.precipitation_unit_of_measurement"
+                  "ui.dialogs.entity_registry.editor.precipitation_unit"
                 )}
-                .value=${stateObj.attributes.precipitation_unit_of_measurement}
+                .value=${stateObj.attributes.precipitation_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._precipitationUnitChanged}
@@ -411,9 +406,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.pressure_unit_of_measurement"
+                  "ui.dialogs.entity_registry.editor.pressure_unit"
                 )}
-                .value=${stateObj.attributes.pressure_unit_of_measurement}
+                .value=${stateObj.attributes.pressure_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._pressureUnitChanged}
@@ -427,9 +422,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.temperature_unit_of_measurement"
+                  "ui.dialogs.entity_registry.editor.temperature_unit"
                 )}
-                .value=${stateObj.attributes.temperature_unit_of_measurement}
+                .value=${stateObj.attributes.temperature_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._temperatureUnitChanged}
@@ -443,9 +438,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.visibility_unit_of_measurement"
+                  "ui.dialogs.entity_registry.editor.visibility_unit"
                 )}
-                .value=${stateObj.attributes.visibility_unit_of_measurement}
+                .value=${stateObj.attributes.visibility_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._visibilityUnitChanged}
@@ -459,9 +454,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
               <ha-select
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.wind_speed_unit_of_measurement"
+                  "ui.dialogs.entity_registry.editor.wind_speed_unit"
                 )}
-                .value=${stateObj.attributes.wind_speed_unit_of_measurement}
+                .value=${stateObj.attributes.wind_speed_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._windSpeedUnitChanged}
@@ -874,25 +869,20 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
     if (
       (domain === "weather" &&
-        stateObj?.attributes?.precipitation_unit_of_measurement !==
-          this._precipitation_unit_of_measurement) ||
-      stateObj?.attributes?.pressure_unit_of_measurement !==
-        this._pressure_unit_of_measurement ||
-      stateObj?.attributes?.temperature_unit_of_measurement !==
-        this._temperature_unit_of_measurement ||
-      stateObj?.attributes?.visbility_unit_of_measurement !==
-        this._visibility_unit_of_measurement ||
-      stateObj?.attributes?.wind_speed_unit_of_measurement !==
-        this._wind_speed_unit_of_measurement
+        stateObj?.attributes?.precipitation_unit !==
+          this._precipitation_unit) ||
+      stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
+      stateObj?.attributes?.temperature_unit !== this._temperature_unit ||
+      stateObj?.attributes?.visbility_unit !== this._visibility_unit ||
+      stateObj?.attributes?.wind_speed_unit !== this._wind_speed_unit
     ) {
       params.options_domain = "weather";
       params.options = {
-        precipitation_unit_of_measurement:
-          this._precipitation_unit_of_measurement,
-        pressure_unit_of_measurement: this._pressure_unit_of_measurement,
-        temperature_unit_of_measurement: this._temperature_unit_of_measurement,
-        visibility_unit_of_measurement: this._visibility_unit_of_measurement,
-        wind_speed_unit_of_measurement: this._wind_speed_unit_of_measurement,
+        precipitation_unit: this._precipitation_unit,
+        pressure_unit: this._pressure_unit,
+        temperature_unit: this._temperature_unit,
+        visibility_unit: this._visibility_unit,
+        wind_speed_unit: this._wind_speed_unit,
       };
     }
     try {

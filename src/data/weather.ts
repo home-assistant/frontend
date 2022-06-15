@@ -50,11 +50,11 @@ interface WeatherEntityAttributes extends HassEntityAttributeBase {
   visibility?: number;
   wind_bearing?: number | string;
   wind_speed?: number;
-  precipitation_unit_of_measurement: string;
-  pressure_unit_of_measurement: string;
-  temperature_unit_of_measurement: string;
-  visibility_unit_of_measurement: string;
-  wind_speed_unit_of_measurement: string;
+  precipitation_unit: string;
+  pressure_unit: string;
+  temperature_unit: string;
+  visibility_unit: string;
+  wind_speed_unit: string;
 }
 
 export interface WeatherEntity extends HassEntityBase {
@@ -197,27 +197,18 @@ export const getWeatherUnit = (
   const lengthUnit = hass.config.unit_system.length || "";
   const defaultPressureUnit = lengthUnit === "km" ? "hPa" : "inHg";
   const defaultPrecipitationUnit = lengthUnit === "km" ? "mm" : "in";
+  const defaultTemperatureUnit = hass.config.unit_system[measure];
   switch (measure) {
     case "visibility":
-      return stateObj.attributes.visibility_unit_of_measurement || lengthUnit;
+      return stateObj.attributes.visibility_unit || lengthUnit;
     case "precipitation":
-      return (
-        stateObj.attributes.precipitation_unit_of_measurement ||
-        defaultPrecipitationUnit
-      );
+      return stateObj.attributes.precipitation_unit || defaultPrecipitationUnit;
     case "pressure":
-      return (
-        stateObj.attributes.pressure_unit_of_measurement || defaultPressureUnit
-      );
+      return stateObj.attributes.pressure_unit || defaultPressureUnit;
     case "temperature":
-      return (
-        stateObj.attributes.temperature_unit_of_measurement ||
-        hass.config.unit_system[measure]
-      );
+      return stateObj.attributes.temperature_unit || defaultTemperatureUnit;
     case "wind_speed":
-      return (
-        stateObj.attributes.wind_speed_unit_of_measurement || `${lengthUnit}/h`
-      );
+      return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
     case "humidity":
     case "precipitation_probability":
       return "%";

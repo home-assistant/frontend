@@ -811,11 +811,11 @@
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of Measurement",
-          "precipitation_unit_of_measurement": "Precipitation unit",
-          "pressure_unit_of_measurement": "Barometric pressure unit",
-          "temperature_unit_of_measurement": "Temperature unit",
-          "visibility_unit_of_measurement": "Visibility unit",
-          "wind_speed_unit_of_measurement": "Wind speed unit",
+          "precipitation_unit": "Precipitation unit",
+          "pressure_unit": "Barometric pressure unit",
+          "temperature_unit": "Temperature unit",
+          "visibility_unit": "Visibility unit",
+          "wind_speed_unit": "Wind speed unit",
           "device_class": "Show as",
           "device_classes": {
             "binary_sensor": {
