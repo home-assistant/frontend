@@ -126,6 +126,7 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
     `,
+    // safari workaround - must be explicit
     document.dir === "rtl"
       ? css`
           .mdc-text-field__affix--suffix,
