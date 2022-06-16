@@ -126,6 +126,19 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
     `,
+    document.dir === "rtl"
+      ? css`
+          .mdc-text-field__affix--suffix,
+          .mdc-text-field--with-leading-icon,
+          .mdc-text-field__icon--leading,
+          .mdc-floating-label,
+          .mdc-text-field--with-leading-icon.mdc-text-field--filled
+            .mdc-floating-label,
+          .mdc-text-field__input[type="number"] {
+            direction: rtl;
+          }
+        `
+      : css``,
   ];
 }
 
