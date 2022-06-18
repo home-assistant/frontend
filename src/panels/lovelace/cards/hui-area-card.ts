@@ -61,7 +61,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature"],
+  sensor: ["temperature", "humidity"],
   binary_sensor: ["motion"],
 };
 
