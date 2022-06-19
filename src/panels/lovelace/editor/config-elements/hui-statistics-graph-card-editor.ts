@@ -29,6 +29,7 @@ const statTypeStruct = union([
   literal("min"),
   literal("max"),
   literal("mean"),
+  literal("state"),
 ]);
 
 const cardConfigStruct = assign(
@@ -105,6 +106,7 @@ export class HuiStatisticsGraphCardEditor
             ["min", "Min"],
             ["max", "Max"],
             ["sum", "Sum"],
+            ["state", "State"],
           ],
         },
         {
@@ -130,7 +132,7 @@ export class HuiStatisticsGraphCardEditor
       ? Array.isArray(this._config!.stat_types)
         ? this._config!.stat_types
         : [this._config!.stat_types]
-      : ["mean", "min", "max", "sum"];
+      : ["mean", "min", "max", "sum", "state"];
     const data = {
       chart_type: "line",
       period: "hour",

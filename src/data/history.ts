@@ -63,7 +63,7 @@ export interface HistoryResult {
   timeline: TimelineEntity[];
 }
 
-export type StatisticType = "sum" | "min" | "max" | "mean";
+export type StatisticType = "sum" | "min" | "max" | "mean" | "state";
 
 export interface Statistics {
   [statisticId: string]: StatisticValue[];
