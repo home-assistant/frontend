@@ -3310,6 +3310,7 @@
           },
           "update_firmware": {
             "title": "Update Device Firmware",
+            "warning": "WARNING: Firmware updates can brick your device if you do not know what you are doing and do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS team will not be able to help you if you brick your device. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device} as well as the firmware target (0 for the Z-Wave chip, >=1 for other chips if they exist). If you don't specify a target, the driver will attempt to figure it out.",
             "upload_firmware": "Upload Firmware",
             "firmware_target": "Firmware Target (chip)",

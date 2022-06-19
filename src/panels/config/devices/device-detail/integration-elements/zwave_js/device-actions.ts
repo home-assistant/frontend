@@ -4,6 +4,7 @@ import {
   fetchZwaveNodeFirmwareUpdateCapabilities,
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
+import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
@@ -31,14 +32,15 @@ export const getZwaveDeviceActions = async (
 
   const entryId = configEntry.entry_id;
 
-  const node = await fetchZwaveNodeStatus(hass, device.id);
+  const results = await Promise.all([
+    fetchZwaveNodeStatus(hass, device.id),
+    fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id),
+  ]);
 
-  const firmwareCapabilities = await fetchZwaveNodeFirmwareUpdateCapabilities(
-    hass,
-    device.id
-  );
+  const nodeStatus = results[0];
+  const firmwareCapabilities = results[1];
 
-  if (!node || node.is_controller_node) {
+  if (!nodeStatus || nodeStatus.is_controller_node) {
     return [];
   }
 
@@ -90,7 +92,19 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
       ),
-      action: () => showZWaveJUpdateFirmwareNodeDialog(el, { device }),
+      action: async () => {
+        if (
+          await showConfirmationDialog(el, {
+            text: hass.localize(
+              "ui.panel.config.zwave_js.update_firmware.warning"
+            ),
+            dismissText: hass.localize("ui.common.no"),
+            confirmText: hass.localize("ui.common.yes"),
+          })
+        ) {
+          showZWaveJUpdateFirmwareNodeDialog(el, { device });
+        }
+      },
     });
   }
 
