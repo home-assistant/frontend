@@ -54,7 +54,7 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
           ...this._node,
           status: message.status,
           ready: message.ready,
-        }
+        };
       }),
     ];
   }
