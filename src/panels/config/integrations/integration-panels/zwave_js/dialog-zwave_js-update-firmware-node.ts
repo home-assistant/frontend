@@ -217,10 +217,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   "ui.panel.config.zwave_js.update_firmware.in_progress",
                   {
                     device: this._deviceName,
-                    progress: Math.floor(
+                    progress: (
                       (this._updateProgressMessage.sent_fragments * 100) /
-                        this._updateProgressMessage.total_fragments
-                    ),
+                      this._updateProgressMessage.total_fragments
+                    ).toFixed(2),
                   }
                 )}
               </p>
