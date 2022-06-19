@@ -89,6 +89,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._updateInProgress = false;
     this._firmwareFile = undefined;
     this._nodeStatus = undefined;
+    this._target = undefined;
+    this._firmwareUpdateCapabilities = undefined;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -217,8 +219,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   "ui.panel.config.zwave_js.update_firmware.in_progress",
                   {
                     device: this._deviceName,
-                    sent: this._updateProgressMessage.sent_fragments,
-                    total: this._updateProgressMessage.total_fragments,
+                    progress: Math.floor(
+                      (this._updateProgressMessage.sent_fragments * 100) /
+                        this._updateProgressMessage.total_fragments
+                    ),
                   }
                 )}
               </p>
@@ -262,9 +266,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   </p>
                 </div>
               </div>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
-              )}
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
+                )}
+              </p>
               ${beginFirmwareUpdateHTML}
             `}
       </ha-dialog>
