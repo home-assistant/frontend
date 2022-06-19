@@ -8,7 +8,6 @@ import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
 import { HaTextField } from "../../components/ha-textfield";
-import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogBoxParams } from "./show-dialog-box";
 
@@ -135,34 +134,34 @@ class DialogBox extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        :host([inert]) {
-          pointer-events: initial !important;
-          cursor: initial !important;
-        }
-        a {
-          color: var(--primary-color);
-        }
-        p {
-          margin: 0;
-          padding-top: 6px;
-          padding-bottom: 24px;
-          color: var(--primary-text-color);
-        }
-        .no-bottom-padding {
-          padding-bottom: 0;
-        }
-        .secondary {
-          color: var(--secondary-text-color);
-        }
-        ha-dialog {
-          /* Place above other dialogs */
-          --dialog-z-index: 104;
-        }
-      `,
-    ];
+    return css`
+      :host([inert]) {
+        pointer-events: initial !important;
+        cursor: initial !important;
+      }
+      a {
+        color: var(--primary-color);
+      }
+      p {
+        margin: 0;
+        padding-top: 6px;
+        padding-bottom: 24px;
+        color: var(--primary-text-color);
+      }
+      .no-bottom-padding {
+        padding-bottom: 0;
+      }
+      .secondary {
+        color: var(--secondary-text-color);
+      }
+      ha-dialog {
+        --mdc-dialog-heading-ink-color: var(--primary-text-color);
+        --mdc-dialog-content-ink-color: var(--primary-text-color);
+        --justify-action-buttons: space-between;
+        /* Place above other dialogs */
+        --dialog-z-index: 104;
+      }
+    `;
   }
 }
 

@@ -73,7 +73,10 @@ export class DialogAddApplicationCredential extends LitElement {
       id: domain,
       name: domainToName(this.hass.localize, domain),
     }));
-    this.hass.loadBackendTranslation("application_credentials");
+    await this.hass.loadBackendTranslation("application_credentials");
+    if (this._domain !== "") {
+      this._updateDescription();
+    }
   }
 
   protected render(): TemplateResult {
@@ -182,9 +185,13 @@ export class DialogAddApplicationCredential extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private async _handleDomainPicked(ev: CustomEvent) {
+  private _handleDomainPicked(ev: CustomEvent) {
     ev.stopPropagation();
     this._domain = ev.detail.value;
+    this._updateDescription();
+  }
+
+  private _updateDescription() {
     const info = this._config!.integrations[this._domain!];
     this._description = this.hass.localize(
       `component.${this._domain}.application_credentials.description`,

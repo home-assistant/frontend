@@ -50,10 +50,11 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
         if (!this._node) {
           return;
         }
-        Object.assign(this._node, {
+        this._node = {
+          ...this._node,
           status: message.status,
           ready: message.ready,
-        });
+        }
       }),
     ];
   }
