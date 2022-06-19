@@ -80,15 +80,15 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   public closeDialog(): void {
     this._unsubscribeNodeFirmwareUpdate();
     this._unsubscribeNodeStatus();
-    this.device = undefined;
-    this._uploading = false;
-    this._updateFinishedMessage = undefined;
-    this._updateProgressMessage = undefined;
-    this._updateInProgress = false;
-    this._firmwareFile = undefined;
-    this._nodeStatus = undefined;
-    this._target = undefined;
-    this._firmwareUpdateCapabilities = undefined;
+    this.device =
+      this._updateProgressMessage =
+      this._updateFinishedMessage =
+      this._firmwareFile =
+      this._nodeStatus =
+      this._target =
+      this._firmwareUpdateCapabilities =
+        undefined;
+    this._uploading = this._updateInProgress = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
