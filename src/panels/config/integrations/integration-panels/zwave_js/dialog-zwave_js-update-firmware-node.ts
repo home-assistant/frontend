@@ -74,8 +74,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     >`;
     this.device = params.device;
     this._fetchData();
-    // this._getNodeStatus();
-    // this._getFirmwareUpdateInProgressStatus();
     this._subscribeNodeStatus();
   }
 
