@@ -1,6 +1,9 @@
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { fetchZwaveNodeStatus } from "../../../../../../data/zwave_js";
+import {
+  fetchZwaveNodeFirmwareUpdateCapabilities,
+  fetchZwaveNodeStatus,
+} from "../../../../../../data/zwave_js";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
@@ -30,11 +33,16 @@ export const getZwaveDeviceActions = async (
 
   const node = await fetchZwaveNodeStatus(hass, device.id);
 
+  const firmwareCapabilities = await fetchZwaveNodeFirmwareUpdateCapabilities(
+    hass,
+    device.id
+  );
+
   if (!node || node.is_controller_node) {
     return [];
   }
 
-  return [
+  const actions = [
     {
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.device_config"
@@ -54,7 +62,7 @@ export const getZwaveDeviceActions = async (
       label: hass.localize("ui.panel.config.zwave_js.device_info.heal_node"),
       action: () =>
         showZWaveJSHealNodeDialog(el, {
-          device: device,
+          device,
         }),
     },
     {
@@ -72,14 +80,19 @@ export const getZwaveDeviceActions = async (
       ),
       action: () =>
         showZWaveJSNodeStatisticsDialog(el, {
-          device: device,
+          device,
         }),
     },
-    {
+  ];
+
+  if (firmwareCapabilities.firmware_upgradable) {
+    actions.push({
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
       ),
       action: () => showZWaveJUpdateFirmwareNodeDialog(el, { device }),
-    },
-  ];
+    });
+  }
+
+  return actions;
 };

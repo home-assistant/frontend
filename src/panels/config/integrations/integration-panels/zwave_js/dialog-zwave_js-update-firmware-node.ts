@@ -1,6 +1,7 @@
 import "../../../../../components/ha-bar";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-file-upload";
+import "../../../../../components/ha-selector/ha-selector-number";
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -14,6 +15,7 @@ import {
 } from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
+  fetchZwaveNodeFirmwareUpdateCapabilities,
   fetchZwaveNodeFirmwareUpdateProgress,
   fetchZwaveNodeStatus,
   FirmwareUpdateStatus,
@@ -24,6 +26,8 @@ import {
   ZWaveJSNodeFirmwareUpdateFinishedMessage,
   ZWaveJSNodeFirmwareUpdateProgressMessage,
   ZWaveJSNodeStatusUpdatedMessage,
+  ZWaveJSNodeFirmwareUpdateCapabilities,
+  ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -32,6 +36,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
+import { NumberSelector } from "../../../../../data/selector";
 
 @customElement("dialog-zwave_js-update-firmware-node")
 class DialogZWaveJSUpdateFirmwareNode extends LitElement {
@@ -41,9 +46,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _uploading = false;
 
-  @state() private _updateFinished?: ZWaveJSNodeFirmwareUpdateFinishedMessage;
+  @state()
+  private _updateFinishedMessage?: ZWaveJSNodeFirmwareUpdateFinishedMessage;
 
-  @state() private _updateProgress?: ZWaveJSNodeFirmwareUpdateProgressMessage;
+  @state()
+  private _updateProgressMessage?: ZWaveJSNodeFirmwareUpdateProgressMessage;
 
   @state() private _updateInProgress = false;
 
@@ -57,13 +64,18 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private _deviceName?: TemplateResult;
 
+  private _target?: number;
+
+  private _firmwareUpdateCapabilities?: ZWaveJSNodeFirmwareUpdateCapabilities;
+
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = html`<strong
       >${computeDeviceName(params.device, this.hass!)}</strong
     >`;
     this.device = params.device;
-    this._getNodeStatus();
-    this._getFirmwareUpdateInProgressStatus();
+    this._fetchData();
+    // this._getNodeStatus();
+    // this._getFirmwareUpdateInProgressStatus();
     this._subscribeNodeStatus();
   }
 
@@ -72,8 +84,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._unsubscribeNodeStatus();
     this.device = undefined;
     this._uploading = false;
-    this._updateFinished = undefined;
-    this._updateProgress = undefined;
+    this._updateFinishedMessage = undefined;
+    this._updateProgressMessage = undefined;
     this._updateInProgress = false;
     this._firmwareFile = undefined;
     this._nodeStatus = undefined;
@@ -82,9 +94,23 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.device) {
+    if (
+      !this.device ||
+      !this._nodeStatus ||
+      !this._firmwareUpdateCapabilities ||
+      this._updateInProgress === undefined
+    ) {
       return html``;
     }
+
+    const targetSelector: NumberSelector = {
+      number: {
+        step: 1,
+        mode: "box",
+        min: Math.min(...this._firmwareUpdateCapabilities.firmware_targets!),
+        max: Math.max(...this._firmwareUpdateCapabilities.firmware_targets!),
+      },
+    };
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
@@ -96,6 +122,16 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
+      <ha-selector-number
+        .hass=${this.hass}
+        label=${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.firmware_target"
+        )}
+        .selector=${targetSelector}
+        .value=${this._target}
+        .required=${false}
+        @value-changed=${this._targetValueChanged}
+      ></ha-selector-number>
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
@@ -112,8 +148,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       </mwc-button>
     `;
 
-    const status = this._updateFinished
-      ? FirmwareUpdateStatus[this._updateFinished.status]
+    const status = this._updateFinishedMessage
+      ? FirmwareUpdateStatus[this._updateFinishedMessage.status]
           .split("_")[0]
           .toLowerCase()
       : undefined;
@@ -127,7 +163,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
           this.hass.localize("ui.panel.config.zwave_js.update_firmware.title")
         )}
       >
-        ${!this._updateProgress && !this._updateFinished
+        ${!this._updateProgressMessage && !this._updateFinishedMessage
           ? !this._updateInProgress
             ? html`
                 <p>
@@ -173,22 +209,22 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 </p>
                 ${abortFirmwareUpdateButton}
               `
-          : this._updateProgress && !this._updateFinished
+          : this._updateProgressMessage && !this._updateFinishedMessage
           ? html`
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.update_firmware.in_progress",
                   {
                     device: this._deviceName,
-                    sent: this._updateProgress.sent_fragments,
-                    total: this._updateProgress.total_fragments,
+                    sent: this._updateProgressMessage.sent_fragments,
+                    total: this._updateProgressMessage.total_fragments,
                   }
                 )}
               </p>
               <ha-bar
                 min="0"
-                .max=${this._updateProgress.total_fragments}
-                .value=${this._updateProgress.sent_fragments}
+                .max=${this._updateProgressMessage.total_fragments}
+                .value=${this._updateProgressMessage.sent_fragments}
               >
               </ha-bar>
               <p>
@@ -215,7 +251,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         device: this._deviceName,
                         message: this.hass.localize(
                           `ui.panel.config.zwave_js.update_firmware.finished_status.${
-                            FirmwareUpdateStatus[this._updateFinished!.status]
+                            FirmwareUpdateStatus[
+                              this._updateFinishedMessage!.status
+                            ]
                           }`
                         ),
                       }
@@ -223,23 +261,24 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   </p>
                 </div>
               </div>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
+              )}
               ${beginFirmwareUpdateHTML}
             `}
       </ha-dialog>
     `;
   }
 
-  private async _getNodeStatus(): Promise<void> {
-    this._nodeStatus = (
-      await fetchZwaveNodeStatus(this.hass, this.device!.id)
-    ).status;
-  }
-
-  private async _getFirmwareUpdateInProgressStatus(): Promise<void> {
-    this._updateInProgress = await fetchZwaveNodeFirmwareUpdateProgress(
-      this.hass,
-      this.device!.id
-    );
+  private async _fetchData(): Promise<void> {
+    let nodeStatus: ZWaveJSNodeStatus;
+    [this._firmwareUpdateCapabilities, nodeStatus, this._updateInProgress] =
+      await Promise.all([
+        fetchZwaveNodeFirmwareUpdateCapabilities(this.hass, this.device!.id),
+        fetchZwaveNodeStatus(this.hass, this.device!.id),
+        fetchZwaveNodeFirmwareUpdateProgress(this.hass, this.device!.id),
+      ]);
+    this._nodeStatus = nodeStatus.status;
     if (this._updateInProgress) {
       this._subscribeNodeFirmwareUpdate();
     }
@@ -247,10 +286,15 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private async _beginFirmwareUpdate(): Promise<void> {
     this._uploading = true;
-    this._updateProgress = this._updateFinished = undefined;
+    this._updateProgressMessage = this._updateFinishedMessage = undefined;
     try {
       this._subscribeNodeFirmwareUpdate();
-      await uploadFirmware(this.hass, this.device!.id, this._firmwareFile!);
+      await uploadFirmware(
+        this.hass,
+        this.device!.id,
+        this._firmwareFile!,
+        this._target
+      );
       this._updateInProgress = true;
       this._uploading = false;
     } catch (err: any) {
@@ -292,8 +336,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         });
       }
       this._firmwareFile = undefined;
-      this._updateFinished = undefined;
-      this._updateProgress = undefined;
+      this._updateFinishedMessage = undefined;
+      this._updateProgressMessage = undefined;
       this._updateInProgress = false;
     }
   }
@@ -332,14 +376,14 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
           | ZWaveJSNodeFirmwareUpdateProgressMessage
       ) => {
         if (message.event === "firmware update progress") {
-          if (!this._updateFinished) {
-            this._updateProgress = message;
+          if (!this._updateFinishedMessage) {
+            this._updateProgressMessage = message;
           }
         } else {
           this._unsubscribeNodeFirmwareUpdate();
-          this._updateProgress = undefined;
+          this._updateProgressMessage = undefined;
           this._updateInProgress = false;
-          this._updateFinished = message;
+          this._updateFinishedMessage = message;
         }
       }
     );
@@ -351,6 +395,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     }
     this._subscribedNodeFirmwareUpdate.then((unsub) => unsub());
     this._subscribedNodeFirmwareUpdate = undefined;
+  }
+
+  private async _targetValueChanged(ev) {
+    this._target = ev.detail.value;
   }
 
   private async _uploadFile(ev) {

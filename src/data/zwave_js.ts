@@ -309,6 +309,13 @@ export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   wait_time: number;
 }
 
+export interface ZWaveJSNodeFirmwareUpdateCapabilities {
+  firmware_upgradable: boolean;
+  firmware_targets?: number[];
+  continues_to_function?: boolean | null;
+  supports_activation?: boolean | null;
+}
+
 export interface ZWaveJSRemovedNode {
   node_id: number;
   manufacturer: string;
@@ -665,13 +672,26 @@ export const fetchZwaveNodeFirmwareUpdateProgress = (
     device_id,
   });
 
+export const fetchZwaveNodeFirmwareUpdateCapabilities = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<ZWaveJSNodeFirmwareUpdateCapabilities> =>
+  hass.callWS({
+    type: "zwave_js/get_firmware_update_capabilities",
+    device_id,
+  });
+
 export const uploadFirmware = async (
   hass: HomeAssistant,
   device_id: string,
-  file: File
+  file: File,
+  target?: number
 ) => {
   const fd = new FormData();
   fd.append("file", file);
+  if (target !== undefined) {
+    fd.append("target", target.toString());
+  }
   const resp = await hass.fetchWithAuth(
     `/api/zwave_js/firmware/upload/${device_id}`,
     {
