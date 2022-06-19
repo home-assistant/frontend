@@ -98,6 +98,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       !this.device ||
       !this._nodeStatus ||
       !this._firmwareUpdateCapabilities ||
+      !this._firmwareUpdateCapabilities.firmware_upgradable ||
       this._updateInProgress === undefined
     ) {
       return html``;
@@ -107,8 +108,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       number: {
         step: 1,
         mode: "box",
-        min: Math.min(...this._firmwareUpdateCapabilities.firmware_targets!),
-        max: Math.max(...this._firmwareUpdateCapabilities.firmware_targets!),
+        min: Math.min(...this._firmwareUpdateCapabilities.firmware_targets),
+        max: Math.max(...this._firmwareUpdateCapabilities.firmware_targets),
       },
     };
 

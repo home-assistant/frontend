@@ -309,12 +309,14 @@ export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   wait_time: number;
 }
 
-export interface ZWaveJSNodeFirmwareUpdateCapabilities {
-  firmware_upgradable: boolean;
-  firmware_targets?: number[];
-  continues_to_function?: boolean | null;
-  supports_activation?: boolean | null;
-}
+export type ZWaveJSNodeFirmwareUpdateCapabilities =
+  | { firmware_upgradable: false }
+  | {
+      firmware_upgradable: true;
+      firmware_targets: number[];
+      continues_to_function: boolean | null;
+      supports_activation: boolean | null;
+    };
 
 export interface ZWaveJSRemovedNode {
   node_id: number;
