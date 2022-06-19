@@ -226,8 +226,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               </p>
               <ha-bar
                 min="0"
-                .max=${this._updateProgressMessage.total_fragments}
                 .value=${this._updateProgressMessage.sent_fragments}
+                .max=${this._updateProgressMessage.total_fragments}
               >
               </ha-bar>
               <p>
