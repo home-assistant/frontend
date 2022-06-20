@@ -707,7 +707,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
           },
         ],
         cloudiness: 25,
-        friendly_name: "V\u00e4der",
+        friendly_name: "Weather",
       },
     },
     "binary_sensor.ubiquiti_switch": {
