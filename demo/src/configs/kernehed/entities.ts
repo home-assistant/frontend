@@ -137,7 +137,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "73",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "oskar batteri",
+        friendly_name: "Oskar battery",
         device_class: "battery",
       },
     },
@@ -146,7 +146,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "88",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "bella batteri",
+        friendly_name: "Bella battery",
         device_class: "battery",
       },
     },
@@ -154,7 +154,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       entity_id: "binary_sensor.unifi_camera",
       state: "off",
       attributes: {
-        friendly_name: "R\u00f6relsesensor kamera",
+        friendly_name: "Motion sensor camera",
         icon: "mdi:walk",
       },
     },
