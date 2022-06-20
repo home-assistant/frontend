@@ -386,7 +386,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
             `
           : ""}
-        ${domain === "switch"
+        ${domain === "weather"
           ? html`
               <ha-select
                 .label=${this.hass.localize(
