@@ -731,7 +731,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         round_trip_time_max: "0.626",
         round_trip_time_mdev: "",
         round_trip_time_min: "0.358",
-        friendly_name: "Entr\u00e9 kamera",
+        friendly_name: "Entry camera",
         device_class: "connectivity",
         icon: "mdi:cctv",
       },
