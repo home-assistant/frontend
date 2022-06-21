@@ -15,7 +15,6 @@ import {
 } from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
-  fetchZwaveNodeFirmwareUpdateCapabilities,
   fetchZwaveNodeIsFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
   FirmwareUpdateStatus,
@@ -56,7 +55,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _firmwareFile?: File;
 
-  @state() private _nodeStatus?: NodeStatus;
+  @state() private _nodeStatus?: ZWaveJSNodeStatus;
 
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
@@ -71,6 +70,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceName(params.device, this.hass!);
     this.device = params.device;
+    this._firmwareUpdateCapabilities = params.firmwareUpdateCapabilities;
     this._fetchData();
     this._subscribeNodeStatus();
   }
@@ -184,7 +184,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               `
             : html`
                 <p>
-                  ${this._nodeStatus === NodeStatus.Asleep
+                  ${this._nodeStatus.status === NodeStatus.Asleep
                     ? this.hass.localize(
                         "ui.panel.config.zwave_js.update_firmware.queued",
                         {
@@ -199,7 +199,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                       )}
                 </p>
                 <p>
-                  ${this._nodeStatus === NodeStatus.Asleep
+                  ${this._nodeStatus.status === NodeStatus.Asleep
                     ? this.hass.localize(
                         "ui.panel.config.zwave_js.update_firmware.close_queued",
                         {
@@ -292,14 +292,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   }
 
   private async _fetchData(): Promise<void> {
-    let nodeStatus: ZWaveJSNodeStatus;
-    [this._firmwareUpdateCapabilities, nodeStatus, this._updateInProgress] =
-      await Promise.all([
-        fetchZwaveNodeFirmwareUpdateCapabilities(this.hass, this.device!.id),
-        fetchZwaveNodeStatus(this.hass, this.device!.id),
-        fetchZwaveNodeIsFirmwareUpdateInProgress(this.hass, this.device!.id),
-      ]);
-    this._nodeStatus = nodeStatus.status;
+    [this._nodeStatus, this._updateInProgress] = await Promise.all([
+      fetchZwaveNodeStatus(this.hass, this.device!.id),
+      fetchZwaveNodeIsFirmwareUpdateInProgress(this.hass, this.device!.id),
+    ]);
     if (this._updateInProgress) {
       this._subscribeNodeFirmwareUpdate();
     }
@@ -371,7 +367,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this.hass,
       this.device.id,
       (message: ZWaveJSNodeStatusUpdatedMessage) => {
-        this._nodeStatus = message.status;
+        this._nodeStatus!.status = message.status;
       }
     );
   }

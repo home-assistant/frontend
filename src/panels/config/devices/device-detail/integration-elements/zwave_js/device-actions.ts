@@ -32,10 +32,7 @@ export const getZwaveDeviceActions = async (
 
   const entryId = configEntry.entry_id;
 
-  const [nodeStatus, firmwareCapabilities] = await Promise.all([
-    fetchZwaveNodeStatus(hass, device.id),
-    fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id),
-  ]);
+  const nodeStatus = await fetchZwaveNodeStatus(hass, device.id);
 
   if (!nodeStatus || nodeStatus.is_controller_node) {
     return [];
@@ -84,7 +81,14 @@ export const getZwaveDeviceActions = async (
     },
   ];
 
-  if (firmwareCapabilities.firmware_upgradable) {
+  if (!nodeStatus.ready) {
+    return actions;
+  }
+
+  const firmwareUpdateCapabilities =
+    await fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id);
+
+  if (firmwareUpdateCapabilities.firmware_upgradable) {
     actions.push({
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
@@ -99,7 +103,10 @@ export const getZwaveDeviceActions = async (
             confirmText: hass.localize("ui.common.yes"),
           })
         ) {
-          showZWaveJUpdateFirmwareNodeDialog(el, { device });
+          showZWaveJUpdateFirmwareNodeDialog(el, {
+            device,
+            firmwareUpdateCapabilities,
+          });
         }
       },
     });
