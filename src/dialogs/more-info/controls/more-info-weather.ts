@@ -139,7 +139,7 @@ class MoreInfoWeather extends LitElement {
                   this.stateObj.attributes.visibility!,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "length")}
+                ${getWeatherUnit(this.hass, this.stateObj, "visibility")}
               </div>
             </div>
           `
