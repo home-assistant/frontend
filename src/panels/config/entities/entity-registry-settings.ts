@@ -742,27 +742,27 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _precipitationUnitChanged(ev): void {
     this._error = undefined;
-    this._unit_of_measurement = ev.target.value;
+    this._precipitation_unit = ev.target.value;
   }
 
   private _pressureUnitChanged(ev): void {
     this._error = undefined;
-    this._unit_of_measurement = ev.target.value;
+    this._pressure_unit = ev.target.value;
   }
 
   private _temperatureUnitChanged(ev): void {
     this._error = undefined;
-    this._unit_of_measurement = ev.target.value;
+    this._temperature_unit = ev.target.value;
   }
 
   private _visibilityUnitChanged(ev): void {
     this._error = undefined;
-    this._unit_of_measurement = ev.target.value;
+    this._visibility_unit = ev.target.value;
   }
 
   private _windSpeedUnitChanged(ev): void {
     this._error = undefined;
-    this._unit_of_measurement = ev.target.value;
+    this._wind_speed_unit = ev.target.value;
   }
 
   private _switchAsChanged(ev): void {
@@ -868,13 +868,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     if (
-      (domain === "weather" &&
-        stateObj?.attributes?.precipitation_unit !==
-          this._precipitation_unit) ||
-      stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
-      stateObj?.attributes?.temperature_unit !== this._temperature_unit ||
-      stateObj?.attributes?.visbility_unit !== this._visibility_unit ||
-      stateObj?.attributes?.wind_speed_unit !== this._wind_speed_unit
+      domain === "weather" &&
+      (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
+        stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
+        stateObj?.attributes?.temperature_unit !== this._temperature_unit ||
+        stateObj?.attributes?.visbility_unit !== this._visibility_unit ||
+        stateObj?.attributes?.wind_speed_unit !== this._wind_speed_unit)
     ) {
       params.options_domain = "weather";
       params.options = {
