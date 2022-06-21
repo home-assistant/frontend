@@ -3311,8 +3311,9 @@
           "update_firmware": {
             "title": "Update Device Firmware",
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
-            "introduction": "Select the firmware file you would like to use to update {device} as well as the firmware target (0 for the Z-Wave chip, >=1 for other chips if they exist). If you don't specify a target, the driver will attempt to figure it out.",
+            "introduction": "Select the firmware file you would like to use to update {device}.",
             "upload_firmware": "Upload Firmware",
+            "firmware_target_intro": "What is the firmware target (0 for the Z-Wave chip, >=1 for other chips if they exist) for this firmware? If you don't specify a target, the driver will attempt to figure it out.",
             "firmware_target": "Firmware Target (chip)",
             "upload_failed": "Upload Failed",
             "begin_update": "Begin Firmware Update",
@@ -3327,7 +3328,7 @@
             "finished_status": {
               "ok": "Successfully updated firmware on {device}: {message}.",
               "error": "Unable to update firmware on {device}: {message}.",
-              "try_again": "To update the firmware again, select the new firmware file you would like to use as well as the firmware target (0 for the Z-Wave chip, >=1 for other chips if they exist). If you don't specify a target, the driver will attempt to figure it out.",
+              "try_again": "To update the firmware again, select the new firmware file you would like to use.",
               "Error_Timeout": "Timed Out",
               "Error_Checksum": "Checksum Error",
               "Error_TransmissionFailed": "Transmission Failed",

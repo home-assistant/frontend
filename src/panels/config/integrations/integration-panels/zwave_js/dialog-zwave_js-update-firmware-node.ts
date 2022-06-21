@@ -64,7 +64,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private _deviceName?: string;
 
-  private _target?: number;
+  private _firmwareTarget?: number;
 
   private _firmwareUpdateCapabilities?: ZWaveJSNodeFirmwareUpdateCapabilities;
 
@@ -83,7 +83,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._updateFinishedMessage =
       this._firmwareFile =
       this._nodeStatus =
-      this._target =
+      this._firmwareTarget =
       this._firmwareUpdateCapabilities =
         undefined;
     this._uploading = this._updateInProgress = false;
@@ -121,16 +121,23 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
-      <ha-selector-number
-        .hass=${this.hass}
-        label=${this.hass.localize(
-          "ui.panel.config.zwave_js.update_firmware.firmware_target"
-        )}
-        .selector=${targetSelector}
-        .value=${this._target}
-        .required=${false}
-        @value-changed=${this._targetValueChanged}
-      ></ha-selector-number>
+      ${this._firmwareUpdateCapabilities.firmware_targets.length > 1
+        ? html`<p>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
+              )}
+            </p>
+            <ha-selector-number
+              .hass=${this.hass}
+              label=${this.hass.localize(
+                "ui.panel.config.zwave_js.update_firmware.firmware_target"
+              )}
+              .selector=${targetSelector}
+              .value=${this._firmwareTarget}
+              .required=${false}
+              @value-changed=${this._targetValueChanged}
+            ></ha-selector-number>`
+        : ""}
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
@@ -295,7 +302,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         this.hass,
         this.device!.id,
         this._firmwareFile!,
-        this._target
+        this._firmwareTarget
       );
       this._updateInProgress = true;
       this._uploading = false;
@@ -400,7 +407,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   }
 
   private async _targetValueChanged(ev) {
-    this._target = ev.detail.value;
+    this._firmwareTarget = ev.detail.value;
   }
 
   private async _uploadFile(ev) {
