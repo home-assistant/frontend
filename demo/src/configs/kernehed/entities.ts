@@ -137,7 +137,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "73",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "oskar batteri",
+        friendly_name: "Oskar battery",
         device_class: "battery",
       },
     },
@@ -146,7 +146,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "88",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "bella batteri",
+        friendly_name: "Bella battery",
         device_class: "battery",
       },
     },
@@ -154,7 +154,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       entity_id: "binary_sensor.unifi_camera",
       state: "off",
       attributes: {
-        friendly_name: "R\u00f6relsesensor kamera",
+        friendly_name: "Motion sensor camera",
         icon: "mdi:walk",
       },
     },
@@ -707,7 +707,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
           },
         ],
         cloudiness: 25,
-        friendly_name: "V\u00e4der",
+        friendly_name: "Weather",
       },
     },
     "binary_sensor.ubiquiti_switch": {
@@ -731,7 +731,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         round_trip_time_max: "0.626",
         round_trip_time_mdev: "",
         round_trip_time_min: "0.358",
-        friendly_name: "Entr\u00e9 kamera",
+        friendly_name: "Entrance camera",
         device_class: "connectivity",
         icon: "mdi:cctv",
       },
@@ -807,7 +807,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         battery_level: 88,
         on: true,
-        friendly_name: "Altand\u00f6rren sensor",
+        friendly_name: "Back door sensor",
         device_class: "opening",
         icon: "mdi:door",
       },
