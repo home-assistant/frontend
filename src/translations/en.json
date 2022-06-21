@@ -3328,7 +3328,8 @@
             "finished_status": {
               "ok": "Successfully updated firmware on {device}: {message}.",
               "error": "Unable to update firmware on {device}: {message}.",
-              "try_again": "To update the firmware again, select the new firmware file you would like to use.",
+              "try_again": "To attempt the firmware update again, select the new firmware file you would like to use.",
+              "done": "The firmware update is complete! If you want to attempt another firmware update on this device, please wait until it gets re-interviewed.",
               "Error_Timeout": "Timed Out",
               "Error_Checksum": "Checksum Error",
               "Error_TransmissionFailed": "Transmission Failed",

@@ -268,6 +268,18 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   </p>
                 </div>
               </div>
+              ${status === "ok"
+                ? html`<p>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.update_firmware.finished_status.done"
+                    )}
+                  </p>`
+                : html`<p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
+                      )}
+                    </p>
+                    ${beginFirmwareUpdateHTML}`}
               <p>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
