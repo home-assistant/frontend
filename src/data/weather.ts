@@ -171,14 +171,14 @@ export const getWind = (
   bearing?: number | string
 ): string => {
   const speedText =
-    typeof speed !== "undefined" && speed !== null
+    speed !== undefined && speed !== null
       ? `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
           hass!,
           stateObj,
           "wind_speed"
         )}`
       : "-";
-  if (typeof bearing !== "undefined" && bearing !== null) {
+  if (bearing !== undefined && bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speedText} (${
       hass.localize(
@@ -197,16 +197,16 @@ export const getWeatherUnit = (
   const lengthUnit = hass.config.unit_system.length || "";
   const defaultPressureUnit = lengthUnit === "km" ? "hPa" : "inHg";
   const defaultPrecipitationUnit = lengthUnit === "km" ? "mm" : "in";
-  const defaultTemperatureUnit = hass.config.unit_system[measure];
+  const defaultTemperatureUnit = hass.config.unit_system.temperature;
   switch (measure) {
     case "visibility":
       return stateObj.attributes.visibility_unit || lengthUnit;
     case "precipitation":
-      return stateObj.attributes.precipitation_unit || defaultPrecipitationUnit;
+      return stateObj.attributes.precipitation_unit || lengthUnit === "km" ? "mm" : "in";
     case "pressure":
-      return stateObj.attributes.pressure_unit || defaultPressureUnit;
+      return stateObj.attributes.pressure_unit || lengthUnit === "km" ? "hPa" : "inHg";
     case "temperature":
-      return stateObj.attributes.temperature_unit || defaultTemperatureUnit;
+      return stateObj.attributes.temperature_unit || hass.config.unit_system.temperature;
     case "wind_speed":
       return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
     case "humidity":

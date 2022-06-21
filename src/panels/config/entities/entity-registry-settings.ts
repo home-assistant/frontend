@@ -115,7 +115,7 @@ const OVERRIDE_WEATHER_UNITS = {
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
   temperature: ["°C", "°F"],
   visibility: ["km", "mi"],
-  wind_speed: ["km/h", "mph", "m/s"],
+  wind_speed: ["km/h", "mph", "m/s", "ft/s", "kt"],
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
@@ -392,7 +392,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.precipitation_unit"
                 )}
-                .value=${stateObj.attributes.precipitation_unit}
+                .value=${this._precipitation_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._precipitationUnitChanged}
@@ -408,7 +408,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.pressure_unit"
                 )}
-                .value=${stateObj.attributes.pressure_unit}
+                .value=${this._pressure_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._pressureUnitChanged}
@@ -424,7 +424,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.temperature_unit"
                 )}
-                .value=${stateObj.attributes.temperature_unit}
+                .value=${this._temperature_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._temperatureUnitChanged}
@@ -440,7 +440,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.visibility_unit"
                 )}
-                .value=${stateObj.attributes.visibility_unit}
+                .value=${this._visibility_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._visibilityUnitChanged}
@@ -456,7 +456,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.wind_speed_unit"
                 )}
-                .value=${stateObj.attributes.wind_speed_unit}
+                .value=${this._wind_speed_unit}
                 naturalMenuWidth
                 fixedMenuPosition
                 @selected=${this._windSpeedUnitChanged}
