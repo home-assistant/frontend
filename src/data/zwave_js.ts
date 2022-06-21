@@ -305,7 +305,7 @@ export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
 
 export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
   event: "firmware update finished";
-  status: number;
+  status: FirmwareUpdateStatus;
   wait_time: number;
 }
 
@@ -665,7 +665,7 @@ export const subscribeZwaveNodeStatistics = (
     }
   );
 
-export const fetchZwaveNodeFirmwareUpdateProgress = (
+export const fetchZwaveNodeIsFirmwareUpdateInProgress = (
   hass: HomeAssistant,
   device_id: string
 ): Promise<boolean> =>
@@ -683,7 +683,7 @@ export const fetchZwaveNodeFirmwareUpdateCapabilities = (
     device_id,
   });
 
-export const uploadFirmware = async (
+export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,
   file: File,

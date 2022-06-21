@@ -32,13 +32,10 @@ export const getZwaveDeviceActions = async (
 
   const entryId = configEntry.entry_id;
 
-  const results = await Promise.all([
+  const [nodeStatus, firmwareCapabilities] = await Promise.all([
     fetchZwaveNodeStatus(hass, device.id),
     fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id),
   ]);
-
-  const nodeStatus = results[0];
-  const firmwareCapabilities = results[1];
 
   if (!nodeStatus || nodeStatus.is_controller_node) {
     return [];
