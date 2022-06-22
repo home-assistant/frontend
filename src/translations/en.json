@@ -1010,7 +1010,7 @@
       },
       "domain_toggler": {
         "title": "Toggle Domains",
-        "reset_entities": "Reset Entities"
+        "reset_entities": "Reset Entity overrides"
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
@@ -1160,7 +1160,7 @@
           },
           "tags": {
             "main": "Tags",
-            "secondary": "Setup NFC tags and QR codes"
+            "secondary": "Set up NFC tags and QR codes"
           },
           "people": {
             "main": "People",
@@ -2431,15 +2431,16 @@
           },
           "alexa": {
             "title": "Alexa",
-            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
-            "exposed_entities": "Exposed entities",
-            "not_exposed_entities": "Not exposed entities",
-            "manage_domains": "Manage domains",
-            "expose_entity": "Expose entity",
-            "dont_expose_entity": "Don't expose entity",
-            "follow_domain": "Follow domain",
-            "exposed": "{selected} exposed",
-            "not_exposed": "{selected} not exposed",
+            "banner": "[%key:ui::panel::config::cloud::google::banner%]",
+            "exposed_entities": "[%key:ui::panel::config::cloud::google::exposed_entities%]",
+            "not_exposed_entities": "[%key:ui::panel::config::cloud::google::not_exposed_entities%]",
+            "manage_defaults": "[%key:ui::panel::config::cloud::google::manage_defaults%]",
+            "manage_defaults_dialog_description": "[%key:ui::panel::config::cloud::google::manage_defaults_dialog_description%]",
+            "expose_entity": "[%key:ui::panel::config::cloud::google::expose_entity%]",
+            "dont_expose_entity": "[%key:ui::panel::config::cloud::google::dont_expose_entity%]",
+            "follow_domain": "[%key:ui::panel::config::cloud::google::follow_domain%]",
+            "exposed": "[%key:ui::panel::config::cloud::google::exposed%]",
+            "not_exposed": "[%key:ui::panel::config::cloud::google::not_exposed%]",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -2456,7 +2457,8 @@
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
             "not_exposed_entities": "Not exposed entities",
-            "manage_domains": "Manage domains",
+            "manage_defaults": "Manage defaults",
+            "manage_defaults_dialog_description": "Entities can be exposed by default based on their type.",
             "expose_entity": "Expose entity",
             "dont_expose_entity": "Don't expose entity",
             "follow_domain": "Follow domain",

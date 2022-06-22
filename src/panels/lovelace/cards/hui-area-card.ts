@@ -3,6 +3,7 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
+  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterPercent,
@@ -61,7 +62,7 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature"],
+  sensor: ["temperature", "humidity"],
   binary_sensor: ["motion"],
 };
 
@@ -69,7 +70,10 @@ const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: { humidity: mdiWaterPercent },
+  sensor: {
+    temperature: mdiThermometer,
+    humidity: mdiWaterPercent,
+  },
   binary_sensor: {
     motion: mdiRun,
   },

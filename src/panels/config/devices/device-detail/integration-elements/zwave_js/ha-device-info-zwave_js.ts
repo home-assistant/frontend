@@ -8,6 +8,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   ConfigEntry,
   getConfigEntries,
@@ -17,13 +18,15 @@ import {
   fetchZwaveNodeStatus,
   nodeStatus,
   SecurityClass,
+  subscribeZwaveNodeStatus,
   ZWaveJSNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
+import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 
 @customElement("ha-device-info-zwave_js")
-export class HaDeviceInfoZWaveJS extends LitElement {
+export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
@@ -39,6 +42,21 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     if (changedProperties.has("device")) {
       this._fetchNodeDetails();
     }
+  }
+
+  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+    return [
+      subscribeZwaveNodeStatus(this.hass, this.device!.id, (message) => {
+        if (!this._node) {
+          return;
+        }
+        this._node = {
+          ...this._node,
+          status: message.status,
+          ready: message.ready,
+        };
+      }),
+    ];
   }
 
   protected async _fetchNodeDetails() {

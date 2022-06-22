@@ -466,6 +466,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
       return results;
     }
   );
+  mockHass.mockWS("recorder/get_statistics_metadata", () => []);
   mockHass.mockWS("history/list_statistic_ids", () => []);
   mockHass.mockWS(
     "history/statistics_during_period",
