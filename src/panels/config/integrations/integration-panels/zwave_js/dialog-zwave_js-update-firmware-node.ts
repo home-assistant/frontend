@@ -100,7 +100,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         throw new Error();
       }
       return {
-        name: "target",
+        name: "firmware_target",
         type: "integer",
         valueMin: Math.min(...firmwareUpdateCapabilities.firmware_targets),
         valueMax: Math.max(...firmwareUpdateCapabilities.firmware_targets),
@@ -137,7 +137,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
             </p>
             <ha-form
               .hass=${this.hass}
-              .data=${{ target: this._firmwareTarget }}
+              .data=${{ firmware_target: this._firmwareTarget }}
               .schema=${[this._schema(this._firmwareUpdateCapabilities)]}
               @value-changed=${this._firmwareTargetChanged}
             ></ha-form>`
@@ -419,7 +419,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   }
 
   private async _firmwareTargetChanged(ev) {
-    this._firmwareTarget = ev.detail.value.target;
+    this._firmwareTarget = ev.detail.value.firmware_target;
   }
 
   private async _uploadFile(ev) {
