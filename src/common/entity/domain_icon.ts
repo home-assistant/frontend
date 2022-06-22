@@ -3,11 +3,14 @@ import {
   mdiAccountArrowRight,
   mdiAirHumidifier,
   mdiAirHumidifierOff,
+  mdiAudioVideo,
+  mdiAudioVideoOff,
   mdiBluetooth,
   mdiBluetoothConnect,
   mdiCalendar,
   mdiCast,
   mdiCastConnected,
+  mdiCastOff,
   mdiChartSankey,
   mdiCheckCircleOutline,
   mdiClock,
@@ -25,7 +28,13 @@ import {
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
+  mdiSpeaker,
+  mdiSpeakerOff,
   mdiSwapHorizontal,
+  mdiTelevision,
+  mdiTelevisionOff,
+  mdiTelevisionPlay,
+  mdiTelevisionPause,
   mdiToggleSwitchVariant,
   mdiToggleSwitchVariantOff,
   mdiWeatherNight,
@@ -127,7 +136,32 @@ export const domainIconWithoutDefault = (
       }
 
     case "media_player":
-      return compareState === "playing" ? mdiCastConnected : mdiCast;
+      switch (stateObj?.attributes.device_class) {
+        case "receiver":
+          return compareState === "off" ? mdiAudioVideoOff : mdiAudioVideo;
+        case "speaker":
+          return compareState === "off" ? mdiSpeakerOff : mdiSpeaker;
+        case "tv":
+          switch (compareState) {
+            case "playing":
+              return mdiTelevisionPlay;
+            case "paused":
+              return mdiTelevisionPause;
+            case "off":
+              return mdiTelevisionOff;
+            default:
+              return mdiTelevision;
+          }
+        default:
+          switch (compareState) {
+            case "playing":
+              return mdiCastConnected;
+            case "off":
+              return mdiCastOff;
+            default:
+              return mdiCast;
+          }
+      }
 
     case "switch":
       switch (stateObj?.attributes.device_class) {
