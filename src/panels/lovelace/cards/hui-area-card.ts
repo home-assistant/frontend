@@ -3,6 +3,7 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
+  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
   mdiWaterPercent,
@@ -69,7 +70,10 @@ const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: { humidity: mdiWaterPercent },
+  sensor: {
+    temperature: mdiThermometer,
+    humidity: mdiWaterPercent,
+  },
   binary_sensor: {
     motion: mdiRun,
   },
