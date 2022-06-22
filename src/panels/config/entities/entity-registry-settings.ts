@@ -115,7 +115,7 @@ const OVERRIDE_WEATHER_UNITS = {
   pressure: ["hPa", "mbar", "mmHg", "inHg"],
   temperature: ["°C", "°F"],
   visibility: ["km", "mi"],
-  wind_speed: ["km/h", "mph", "m/s", "ft/s", "kt"],
+  wind_speed: ["km/h", "mph", "m/s"],
 };
 
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
