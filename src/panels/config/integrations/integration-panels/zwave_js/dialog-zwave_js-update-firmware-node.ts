@@ -1,5 +1,6 @@
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-svg-icon";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
