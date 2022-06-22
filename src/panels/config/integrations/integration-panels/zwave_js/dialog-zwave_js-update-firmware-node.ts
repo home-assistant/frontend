@@ -1,11 +1,11 @@
-import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-file-upload";
-import "../../../../../components/ha-selector/ha-selector-number";
+import "../../../../../components/ha-form/ha-form";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -35,7 +35,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
-import { NumberSelector } from "../../../../../data/selector";
+import { HaFormIntegerSchema } from "../../../../../components/ha-form/types";
 
 @customElement("dialog-zwave_js-update-firmware-node")
 class DialogZWaveJSUpdateFirmwareNode extends LitElement {
@@ -57,13 +57,13 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   @state() private _nodeStatus?: ZWaveJSNodeStatus;
 
+  @state() private _firmwareTarget? = 0;
+
   private _subscribedNodeStatus?: Promise<UnsubscribeFunc>;
 
   private _subscribedNodeFirmwareUpdate?: Promise<UnsubscribeFunc>;
 
   private _deviceName?: string;
-
-  private _firmwareTarget?: number;
 
   private _firmwareUpdateCapabilities?: ZWaveJSNodeFirmwareUpdateCapabilities;
 
@@ -83,13 +83,29 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._updateFinishedMessage =
       this._firmwareFile =
       this._nodeStatus =
-      this._firmwareTarget =
       this._firmwareUpdateCapabilities =
         undefined;
+    this._firmwareTarget = 0;
     this._uploading = this._updateInProgress = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
+
+  private _schema = memoizeOne(
+    (
+      firmwareUpdateCapabilities: ZWaveJSNodeFirmwareUpdateCapabilities
+    ): HaFormIntegerSchema => {
+      if (!firmwareUpdateCapabilities.firmware_upgradable) {
+        throw new Error();
+      }
+      return {
+        name: "target",
+        type: "integer",
+        valueMin: Math.min(...firmwareUpdateCapabilities.firmware_targets),
+        valueMax: Math.max(...firmwareUpdateCapabilities.firmware_targets),
+      };
+    }
+  );
 
   protected render(): TemplateResult {
     if (
@@ -101,15 +117,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     ) {
       return html``;
     }
-
-    const targetSelector: NumberSelector = {
-      number: {
-        step: 1,
-        mode: "box",
-        min: Math.min(...this._firmwareUpdateCapabilities.firmware_targets),
-        max: Math.max(...this._firmwareUpdateCapabilities.firmware_targets),
-      },
-    };
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
@@ -127,16 +134,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
               )}
             </p>
-            <ha-selector-number
+            <ha-form
               .hass=${this.hass}
-              label=${this.hass.localize(
-                "ui.panel.config.zwave_js.update_firmware.firmware_target"
-              )}
-              .selector=${targetSelector}
-              .value=${this._firmwareTarget}
-              .required=${false}
-              @value-changed=${this._targetValueChanged}
-            ></ha-selector-number>`
+              .data=${{ target: this._firmwareTarget }}
+              .schema=${[this._schema(this._firmwareUpdateCapabilities)]}
+              @value-changed=${this._firmwareTargetChanged}
+            ></ha-form>`
         : ""}
       <mwc-button
         slot="primaryAction"
@@ -414,8 +417,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     this._subscribedNodeFirmwareUpdate = undefined;
   }
 
-  private async _targetValueChanged(ev) {
-    this._firmwareTarget = ev.detail.value;
+  private async _firmwareTargetChanged(ev) {
+    this._firmwareTarget = ev.detail.value.target;
   }
 
   private async _uploadFile(ev) {
