@@ -38,11 +38,6 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 
-export interface StateEntity extends EntityRegistryEntry {
-  readonly?: boolean;
-  selectable?: boolean;
-}
-
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property() hass!: HomeAssistant;
 
@@ -64,7 +59,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _entities?: EntityRegistryEntry[];
 
-  @state() private _stateEntities?: StateEntity[];
+  @state() private _stateEntities?: EntityRegistryEntry[];
 
   public constructor() {
     super();
@@ -216,7 +211,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         this.rtl = computeRTL(this.hass);
       }
       if (this._entities) {
-        const stateEntities: StateEntity[] = [];
+        const stateEntities: EntityRegistryEntry[] = [];
         const regEntityIds = new Set(
           this._entities.map((entity) => entity.entity_id)
         );
@@ -234,8 +229,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             config_entry_id: null,
             device_id: null,
             icon: null,
-            readonly: true,
-            selectable: false,
             entity_category: null,
           });
         }
@@ -268,6 +261,35 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._isLoading = false;
   }
 
+  private _filterEntity(entity: EntityRegistryEntry): boolean {
+    const { area_id, device_id, entity_id } = this._targetPickerValue;
+    if (area_id !== undefined) {
+      if (typeof area_id === "string" && area_id === entity.area_id) {
+        return true;
+      }
+      if (Array.isArray(area_id) && area_id.includes(entity.area_id)) {
+        return true;
+      }
+    }
+    if (device_id !== undefined) {
+      if (typeof device_id === "string" && device_id === entity.device_id) {
+        return true;
+      }
+      if (Array.isArray(device_id) && device_id.includes(entity.device_id)) {
+        return true;
+      }
+    }
+    if (entity_id !== undefined) {
+      if (typeof entity_id === "string" && entity_id === entity.entity_id) {
+        return true;
+      }
+      if (Array.isArray(entity_id) && entity_id.includes(entity.entity_id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private _getEntityIds(): string[] {
     if (
       this._targetPickerValue === undefined ||
@@ -277,76 +299,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       return [];
     }
     const entityIds = this._entities
-      .filter((entity) => {
-        const { area_id, device_id, entity_id } = this._targetPickerValue;
-        if (area_id !== undefined) {
-          if (typeof area_id === "string" && area_id === entity.area_id) {
-            return true;
-          }
-          if (Array.isArray(area_id) && area_id.includes(entity.area_id)) {
-            return true;
-          }
-        }
-        if (device_id !== undefined) {
-          if (typeof device_id === "string" && device_id === entity.device_id) {
-            return true;
-          }
-          if (
-            Array.isArray(device_id) &&
-            device_id.includes(entity.device_id)
-          ) {
-            return true;
-          }
-        }
-        if (entity_id !== undefined) {
-          if (typeof entity_id === "string" && entity_id === entity.entity_id) {
-            return true;
-          }
-          if (
-            Array.isArray(entity_id) &&
-            entity_id.includes(entity.entity_id)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      })
+      .filter((entity) => this._filterEntity(entity))
       .map((entity) => entity.entity_id);
     const stateEntityIds = this._stateEntities
-      .filter((entity) => {
-        const { area_id, device_id, entity_id } = this._targetPickerValue;
-        if (area_id !== undefined) {
-          if (typeof area_id === "string" && area_id === entity.area_id) {
-            return true;
-          }
-          if (Array.isArray(area_id) && area_id.includes(entity.area_id)) {
-            return true;
-          }
-        }
-        if (device_id !== undefined) {
-          if (typeof device_id === "string" && device_id === entity.device_id) {
-            return true;
-          }
-          if (
-            Array.isArray(device_id) &&
-            device_id.includes(entity.device_id)
-          ) {
-            return true;
-          }
-        }
-        if (entity_id !== undefined) {
-          if (typeof entity_id === "string" && entity_id === entity.entity_id) {
-            return true;
-          }
-          if (
-            Array.isArray(entity_id) &&
-            entity_id.includes(entity.entity_id)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      })
+      .filter((entity) => this._filterEntity(entity))
       .map((entity) => entity.entity_id);
     return [...entityIds, ...stateEntityIds];
   }
