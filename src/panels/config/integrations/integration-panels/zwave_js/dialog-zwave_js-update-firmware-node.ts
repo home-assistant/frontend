@@ -96,6 +96,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       firmwareUpdateCapabilities: ZWaveJSNodeFirmwareUpdateCapabilities
     ): HaFormIntegerSchema => {
       if (!firmwareUpdateCapabilities.firmware_upgradable) {
+        // We should never get here, this is to pass type checks
         throw new Error();
       }
       return {
