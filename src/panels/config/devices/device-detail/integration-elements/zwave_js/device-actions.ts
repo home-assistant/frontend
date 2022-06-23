@@ -87,13 +87,19 @@ export const getZwaveDeviceActions = async (
     return actions;
   }
 
-  const firmwareUpdateCapabilities =
-    await fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id);
+  const [
+    firmwareUpdateCapabilities,
+    isAnyFirmwareUpdateInProgress,
+    isNodeFirmwareUpdateInProgress,
+  ] = await Promise.all([
+    fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id),
+    fetchZwaveIsAnyFirmwareUpdateInProgress(hass, entryId),
+    fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id),
+  ]);
 
   if (
     firmwareUpdateCapabilities.firmware_upgradable &&
-    (!(await fetchZwaveIsAnyFirmwareUpdateInProgress(hass, entryId)) ||
-      (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id)))
+    (!isAnyFirmwareUpdateInProgress || isNodeFirmwareUpdateInProgress)
   ) {
     actions.push({
       label: hass.localize(
