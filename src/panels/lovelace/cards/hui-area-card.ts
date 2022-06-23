@@ -6,6 +6,7 @@ import {
   mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiWaterAlert,
   mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -63,7 +64,7 @@ const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
   sensor: ["temperature", "humidity"],
-  binary_sensor: ["motion"],
+  binary_sensor: ["motion", "moisture"],
 };
 
 const DOMAIN_ICONS = {
@@ -76,6 +77,7 @@ const DOMAIN_ICONS = {
   },
   binary_sensor: {
     motion: mdiRun,
+    moisture: mdiWaterAlert,
   },
 };
 
