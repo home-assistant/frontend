@@ -6,7 +6,22 @@ import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
 
-export type LocalizeFunc = (key: string, ...args: any[]) => string;
+type TranslationKeys = typeof import("../../translations/en.json");
+// From https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
+type FlattenObjectKeys<
+  T extends Record<string, unknown>,
+  Key = keyof T
+> = Key extends string
+  ? T[Key] extends Record<string, unknown>
+    ? `${Key}.${FlattenObjectKeys<T[Key]>}`
+    : `${Key}`
+  : never;
+
+export type LocalizeFunc = (
+  key: FlattenObjectKeys<TranslationKeys>,
+  ...args: any[]
+) => string;
+
 interface FormatType {
   [format: string]: any;
 }
