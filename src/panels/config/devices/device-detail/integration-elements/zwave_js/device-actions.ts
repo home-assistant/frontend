@@ -1,7 +1,9 @@
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
+  fetchZwaveIsAnyFirmwareUpdateInProgress,
   fetchZwaveNodeFirmwareUpdateCapabilities,
+  fetchZwaveNodeIsFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -88,7 +90,11 @@ export const getZwaveDeviceActions = async (
   const firmwareUpdateCapabilities =
     await fetchZwaveNodeFirmwareUpdateCapabilities(hass, device.id);
 
-  if (firmwareUpdateCapabilities.firmware_upgradable) {
+  if (
+    firmwareUpdateCapabilities.firmware_upgradable &&
+    (!(await fetchZwaveIsAnyFirmwareUpdateInProgress(hass, entryId)) ||
+      (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id)))
+  ) {
     actions.push({
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
