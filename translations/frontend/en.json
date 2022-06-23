@@ -2429,6 +2429,10 @@
                                 "title": "Entity not tracked"
                             }
                         }
+                    },
+                    "compare":{
+                        "info": "You are comparing the period {start} with {end}"
+
                     }
                 },
                 "entities": {
@@ -3852,7 +3856,8 @@
                         "previous": "Previous",
                         "today": "Today",
                         "week": "Week",
-                        "year": "Year"
+                        "year": "Year",
+                        "compare": "Compare data"
                     },
                     "timestamp-display": {
                         "invalid": "Invalid timestamp",
