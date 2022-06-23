@@ -74,33 +74,11 @@ jobs:
           version=$(echo "${{ github.ref }}" | awk -F"/" '{print $NF}' )
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
-      - name: Upload requirements.txt
-        uses: actions/upload-artifact@v2
-        with:
-          name: requirements
-          path: ./requirements.txt
-
-  build-wheels:
-    name: Build wheels for ${{ matrix.arch }}
-    needs: wheels-init
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
-        tag:
-          - "3.9-alpine3.14"
-    steps:
-      - name: Download requirements.txt
-        uses: actions/download-artifact@v2
-        with:
-          name: requirements
-
       - name: Build wheels
-        uses: home-assistant/wheels@master
+        uses: home-assistant/wheels@2022.06.7
         with:
-          tag: ${{ matrix.tag }}
-          arch: ${{ matrix.arch }}
-          wheels-host: ${{ secrets.WHEELS_HOST }}
+          abi: cp310
+          tag: musllinux_1_2
+          arch: amd64
           wheels-key: ${{ secrets.WHEELS_KEY }}
-          wheels-user: wheels
           requirements: "requirements.txt"
