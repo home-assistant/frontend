@@ -423,9 +423,7 @@
         "remove_user": "Remove user"
       },
       "blueprint-picker": {
-        "select_blueprint": "Select a Blueprint",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "select_blueprint": "Select a Blueprint"
       },
       "device-picker": {
         "clear": "Clear",
