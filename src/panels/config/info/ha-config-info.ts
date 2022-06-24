@@ -143,9 +143,7 @@ class HaConfigInfo extends LitElement {
                   <ha-clickable-list-item
                     graphic="avatar"
                     openNewTab
-                    href=${page.path.startsWith("https")
-                      ? page.path
-                      : documentationUrl(this.hass, page.path)}
+                    href=${documentationUrl(this.hass, page.path)}
                     @click=${this._entryClicked}
                   >
                     <div
