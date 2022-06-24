@@ -67,7 +67,7 @@ export interface Supervisor {
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
   store: SupervisorStore;
-  localize: LocalizeFunc;
+  localize: LocalizeFunc<"supervisor">;
 }
 
 export const supervisorApiWsRequest = <T>(
