@@ -93,8 +93,8 @@ class HaConfigInfo extends LitElement {
 
   protected render(): TemplateResult {
     const hass = this.hass;
-    // const customUiList: Array<{ name: string; url: string; version: string }> =
-    //   (window as any).CUSTOM_UI_LIST || [];
+    const customUiList: Array<{ name: string; url: string; version: string }> =
+      (window as any).CUSTOM_UI_LIST || [];
 
     return html`
       <hass-subpage
@@ -171,6 +171,21 @@ class HaConfigInfo extends LitElement {
                 hass.config.config_dir
               )}
             </p>
+            ${!customUiList.length
+              ? ""
+              : html`
+                  <div class="custom-ui">
+                    ${this.hass.localize("ui.panel.config.info.custom_uis")}
+                    ${customUiList.map(
+                      (item) => html`
+                        <div>
+                          <a href=${item.url} target="_blank"> ${item.name}</a>:
+                          ${item.version}
+                        </div>
+                      `
+                    )}
+                  </div>
+                `}
           </ha-card>
         </div>
       </hass-subpage>
@@ -243,12 +258,17 @@ class HaConfigInfo extends LitElement {
           color: var(--secondary-text-color);
           padding: 12px 0;
           align-self: stretch;
-          justify-content: space-between;
+          justify-content: flex-start;
         }
 
         .ha-version {
           color: var(--primary-text-color);
           font-weight: 500;
+          font-size: 16px;
+        }
+
+        mwc-list {
+          --mdc-list-side-padding: 4px;
         }
 
         ha-svg-icon {
@@ -278,6 +298,11 @@ class HaConfigInfo extends LitElement {
           color: var(--secondary-text-color);
           text-align: center;
           font-style: italic;
+        }
+
+        .custom-ui {
+          color: var(--secondary-text-color);
+          text-align: center;
         }
       `,
     ];
