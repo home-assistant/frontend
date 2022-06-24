@@ -7,6 +7,7 @@ import { Resources } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
 
 type TranslationKeys = typeof import("../../translations/en.json");
+type TopKeys = keyof TranslationKeys;
 // From https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 type FlattenObjectKeys<
   T extends Record<string, unknown>,
@@ -17,8 +18,10 @@ type FlattenObjectKeys<
     : `${Key}`
   : never;
 
-export type LocalizeFunc = (
-  key: FlattenObjectKeys<TranslationKeys>,
+export type LocalizeFunc<key extends TopKeys | null = null> = (
+  key: FlattenObjectKeys<
+    key extends TopKeys ? TranslationKeys[key] : TranslationKeys
+  >,
   ...args: any[]
 ) => string;
 
