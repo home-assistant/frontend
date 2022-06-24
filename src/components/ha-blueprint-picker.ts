@@ -51,7 +51,7 @@ class HaBluePrintPicker extends LitElement {
     return html`
       <ha-select
         .label=${this.label ||
-        this.hass.localize("ui.components.blueprint-picker.label")}
+        this.hass.localize("ui.components.blueprint-picker.select_blueprint")}
         fixedMenuPosition
         naturalMenuWidth
         .value=${this.value}

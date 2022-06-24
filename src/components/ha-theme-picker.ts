@@ -23,7 +23,7 @@ export class HaThemePicker extends LitElement {
     return html`
       <ha-select
         .label=${this.label ||
-        this.hass!.localize("ui.components.theme_picker.theme")}
+        this.hass!.localize("ui.components.theme-picker.theme")}
         .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -34,7 +34,7 @@ export class HaThemePicker extends LitElement {
       >
         <mwc-list-item value="remove"
           >${this.hass!.localize(
-            "ui.components.theme_picker.no_theme"
+            "ui.components.theme-picker.no_theme"
           )}</mwc-list-item
         >
         ${Object.keys(this.hass!.themes.themes)
