@@ -286,10 +286,6 @@ class HaConfigInfo extends LitElement {
             height: 100px;
             width: 100px;
           }
-
-          .versions {
-            font-size: 12px;
-          }
         }
 
         .config-path {
