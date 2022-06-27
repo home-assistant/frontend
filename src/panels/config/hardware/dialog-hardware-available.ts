@@ -89,7 +89,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             )}
           </h2>
           <ha-icon-button
-            .label=${this.hass.localize("common.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             dialogAction="close"
           ></ha-icon-button>
@@ -97,7 +97,9 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             .hass=${this.hass}
             .filter=${this._filter}
             @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize("common.search")}
+            .label=${this.hass.localize(
+              "ui.panel.config.hardware.available_hardware.search"
+            )}
           >
           </search-input>
         </div>
