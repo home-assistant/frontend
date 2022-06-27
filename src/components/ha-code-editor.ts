@@ -11,6 +11,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
+import "./ha-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -24,6 +25,12 @@ const saveKeyBinding: KeyBinding = {
     fireEvent(view.dom, "editor-save");
     return true;
   },
+};
+
+const renderIcon = (completion: Completion) => {
+  const icon = document.createElement("ha-icon");
+  icon.icon = completion.label;
+  return icon;
 };
 
 @customElement("ha-code-editor")
@@ -154,7 +161,10 @@ export class HaCodeEditor extends ReactiveElement {
     if (!this.readOnly && this.autocompleteEntities && this.hass) {
       extensions.push(
         this._loadedCodeMirror.autocompletion({
-          override: [this._entityCompletions.bind(this)],
+          override: [
+            this._entityCompletions.bind(this),
+            this._mdiCompletions.bind(this),
+          ],
           maxRenderedOptions: 10,
         })
       );
@@ -205,6 +215,31 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(entityWord.from),
       options: states,
+      span: /^\w*.\w*$/,
+    };
+  }
+
+  private async _mdiCompletions(
+    context: CompletionContext
+  ): Promise<CompletionResult | null> {
+    const match = context.matchBefore(/mdi:/);
+
+    if (!match || (match.from === match.to && !context.explicit)) {
+      return null;
+    }
+
+    const iconList = await import("../../build/mdi/iconList.json");
+
+    const iconItems = iconList.default.map((icon) => ({
+      type: "variable",
+      label: `mdi:${icon.name}`,
+      detail: icon.keywords.join(", "),
+      info: renderIcon,
+    }));
+
+    return {
+      from: Number(match.from),
+      options: iconItems,
       span: /^\w*.\w*$/,
     };
   }
