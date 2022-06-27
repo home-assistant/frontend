@@ -11,7 +11,6 @@ import {
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -28,7 +27,6 @@ import {
   MediaPlayerEntity,
   mediaPlayerPlayMedia,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_PLAY_MEDIA,
   SUPPORT_SELECT_SOUND_MODE,
   SUPPORT_SELECT_SOURCE,
   SUPPORT_VOLUME_BUTTONS,
@@ -189,14 +187,6 @@ class MoreInfoMediaPlayer extends LitElement {
                 )}
                 <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>
               </ha-select>
-            </div>
-          `
-        : ""}
-      ${isComponentLoaded(this.hass, "tts") &&
-      supportsFeature(stateObj, SUPPORT_PLAY_MEDIA)
-        ? html`
-            <div class="tts">
-              Text to speech has moved to the media browser.
             </div>
           `
         : ""}
