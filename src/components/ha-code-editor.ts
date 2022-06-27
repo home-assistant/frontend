@@ -54,6 +54,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
+  private _iconList?: Completion[];
+
   public set value(value: string) {
     this._value = value;
   }
@@ -219,6 +221,21 @@ export class HaCodeEditor extends ReactiveElement {
     };
   }
 
+  private _getIconItems = async (): Promise<Completion[]> => {
+    if (!this._iconList) {
+      const iconList = await import("../../build/mdi/iconList.json");
+
+      this._iconList = iconList.default.map((icon) => ({
+        type: "variable",
+        label: `mdi:${icon.name}`,
+        detail: icon.keywords.join(", "),
+        info: renderIcon,
+      }));
+    }
+
+    return this._iconList;
+  };
+
   private async _mdiCompletions(
     context: CompletionContext
   ): Promise<CompletionResult | null> {
@@ -228,14 +245,7 @@ export class HaCodeEditor extends ReactiveElement {
       return null;
     }
 
-    const iconList = await import("../../build/mdi/iconList.json");
-
-    const iconItems = iconList.default.map((icon) => ({
-      type: "variable",
-      label: `mdi:${icon.name}`,
-      detail: icon.keywords.join(", "),
-      info: renderIcon,
-    }));
+    const iconItems = await this._getIconItems();
 
     return {
       from: Number(match.from),
