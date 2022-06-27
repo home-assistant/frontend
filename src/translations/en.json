@@ -1567,6 +1567,7 @@
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
+            "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
