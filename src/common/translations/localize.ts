@@ -3,27 +3,22 @@ import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-plur
 import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
 import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
-import { Resources } from "../../types";
+import { Resources, TranslationDict } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
 
-type TranslationKeys = typeof import("../../translations/en.json");
-type TopKeys = keyof TranslationKeys;
 // From https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 type FlattenObjectKeys<
   T extends Record<string, unknown>,
-  Key = keyof T
+  Key extends keyof T = keyof T
 > = Key extends string
   ? T[Key] extends Record<string, unknown>
     ? `${Key}.${FlattenObjectKeys<T[Key]>}`
     : `${Key}`
   : never;
 
-export type LocalizeFunc<key extends TopKeys | null = null> = (
-  key: FlattenObjectKeys<
-    key extends TopKeys ? TranslationKeys[key] : TranslationKeys
-  >,
-  ...args: any[]
-) => string;
+export type LocalizeFunc<
+  Dict extends Record<string, unknown> = TranslationDict
+> = (key: FlattenObjectKeys<Dict>, ...args: any[]) => string;
 
 interface FormatType {
   [format: string]: any;
@@ -83,12 +78,14 @@ export const polyfillsLoaded =
  * }
  */
 
-export const computeLocalize = async (
+export const computeLocalize = async <
+  Dict extends Record<string, unknown> = TranslationDict
+>(
   cache: any,
   language: string,
   resources: Resources,
   formats?: FormatsType
-): Promise<LocalizeFunc> => {
+): Promise<LocalizeFunc<Dict>> => {
   if (polyfillsLoaded) {
     await polyfillsLoaded;
   }
