@@ -1601,7 +1601,7 @@
           "frontend": "frontend-ui",
           "built_using": "Built using",
           "icons_by": "Icons by",
-          "frontend_version": "Frontend {version}",
+          "frontend_version": "Frontend {version} - {type}",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
