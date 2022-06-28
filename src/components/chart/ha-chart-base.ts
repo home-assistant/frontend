@@ -326,6 +326,9 @@ export default class HaChartBase extends LitElement {
         width: 16px;
         flex-shrink: 0;
         box-sizing: border-box;
+        margin-inline-end: 6px;
+        margin-inline-start: initial;
+        direction: var(--direction);
       }
       .chartTooltip .bullet {
         align-self: baseline;
@@ -334,6 +337,9 @@ export default class HaChartBase extends LitElement {
       :host([rtl]) .chartTooltip .bullet {
         margin-right: inherit;
         margin-left: 6px;
+        margin-inline-end: inherit;
+        margin-inline-start: 6px;
+        direction: var(--direction);
       }
       .chartTooltip {
         padding: 8px;
