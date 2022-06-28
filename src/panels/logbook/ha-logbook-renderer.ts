@@ -1,4 +1,5 @@
 import "@lit-labs/virtualizer";
+import { VisibilityChangedEvent } from "@lit-labs/virtualizer/Virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -247,7 +248,7 @@ class HaLogbookRenderer extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _visibilityChanged(e: Event) {
+  private _visibilityChanged(e: VisibilityChangedEvent) {
     fireEvent(this, "hass-logbook-live", {
       enable: e.first === 0,
     });
