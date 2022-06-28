@@ -34,6 +34,12 @@ import {
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 
+declare global {
+  interface HASSDomEvents {
+    "hass-logbook-live": { enable: boolean };
+  }
+}
+
 const triggerDomains = ["script", "automation"];
 
 const hasContext = (item: LogbookEntry) =>
@@ -102,6 +108,7 @@ class HaLogbookRenderer extends LitElement {
       >
         ${this.virtualize
           ? html`<lit-virtualizer
+              @visibilityChanged=${this._visibilityChanged}
               scroller
               class="ha-scrollbar"
               .items=${this.entries}
@@ -237,6 +244,13 @@ class HaLogbookRenderer extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  @eventOptions({ passive: true })
+  private _visibilityChanged(e: Event) {
+    fireEvent(this, "hass-logbook-live", {
+      enable: e.first === 0,
+    });
   }
 
   private _renderMessage(

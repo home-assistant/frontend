@@ -80,6 +80,10 @@ export class HaLogbook extends LitElement {
 
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
+  private _liveUpdatesEnabled = true;
+
+  private _pendingStreamMessages: LogbookStreamMessage[] = [];
+
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
     1000
@@ -150,6 +154,13 @@ export class HaLogbook extends LitElement {
     this._throttleGetLogbookEntries();
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.addEventListener("hass-logbook-live", (ev) =>
+      this._handleLogbookLive(ev)
+    );
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
@@ -183,6 +194,17 @@ export class HaLogbook extends LitElement {
     if (changed) {
       this.refresh(true);
     }
+  }
+
+  private _handleLogbookLive(ev: CustomEvent) {
+    if (ev.detail.enable && !this._liveUpdatesEnabled) {
+      // Process everything we queued up while we were scrolled down
+      this._pendingStreamMessages.forEach((msg) =>
+        this._processStreamMessage(msg)
+      );
+      this._pendingStreamMessages = [];
+    }
+    this._liveUpdatesEnabled = ev.detail.enable;
   }
 
   private get _filterAlwaysEmptyResults(): boolean {
@@ -283,12 +305,7 @@ export class HaLogbook extends LitElement {
           // Message came in before we had a chance to unload
           return;
         }
-        this._processStreamMessage(
-          streamMessage,
-          "recent" in this.time
-            ? findStartOfRecentTime(new Date(), this.time.recent)
-            : undefined
-        );
+        this._processOrQueueStreamMessage(streamMessage);
       },
       logbookPeriod.startTime.toISOString(),
       logbookPeriod.endTime.toISOString(),
@@ -334,10 +351,21 @@ export class HaLogbook extends LitElement {
         )
       : this._logbookEntries;
 
-  private _processStreamMessage = (
-    streamMessage: LogbookStreamMessage,
-    purgeBeforePythonTime: number | undefined
+  private _processOrQueueStreamMessage = (
+    streamMessage: LogbookStreamMessage
   ) => {
+    if (this._liveUpdatesEnabled) {
+      this._processStreamMessage(streamMessage);
+      return;
+    }
+    this._pendingStreamMessages.push(streamMessage);
+  };
+
+  private _processStreamMessage = (streamMessage: LogbookStreamMessage) => {
+    const purgeBeforePythonTime =
+      "recent" in this.time
+        ? findStartOfRecentTime(new Date(), this.time.recent)
+        : undefined;
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
     const newEntries = [...streamMessage.events].reverse();
