@@ -59,7 +59,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         hidden: true,
         radius: 50,
-        friendly_name: "Skolan",
+        friendly_name: "School",
         icon: "mdi:school",
       },
     },
