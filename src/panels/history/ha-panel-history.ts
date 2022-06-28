@@ -114,7 +114,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
-              .horizontal=${true}
+              horizontal
               @value-changed=${this._entitiesChanged}
             ></ha-target-picker>
           </div>
