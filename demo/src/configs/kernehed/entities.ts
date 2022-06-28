@@ -59,7 +59,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         hidden: true,
         radius: 50,
-        friendly_name: "Skolan",
+        friendly_name: "School",
         icon: "mdi:school",
       },
     },
@@ -841,7 +841,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         battery_level: 60,
         on: true,
         dark: true,
-        friendly_name: "R\u00f6relsesensor tv\u00e4ttstugan",
+        friendly_name: "Laundy room motion sensor",
         device_class: "motion",
         icon: "mdi:walk",
       },
