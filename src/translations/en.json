@@ -4002,7 +4002,8 @@
             "month": "Month",
             "year": "Year",
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "compare": "Compare data"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -4545,6 +4546,9 @@
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"
+        },
+        "compare": {
+          "info": "You are comparing the period {start} with {end}"
         }
       }
     },
