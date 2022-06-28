@@ -273,7 +273,7 @@ class HaConfigSectionGeneral extends LitElement {
     }
     button.progress = true;
 
-    let locationConfig = {};
+    let locationConfig;
 
     if (this._location) {
       locationConfig = {
