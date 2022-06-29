@@ -19,8 +19,8 @@ export const brandsUrl = (options: BrandsOptions): string =>
 
 export const hardwareBrandsUrl = (options: HardwareBrandsOptions): string =>
   `https://brands.home-assistant.io/hardware/${options.category}/${
-    options.darkOptimized ? "dark_" : ""
-  }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
+    options.manufacturer
+  }${options.model ? `_${options.model}` : ""}.png`;
 
 export const extractDomainFromBrandUrl = (url: string) => url.split("/")[4];
 
