@@ -98,9 +98,8 @@ export class HassioBackups extends LitElement {
     if (backup.content.addons.length !== 0) {
       for (const addon of backup.content.addons) {
         content.push(
-          this.supervisor.supervisor.addons.find(
-            (entry) => entry.slug === addon
-          )?.name || addon
+          this.supervisor.addon.addons.find((entry) => entry.slug === addon)
+            ?.name || addon
         );
       }
     }

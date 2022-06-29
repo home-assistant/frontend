@@ -1,6 +1,18 @@
+import "@material/mwc-list/mwc-list";
+import {
+  mdiBug,
+  mdiFileDocument,
+  mdiHandsPray,
+  mdiHelp,
+  mdiHomeAssistant,
+  mdiPower,
+  mdiTshirtCrew,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-card";
+import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-logo-svg";
 import {
   fetchHassioHassOsInfo,
@@ -9,11 +21,60 @@ import {
 import { fetchHassioInfo, HassioInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
-const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
+
+const PAGES: Array<{
+  name: string;
+  path: string;
+  iconPath: string;
+  iconColor: string;
+}> = [
+  {
+    name: "change_log",
+    path: "/latest-release-notes/",
+    iconPath: mdiPower,
+    iconColor: "#4A5963",
+  },
+  {
+    name: "thanks",
+    path: "/developers/credits/",
+    iconPath: mdiHandsPray,
+    iconColor: "#3B808E",
+  },
+  {
+    name: "merch",
+    path: "/merch",
+    iconPath: mdiTshirtCrew,
+    iconColor: "#C65326",
+  },
+  {
+    name: "feature",
+    path: "/feature-requests",
+    iconPath: mdiHomeAssistant,
+    iconColor: "#0D47A1",
+  },
+  {
+    name: "bug",
+    path: "/issues",
+    iconPath: mdiBug,
+    iconColor: "#F1C447",
+  },
+  {
+    name: "help",
+    path: "/community",
+    iconPath: mdiHelp,
+    iconColor: "#B1345C",
+  },
+  {
+    name: "license",
+    path: "/developers/license/",
+    iconPath: mdiFileDocument,
+    iconColor: "#518C43",
+  },
+];
 
 class HaConfigInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,96 +103,76 @@ class HaConfigInfo extends LitElement {
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.info.caption")}
       >
-        <div class="about">
-          <a
-            href=${documentationUrl(this.hass, "")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ha-logo-svg
-              title=${this.hass.localize(
-                "ui.panel.config.info.home_assistant_logo"
+        <div class="content">
+          <ha-card outlined>
+            <div class="logo-versions">
+              <a
+                href=${documentationUrl(this.hass, "")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-logo-svg
+                  title=${this.hass.localize(
+                    "ui.panel.config.info.home_assistant_logo"
+                  )}
+                >
+                </ha-logo-svg>
+              </a>
+              <div class="versions">
+                <span class="ha-version"
+                  >Home Assistant ${hass.connection.haVersion}</span
+                >
+                ${this._hassioInfo
+                  ? html`<span>Supervisor ${this._hassioInfo.supervisor}</span>`
+                  : ""}
+                ${this._osInfo?.version
+                  ? html`<span>Operating System ${this._osInfo.version}</span>`
+                  : ""}
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.config.info.frontend_version",
+                    "version",
+                    JS_VERSION
+                  )}
+                </span>
+              </div>
+            </div>
+            <mwc-list>
+              ${PAGES.map(
+                (page) => html`
+                  <ha-clickable-list-item
+                    graphic="avatar"
+                    openNewTab
+                    href=${documentationUrl(this.hass, page.path)}
+                    @click=${this._entryClicked}
+                  >
+                    <div
+                      slot="graphic"
+                      class="icon-background"
+                      .style="background-color: ${page.iconColor}"
+                    >
+                      <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
+                    </div>
+                    <span>
+                      ${this.hass.localize(
+                        `ui.panel.config.info.items.${page.name}`
+                      )}
+                    </span>
+                  </ha-clickable-list-item>
+                `
               )}
-            >
-            </ha-logo-svg>
-          </a>
-          <br />
-          <h3>Home Assistant Core ${hass.connection.haVersion}</h3>
-          ${this._hassioInfo
-            ? html`
-                <h3>
-                  Home Assistant Supervisor ${this._hassioInfo.supervisor}
-                </h3>
-              `
-            : ""}
-          ${this._osInfo?.version
-            ? html`<h3>Home Assistant OS ${this._osInfo.version}</h3>`
-            : ""}
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.info.path_configuration",
-              "path",
-              hass.config.config_dir
-            )}
-          </p>
-          <p class="develop">
-            <a
-              href=${documentationUrl(this.hass, "/developers/credits/")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              ${this.hass.localize("ui.panel.config.info.developed_by")}
-            </a>
-          </p>
-          <p>
-            ${this.hass.localize("ui.panel.config.info.license")}<br />
-            ${this.hass.localize("ui.panel.config.info.source")}
-            <a
-              href="https://github.com/home-assistant/core"
-              target="_blank"
-              rel="noreferrer"
-              >${this.hass.localize("ui.panel.config.info.server")}</a
-            >
-            &mdash;
-            <a
-              href="https://github.com/home-assistant/frontend"
-              target="_blank"
-              rel="noreferrer"
-              >${this.hass.localize("ui.panel.config.info.frontend")}</a
-            >
-          </p>
-          <p>
-            ${this.hass.localize("ui.panel.config.info.built_using")}
-            <a href="https://www.python.org" target="_blank" rel="noreferrer"
-              >Python 3</a
-            >,
-            <a href="https://lit.dev" target="_blank" rel="noreferrer">Lit</a>,
-            ${this.hass.localize("ui.panel.config.info.icons_by")}
-            <a
-              href="https://fonts.google.com/icons?selected=Material+Icons"
-              target="_blank"
-              rel="noreferrer"
-              >Google</a
-            >
-            ${this.hass.localize("ui.common.and")}
-            <a
-              href="https://materialdesignicons.com/"
-              target="_blank"
-              rel="noreferrer"
-              >Material Design Icons</a
-            >.
-          </p>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.info.frontend_version",
-              "version",
-              JS_VERSION,
-              "type",
-              JS_TYPE
-            )}
-            ${customUiList.length > 0
-              ? html`
-                  <div>
+            </mwc-list>
+            <p class="config-path">
+              ${this.hass.localize(
+                "ui.panel.config.info.path_configuration",
+                "path",
+                hass.config.config_dir
+              )}
+            </p>
+            ${!customUiList.length
+              ? ""
+              : html`
+                  <div class="custom-ui">
                     ${this.hass.localize("ui.panel.config.info.custom_uis")}
                     ${customUiList.map(
                       (item) => html`
@@ -142,9 +183,8 @@ class HaConfigInfo extends LitElement {
                       `
                     )}
                   </div>
-                `
-              : ""}
-          </p>
+                `}
+          </ha-card>
         </div>
       </hass-subpage>
     `;
@@ -176,40 +216,87 @@ class HaConfigInfo extends LitElement {
     this._osInfo = osInfo;
   }
 
+  private _entryClicked(ev) {
+    ev.currentTarget.blur();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
-        :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+        .content {
+          padding: 28px 20px 0;
+          max-width: 1040px;
+          margin: 0 auto;
         }
 
-        .about {
-          text-align: center;
-          line-height: 2em;
-        }
-
-        .version {
-          @apply --paper-font-headline;
-        }
-
-        .develop {
-          @apply --paper-font-subhead;
-        }
-
-        .about a {
-          color: var(--primary-color);
-        }
         ha-logo-svg {
           padding: 12px;
-          height: 180px;
-          width: 180px;
+          height: 150px;
+          width: 150px;
         }
 
-        h4 {
-          font-weight: 400;
+        ha-card {
+          padding: 16px;
+          max-width: 600px;
+          margin: 0 auto;
+          margin-bottom: 24px;
+          margin-bottom: max(24px, env(safe-area-inset-bottom));
+        }
+
+        .logo-versions {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+        }
+
+        .versions {
+          display: flex;
+          flex-direction: column;
+          color: var(--secondary-text-color);
+          padding: 12px 0;
+          align-self: stretch;
+          justify-content: flex-start;
+        }
+
+        .ha-version {
+          color: var(--primary-text-color);
+          font-weight: 500;
+          font-size: 16px;
+        }
+
+        mwc-list {
+          --mdc-list-side-padding: 4px;
+        }
+
+        ha-svg-icon {
+          height: 24px;
+          width: 24px;
+          display: block;
+          padding: 8px;
+          color: #fff;
+        }
+
+        .icon-background {
+          border-radius: 50%;
+        }
+
+        @media all and (max-width: 500px), all and (max-height: 500px) {
+          ha-logo-svg {
+            height: 100px;
+            width: 100px;
+          }
+        }
+
+        .config-path {
+          color: var(--secondary-text-color);
+          text-align: center;
+          font-style: italic;
+        }
+
+        .custom-ui {
+          color: var(--secondary-text-color);
+          text-align: center;
         }
       `,
     ];

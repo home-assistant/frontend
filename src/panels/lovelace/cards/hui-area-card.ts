@@ -3,8 +3,10 @@ import {
   mdiLightbulbMultiple,
   mdiLightbulbMultipleOff,
   mdiRun,
+  mdiThermometer,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiWaterAlert,
   mdiWaterPercent,
 } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -61,17 +63,21 @@ const TOGGLE_DOMAINS = ["light", "switch", "fan"];
 const OTHER_DOMAINS = ["camera"];
 
 const DEVICE_CLASSES = {
-  sensor: ["temperature"],
-  binary_sensor: ["motion"],
+  sensor: ["temperature", "humidity"],
+  binary_sensor: ["motion", "moisture"],
 };
 
 const DOMAIN_ICONS = {
   light: { on: mdiLightbulbMultiple, off: mdiLightbulbMultipleOff },
   switch: { on: mdiToggleSwitch, off: mdiToggleSwitchOff },
   fan: { on: domainIcon("fan"), off: domainIcon("fan") },
-  sensor: { humidity: mdiWaterPercent },
+  sensor: {
+    temperature: mdiThermometer,
+    humidity: mdiWaterPercent,
+  },
   binary_sensor: {
     motion: mdiRun,
+    moisture: mdiWaterAlert,
   },
 };
 

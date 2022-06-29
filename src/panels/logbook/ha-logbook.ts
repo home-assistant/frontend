@@ -1,4 +1,3 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -79,7 +78,11 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<UnsubscribeFunc | void>;
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
+
+  private _liveUpdatesEnabled = true;
+
+  private _pendingStreamMessages: LogbookStreamMessage[] = [];
 
   private _throttleGetLogbookEntries = throttle(
     () => this._getLogBookData(),
@@ -127,6 +130,7 @@ export class HaLogbook extends LitElement {
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
+        @hass-logbook-live=${this._handleLogbookLive}
       ></ha-logbook-renderer>
     `;
   }
@@ -136,7 +140,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    this._unsubscribe();
+    this._unsubscribeSetLoading();
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
@@ -148,13 +152,23 @@ export class HaLogbook extends LitElement {
       );
     }
 
-    this._logbookEntries = undefined;
     this._throttleGetLogbookEntries();
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+  }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("hass")) {
+      return true;
+    }
+    // We only respond to hass changes if the translations changed
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !oldHass || oldHass.localize !== this.hass.localize;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
     let changed = changedProps.has("time");
 
     for (const key of ["entityIds", "deviceIds"]) {
@@ -180,6 +194,17 @@ export class HaLogbook extends LitElement {
     }
   }
 
+  private _handleLogbookLive(ev: CustomEvent) {
+    if (ev.detail.enable && !this._liveUpdatesEnabled) {
+      // Process everything we queued up while we were scrolled down
+      this._pendingStreamMessages.forEach((msg) =>
+        this._processStreamMessage(msg)
+      );
+      this._pendingStreamMessages = [];
+    }
+    this._liveUpdatesEnabled = ev.detail.enable;
+  }
+
   private get _filterAlwaysEmptyResults(): boolean {
     const entityIds = ensureArray(this.entityIds);
     const deviceIds = ensureArray(this.deviceIds);
@@ -194,7 +219,15 @@ export class HaLogbook extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => (unsub ? unsub() : undefined));
+      this._subscribed.then((unsub) =>
+        unsub
+          ? unsub().catch(() => {
+              // The backend will cancel the subscription if
+              // we subscribe to entities that will all be
+              // filtered away
+            })
+          : undefined
+      );
       this._subscribed = undefined;
     }
   }
@@ -208,12 +241,26 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubscribeSetLoading();
+  }
+
+  /** Unsubscribe because we are unloading
+   * or about to resubscribe.
+   * Setting this._logbookEntries to undefined
+   * will put the page in a loading state.
+   */
+  private _unsubscribeSetLoading() {
+    this._logbookEntries = undefined;
     this._unsubscribe();
   }
 
-  private _unsubscribeAndEmptyEntries() {
-    this._unsubscribe();
+  /** Unsubscribe because there are no results.
+   * Setting this._logbookEntries to an empty
+   * list will show a no results message.
+   */
+  private _unsubscribeNoResults() {
     this._logbookEntries = [];
+    this._unsubscribe();
   }
 
   private _calculateLogbookPeriod() {
@@ -252,20 +299,19 @@ export class HaLogbook extends LitElement {
         // "recent" means start time is a sliding window
         // so we need to calculate an expireTime to
         // purge old events
-        this._processStreamMessage(
-          streamMessage,
-          "recent" in this.time
-            ? findStartOfRecentTime(new Date(), this.time.recent)
-            : undefined
-        );
+        if (!this._subscribed) {
+          // Message came in before we had a chance to unload
+          return;
+        }
+        this._processOrQueueStreamMessage(streamMessage);
       },
       logbookPeriod.startTime.toISOString(),
       logbookPeriod.endTime.toISOString(),
       ensureArray(this.entityIds),
       ensureArray(this.deviceIds)
     ).catch((err) => {
-      this._error = err.message;
       this._subscribed = undefined;
+      this._error = err;
     });
     return true;
   }
@@ -274,7 +320,7 @@ export class HaLogbook extends LitElement {
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      this._unsubscribeAndEmptyEntries();
+      this._unsubscribeNoResults();
       return;
     }
 
@@ -282,7 +328,7 @@ export class HaLogbook extends LitElement {
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
-      this._unsubscribeAndEmptyEntries();
+      this._unsubscribeNoResults();
       return;
     }
 
@@ -303,10 +349,21 @@ export class HaLogbook extends LitElement {
         )
       : this._logbookEntries;
 
-  private _processStreamMessage = (
-    streamMessage: LogbookStreamMessage,
-    purgeBeforePythonTime: number | undefined
+  private _processOrQueueStreamMessage = (
+    streamMessage: LogbookStreamMessage
   ) => {
+    if (this._liveUpdatesEnabled) {
+      this._processStreamMessage(streamMessage);
+      return;
+    }
+    this._pendingStreamMessages.push(streamMessage);
+  };
+
+  private _processStreamMessage = (streamMessage: LogbookStreamMessage) => {
+    const purgeBeforePythonTime =
+      "recent" in this.time
+        ? findStartOfRecentTime(new Date(), this.time.recent)
+        : undefined;
     // Put newest ones on top. Reverse works in-place so
     // make a copy first.
     const newEntries = [...streamMessage.events].reverse();

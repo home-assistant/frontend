@@ -19,6 +19,14 @@ export class HaFab extends FabBase {
         direction: var(--direction);
       }
     `,
+    // safari workaround - must be explicit
+    document.dir === "rtl"
+      ? css`
+          :host .mdc-fab--extended .mdc-fab__icon {
+            direction: rtl;
+          }
+        `
+      : css``,
   ];
 }
 

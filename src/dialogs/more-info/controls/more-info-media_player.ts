@@ -11,7 +11,6 @@ import {
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -26,8 +25,8 @@ import {
   handleMediaControlClick,
   MediaPickedEvent,
   MediaPlayerEntity,
+  mediaPlayerPlayMedia,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_PLAY_MEDIA,
   SUPPORT_SELECT_SOUND_MODE,
   SUPPORT_SELECT_SOURCE,
   SUPPORT_VOLUME_BUTTONS,
@@ -191,14 +190,6 @@ class MoreInfoMediaPlayer extends LitElement {
             </div>
           `
         : ""}
-      ${isComponentLoaded(this.hass, "tts") &&
-      supportsFeature(stateObj, SUPPORT_PLAY_MEDIA)
-        ? html`
-            <div class="tts">
-              Text to speech has moved to the media browser.
-            </div>
-          `
-        : ""}
     `;
   }
 
@@ -305,18 +296,12 @@ class MoreInfoMediaPlayer extends LitElement {
       action: "play",
       entityId: this.stateObj!.entity_id,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
-        this._playMedia(
+        mediaPlayerPlayMedia(
+          this.hass,
+          this.stateObj!.entity_id,
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
         ),
-    });
-  }
-
-  private _playMedia(media_content_id: string, media_content_type: string) {
-    this.hass!.callService("media_player", "play_media", {
-      entity_id: this.stateObj!.entity_id,
-      media_content_id,
-      media_content_type,
     });
   }
 }
