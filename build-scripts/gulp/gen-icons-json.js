@@ -156,3 +156,8 @@ gulp.task("gen-icons-json", (done) => {
 
   done();
 });
+
+gulp.task("gen-dummy-icons-json", (done) => {
+  fs.writeFileSync(path.resolve(OUTPUT_DIR, "iconList.json"), "[]");
+  done();
+});
