@@ -22,6 +22,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 const gaugeSegmentStruct = object({
   from: number(),
   color: string(),
+  label: optional(string()),
 });
 
 const cardConfigStruct = assign(
