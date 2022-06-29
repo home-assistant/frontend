@@ -150,13 +150,15 @@ export class Gauge extends LitElement {
   }
 
   private getSegmentLabel() {
-    if (this.levels) {
-      this.levels.sort((a, b) => a.level - b.level);
-      for (let i = this.levels.length - 1; i >= 0; i--) {
-        if (this.value >= this.levels[i].level) return this.levels[i].label;
+    if (!this.levels) { 
+      return "";
+    }
+    this.levels.sort((a, b) => a.level - b.level);
+    for (let i = this.levels.length - 1; i >= 0; i--) {
+      if (this.value >= this.levels[i].level) {
+        return this.levels[i].label;
       }
     }
-    return "";
   }
 
   static get styles() {
