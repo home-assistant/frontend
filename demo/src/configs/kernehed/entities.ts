@@ -829,7 +829,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         battery_level: 47,
         on: true,
         dark: true,
-        friendly_name: "R\u00f6relsesensor k\u00e4llaren 1",
+        friendly_name: "Basement motion sensor 1",
         device_class: "motion",
         icon: "mdi:walk",
       },
