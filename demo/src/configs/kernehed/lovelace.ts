@@ -277,7 +277,7 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          title: "Bandbredd",
+          title: "Bandwidth",
         },
         // {
         //   title: "Updater",
