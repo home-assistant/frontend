@@ -130,6 +130,7 @@ export class HaLogbook extends LitElement {
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
+        @hass-logbook-live=${this._handleLogbookLive}
       ></ha-logbook-renderer>
     `;
   }
@@ -156,9 +157,6 @@ export class HaLogbook extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.addEventListener("hass-logbook-live", (ev) =>
-      this._handleLogbookLive(ev)
-    );
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
