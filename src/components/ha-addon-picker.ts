@@ -4,8 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { HassioAddonInfo } from "../data/hassio/addon";
-import { fetchHassioSupervisorInfo } from "../data/hassio/supervisor";
+import { fetchHassioAddonsInfo, HassioAddonInfo } from "../data/hassio/addon";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -78,10 +77,10 @@ class HaAddonPicker extends LitElement {
   private async _getAddons() {
     try {
       if (isComponentLoaded(this.hass, "hassio")) {
-        const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
-        this._addons = supervisorInfo.addons.sort((a, b) =>
-          stringCompare(a.name, b.name)
-        );
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        this._addons = addonsInfo.addons
+          .filter((addon) => addon.version)
+          .sort((a, b) => stringCompare(a.name, b.name));
       } else {
         showAlertDialog(this, {
           title: this.hass.localize(

@@ -186,7 +186,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 id="alarmCode"
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
-                .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
+                .inputMode=${stateObj.attributes.code_format === FORMAT_NUMBER
                   ? "numeric"
                   : "text"}
               ></ha-textfield>
@@ -346,6 +346,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         margin: auto;
         width: 100%;
         max-width: 300px;
+        direction: ltr;
       }
 
       #keypad mwc-button {

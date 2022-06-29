@@ -116,9 +116,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  // @ts-ignore
-  private _intersectionObserver?: IntersectionObserver;
-
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachResizeObserver());
@@ -127,9 +124,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   public disconnectedCallback(): void {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
-    }
-    if (this._intersectionObserver) {
-      this._intersectionObserver.disconnect();
     }
   }
 
@@ -485,7 +479,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                       .layout=${grid({
                         itemSize: {
                           width: "175px",
-                          height: "225px",
+                          height:
+                            childrenMediaClass.thumbnail_ratio === "portrait"
+                              ? "312px"
+                              : "225px",
                         },
                         gap: "16px",
                         flex: { preserve: "aspect-ratio" },

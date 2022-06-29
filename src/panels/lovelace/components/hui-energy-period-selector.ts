@@ -151,7 +151,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 dense
                 outlined
               >
-                Compare data
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
               </ha-icon-button>`
             : html`<mwc-button
                 class="compare ${this._compare ? "active" : ""}"
@@ -159,7 +161,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 dense
                 outlined
               >
-                Compare data
+                ${this.hass.localize(
+                  "ui.panel.lovelace.components.energy_period_selector.compare"
+                )}
               </mwc-button>`}
         </div>
       </div>

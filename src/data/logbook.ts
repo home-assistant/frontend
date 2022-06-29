@@ -1,4 +1,4 @@
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
@@ -6,12 +6,14 @@ import {
 } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../common/translations/localize";
+import { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
-export const CONTINUOUS_DOMAINS = ["proximity", "sensor"];
+export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor"];
 
 export interface LogbookStreamMessage {
   events: LogbookEntry[];
@@ -175,7 +177,7 @@ export const subscribeLogbook = (
   endDate: string,
   entityIds?: string[],
   deviceIds?: string[]
-): Promise<UnsubscribeFunc> => {
+): Promise<() => Promise<void>> => {
   // If all specified filters are empty lists, we can return an empty list.
   if (
     (entityIds || deviceIds) &&
@@ -425,3 +427,10 @@ export const localizeStateMessage = (
       : state
   );
 };
+
+export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (
+  entity
+) =>
+  computeStateDomain(entity) !== "sensor" ||
+  (entity.attributes.unit_of_measurement === undefined &&
+    entity.attributes.state_class === undefined);

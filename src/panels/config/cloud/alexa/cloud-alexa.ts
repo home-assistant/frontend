@@ -232,7 +232,7 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
                   slot="toolbar-icon"
                   @click=${this._openDomainToggler}
                   >${this.hass!.localize(
-                    "ui.panel.config.cloud.alexa.manage_domains"
+                    "ui.panel.config.cloud.alexa.manage_defaults"
                   )}</mwc-button
                 >
               `
@@ -402,6 +402,10 @@ class CloudAlexa extends SubscribeMixin(LitElement) {
 
   private _openDomainToggler() {
     showDomainTogglerDialog(this, {
+      title: this.hass!.localize("ui.panel.config.cloud.alexa.manage_defaults"),
+      description: this.hass!.localize(
+        "ui.panel.config.cloud.alexa.manage_defaults_dialog_description"
+      ),
       domains: this._entities!.map((entity) =>
         computeDomain(entity.entity_id)
       ).filter((value, idx, self) => self.indexOf(value) === idx),

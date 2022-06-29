@@ -47,10 +47,14 @@ class DomainTogglerDialog
         hideActions
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize("ui.dialogs.domain_toggler.title")
+          this._params.title ||
+            this.hass.localize("ui.dialogs.domain_toggler.title")
         )}
       >
-        <div>
+        ${this._params.description
+          ? html`<div class="description">${this._params.description}</div>`
+          : ""}
+        <div class="domains">
           ${domains.map(
             (domain) =>
               html`
@@ -92,7 +96,10 @@ class DomainTogglerDialog
         ha-dialog {
           --mdc-dialog-max-width: 500px;
         }
-        div {
+        .description {
+          margin-bottom: 8px;
+        }
+        .domains {
           display: grid;
           grid-template-columns: auto auto;
           grid-row-gap: 8px;

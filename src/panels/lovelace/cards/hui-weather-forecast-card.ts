@@ -228,12 +228,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   </div>
                   <div class="temp-attribute">
                     <div class="temp">
-                      ${formatNumber(
-                        stateObj.attributes.temperature,
-                        this.hass.locale
-                      )}&nbsp;<span
-                        >${getWeatherUnit(this.hass, "temperature")}</span
-                      >
+                      ${stateObj.attributes.temperature !== undefined &&
+                      stateObj.attributes.temperature !== null
+                        ? html`
+                            ${formatNumber(
+                              stateObj.attributes.temperature,
+                              this.hass.locale
+                            )}&nbsp;<span
+                              >${getWeatherUnit(
+                                this.hass,
+                                stateObj,
+                                "temperature"
+                              )}</span
+                            >
+                          `
+                        : html`&nbsp;`}
                     </div>
                     <div class="attribute">
                       ${this._config.secondary_info_attribute !== undefined
@@ -255,6 +264,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             "wind_speed"
                               ? getWind(
                                   this.hass,
+                                  stateObj,
                                   stateObj.attributes.wind_speed,
                                   stateObj.attributes.wind_bearing
                                 )
@@ -267,6 +277,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   )}
                                   ${getWeatherUnit(
                                     this.hass,
+                                    stateObj,
                                     this._config.secondary_info_attribute
                                   )}
                                 `}

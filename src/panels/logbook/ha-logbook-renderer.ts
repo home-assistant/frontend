@@ -1,4 +1,5 @@
 import "@lit-labs/virtualizer";
+import { VisibilityChangedEvent } from "@lit-labs/virtualizer/Virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -16,7 +17,6 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
@@ -34,6 +34,12 @@ import {
 } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+
+declare global {
+  interface HASSDomEvents {
+    "hass-logbook-live": { enable: boolean };
+  }
+}
 
 const triggerDomains = ["script", "automation"];
 
@@ -55,9 +61,6 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ type: Boolean, attribute: "narrow" })
   public narrow = false;
-
-  @property({ attribute: "rtl", type: Boolean })
-  private _rtl = false;
 
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = false;
@@ -86,18 +89,10 @@ class HaLogbookRenderer extends LitElement {
     );
   }
 
-  protected updated(_changedProps: PropertyValues) {
-    const oldHass = _changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (oldHass === undefined || oldHass.language !== this.hass.language) {
-      this._rtl = computeRTL(this.hass);
-    }
-  }
-
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        <div class="container no-entries" .dir=${emitRTLDirection(this._rtl)}>
+        <div class="container no-entries">
           ${this.hass.localize("ui.components.logbook.entries_not_found")}
         </div>
       `;
@@ -107,7 +102,6 @@ class HaLogbookRenderer extends LitElement {
       <div
         class="container ha-scrollbar ${classMap({
           narrow: this.narrow,
-          rtl: this._rtl,
           "no-name": this.noName,
           "no-icon": this.noIcon,
         })}"
@@ -115,6 +109,7 @@ class HaLogbookRenderer extends LitElement {
       >
         ${this.virtualize
           ? html`<lit-virtualizer
+              @visibilityChanged=${this._visibilityChanged}
               scroller
               class="ha-scrollbar"
               .items=${this.entries}
@@ -250,6 +245,13 @@ class HaLogbookRenderer extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  @eventOptions({ passive: true })
+  private _visibilityChanged(e: VisibilityChangedEvent) {
+    fireEvent(this, "hass-logbook-live", {
+      enable: e.first === 0,
+    });
   }
 
   private _renderMessage(
@@ -507,10 +509,6 @@ class HaLogbookRenderer extends LitElement {
           height: 100%;
         }
 
-        .rtl {
-          direction: ltr;
-        }
-
         .entry-container {
           width: 100%;
         }
@@ -535,6 +533,9 @@ class HaLogbookRenderer extends LitElement {
 
         .narrow:not(.no-icon) .time {
           margin-left: 32px;
+          margin-inline-start: 32px;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
 
         .message-relative_time {
@@ -556,10 +557,6 @@ class HaLogbookRenderer extends LitElement {
           padding: 0 16px;
         }
 
-        .rtl .date {
-          direction: rtl;
-        }
-
         .icon-message {
           display: flex;
           align-items: center;
@@ -572,8 +569,11 @@ class HaLogbookRenderer extends LitElement {
 
         state-badge {
           margin-right: 16px;
+          margin-inline-start: initial;
           flex-shrink: 0;
           color: var(--state-icon-color);
+          margin-inline-end: 16px;
+          direction: var(--direction);
         }
 
         .message {
@@ -613,6 +613,9 @@ class HaLogbookRenderer extends LitElement {
 
         .narrow .icon-message state-badge {
           margin-left: 0;
+          margin-inline-start: 0;
+          margin-inline-end: initial;
+          direction: var(--direction);
         }
       `,
     ];

@@ -91,6 +91,7 @@ export class HaDialog extends DialogBase {
       .header_title {
         margin-right: 40px;
         margin-inline-end: 40px;
+        margin-inline-start: initial;
         direction: var(--direction);
       }
       .header_button {

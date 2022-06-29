@@ -114,7 +114,9 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         <div>
-          ${UNAVAILABLE_STATES.includes(stateObj.state)
+          ${UNAVAILABLE_STATES.includes(stateObj.state) ||
+          stateObj.attributes.temperature === undefined ||
+          stateObj.attributes.temperature === null
             ? computeStateDisplay(
                 this.hass.localize,
                 stateObj,
@@ -125,7 +127,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                   stateObj.attributes.temperature,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, "temperature")}
+                ${getWeatherUnit(this.hass, stateObj, "temperature")}
               `}
         </div>
         <div class="secondary">
