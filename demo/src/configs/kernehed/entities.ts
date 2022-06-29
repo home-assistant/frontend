@@ -863,7 +863,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         battery_level: 60,
         on: true,
-        friendly_name: "R\u00f6relsesensor skafferiet",
+        friendly_name: "Pantry motion sensor",
         device_class: "motion",
         icon: "mdi:walk",
       },
