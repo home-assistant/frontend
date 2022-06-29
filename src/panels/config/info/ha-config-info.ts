@@ -24,6 +24,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
+const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
 
 const PAGES: Array<{
@@ -132,7 +133,9 @@ class HaConfigInfo extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.info.frontend_version",
                     "version",
-                    JS_VERSION
+                    JS_VERSION,
+                    "type",
+                    JS_TYPE
                   )}
                 </span>
               </div>
