@@ -1,9 +1,7 @@
 import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import { HomeAssistant } from "../../types";
-import { supervisorApiCall } from "../supervisor/common";
-import { StoreAddonDetails } from "../supervisor/store";
-import { Supervisor, SupervisorArch } from "../supervisor/supervisor";
+import { SupervisorArch } from "../supervisor/supervisor";
 import {
   extractApiErrorMessage,
   hassioApiResultExtractor,
@@ -365,15 +363,3 @@ export const uninstallHassioAddon = async (
     `hassio/addons/${slug}/uninstall`
   );
 };
-
-export const fetchAddonInfo = (
-  hass: HomeAssistant,
-  supervisor: Supervisor,
-  addonSlug: string
-): Promise<HassioAddonDetails | StoreAddonDetails> =>
-  supervisorApiCall(
-    hass,
-    !supervisor.addon?.addons.find((addon) => addon.slug === addonSlug)
-      ? `/store/addons/${addonSlug}` // Use /store/addons when add-on is not installed
-      : `/addons/${addonSlug}/info` // Use /addons when add-on is installed
-  );

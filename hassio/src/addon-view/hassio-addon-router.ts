@@ -1,6 +1,5 @@
 import { customElement, property } from "lit/decorators";
 import { HassioAddonDetails } from "../../../src/data/hassio/addon";
-import { StoreAddonDetails } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   HassRouterPage,
@@ -21,9 +20,7 @@ class HassioAddonRouter extends HassRouterPage {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property({ attribute: false }) public addon!:
-    | HassioAddonDetails
-    | StoreAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "info",

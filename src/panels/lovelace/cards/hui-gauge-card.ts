@@ -232,7 +232,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       return segments.map((segment) => ({
         level: segment?.from,
         stroke: segment?.color,
-        label: segment?.label,
       }));
     }
 

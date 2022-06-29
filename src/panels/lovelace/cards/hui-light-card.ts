@@ -276,12 +276,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         cursor: pointer;
         top: 0;
         right: 0;
-        inset-inline-start: initial;
-        inset-inline-end: 0;
         border-radius: 100%;
         color: var(--secondary-text-color);
         z-index: 1;
-        direction: var(--direction);
       }
 
       .content {

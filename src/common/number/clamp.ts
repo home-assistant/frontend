@@ -5,6 +5,6 @@ export const clamp = (value: number, min: number, max: number) =>
 export const conditionalClamp = (value: number, min?: number, max?: number) => {
   let result: number;
   result = min ? Math.max(value, min) : value;
-  result = max ? Math.min(result, max) : result;
+  result = max ? Math.min(value, max) : value;
   return result;
 };

@@ -489,8 +489,8 @@ class HuiEnergyDistrubutionCard
                       <ha-svg-icon
                         class="small"
                         .path=${mdiArrowUp}
-                      ></ha-svg-icon
-                      >${formatNumber(totalBatteryOut || 0, this.hass.locale, {
+                      ></ha-svg-icon>
+                      ${formatNumber(totalBatteryOut || 0, this.hass.locale, {
                         maximumFractionDigits: 1,
                       })}
                       kWh</span

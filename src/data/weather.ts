@@ -37,24 +37,14 @@ interface ForecastAttribute {
   humidity?: number;
   condition?: string;
   daytime?: boolean;
-  pressure?: number;
-  wind_speed?: string;
 }
 
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
-  attribution?: string;
+  temperature: number;
   humidity?: number;
   forecast?: ForecastAttribute[];
-  pressure?: number;
-  temperature?: number;
-  visibility?: number;
-  wind_bearing?: number | string;
-  wind_speed?: number;
-  precipitation_unit: string;
-  pressure_unit: string;
-  temperature_unit: string;
-  visibility_unit: string;
-  wind_speed_unit: string;
+  wind_speed: string;
+  wind_bearing: string;
 }
 
 export interface WeatherEntity extends HassEntityBase {
@@ -148,16 +138,16 @@ const cardinalDirections = [
   "N",
 ];
 
-const getWindBearingText = (degree: number | string): string => {
-  const degreenum = typeof degree === "number" ? degree : parseInt(degree, 10);
+const getWindBearingText = (degree: string): string => {
+  const degreenum = parseInt(degree, 10);
   if (isFinite(degreenum)) {
     // eslint-disable-next-line no-bitwise
     return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
   }
-  return typeof degree === "number" ? degree.toString() : degree;
+  return degree;
 };
 
-const getWindBearing = (bearing: number | string): string => {
+const getWindBearing = (bearing: string): string => {
   if (bearing != null) {
     return getWindBearingText(bearing);
   }
@@ -166,19 +156,14 @@ const getWindBearing = (bearing: number | string): string => {
 
 export const getWind = (
   hass: HomeAssistant,
-  stateObj: WeatherEntity,
-  speed?: number,
-  bearing?: number | string
+  speed: string,
+  bearing: string
 ): string => {
-  const speedText =
-    speed !== undefined && speed !== null
-      ? `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
-          hass!,
-          stateObj,
-          "wind_speed"
-        )}`
-      : "-";
-  if (bearing !== undefined && bearing !== null) {
+  const speedText = `${formatNumber(speed, hass.locale)} ${getWeatherUnit(
+    hass!,
+    "wind_speed"
+  )}`;
+  if (bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speedText} (${
       hass.localize(
@@ -191,28 +176,13 @@ export const getWind = (
 
 export const getWeatherUnit = (
   hass: HomeAssistant,
-  stateObj: WeatherEntity,
   measure: string
 ): string => {
-  const lengthUnit = hass.config.unit_system.length || "";
   switch (measure) {
     case "visibility":
-      return stateObj.attributes.visibility_unit || lengthUnit;
+      return hass.config.unit_system.length || "";
     case "precipitation":
-      return stateObj.attributes.precipitation_unit || lengthUnit === "km"
-        ? "mm"
-        : "in";
-    case "pressure":
-      return stateObj.attributes.pressure_unit || lengthUnit === "km"
-        ? "hPa"
-        : "inHg";
-    case "temperature":
-      return (
-        stateObj.attributes.temperature_unit ||
-        hass.config.unit_system.temperature
-      );
-    case "wind_speed":
-      return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
+      return hass.config.unit_system.accumulated_precipitation || "";
     case "humidity":
     case "precipitation_probability":
       return "%";
@@ -257,7 +227,7 @@ export const getSecondaryWeatherAttribute = (
         `
       : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
     ${formatNumber(value, hass.locale, { maximumFractionDigits: 1 })}
-    ${getWeatherUnit(hass!, stateObj, attribute)}
+    ${getWeatherUnit(hass!, attribute)}
   `;
 };
 
@@ -292,7 +262,7 @@ const getWeatherExtrema = (
     return undefined;
   }
 
-  const unit = getWeatherUnit(hass!, stateObj, "temperature");
+  const unit = getWeatherUnit(hass!, "temperature");
 
   return html`
     ${tempHigh ? `${formatNumber(tempHigh, hass.locale)} ${unit}` : ""}

@@ -59,10 +59,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
-import {
-  StoreAddon,
-  StoreAddonDetails,
-} from "../../../../src/data/supervisor/store";
+import { StoreAddon } from "../../../../src/data/supervisor/store";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -103,9 +100,7 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addon!:
-    | HassioAddonDetails
-    | StoreAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
@@ -148,7 +143,7 @@ class HassioAddonInfo extends LitElement {
             ></update-available-card>
           `
         : ""}
-      ${"protected" in this.addon && !this.addon.protected
+      ${!this.addon.protected
         ? html`
             <ha-alert
               alert-type="error"
@@ -523,7 +518,7 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
             <div>
-              ${this.addon.version && this.addon.state === "started"
+              ${this.addon.state === "started"
                 ? html`<ha-settings-row ?three-line=${this.narrow}>
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
@@ -674,7 +669,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    if ("state" in this.addon && this.addon.state === "started") {
+    if (this.addon.state === "started") {
       this._metrics = await fetchHassioStats(
         this.hass,
         `addons/${this.addon.slug}`
@@ -722,22 +717,18 @@ class HassioAddonInfo extends LitElement {
   }
 
   private get _computeIsRunning(): boolean {
-    return (this.addon as HassioAddonDetails)?.state === "started";
+    return this.addon?.state === "started";
   }
 
   private get _pathWebui(): string | null {
-    return (this.addon as HassioAddonDetails).webui!.replace(
-      "[HOST]",
-      document.location.hostname
+    return (
+      this.addon.webui &&
+      this.addon.webui.replace("[HOST]", document.location.hostname)
     );
   }
 
   private get _computeShowWebUI(): boolean | "" | null {
-    return (
-      !this.addon.ingress &&
-      (this.addon as HassioAddonDetails).webui &&
-      this._computeIsRunning
-    );
+    return !this.addon.ingress && this.addon.webui && this._computeIsRunning;
   }
 
   private _openIngress(): void {
@@ -763,8 +754,7 @@ class HassioAddonInfo extends LitElement {
   private async _startOnBootToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      boot:
-        (this.addon as HassioAddonDetails).boot === "auto" ? "manual" : "auto",
+      boot: this.addon.boot === "auto" ? "manual" : "auto",
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -786,7 +776,7 @@ class HassioAddonInfo extends LitElement {
   private async _watchdogToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      watchdog: !(this.addon as HassioAddonDetails).watchdog,
+      watchdog: !this.addon.watchdog,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -808,7 +798,7 @@ class HassioAddonInfo extends LitElement {
   private async _autoUpdateToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      auto_update: !(this.addon as HassioAddonDetails).auto_update,
+      auto_update: !this.addon.auto_update,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -830,7 +820,7 @@ class HassioAddonInfo extends LitElement {
   private async _protectionToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetSecurityParams = {
-      protected: !(this.addon as HassioAddonDetails).protected,
+      protected: !this.addon.protected,
     };
     try {
       await setHassioAddonSecurity(this.hass, this.addon.slug, data);
@@ -852,7 +842,7 @@ class HassioAddonInfo extends LitElement {
   private async _panelToggled(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      ingress_panel: !(this.addon as HassioAddonDetails).ingress_panel,
+      ingress_panel: !this.addon.ingress_panel,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
@@ -880,7 +870,7 @@ class HassioAddonInfo extends LitElement {
 
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
-        content: extractChangelog(this.addon as HassioAddonDetails, content),
+        content: extractChangelog(this.addon, content),
       });
     } catch (err: any) {
       showAlertDialog(this, {

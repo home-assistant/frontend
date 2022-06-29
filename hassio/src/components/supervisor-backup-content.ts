@@ -96,7 +96,7 @@ export class SupervisorBackupContent extends LitElement {
           : ["ssl", "share", "media", "addons/local"]
       );
       this.addons = _computeAddons(
-        this.backup ? this.backup.addons : this.supervisor?.addon.addons
+        this.backup ? this.backup.addons : this.supervisor?.supervisor.addons
       );
       this.backupType = this.backup?.type || "full";
       this.backupName = this.backup?.name || "";

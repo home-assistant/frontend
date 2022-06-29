@@ -1,5 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import { DeviceRegistryEntry } from "./device_registry";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -84,23 +85,6 @@ enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
-
-export enum FirmwareUpdateStatus {
-  Error_Timeout = -1,
-  Error_Checksum = 0,
-  Error_TransmissionFailed = 1,
-  Error_InvalidManufacturerID = 2,
-  Error_InvalidFirmwareID = 3,
-  Error_InvalidFirmwareTarget = 4,
-  Error_InvalidHeaderInformation = 5,
-  Error_InvalidHeaderFormat = 6,
-  Error_InsufficientMemory = 7,
-  Error_InvalidHardwareVersion = 8,
-  OK_WaitingForActivation = 0xfd,
-  OK_NoRestart = 0xfe,
-  OK_RestartPending = 0xff,
-}
-
 export interface QRProvisioningInformation {
   version: QRCodeVersion;
   securityClasses: SecurityClass[];
@@ -125,6 +109,10 @@ export interface PlannedProvisioningEntry {
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
 
+export interface ZWaveJSNodeIdentifiers {
+  home_id: string;
+  node_id: number;
+}
 export interface ZWaveJSNetwork {
   client: ZWaveJSClient;
   controller: ZWaveJSController;
@@ -163,7 +151,7 @@ export interface ZWaveJSController {
 export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
-  status: NodeStatus;
+  status: number;
   is_secure: boolean | string;
   is_routing: boolean | null;
   zwave_plus_version: number | null;
@@ -256,68 +244,6 @@ export interface ZWaveJSControllerStatisticsUpdatedMessage {
   timeout_callback: number;
 }
 
-export enum RssiError {
-  NotAvailable = 127,
-  ReceiverSaturated = 126,
-  NoSignalDetected = 125,
-}
-
-export enum ProtocolDataRate {
-  ZWave_9k6 = 0x01,
-  ZWave_40k = 0x02,
-  ZWave_100k = 0x03,
-  LongRange_100k = 0x04,
-}
-
-export interface ZWaveJSNodeStatisticsUpdatedMessage {
-  event: "statistics updated";
-  source: "node";
-  commands_tx: number;
-  commands_rx: number;
-  commands_dropped_tx: number;
-  commands_dropped_rx: number;
-  timeout_response: number;
-  rtt: number | null;
-  rssi: RssiError | number | null;
-  lwr: ZWaveJSRouteStatistics | null;
-  nlwr: ZWaveJSRouteStatistics | null;
-}
-
-export interface ZWaveJSRouteStatistics {
-  protocol_data_rate: number;
-  repeaters: string[];
-  rssi: RssiError | number | null;
-  repeater_rssi: (RssiError | number)[];
-  route_failed_between: [string, string] | null;
-}
-
-export interface ZWaveJSNodeStatusUpdatedMessage {
-  event: "ready" | "wake up" | "sleep" | "dead" | "alive";
-  ready: boolean;
-  status: NodeStatus;
-}
-
-export interface ZWaveJSNodeFirmwareUpdateProgressMessage {
-  event: "firmware update progress";
-  sent_fragments: number;
-  total_fragments: number;
-}
-
-export interface ZWaveJSNodeFirmwareUpdateFinishedMessage {
-  event: "firmware update finished";
-  status: FirmwareUpdateStatus;
-  wait_time: number;
-}
-
-export type ZWaveJSNodeFirmwareUpdateCapabilities =
-  | { firmware_upgradable: false }
-  | {
-      firmware_upgradable: true;
-      firmware_targets: number[];
-      continues_to_function: boolean | null;
-      supports_activation: boolean | null;
-    };
-
 export interface ZWaveJSRemovedNode {
   node_id: number;
   manufacturer: string;
@@ -353,6 +279,25 @@ export interface RequestedGrant {
 }
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
+
+export interface ZWaveJsMigrationData {
+  migration_device_map: Record<string, string>;
+  zwave_entity_ids: string[];
+  zwave_js_entity_ids: string[];
+  migration_entity_map: Record<string, string>;
+  migrated: boolean;
+}
+
+export const migrateZwave = (
+  hass: HomeAssistant,
+  entry_id: string,
+  dry_run = true
+): Promise<ZWaveJsMigrationData> =>
+  hass.callWS({
+    type: "zwave_js/migrate_zwave",
+    entry_id,
+    dry_run,
+  });
 
 export const fetchZwaveNetworkStatus = (
   hass: HomeAssistant,
@@ -516,19 +461,6 @@ export const fetchZwaveNodeStatus = (
     device_id,
   });
 
-export const subscribeZwaveNodeStatus = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (message: ZWaveJSNodeStatusUpdatedMessage) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/subscribe_node_status",
-      device_id,
-    }
-  );
-
 export const fetchZwaveNodeMetadata = (
   hass: HomeAssistant,
   device_id: string
@@ -626,6 +558,19 @@ export const stopHealZwaveNetwork = (
     entry_id,
   });
 
+export const subscribeZwaveNodeReady = (
+  hass: HomeAssistant,
+  device_id: string,
+  callbackFunction: (message) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/node_ready",
+      device_id,
+    }
+  );
+
 export const subscribeHealZwaveNetworkProgress = (
   hass: HomeAssistant,
   entry_id: string,
@@ -652,95 +597,26 @@ export const subscribeZwaveControllerStatistics = (
     }
   );
 
-export const subscribeZwaveNodeStatistics = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (message: ZWaveJSNodeStatisticsUpdatedMessage) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/subscribe_node_statistics",
-      device_id,
-    }
-  );
-
-export const fetchZwaveNodeIsFirmwareUpdateInProgress = (
-  hass: HomeAssistant,
-  device_id: string
-): Promise<boolean> =>
-  hass.callWS({
-    type: "zwave_js/get_firmware_update_progress",
-    device_id,
-  });
-
-export const fetchZwaveIsAnyFirmwareUpdateInProgress = (
-  hass: HomeAssistant,
-  entry_id: string
-): Promise<boolean> =>
-  hass.callWS({
-    type: "zwave_js/get_any_firmware_update_progress",
-    entry_id,
-  });
-
-export const fetchZwaveNodeFirmwareUpdateCapabilities = (
-  hass: HomeAssistant,
-  device_id: string
-): Promise<ZWaveJSNodeFirmwareUpdateCapabilities> =>
-  hass.callWS({
-    type: "zwave_js/get_firmware_update_capabilities",
-    device_id,
-  });
-
-export const uploadFirmwareAndBeginUpdate = async (
-  hass: HomeAssistant,
-  device_id: string,
-  file: File,
-  target?: number
-) => {
-  const fd = new FormData();
-  fd.append("file", file);
-  if (target !== undefined) {
-    fd.append("target", target.toString());
+export const getZwaveJsIdentifiersFromDevice = (
+  device: DeviceRegistryEntry
+): ZWaveJSNodeIdentifiers | undefined => {
+  if (!device) {
+    return undefined;
   }
-  const resp = await hass.fetchWithAuth(
-    `/api/zwave_js/firmware/upload/${device_id}`,
-    {
-      method: "POST",
-      body: fd,
-    }
-  );
 
-  if (resp.status !== 200) {
-    throw new Error(resp.statusText);
+  const zwaveJSIdentifier = device.identifiers.find(
+    (identifier) => identifier[0] === "zwave_js"
+  );
+  if (!zwaveJSIdentifier) {
+    return undefined;
   }
+
+  const identifiers = zwaveJSIdentifier[1].split("-");
+  return {
+    node_id: parseInt(identifiers[1]),
+    home_id: identifiers[0],
+  };
 };
-
-export const subscribeZwaveNodeFirmwareUpdate = (
-  hass: HomeAssistant,
-  device_id: string,
-  callbackFunction: (
-    message:
-      | ZWaveJSNodeFirmwareUpdateFinishedMessage
-      | ZWaveJSNodeFirmwareUpdateProgressMessage
-  ) => void
-): Promise<UnsubscribeFunc> =>
-  hass.connection.subscribeMessage(
-    (message: any) => callbackFunction(message),
-    {
-      type: "zwave_js/subscribe_firmware_update_status",
-      device_id,
-    }
-  );
-
-export const abortZwaveNodeFirmwareUpdate = (
-  hass: HomeAssistant,
-  device_id: string
-): Promise<UnsubscribeFunc> =>
-  hass.callWS({
-    type: "zwave_js/abort_firmware_update",
-    device_id,
-  });
 
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
 

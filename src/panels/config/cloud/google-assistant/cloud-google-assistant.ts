@@ -256,7 +256,7 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
                   slot="toolbar-icon"
                   @click=${this._openDomainToggler}
                   >${this.hass!.localize(
-                    "ui.panel.config.cloud.google.manage_defaults"
+                    "ui.panel.config.cloud.google.manage_domains"
                   )}</mwc-button
                 >
               `
@@ -442,12 +442,6 @@ class CloudGoogleAssistant extends SubscribeMixin(LitElement) {
 
   private _openDomainToggler() {
     showDomainTogglerDialog(this, {
-      title: this.hass!.localize(
-        "ui.panel.config.cloud.google.manage_defaults"
-      ),
-      description: this.hass!.localize(
-        "ui.panel.config.cloud.google.manage_defaults_dialog_description"
-      ),
       domains: this._entities!.map((entity) =>
         computeDomain(entity.entity_id)
       ).filter((value, idx, self) => self.indexOf(value) === idx),

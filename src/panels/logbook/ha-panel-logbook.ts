@@ -12,17 +12,19 @@ import {
 } from "date-fns/esm";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../components/entity/ha-entity-picker";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -37,6 +39,8 @@ export class HaPanelLogbook extends LitElement {
   @state() _time: { range: [Date, Date] };
 
   @state() _entityIds?: string[];
+
+  @property({ reflect: true, type: Boolean }) rtl = false;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -85,7 +89,7 @@ export class HaPanelLogbook extends LitElement {
             .label=${this.hass.localize(
               "ui.components.entity.entity-picker.entity"
             )}
-            .entityFilter=${filterLogbookCompatibleEntities}
+            .entityFilter=${this._entityFilter}
             @change=${this._entityPicked}
           ></ha-entity-picker>
         </div>
@@ -145,6 +149,15 @@ export class HaPanelLogbook extends LitElement {
   private _locationChanged = () => {
     this._applyURLParams();
   };
+
+  protected updated(changedProps: PropertyValues<this>) {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.language !== this.hass.language) {
+        this.rtl = computeRTL(this.hass);
+      }
+    }
+  }
 
   private _applyURLParams() {
     const searchParams = new URLSearchParams(location.search);
@@ -228,6 +241,17 @@ export class HaPanelLogbook extends LitElement {
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
   }
+
+  private _entityFilter: HaEntityPickerEntityFilterFunc = (entity) => {
+    if (computeStateDomain(entity) !== "sensor") {
+      return true;
+    }
+
+    return (
+      entity.attributes.unit_of_measurement === undefined &&
+      entity.attributes.state_class === undefined
+    );
+  };
 
   static get styles() {
     return [

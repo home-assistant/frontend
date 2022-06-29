@@ -1,11 +1,7 @@
 import { HomeAssistant } from "../types";
 
-export interface ApplicationCredentialsDomainConfig {
-  description_placeholders: string;
-}
-
 export interface ApplicationCredentialsConfig {
-  integrations: Record<string, ApplicationCredentialsDomainConfig>;
+  domains: string[];
 }
 
 export interface ApplicationCredential {

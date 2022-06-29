@@ -24,7 +24,7 @@ class HassioAddons extends LitElement {
           ? html` <h1>${this.supervisor.localize("dashboard.addons")}</h1> `
           : ""}
         <div class="card-group">
-          ${!this.supervisor.addon.addons.length
+          ${!this.supervisor.supervisor.addons?.length
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
@@ -34,7 +34,7 @@ class HassioAddons extends LitElement {
                   </div>
                 </ha-card>
               `
-            : this.supervisor.addon.addons
+            : this.supervisor.supervisor.addons
                 .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
                 .map(
                   (addon) => html`

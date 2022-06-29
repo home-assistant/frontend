@@ -8,7 +8,6 @@ import {
   mdiCalendar,
   mdiCast,
   mdiCastConnected,
-  mdiChartSankey,
   mdiCheckCircleOutline,
   mdiClock,
   mdiCloseCircleOutline,
@@ -25,7 +24,6 @@ import {
   mdiPowerPlug,
   mdiPowerPlugOff,
   mdiRestart,
-  mdiSwapHorizontal,
   mdiToggleSwitchVariant,
   mdiToggleSwitchVariantOff,
   mdiWeatherNight,
@@ -154,12 +152,6 @@ export const domainIconWithoutDefault = (
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
         : mdiWeatherNight;
-
-    case "switch_as_x":
-      return mdiSwapHorizontal;
-
-    case "threshold":
-      return mdiChartSankey;
 
     case "update":
       return compareState === "on"

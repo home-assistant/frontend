@@ -79,8 +79,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @property({ type: Boolean }) public horizontal = false;
-
   @state() private _areas?: { [areaId: string]: AreaRegistryEntry };
 
   @state() private _devices?: {
@@ -119,55 +117,45 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._areas || !this._devices || !this._entities) {
       return html``;
     }
-    return html`<div class=${this.horizontal ? "horizontal-container" : ""}>
-      ${this.horizontal ? this._renderChips() : this._renderItems()}
-      ${this._renderPicker()}
-      ${this.horizontal ? this._renderItems() : this._renderChips()}
-    </div>`;
-  }
-
-  private _renderItems() {
     return html`<div class="mdc-chip-set items">
-      ${this.value?.area_id
-        ? ensureArray(this.value.area_id).map((area_id) => {
-            const area = this._areas![area_id];
-            return this._renderChip(
-              "area_id",
-              area_id,
-              area?.name || area_id,
-              undefined,
-              mdiSofa
-            );
-          })
-        : ""}
-      ${this.value?.device_id
-        ? ensureArray(this.value.device_id).map((device_id) => {
-            const device = this._devices![device_id];
-            return this._renderChip(
-              "device_id",
-              device_id,
-              device ? computeDeviceName(device, this.hass) : device_id,
-              undefined,
-              mdiDevices
-            );
-          })
-        : ""}
-      ${this.value?.entity_id
-        ? ensureArray(this.value.entity_id).map((entity_id) => {
-            const entity = this.hass.states[entity_id];
-            return this._renderChip(
-              "entity_id",
-              entity_id,
-              entity ? computeStateName(entity) : entity_id,
-              entity
-            );
-          })
-        : ""}
-    </div>`;
-  }
-
-  private _renderChips() {
-    return html`<div class="mdc-chip-set">
+        ${this.value?.area_id
+          ? ensureArray(this.value.area_id).map((area_id) => {
+              const area = this._areas![area_id];
+              return this._renderChip(
+                "area_id",
+                area_id,
+                area?.name || area_id,
+                undefined,
+                mdiSofa
+              );
+            })
+          : ""}
+        ${this.value?.device_id
+          ? ensureArray(this.value.device_id).map((device_id) => {
+              const device = this._devices![device_id];
+              return this._renderChip(
+                "device_id",
+                device_id,
+                device ? computeDeviceName(device, this.hass) : device_id,
+                undefined,
+                mdiDevices
+              );
+            })
+          : ""}
+        ${this.value?.entity_id
+          ? ensureArray(this.value.entity_id).map((entity_id) => {
+              const entity = this.hass.states[entity_id];
+              return this._renderChip(
+                "entity_id",
+                entity_id,
+                entity ? computeStateName(entity) : entity_id,
+                entity
+              );
+            })
+          : ""}
+      </div>
+      ${this._renderPicker()}
+      <div class="mdc-chip-set">
         <div
           class="mdc-chip area_id add"
           .type=${"area_id"}
@@ -229,6 +217,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           </span>
         </div>
       </div>
+
       ${this.helper
         ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
         : ""} `;
@@ -332,7 +321,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .entityFilter=${this.entityRegFilter}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeDomains=${this.includeDomains}
-          class=${this.horizontal ? "hidden-picker" : ""}
           @value-changed=${this._targetPicked}
         ></ha-area-picker>`;
       case "device_id":
@@ -347,7 +335,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .entityFilter=${this.entityRegFilter}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeDomains=${this.includeDomains}
-          class=${this.horizontal ? "hidden-picker" : ""}
           @value-changed=${this._targetPicked}
         ></ha-device-picker>`;
       case "entity_id":
@@ -361,7 +348,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .entityFilter=${this.entityFilter}
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeDomains=${this.includeDomains}
-          class=${this.horizontal ? "hidden-picker" : ""}
           @value-changed=${this._targetPicked}
           allow-custom-entity
         ></ha-entity-picker>`;
@@ -553,16 +539,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
-      .hidden-picker {
-        height: 0px;
-        display: inline-block;
-        overflow: hidden;
-        position: absolute;
-      }
-      .horizontal-container {
-        display: flex;
-        flex-wrap: wrap;
-      }
       .mdc-chip {
         color: var(--primary-text-color);
       }

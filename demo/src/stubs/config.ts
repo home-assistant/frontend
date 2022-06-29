@@ -1,7 +1,7 @@
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockConfig = (hass: MockHomeAssistant) => {
-  hass.mockAPI("config/config_entries/entry?domain=co2signal", () => [
+  hass.mockAPI("config/config_entries/entry", () => [
     {
       entry_id: "co2signal",
       domain: "co2signal",

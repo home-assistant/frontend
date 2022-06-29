@@ -6,7 +6,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button-menu";
 import "../../../components/search-input";
 import { LogProvider } from "../../../data/error_log";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import { fetchHassioSupervisorInfo } from "../../../data/hassio/supervisor";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -167,15 +167,13 @@ export class HaConfigLogs extends LitElement {
 
   private async _getInstalledAddons() {
     try {
-      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
       this._logProviders = [
         ...this._logProviders,
-        ...addonsInfo.addons
-          .filter((addon) => addon.version)
-          .map((addon) => ({
-            key: addon.slug,
-            name: addon.name,
-          })),
+        ...supervisorInfo.addons.map((addon) => ({
+          key: addon.slug,
+          name: addon.name,
+        })),
       ];
     } catch (err) {
       // Ignore, nothing the user can do anyway

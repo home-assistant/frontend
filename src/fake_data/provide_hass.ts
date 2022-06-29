@@ -194,7 +194,6 @@ export const provideHass = (
       socket: {
         readyState: WebSocket.OPEN,
       },
-      haVersion: "DEMO",
     } as any,
     connected: true,
     states: {},

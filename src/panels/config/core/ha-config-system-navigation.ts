@@ -139,6 +139,12 @@ class HaConfigSystemNavigation extends LitElement {
               hasSecondary
             ></ha-navigation-list>
           </ha-card>
+          ${this.hass.userData?.showAdvanced
+            ? html`<ha-tip>
+                Looking for YAML Configuration? It has moved to
+                <a href="/developer-tools/yaml">Developer Tools</a>
+              </ha-tip>`
+            : ""}
         </ha-config-section>
       </hass-subpage>
     `;

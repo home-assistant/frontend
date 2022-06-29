@@ -37,7 +37,7 @@ export class MoreInfoAlarmControlPanel extends LitElement {
                 id="alarmCode"
                 .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
                 type="password"
-                .inputMode=${this.stateObj.attributes.code_format ===
+                .inputmode=${this.stateObj.attributes.code_format ===
                 FORMAT_NUMBER
                   ? "numeric"
                   : "text"}

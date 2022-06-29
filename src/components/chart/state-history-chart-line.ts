@@ -8,7 +8,7 @@ import {
 } from "../../common/number/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import "./ha-chart-base";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -33,8 +33,6 @@ class StateHistoryChartLine extends LitElement {
   @state() private _chartData?: ChartData<"line">;
 
   @state() private _chartOptions?: ChartOptions;
-
-  private _chartTime: Date = new Date();
 
   protected render() {
     return html`
@@ -123,13 +121,7 @@ class StateHistoryChartLine extends LitElement {
         locale: numberFormatToLocale(this.hass.locale),
       };
     }
-    if (
-      changedProps.has("data") ||
-      this._chartTime <
-        new Date(this.endTime.getTime() - MIN_TIME_BETWEEN_UPDATES)
-    ) {
-      // If the line is more than 5 minutes old, re-gen it
-      // so the X axis grows even if there is no new data
+    if (changedProps.has("data")) {
       this._generateData();
     }
   }
@@ -143,7 +135,6 @@ class StateHistoryChartLine extends LitElement {
       return;
     }
 
-    this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
     entityStates.forEach((states) => {

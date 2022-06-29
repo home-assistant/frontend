@@ -1,6 +1,7 @@
 import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant, PanelInfo } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
+import { HassioAddonInfo } from "./addon";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHomeAssistantInfo = {
@@ -21,7 +22,7 @@ export type HassioHomeAssistantInfo = {
 };
 
 export type HassioSupervisorInfo = {
-  addons: string[];
+  addons: HassioAddonInfo[];
   addons_repositories: string[];
   arch: SupervisorArch;
   channel: string;

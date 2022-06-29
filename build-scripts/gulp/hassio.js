@@ -9,7 +9,6 @@ require("./compress.js");
 require("./rollup.js");
 require("./gather-static.js");
 require("./translations.js");
-require("./gen-icons-json.js");
 
 gulp.task(
   "develop-hassio",
@@ -18,7 +17,6 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-hassio",
-    "gen-dummy-icons-json",
     "gen-index-hassio-dev",
     "build-supervisor-translations",
     "copy-translations-supervisor",
@@ -35,7 +33,6 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-hassio",
-    "gen-dummy-icons-json",
     "build-supervisor-translations",
     "copy-translations-supervisor",
     "build-locale-data",

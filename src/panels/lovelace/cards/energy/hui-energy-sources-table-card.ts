@@ -851,10 +851,7 @@ export class HuiEnergySourcesTableCard
                       )}
                     </th>
                     ${compare
-                      ? html`${showCosts
-                            ? html`<td class="mdc-data-table__cell"></td>`
-                            : ""}
-                          <td
+                      ? html`<td
                             class="mdc-data-table__cell mdc-data-table__cell--numeric"
                           >
                             ${formatNumber(
@@ -865,7 +862,10 @@ export class HuiEnergySourcesTableCard
                                 currency: this.hass.config.currency!,
                               }
                             )}
-                          </td>`
+                          </td>
+                          ${showCosts
+                            ? html`<td class="mdc-data-table__cell"></td>`
+                            : ""}`
                       : ""}
                     <td class="mdc-data-table__cell"></td>
                     <td

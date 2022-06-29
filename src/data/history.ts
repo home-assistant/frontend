@@ -223,12 +223,16 @@ export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityId?: string
 ): Promise<HassEntity[][]> =>
   hass.callApi(
     "GET",
     `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
-      entityIds ? `&filter_entity_id=${entityIds.join(",")}` : ``
+      entityId ? `&filter_entity_id=${entityId}` : ``
+    }${
+      entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
+        ? `&no_attributes`
+        : ``
     }`
   );
 
@@ -236,19 +240,19 @@ export const fetchDateWS = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityId?: string
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: true,
-    no_attributes: !entityIds
-      .map((entityId) => entityIdHistoryNeedsAttributes(hass, entityId))
-      .reduce((cur, next) => cur || next, false),
+    no_attributes: !!(
+      entityId && !entityIdHistoryNeedsAttributes(hass, entityId)
+    ),
   };
-  if (entityIds.length !== 0) {
-    return hass.callWS<HistoryStates>({ ...params, entity_ids: entityIds });
+  if (entityId) {
+    return hass.callWS<HistoryStates>({ ...params, entity_ids: [entityId] });
   }
   return hass.callWS<HistoryStates>(params);
 };

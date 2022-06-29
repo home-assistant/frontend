@@ -5,6 +5,7 @@ import {
   mdiWaterPercent,
   mdiWeatherWindy,
 } from "@mdi/js";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -22,7 +23,6 @@ import {
   getWeatherUnit,
   getWind,
   isForecastHourly,
-  WeatherEntity,
   weatherIcons,
 } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
@@ -31,7 +31,7 @@ import { HomeAssistant } from "../../../types";
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public stateObj?: WeatherEntity;
+  @property() public stateObj?: HassEntity;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("stateObj")) {
@@ -58,23 +58,19 @@ class MoreInfoWeather extends LitElement {
     const hourly = isForecastHourly(this.stateObj.attributes.forecast);
 
     return html`
-      ${this._showValue(this.stateObj.attributes.temperature)
-        ? html`
-            <div class="flex">
-              <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
-              <div class="main">
-                ${this.hass.localize("ui.card.weather.attributes.temperature")}
-              </div>
-              <div>
-                ${formatNumber(
-                  this.stateObj.attributes.temperature!,
-                  this.hass.locale
-                )}
-                ${getWeatherUnit(this.hass, this.stateObj, "temperature")}
-              </div>
-            </div>
-          `
-        : ""}
+      <div class="flex">
+        <ha-svg-icon .path=${mdiThermometer}></ha-svg-icon>
+        <div class="main">
+          ${this.hass.localize("ui.card.weather.attributes.temperature")}
+        </div>
+        <div>
+          ${formatNumber(
+            this.stateObj.attributes.temperature,
+            this.hass.locale
+          )}
+          ${getWeatherUnit(this.hass, "temperature")}
+        </div>
+      </div>
       ${this._showValue(this.stateObj.attributes.pressure)
         ? html`
             <div class="flex">
@@ -84,10 +80,10 @@ class MoreInfoWeather extends LitElement {
               </div>
               <div>
                 ${formatNumber(
-                  this.stateObj.attributes.pressure!,
+                  this.stateObj.attributes.pressure,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "pressure")}
+                ${getWeatherUnit(this.hass, "pressure")}
               </div>
             </div>
           `
@@ -101,7 +97,7 @@ class MoreInfoWeather extends LitElement {
               </div>
               <div>
                 ${formatNumber(
-                  this.stateObj.attributes.humidity!,
+                  this.stateObj.attributes.humidity,
                   this.hass.locale
                 )}
                 %
@@ -119,8 +115,7 @@ class MoreInfoWeather extends LitElement {
               <div>
                 ${getWind(
                   this.hass,
-                  this.stateObj,
-                  this.stateObj.attributes.wind_speed!,
+                  this.stateObj.attributes.wind_speed,
                   this.stateObj.attributes.wind_bearing
                 )}
               </div>
@@ -136,10 +131,10 @@ class MoreInfoWeather extends LitElement {
               </div>
               <div>
                 ${formatNumber(
-                  this.stateObj.attributes.visibility!,
+                  this.stateObj.attributes.visibility,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, this.stateObj, "visibility")}
+                ${getWeatherUnit(this.hass, "length")}
               </div>
             </div>
           `
@@ -178,24 +173,16 @@ class MoreInfoWeather extends LitElement {
                         `}
                     <div class="templow">
                       ${this._showValue(item.templow)
-                        ? `${formatNumber(item.templow!, this.hass.locale)}
-                          ${getWeatherUnit(
-                            this.hass,
-                            this.stateObj!,
-                            "temperature"
-                          )}`
+                        ? `${formatNumber(item.templow, this.hass.locale)}
+                          ${getWeatherUnit(this.hass, "temperature")}`
                         : hourly
                         ? ""
                         : "—"}
                     </div>
                     <div class="temp">
                       ${this._showValue(item.temperature)
-                        ? `${formatNumber(item.temperature!, this.hass.locale)}
-                        ${getWeatherUnit(
-                          this.hass,
-                          this.stateObj!,
-                          "temperature"
-                        )}`
+                        ? `${formatNumber(item.temperature, this.hass.locale)}
+                        ${getWeatherUnit(this.hass, "temperature")}`
                         : "—"}
                     </div>
                   </div>`
@@ -253,7 +240,7 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  private _showValue(item: number | string | undefined): boolean {
+  private _showValue(item: string): boolean {
     return typeof item !== "undefined" && item !== null;
   }
 }

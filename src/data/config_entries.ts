@@ -38,19 +38,19 @@ export const getConfigEntries = (
   hass: HomeAssistant,
   filters?: { type?: "helper" | "integration"; domain?: string }
 ): Promise<ConfigEntry[]> => {
-  const params: any = {};
+  const params = new URLSearchParams();
   if (filters) {
     if (filters.type) {
-      params.type_filter = filters.type;
+      params.append("type", filters.type);
     }
     if (filters.domain) {
-      params.domain = filters.domain;
+      params.append("domain", filters.domain);
     }
   }
-  return hass.callWS<ConfigEntry[]>({
-    type: "config_entries/get",
-    ...params,
-  });
+  return hass.callApi<ConfigEntry[]>(
+    "GET",
+    `config/config_entries/entry?${params.toString()}`
+  );
 };
 
 export const updateConfigEntry = (

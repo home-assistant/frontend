@@ -36,7 +36,7 @@ declare global {
 class BrowseMediaTTS extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public item!: MediaPlayerItem;
+  @property() public item;
 
   @property() public action!: MediaPlayerBrowseAction;
 

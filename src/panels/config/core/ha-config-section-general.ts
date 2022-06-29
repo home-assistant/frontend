@@ -273,15 +273,6 @@ class HaConfigSectionGeneral extends LitElement {
     }
     button.progress = true;
 
-    let locationConfig;
-
-    if (this._location) {
-      locationConfig = {
-        latitude: this._location[0],
-        longitude: this._location[1],
-      };
-    }
-
     try {
       await saveCoreConfig(this.hass, {
         currency: this._currency,
@@ -289,7 +280,6 @@ class HaConfigSectionGeneral extends LitElement {
         unit_system: this._unitSystem,
         time_zone: this._timeZone,
         location_name: this._name,
-        ...locationConfig,
       });
       button.actionSuccess();
     } catch (err: any) {

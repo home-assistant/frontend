@@ -36,7 +36,6 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
-import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   media_content_id?: string;
@@ -442,29 +441,3 @@ export const handleMediaControlClick = (
           entity_id: stateObj!.entity_id,
         }
   );
-
-export const mediaPlayerPlayMedia = (
-  hass: HomeAssistant,
-  entity_id: string,
-  media_content_id: string,
-  media_content_type: string,
-  extra: {
-    enqueue?: "play" | "next" | "add" | "replace";
-    announce?: boolean;
-  } = {}
-) => {
-  // We set text-to-speech to announce.
-  if (
-    !extra.enqueue &&
-    extra.announce === undefined &&
-    isTTSMediaSource(media_content_id)
-  ) {
-    extra.announce = true;
-  }
-  return hass.callService("media_player", "play_media", {
-    entity_id,
-    media_content_id,
-    media_content_type,
-    ...extra,
-  });
-};

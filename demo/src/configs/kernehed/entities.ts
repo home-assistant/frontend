@@ -59,7 +59,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         hidden: true,
         radius: 50,
-        friendly_name: "School",
+        friendly_name: "Skolan",
         icon: "mdi:school",
       },
     },
@@ -137,7 +137,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "73",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "Oskar battery",
+        friendly_name: "oskar batteri",
         device_class: "battery",
       },
     },
@@ -146,7 +146,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "88",
       attributes: {
         unit_of_measurement: "%",
-        friendly_name: "Bella battery",
+        friendly_name: "bella batteri",
         device_class: "battery",
       },
     },
@@ -154,7 +154,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       entity_id: "binary_sensor.unifi_camera",
       state: "off",
       attributes: {
-        friendly_name: "Motion sensor camera",
+        friendly_name: "R\u00f6relsesensor kamera",
         icon: "mdi:walk",
       },
     },
@@ -707,7 +707,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
           },
         ],
         cloudiness: 25,
-        friendly_name: "Weather",
+        friendly_name: "V\u00e4der",
       },
     },
     "binary_sensor.ubiquiti_switch": {
@@ -731,7 +731,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         round_trip_time_max: "0.626",
         round_trip_time_mdev: "",
         round_trip_time_min: "0.358",
-        friendly_name: "Entrance camera",
+        friendly_name: "Entr\u00e9 kamera",
         device_class: "connectivity",
         icon: "mdi:cctv",
       },
@@ -807,7 +807,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         battery_level: 88,
         on: true,
-        friendly_name: "Back door sensor",
+        friendly_name: "Altand\u00f6rren sensor",
         device_class: "opening",
         icon: "mdi:door",
       },
@@ -841,7 +841,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
         battery_level: 60,
         on: true,
         dark: true,
-        friendly_name: "Laundy room motion sensor",
+        friendly_name: "R\u00f6relsesensor tv\u00e4ttstugan",
         device_class: "motion",
         icon: "mdi:walk",
       },

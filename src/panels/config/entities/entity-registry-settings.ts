@@ -110,14 +110,6 @@ const OVERRIDE_SENSOR_UNITS = {
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
 };
 
-const OVERRIDE_WEATHER_UNITS = {
-  precipitation: ["mm", "in"],
-  pressure: ["hPa", "mbar", "mmHg", "inHg"],
-  temperature: ["°C", "°F"],
-  visibility: ["km", "mi"],
-  wind_speed: ["ft/s", "km/h", "kn", "mph", "m/s"],
-};
-
 const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 
 @customElement("entity-registry-settings")
@@ -147,16 +139,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @state() private _helperConfigEntry?: ConfigEntry;
 
   @state() private _unit_of_measurement?: string | null;
-
-  @state() private _precipitation_unit?: string | null;
-
-  @state() private _pressure_unit?: string | null;
-
-  @state() private _temperature_unit?: string | null;
-
-  @state() private _visibility_unit?: string | null;
-
-  @state() private _wind_speed_unit?: string | null;
 
   @state() private _error?: string;
 
@@ -239,16 +221,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
       this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
-    }
-
-    if (domain === "weather") {
-      const stateObj: HassEntity | undefined =
-        this.hass.states[this.entry.entity_id];
-      this._precipitation_unit = stateObj?.attributes?.precipitation_unit;
-      this._pressure_unit = stateObj?.attributes?.pressure_unit;
-      this._temperature_unit = stateObj?.attributes?.temperature_unit;
-      this._visibility_unit = stateObj?.attributes?.visibility_unit;
-      this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
     }
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
@@ -361,8 +333,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               </ha-select>
             `
           : ""}
-        ${domain === "sensor" &&
-        this._deviceClass &&
+        ${this._deviceClass &&
         stateObj?.attributes.unit_of_measurement &&
         OVERRIDE_SENSOR_UNITS[this._deviceClass]?.includes(
           stateObj?.attributes.unit_of_measurement
@@ -379,90 +350,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 @closed=${stopPropagation}
               >
                 ${OVERRIDE_SENSOR_UNITS[this._deviceClass].map(
-                  (unit: string) => html`
-                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-            `
-          : ""}
-        ${domain === "weather"
-          ? html`
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.precipitation_unit"
-                )}
-                .value=${this._precipitation_unit}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._precipitationUnitChanged}
-                @closed=${stopPropagation}
-              >
-                ${OVERRIDE_WEATHER_UNITS.precipitation.map(
-                  (unit: string) => html`
-                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.pressure_unit"
-                )}
-                .value=${this._pressure_unit}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._pressureUnitChanged}
-                @closed=${stopPropagation}
-              >
-                ${OVERRIDE_WEATHER_UNITS.pressure.map(
-                  (unit: string) => html`
-                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.temperature_unit"
-                )}
-                .value=${this._temperature_unit}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._temperatureUnitChanged}
-                @closed=${stopPropagation}
-              >
-                ${OVERRIDE_WEATHER_UNITS.temperature.map(
-                  (unit: string) => html`
-                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.visibility_unit"
-                )}
-                .value=${this._visibility_unit}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._visibilityUnitChanged}
-                @closed=${stopPropagation}
-              >
-                ${OVERRIDE_WEATHER_UNITS.visibility.map(
-                  (unit: string) => html`
-                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
-                  `
-                )}
-              </ha-select>
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.wind_speed_unit"
-                )}
-                .value=${this._wind_speed_unit}
-                naturalMenuWidth
-                fixedMenuPosition
-                @selected=${this._windSpeedUnitChanged}
-                @closed=${stopPropagation}
-              >
-                ${OVERRIDE_WEATHER_UNITS.wind_speed.map(
                   (unit: string) => html`
                     <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
@@ -740,31 +627,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._unit_of_measurement = ev.target.value;
   }
 
-  private _precipitationUnitChanged(ev): void {
-    this._error = undefined;
-    this._precipitation_unit = ev.target.value;
-  }
-
-  private _pressureUnitChanged(ev): void {
-    this._error = undefined;
-    this._pressure_unit = ev.target.value;
-  }
-
-  private _temperatureUnitChanged(ev): void {
-    this._error = undefined;
-    this._temperature_unit = ev.target.value;
-  }
-
-  private _visibilityUnitChanged(ev): void {
-    this._error = undefined;
-    this._visibility_unit = ev.target.value;
-  }
-
-  private _windSpeedUnitChanged(ev): void {
-    this._error = undefined;
-    this._wind_speed_unit = ev.target.value;
-  }
-
   private _switchAsChanged(ev): void {
     if (ev.target.value === "") {
       return;
@@ -866,23 +728,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     ) {
       params.options_domain = "sensor";
       params.options = { unit_of_measurement: this._unit_of_measurement };
-    }
-    if (
-      domain === "weather" &&
-      (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
-        stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
-        stateObj?.attributes?.temperature_unit !== this._temperature_unit ||
-        stateObj?.attributes?.visbility_unit !== this._visibility_unit ||
-        stateObj?.attributes?.wind_speed_unit !== this._wind_speed_unit)
-    ) {
-      params.options_domain = "weather";
-      params.options = {
-        precipitation_unit: this._precipitation_unit,
-        pressure_unit: this._pressure_unit,
-        temperature_unit: this._temperature_unit,
-        visibility_unit: this._visibility_unit,
-        wind_speed_unit: this._wind_speed_unit,
-      };
     }
     try {
       const result = await updateEntityRegistryEntry(

@@ -11,7 +11,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
-import "./ha-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -25,12 +24,6 @@ const saveKeyBinding: KeyBinding = {
     fireEvent(view.dom, "editor-save");
     return true;
   },
-};
-
-const renderIcon = (completion: Completion) => {
-  const icon = document.createElement("ha-icon");
-  icon.icon = completion.label;
-  return icon;
 };
 
 @customElement("ha-code-editor")
@@ -53,8 +46,6 @@ export class HaCodeEditor extends ReactiveElement {
   @state() private _value = "";
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
-
-  private _iconList?: Completion[];
 
   public set value(value: string) {
     this._value = value;
@@ -163,10 +154,7 @@ export class HaCodeEditor extends ReactiveElement {
     if (!this.readOnly && this.autocompleteEntities && this.hass) {
       extensions.push(
         this._loadedCodeMirror.autocompletion({
-          override: [
-            this._entityCompletions.bind(this),
-            this._mdiCompletions.bind(this),
-          ],
+          override: [this._entityCompletions.bind(this)],
           maxRenderedOptions: 10,
         })
       );
@@ -217,47 +205,6 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(entityWord.from),
       options: states,
-      span: /^\w*.\w*$/,
-    };
-  }
-
-  private _getIconItems = async (): Promise<Completion[]> => {
-    if (!this._iconList) {
-      let iconList: {
-        name: string;
-        keywords: string[];
-      }[];
-      if (__SUPERVISOR__) {
-        iconList = [];
-      } else {
-        iconList = (await import("../../build/mdi/iconList.json")).default;
-      }
-
-      this._iconList = iconList.map((icon) => ({
-        type: "variable",
-        label: `mdi:${icon.name}`,
-        detail: icon.keywords.join(", "),
-        info: renderIcon,
-      }));
-    }
-
-    return this._iconList;
-  };
-
-  private async _mdiCompletions(
-    context: CompletionContext
-  ): Promise<CompletionResult | null> {
-    const match = context.matchBefore(/mdi:/);
-
-    if (!match || (match.from === match.to && !context.explicit)) {
-      return null;
-    }
-
-    const iconItems = await this._getIconItems();
-
-    return {
-      from: Number(match.from),
-      options: iconItems,
       span: /^\w*.\w*$/,
     };
   }

@@ -41,12 +41,6 @@ export interface WebRtcAnswer {
   answer: string;
 }
 
-export const cameraUrlWithWidthHeight = (
-  base_url: string,
-  width: number,
-  height: number
-) => `${base_url}&width=${width}&height=${height}`;
-
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
   `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
 
@@ -63,7 +57,7 @@ export const fetchThumbnailUrlWithCache = async (
     hass,
     entityId
   );
-  return cameraUrlWithWidthHeight(base_url, width, height);
+  return `${base_url}&width=${width}&height=${height}`;
 };
 
 export const fetchThumbnailUrl = async (
