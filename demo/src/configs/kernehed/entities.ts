@@ -818,7 +818,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       attributes: {
         battery_level: 74,
         on: true,
-        friendly_name: "badrumssensor",
+        friendly_name: "Bathroom motion sensor",
         device_class: "motion",
       },
     },
