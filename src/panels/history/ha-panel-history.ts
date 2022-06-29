@@ -10,9 +10,11 @@ import {
   startOfWeek,
   startOfYesterday,
 } from "date-fns/esm";
+import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -20,23 +22,21 @@ import {
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
-import "../../components/ha-target-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { computeHistory, fetchDateWS } from "../../data/history";
-import "../../layouts/ha-app-layout";
-import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import "../../components/ha-target-picker";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
+import { computeHistory, fetchDateWS } from "../../data/history";
+import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property() hass!: HomeAssistant;
@@ -118,30 +118,22 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               @value-changed=${this._entitiesChanged}
             ></ha-target-picker>
           </div>
-          ${this._isLoading
-            ? html`<div class="progress-wrapper">
+        </div>
+        ${!this._targetPickerValue
+          ? html`
+              <div class="start-search">
+                ${this.hass.localize("ui.panel.history.start_search")}
+              </div>
+            `
+          : this._isLoading
+          ? html`
+              <div class="progress-wrapper">
                 <ha-circular-progress
                   active
                   alt=${this.hass.localize("ui.common.loading")}
                 ></ha-circular-progress>
-              </div>`
-            : html`
-                <state-history-charts
-                  .hass=${this.hass}
-                  .historyData=${this._stateHistory}
-                  .endTime=${this._endDate}
-                  no-single
-                >
-                </state-history-charts>
-              `}
-        </div>
-        ${this._isLoading
-          ? html`<div class="progress-wrapper">
-              <ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>
-            </div>`
+              </div>
+            `
           : html`
               <state-history-charts
                 virtualize
@@ -389,7 +381,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         .filters {
           display: flex;
-          align-items: flex-end;
+          align-items: flex-start;
           padding: 8px 16px 0;
         }
 
@@ -428,6 +420,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         :host([narrow]) ha-entity-picker {
           max-width: none;
           width: 100%;
+        }
+
+        .start-search {
+          padding-top: 16px;
+          text-align: center;
+          color: var(--secondary-text-color);
         }
       `,
     ];

@@ -4556,6 +4556,9 @@
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"
         }
+      },
+      "history": {
+        "start_search": "Start by selecting an area, device or entity above"
       }
     },
     "tips": {
