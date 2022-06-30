@@ -60,6 +60,7 @@ class HaPanelDevMqtt extends LitElement {
               <ha-code-editor
                 mode="jinja2"
                 autocomplete-entities
+                autocomplete-icons
                 .hass=${this.hass}
                 .value=${this.payload}
                 @value-changed=${this._handlePayload}
