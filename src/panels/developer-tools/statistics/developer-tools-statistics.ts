@@ -113,7 +113,7 @@ class HaPanelDevStatistics extends SubscribeMixin(LitElement) {
                   "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
                 )}
               </mwc-button>`
-            : ""}`,
+            : "—"}`,
         width: "113px",
       },
       actions: {
