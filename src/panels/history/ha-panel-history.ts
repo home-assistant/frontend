@@ -201,7 +201,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 ></ha-circular-progress>
               </div>`
             : this._targetPickerValue === undefined
-            ? html`<div class="info">No selection made</div>`
+            ? html`<div class="info">
+                Select what you would like to see history for above
+              </div>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
