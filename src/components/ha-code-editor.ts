@@ -209,7 +209,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
-    const entityWord = context.matchBefore(/[a-z_]{3,}\./);
+    const entityWord = context.matchBefore(/[a-z_]{3,}\.\w*/);
 
     if (
       !entityWord ||
@@ -227,7 +227,7 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(entityWord.from),
       options: states,
-      span: /^\w*.\w*$/,
+      span: /^[a-z_]{3,}\.\w*$/,
     };
   }
 
@@ -257,7 +257,7 @@ export class HaCodeEditor extends ReactiveElement {
   private async _mdiCompletions(
     context: CompletionContext
   ): Promise<CompletionResult | null> {
-    const match = context.matchBefore(/mdi:/);
+    const match = context.matchBefore(/mdi:\S*/);
 
     if (!match || (match.from === match.to && !context.explicit)) {
       return null;
@@ -268,7 +268,7 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(match.from),
       options: iconItems,
-      span: /^\w*.\w*$/,
+      span: /^mdi:\S*$/,
     };
   }
 
