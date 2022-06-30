@@ -1,4 +1,4 @@
-import { mdiCollapseAll, mdiExpandAll, mdiRefresh } from "@mdi/js";
+import { mdiCollapseAll, mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -52,8 +52,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   @property() _endDate: Date;
 
   @property() _targetPickerValue?;
-
-  @property() _showAllEntities = false;
 
   @property() _isLoading = false;
 
@@ -157,12 +155,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
             <ha-icon-button
-              @click=${this._showAll}
-              .disabled=${this._isLoading}
-              .path=${mdiExpandAll}
-              .label=${this.hass.localize("ui.panel.history.add_all")}
-            ></ha-icon-button>
-            <ha-icon-button
               @click=${this._removeAll}
               .disabled=${this._isLoading}
               .path=${mdiCollapseAll}
@@ -202,7 +194,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   alt=${this.hass.localize("ui.common.loading")}
                 ></ha-circular-progress>
               </div>`
-            : this._targetPickerValue === undefined && !this._showAllEntities
+            : this._targetPickerValue === undefined
             ? html`<div class="start-search">
                 ${this.hass.localize("ui.panel.history.start_search")}
               </div>`
@@ -268,8 +260,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       changedProps.has("_devices") ||
       changedProps.has("_deviceIdToEntities") ||
       changedProps.has("_areaIdToEntities") ||
-      changedProps.has("_areaIdToDevices") ||
-      changedProps.has("_showAllEntities")
+      changedProps.has("_areaIdToDevices")
     ) {
       this._getHistory();
     }
@@ -304,13 +295,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _showAll() {
-    this._showAllEntities = true;
-  }
-
   private _removeAll() {
     this._targetPickerValue = undefined;
-    this._showAllEntities = false;
   }
 
   private _refreshHistory() {
@@ -344,12 +330,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityIds(): string[] {
-    if (this._showAllEntities) {
-      return [
-        ...Object.keys(this._entities ?? []),
-        ...Object.keys(this._stateEntities ?? []),
-      ];
-    }
     if (
       this._targetPickerValue === undefined ||
       this._entities === undefined ||
