@@ -158,13 +158,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               @click=${this._showAll}
               .disabled=${this._isLoading}
               .path=${mdiExpandAll}
-              .label=${"Show All"}
+              .label=${this.hass.localize("ui.panel.history.add_all")}
             ></ha-icon-button>
             <ha-icon-button
               @click=${this._removeAll}
               .disabled=${this._isLoading}
               .path=${mdiCollapseAll}
-              .label=${"Clear All"}
+              .label=${this.hass.localize("ui.panel.history.remove_all")}
             ></ha-icon-button>
             <ha-icon-button
               @click=${this._refreshHistory}
@@ -201,8 +201,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 ></ha-circular-progress>
               </div>`
             : this._targetPickerValue === undefined
-            ? html`<div class="info">
-                Select what you would like to see history for above
+            ? html` <div class="start-search">
+                ${this.hass.localize("ui.panel.history.start_search")}
               </div>`
             : html`
                 <state-history-charts
@@ -496,12 +496,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           flex-wrap: wrap;
         }
 
-        .info {
-          text-align: center;
-          line-height: 60px;
-          color: var(--secondary-text-color);
-        }
-
         ha-date-range-picker {
           margin-right: 16px;
           margin-inline-end: 16px;
@@ -533,6 +527,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         :host([narrow]) ha-entity-picker {
           max-width: none;
           width: 100%;
+        }
+
+        .start-search {
+          padding-top: 16px;
+          text-align: center;
+          color: var(--secondary-text-color);
         }
       `,
     ];
