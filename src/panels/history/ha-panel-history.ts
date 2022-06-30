@@ -313,6 +313,14 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._getHistory();
   }
 
+  private _shouldShowEntityByLargerSelection(
+    entity: EntityRegistryEntry
+  ): boolean {
+    return (
+      entity.entity_category === null || entity.entity_category === "config"
+    );
+  }
+
   private async _getHistory() {
     this._isLoading = true;
     const entityIds = this._getEntityIds();
@@ -359,7 +367,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
         if (foundEntities !== undefined) {
           for (const foundEntity of foundEntities) {
-            entityIds.add(foundEntity.entity_id);
+            if (this._shouldShowEntityByLargerSelection(foundEntity)) {
+              entityIds.add(foundEntity.entity_id);
+            }
           }
         }
         const foundDevices = this._areaIdToDevices[singleSearchingAreaId];
@@ -369,9 +379,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               this._deviceIdToEntities[foundDevice.id];
             for (const foundDeviceEntity of foundDeviceEntities) {
               if (
-                foundDeviceEntity.area_id === undefined ||
-                foundDeviceEntity.area_id === null ||
-                foundDeviceEntity.area_id === singleSearchingAreaId
+                (!foundDeviceEntity.area_id ||
+                  foundDeviceEntity.area_id === singleSearchingAreaId) &&
+                this._shouldShowEntityByLargerSelection(foundDeviceEntity)
               ) {
                 entityIds.add(foundDeviceEntity.entity_id);
               }
@@ -388,7 +398,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
         if (foundEntities !== undefined) {
           for (const foundEntity of foundEntities) {
-            entityIds.add(foundEntity.entity_id);
+            if (this._shouldShowEntityByLargerSelection(foundEntity)) {
+              entityIds.add(foundEntity.entity_id);
+            }
           }
         }
       }
