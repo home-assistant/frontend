@@ -31,6 +31,7 @@ export class HaTemplateSelector extends LitElement {
         .readOnly=${this.disabled}
         autofocus
         autocomplete-entities
+        autocomplete-icons
         @value-changed=${this._handleChange}
         dir="ltr"
       ></ha-code-editor>
