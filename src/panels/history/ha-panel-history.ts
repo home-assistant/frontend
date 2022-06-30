@@ -99,7 +99,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           return accumulator;
         }, {});
         this._deviceIdToEntities = entities.reduce((accumulator, current) => {
-          if (current.device_id === undefined || current.device_id === null) {
+          if (!current.device_id) {
             return accumulator;
           }
           let found = accumulator[current.device_id];
@@ -111,7 +111,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           return accumulator;
         }, {});
         this._areaIdToEntities = entities.reduce((accumulator, current) => {
-          if (current.area_id === undefined || current.area_id === null) {
+          if (!current.area_id) {
             return accumulator;
           }
           let found = accumulator[current.area_id];
@@ -129,7 +129,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           return accumulator;
         }, {});
         this._areaIdToDevices = devices.reduce((accumulator, current) => {
-          if (current.area_id === undefined || current.area_id === null) {
+          if (!current.area_id) {
             return accumulator;
           }
           let found = accumulator[current.area_id];
@@ -201,7 +201,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 ></ha-circular-progress>
               </div>`
             : this._targetPickerValue === undefined
-            ? html` <div class="start-search">
+            ? html`<div class="start-search">
                 ${this.hass.localize("ui.panel.history.start_search")}
               </div>`
             : html`
@@ -303,12 +303,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _showAll() {
     this._targetPickerValue = { entity_id: Object.keys(this._entities ?? {}) };
-    this._getHistory();
   }
 
   private _removeAll() {
     this._targetPickerValue = undefined;
-    this._getHistory();
   }
 
   private _refreshHistory() {
