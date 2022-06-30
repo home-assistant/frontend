@@ -254,13 +254,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
-      changedProps.has("_targetPickerValue") ||
-      changedProps.has("_entities") ||
-      changedProps.has("_stateEntities") ||
-      changedProps.has("_devices") ||
-      changedProps.has("_deviceIdToEntities") ||
-      changedProps.has("_areaIdToEntities") ||
-      changedProps.has("_areaIdToDevices")
+      changedProps.has("_targetPickerValue")
     ) {
       this._getHistory();
     }
