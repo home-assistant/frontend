@@ -198,6 +198,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                   mode="yaml"
                   autofocus
                   autocomplete-entities
+                  autocomplete-icons
                   .hass=${this.hass}
                   .value=${this.yaml}
                   .error=${Boolean(this._errors)}
