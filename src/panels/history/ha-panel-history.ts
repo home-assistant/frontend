@@ -316,9 +316,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _shouldShowEntityByLargerSelection(
     entity: EntityRegistryEntry
   ): boolean {
-    return (
-      entity.entity_category === null || entity.entity_category === "config"
-    );
+    return entity.entity_category === null;
   }
 
   private async _getHistory() {
