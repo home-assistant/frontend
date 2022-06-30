@@ -53,6 +53,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @property() _targetPickerValue?;
 
+  @property() _showAllEntities = false;
+
   @property() _isLoading = false;
 
   @property() _stateHistory?;
@@ -200,7 +202,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   alt=${this.hass.localize("ui.common.loading")}
                 ></ha-circular-progress>
               </div>`
-            : this._targetPickerValue === undefined
+            : this._targetPickerValue === undefined && !this._showAllEntities
             ? html`<div class="start-search">
                 ${this.hass.localize("ui.panel.history.start_search")}
               </div>`
@@ -266,7 +268,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       changedProps.has("_devices") ||
       changedProps.has("_deviceIdToEntities") ||
       changedProps.has("_areaIdToEntities") ||
-      changedProps.has("_areaIdToDevices")
+      changedProps.has("_areaIdToDevices") ||
+      changedProps.has("_showAllEntities")
     ) {
       this._getHistory();
     }
@@ -302,11 +305,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _showAll() {
-    this._targetPickerValue = { entity_id: Object.keys(this._entities ?? {}) };
+    this._showAllEntities = true;
   }
 
   private _removeAll() {
     this._targetPickerValue = undefined;
+    this._showAllEntities = false;
   }
 
   private _refreshHistory() {
@@ -340,6 +344,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityIds(): string[] {
+    if (this._showAllEntities) {
+      return [
+        ...Object.keys(this._entities ?? []),
+        ...Object.keys(this._stateEntities ?? []),
+      ];
+    }
     if (
       this._targetPickerValue === undefined ||
       this._entities === undefined ||
