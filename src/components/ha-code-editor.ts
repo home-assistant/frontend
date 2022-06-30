@@ -2,6 +2,7 @@ import type {
   Completion,
   CompletionContext,
   CompletionResult,
+  CompletionSource,
 } from "@codemirror/autocomplete";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { HassEntities } from "home-assistant-js-websocket";
@@ -47,6 +48,9 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "autocomplete-entities" })
   public autocompleteEntities = false;
+
+  @property({ type: Boolean, attribute: "autocomplete-icons" })
+  public autocompleteIcons = false;
 
   @property() public error = false;
 
@@ -160,16 +164,22 @@ export class HaCodeEditor extends ReactiveElement {
       ),
     ];
 
-    if (!this.readOnly && this.autocompleteEntities && this.hass) {
-      extensions.push(
-        this._loadedCodeMirror.autocompletion({
-          override: [
-            this._entityCompletions.bind(this),
-            this._mdiCompletions.bind(this),
-          ],
-          maxRenderedOptions: 10,
-        })
-      );
+    if (!this.readOnly) {
+      const completionSources: CompletionSource[] = [];
+      if (this.autocompleteEntities && this.hass) {
+        completionSources.push(this._entityCompletions.bind(this));
+      }
+      if (this.autocompleteIcons) {
+        completionSources.push(this._mdiCompletions.bind(this));
+      }
+      if (completionSources.length > 0) {
+        extensions.push(
+          this._loadedCodeMirror.autocompletion({
+            override: completionSources,
+            maxRenderedOptions: 10,
+          })
+        );
+      }
     }
 
     this.codemirror = new this._loadedCodeMirror.EditorView({
