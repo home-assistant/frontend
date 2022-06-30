@@ -1,4 +1,4 @@
-import { mdiRefresh } from "@mdi/js";
+import { mdiCollapseAll, mdiExpandAll, mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -34,6 +34,10 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../data/device_registry";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -57,9 +61,23 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @state() private _entities?: EntityRegistryEntry[];
+  @state() private _devices?: { [deviceId: string]: DeviceRegistryEntry };
 
-  @state() private _stateEntities?: EntityRegistryEntry[];
+  @state() private _entities?: { [entityId: string]: EntityRegistryEntry };
+
+  @state() private _stateEntities?: { [entityId: string]: EntityRegistryEntry };
+
+  @state() private _deviceIdToEntities?: {
+    [deviceId: string]: EntityRegistryEntry[];
+  };
+
+  @state() private _areaIdToEntities?: {
+    [areaId: string]: EntityRegistryEntry[];
+  };
+
+  @state() private _areaIdToDevices?: {
+    [areaId: string]: DeviceRegistryEntry[];
+  };
 
   public constructor() {
     super();
@@ -76,7 +94,52 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities;
+        this._entities = entities.reduce((accumulator, current) => {
+          accumulator[current.entity_id] = current;
+          return accumulator;
+        }, {});
+        this._deviceIdToEntities = entities.reduce((accumulator, current) => {
+          if (current.device_id === undefined || current.device_id === null) {
+            return accumulator;
+          }
+          let found = accumulator[current.device_id];
+          if (found === undefined) {
+            found = [];
+            accumulator[current.device_id] = found;
+          }
+          found.push(current);
+          return accumulator;
+        }, {});
+        this._areaIdToEntities = entities.reduce((accumulator, current) => {
+          if (current.area_id === undefined || current.area_id === null) {
+            return accumulator;
+          }
+          let found = accumulator[current.area_id];
+          if (found === undefined) {
+            found = [];
+            accumulator[current.area_id] = found;
+          }
+          found.push(current);
+          return accumulator;
+        }, {});
+      }),
+      subscribeDeviceRegistry(this.hass.connection!, (devices) => {
+        this._devices = devices.reduce((accumulator, current) => {
+          accumulator[current.id] = current;
+          return accumulator;
+        }, {});
+        this._areaIdToDevices = devices.reduce((accumulator, current) => {
+          if (current.area_id === undefined || current.area_id === null) {
+            return accumulator;
+          }
+          let found = accumulator[current.area_id];
+          if (found === undefined) {
+            found = [];
+            accumulator[current.area_id] = found;
+          }
+          found.push(current);
+          return accumulator;
+        }, {});
       }),
     ];
   }
@@ -91,6 +154,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
+            <ha-icon-button
+              @click=${this._showAll}
+              .disabled=${this._isLoading}
+              .path=${mdiExpandAll}
+              .label=${"Show All"}
+            ></ha-icon-button>
+            <ha-icon-button
+              @click=${this._removeAll}
+              .disabled=${this._isLoading}
+              .path=${mdiCollapseAll}
+              .label=${"Clear All"}
+            ></ha-icon-button>
             <ha-icon-button
               @click=${this._refreshHistory}
               .disabled=${this._isLoading}
@@ -125,6 +200,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   alt=${this.hass.localize("ui.common.loading")}
                 ></ha-circular-progress>
               </div>`
+            : this._targetPickerValue === undefined
+            ? html`<div class="info">No selection made</div>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
@@ -135,24 +212,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                 </state-history-charts>
               `}
         </div>
-        ${this._isLoading
-          ? html`<div class="progress-wrapper">
-              <ha-circular-progress
-                active
-                alt=${this.hass.localize("ui.common.loading")}
-              ></ha-circular-progress>
-            </div>`
-          : html`
-              <state-history-charts
-                virtualize
-                .hass=${this.hass}
-                .historyData=${this._stateHistory}
-                .endTime=${this._endDate}
-                .narrow=${this.narrow}
-                no-single
-              >
-              </state-history-charts>
-            `}
       </ha-app-layout>
     `;
   }
@@ -211,15 +270,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         this.rtl = computeRTL(this.hass);
       }
       if (this._entities) {
-        const stateEntities: EntityRegistryEntry[] = [];
-        const regEntityIds = new Set(
-          this._entities.map((entity) => entity.entity_id)
-        );
+        const stateEntities: { [entityId: string]: EntityRegistryEntry } = {};
+        const regEntityIds = new Set(Object.keys(this._entities));
         for (const entityId of Object.keys(this.hass.states)) {
           if (regEntityIds.has(entityId)) {
             continue;
           }
-          stateEntities.push({
+          stateEntities[entityId] = {
             name: computeStateName(this.hass.states[entityId]),
             entity_id: entityId,
             platform: computeDomain(entityId),
@@ -230,11 +287,21 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
             device_id: null,
             icon: null,
             entity_category: null,
-          });
+          };
         }
         this._stateEntities = stateEntities;
       }
     }
+  }
+
+  private _showAll() {
+    this._targetPickerValue = { entity_id: Object.keys(this._entities ?? {}) };
+    this._getHistory();
+  }
+
+  private _removeAll() {
+    this._targetPickerValue = undefined;
+    this._getHistory();
   }
 
   private _refreshHistory() {
@@ -261,50 +328,75 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._isLoading = false;
   }
 
-  private _filterEntity(entity: EntityRegistryEntry): boolean {
-    const { area_id, device_id, entity_id } = this._targetPickerValue;
-    if (area_id !== undefined) {
-      if (typeof area_id === "string" && area_id === entity.area_id) {
-        return true;
-      }
-      if (Array.isArray(area_id) && area_id.includes(entity.area_id)) {
-        return true;
-      }
-    }
-    if (device_id !== undefined) {
-      if (typeof device_id === "string" && device_id === entity.device_id) {
-        return true;
-      }
-      if (Array.isArray(device_id) && device_id.includes(entity.device_id)) {
-        return true;
-      }
-    }
-    if (entity_id !== undefined) {
-      if (typeof entity_id === "string" && entity_id === entity.entity_id) {
-        return true;
-      }
-      if (Array.isArray(entity_id) && entity_id.includes(entity.entity_id)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private _getEntityIds(): string[] {
     if (
       this._targetPickerValue === undefined ||
       this._entities === undefined ||
-      this._stateEntities === undefined
+      this._stateEntities === undefined ||
+      this._devices === undefined ||
+      this._deviceIdToEntities === undefined ||
+      this._areaIdToEntities === undefined ||
+      this._areaIdToDevices === undefined
     ) {
       return [];
     }
-    const entityIds = this._entities
-      .filter((entity) => this._filterEntity(entity))
-      .map((entity) => entity.entity_id);
-    const stateEntityIds = this._stateEntities
-      .filter((entity) => this._filterEntity(entity))
-      .map((entity) => entity.entity_id);
-    return [...entityIds, ...stateEntityIds];
+    const entityIds = new Set<string>();
+    let {
+      area_id: searchingAreaId,
+      device_id: searchingDeviceId,
+      entity_id: searchingEntityId,
+    } = this._targetPickerValue;
+    if (searchingAreaId !== undefined) {
+      if (typeof searchingAreaId === "string") {
+        searchingAreaId = [searchingAreaId];
+      }
+      for (const singleSearchingAreaId of searchingAreaId) {
+        const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
+        if (foundEntities !== undefined) {
+          for (const foundEntity of foundEntities) {
+            entityIds.add(foundEntity.entity_id);
+          }
+        }
+        const foundDevices = this._areaIdToDevices[singleSearchingAreaId];
+        if (foundDevices !== undefined) {
+          for (const foundDevice of foundDevices) {
+            const foundDeviceEntities =
+              this._deviceIdToEntities[foundDevice.id];
+            for (const foundDeviceEntity of foundDeviceEntities) {
+              if (
+                foundDeviceEntity.area_id === undefined ||
+                foundDeviceEntity.area_id === null ||
+                foundDeviceEntity.area_id === singleSearchingAreaId
+              ) {
+                entityIds.add(foundDeviceEntity.entity_id);
+              }
+            }
+          }
+        }
+      }
+    }
+    if (searchingDeviceId !== undefined) {
+      if (typeof searchingDeviceId === "string") {
+        searchingDeviceId = [searchingDeviceId];
+      }
+      for (const singleSearchingDeviceId of searchingDeviceId) {
+        const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
+        if (foundEntities !== undefined) {
+          for (const foundEntity of foundEntities) {
+            entityIds.add(foundEntity.entity_id);
+          }
+        }
+      }
+    }
+    if (searchingEntityId !== undefined) {
+      if (typeof searchingEntityId === "string") {
+        searchingEntityId = [searchingEntityId];
+      }
+      for (const singleSearchingEntityId of searchingEntityId) {
+        entityIds.add(singleSearchingEntityId);
+      }
+    }
+    return [...entityIds];
   }
 
   private _dateRangeChanged(ev) {
@@ -389,12 +481,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
         .filters {
           display: flex;
-          align-items: flex-end;
+          align-items: flex-start;
           padding: 8px 16px 0;
         }
 
         :host([narrow]) .filters {
           flex-wrap: wrap;
+        }
+
+        .info {
+          text-align: center;
+          line-height: 60px;
+          color: var(--secondary-text-color);
         }
 
         ha-date-range-picker {
