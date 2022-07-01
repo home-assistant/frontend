@@ -194,7 +194,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   alt=${this.hass.localize("ui.common.loading")}
                 ></ha-circular-progress>
               </div>`
-            : this._targetPickerValue === undefined
+            : !this._targetPickerValue
             ? html`<div class="start-search">
                 ${this.hass.localize("ui.panel.history.start_search")}
               </div>`
