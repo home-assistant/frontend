@@ -4012,7 +4012,8 @@
             "month": "Month",
             "year": "Year",
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "compare": "Compare Data"
           }
         },
         "reload_lovelace": "Reload UI"
