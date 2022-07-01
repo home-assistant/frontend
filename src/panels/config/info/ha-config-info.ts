@@ -165,17 +165,6 @@ class HaConfigInfo extends LitElement {
                 `
               )}
             </mwc-list>
-            ${hass.config.config_dir !== "/config"
-              ? html`
-                  <p class="config-path">
-                    ${this.hass.localize(
-                      "ui.panel.config.info.path_configuration",
-                      "path",
-                      hass.config.config_dir
-                    )}
-                  </p>
-                `
-              : ""}
             ${!customUiList.length
               ? ""
               : html`

@@ -1593,7 +1593,6 @@
           "copy_github": "For GitHub",
           "description": "Version, loaded integrations and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
-          "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
           "license": "Published under the Apache 2.0 license",
           "source": "Source:",
@@ -1609,7 +1608,8 @@
           "setup_time": "Setup time",
           "system_health": {
             "manage": "Manage",
-            "more_info": "more info"
+            "more_info": "more info",
+            "path_configuration": "Path to configuration.yaml"
           },
           "items": {
             "change_log": "Change Log",
