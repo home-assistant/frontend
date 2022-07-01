@@ -195,7 +195,7 @@ class HaConfigInfo extends LitElement {
       if (((window as any).CUSTOM_UI_LIST || []).length !== customUI.length) {
         this.requestUpdate();
       }
-    }, 1000);
+    }, 2000);
 
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorInfo();
@@ -282,12 +282,6 @@ class HaConfigInfo extends LitElement {
             height: 100px;
             width: 100px;
           }
-        }
-
-        .config-path {
-          color: var(--secondary-text-color);
-          text-align: center;
-          font-style: italic;
         }
 
         .custom-ui {
