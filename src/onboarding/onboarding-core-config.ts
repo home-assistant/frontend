@@ -378,6 +378,10 @@ class OnboardingCoreConfig extends LitElement {
         color: var(--secondary-text-color);
       }
 
+      ha-locations-editor {
+        height: 200px;
+      }
+
       .flex {
         flex: 1;
       }

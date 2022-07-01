@@ -81,7 +81,10 @@ class OnboardingIntegrations extends LitElement {
     // Render discovered and existing entries together sorted by localized title.
     const entries: Array<[string, TemplateResult]> = this._entries.map(
       (entry) => {
-        const title = domainToName(this.hass.localize, entry.domain);
+        const title =
+          entry.title ||
+          domainToName(this.hass.localize, entry.domain) ||
+          entry.domain;
         return [
           title,
           html`
