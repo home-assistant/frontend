@@ -24,10 +24,15 @@ function auto(version) {
   return patch(version);
 }
 
+function nightly() {
+  return `${today()}.dev`;
+}
+
 const methods = {
   patch,
   today,
   auto,
+  nightly,
 };
 
 async function main(args) {
@@ -57,7 +62,11 @@ async function main(args) {
   console.log("Current version:", version);
   console.log("New version:", newVersion);
 
-  fs.writeFileSync("pyproject.toml", setup.replace(version, newVersion), "utf-8");
+  fs.writeFileSync(
+    "pyproject.toml",
+    setup.replace(version, newVersion),
+    "utf-8"
+  );
 
   if (!commit) {
     return;
