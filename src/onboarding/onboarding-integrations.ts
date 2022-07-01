@@ -30,7 +30,13 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
-const HIDDEN_DOMAINS = new Set(["hassio", "met", "radio_browser", "rpi_power"]);
+const HIDDEN_DOMAINS = new Set([
+  "hassio",
+  "met",
+  "radio_browser",
+  "rpi_power",
+  "sun",
+]);
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
