@@ -162,6 +162,7 @@ export const domainIconWithoutDefault = (
         default:
           switch (compareState) {
             case "playing":
+            case "paused":
               return mdiCastConnected;
             case "off":
               return mdiCastOff;
