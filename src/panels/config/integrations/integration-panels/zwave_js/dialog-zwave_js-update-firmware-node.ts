@@ -64,11 +64,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private _deviceName?: string;
 
-  private _schema: HaFormIntegerSchema = {
-    name: "firmware_target",
-    type: "integer",
-  };
-
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceName(params.device, this.hass!);
     this.device = params.device;
@@ -100,6 +95,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       return html``;
     }
 
+    const schema: HaFormIntegerSchema = {
+      name: "firmware_target",
+      type: "integer",
+    };
+
     const beginFirmwareUpdateHTML = html`<ha-file-upload
         .hass=${this.hass}
         .uploading=${this._uploading}
@@ -118,7 +118,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       <ha-form
         .hass=${this.hass}
         .data=${{ firmware_target: this._firmwareTarget }}
-        .schema=${[this._schema]}
+        .schema=${[schema]}
         @value-changed=${this._firmwareTargetChanged}
       ></ha-form>
       <mwc-button
