@@ -20,7 +20,6 @@ import { baseTriggerStruct, forDictStruct } from "../../structs";
 import { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -38,26 +37,29 @@ const stateTriggerStruct = assign(
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: StateTrigger;
+  @property({ attribute: false }) public trigger!: StateTrigger;
 
   public static get defaultConfig() {
     return { entity_id: [] };
   }
 
-  private _schema = memoizeOne((entityId) => [
-    {
-      name: "entity_id",
-      required: true,
-      selector: { entity: { multiple: true } },
-    },
-    {
-      name: "attribute",
-      selector: { attribute: { entity_id: entityId } },
-    },
-    { name: "from", selector: { text: {} } },
-    { name: "to", selector: { text: {} } },
-    { name: "for", selector: { duration: {} } },
-  ]);
+  private _schema = memoizeOne(
+    (entityId) =>
+      [
+        {
+          name: "entity_id",
+          required: true,
+          selector: { entity: { multiple: true } },
+        },
+        {
+          name: "attribute",
+          selector: { attribute: { entity_id: entityId } },
+        },
+        { name: "from", selector: { text: {} } },
+        { name: "to", selector: { text: {} } },
+        { name: "for", selector: { duration: {} } },
+      ] as const
+  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -122,7 +124,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: ReturnType<typeof this._schema>[number]
+  ): string =>
     this.hass.localize(
       schema.name === "entity_id"
         ? "ui.components.entity.entity-picker.entity"

@@ -6,7 +6,7 @@ import type { CalendarTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 
@@ -16,52 +16,55 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
 
   @property({ attribute: false }) public trigger!: CalendarTrigger;
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => [
-    {
-      name: "entity_id",
-      required: true,
-      selector: { entity: { domain: "calendar" } },
-    },
-    {
-      name: "event",
-      type: "select",
-      required: true,
-      options: [
-        [
-          "start",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.calendar.start"
-          ),
-        ],
-        [
-          "end",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.calendar.end"
-          ),
-        ],
-      ],
-    },
-    { name: "offset", selector: { duration: {} } },
-    {
-      name: "offset_type",
-      type: "select",
-      required: true,
-      options: [
-        [
-          "before",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.calendar.before"
-          ),
-        ],
-        [
-          "after",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.calendar.after"
-          ),
-        ],
-      ],
-    },
-  ]);
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "entity_id",
+          required: true,
+          selector: { entity: { domain: "calendar" } },
+        },
+        {
+          name: "event",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "start",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.calendar.start"
+              ),
+            ],
+            [
+              "end",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.calendar.end"
+              ),
+            ],
+          ],
+        },
+        { name: "offset", selector: { duration: {} } },
+        {
+          name: "offset_type",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "before",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.calendar.before"
+              ),
+            ],
+            [
+              "after",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.calendar.after"
+              ),
+            ],
+          ],
+        },
+      ] as const
+  );
 
   public static get defaultConfig() {
     return {
@@ -114,7 +117,9 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: ReturnType<typeof this._schema>[number]
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.calendar.${schema.name}`
     );
