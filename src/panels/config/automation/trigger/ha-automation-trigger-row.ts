@@ -60,7 +60,7 @@ const OPTIONS = [
   "time_pattern",
   "webhook",
   "zone",
-];
+] as const;
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -92,7 +92,7 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: Trigger;
+  @property({ attribute: false }) public trigger!: Trigger;
 
   @state() private _warnings?: string[];
 

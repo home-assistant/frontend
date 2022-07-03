@@ -100,7 +100,7 @@ export type HaFormMultiSelectData = string[];
 export type HaFormTimeData = HaDurationData;
 
 export interface HaFormElement extends LitElement {
-  schema: HaFormSchema | HaFormSchema[];
+  schema: HaFormSchema | readonly HaFormSchema[];
   data?: HaFormDataContainer | HaFormData;
   label?: string;
 }
