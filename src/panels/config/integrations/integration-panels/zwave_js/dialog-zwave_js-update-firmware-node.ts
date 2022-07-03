@@ -98,6 +98,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     const schema: HaFormIntegerSchema = {
       name: "firmware_target",
       type: "integer",
+      valueMin: 0,
     };
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
