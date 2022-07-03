@@ -6,7 +6,6 @@ import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -26,7 +25,6 @@ import {
   ZWaveJSNodeFirmwareUpdateFinishedMessage,
   ZWaveJSNodeFirmwareUpdateProgressMessage,
   ZWaveJSNodeStatusUpdatedMessage,
-  ZWaveJSNodeFirmwareUpdateCapabilities,
   ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -66,12 +64,14 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private _deviceName?: string;
 
-  private _firmwareUpdateCapabilities?: ZWaveJSNodeFirmwareUpdateCapabilities;
+  private _schema: HaFormIntegerSchema = {
+    name: "firmware_target",
+    type: "integer",
+  };
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceName(params.device, this.hass!);
     this.device = params.device;
-    this._firmwareUpdateCapabilities = params.firmwareUpdateCapabilities;
     this._fetchData();
     this._subscribeNodeStatus();
   }
@@ -84,7 +84,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._updateFinishedMessage =
       this._firmwareFile =
       this._nodeStatus =
-      this._firmwareUpdateCapabilities =
         undefined;
     this._firmwareTarget = 0;
     this._uploading = this._updateInProgress = false;
@@ -92,29 +91,10 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _schema = memoizeOne(
-    (
-      firmwareUpdateCapabilities: ZWaveJSNodeFirmwareUpdateCapabilities
-    ): HaFormIntegerSchema => {
-      if (!firmwareUpdateCapabilities.firmware_upgradable) {
-        // We should never get here, this is to pass type checks
-        throw new Error();
-      }
-      return {
-        name: "firmware_target",
-        type: "integer",
-        valueMin: Math.min(...firmwareUpdateCapabilities.firmware_targets),
-        valueMax: Math.max(...firmwareUpdateCapabilities.firmware_targets),
-      };
-    }
-  );
-
   protected render(): TemplateResult {
     if (
       !this.device ||
       !this._nodeStatus ||
-      !this._firmwareUpdateCapabilities ||
-      !this._firmwareUpdateCapabilities.firmware_upgradable ||
       this._updateInProgress === undefined
     ) {
       return html``;
@@ -130,19 +110,17 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         )}
         @file-picked=${this._uploadFile}
       ></ha-file-upload>
-      ${this._firmwareUpdateCapabilities.firmware_targets.length > 1
-        ? html`<p>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
-              )}
-            </p>
-            <ha-form
-              .hass=${this.hass}
-              .data=${{ firmware_target: this._firmwareTarget }}
-              .schema=${[this._schema(this._firmwareUpdateCapabilities)]}
-              @value-changed=${this._firmwareTargetChanged}
-            ></ha-form>`
-        : ""}
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.update_firmware.firmware_target_intro"
+        )}
+      </p>
+      <ha-form
+        .hass=${this.hass}
+        .data=${{ firmware_target: this._firmwareTarget }}
+        .schema=${[this._schema]}
+        @value-changed=${this._firmwareTargetChanged}
+      ></ha-form>
       <mwc-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
