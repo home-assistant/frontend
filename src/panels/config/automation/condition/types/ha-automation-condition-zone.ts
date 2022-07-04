@@ -18,7 +18,7 @@ const includeDomains = ["zone"];
 export class HaZoneCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: ZoneCondition;
+  @property({ attribute: false }) public condition!: ZoneCondition;
 
   public static get defaultConfig() {
     return {

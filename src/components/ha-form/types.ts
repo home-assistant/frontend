@@ -53,12 +53,15 @@ export interface HaFormIntegerSchema extends HaFormBaseSchema {
 
 export interface HaFormSelectSchema extends HaFormBaseSchema {
   type: "select";
-  options: Array<[string, string]>;
+  options: ReadonlyArray<readonly [string, string]>;
 }
 
 export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
   type: "multi_select";
-  options: Record<string, string> | string[] | Array<[string, string]>;
+  options:
+    | Record<string, string>
+    | readonly string[]
+    | ReadonlyArray<readonly [string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {

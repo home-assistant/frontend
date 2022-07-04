@@ -4,7 +4,6 @@ import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string, union } from "superstruct";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { StateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
@@ -29,15 +28,18 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { entity_id: "", state: "" };
   }
 
-  private _schema = memoizeOne((entityId) => [
-    { name: "entity_id", required: true, selector: { entity: {} } },
-    {
-      name: "attribute",
-      selector: { attribute: { entity_id: entityId } },
-    },
-    { name: "state", selector: { text: {} } },
-    { name: "for", selector: { duration: {} } },
-  ]);
+  private _schema = memoizeOne(
+    (entityId) =>
+      [
+        { name: "entity_id", required: true, selector: { entity: {} } },
+        {
+          name: "attribute",
+          selector: { attribute: { entity_id: entityId } },
+        },
+        { name: "state", selector: { text: {} } },
+        { name: "for", selector: { duration: {} } },
+      ] as const
+  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("condition")) {
@@ -80,7 +82,9 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => {
+  private _computeLabelCallback = (
+    schema: ReturnType<typeof this._schema>[number]
+  ): string => {
     switch (schema.name) {
       case "entity_id":
         return this.hass.localize("ui.components.entity.entity-picker.entity");
