@@ -15,7 +15,7 @@ import "../ha-automation-action";
 import "../../../../../components/ha-textfield";
 import type { ActionElement } from "../ha-automation-action-row";
 
-const OPTIONS = ["count", "while", "until"];
+const OPTIONS = ["count", "while", "until"] as const;
 
 const getType = (action) => OPTIONS.find((option) => option in action);
 
