@@ -158,7 +158,16 @@ export class HaSceneEditor extends SubscribeMixin(
 
         devices.forEach((deviceId) => {
           const device = deviceLookup[deviceId];
-          const deviceEntities: string[] = deviceEntityLookup[deviceId] || [];
+          const filteredEntityReg = this._entityRegistryEntries.filter(
+            (entityReg) =>
+              (deviceEntityLookup[device.id] || []).includes(
+                entityReg.entity_id
+              ) && entityReg.entity_category === null
+          );
+          const deviceEntities = filteredEntityReg.map(
+            (entityReg) => entityReg.entity_id
+          );
+
           outputDevices.push({
             name: computeDeviceName(
               device,
@@ -672,7 +681,16 @@ export class HaSceneEditor extends SubscribeMixin(
       return;
     }
     this._devices = [...this._devices, device_id];
-    const deviceEntities = this._deviceEntityLookup[device_id];
+    const filteredEntityReg = this._entityRegistryEntries.filter(
+      (entityReg) =>
+        (this._deviceEntityLookup[device_id] || []).includes(
+          entityReg.entity_id
+        ) && entityReg.entity_category === null
+    );
+    const deviceEntities = filteredEntityReg.map(
+      (entityReg) => entityReg.entity_id
+    );
+
     if (!deviceEntities) {
       return;
     }
