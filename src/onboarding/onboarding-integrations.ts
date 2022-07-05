@@ -30,7 +30,13 @@ import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
 
-const HIDDEN_DOMAINS = new Set(["hassio", "met", "radio_browser", "rpi_power"]);
+const HIDDEN_DOMAINS = new Set([
+  "hassio",
+  "met",
+  "radio_browser",
+  "rpi_power",
+  "sun",
+]);
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
@@ -75,7 +81,10 @@ class OnboardingIntegrations extends LitElement {
     // Render discovered and existing entries together sorted by localized title.
     const entries: Array<[string, TemplateResult]> = this._entries.map(
       (entry) => {
-        const title = domainToName(this.hass.localize, entry.domain);
+        const title =
+          entry.title ||
+          domainToName(this.hass.localize, entry.domain) ||
+          entry.domain;
         return [
           title,
           html`

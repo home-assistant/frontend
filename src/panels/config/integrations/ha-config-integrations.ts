@@ -766,7 +766,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: flex-end;
           width: 100%;
-          margin-right: 8px;
           align-items: center;
           height: 56px;
           position: sticky;

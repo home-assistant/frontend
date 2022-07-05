@@ -674,6 +674,15 @@ export const fetchZwaveNodeIsFirmwareUpdateInProgress = (
     device_id,
   });
 
+export const fetchZwaveIsAnyFirmwareUpdateInProgress = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<boolean> =>
+  hass.callWS({
+    type: "zwave_js/get_any_firmware_update_progress",
+    entry_id,
+  });
+
 export const fetchZwaveNodeFirmwareUpdateCapabilities = (
   hass: HomeAssistant,
   device_id: string
