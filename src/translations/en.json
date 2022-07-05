@@ -4012,7 +4012,8 @@
             "month": "Month",
             "year": "Year",
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "compare": "Compare Data"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -4537,6 +4538,9 @@
         }
       },
       "energy": {
+        "compare": {
+          "info": "You are comparing the period {start} with the period {end}"
+        },
         "setup": {
           "next": "Next",
           "back": "Back",
