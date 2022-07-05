@@ -314,8 +314,14 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._isLoading = true;
     const entityIds = this._getEntityIds();
 
-    if (!entityIds.length) {
+    if (entityIds === undefined) {
       this._stateHistory = undefined;
+      return;
+    }
+
+    if (entityIds.length === 0) {
+      this._isLoading = false;
+      this._stateHistory = [];
       return;
     }
 
@@ -334,7 +340,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._isLoading = false;
   }
 
-  private _getEntityIds(): string[] {
+  private _getEntityIds(): string[] | undefined {
     if (
       this._targetPickerValue === undefined ||
       this._entities === undefined ||
@@ -344,7 +350,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       this._areaIdToEntities === undefined ||
       this._areaIdToDevices === undefined
     ) {
-      return [];
+      return undefined;
     }
     const entityIds = new Set<string>();
     let {
@@ -353,25 +359,23 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       entity_id: searchingEntityId,
     } = this._targetPickerValue;
 
-    if (searchingAreaId !== undefined) {
+    if (searchingAreaId) {
       searchingAreaId =
         typeof searchingAreaId === "string"
           ? [searchingAreaId]
           : searchingAreaId;
       for (const singleSearchingAreaId of searchingAreaId) {
         const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
-        if (!foundEntities) {
-          continue;
-        }
-
-        for (const foundEntity of foundEntities) {
-          if (foundEntity.entity_category === null) {
-            entityIds.add(foundEntity.entity_id);
+        if (foundEntities?.length) {
+          for (const foundEntity of foundEntities) {
+            if (foundEntity.entity_category === null) {
+              entityIds.add(foundEntity.entity_id);
+            }
           }
         }
 
         const foundDevices = this._areaIdToDevices[singleSearchingAreaId];
-        if (foundDevices !== undefined) {
+        if (foundDevices) {
           for (const foundDevice of foundDevices) {
             const foundDeviceEntities =
               this._deviceIdToEntities[foundDevice.id];
@@ -389,20 +393,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       }
     }
 
-    if (searchingDeviceId !== undefined) {
+    if (searchingDeviceId) {
       searchingDeviceId =
         typeof searchingDeviceId === "string"
           ? [searchingDeviceId]
           : searchingDeviceId;
       for (const singleSearchingDeviceId of searchingDeviceId) {
         const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
-        if (!foundEntities) {
-          continue;
-        }
-
-        for (const foundEntity of foundEntities) {
-          if (foundEntity.entity_category === null) {
-            entityIds.add(foundEntity.entity_id);
+        if (foundEntities?.length) {
+          for (const foundEntity of foundEntities) {
+            if (foundEntity.entity_category === null) {
+              entityIds.add(foundEntity.entity_id);
+            }
           }
         }
       }
@@ -417,6 +419,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         entityIds.add(singleSearchingEntityId);
       }
     }
+
     return [...entityIds];
   }
 
@@ -441,7 +444,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const params: Record<string, string> = {};
 
     if (this._targetPickerValue) {
-      params.entity_id = this._getEntityIds().join(",");
+      params.entity_id = this._getEntityIds()?.join(",") || "";
     }
 
     if (this._startDate) {
