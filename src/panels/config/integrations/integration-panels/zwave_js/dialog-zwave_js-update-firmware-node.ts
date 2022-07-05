@@ -264,12 +264,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                       )}
                     </p>
                     ${beginFirmwareUpdateHTML}`}
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"
-                )}
-              </p>
-              ${beginFirmwareUpdateHTML}
             `}
       </ha-dialog>
     `;
