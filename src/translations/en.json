@@ -1593,7 +1593,6 @@
           "copy_github": "For GitHub",
           "description": "Version, loaded integrations and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
-          "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
           "license": "Published under the Apache 2.0 license",
           "source": "Source:",
@@ -4012,7 +4011,8 @@
             "month": "Month",
             "year": "Year",
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "compare": "Compare Data"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -4537,6 +4537,9 @@
         }
       },
       "energy": {
+        "compare": {
+          "info": "You are comparing the period {start} with the period {end}"
+        },
         "setup": {
           "next": "Next",
           "back": "Back",
@@ -4556,6 +4559,11 @@
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"
         }
+      },
+      "history": {
+        "start_search": "Start by selecting an area, device or entity above",
+        "add_all": "Add all entities",
+        "remove_all": "Remove all selections"
       }
     },
     "tips": {
