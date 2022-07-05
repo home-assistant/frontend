@@ -50,9 +50,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @LocalStorage("historyStartDate", true, false) private _startDate: Date;
+  @state() private _startDate: Date;
 
-  @LocalStorage("historyEndDate", true, false) private _endDate: Date;
+  @state() private _endDate: Date;
 
   @LocalStorage("historyPickedValue", true, false) private _targetPickerValue?;
 
