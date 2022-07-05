@@ -123,7 +123,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   private _unsubscribeEvents?: () => void;
 
-  @state() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
   private _activateContextId?: string;
 
@@ -678,7 +678,7 @@ export class HaSceneEditor extends SubscribeMixin(
     this._entities = this._entities.filter(
       (entityId) => entityId !== deleteEntityId
     );
-    this._single_entities = this. _single_entities.filter(
+    this._single_entities = this._single_entities.filter(
       (entityId) => entityId !== deleteEntityId
     );
     this._dirty = true;
@@ -832,19 +832,15 @@ export class HaSceneEditor extends SubscribeMixin(
   private _calculateMetaData(): SceneMetaData {
     const output: SceneMetaData = {};
 
-    for (const entityReg of this._entityRegistryEntries) {
-      if (!this._entities.includes(entityReg.entity_id)) {
-        continue;
-      }
-
-      const entityState = this._getCurrentState(entityReg.entity_id);
+    for (const entityId of this._single_entities) {
+      const entityState = this._getCurrentState(entityId);
 
       if (!entityState) {
         continue;
       }
 
-      output[entityReg.entity_id] = {
-        entity_only: this._single_entities.includes(entityReg.entity_id),
+      output[entityId] = {
+        entity_only: true,
       };
     }
 
