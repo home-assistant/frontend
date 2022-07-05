@@ -10,9 +10,12 @@ import {
   startOfWeek,
   startOfYesterday,
 } from "date-fns/esm";
+import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
+import { LocalStorage } from "../../common/decorators/local-storage";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -20,44 +23,42 @@ import {
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
-import "../../components/ha-target-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { computeHistory, fetchDateWS } from "../../data/history";
-import "../../layouts/ha-app-layout";
-import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
+import "../../components/ha-target-picker";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
+import { computeHistory, fetchDateWS } from "../../data/history";
+import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 
 class HaPanelHistory extends SubscribeMixin(LitElement) {
-  @property() hass!: HomeAssistant;
+  @property({ attribute: false }) hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
 
-  @property() _startDate: Date;
-
-  @property() _endDate: Date;
-
-  @property() _targetPickerValue?;
-
-  @property() _isLoading = false;
-
-  @property() _stateHistory?;
-
   @property({ reflect: true, type: Boolean }) rtl = false;
+
+  @state() private _startDate: Date;
+
+  @state() private _endDate: Date;
+
+  @LocalStorage("historyPickedValue", true, false) private _targetPickerValue?;
+
+  @state() private _isLoading = false;
+
+  @state() private _stateHistory?;
 
   @state() private _ranges?: DateRangePickerRanges;
 
@@ -154,14 +155,18 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
+            ${this._targetPickerValue
+              ? html`
+                  <ha-icon-button
+                    @click=${this._removeAll}
+                    .disabled=${this._isLoading}
+                    .path=${mdiCollapseAll}
+                    .label=${this.hass.localize("ui.panel.history.remove_all")}
+                  ></ha-icon-button>
+                `
+              : ""}
             <ha-icon-button
-              @click=${this._removeAll}
-              .disabled=${this._isLoading}
-              .path=${mdiCollapseAll}
-              .label=${this.hass.localize("ui.panel.history.remove_all")}
-            ></ha-icon-button>
-            <ha-icon-button
-              @click=${this._refreshHistory}
+              @click=${this._getHistory}
               .disabled=${this._isLoading}
               .path=${mdiRefresh}
               .label=${this.hass.localize("ui.common.refresh")}
@@ -252,69 +257,75 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     if (
-      changedProps.has("_startDate") ||
-      changedProps.has("_endDate") ||
-      changedProps.has("_targetPickerValue")
+      this._targetPickerValue &&
+      (changedProps.has("_startDate") ||
+        changedProps.has("_endDate") ||
+        changedProps.has("_targetPickerValue") ||
+        (!this._stateHistory &&
+          (changedProps.has("_entities") ||
+            changedProps.has("_devices") ||
+            changedProps.has("_stateEntities") ||
+            changedProps.has("_deviceIdToEntities") ||
+            changedProps.has("_areaIdToEntities") ||
+            changedProps.has("_areaIdToDevices"))))
     ) {
       this._getHistory();
     }
 
-    if (changedProps.has("hass") || changedProps.has("_entities")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this.rtl = computeRTL(this.hass);
-      }
-      if (this._entities) {
-        const stateEntities: { [entityId: string]: EntityRegistryEntry } = {};
-        const regEntityIds = new Set(Object.keys(this._entities));
-        for (const entityId of Object.keys(this.hass.states)) {
-          if (regEntityIds.has(entityId)) {
-            continue;
-          }
-          stateEntities[entityId] = {
-            name: computeStateName(this.hass.states[entityId]),
-            entity_id: entityId,
-            platform: computeDomain(entityId),
-            disabled_by: null,
-            hidden_by: null,
-            area_id: null,
-            config_entry_id: null,
-            device_id: null,
-            icon: null,
-            entity_category: null,
-          };
+    if (!changedProps.has("hass") && !changedProps.has("_entities")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.language !== this.hass.language) {
+      this.rtl = computeRTL(this.hass);
+    }
+
+    if (this._entities) {
+      const stateEntities: { [entityId: string]: EntityRegistryEntry } = {};
+      const regEntityIds = new Set(Object.keys(this._entities));
+      for (const entityId of Object.keys(this.hass.states)) {
+        if (regEntityIds.has(entityId)) {
+          continue;
         }
-        this._stateEntities = stateEntities;
+        stateEntities[entityId] = {
+          name: computeStateName(this.hass.states[entityId]),
+          entity_id: entityId,
+          platform: computeDomain(entityId),
+          disabled_by: null,
+          hidden_by: null,
+          area_id: null,
+          config_entry_id: null,
+          device_id: null,
+          icon: null,
+          entity_category: null,
+        };
       }
+      this._stateEntities = stateEntities;
     }
   }
 
   private _removeAll() {
     this._targetPickerValue = undefined;
-  }
-
-  private _refreshHistory() {
-    this._getHistory();
-  }
-
-  private _shouldShowEntityByLargerSelection(
-    entity: EntityRegistryEntry
-  ): boolean {
-    return entity.entity_category === null;
+    this._updatePath();
   }
 
   private async _getHistory() {
     this._isLoading = true;
     const entityIds = this._getEntityIds();
-    const dateHistory =
-      entityIds.length === 0
-        ? {}
-        : await fetchDateWS(
-            this.hass,
-            this._startDate,
-            this._endDate,
-            entityIds
-          );
+
+    if (!entityIds.length) {
+      this._stateHistory = undefined;
+      return;
+    }
+
+    const dateHistory = await fetchDateWS(
+      this.hass,
+      this._startDate,
+      this._endDate,
+      entityIds
+    );
+
     this._stateHistory = computeHistory(
       this.hass,
       dateHistory,
@@ -341,19 +352,24 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       device_id: searchingDeviceId,
       entity_id: searchingEntityId,
     } = this._targetPickerValue;
+
     if (searchingAreaId !== undefined) {
-      if (typeof searchingAreaId === "string") {
-        searchingAreaId = [searchingAreaId];
-      }
+      searchingAreaId =
+        typeof searchingAreaId === "string"
+          ? [searchingAreaId]
+          : searchingAreaId;
       for (const singleSearchingAreaId of searchingAreaId) {
         const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
-        if (foundEntities !== undefined) {
-          for (const foundEntity of foundEntities) {
-            if (this._shouldShowEntityByLargerSelection(foundEntity)) {
-              entityIds.add(foundEntity.entity_id);
-            }
+        if (!foundEntities) {
+          continue;
+        }
+
+        for (const foundEntity of foundEntities) {
+          if (foundEntity.entity_category === null) {
+            entityIds.add(foundEntity.entity_id);
           }
         }
+
         const foundDevices = this._areaIdToDevices[singleSearchingAreaId];
         if (foundDevices !== undefined) {
           for (const foundDevice of foundDevices) {
@@ -363,7 +379,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               if (
                 (!foundDeviceEntity.area_id ||
                   foundDeviceEntity.area_id === singleSearchingAreaId) &&
-                this._shouldShowEntityByLargerSelection(foundDeviceEntity)
+                foundDeviceEntity.entity_category === null
               ) {
                 entityIds.add(foundDeviceEntity.entity_id);
               }
@@ -372,25 +388,31 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }
       }
     }
+
     if (searchingDeviceId !== undefined) {
-      if (typeof searchingDeviceId === "string") {
-        searchingDeviceId = [searchingDeviceId];
-      }
+      searchingDeviceId =
+        typeof searchingDeviceId === "string"
+          ? [searchingDeviceId]
+          : searchingDeviceId;
       for (const singleSearchingDeviceId of searchingDeviceId) {
         const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
-        if (foundEntities !== undefined) {
-          for (const foundEntity of foundEntities) {
-            if (this._shouldShowEntityByLargerSelection(foundEntity)) {
-              entityIds.add(foundEntity.entity_id);
-            }
+        if (!foundEntities) {
+          continue;
+        }
+
+        for (const foundEntity of foundEntities) {
+          if (foundEntity.entity_category === null) {
+            entityIds.add(foundEntity.entity_id);
           }
         }
       }
     }
+
     if (searchingEntityId !== undefined) {
-      if (typeof searchingEntityId === "string") {
-        searchingEntityId = [searchingEntityId];
-      }
+      searchingEntityId =
+        typeof searchingEntityId === "string"
+          ? [searchingEntityId]
+          : searchingEntityId;
       for (const singleSearchingEntityId of searchingEntityId) {
         entityIds.add(singleSearchingEntityId);
       }
@@ -412,7 +434,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _entitiesChanged(ev) {
     this._targetPickerValue = ev.detail.value;
-
     this._updatePath();
   }
 
@@ -532,3 +553,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 }
 
 customElements.define("ha-panel-history", HaPanelHistory);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-panel-history": HaPanelHistory;
+  }
+}

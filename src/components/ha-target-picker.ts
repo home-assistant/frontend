@@ -573,6 +573,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .horizontal-container {
         display: flex;
         flex-wrap: wrap;
+        min-height: 56px;
+        align-items: center;
       }
       .mdc-chip {
         color: var(--primary-text-color);
