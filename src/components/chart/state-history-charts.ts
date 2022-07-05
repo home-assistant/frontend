@@ -186,6 +186,7 @@ class StateHistoryCharts extends LitElement {
         line-height: 60px;
         color: var(--secondary-text-color);
       }
+
       .container {
         max-height: var(--history-max-height);
       }
