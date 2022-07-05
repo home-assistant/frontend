@@ -678,7 +678,7 @@ export class HaSceneEditor extends SubscribeMixin(
     this._entities = this._entities.filter(
       (entityId) => entityId !== deleteEntityId
     );
-    this._single_entities = this._entities.filter(
+    this._single_entities = this. _single_entities.filter(
       (entityId) => entityId !== deleteEntityId
     );
     this._dirty = true;
