@@ -191,17 +191,6 @@ class HaConfigSystemHealth extends SubscribeMixin(LitElement) {
               </div>
             `
           );
-        } else {
-          keys.push(html`
-            <tr>
-              <td>
-                ${this.hass.localize(
-                  "ui.panel.config.info.system_health.path_configuration"
-                )}
-              </td>
-              <td>${this.hass.config.config_dir}</td>
-            </tr>
-          `);
         }
         sections.push(html`
           <table>
