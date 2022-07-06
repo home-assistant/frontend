@@ -1,4 +1,4 @@
-import { mdiCollapseAll, mdiRefresh } from "@mdi/js";
+import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -10,10 +10,14 @@ import {
   startOfWeek,
   startOfYesterday,
 } from "date-fns/esm";
-import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
+import {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
+import { ensureArray } from "../../common/ensure-array";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
@@ -54,7 +58,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _endDate: Date;
 
-  @LocalStorage("historyPickedValue", true, false) private _targetPickerValue?;
+  @LocalStorage("historyPickedValue", true, false)
+  private _targetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
 
@@ -160,7 +165,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
                   <ha-icon-button
                     @click=${this._removeAll}
                     .disabled=${this._isLoading}
-                    .path=${mdiCollapseAll}
+                    .path=${mdiFilterRemove}
                     .label=${this.hass.localize("ui.panel.history.remove_all")}
                   ></ha-icon-button>
                 `
@@ -189,7 +194,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               .value=${this._targetPickerValue}
               .disabled=${this._isLoading}
               horizontal
-              @value-changed=${this._entitiesChanged}
+              @value-changed=${this._targetsChanged}
             ></ha-target-picker>
           </div>
           ${this._isLoading
@@ -217,8 +222,12 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
 
     const today = new Date();
     const weekStart = startOfWeek(today);
@@ -238,11 +247,22 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     };
 
     const entityIds = extractSearchParam("entity_id");
+    const deviceIds = extractSearchParam("device_id");
+    const areaIds = extractSearchParam("area_id");
+    if (entityIds || deviceIds || areaIds) {
+      this._targetPickerValue = {};
+    }
     if (entityIds) {
-      const splitEntityIds = entityIds.split(",");
-      this._targetPickerValue = {
-        entity_id: splitEntityIds,
-      };
+      const splitIds = entityIds.split(",");
+      this._targetPickerValue!.entity_id = splitIds;
+    }
+    if (deviceIds) {
+      const splitIds = deviceIds.split(",");
+      this._targetPickerValue!.device_id = splitIds;
+    }
+    if (areaIds) {
+      const splitIds = areaIds.split(",");
+      this._targetPickerValue!.area_id = splitIds;
     }
 
     const startDate = extractSearchParam("start_date");
@@ -342,7 +362,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   private _getEntityIds(): string[] | undefined {
     if (
-      this._targetPickerValue === undefined ||
+      !this._targetPickerValue ||
       this._entities === undefined ||
       this._stateEntities === undefined ||
       this._devices === undefined ||
@@ -360,10 +380,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     } = this._targetPickerValue;
 
     if (searchingAreaId) {
-      searchingAreaId =
-        typeof searchingAreaId === "string"
-          ? [searchingAreaId]
-          : searchingAreaId;
+      searchingAreaId = ensureArray(searchingAreaId);
       for (const singleSearchingAreaId of searchingAreaId) {
         const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
         if (foundEntities?.length) {
@@ -394,10 +411,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     if (searchingDeviceId) {
-      searchingDeviceId =
-        typeof searchingDeviceId === "string"
-          ? [searchingDeviceId]
-          : searchingDeviceId;
+      searchingDeviceId = ensureArray(searchingDeviceId);
       for (const singleSearchingDeviceId of searchingDeviceId) {
         const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
         if (foundEntities?.length) {
@@ -411,10 +425,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     }
 
     if (searchingEntityId !== undefined) {
-      searchingEntityId =
-        typeof searchingEntityId === "string"
-          ? [searchingEntityId]
-          : searchingEntityId;
+      searchingEntityId = ensureArray(searchingEntityId);
       for (const singleSearchingEntityId of searchingEntityId) {
         entityIds.add(singleSearchingEntityId);
       }
@@ -435,7 +446,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     this._updatePath();
   }
 
-  private _entitiesChanged(ev) {
+  private _targetsChanged(ev) {
     this._targetPickerValue = ev.detail.value;
     this._updatePath();
   }
@@ -444,7 +455,19 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const params: Record<string, string> = {};
 
     if (this._targetPickerValue) {
-      params.entity_id = this._getEntityIds()?.join(",") || "";
+      if (this._targetPickerValue.entity_id) {
+        params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
+          ","
+        );
+      }
+      if (this._targetPickerValue.area_id) {
+        params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
+      }
+      if (this._targetPickerValue.device_id) {
+        params.device_id = ensureArray(this._targetPickerValue.device_id).join(
+          ","
+        );
+      }
     }
 
     if (this._startDate) {

@@ -76,7 +76,11 @@ class Storage {
   public setValue(storageKey: string, value: any): any {
     this._storage[storageKey] = value;
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify(value));
+      if (value === undefined) {
+        window.localStorage.removeItem(storageKey);
+      } else {
+        window.localStorage.setItem(storageKey, JSON.stringify(value));
+      }
     } catch (err: any) {
       // Safari in private mode doesn't allow localstorage
     }
