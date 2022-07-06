@@ -70,6 +70,7 @@ export class HaYamlEditor extends LitElement {
         .readOnly=${this.readOnly}
         mode="yaml"
         autocomplete-entities
+        autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
         dir="ltr"

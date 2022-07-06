@@ -2,6 +2,7 @@ import type {
   Completion,
   CompletionContext,
   CompletionResult,
+  CompletionSource,
 } from "@codemirror/autocomplete";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { HassEntities } from "home-assistant-js-websocket";
@@ -11,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { HomeAssistant } from "../types";
+import "./ha-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -24,6 +26,12 @@ const saveKeyBinding: KeyBinding = {
     fireEvent(view.dom, "editor-save");
     return true;
   },
+};
+
+const renderIcon = (completion: Completion) => {
+  const icon = document.createElement("ha-icon");
+  icon.icon = completion.label;
+  return icon;
 };
 
 @customElement("ha-code-editor")
@@ -41,11 +49,16 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "autocomplete-entities" })
   public autocompleteEntities = false;
 
+  @property({ type: Boolean, attribute: "autocomplete-icons" })
+  public autocompleteIcons = false;
+
   @property() public error = false;
 
   @state() private _value = "";
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
+
+  private _iconList?: Completion[];
 
   public set value(value: string) {
     this._value = value;
@@ -151,13 +164,22 @@ export class HaCodeEditor extends ReactiveElement {
       ),
     ];
 
-    if (!this.readOnly && this.autocompleteEntities && this.hass) {
-      extensions.push(
-        this._loadedCodeMirror.autocompletion({
-          override: [this._entityCompletions.bind(this)],
-          maxRenderedOptions: 10,
-        })
-      );
+    if (!this.readOnly) {
+      const completionSources: CompletionSource[] = [];
+      if (this.autocompleteEntities && this.hass) {
+        completionSources.push(this._entityCompletions.bind(this));
+      }
+      if (this.autocompleteIcons) {
+        completionSources.push(this._mdiCompletions.bind(this));
+      }
+      if (completionSources.length > 0) {
+        extensions.push(
+          this._loadedCodeMirror.autocompletion({
+            override: completionSources,
+            maxRenderedOptions: 10,
+          })
+        );
+      }
     }
 
     this.codemirror = new this._loadedCodeMirror.EditorView({
@@ -187,7 +209,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
-    const entityWord = context.matchBefore(/[a-z_]{3,}\./);
+    const entityWord = context.matchBefore(/[a-z_]{3,}\.\w*/);
 
     if (
       !entityWord ||
@@ -205,7 +227,48 @@ export class HaCodeEditor extends ReactiveElement {
     return {
       from: Number(entityWord.from),
       options: states,
-      span: /^\w*.\w*$/,
+      span: /^[a-z_]{3,}\.\w*$/,
+    };
+  }
+
+  private _getIconItems = async (): Promise<Completion[]> => {
+    if (!this._iconList) {
+      let iconList: {
+        name: string;
+        keywords: string[];
+      }[];
+      if (__SUPERVISOR__) {
+        iconList = [];
+      } else {
+        iconList = (await import("../../build/mdi/iconList.json")).default;
+      }
+
+      this._iconList = iconList.map((icon) => ({
+        type: "variable",
+        label: `mdi:${icon.name}`,
+        detail: icon.keywords.join(", "),
+        info: renderIcon,
+      }));
+    }
+
+    return this._iconList;
+  };
+
+  private async _mdiCompletions(
+    context: CompletionContext
+  ): Promise<CompletionResult | null> {
+    const match = context.matchBefore(/mdi:\S*/);
+
+    if (!match || (match.from === match.to && !context.explicit)) {
+      return null;
+    }
+
+    const iconItems = await this._getIconItems();
+
+    return {
+      from: Number(match.from),
+      options: iconItems,
+      span: /^mdi:\S*$/,
     };
   }
 

@@ -1592,7 +1592,6 @@
           "copy_github": "For GitHub",
           "description": "Version, loaded integrations and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
-          "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
           "license": "Published under the Apache 2.0 license",
           "source": "Source:",
@@ -1600,7 +1599,7 @@
           "frontend": "frontend-ui",
           "built_using": "Built using",
           "icons_by": "Icons by",
-          "frontend_version": "Frontend version: {version} - {type}",
+          "frontend_version": "Frontend {version} - {type}",
           "custom_uis": "Custom UIs:",
           "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
           "documentation": "Documentation",
@@ -1609,6 +1608,15 @@
           "system_health": {
             "manage": "Manage",
             "more_info": "more info"
+          },
+          "items": {
+            "change_log": "Change Log",
+            "thanks": "Thanks To",
+            "merch": "Merchandise",
+            "feature": "Feature Requests",
+            "bug": "Bug Reports",
+            "help": "Help",
+            "license": "License"
           }
         },
         "logs": {
@@ -4529,6 +4537,9 @@
         }
       },
       "energy": {
+        "compare": {
+          "info": "You are comparing the period {start} with the period {end}"
+        },
         "setup": {
           "next": "Next",
           "back": "Back",
@@ -4551,6 +4562,11 @@
         "compare": {
           "info": "You are comparing the period {start} with {end}"
         }
+      },
+      "history": {
+        "start_search": "Start by selecting an area, device or entity above",
+        "add_all": "Add all entities",
+        "remove_all": "Remove all selections"
       }
     },
     "tips": {
