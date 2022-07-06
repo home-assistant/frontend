@@ -16,6 +16,7 @@ import {
 } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
+import { LocalStorage } from "../../common/decorators/local-storage";
 import { ensureArray } from "../../common/ensure-array";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
@@ -57,7 +58,8 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _endDate: Date;
 
-  @state() private _targetPickerValue?: HassServiceTarget;
+  @LocalStorage("historyPickedValue", true, false)
+  private _targetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
 
@@ -245,28 +247,22 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     };
 
     const entityIds = extractSearchParam("entity_id");
+    const deviceIds = extractSearchParam("device_id");
+    const areaIds = extractSearchParam("area_id");
+    if (entityIds || deviceIds || areaIds) {
+      this._targetPickerValue = {};
+    }
     if (entityIds) {
       const splitIds = entityIds.split(",");
-      if (!this._targetPickerValue) {
-        this._targetPickerValue = {};
-      }
-      this._targetPickerValue.entity_id = splitIds;
+      this._targetPickerValue!.entity_id = splitIds;
     }
-    const deviceIds = extractSearchParam("device_id");
     if (deviceIds) {
-      if (!this._targetPickerValue) {
-        this._targetPickerValue = {};
-      }
       const splitIds = deviceIds.split(",");
-      this._targetPickerValue.device_id = splitIds;
+      this._targetPickerValue!.device_id = splitIds;
     }
-    const areaIds = extractSearchParam("area_id");
     if (areaIds) {
-      if (!this._targetPickerValue) {
-        this._targetPickerValue = {};
-      }
       const splitIds = areaIds.split(",");
-      this._targetPickerValue.area_id = splitIds;
+      this._targetPickerValue!.area_id = splitIds;
     }
 
     const startDate = extractSearchParam("start_date");
