@@ -637,7 +637,7 @@ export class HaSceneEditor extends SubscribeMixin(
       Object.keys(config.entities).forEach((entity) => {
         if (
           !this._single_entities.includes(entity) &&
-          config.metadata![entity].entity_only
+          config.metadata![entity]?.entity_only
         ) {
           this._single_entities.push(entity);
         }
