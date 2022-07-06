@@ -31,7 +31,7 @@ export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
   name: "";
   column_min_width?: string;
-  schema: HaFormSchema[];
+  schema: readonly HaFormSchema[];
 }
 
 export interface HaFormSelector extends HaFormBaseSchema {
@@ -80,6 +80,12 @@ export interface HaFormBooleanSchema extends HaFormBaseSchema {
 export interface HaFormTimeSchema extends HaFormBaseSchema {
   type: "positive_time_period_dict";
 }
+
+// Type utility to unionize a schema array by flattening any grid schemas
+export type SchemaUnion<
+  SchemaArray extends readonly HaFormSchema[],
+  Schema = SchemaArray[number]
+> = Schema extends HaFormGridSchema ? SchemaUnion<Schema["schema"]> : Schema;
 
 export interface HaFormDataContainer {
   [key: string]: HaFormData;

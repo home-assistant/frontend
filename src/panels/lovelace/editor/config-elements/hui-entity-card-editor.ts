@@ -7,7 +7,7 @@ import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { EntityCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
@@ -43,36 +43,37 @@ export class HuiEntityCardEditor
   }
 
   private _schema = memoizeOne(
-    (entity: string, icon: string, entityState: HassEntity): HaFormSchema[] => [
-      { name: "entity", required: true, selector: { entity: {} } },
-      {
-        type: "grid",
-        name: "",
-        schema: [
-          { name: "name", selector: { text: {} } },
-          {
-            name: "icon",
-            selector: {
-              icon: {
-                placeholder: icon || entityState?.attributes.icon,
-                fallbackPath:
-                  !icon && !entityState?.attributes.icon && entityState
-                    ? domainIcon(computeDomain(entity), entityState)
-                    : undefined,
+    (entity: string, icon: string, entityState: HassEntity) =>
+      [
+        { name: "entity", required: true, selector: { entity: {} } },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon && !entityState?.attributes.icon && entityState
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
+                },
               },
             },
-          },
 
-          {
-            name: "attribute",
-            selector: { attribute: { entity_id: entity } },
-          },
-          { name: "unit", selector: { text: {} } },
-          { name: "theme", selector: { theme: {} } },
-          { name: "state_color", selector: { boolean: {} } },
-        ],
-      },
-    ]
+            {
+              name: "attribute",
+              selector: { attribute: { entity_id: entity } },
+            },
+            { name: "unit", selector: { text: {} } },
+            { name: "theme", selector: { theme: {} } },
+            { name: "state_color", selector: { boolean: {} } },
+          ],
+        },
+      ] as const
   );
 
   protected render(): TemplateResult {
@@ -105,7 +106,9 @@ export class HuiEntityCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     if (schema.name === "entity") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
