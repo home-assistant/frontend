@@ -396,13 +396,15 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           for (const foundDevice of foundDevices) {
             const foundDeviceEntities =
               this._deviceIdToEntities[foundDevice.id];
-            for (const foundDeviceEntity of foundDeviceEntities) {
-              if (
-                (!foundDeviceEntity.area_id ||
-                  foundDeviceEntity.area_id === singleSearchingAreaId) &&
-                foundDeviceEntity.entity_category === null
-              ) {
-                entityIds.add(foundDeviceEntity.entity_id);
+            if (foundDeviceEntities !== undefined) {
+              for (const foundDeviceEntity of foundDeviceEntities) {
+                if (
+                  (!foundDeviceEntity.area_id ||
+                    foundDeviceEntity.area_id === singleSearchingAreaId) &&
+                  foundDeviceEntity.entity_category === null
+                ) {
+                  entityIds.add(foundDeviceEntity.entity_id);
+                }
               }
             }
           }
