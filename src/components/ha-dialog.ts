@@ -41,6 +41,8 @@ export class HaDialog extends DialogBase {
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
+        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-size: 1.574rem;
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
