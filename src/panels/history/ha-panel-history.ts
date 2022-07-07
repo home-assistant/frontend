@@ -21,7 +21,7 @@ import { ensureArray } from "../../common/ensure-array";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
-  extractSearchParam,
+  extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
@@ -195,9 +195,10 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
 
-    const entityIds = extractSearchParam("entity_id");
-    const deviceIds = extractSearchParam("device_id");
-    const areaIds = extractSearchParam("area_id");
+    const searchParams = extractSearchParamsObject();
+    const entityIds = searchParams.entity_id;
+    const deviceIds = searchParams.device_id;
+    const areaIds = searchParams.area_id;
     if (entityIds || deviceIds || areaIds) {
       this._targetPickerValue = {};
     }
@@ -214,11 +215,11 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       this._targetPickerValue!.area_id = splitIds;
     }
 
-    const startDate = extractSearchParam("start_date");
+    const startDate = searchParams.start_date;
     if (startDate) {
       this._startDate = new Date(startDate);
     }
-    const endDate = extractSearchParam("end_date");
+    const endDate = searchParams.end_date;
     if (endDate) {
       this._endDate = new Date(endDate);
     }
