@@ -121,7 +121,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
               : ""}
             <ha-icon-button
               @click=${this._getHistory}
-              .disabled=${this._isLoading}
+              .disabled=${this._isLoading || !this._targetPickerValue}
               .path=${mdiRefresh}
               .label=${this.hass.localize("ui.common.refresh")}
             ></ha-icon-button>
@@ -254,10 +254,14 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   }
 
   private async _getHistory() {
+    if (!this._targetPickerValue) {
+      return;
+    }
     this._isLoading = true;
     const entityIds = this._getEntityIds();
 
     if (entityIds === undefined) {
+      this._isLoading = false;
       this._stateHistory = undefined;
       return;
     }
@@ -267,20 +271,22 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
       this._stateHistory = [];
       return;
     }
+    try {
+      const dateHistory = await fetchDateWS(
+        this.hass,
+        this._startDate,
+        this._endDate,
+        entityIds
+      );
 
-    const dateHistory = await fetchDateWS(
-      this.hass,
-      this._startDate,
-      this._endDate,
-      entityIds
-    );
-
-    this._stateHistory = computeHistory(
-      this.hass,
-      dateHistory,
-      this.hass.localize
-    );
-    this._isLoading = false;
+      this._stateHistory = computeHistory(
+        this.hass,
+        dateHistory,
+        this.hass.localize
+      );
+    } finally {
+      this._isLoading = false;
+    }
   }
 
   private _getEntityIds(): string[] | undefined {
