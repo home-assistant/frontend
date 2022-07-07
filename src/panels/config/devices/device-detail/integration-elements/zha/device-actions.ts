@@ -30,7 +30,7 @@ export const getZHADeviceActions = async (
 
   const actions: DeviceAction[] = [];
 
-  if (zhaDevice.device_type !== "Coordinator") {
+  if (!zhaDevice.active_coordinator) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.reconfigure"),
       action: () => showZHAReconfigureDeviceDialog(el, { device: zhaDevice }),
@@ -58,50 +58,48 @@ export const getZHADeviceActions = async (
     );
   }
 
-  if (zhaDevice.device_type !== "Coordinator") {
-    actions.push(
-      ...[
-        {
-          label: hass.localize(
-            "ui.dialogs.zha_device_info.buttons.zigbee_information"
+  actions.push(
+    {
+      label: hass.localize(
+        "ui.dialogs.zha_device_info.buttons.zigbee_information"
+      ),
+      action: () => showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
+    },
+    {
+      label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
+      action: () => showZHAClusterDialog(el, { device: zhaDevice }),
+    },
+    {
+      label: hass.localize(
+        "ui.dialogs.zha_device_info.buttons.view_in_visualization"
+      ),
+      action: () =>
+        navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
+    }
+  );
+
+  if (!zhaDevice.active_coordinator) {
+    actions.push({
+      label: hass.localize("ui.dialogs.zha_device_info.buttons.remove"),
+      classes: "warning",
+      action: async () => {
+        const confirmed = await showConfirmationDialog(el, {
+          text: hass.localize(
+            "ui.dialogs.zha_device_info.confirmations.remove"
           ),
-          action: () =>
-            showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
-        },
-        {
-          label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
-          action: () => showZHAClusterDialog(el, { device: zhaDevice }),
-        },
-        {
-          label: hass.localize(
-            "ui.dialogs.zha_device_info.buttons.view_in_visualization"
-          ),
-          action: () =>
-            navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
-        },
-        {
-          label: hass.localize("ui.dialogs.zha_device_info.buttons.remove"),
-          classes: "warning",
-          action: async () => {
-            const confirmed = await showConfirmationDialog(el, {
-              text: hass.localize(
-                "ui.dialogs.zha_device_info.confirmations.remove"
-              ),
-            });
+        });
 
-            if (!confirmed) {
-              return;
-            }
+        if (!confirmed) {
+          return;
+        }
 
-            await hass.callService("zha", "remove", {
-              ieee: zhaDevice.ieee,
-            });
+        await hass.callService("zha", "remove", {
+          ieee: zhaDevice.ieee,
+        });
 
-            history.back();
-          },
-        },
-      ]
-    );
+        history.back();
+      },
+    });
   }
 
   return actions;
