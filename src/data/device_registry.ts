@@ -126,3 +126,19 @@ export const sortDeviceRegistryByName = (entries: DeviceRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
+
+export const getDeviceEntityLookup = (
+  entities: EntityRegistryEntry[]
+): DeviceEntityLookup => {
+  const deviceEntityLookup: DeviceEntityLookup = {};
+  for (const entity of entities) {
+    if (!entity.device_id) {
+      continue;
+    }
+    if (!(entity.device_id in deviceEntityLookup)) {
+      deviceEntityLookup[entity.device_id] = [];
+    }
+    deviceEntityLookup[entity.device_id].push(entity);
+  }
+  return deviceEntityLookup;
+};
