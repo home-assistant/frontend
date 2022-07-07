@@ -180,7 +180,7 @@ export interface SelectSelector {
     multiple?: boolean;
     custom_value?: boolean;
     mode?: "list" | "dropdown";
-    options: string[] | SelectOption[];
+    options: readonly string[] | readonly SelectOption[];
   };
 }
 
