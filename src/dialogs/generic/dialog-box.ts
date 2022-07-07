@@ -157,7 +157,6 @@ class DialogBox extends LitElement {
       ha-dialog {
         --mdc-dialog-heading-ink-color: var(--primary-text-color);
         --mdc-dialog-content-ink-color: var(--primary-text-color);
-        --justify-action-buttons: space-between;
         /* Place above other dialogs */
         --dialog-z-index: 104;
       }

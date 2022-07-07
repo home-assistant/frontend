@@ -40,10 +40,11 @@ export class HaDialog extends DialogBase {
         z-index: var(--dialog-z-index, 7);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
+        --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        padding-bottom: max(env(safe-area-inset-bottom), 24px);
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -54,13 +55,19 @@ export class HaDialog extends DialogBase {
       .mdc-dialog__container {
         align-items: var(--vertial-align-dialog, center);
       }
+      .mdc-dialog__title {
+        padding: 24px 24px 0 24px;
+      }
+      .mdc-dialog__actions {
+        padding: 0 24px 24px 24px;
+      }
       .mdc-dialog__title::before {
         display: block;
-        height: 20px;
+        height: 0px;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 20px 24px);
+        padding: var(--dialog-content-padding, 24px);
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
@@ -72,10 +79,7 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         min-height: var(--mdc-dialog-min-height, auto);
-        border-radius: var(
-          --ha-dialog-border-radius,
-          var(--ha-card-border-radius, 4px)
-        );
+        border-radius: var(--ha-dialog-border-radius, 28px);
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
