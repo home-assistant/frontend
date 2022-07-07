@@ -313,7 +313,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         }
 
         const foundDevices = this._areaDeviceLookup[singleSearchingAreaId];
-        if (!foundDevices.length) {
+        if (!foundDevices?.length) {
           continue;
         }
 
