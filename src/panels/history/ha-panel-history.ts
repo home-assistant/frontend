@@ -396,7 +396,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           for (const foundDevice of foundDevices) {
             const foundDeviceEntities =
               this._deviceIdToEntities[foundDevice.id];
-            if (foundDeviceEntities !== undefined) {
+            if (foundDeviceEntities?.length) {
               for (const foundDeviceEntity of foundDeviceEntities) {
                 if (
                   (!foundDeviceEntity.area_id ||
@@ -429,7 +429,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (searchingEntityId !== undefined) {
       searchingEntityId = ensureArray(searchingEntityId);
       for (const singleSearchingEntityId of searchingEntityId) {
-        entityIds.add(singleSearchingEntityId);
+        if (
+          Object.keys(this._entities ?? {}).includes(singleSearchingEntityId) ||
+          Object.keys(this._stateEntities ?? {}).includes(
+            singleSearchingEntityId
+          )
+        )
+          entityIds.add(singleSearchingEntityId);
       }
     }
 
