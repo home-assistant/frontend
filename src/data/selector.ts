@@ -112,7 +112,7 @@ export interface DurationSelector {
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string | string[];
+    domain?: string | readonly string[];
     device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
