@@ -316,7 +316,6 @@ export const haStyleDialog = css`
   }
 
   ha-dialog .form {
-    padding-bottom: 24px;
     color: var(--primary-text-color);
   }
 
