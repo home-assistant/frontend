@@ -73,7 +73,7 @@ export class HaDialog extends DialogBase {
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
-          var(--dialog-content-padding, 20px),
+          var(--dialog-content-padding, 24px),
           env(safe-area-inset-bottom)
         );
       }
