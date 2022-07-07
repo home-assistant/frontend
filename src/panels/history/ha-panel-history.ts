@@ -18,8 +18,6 @@ import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { ensureArray } from "../../common/ensure-array";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
@@ -34,13 +32,17 @@ import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import {
-  DeviceRegistryEntry,
+  AreaDeviceLookup,
+  AreaEntityLookup,
+  getAreaDeviceLookup,
+  getAreaEntityLookup,
+} from "../../data/area_registry";
+import {
+  DeviceEntityLookup,
+  getDeviceEntityLookup,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  subscribeEntityRegistry,
-} from "../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { computeHistory, fetchDateWS } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
@@ -67,23 +69,11 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  @state() private _devices?: { [deviceId: string]: DeviceRegistryEntry };
+  @state() private _deviceEntityLookup?: DeviceEntityLookup;
 
-  @state() private _entities?: { [entityId: string]: EntityRegistryEntry };
+  @state() private _areaEntityLookup?: AreaEntityLookup;
 
-  @state() private _stateEntities?: { [entityId: string]: EntityRegistryEntry };
-
-  @state() private _deviceIdToEntities?: {
-    [deviceId: string]: EntityRegistryEntry[];
-  };
-
-  @state() private _areaIdToEntities?: {
-    [areaId: string]: EntityRegistryEntry[];
-  };
-
-  @state() private _areaIdToDevices?: {
-    [areaId: string]: DeviceRegistryEntry[];
-  };
+  @state() private _areaDeviceLookup?: AreaDeviceLookup;
 
   public constructor() {
     super();
@@ -100,52 +90,11 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.reduce((accumulator, current) => {
-          accumulator[current.entity_id] = current;
-          return accumulator;
-        }, {});
-        this._deviceIdToEntities = entities.reduce((accumulator, current) => {
-          if (!current.device_id) {
-            return accumulator;
-          }
-          let found = accumulator[current.device_id];
-          if (found === undefined) {
-            found = [];
-            accumulator[current.device_id] = found;
-          }
-          found.push(current);
-          return accumulator;
-        }, {});
-        this._areaIdToEntities = entities.reduce((accumulator, current) => {
-          if (!current.area_id) {
-            return accumulator;
-          }
-          let found = accumulator[current.area_id];
-          if (found === undefined) {
-            found = [];
-            accumulator[current.area_id] = found;
-          }
-          found.push(current);
-          return accumulator;
-        }, {});
+        this._deviceEntityLookup = getDeviceEntityLookup(entities);
+        this._areaEntityLookup = getAreaEntityLookup(entities);
       }),
       subscribeDeviceRegistry(this.hass.connection!, (devices) => {
-        this._devices = devices.reduce((accumulator, current) => {
-          accumulator[current.id] = current;
-          return accumulator;
-        }, {});
-        this._areaIdToDevices = devices.reduce((accumulator, current) => {
-          if (!current.area_id) {
-            return accumulator;
-          }
-          let found = accumulator[current.area_id];
-          if (found === undefined) {
-            found = [];
-            accumulator[current.area_id] = found;
-          }
-          found.push(current);
-          return accumulator;
-        }, {});
+        this._areaDeviceLookup = getAreaDeviceLookup(devices);
       }),
     ];
   }
@@ -282,12 +231,9 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
         changedProps.has("_endDate") ||
         changedProps.has("_targetPickerValue") ||
         (!this._stateHistory &&
-          (changedProps.has("_entities") ||
-            changedProps.has("_devices") ||
-            changedProps.has("_stateEntities") ||
-            changedProps.has("_deviceIdToEntities") ||
-            changedProps.has("_areaIdToEntities") ||
-            changedProps.has("_areaIdToDevices"))))
+          (changedProps.has("_deviceEntityLookup") ||
+            changedProps.has("_areaEntityLookup") ||
+            changedProps.has("_areaDeviceLookup"))))
     ) {
       this._getHistory();
     }
@@ -299,29 +245,6 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.language !== this.hass.language) {
       this.rtl = computeRTL(this.hass);
-    }
-
-    if (this._entities) {
-      const stateEntities: { [entityId: string]: EntityRegistryEntry } = {};
-      const regEntityIds = new Set(Object.keys(this._entities));
-      for (const entityId of Object.keys(this.hass.states)) {
-        if (regEntityIds.has(entityId)) {
-          continue;
-        }
-        stateEntities[entityId] = {
-          name: computeStateName(this.hass.states[entityId]),
-          entity_id: entityId,
-          platform: computeDomain(entityId),
-          disabled_by: null,
-          hidden_by: null,
-          area_id: null,
-          config_entry_id: null,
-          device_id: null,
-          icon: null,
-          entity_category: null,
-        };
-      }
-      this._stateEntities = stateEntities;
     }
   }
 
@@ -363,15 +286,13 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
   private _getEntityIds(): string[] | undefined {
     if (
       !this._targetPickerValue ||
-      this._entities === undefined ||
-      this._stateEntities === undefined ||
-      this._devices === undefined ||
-      this._deviceIdToEntities === undefined ||
-      this._areaIdToEntities === undefined ||
-      this._areaIdToDevices === undefined
+      this._deviceEntityLookup === undefined ||
+      this._areaEntityLookup === undefined ||
+      this._areaDeviceLookup === undefined
     ) {
       return undefined;
     }
+
     const entityIds = new Set<string>();
     let {
       area_id: searchingAreaId,
@@ -382,7 +303,7 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (searchingAreaId) {
       searchingAreaId = ensureArray(searchingAreaId);
       for (const singleSearchingAreaId of searchingAreaId) {
-        const foundEntities = this._areaIdToEntities[singleSearchingAreaId];
+        const foundEntities = this._areaEntityLookup[singleSearchingAreaId];
         if (foundEntities?.length) {
           for (const foundEntity of foundEntities) {
             if (foundEntity.entity_category === null) {
@@ -391,19 +312,24 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
           }
         }
 
-        const foundDevices = this._areaIdToDevices[singleSearchingAreaId];
-        if (foundDevices) {
-          for (const foundDevice of foundDevices) {
-            const foundDeviceEntities =
-              this._deviceIdToEntities[foundDevice.id];
-            for (const foundDeviceEntity of foundDeviceEntities) {
-              if (
-                (!foundDeviceEntity.area_id ||
-                  foundDeviceEntity.area_id === singleSearchingAreaId) &&
-                foundDeviceEntity.entity_category === null
-              ) {
-                entityIds.add(foundDeviceEntity.entity_id);
-              }
+        const foundDevices = this._areaDeviceLookup[singleSearchingAreaId];
+        if (!foundDevices?.length) {
+          continue;
+        }
+
+        for (const foundDevice of foundDevices) {
+          const foundDeviceEntities = this._deviceEntityLookup[foundDevice.id];
+          if (!foundDeviceEntities?.length) {
+            continue;
+          }
+
+          for (const foundDeviceEntity of foundDeviceEntities) {
+            if (
+              (!foundDeviceEntity.area_id ||
+                foundDeviceEntity.area_id === singleSearchingAreaId) &&
+              foundDeviceEntity.entity_category === null
+            ) {
+              entityIds.add(foundDeviceEntity.entity_id);
             }
           }
         }
@@ -413,18 +339,20 @@ class HaPanelHistory extends SubscribeMixin(LitElement) {
     if (searchingDeviceId) {
       searchingDeviceId = ensureArray(searchingDeviceId);
       for (const singleSearchingDeviceId of searchingDeviceId) {
-        const foundEntities = this._deviceIdToEntities[singleSearchingDeviceId];
-        if (foundEntities?.length) {
-          for (const foundEntity of foundEntities) {
-            if (foundEntity.entity_category === null) {
-              entityIds.add(foundEntity.entity_id);
-            }
+        const foundEntities = this._deviceEntityLookup[singleSearchingDeviceId];
+        if (!foundEntities?.length) {
+          continue;
+        }
+
+        for (const foundEntity of foundEntities) {
+          if (foundEntity.entity_category === null) {
+            entityIds.add(foundEntity.entity_id);
           }
         }
       }
     }
 
-    if (searchingEntityId !== undefined) {
+    if (searchingEntityId) {
       searchingEntityId = ensureArray(searchingEntityId);
       for (const singleSearchingEntityId of searchingEntityId) {
         entityIds.add(singleSearchingEntityId);
