@@ -1023,12 +1023,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           bottom: 0;
           width: 100%;
           box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
-          justify-content: space-between;
-          padding: 8px;
-          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          padding: 0 24px 24px 24px;
+          justify-content: flex-end;
+          padding-bottom: max(env(safe-area-inset-bottom), 24px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         ha-select {
