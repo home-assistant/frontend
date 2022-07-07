@@ -97,26 +97,28 @@ export const getZwaveDeviceActions = async (
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.update_firmware"
       ),
-      action: isNodeFirmwareUpdateInProgress
-        ? () =>
-            showZWaveJUpdateFirmwareNodeDialog(el, {
-              device,
-            })
-        : async () => {
-            if (
-              await showConfirmationDialog(el, {
-                text: hass.localize(
-                  "ui.panel.config.zwave_js.update_firmware.warning"
-                ),
-                dismissText: hass.localize("ui.common.no"),
-                confirmText: hass.localize("ui.common.yes"),
-              })
-            ) {
-              showZWaveJUpdateFirmwareNodeDialog(el, {
-                device,
-              });
-            }
-          },
+      action: async () => {
+        if (
+          isNodeFirmwareUpdateInProgress ||
+          (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id))
+        ) {
+          showZWaveJUpdateFirmwareNodeDialog(el, {
+            device,
+          });
+        } else if (
+          await showConfirmationDialog(el, {
+            text: hass.localize(
+              "ui.panel.config.zwave_js.update_firmware.warning"
+            ),
+            dismissText: hass.localize("ui.common.no"),
+            confirmText: hass.localize("ui.common.yes"),
+          })
+        ) {
+          showZWaveJUpdateFirmwareNodeDialog(el, {
+            device,
+          });
+        }
+      },
     });
   }
 
