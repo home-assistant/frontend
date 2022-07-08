@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const stateConditionStruct = object({
   condition: literal("state"),
@@ -83,7 +84,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
       case "entity_id":

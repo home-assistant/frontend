@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -148,7 +149,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.conditions.type.time.${schema.name}`

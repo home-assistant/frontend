@@ -9,6 +9,7 @@ import type { HaDurationData } from "../../../../../components/ha-duration-input
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-calendar")
 export class HaCalendarTrigger extends LitElement implements TriggerElement {
@@ -118,7 +119,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.calendar.${schema.name}`

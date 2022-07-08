@@ -7,6 +7,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
@@ -76,7 +77,7 @@ export class HaNumericStateTrigger extends LitElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
       case "entity_id":
