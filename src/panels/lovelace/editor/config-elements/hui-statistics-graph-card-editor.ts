@@ -16,7 +16,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-statistics-picker";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { StatisticsGraphCardConfig } from "../../cards/types";
 import { processConfigEntities } from "../../common/process-config-entities";
@@ -50,7 +50,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const periods = ["5minute", "hour", "day", "month"];
+const periods = ["5minute", "hour", "day", "month"] as const;
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor
@@ -71,54 +71,57 @@ export class HuiStatisticsGraphCardEditor
       : [];
   }
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => [
-    { name: "title", selector: { text: {} } },
-    {
-      name: "",
-      type: "grid",
-      schema: [
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "title", selector: { text: {} } },
         {
-          name: "period",
-          required: true,
-          selector: {
-            select: {
-              options: periods.map((period) => ({
-                value: period,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                ),
-              })),
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "period",
+              required: true,
+              selector: {
+                select: {
+                  options: periods.map((period) => ({
+                    value: period,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                    ),
+                  })),
+                },
+              },
             },
-          },
-        },
-        {
-          name: "days_to_show",
-          required: true,
-          selector: { number: { min: 1, mode: "box" } },
-        },
-        {
-          name: "stat_types",
-          required: true,
-          type: "multi_select",
-          options: [
-            ["mean", "Mean"],
-            ["min", "Min"],
-            ["max", "Max"],
-            ["sum", "Sum"],
+            {
+              name: "days_to_show",
+              required: true,
+              selector: { number: { min: 1, mode: "box" } },
+            },
+            {
+              name: "stat_types",
+              required: true,
+              type: "multi_select",
+              options: [
+                ["mean", "Mean"],
+                ["min", "Min"],
+                ["max", "Max"],
+                ["sum", "Sum"],
+              ],
+            },
+            {
+              name: "chart_type",
+              required: true,
+              type: "select",
+              options: [
+                ["line", "Line"],
+                ["bar", "Bar"],
+              ],
+            },
           ],
         },
-        {
-          name: "chart_type",
-          required: true,
-          type: "select",
-          options: [
-            ["line", "Line"],
-            ["bar", "Bar"],
-          ],
-        },
-      ],
-    },
-  ]);
+      ] as const
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
@@ -169,13 +172,22 @@ export class HuiStatisticsGraphCardEditor
     });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) =>
-    this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
-    ) ||
-    this.hass!.localize(
-      `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
-    );
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "chart_type":
+      case "stat_types":
+      case "period":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.statistics-graph.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static styles: CSSResultGroup = css`
     ha-statistics-picker {

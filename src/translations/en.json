@@ -3936,7 +3936,6 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
-              "hours_to_show": "Hours to Show",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -3992,6 +3991,7 @@
             "weather-forecast": {
               "name": "Weather Forecast",
               "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
+              "weather_to_show": "Weather to Show",
               "show_both": "Show current Weather and Forecast",
               "show_only_current": "Show only current Weather",
               "show_only_forecast": "Show only Forecast"
