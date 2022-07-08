@@ -2,6 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
@@ -39,7 +40,9 @@ export class HaMQTTTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: typeof SCHEMA[number]): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<typeof SCHEMA>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.mqtt.${schema.name}`
     );

@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-sun")
 export class HaSunTrigger extends LitElement implements TriggerElement {
@@ -67,7 +68,7 @@ export class HaSunTrigger extends LitElement implements TriggerElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.sun.${schema.name}`

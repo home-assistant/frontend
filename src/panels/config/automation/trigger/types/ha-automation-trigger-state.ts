@@ -20,6 +20,7 @@ import { baseTriggerStruct, forDictStruct } from "../../structs";
 import { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -125,7 +126,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       schema.name === "entity_id"

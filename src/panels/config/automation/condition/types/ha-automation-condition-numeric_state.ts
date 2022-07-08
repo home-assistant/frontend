@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { NumericStateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
@@ -56,7 +57,7 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
       case "entity_id":
