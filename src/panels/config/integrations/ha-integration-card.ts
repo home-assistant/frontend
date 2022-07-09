@@ -718,24 +718,17 @@ export class HaIntegrationCard extends LitElement {
       });
     }
     if (result.application_credential_id) {
-      this._removeApplicationCredential(
-        result.application_credential_id,
-        configEntry.title
-      );
+      this._removeApplicationCredential(result.application_credential_id);
     }
   }
 
-  private async _removeApplicationCredential(
-    applicationCredentialsId: string,
-    configEntryTitle: string
-  ) {
+  private async _removeApplicationCredential(applicationCredentialsId: string) {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
       ),
       text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt",
-        { title: configEntryTitle }
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
       ),
       confirmText: this.hass.localize("ui.common.remove"),
     });

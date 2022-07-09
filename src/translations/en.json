@@ -2836,7 +2836,7 @@
           "config_entry": {
             "application_credentials": {
               "delete_title": "Remove Application Credentials",
-              "delete_confirm": "The integration has configured Application Credentials. Do you want to remove them?",
+              "delete_prompt": "The integration has configured Application Credentials. Do you want to remove them?",
               "delete_error_title": "Removing Application Credential failed"
             },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
