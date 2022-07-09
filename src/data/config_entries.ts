@@ -74,10 +74,16 @@ export const updateConfigEntry = (
     ...updatedValues,
   });
 
+export interface DeleteConfigEntryResult {
+  require_restart: boolean;
+  application_credential_id: string;
+}
+
 export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
-  hass.callApi<{
-    require_restart: boolean;
-  }>("DELETE", `config/config_entries/entry/${configEntryId}`);
+  hass.callApi<DeleteConfigEntryResult>(
+    "DELETE",
+    `config/config_entries/entry/${configEntryId}`
+  );
 
 export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
   hass.callApi<{

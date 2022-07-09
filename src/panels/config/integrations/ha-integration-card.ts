@@ -31,6 +31,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
+import { deleteApplicationCredential } from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
 import {
   ConfigEntry,
@@ -714,6 +715,41 @@ export class HaIntegrationCard extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.restart_confirm"
         ),
+      });
+    }
+    if (result.application_credential_id) {
+      this._removeApplicationCredential(
+        result.application_credential_id,
+        configEntry.title
+      );
+    }
+  }
+
+  private async _removeApplicationCredential(
+    applicationCredentialsId: string,
+    configEntryTitle: string
+  ) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt",
+        { title: configEntryTitle }
+      ),
+      confirmText: this.hass.localize("ui.common.remove"),
+    });
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteApplicationCredential(this.hass, applicationCredentialsId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.application_credentials.delete_error_title"
+        ),
+        text: err.message,
       });
     }
   }
