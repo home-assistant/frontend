@@ -34,7 +34,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, TranslationDict } from "../types";
 import { UNAVAILABLE_STATES } from "./entity";
 import { isTTSMediaSource } from "./tts";
 
@@ -170,7 +170,7 @@ export interface MediaPlayerThumbnail {
 export interface ControlButton {
   icon: string;
   // Used as key for action as well as tooltip and aria-label translation key
-  action: string;
+  action: keyof TranslationDict["ui"]["card"]["media_player"];
 }
 
 export interface MediaPlayerItem {

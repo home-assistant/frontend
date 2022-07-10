@@ -246,7 +246,7 @@ export class HuiEnergyUsageGraphCard
                     : "",
                   totalReturned
                     ? this.hass.localize(
-                        "ui.panel.lovelace.cards.energyenergy_usage_graph.total_returned",
+                        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_returned",
                         { num: formatNumber(totalReturned, locale) }
                       )
                     : "",
