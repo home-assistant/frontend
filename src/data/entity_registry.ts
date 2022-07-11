@@ -37,6 +37,10 @@ export interface SensorEntityOptions {
   unit_of_measurement?: string | null;
 }
 
+export interface NumberEntityOptions {
+  unit_of_measurement?: string | null;
+}
+
 export interface WeatherEntityOptions {
   precipitation_unit?: string | null;
   pressure_unit?: string | null;
