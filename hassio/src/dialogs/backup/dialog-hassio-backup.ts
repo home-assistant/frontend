@@ -201,26 +201,24 @@ class HassioBackupDialog
     }
 
     if (!this._dialogParams?.onboarding) {
-      this.hass!.callApi(
-        "POST",
+      try {
+        await this.hass!.callApi(
+          "POST",
 
-        `hassio/${
-          atLeastVersion(this.hass!.config.version, 2021, 9)
-            ? "backups"
-            : "snapshots"
-        }/${this._backup!.slug}/restore/partial`,
-        backupDetails
-      ).then(
-        () => {
-          this.closeDialog();
-        },
-        (error) => {
-          this._error = error.body.message;
-        }
-      );
+          `hassio/${
+            atLeastVersion(this.hass!.config.version, 2021, 9)
+              ? "backups"
+              : "snapshots"
+          }/${this._backup!.slug}/restore/partial`,
+          backupDetails
+        );
+        this.closeDialog();
+      } catch (error: any) {
+        this._error = error.body.message;
+      }
     } else {
       fireEvent(this, "restoring");
-      fetch(`/api/hassio/backups/${this._backup!.slug}/restore/partial`, {
+      await fetch(`/api/hassio/backups/${this._backup!.slug}/restore/partial`, {
         method: "POST",
         body: JSON.stringify(backupDetails),
       });
