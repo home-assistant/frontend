@@ -59,23 +59,25 @@ export const getZHADeviceActions = async (
   }
 
   actions.push(
-    ...[{
-      label: hass.localize(
-        "ui.dialogs.zha_device_info.buttons.zigbee_information"
-      ),
-      action: () => showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
-    },
-    {
-      label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
-      action: () => showZHAClusterDialog(el, { device: zhaDevice }),
-    },
-    {
-      label: hass.localize(
-        "ui.dialogs.zha_device_info.buttons.view_in_visualization"
-      ),
-      action: () =>
-        navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
-    }]
+    ...[
+      {
+        label: hass.localize(
+          "ui.dialogs.zha_device_info.buttons.zigbee_information"
+        ),
+        action: () => showZHADeviceZigbeeInfoDialog(el, { device: zhaDevice }),
+      },
+      {
+        label: hass.localize("ui.dialogs.zha_device_info.buttons.clusters"),
+        action: () => showZHAClusterDialog(el, { device: zhaDevice }),
+      },
+      {
+        label: hass.localize(
+          "ui.dialogs.zha_device_info.buttons.view_in_visualization"
+        ),
+        action: () =>
+          navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
+      },
+    ]
   );
 
   if (!zhaDevice.active_coordinator) {
