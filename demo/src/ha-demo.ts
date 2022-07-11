@@ -21,8 +21,9 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
 import { mockEnergy } from "./stubs/energy";
-import { mockConfig } from "./stubs/config";
 import { energyEntities } from "./stubs/entities";
+import { mockConfigEntries } from "./stubs/config_entries";
+import { mockEntityRegistry } from "./stubs/entity_registry";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initializeHass() {
@@ -51,8 +52,34 @@ class HaDemo extends HomeAssistantAppEl {
     mockMediaPlayer(hass);
     mockFrontend(hass);
     mockEnergy(hass);
-    mockConfig(hass);
     mockPersistentNotification(hass);
+    mockConfigEntries(hass);
+    mockEntityRegistry(hass, [
+      {
+        config_entry_id: "co2signal",
+        device_id: "co2signal",
+        area_id: null,
+        disabled_by: null,
+        entity_id: "sensor.co2_intensity",
+        name: null,
+        icon: null,
+        platform: "co2signal",
+        hidden_by: null,
+        entity_category: null,
+      },
+      {
+        config_entry_id: "co2signal",
+        device_id: "co2signal",
+        area_id: null,
+        disabled_by: null,
+        entity_id: "sensor.grid_fossil_fuel_percentage",
+        name: null,
+        icon: null,
+        platform: "co2signal",
+        hidden_by: null,
+        entity_category: null,
+      },
+    ]);
 
     hass.addEntities(energyEntities());
 
