@@ -8,6 +8,9 @@ export const energyCardStyles = css`
     height: 32px;
     width: 32px;
     margin-right: 8px;
+    margin-inline-end: 8px;
+    margin-inline-start: initial;
+    direction: var(--direction);
   }
   h3 {
     margin-top: 24px;
@@ -24,6 +27,9 @@ export const energyCardStyles = css`
   .row ha-icon,
   .row img {
     margin-right: 16px;
+    margin-inline-end: 16px;
+    margin-inline-start: initial;
+    direction: var(--direction);
   }
   .row img {
     height: 24px;

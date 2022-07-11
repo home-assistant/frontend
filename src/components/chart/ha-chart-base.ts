@@ -376,6 +376,7 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .title {
         text-align: center;
         font-weight: 500;
+        direction: ltr;
       }
       .chartTooltip .footer {
         font-weight: 500;
