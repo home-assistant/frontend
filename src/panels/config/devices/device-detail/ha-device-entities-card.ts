@@ -163,17 +163,25 @@ export class HaDeviceEntitiesCard extends LitElement {
     if (this.hass) {
       element.hass = this.hass;
       const stateObj = this.hass.states[entry.entity_id];
-      const name = stripPrefixFromEntityName(
-        computeStateName(stateObj),
-        this.deviceName.toLowerCase()
-      );
-      if (entry.hidden_by) {
-        config.name = `${
-          name || computeStateName(stateObj)
-        } (${this.hass.localize("ui.panel.config.devices.entities.hidden")})`;
-      } else if (name) {
-        config.name = name;
+
+      let name = entry.has_entity_name
+        ? entry.name || this.deviceName
+        : stripPrefixFromEntityName(
+            computeStateName(stateObj),
+            this.deviceName.toLowerCase()
+          );
+
+      if (!name) {
+        name = computeStateName(stateObj);
       }
+
+      if (entry.hidden_by) {
+        name += ` (${this.hass.localize(
+          "ui.panel.config.devices.entities.hidden"
+        )})`;
+      }
+
+      config.name = name;
     }
     // @ts-ignore
     element.entry = entry;

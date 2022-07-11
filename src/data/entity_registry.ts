@@ -16,6 +16,7 @@ export interface EntityRegistryEntry {
   disabled_by: string | null;
   hidden_by: string | null;
   entity_category: "config" | "diagnostic" | null;
+  has_entity_name: boolean;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
