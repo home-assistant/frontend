@@ -16,7 +16,8 @@ export interface EntityRegistryEntry {
   disabled_by: string | null;
   hidden_by: string | null;
   entity_category: "config" | "diagnostic" | null;
-  has_entity_name: boolean;
+  // false = no entity name. null = use device name.
+  entity_name: false | null | string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {

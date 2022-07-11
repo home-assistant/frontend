@@ -164,8 +164,10 @@ export class HaDeviceEntitiesCard extends LitElement {
       element.hass = this.hass;
       const stateObj = this.hass.states[entry.entity_id];
 
-      let name = entry.has_entity_name
-        ? entry.name || this.deviceName
+      let name = entry.name
+        ? entry.name
+        : entry.entity_name !== false
+        ? entry.entity_name || this.deviceName
         : stripPrefixFromEntityName(
             computeStateName(stateObj),
             this.deviceName.toLowerCase()
