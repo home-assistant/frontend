@@ -900,6 +900,7 @@ export class HuiEnergySourcesTableCard
       .mdc-data-table__cell {
         color: var(--primary-text-color);
         border-bottom-color: var(--divider-color);
+        text-align: var(--float-start);
       }
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
         background-color: rgba(var(--rgb-primary-text-color), 0.04);
@@ -925,6 +926,9 @@ export class HuiEnergySourcesTableCard
       .cell-bullet {
         width: 32px;
         padding-right: 0;
+        padding-inline-end: 0;
+        padding-inline-start: 16px;
+        direction: var(--direction);
       }
       .bullet {
         border-width: 1px;
@@ -932,6 +936,9 @@ export class HuiEnergySourcesTableCard
         border-radius: 4px;
         height: 16px;
         width: 32px;
+      }
+      .mdc-data-table__cell--numeric {
+        direction: ltr;
       }
     `;
   }

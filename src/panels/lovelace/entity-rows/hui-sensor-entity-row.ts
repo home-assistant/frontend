@@ -62,7 +62,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div
-          class="text-content"
+          class="text-content value"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config.hold_action),
@@ -98,6 +98,9 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     return css`
       div {
         text-align: right;
+      }
+      .value {
+        direction: ltr;
       }
     `;
   }

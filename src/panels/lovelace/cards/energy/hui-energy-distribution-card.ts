@@ -699,6 +699,7 @@ class HuiEnergyDistrubutionCard
     }
     .card-content {
       position: relative;
+      direction: ltr;
     }
     .lines {
       position: absolute;
