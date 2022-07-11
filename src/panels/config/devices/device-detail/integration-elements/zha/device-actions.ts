@@ -59,7 +59,7 @@ export const getZHADeviceActions = async (
   }
 
   actions.push(
-    {
+    ...[{
       label: hass.localize(
         "ui.dialogs.zha_device_info.buttons.zigbee_information"
       ),
@@ -75,7 +75,7 @@ export const getZHADeviceActions = async (
       ),
       action: () =>
         navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
-    }
+    }]
   );
 
   if (!zhaDevice.active_coordinator) {
