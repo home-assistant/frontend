@@ -314,7 +314,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             class="mdc-chip__icon mdc-chip__icon--trailing"
             tabindex="-1"
             role="button"
-            .label=${this.hass.localize("ui.components.target-picker.expand")}
+            .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hideTooltip
             .id=${id}

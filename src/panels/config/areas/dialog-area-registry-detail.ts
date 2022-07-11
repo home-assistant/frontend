@@ -178,9 +178,6 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         ha-textfield {
           display: block;
           margin-bottom: 16px;
