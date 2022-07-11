@@ -3,15 +3,15 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
-import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 import "../ha-slider";
 import { HaTextField } from "../ha-textfield";
+import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
@@ -105,7 +105,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     }
 
     return (
-      this.schema.description?.suggested_value ||
+      this.schema.description?.suggested_value !== undefined ||
       this.schema.default ||
       this.schema.valueMin ||
       0
