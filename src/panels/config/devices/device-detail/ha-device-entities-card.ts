@@ -166,8 +166,8 @@ export class HaDeviceEntitiesCard extends LitElement {
 
       let name = entry.name
         ? entry.name
-        : entry.entity_name !== false
-        ? entry.entity_name || this.deviceName
+        : entry.has_entity_name
+        ? entry.original_name || this.deviceName
         : stripPrefixFromEntityName(
             computeStateName(stateObj),
             this.deviceName.toLowerCase()
