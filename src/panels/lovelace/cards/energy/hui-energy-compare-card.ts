@@ -46,8 +46,11 @@ export class HuiEnergyCompareCard
 
   protected render(): TemplateResult {
     if (!this._startCompare || !this._endCompare) {
+      this.style.setProperty("display", "none");
       return html``;
     }
+
+    this.style.removeProperty("display");
 
     const dayDifference = differenceInDays(
       this._endCompare,

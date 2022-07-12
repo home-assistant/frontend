@@ -157,6 +157,7 @@ class HuiEnergySolarGaugeCard
       ha-gauge {
         width: 100%;
         max-width: 250px;
+        direction: ltr;
       }
 
       .name {
