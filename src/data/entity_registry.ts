@@ -16,12 +16,13 @@ export interface EntityRegistryEntry {
   disabled_by: string | null;
   hidden_by: string | null;
   entity_category: "config" | "diagnostic" | null;
+  has_entity_name: boolean;
+  original_name?: string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   unique_id: string;
   capabilities: Record<string, unknown>;
-  original_name?: string;
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
