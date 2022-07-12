@@ -13,7 +13,7 @@ import {
 import { IntegrationManifest } from "../../data/integration";
 import { HomeAssistant } from "../../types";
 
-interface SupportedBrandHandler {
+export interface SupportedBrandHandler {
   [key: string]: string;
 }
 
