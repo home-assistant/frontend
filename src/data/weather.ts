@@ -199,13 +199,15 @@ export const getWeatherUnit = (
     case "visibility":
       return stateObj.attributes.visibility_unit || lengthUnit;
     case "precipitation":
-      return stateObj.attributes.precipitation_unit || lengthUnit === "km"
-        ? "mm"
-        : "in";
+      return (
+        stateObj.attributes.precipitation_unit ||
+        (lengthUnit === "km" ? "mm" : "in")
+      );
     case "pressure":
-      return stateObj.attributes.pressure_unit || lengthUnit === "km"
-        ? "hPa"
-        : "inHg";
+      return (
+        stateObj.attributes.pressure_unit ||
+        (lengthUnit === "km" ? "hPa" : "inHg")
+      );
     case "temperature":
       return (
         stateObj.attributes.temperature_unit ||
