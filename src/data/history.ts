@@ -268,7 +268,8 @@ const processTimelineEntity = (
   localize: LocalizeFunc,
   language: FrontendLocaleData,
   entityId: string,
-  states: EntityHistoryState[]
+  states: EntityHistoryState[],
+  current_state: HassEntity | undefined
 ): TimelineEntity => {
   const data: TimelineState[] = [];
   const first: EntityHistoryState = states[0];
@@ -292,7 +293,11 @@ const processTimelineEntity = (
   }
 
   return {
-    name: computeStateNameFromEntityAttributes(entityId, states[0].a),
+    name: computeStateNameFromEntityAttributes(
+      entityId,
+      (states[0].a.friendly_name ? states[0].a : current_state?.attributes) ||
+        {}
+    ),
     entity_id: entityId,
     data,
   };
@@ -411,7 +416,13 @@ export const computeHistory = (
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, hass.locale, entityId, stateInfo)
+        processTimelineEntity(
+          localize,
+          hass.locale,
+          entityId,
+          stateInfo,
+          currentState
+        )
       );
     } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
       lineChartDevices[unit][entityId].push(...stateInfo);
