@@ -13,9 +13,14 @@ import {
 import { IntegrationManifest } from "../../data/integration";
 import { HomeAssistant } from "../../types";
 
+interface SupportedBrandHandler {
+  [key: string]: string;
+}
+
 export interface FlowHandlers {
   integrations: string[];
   helpers: string[];
+  supportedBrands: { [key: string]: SupportedBrandHandler };
 }
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;

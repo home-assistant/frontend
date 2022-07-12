@@ -2850,7 +2850,8 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
+            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
+            "supported_brand_flow": "{supported_brand} uses the {flow_domain_name} integration to set up your device. Would you like to set up your device using {flow_domain_name} now?"
           }
         },
         "users": {

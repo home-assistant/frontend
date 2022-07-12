@@ -7,6 +7,7 @@ import {
   handleConfigFlowStep,
 } from "../../data/config_flow";
 import { domainToName } from "../../data/integration";
+import { getSupportedBrands } from "../../data/supported_brands";
 import {
   DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
@@ -22,12 +23,14 @@ export const showConfigFlowDialog = (
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
     getFlowHandlers: async (hass) => {
-      const [integrations, helpers] = await Promise.all([
+      const [integrations, helpers, supportedBrands] = await Promise.all([
         getConfigFlowHandlers(hass, "integration"),
         getConfigFlowHandlers(hass, "helper"),
+        getSupportedBrands(hass),
         hass.loadBackendTranslation("title", undefined, true),
       ]);
-      return { integrations, helpers };
+
+      return { integrations, helpers, supportedBrands };
     },
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
