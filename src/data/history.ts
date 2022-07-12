@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import {
@@ -295,8 +295,9 @@ const processTimelineEntity = (
   return {
     name: computeStateNameFromEntityAttributes(
       entityId,
-      (states[0].a.friendly_name ? states[0].a : current_state?.attributes) ||
-        {}
+      ("friendly_name" in states[0].a
+        ? states[0].a
+        : current_state?.attributes) || {}
     ),
     entity_id: entityId,
     data,
@@ -305,7 +306,8 @@ const processTimelineEntity = (
 
 const processLineChartEntities = (
   unit,
-  entities: HistoryStates
+  entities: HistoryStates,
+  hassEntities: HassEntities
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
@@ -354,9 +356,16 @@ const processLineChartEntities = (
       processedStates.push(processedState);
     }
 
+    const attributes =
+      "friendly_name" in first.a
+        ? first.a
+        : entityId in hassEntities
+        ? hassEntities[entityId].attributes
+        : undefined;
+
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, first.a),
+      name: computeStateNameFromEntityAttributes(entityId, attributes || {}),
       entity_id: entityId,
       states: processedStates,
     });
@@ -435,7 +444,7 @@ export const computeHistory = (
   });
 
   const unitStates = Object.keys(lineChartDevices).map((unit) =>
-    processLineChartEntities(unit, lineChartDevices[unit])
+    processLineChartEntities(unit, lineChartDevices[unit], hass.states)
   );
 
   return { line: unitStates, timeline: timelineDevices };
