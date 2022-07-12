@@ -295,9 +295,7 @@ const processTimelineEntity = (
   return {
     name: computeStateNameFromEntityAttributes(
       entityId,
-      ("friendly_name" in states[0].a
-        ? states[0].a
-        : current_state?.attributes) || {}
+      current_state?.attributes || first.a
     ),
     entity_id: entityId,
     data,
@@ -357,10 +355,10 @@ const processLineChartEntities = (
     }
 
     const attributes =
-      "friendly_name" in first.a
-        ? first.a
-        : entityId in hassEntities
+      entityId in hassEntities
         ? hassEntities[entityId].attributes
+        : "friendly_name" in first.a
+        ? first.a
         : undefined;
 
     data.push({
