@@ -4,7 +4,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-form/ha-form";
-import { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type { SchemaUnion } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-settings-row";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -19,7 +19,7 @@ import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { RegistriesDialogParams } from "./show-dialog-registries";
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   {
     name: "registry",
     required: true,
@@ -35,7 +35,7 @@ const SCHEMA: HaFormSchema[] = [
     required: true,
     selector: { text: { type: "password" } },
   },
-];
+] as const;
 
 @customElement("dialog-hassio-registries")
 class HassioRegistriesDialog extends LitElement {
@@ -135,8 +135,8 @@ class HassioRegistriesDialog extends LitElement {
     `;
   }
 
-  private _computeLabel = (schema: HaFormSchema) =>
-    this.supervisor.localize(`dialog.registries.${schema.name}`) || schema.name;
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.supervisor.localize(`dialog.registries.${schema.name}`);
 
   private _valueChanged(ev: CustomEvent) {
     this._input = ev.detail.value;

@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
-import { HaFormSchema } from "../../../../components/ha-form/types";
+import { SchemaUnion } from "../../../../components/ha-form/types";
 import { LovelaceResourcesMutableParams } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -132,53 +132,68 @@ export class DialogLovelaceResourceDetail extends LitElement {
     `;
   }
 
-  private _schema = memoizeOne((data) => [
-    {
-      name: "url",
-      required: true,
-      selector: {
-        text: {},
-      },
-    },
-    {
-      name: "res_type",
-      required: true,
-      selector: {
-        select: {
-          options: [
-            {
-              value: "module",
-              label: this.hass!.localize(
-                "ui.panel.config.lovelace.resources.types.module"
-              ),
-            },
-            {
-              value: "css",
-              label: this.hass!.localize(
-                "ui.panel.config.lovelace.resources.types.css"
-              ),
-            },
-            data.type === "js" && {
-              value: "js",
-              label: this.hass!.localize(
-                "ui.panel.config.lovelace.resources.types.js"
-              ),
-            },
-            data.type === "html" && {
-              value: "html",
-              label: this.hass!.localize(
-                "ui.panel.config.lovelace.resources.types.html"
-              ),
-            },
-          ].filter(Boolean),
+  private _schema = memoizeOne(
+    (data) =>
+      [
+        {
+          name: "url",
+          required: true,
+          selector: {
+            text: {},
+          },
         },
-      },
-    },
-  ]);
+        {
+          name: "res_type",
+          required: true,
+          selector: {
+            select: {
+              options: [
+                {
+                  value: "module",
+                  label: this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.types.module"
+                  ),
+                },
+                {
+                  value: "css",
+                  label: this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.types.css"
+                  ),
+                },
+                ...(data.type === "js"
+                  ? ([
+                      {
+                        value: "js",
+                        label: this.hass!.localize(
+                          "ui.panel.config.lovelace.resources.types.js"
+                        ),
+                      },
+                    ] as const)
+                  : []),
+                ...(data.type === "html"
+                  ? ([
+                      {
+                        value: "html",
+                        label: this.hass!.localize(
+                          "ui.panel.config.lovelace.resources.types.html"
+                        ),
+                      },
+                    ] as const)
+                  : []),
+              ],
+            },
+          },
+        },
+      ] as const
+  );
 
-  private _computeLabel = (entry: HaFormSchema): string =>
+  private _computeLabel = (
+    entry: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
-      `ui.panel.config.lovelace.resources.detail.${entry.name}`
+      `ui.panel.config.lovelace.resources.detail.${
+        entry.name === "res_type" ? "type" : entry.name
+      }`
     );
 
   private _valueChanged(ev: CustomEvent) {
