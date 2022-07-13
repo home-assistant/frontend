@@ -10,12 +10,9 @@ import {
   DataEntryFlowStepMenu,
   DataEntryFlowStepProgress,
 } from "../../data/data_entry_flow";
-import { IntegrationManifest } from "../../data/integration";
-import { HomeAssistant } from "../../types";
-
-export interface SupportedBrandHandler {
-  [key: string]: string;
-}
+import type { IntegrationManifest } from "../../data/integration";
+import type { SupportedBrandHandler } from "../../data/supported_brands";
+import type { HomeAssistant } from "../../types";
 
 export interface FlowHandlers {
   integrations: string[];

@@ -1,5 +1,8 @@
-import { SupportedBrandHandler } from "../dialogs/config-flow/show-dialog-data-entry-flow";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
+
+export interface SupportedBrandHandler {
+  [key: string]: string;
+}
 
 export const getSupportedBrands = (hass: HomeAssistant) =>
   hass.callWS<{ [key: string]: SupportedBrandHandler }>({
