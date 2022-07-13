@@ -308,7 +308,9 @@ class StepFlowPickHandler extends LitElement {
       if (!entries.length) {
         // If the component isn't loaded, ask them to load the integration first
         showConfirmationDialog(this, {
-          text: "You need to install the Zwave integration to add a device.",
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.missing_zwave_js"
+          ),
           confirm: () => {
             fireEvent(this, "handler-picked", {
               handler: "zwave_js",
@@ -325,7 +327,9 @@ class StepFlowPickHandler extends LitElement {
       // If the component isn't loaded, ask them to load the integration first
       if (!isComponentLoaded(this.hass, "zha")) {
         showConfirmationDialog(this, {
-          text: "You need to install the ZHA integration to add a device.",
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.missing_zha"
+          ),
           confirm: () => {
             fireEvent(this, "handler-picked", {
               handler: "zha",
