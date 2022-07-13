@@ -1,10 +1,8 @@
 import type { HomeAssistant } from "../types";
 
-export interface SupportedBrandHandler {
-  [key: string]: string;
-}
+export type SupportedBrandHandler = Record<string, string>;
 
 export const getSupportedBrands = (hass: HomeAssistant) =>
-  hass.callWS<{ [key: string]: SupportedBrandHandler }>({
+  hass.callWS<Record<string, SupportedBrandHandler>>({
     type: "supported_brands",
   });

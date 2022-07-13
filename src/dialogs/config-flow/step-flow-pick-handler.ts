@@ -68,25 +68,16 @@ class StepFlowPickHandler extends LitElement {
       h: FlowHandlers,
       filter?: string,
       _localize?: LocalizeFunc
-    ): [HandlerObj[], HandlerObj[]] => {
-      const integrations: HandlerObj[] = h.integrations.map((handler) => ({
-        name: domainToName(this.hass.localize, handler),
-        slug: handler,
-      }));
+    ): [(HandlerObj | SupportedBrandObj)[], HandlerObj[]] => {
+      const integrations: (HandlerObj | SupportedBrandObj)[] =
+        h.integrations.map((handler) => ({
+          name: domainToName(this.hass.localize, handler),
+          slug: handler,
+        }));
 
-      // Get Supported Brands in a digestable list of objects
-      const supportedBrands: SupportedBrandObj[] = [];
       for (const [domain, domainBrands] of Object.entries(h.supportedBrands)) {
         for (const [slug, name] of Object.entries(domainBrands)) {
-          const index = supportedBrands.findIndex((b) => b.slug === slug);
-
-          // Replace the array if exists, to be changed to append to array after supporting multiple supported brands
-          if (index !== -1) {
-            supportedBrands[index].supported_flows = [domain];
-            continue;
-          }
-
-          supportedBrands.push({
+          integrations.push({
             slug,
             name,
             supported_flows: [domain],
@@ -107,7 +98,7 @@ class StepFlowPickHandler extends LitElement {
           is_helper: true,
         }));
         return [
-          new Fuse([...integrations, ...supportedBrands], options)
+          new Fuse(integrations, options)
             .search(filter)
             .map((result) => result.item),
           new Fuse(helpers, options)
@@ -116,7 +107,7 @@ class StepFlowPickHandler extends LitElement {
         ];
       }
       return [
-        [...integrations, ...supportedBrands].sort((a, b) =>
+        integrations.sort((a, b) =>
           caseInsensitiveStringCompare(a.name, b.name)
         ),
         [],
@@ -279,10 +270,6 @@ class StepFlowPickHandler extends LitElement {
 
     if ("supported_flows" in handler) {
       const slug = handler.supported_flows[0];
-      if (["zha", "zwave_js"].includes(slug)) {
-        this._handleAddPicked(slug);
-        return;
-      }
 
       showConfirmationDialog(this, {
         text: this.hass.localize(
@@ -292,10 +279,16 @@ class StepFlowPickHandler extends LitElement {
             flow_domain_name: domainToName(this.hass.localize, slug),
           }
         ),
-        confirm: () =>
+        confirm: () => {
+          if (["zha", "zwave_js"].includes(slug)) {
+            this._handleAddPicked(slug);
+            return;
+          }
+
           fireEvent(this, "handler-picked", {
             handler: slug,
-          }),
+          });
+        },
       });
 
       return;
@@ -313,6 +306,15 @@ class StepFlowPickHandler extends LitElement {
       });
 
       if (!entries.length) {
+        // If the component isn't loaded, ask them to load the integration first
+        showConfirmationDialog(this, {
+          text: "You need to install the Zwave integration to add a device.",
+          confirm: () => {
+            fireEvent(this, "handler-picked", {
+              handler: "zwave_js",
+            });
+          },
+        });
         return;
       }
 
@@ -320,6 +322,19 @@ class StepFlowPickHandler extends LitElement {
         entry_id: entries[0].entry_id,
       });
     } else if (slug === "zha") {
+      // If the component isn't loaded, ask them to load the integration first
+      if (!isComponentLoaded(this.hass, "zha")) {
+        showConfirmationDialog(this, {
+          text: "You need to install the ZHA integration to add a device.",
+          confirm: () => {
+            fireEvent(this, "handler-picked", {
+              handler: "zha",
+            });
+          },
+        });
+        return;
+      }
+
       navigate("/config/zha/add");
     }
 

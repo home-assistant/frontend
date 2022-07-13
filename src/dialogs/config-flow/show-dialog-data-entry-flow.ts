@@ -17,7 +17,7 @@ import type { HomeAssistant } from "../../types";
 export interface FlowHandlers {
   integrations: string[];
   helpers: string[];
-  supportedBrands: { [key: string]: SupportedBrandHandler };
+  supportedBrands: Record<string, SupportedBrandHandler>;
 }
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;
