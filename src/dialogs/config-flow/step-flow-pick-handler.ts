@@ -278,29 +278,27 @@ class StepFlowPickHandler extends LitElement {
     }
 
     if ("supported_flows" in handler) {
-      if (handler.supported_flows.length === 1) {
-        const slug = handler.supported_flows[0];
-        if (["zha", "zwave_js"].includes(slug)) {
-          this._handleAddPicked(slug);
-          return;
-        }
-
-        showConfirmationDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.supported_brand_flow",
-            {
-              supported_brand: handler.name,
-              flow_domain_name: domainToName(this.hass.localize, slug),
-            }
-          ),
-          confirm: () =>
-            fireEvent(this, "handler-picked", {
-              handler: slug,
-            }),
-        });
-
+      const slug = handler.supported_flows[0];
+      if (["zha", "zwave_js"].includes(slug)) {
+        this._handleAddPicked(slug);
         return;
       }
+
+      showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.supported_brand_flow",
+          {
+            supported_brand: handler.name,
+            flow_domain_name: domainToName(this.hass.localize, slug),
+          }
+        ),
+        confirm: () =>
+          fireEvent(this, "handler-picked", {
+            handler: slug,
+          }),
+      });
+
+      return;
     }
 
     fireEvent(this, "handler-picked", {
