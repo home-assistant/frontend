@@ -4,6 +4,7 @@ export interface ResolutionIssue {
   domain: string;
   issue_id: string;
   active: boolean;
+  is_fixable: boolean;
   severity?: "error" | "warning" | "critical";
   breaks_in_ha_version?: string;
   dismissed_version?: string;

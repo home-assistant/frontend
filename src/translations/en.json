@@ -1220,7 +1220,12 @@
           "caption": "Resolutions",
           "description": "Find and fix issues with your Home Assistant instance",
           "title": "{count} {count, plural,\n  one {resolution}\n  other {resolutions}\n}",
-          "no_resolutions": "There are currently no resolutions available"
+          "no_resolutions": "There are currently no resolutions available",
+          "dialog": {
+            "title": "Resolution",
+            "fix": "Fix",
+            "learn": "Learn more"
+          }
         },
         "areas": {
           "caption": "Areas",

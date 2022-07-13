@@ -9,6 +9,7 @@ import "../../../components/ha-svg-icon";
 import type { ResolutionIssue } from "../../../data/resolutions";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { showResolutionIssueDialog } from "./show-resolution-issue-dialog";
 
 @customElement("ha-config-resolutions")
 class HaConfigResolutions extends LitElement {
@@ -35,7 +36,13 @@ class HaConfigResolutions extends LitElement {
       <mwc-list>
         ${issues.map(
           (issue) => html`
-            <ha-list-item twoline graphic="avatar" .hasMeta=${!this.narrow}>
+            <ha-list-item
+              twoline
+              graphic="avatar"
+              .hasMeta=${!this.narrow}
+              .issue=${issue}
+              @click=${this._openShowMoreDialog}
+            >
               <ha-svg-icon
                 slot="graphic"
                 .title=${issue.domain}
@@ -56,8 +63,9 @@ class HaConfigResolutions extends LitElement {
     `;
   }
 
-  // private _openShowMoreDialog(ev: MouseEvent): void {
-  // }
+  private _openShowMoreDialog(ev: MouseEvent): void {
+    showResolutionIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+  }
 
   static styles = css`
     :host {
