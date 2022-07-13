@@ -77,10 +77,8 @@ class StepFlowPickHandler extends LitElement {
       // Get Supported Brands in a digestable list of objects
       const supportedBrands: SupportedBrandObj[] = [];
       for (const [domain, domainBrands] of Object.entries(h.supportedBrands)) {
-        for (const supportedBrand of Object.keys(domainBrands)) {
-          const index = supportedBrands.findIndex(
-            (b) => b.slug === supportedBrand
-          );
+        for (const [slug, name] of Object.entries(domainBrands)) {
+          const index = supportedBrands.findIndex((b) => b.slug === slug);
 
           // Replace the array if exists, to be changed to append to array after supporting multiple supported brands
           if (index !== -1) {
@@ -89,8 +87,8 @@ class StepFlowPickHandler extends LitElement {
           }
 
           supportedBrands.push({
-            slug: supportedBrand,
-            name: domainBrands[supportedBrand],
+            slug,
+            name,
             supported_flows: [domain],
           });
         }
