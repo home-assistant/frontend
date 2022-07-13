@@ -2165,6 +2165,7 @@
             "confirm_delete_header": "Delete this blueprint?",
             "confirm_delete_text": "Are you sure you want to delete this blueprint?",
             "add_blueprint": "Import blueprint",
+            "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
             "create_script": "Create script",
             "delete_blueprint": "Delete blueprint",

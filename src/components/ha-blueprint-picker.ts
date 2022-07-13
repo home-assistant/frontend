@@ -6,7 +6,12 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { stringCompare } from "../common/string/compare";
-import { Blueprint, Blueprints, fetchBlueprints } from "../data/blueprint";
+import {
+  Blueprint,
+  BlueprintDomain,
+  Blueprints,
+  fetchBlueprints,
+} from "../data/blueprint";
 import { HomeAssistant } from "../types";
 
 @customElement("ha-blueprint-picker")
@@ -17,7 +22,7 @@ class HaBluePrintPicker extends LitElement {
 
   @property() public value = "";
 
-  @property() public domain = "automation";
+  @property() public domain: BlueprintDomain = "automation";
 
   @property() public blueprints?: Blueprints;
 
