@@ -82,8 +82,9 @@ class StepFlowPickHandler extends LitElement {
             (b) => b.slug === supportedBrand
           );
 
+          // Replace the array if exists, to be changed to append to array after supporting multiple supported brands
           if (index !== -1) {
-            supportedBrands[index].supported_flows.push(domain);
+            supportedBrands[index].supported_flows = [domain];
             continue;
           }
 
