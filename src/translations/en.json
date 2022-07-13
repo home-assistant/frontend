@@ -1216,6 +1216,12 @@
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
         },
+        "resolutions": {
+          "caption": "Resolutions",
+          "description": "Find and fix issues with your Home Assistant instance",
+          "title": "{count} {count, plural,\n  one {resolution}\n  other {resolutions}\n}",
+          "no_resolutions": "There are currently no resolutions available"
+        },
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",

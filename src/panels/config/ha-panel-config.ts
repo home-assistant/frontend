@@ -9,6 +9,7 @@ import {
   mdiHeart,
   mdiInformation,
   mdiInformationOutline,
+  mdiLifebuoy,
   mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
@@ -268,6 +269,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#3B808E",
     },
     {
+      path: "/config/resolutions",
+      translationKey: "resolutions",
+      iconPath: mdiLifebuoy,
+      iconColor: "#3BF0FE",
+    },
+    {
       component: "logs",
       path: "/config/logs",
       translationKey: "logs",
@@ -447,6 +454,10 @@ class HaPanelConfig extends HassRouterPage {
       updates: {
         tag: "ha-config-section-updates",
         load: () => import("./core/ha-config-section-updates"),
+      },
+      resolutions: {
+        tag: "ha-config-resolutions-dashboard",
+        load: () => import("./resolutions/ha-config-resolutions-dashboard"),
       },
       users: {
         tag: "ha-config-users",
