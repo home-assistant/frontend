@@ -31,6 +31,7 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
   ERROR_STATES,
+  RECOVERABLE_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
@@ -366,7 +367,7 @@ export class HaIntegrationCard extends LitElement {
               </a>`
             : ""}
           ${!item.disabled_by &&
-          (item.state === "loaded" || item.state === "setup_retry") &&
+          RECOVERABLE_STATES.includes(item.state) &&
           item.supports_unload &&
           item.source !== "system"
             ? html`<mwc-list-item @request-selected=${this._handleReload}>
