@@ -17,10 +17,18 @@ export const setupLeafletMap = async (
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
   const map = Leaflet.map(mapElement);
+  const baseStyle = document.createElement("link");
+  baseStyle.setAttribute("href", "/static/images/leaflet/leaflet.css");
+  baseStyle.setAttribute("rel", "stylesheet");
+  mapElement.parentNode.appendChild(baseStyle);
+  const tileContrastStyle = document.createElement("style");
+  tileContrastStyle.innerHTML = `
+    .leaflet-tile-loaded {
+      filter: ${darkMode ? "brightness(4) contrast(1.33)" : "brightness(0.6) contrast(2) brightness(1.5)"}
+    }
+  `;
+  mapElement.parentNode.appendChild(tileContrastStyle);
   const style = document.createElement("link");
-  style.setAttribute("href", "/static/images/leaflet/leaflet.css");
-  style.setAttribute("rel", "stylesheet");
-  mapElement.parentNode.appendChild(style);
   map.setView([52.3731339, 4.8903147], 13);
 
   const tileLayer = createTileLayer(Leaflet, Boolean(darkMode)).addTo(map);
