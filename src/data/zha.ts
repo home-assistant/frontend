@@ -128,6 +128,44 @@ export interface ZHAConfiguration {
   schemas: Record<string, HaFormSchema[]>;
 }
 
+export interface ZHANetworkBackupNodeInfo {
+  nwk: string;
+  ieee: string;
+  logical_type: "coordinator" | "router" | "end_device";
+}
+
+export interface ZHANetworkBackupKey {
+  key: string;
+  tx_counter: number;
+  rx_counter: number;
+  seq: number;
+  partner_ieee: string;
+}
+
+export interface ZHANetworkBackupNetworkInfo {
+  extended_pan_id: string;
+  pan_id: string;
+  nwk_update_id: number;
+  nwk_manager_id: string;
+  channel: number;
+  channel_mask: number[];
+  security_level: number;
+  network_key: ZHANetworkBackupKey;
+  tc_link_key: ZHANetworkBackupKey;
+  key_table: ZHANetworkBackupKey[];
+  children: string[];
+  nwk_addresses: Map<string, string>;
+  stack_specific?: Map<string, any>;
+  metadata: Map<string, any>;
+  source: string;
+}
+
+export interface ZHANetworkBackup {
+  backup_time: string;
+  network_info: ZHANetworkBackupNetworkInfo;
+  node_info: ZHANetworkBackupNodeInfo;
+}
+
 export interface ZHAGroupMember {
   ieee: string;
   endpoint_id: string;
@@ -347,6 +385,20 @@ export const updateZHAConfiguration = (
   hass.callWS({
     type: "zha/configuration/update",
     data: data,
+  });
+
+export const fetchZHANetworkSettings = (
+  hass: HomeAssistant
+): Promise<ZHANetworkBackup> =>
+  hass.callWS({
+    type: "zha/network/settings",
+  });
+
+export const createZHANetworkBackup = (
+  hass: HomeAssistant
+): Promise<ZHANetworkBackup> =>
+  hass.callWS({
+    type: "zha/network/backup",
   });
 
 export const INITIALIZED = "INITIALIZED";

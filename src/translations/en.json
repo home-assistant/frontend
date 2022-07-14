@@ -3035,7 +3035,11 @@
             "INITIALIZED_status_text": "The device is ready to use"
           },
           "network": {
-            "caption": "Network"
+            "caption": "Network",
+            "current_settings_title": "Current Network Settings"
+          },
+          "options": {
+            "caption": "Options"
           },
           "groups": {
             "add_group": "Create Group",

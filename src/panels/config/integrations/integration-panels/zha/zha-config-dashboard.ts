@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
+import { mdiCog, mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -27,9 +27,9 @@ import {
 
 export const zhaTabs: PageNavigation[] = [
   {
-    translationKey: "ui.panel.config.zha.network.caption",
+    translationKey: "ui.panel.config.zha.options.caption",
     path: `/config/zha/dashboard`,
-    iconPath: mdiNetwork,
+    iconPath: mdiCog,
   },
   {
     translationKey: "ui.panel.config.zha.groups.caption",
@@ -40,6 +40,11 @@ export const zhaTabs: PageNavigation[] = [
     translationKey: "ui.panel.config.zha.visualization.caption",
     path: `/config/zha/visualization`,
     iconPath: mdiLan,
+  },
+  {
+    translationKey: "ui.panel.config.zha.network.caption",
+    path: `/config/zha/network`,
+    iconPath: mdiNetwork,
   },
 ];
 
