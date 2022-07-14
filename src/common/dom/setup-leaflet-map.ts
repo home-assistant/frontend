@@ -28,7 +28,6 @@ export const setupLeafletMap = async (
     }
   `;
   mapElement.parentNode.appendChild(tileContrastStyle);
-  const style = document.createElement("link");
   map.setView([52.3731339, 4.8903147], 13);
 
   const tileLayer = createTileLayer(Leaflet, Boolean(darkMode)).addTo(map);
