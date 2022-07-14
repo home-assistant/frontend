@@ -6,7 +6,7 @@ export const computeInitialHaFormData = (
 ): Record<string, any> => {
   const data = {};
   schema.forEach((field) => {
-    if (field.description?.suggested_value) {
+    if (field.description?.suggested_value !== undefined) {
       data[field.name] = field.description.suggested_value;
     } else if ("default" in field) {
       data[field.name] = field.default;
