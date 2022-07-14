@@ -24,7 +24,11 @@ export const setupLeafletMap = async (
   const tileContrastStyle = document.createElement("style");
   tileContrastStyle.innerHTML = `
     .leaflet-tile-loaded {
-      filter: ${darkMode ? "brightness(4) contrast(1.33)" : "brightness(0.6) contrast(2) brightness(1.5)"}
+      filter: ${
+        darkMode
+          ? "brightness(4) contrast(1.33)"
+          : "brightness(0.6) contrast(2) brightness(1.5)"
+      }
     }
   `;
   mapElement.parentNode.appendChild(tileContrastStyle);
