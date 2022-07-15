@@ -398,7 +398,23 @@ export const createZHANetworkBackup = (
   hass: HomeAssistant
 ): Promise<ZHANetworkBackup> =>
   hass.callWS({
-    type: "zha/network/backup",
+    type: "zha/network/backups/create",
+  });
+
+export const restoreZHANetworkBackup = (
+  hass: HomeAssistant,
+  backup: ZHANetworkBackup
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/network/backups/restore",
+    data: backup,
+  });
+
+export const listZHANetworkBackups = (
+  hass: HomeAssistant
+): Promise<ZHANetworkBackup[]> =>
+  hass.callWS({
+    type: "zha/network/backups/list",
   });
 
 export const INITIALIZED = "INITIALIZED";

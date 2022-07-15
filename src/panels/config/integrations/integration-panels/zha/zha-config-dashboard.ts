@@ -1,5 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCog, mdiFolderMultipleOutline, mdiLan, mdiNetwork, mdiPlus } from "@mdi/js";
+import {
+  mdiCog,
+  mdiFolderMultipleOutline,
+  mdiLan,
+  mdiNetwork,
+  mdiPlus,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,

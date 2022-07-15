@@ -1023,6 +1023,9 @@
           "device_name_placeholder": "Change device name"
         }
       },
+      "zha_network_restore": {
+        "restore_backup": "Restore ZHA network backup"
+      },
       "domain_toggler": {
         "title": "Toggle Domains",
         "reset_entities": "Reset Entity overrides"
@@ -3036,7 +3039,10 @@
           },
           "network": {
             "caption": "Network",
-            "current_settings_title": "Current Network Settings"
+            "settings_title": "Network Settings",
+            "create_backup": "Create network backup",
+            "restore_backup": "Restore network backup",
+            "upload_backup": "Upload network backup"
           },
           "options": {
             "caption": "Options"

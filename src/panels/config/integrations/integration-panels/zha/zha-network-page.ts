@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import {mdiFileUpload } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -11,8 +10,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { zhaTabs } from "./zha-config-dashboard";
 import "../../../../../components/ha-card";
+import { showZHARestoreBackupDialog } from "./show-dialog-zha-restore-backup";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-circular-progress";
 import "@material/mwc-button/mwc-button";
 import { fileDownload } from "../../../../../../src/util/file_download";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -20,6 +21,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-file-upload";
 import {
   fetchZHANetworkSettings,
   createZHANetworkBackup,
@@ -40,7 +42,9 @@ class ZHANetworkPage extends LitElement {
 
   @property() private _settings?: ZHANetworkBackup;
 
-  @state() private _uploading = false;
+  @state() private _uploadingBackup = false;
+  @state() private _restoringBackup = false;
+  @state() private _generatingBackup = false;
 
   @state() private _backupFile?: File;
 
@@ -59,54 +63,60 @@ class ZHANetworkPage extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .header=${this.hass.localize(
-          "ui.panel.config.zha.network.caption"
-        )}
+        .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
       >
-        ${this._settings ?
-        html`<ha-card
-          header=${this.hass.localize(
-            "ui.panel.config.zha.network.current_settings_title"
-          )}
-        >
-          <p>PAN ID: ${this._settings!.network_info.pan_id}</p>
-          <p>Extended PAN ID: ${this._settings!.network_info.extended_pan_id}</p>
-          <p>Channel: ${this._settings!.network_info.channel}</p>
-          <p>Coordinator IEEE: ${this._settings!.node_info.ieee}</p>
-          <p>Network key: ${this._settings!.network_info.network_key.key}</p>
-        </ha-card>
+        ${this._settings
+          ? html`<ha-card
+              header=${this.hass.localize(
+                "ui.panel.config.zha.network.settings_title"
+              )}
+            >
+              <div class="card-content network-settings">
+                <div>PAN ID: ${this._settings!.network_info.pan_id}</div>
+                <div>
+                  Extended PAN ID:
+                  ${this._settings!.network_info.extended_pan_id}
+                </div>
+                <div>Channel: ${this._settings!.network_info.channel}</div>
+                <div>Coordinator IEEE: ${this._settings!.node_info.ieee}</div>
+                <div>
+                  Network key: ${this._settings!.network_info.network_key.key}
+                </div>
+              </div>
 
-        <ha-card>
-          <mwc-button
-            slot="primaryAction"
-            @click=${this._createAndDownloadBackup}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.update_firmware.begin_update"
-            )}
-          </mwc-button>
-        </ha-card>
+              <div class="card-actions">
+                <mwc-button
+                  @click=${this._createAndDownloadBackup}
+                  .disabled=${this._generatingBackup ||
+                  this._uploadingBackup ||
+                  this._restoringBackup}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.network.create_backup"
+                  )}
 
-        <ha-card>
-          <mwc-button
-            slot="primaryAction"
-            @click=${this._beginRestore}
-            .disabled=${this._backupFile === undefined}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.update_firmware.begin_update"
-            )}
-          </mwc-button>
-          <ha-file-upload
-            .hass=${this.hass}
-            .uploading=${this._uploading}
-            .icon=${mdiFileUpload}
-            label=${this._backupFile?.name ??"Upload Backup"}
-            @file-picked=${this._uploadFile}
-          ></ha-file-upload>
-        </ha-card>
-        `
-        : ""}
+                  <ha-circular-progress
+                    active
+                    size="small"
+                    .indeterminate=${this._generatingBackup}
+                    .closed=${!this._generatingBackup}
+                  ></ha-circular-progress>
+                </mwc-button>
+
+                <mwc-button
+                  class="warning"
+                  @click=${this._beginRestore}
+                  .disabled=${this._generatingBackup ||
+                  this._uploadingBackup ||
+                  this._restoringBackup}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.network.restore_backup"
+                  )}
+                </mwc-button>
+              </div>
+            </ha-card> `
+          : ""}
       </hass-tabs-subpage>
     `;
   }
@@ -116,21 +126,21 @@ class ZHANetworkPage extends LitElement {
   }
 
   private async _createAndDownloadBackup(): Promise<void> {
-    let backup = await createZHANetworkBackup(this.hass!);
-    let backupJSON = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 4));
-    let backupTime = Date.parse(backup.backup_time);
+    this._generatingBackup = true;
+    const backup: ZHANetworkBackup = await createZHANetworkBackup(this.hass!);
+    this._generatingBackup = false;
 
-    fileDownload(backupJSON, "zha-backup.json");
-  }
+    const backupJSON: string =
+      "data:text/plain;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(backup, null, 4));
+    const backupTime: Date = new Date(Date.parse(backup.backup_time));
+    const filename: string = backupTime.toISOString().replace(/:/g, "-");
 
-  private async _uploadFile(ev) {
-    this._backupFile = ev.detail.files[0];
+    fileDownload(backupJSON, `ZHA backup ${filename}.json`);
   }
 
   private async _beginRestore(): Promise<void> {
-    this._uploading = true;
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    this._uploading = false;
+    showZHARestoreBackupDialog(this);
   }
 
   static get styles(): CSSResultGroup {
@@ -141,6 +151,19 @@ class ZHANetworkPage extends LitElement {
           margin: auto;
           margin-top: 16px;
           max-width: 500px;
+        }
+
+        ha-card h1 {
+          margin-bottom: 4px;
+        }
+
+        mwc-button > ha-circular-progress {
+          margin-left: 16px;
+        }
+
+        .network-settings > div {
+          word-break: break-all;
+          margin-top: 2px;
         }
       `,
     ];
