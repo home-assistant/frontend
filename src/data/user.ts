@@ -21,7 +21,7 @@ export interface User {
   is_active: boolean;
   local_only: boolean;
   system_generated: boolean;
-  group_ids: string[];
+  group_ids: (keyof TranslationDict["groups"])[];
   credentials: Credential[];
 }
 
