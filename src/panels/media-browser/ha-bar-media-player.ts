@@ -39,6 +39,7 @@ import {
   cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
+  ControlButton,
   formatMediaTime,
   getCurrentProgress,
   handleMediaControlClick,
@@ -179,7 +180,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       return this._renderChoosePlayer(stateObj);
     }
 
-    const controls = !this.narrow
+    const controls: ControlButton[] | undefined = !this.narrow
       ? computeMediaControls(stateObj, true)
       : (stateObj.state === "playing" &&
           (supportsFeature(stateObj, SUPPORT_PAUSE) ||
@@ -207,7 +208,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                 : "media_stop",
           },
         ]
-      : [{}];
+      : undefined;
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaDuration = formatMediaTime(stateObj.attributes.media_duration);
     const mediaTitleClean = cleanupMediaTitle(
