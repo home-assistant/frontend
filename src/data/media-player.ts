@@ -177,7 +177,7 @@ export interface MediaPlayerItem {
   title: string;
   media_content_type: string;
   media_content_id: string;
-  media_class: string;
+  media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
   children_media_class?: string;
   can_play: boolean;
   can_expand: boolean;
