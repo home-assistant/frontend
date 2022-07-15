@@ -13,6 +13,7 @@ import {
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
+  EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
@@ -25,7 +26,7 @@ import type { HomeAssistant } from "../../../types";
 export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ExtEntityRegistryEntry;
+  @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
 
   @state() private _origEntityId!: string;
 
@@ -33,7 +34,7 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   @state() private _areaId?: string | null;
 
-  @state() private _disabledBy!: string | null;
+  @state() private _disabledBy!: EntityRegistryEntry["disabled_by"];
 
   @state() private _hiddenBy!: string | null;
 
@@ -41,7 +42,7 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   @state() private _device?: DeviceRegistryEntry;
 
-  @state() private _submitting?: boolean;
+  @state() private _submitting = false;
 
   public async updateEntry(): Promise<void> {
     this._submitting = true;
@@ -145,8 +146,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
       ></ha-textfield>
       <ha-area-picker
         .hass=${this.hass}
-        .value=${this._areaId}
-        .placeholder=${this._device?.area_id}
+        .value=${this._areaId || undefined}
+        .placeholder=${this._device?.area_id || undefined}
         @value-changed=${this._areaPicked}
       ></ha-area-picker>
 
@@ -182,8 +183,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="enabled"
               .checked=${!this._hiddenBy && !this._disabledBy}
-              .disabled=${this._device?.disabled_by ||
-              (this._disabledBy &&
+              .disabled=${!!this._device?.disabled_by ||
+              (this._disabledBy !== null &&
                 !(
                   this._disabledBy === "user" ||
                   this._disabledBy === "integration"
@@ -200,8 +201,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="hidden"
               .checked=${this._hiddenBy !== null}
-              .disabled=${this._device?.disabled_by ||
-              (this._disabledBy &&
+              .disabled=${!!this._device?.disabled_by ||
+              (this._disabledBy !== null &&
                 !(
                   this._disabledBy === "user" ||
                   this._disabledBy === "integration"
@@ -218,8 +219,8 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
               name="hiddendisabled"
               value="disabled"
               .checked=${this._disabledBy !== null}
-              .disabled=${this._device?.disabled_by ||
-              (this._disabledBy &&
+              .disabled=${!!this._device?.disabled_by ||
+              (this._disabledBy !== null &&
                 !(
                   this._disabledBy === "user" ||
                   this._disabledBy === "integration"
@@ -300,5 +301,11 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
         margin-top: 16px;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-registry-basic-editor": HaEntityRegistryBasicEditor;
   }
 }
