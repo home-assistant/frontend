@@ -6,9 +6,13 @@ import IntlMessageFormat from "intl-messageformat";
 import { Resources, TranslationDict } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
 
-// From https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
+// Exclude some patterns from key type checking for now
+// Fixing requires tighter definition of types from backend and/or web socket
+type LocalizeKeyExceptions = `component.${string}`;
+
+// Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 type FlattenObjectKeys<
-  T extends Record<string, unknown>,
+  T extends Record<string, any>,
   Key extends keyof T = keyof T
 > = Key extends string
   ? T[Key] extends Record<string, unknown>
@@ -18,7 +22,10 @@ type FlattenObjectKeys<
 
 export type LocalizeFunc<
   Dict extends Record<string, unknown> = TranslationDict
-> = (key: FlattenObjectKeys<Dict>, ...args: any[]) => string;
+> = (
+  key: FlattenObjectKeys<Dict> | LocalizeKeyExceptions,
+  ...args: any[]
+) => string;
 
 interface FormatType {
   [format: string]: any;
