@@ -13,8 +13,8 @@ export interface EntityRegistryEntry {
   config_entry_id: string | null;
   device_id: string | null;
   area_id: string | null;
-  disabled_by: string | null;
-  hidden_by: string | null;
+  disabled_by: "user" | "device" | "integration" | "config_entry" | null;
+  hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
   entity_category: "config" | "diagnostic" | null;
   has_entity_name: boolean;
   original_name?: string;

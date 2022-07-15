@@ -12,13 +12,13 @@ import { brandsUrl } from "../../../util/brands-url";
 export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public banner!: string;
+  @property() public banner?: string;
 
   @property() public localizedDomainName?: string;
 
   @property() public domain!: string;
 
-  @property() public label!: string;
+  @property() public label?: string;
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
