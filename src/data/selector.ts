@@ -40,18 +40,22 @@ export interface AddonSelector {
   };
 }
 
+export interface SelectorDevice {
+  integration?: DeviceSelector["device"]["integration"];
+  manufacturer?: DeviceSelector["device"]["manufacturer"];
+  model?: DeviceSelector["device"]["model"];
+}
+
+export interface SelectorEntity {
+  integration?: EntitySelector["entity"]["integration"];
+  domain?: EntitySelector["entity"]["domain"];
+  device_class?: EntitySelector["entity"]["device_class"];
+}
+
 export interface AreaSelector {
   area: {
-    entity?: {
-      integration?: EntitySelector["entity"]["integration"];
-      domain?: EntitySelector["entity"]["domain"];
-      device_class?: EntitySelector["entity"]["device_class"];
-    };
-    device?: {
-      integration?: DeviceSelector["device"]["integration"];
-      manufacturer?: DeviceSelector["device"]["manufacturer"];
-      model?: DeviceSelector["device"]["model"];
-    };
+    entity?: SelectorEntity;
+    device?: SelectorDevice;
     multiple?: boolean;
   };
 }
@@ -94,10 +98,7 @@ export interface DeviceSelector {
     integration?: string;
     manufacturer?: string;
     model?: string;
-    entity?: {
-      domain?: EntitySelector["entity"]["domain"];
-      device_class?: EntitySelector["entity"]["device_class"];
-    };
+    entity?: SelectorEntity;
     multiple?: boolean;
   };
 }
@@ -206,16 +207,8 @@ export interface StringSelector {
 
 export interface TargetSelector {
   target: {
-    entity?: {
-      integration?: EntitySelector["entity"]["integration"];
-      domain?: EntitySelector["entity"]["domain"];
-      device_class?: EntitySelector["entity"]["device_class"];
-    };
-    device?: {
-      integration?: DeviceSelector["device"]["integration"];
-      manufacturer?: DeviceSelector["device"]["manufacturer"];
-      model?: DeviceSelector["device"]["model"];
-    };
+    entity?: SelectorEntity;
+    device?: SelectorDevice;
   };
 }
 
@@ -234,11 +227,7 @@ export interface TimeSelector {
 }
 
 export const filterSelectorDevices = (
-  filterDevice: {
-    integration?: DeviceSelector["device"]["integration"];
-    manufacturer?: DeviceSelector["device"]["manufacturer"];
-    model?: DeviceSelector["device"]["model"];
-  },
+  filterDevice: SelectorDevice,
   device: DeviceRegistryEntry,
   deviceIntegrationLookup: Record<string, string[]> | undefined
 ): boolean => {
@@ -265,11 +254,7 @@ export const filterSelectorDevices = (
 };
 
 export const filterSelectorEntities = (
-  filterEntity: {
-    integration?: EntitySelector["entity"]["integration"];
-    domain?: EntitySelector["entity"]["domain"];
-    device_class?: EntitySelector["entity"]["device_class"];
-  },
+  filterEntity: SelectorEntity,
   entity: HassEntity,
   entitySources?: EntitySources
 ): boolean => {
