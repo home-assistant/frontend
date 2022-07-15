@@ -4,7 +4,7 @@ import {
   mdiHomeCircleOutline,
   mdiCancel,
 } from "@mdi/js";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, TranslationDict } from "../types";
 import { Credential } from "./auth";
 
 export const SYSTEM_GROUP_ID_ADMIN = "system-admin";
@@ -95,7 +95,12 @@ export const computeUserBadges = (
   includeSystem: boolean
 ) => {
   const labels: [string, string][] = [];
-  const translate = (key) => hass.localize(`ui.panel.config.users.${key}`);
+  const translate = (
+    key: Extract<
+      keyof TranslationDict["ui"]["panel"]["config"]["users"],
+      `is_${string}`
+    >
+  ) => hass.localize(`ui.panel.config.users.${key}`);
 
   if (user.is_owner) {
     labels.push([OWNER_ICON, translate("is_owner")]);
