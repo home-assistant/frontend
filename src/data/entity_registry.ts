@@ -160,3 +160,16 @@ export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
+
+export const getEntityPlatformLookup = (
+  entities: EntityRegistryEntry[]
+): Record<string, string> => {
+  const entityLookup = {};
+  for (const confEnt of entities) {
+    if (!confEnt.platform) {
+      continue;
+    }
+    entityLookup[confEnt.entity_id] = confEnt.platform;
+  }
+  return entityLookup;
+};

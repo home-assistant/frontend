@@ -1,3 +1,8 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import type { DeviceRegistryEntry } from "./device_registry";
+import type { EntitySources } from "./entity_sources";
+
 export type Selector =
   | ActionSelector
   | AddonSelector
@@ -227,3 +232,77 @@ export interface TimeSelector {
   // eslint-disable-next-line @typescript-eslint/ban-types
   time: {};
 }
+
+export const filterSelectorDevices = (
+  filterDevice: {
+    integration?: DeviceSelector["device"]["integration"];
+    manufacturer?: DeviceSelector["device"]["manufacturer"];
+    model?: DeviceSelector["device"]["model"];
+  },
+  device: DeviceRegistryEntry,
+  deviceIntegrationLookup: Record<string, string[]> | undefined
+): boolean => {
+  const {
+    manufacturer: filterManufacturer,
+    model: filterModel,
+    integration: filterIntegration,
+  } = filterDevice;
+
+  if (filterManufacturer && device.manufacturer !== filterManufacturer) {
+    return false;
+  }
+
+  if (filterModel && device.model !== filterModel) {
+    return false;
+  }
+
+  if (filterIntegration && deviceIntegrationLookup) {
+    if (!deviceIntegrationLookup?.[device.id]?.includes(filterIntegration)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const filterSelectorEntities = (
+  filterEntity: {
+    integration?: EntitySelector["entity"]["integration"];
+    domain?: EntitySelector["entity"]["domain"];
+    device_class?: EntitySelector["entity"]["device_class"];
+  },
+  entity: HassEntity,
+  entitySources?: EntitySources
+): boolean => {
+  const {
+    domain: filterDomain,
+    device_class: filterDeviceClass,
+    integration: filterIntegration,
+  } = filterEntity;
+
+  if (filterDomain) {
+    const entityDomain = computeStateDomain(entity);
+    if (
+      Array.isArray(filterDomain)
+        ? !filterDomain.includes(entityDomain)
+        : entityDomain !== filterDomain
+    ) {
+      return false;
+    }
+  }
+
+  if (
+    filterDeviceClass &&
+    entity.attributes.device_class !== filterDeviceClass
+  ) {
+    return false;
+  }
+
+  if (
+    filterIntegration &&
+    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+  ) {
+    return false;
+  }
+
+  return true;
+};
