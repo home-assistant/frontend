@@ -26,8 +26,8 @@ export const setupLeafletMap = async (
     .leaflet-tile-loaded {
       filter: ${
         darkMode
-          ? "brightness(4) contrast(1.33)"
-          : "brightness(0.6) contrast(2) brightness(1.5)"
+          ? "var(--map-filter-dark, brightness(3) contrast(1.3))"
+          : "var(--map-filter-light, brightness(0.6) contrast(2) brightness(1.5))"
       }
     }
   `;
