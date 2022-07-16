@@ -27,3 +27,12 @@ export const dismissResolutionIssue = async (
     issue_id: issue.issue_id,
     domain: issue.domain,
   });
+
+export const fixResolutionIssue = (
+  hass: HomeAssistant,
+  issue: ResolutionIssue
+) =>
+  hass.callApi("POST", "resolution_center/issues/fix", {
+    handler: issue.domain,
+    issue_id: issue.issue_id,
+  });

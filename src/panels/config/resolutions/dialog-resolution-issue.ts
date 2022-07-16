@@ -1,8 +1,9 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import type { ResolutionIssue } from "../../../data/resolutions";
+import { fixResolutionIssue, ResolutionIssue } from "../../../data/resolutions";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ResolutionIssueDialogParams } from "./show-resolution-issue-dialog";
@@ -16,6 +17,8 @@ class DialogResolutionIssue extends LitElement {
   @state() private _params?: ResolutionIssueDialogParams;
 
   @state() private _submitting = false;
+
+  @state() private _error?: string;
 
   public async showDialog(params: ResolutionIssueDialogParams): Promise<void> {
     this._params = params;
@@ -40,6 +43,9 @@ class DialogResolutionIssue extends LitElement {
         )}
       >
         <div>
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <h3>
             ${this.hass.localize(
               `component.${this._issue.domain}.issues.${this._issue.issue_id}.title`
@@ -53,9 +59,6 @@ class DialogResolutionIssue extends LitElement {
             : ""}
           The issue is ${this._issue.severity} severity
           ${this._issue.is_fixable ? "and fixable" : "but not fixable"}.
-          ${this._issue.learn_more_url
-            ? html`<a href=${this._issue.learn_more_url}>Learn more</a>`
-            : ""}
           ${this._issue.dismissed_version
             ? html`
                 This issue has been dismissed in version
@@ -63,11 +66,34 @@ class DialogResolutionIssue extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="primaryAction" .disabled=${this._submitting}>
-          ${this.hass!.localize("ui.panel.config.resolutions.dialog.fix")}
-        </mwc-button>
+        ${this._issue.is_fixable
+          ? html`
+              <mwc-button
+                slot="primaryAction"
+                @click=${this._fixIssue}
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.panel.config.resolutions.dialog.fix")}
+              </mwc-button>
+            `
+          : ""}
+        ${this._issue.learn_more_url
+          ? html`
+              <a href=${this._issue.learn_more_url} target="_blank">
+                <mwc-button .label=${"Learn More"}> </mwc-button>
+              </a>
+            `
+          : ""}
       </ha-dialog>
     `;
+  }
+
+  private _fixIssue() {
+    try {
+      fixResolutionIssue(this.hass, this._issue);
+    } catch (err: any) {
+      this._error = err.body.message;
+    }
   }
 
   private _closeDialog() {
