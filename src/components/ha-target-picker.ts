@@ -258,7 +258,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _renderChip(
-    type: string,
+    type: "area_id" | "device_id" | "entity_id",
     id: string,
     name: string,
     entityState?: HassEntity,
