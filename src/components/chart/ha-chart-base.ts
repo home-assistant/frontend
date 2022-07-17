@@ -193,7 +193,6 @@ export default class HaChartBase extends LitElement {
       computedStyles.getPropertyValue("--mdc-typography-font-family") ||
       "Roboto, Noto, sans-serif";
 
-
     this.chart = new ChartConstructor(ctx, {
       type: this.chartType,
       data: this.data,
