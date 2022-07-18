@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-export interface ResolutionIssue {
+export interface RepairsIssue {
   domain: string;
   issue_id: string;
   active: boolean;
@@ -13,14 +13,14 @@ export interface ResolutionIssue {
   translation_placeholders?: Record<string, string>;
 }
 
-export const fetchResolutionsIssues = async (hass: HomeAssistant) =>
-  hass.callWS<{ issues: ResolutionIssue[] }>({
+export const fetchRepairsIssues = async (hass: HomeAssistant) =>
+  hass.callWS<{ issues: RepairsIssue[] }>({
     type: "resolution_center/list_issues",
   });
 
-export const dismissResolutionIssue = async (
+export const dismissRepairsIssue = async (
   hass: HomeAssistant,
-  issue: ResolutionIssue
+  issue: RepairsIssue
 ) =>
   hass.callWS<string>({
     type: "resolution_center/dismiss_issue",
@@ -28,10 +28,7 @@ export const dismissResolutionIssue = async (
     domain: issue.domain,
   });
 
-export const fixResolutionIssue = (
-  hass: HomeAssistant,
-  issue: ResolutionIssue
-) =>
+export const fixRepairsIssue = (hass: HomeAssistant, issue: RepairsIssue) =>
   hass.callApi("POST", "resolution_center/issues/fix", {
     handler: issue.domain,
     issue_id: issue.issue_id,

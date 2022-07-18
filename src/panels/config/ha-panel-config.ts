@@ -269,8 +269,8 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#3B808E",
     },
     {
-      path: "/config/resolutions",
-      translationKey: "resolutions",
+      path: "/config/repairs",
+      translationKey: "repairs",
       iconPath: mdiLifebuoy,
       iconColor: "#3BF0FE",
     },
@@ -455,9 +455,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-section-updates",
         load: () => import("./core/ha-config-section-updates"),
       },
-      resolutions: {
-        tag: "ha-config-resolutions-dashboard",
-        load: () => import("./resolutions/ha-config-resolutions-dashboard"),
+      repairs: {
+        tag: "ha-config-repairs-dashboard",
+        load: () => import("./repairs/ha-config-repairs-dashboard"),
       },
       users: {
         tag: "ha-config-users",

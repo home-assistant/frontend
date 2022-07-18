@@ -3,24 +3,22 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import { fixResolutionIssue, ResolutionIssue } from "../../../data/resolutions";
+import type { RepairsIssue } from "../../../data/repairs";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { ResolutionIssueDialogParams } from "./show-resolution-issue-dialog";
+import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
 
-@customElement("dialog-resolution-issue")
-class DialogResolutionIssue extends LitElement {
+@customElement("dialog-repairs-issue")
+class DialogRepairsIssue extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _issue!: ResolutionIssue;
+  @state() private _issue!: RepairsIssue;
 
-  @state() private _params?: ResolutionIssueDialogParams;
-
-  @state() private _submitting = false;
+  @state() private _params?: RepairsIssueDialogParams;
 
   @state() private _error?: string;
 
-  public async showDialog(params: ResolutionIssueDialogParams): Promise<void> {
+  public async showDialog(params: RepairsIssueDialogParams): Promise<void> {
     this._params = params;
     this._issue = this._params.issue;
     await this.updateComplete;
@@ -39,7 +37,7 @@ class DialogResolutionIssue extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass!.localize("ui.panel.config.resolutions.dialog.title")
+          this.hass!.localize("ui.panel.config.repairs.dialog.title")
         )}
       >
         <div>
@@ -66,17 +64,6 @@ class DialogResolutionIssue extends LitElement {
               `
             : ""}
         </div>
-        ${this._issue.is_fixable
-          ? html`
-              <mwc-button
-                slot="primaryAction"
-                @click=${this._fixIssue}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.resolutions.dialog.fix")}
-              </mwc-button>
-            `
-          : ""}
         ${this._issue.learn_more_url
           ? html`
               <a href=${this._issue.learn_more_url} target="_blank">
@@ -88,14 +75,6 @@ class DialogResolutionIssue extends LitElement {
     `;
   }
 
-  private _fixIssue() {
-    try {
-      fixResolutionIssue(this.hass, this._issue);
-    } catch (err: any) {
-      this._error = err.body.message;
-    }
-  }
-
   private _closeDialog() {
     this._params = undefined;
   }
@@ -105,6 +84,6 @@ class DialogResolutionIssue extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-resolution-issue": DialogResolutionIssue;
+    "dialog-repairs-issue": DialogRepairsIssue;
   }
 }

@@ -1,26 +1,26 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import type { ResolutionIssue } from "../../../data/resolutions";
-import { fetchResolutionsIssues } from "../../../data/resolutions";
+import type { RepairsIssue } from "../../../data/repairs";
+import { fetchRepairsIssues } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "./ha-config-resolutions";
+import "./ha-config-repairs";
 
-@customElement("ha-config-resolutions-dashboard")
-class HaConfigResolutionsDashboard extends LitElement {
+@customElement("ha-config-repairs-dashboard")
+class HaConfigRepairsDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @state() private _resolutionIssues: ResolutionIssue[] = [];
+  @state() private _repairsIssues: RepairsIssue[] = [];
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
 
-    fetchResolutionsIssues(this.hass).then(async (data) => {
+    fetchRepairsIssues(this.hass).then(async (data) => {
       await this.hass.loadBackendTranslation("issues");
-      this._resolutionIssues = data.issues;
+      this._repairsIssues = data.issues;
     });
   }
 
@@ -30,23 +30,23 @@ class HaConfigResolutionsDashboard extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.resolutions.caption")}
+        .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
-              ${this._resolutionIssues.length
+              ${this._repairsIssues.length
                 ? html`
-                    <ha-config-resolutions
+                    <ha-config-repairs
                       .hass=${this.hass}
                       .narrow=${this.narrow}
-                      .resolutionIssues=${this._resolutionIssues}
-                    ></ha-config-resolutions>
+                      .repairsIssues=${this._repairsIssues}
+                    ></ha-config-repairs>
                   `
                 : html`
-                    <div class="no-resolutions">
+                    <div class="no-repairs">
                       ${this.hass.localize(
-                        "ui.panel.config.resolutions.no_resolutions"
+                        "ui.panel.config.repairs.no_repairs"
                       )}
                     </div>
                   `}
@@ -81,7 +81,7 @@ class HaConfigResolutionsDashboard extends LitElement {
       padding: 0;
     }
 
-    .no-resolutions {
+    .no-repairs {
       padding: 16px;
     }
   `;
@@ -89,6 +89,6 @@ class HaConfigResolutionsDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-resolutions-dashboard": HaConfigResolutionsDashboard;
+    "ha-config-repairs-dashboard": HaConfigRepairsDashboard;
   }
 }

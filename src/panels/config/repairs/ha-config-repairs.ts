@@ -6,31 +6,31 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
-import type { ResolutionIssue } from "../../../data/resolutions";
+import type { RepairsIssue } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import { showResolutionIssueDialog } from "./show-resolution-issue-dialog";
+import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 
-@customElement("ha-config-resolutions")
-class HaConfigResolutions extends LitElement {
+@customElement("ha-config-repairs")
+class HaConfigRepairs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false })
-  public resolutionIssues?: ResolutionIssue[];
+  public RepairsIssues?: RepairsIssue[];
 
   protected render(): TemplateResult {
-    if (!this.resolutionIssues?.length) {
+    if (!this.RepairsIssues?.length) {
       return html``;
     }
 
-    const issues = this.resolutionIssues;
+    const issues = this.RepairsIssues;
 
     return html`
       <div class="title">
-        ${this.hass.localize("ui.panel.config.resolutions.title", {
-          count: this.resolutionIssues.length,
+        ${this.hass.localize("ui.panel.config.repairs.title", {
+          count: this.RepairsIssues.length,
         })}
       </div>
       <mwc-list>
@@ -64,7 +64,7 @@ class HaConfigResolutions extends LitElement {
   }
 
   private _openShowMoreDialog(ev: MouseEvent): void {
-    showResolutionIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+    showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
   }
 
   static styles = css`
@@ -101,6 +101,6 @@ class HaConfigResolutions extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-resolutions": HaConfigResolutions;
+    "ha-config-repairs": HaConfigRepairs;
   }
 }

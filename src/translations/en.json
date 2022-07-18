@@ -1216,14 +1216,14 @@
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
         },
-        "resolutions": {
-          "caption": "Resolutions",
+        "repairs": {
+          "caption": "Repairs",
           "description": "Find and fix issues with your Home Assistant instance",
-          "title": "{count} {count, plural,\n  one {resolution}\n  other {resolutions}\n}",
-          "no_resolutions": "There are currently no resolutions available",
+          "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
+          "no_repairs": "There are currently no repairs available",
           "dialog": {
-            "title": "Resolution",
-            "fix": "Fix",
+            "title": "Repair",
+            "fix": "Repair",
             "learn": "Learn more"
           }
         },
