@@ -154,9 +154,9 @@ export interface ZHANetworkBackupNetworkInfo {
   tc_link_key: ZHANetworkBackupKey;
   key_table: ZHANetworkBackupKey[];
   children: string[];
-  nwk_addresses: Map<string, string>;
-  stack_specific?: Map<string, any>;
-  metadata: Map<string, any>;
+  nwk_addresses: Record<string, string>;
+  stack_specific?: Record<string, any>;
+  metadata: Record<string, any>;
   source: string;
 }
 
