@@ -44,15 +44,10 @@ class DialogZHARestoreBackup extends LitElement {
   @state() private _chosenBackup?: ZHANetworkBackup;
 
   public async showDialog(): Promise<void> {
-    this._backupFile = undefined;
-    this._backupType = undefined;
-    this._chosenBackup = undefined;
     this._currentBackups = await listZHANetworkBackups(this.hass);
   }
 
   public closeDialog(): void {
-    console.log("Closing dialog!");
-
     this._backupFile = undefined;
     this._backupType = undefined;
     this._chosenBackup = undefined;
@@ -69,6 +64,10 @@ class DialogZHARestoreBackup extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._currentBackups) {
+      return html``;
+    }
+
     return html`
       <ha-dialog
         open
