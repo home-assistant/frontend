@@ -18,19 +18,19 @@ class HaConfigRepairs extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false })
-  public RepairsIssues?: RepairsIssue[];
+  public repairsIssues?: RepairsIssue[];
 
   protected render(): TemplateResult {
-    if (!this.RepairsIssues?.length) {
+    if (!this.repairsIssues?.length) {
       return html``;
     }
 
-    const issues = this.RepairsIssues;
+    const issues = this.repairsIssues;
 
     return html`
       <div class="title">
         ${this.hass.localize("ui.panel.config.repairs.title", {
-          count: this.RepairsIssues.length,
+          count: this.repairsIssues.length,
         })}
       </div>
       <mwc-list>
