@@ -2852,8 +2852,8 @@
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee": "To add a {integration} device, you first need a {supported_adapter_link} and the {integration} integration set up. If you already have the adapter then you can proceed with the setup of {integration}.",
-            "supported_adapter": "supported adapter",
+            "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "supported_hardware": "supported hardware",
             "proceed": "Proceed"
           }
         },

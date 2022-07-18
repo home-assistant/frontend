@@ -312,12 +312,12 @@ class StepFlowPickHandler extends LitElement {
             "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
             {
               integration: "Z-Wave",
-              supported_adapter_link: html`<a
+              supported_hardware_link: html`<a
                 href=${documentationUrl(this.hass, "/docs/z-wave/controllers")}
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.supported_adapter"
+                  "ui.panel.config.integrations.config_flow.supported_hardware"
                 )}</a
               >`,
             }
@@ -345,7 +345,7 @@ class StepFlowPickHandler extends LitElement {
             "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
             {
               integration: "Zigbee",
-              supported_adapter_link: html`<a
+              supported_hardware_link: html`<a
                 href=${documentationUrl(
                   this.hass,
                   "/integrations/zha/#known-working-zigbee-radio-modules"
@@ -353,7 +353,7 @@ class StepFlowPickHandler extends LitElement {
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.supported_adapter"
+                  "ui.panel.config.integrations.config_flow.supported_hardware"
                 )}</a
               >`,
             }
