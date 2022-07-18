@@ -2,6 +2,8 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
 
+import { fireEvent } from "../../../../../../src/common/dom/fire_event";
+
 import {
   ZHANetworkBackup,
   listZHANetworkBackups,
@@ -14,7 +16,7 @@ import {
 } from "../../../../../../src/dialogs/generic/show-dialog-box";
 
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { haStyleDialog } from "../../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 
 import { HaRadio } from "../../../../../../src/components/ha-radio";
@@ -33,9 +35,7 @@ enum BackupType {
 class DialogZHARestoreBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
   @state() private _uploadingBackup = false;
-  @state() private _restoringBackup = false;
 
   @state() private _currentBackups?: ZHANetworkBackup[];
 
@@ -44,12 +44,21 @@ class DialogZHARestoreBackup extends LitElement {
   @state() private _chosenBackup?: ZHANetworkBackup;
 
   public async showDialog(): Promise<void> {
+    this._backupFile = undefined;
+    this._backupType = undefined;
+    this._chosenBackup = undefined;
     this._currentBackups = await listZHANetworkBackups(this.hass);
-    this._opened = true;
   }
 
-  public _close(): void {
-    this._opened = false;
+  public closeDialog(): void {
+    console.log("Closing dialog!");
+
+    this._backupFile = undefined;
+    this._backupType = undefined;
+    this._chosenBackup = undefined;
+    this._currentBackups = undefined;
+
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _formatBackupLabel(backup: ZHANetworkBackup): string {
@@ -64,7 +73,7 @@ class DialogZHARestoreBackup extends LitElement {
       <ha-dialog
         open
         hideActions
-        @closed=${this._close}
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.dialogs.zha_network_restore.restore_backup")
@@ -101,8 +110,8 @@ class DialogZHARestoreBackup extends LitElement {
 
           ${
             this._backupType === BackupType.Automatic
-              ? html` <p>Select a backup:</p>
-
+              ? html`
+                  <p>Select a backup:</p>
                   <div>
                     ${this._currentBackups!.map(
                       (backup) => html`
@@ -115,26 +124,28 @@ class DialogZHARestoreBackup extends LitElement {
                         </ha-formfield>
                       `
                     )}
-                  </div>`
+                  </div>
+                `
               : html``
           }
 
           ${
             this._backupType === BackupType.Manual
-              ? html`<div>
-            <ha-file-upload
-              .hass=${this.hass}
-              .uploading=${this._uploadingBackup}
-              .icon=${mdiFileUpload}
-              accept=".json,application/json"
-              label=${
-                this._backupFile?.name ??
-                this.hass.localize("ui.panel.config.zha.network.upload_backup")
-              }
-              @file-picked=${this._uploadFile}
-            ></ha-file-upload>
-          </div>
-        </div>`
+              ? html`
+                  <div>
+                    <ha-file-upload
+                      .hass=${this.hass}
+                      .uploading=${this._uploadingBackup}
+                      .icon=${mdiFileUpload}
+                      accept=".json,application/json"
+                      label=${this._backupFile?.name ??
+                      this.hass.localize(
+                        "ui.panel.config.zha.network.upload_backup"
+                      )}
+                      @file-picked=${this._uploadFile}
+                    ></ha-file-upload>
+                  </div>
+                `
               : html``
           }
 
@@ -186,9 +197,7 @@ class DialogZHARestoreBackup extends LitElement {
       return;
     }
 
-    this._restoringBackup = true;
     await restoreZHANetworkBackup(this.hass, this._chosenBackup!);
-    this._restoringBackup = false;
 
     await showAlertDialog(this, {
       title: "Restore succeeded",
@@ -199,6 +208,7 @@ class DialogZHARestoreBackup extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyle,
       css`
         ha-select {
           width: 100%;
