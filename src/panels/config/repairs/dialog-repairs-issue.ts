@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
@@ -13,25 +13,26 @@ import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
 class DialogRepairsIssue extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _issue!: RepairsIssue;
+  @state() private _issue?: RepairsIssue;
 
   @state() private _params?: RepairsIssueDialogParams;
 
   @state() private _error?: string;
 
-  public async showDialog(params: RepairsIssueDialogParams): Promise<void> {
+  public showDialog(params: RepairsIssueDialogParams): void {
     this._params = params;
     this._issue = this._params.issue;
-    await this.updateComplete;
   }
 
   public closeDialog() {
     this._params = undefined;
+    this._issue = undefined;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._issue) {
       return html``;
     }
 
@@ -78,8 +79,12 @@ class DialogRepairsIssue extends LitElement {
         </div>
         ${this._issue.learn_more_url
           ? html`
-              <a href=${this._issue.learn_more_url} target="_blank">
-                <mwc-button .label=${"Learn More"}> </mwc-button>
+              <a
+                href=${this._issue.learn_more_url}
+                target="_blank"
+                slot="primaryAction"
+              >
+                <mwc-button .label=${"Learn More"}></mwc-button>
               </a>
             `
           : ""}
@@ -87,7 +92,14 @@ class DialogRepairsIssue extends LitElement {
     `;
   }
 
-  static styles: CSSResultGroup = haStyleDialog;
+  static styles: CSSResultGroup = [
+    haStyleDialog,
+    css`
+      a {
+        text-decoration: none;
+      }
+    `,
+  ];
 }
 
 declare global {

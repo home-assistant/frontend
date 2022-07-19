@@ -1,15 +1,17 @@
 import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import type { RepairsIssue } from "../../../data/repairs";
-import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 
 @customElement("ha-config-repairs")
@@ -50,14 +52,17 @@ class HaConfigRepairs extends LitElement {
                     slot="graphic"
                     .title=${issue.domain}
                     .path=${domainIcon(issue.domain)}
+                    class=${ifDefined(issue.severity)}
                   ></ha-svg-icon>
                   <span
                     >${this.hass.localize(
                       `component.${issue.domain}.issues.${issue.issue_id}.title`
                     )}</span
                   >
-                  <span slot="secondary">
-                    Breaks in version ${issue.breaks_in_ha_version}
+                  <span slot="secondary" class="secondary">
+                    ${issue.created
+                      ? relativeTime(new Date(issue.created), this.hass.locale)
+                      : ""}
                   </span>
                 </ha-list-item>
               `
@@ -103,6 +108,15 @@ class HaConfigRepairs extends LitElement {
     ha-list-item {
       cursor: pointer;
       font-size: 16px;
+    }
+    .secondary {
+      text-transform: capitalize;
+    }
+    .error {
+      color: var(--warning-color);
+    }
+    .critical {
+      color: var(--error-color);
     }
   `;
 }

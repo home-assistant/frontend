@@ -18,9 +18,11 @@ class HaConfigRepairsDashboard extends LitElement {
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
 
-    fetchRepairsIssues(this.hass).then(async (data) => {
-      await this.hass.loadBackendTranslation("issues");
-      this._repairsIssues = data.issues;
+    Promise.all([
+      this.hass.loadBackendTranslation("issues"),
+      fetchRepairsIssues(this.hass),
+    ]).then(([, repairsIssues]) => {
+      this._repairsIssues = repairsIssues.issues;
     });
   }
 
