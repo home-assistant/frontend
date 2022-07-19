@@ -44,18 +44,15 @@ class DialogRepairsIssue extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass!.localize("ui.panel.config.repairs.dialog.title")
+          this.hass.localize(
+            `component.${this._issue.domain}.issues.${this._issue.issue_id}.title`
+          ) || this.hass!.localize("ui.panel.config.repairs.dialog.title")
         )}
       >
         <div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-          <h3>
-            ${this.hass.localize(
-              `component.${this._issue.domain}.issues.${this._issue.issue_id}.title`
-            )}
-          </h3>
           ${this.hass.localize(
             `component.${this._issue.domain}.issues.${this._issue.issue_id}.${
               this._issue.translation_key || "description"
