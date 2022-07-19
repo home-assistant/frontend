@@ -80,6 +80,7 @@ class DialogRepairsIssue extends LitElement {
                 href=${this._issue.learn_more_url}
                 target="_blank"
                 slot="primaryAction"
+                rel="noopener noreferrer"
               >
                 <mwc-button .label=${"Learn More"}></mwc-button>
               </a>
