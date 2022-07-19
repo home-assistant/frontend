@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import type { RepairsIssue } from "../../../data/repairs";
@@ -24,6 +25,11 @@ class DialogRepairsIssue extends LitElement {
     await this.updateComplete;
   }
 
+  public closeDialog() {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -32,7 +38,7 @@ class DialogRepairsIssue extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -81,11 +87,7 @@ class DialogRepairsIssue extends LitElement {
     `;
   }
 
-  private _closeDialog() {
-    this._params = undefined;
-  }
-
-  static styles: CSSResultGroup = [haStyleDialog, css``];
+  static styles: CSSResultGroup = haStyleDialog;
 }
 
 declare global {
