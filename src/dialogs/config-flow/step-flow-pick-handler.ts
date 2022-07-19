@@ -309,7 +309,21 @@ class StepFlowPickHandler extends LitElement {
         // If the component isn't loaded, ask them to load the integration first
         showConfirmationDialog(this, {
           text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.missing_zwave_js"
+            "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
+            {
+              integration: "Z-Wave",
+              supported_hardware_link: html`<a
+                href=${documentationUrl(this.hass, "/docs/z-wave/controllers")}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.supported_hardware"
+                )}</a
+              >`,
+            }
+          ),
+          confirmText: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.proceed"
           ),
           confirm: () => {
             fireEvent(this, "handler-picked", {
@@ -328,7 +342,24 @@ class StepFlowPickHandler extends LitElement {
       if (!isComponentLoaded(this.hass, "zha")) {
         showConfirmationDialog(this, {
           text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.missing_zha"
+            "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
+            {
+              integration: "Zigbee",
+              supported_hardware_link: html`<a
+                href=${documentationUrl(
+                  this.hass,
+                  "/integrations/zha/#known-working-zigbee-radio-modules"
+                )}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.supported_hardware"
+                )}</a
+              >`,
+            }
+          ),
+          confirmText: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.proceed"
           ),
           confirm: () => {
             fireEvent(this, "handler-picked", {
