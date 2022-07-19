@@ -2,8 +2,10 @@ import "@material/mwc-button";
 import { HassEvent } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { dump } from "js-yaml";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
+import "../../../components/ha-code-editor";
 import "../../../components/ha-textfield";
 import { HomeAssistant } from "../../../types";
 
@@ -74,7 +76,12 @@ class EventSubscribeCard extends LitElement {
                   ev.id
                 )}
                 ${formatTime(new Date(ev.event.time_fired), this.hass!.locale)}:
-                <pre>${JSON.stringify(ev.event, null, 4)}</pre>
+                <ha-code-editor
+                  mode="yaml"
+                  .value=${dump(ev.event, { quotingType: '"' })}
+                  readOnly
+                  dir="ltr"
+                ></ha-code-editor>
               </div>
             `
           )}
