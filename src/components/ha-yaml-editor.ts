@@ -41,7 +41,7 @@ export class HaYamlEditor extends LitElement {
     try {
       this._yaml =
         value && !isEmpty(value)
-          ? dump(value, { schema: this.yamlSchema })
+          ? dump(value, { schema: this.yamlSchema, quotingType: '"' })
           : "";
     } catch (err: any) {
       // eslint-disable-next-line no-console
