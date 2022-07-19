@@ -460,8 +460,8 @@ export class HaMap extends ReactiveElement {
       .dark {
         color: #ffffff;
       }
-      .dark .leaflet-tile-pane {
-        filter: invert(0.9) hue-rotate(170deg);
+      .leaflet-tile-pane {
+        filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
         background: var(--card-background-color);
