@@ -1,17 +1,17 @@
 import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import { domainToName } from "../../../data/integration";
 import type { RepairsIssue } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 
@@ -49,12 +49,18 @@ class HaConfigRepairs extends LitElement {
                   .issue=${issue}
                   @click=${this._openShowMoreDialog}
                 >
-                  <ha-svg-icon
+                  <img
+                    loading="lazy"
+                    src=${brandsUrl({
+                      domain: issue.domain,
+                      type: "icon",
+                      useFallback: true,
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    .title=${domainToName(this.hass.localize, issue.domain)}
+                    referrerpolicy="no-referrer"
                     slot="graphic"
-                    .title=${issue.domain}
-                    .path=${domainIcon(issue.domain)}
-                    class=${ifDefined(issue.severity)}
-                  ></ha-svg-icon>
+                  />
                   <span
                     >${this.hass.localize(
                       `component.${issue.domain}.issues.${issue.issue_id}.title`
@@ -115,12 +121,6 @@ class HaConfigRepairs extends LitElement {
     }
     .secondary {
       text-transform: capitalize;
-    }
-    .error {
-      color: var(--warning-color);
-    }
-    .critical {
-      color: var(--error-color);
     }
   `;
 }
