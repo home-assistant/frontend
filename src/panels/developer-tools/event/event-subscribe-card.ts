@@ -2,10 +2,11 @@ import "@material/mwc-button";
 import { HassEvent } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
-import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
+import "../../../components/ha-yaml-editor";
 import { HomeAssistant } from "../../../types";
 
 @customElement("event-subscribe-card")
@@ -66,21 +67,27 @@ class EventSubscribeCard extends LitElement {
           </mwc-button>
         </form>
         <div class="events">
-          ${this._events.map(
-            (ev) => html`
-              <div class="event">
-                ${this.hass!.localize(
-                  "ui.panel.developer-tools.tabs.events.event_fired",
-                  "name",
-                  ev.id
-                )}
-                ${formatTime(new Date(ev.event.time_fired), this.hass!.locale)}:
-                <ha-yaml-editor
-                  .defaultValue=${ev.event}
-                  readOnly
-                ></ha-code-editor>
-              </div>
-            `
+          ${repeat(
+            this._events,
+            (event) => event.id,
+            (event) =>
+              html`
+                <div class="event">
+                  ${this.hass!.localize(
+                    "ui.panel.developer-tools.tabs.events.event_fired",
+                    "name",
+                    event.id
+                  )}
+                  ${formatTime(
+                    new Date(event.event.time_fired),
+                    this.hass!.locale
+                  )}:
+                  <ha-yaml-editor
+                    .defaultValue=${event.event}
+                    readOnly
+                  ></ha-yaml-editor>
+                </div>
+              `
           )}
         </div>
       </ha-card>
