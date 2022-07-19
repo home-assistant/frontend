@@ -272,7 +272,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/repairs",
       translationKey: "repairs",
       iconPath: mdiLifebuoy,
-      iconColor: "#3BF0FE",
+      iconColor: "#5c995c",
     },
     {
       component: "logs",

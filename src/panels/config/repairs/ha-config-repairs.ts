@@ -119,9 +119,6 @@ class HaConfigRepairs extends LitElement {
       cursor: pointer;
       font-size: 16px;
     }
-    .secondary {
-      text-transform: capitalize;
-    }
   `;
 }
 
