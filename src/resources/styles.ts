@@ -46,7 +46,7 @@ export const darkStyles = {
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
   "energy-grid-return-color": "#a280db",
-  "map-filter": "invert(0.9) hue-rotate(170deg)",
+  "map-filter": "invert(.9) hue-rotate(170deg) grayscale(.7)",
 };
 
 export const derivedStyles = {
