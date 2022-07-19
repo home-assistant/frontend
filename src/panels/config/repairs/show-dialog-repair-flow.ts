@@ -1,0 +1,186 @@
+import { html } from "lit";
+import { domainToName } from "../../../data/integration";
+import {
+  createRepairsFlow,
+  deleteRepairsFlow,
+  fetchRepairsFlow,
+  handleRepairsFlowStep,
+  RepairsIssue,
+} from "../../../data/repairs";
+import {
+  loadDataEntryFlowDialog,
+  showFlowDialog,
+} from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
+
+export const loadRepairFlowDialog = loadDataEntryFlowDialog;
+
+export const showRepairsFlowDialog = (
+  element: HTMLElement,
+  issue: RepairsIssue
+): void =>
+  showFlowDialog(
+    element,
+    {
+      startFlowHandler: issue.domain,
+      domain: issue.domain,
+    },
+    {
+      loadDevicesAndAreas: false,
+      createFlow: async (hass, handler) => {
+        const [step] = await Promise.all([
+          createRepairsFlow(hass, handler, issue.issue_id),
+          hass.loadBackendTranslation("issues", issue.domain),
+        ]);
+        return step;
+      },
+      fetchFlow: async (hass, flowId) => {
+        const [step] = await Promise.all([
+          fetchRepairsFlow(hass, flowId),
+          hass.loadBackendTranslation("issues", issue.domain),
+        ]);
+        return step;
+      },
+      handleFlowStep: handleRepairsFlowStep,
+      deleteFlow: deleteRepairsFlow,
+
+      renderAbortDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.abort.${step.reason}`,
+          step.description_placeholders
+        );
+
+        return description
+          ? html`
+              <ha-markdown
+                breaks
+                allowsvg
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
+      },
+
+      renderShowFormStepHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.title`
+          ) || hass.localize(`ui.dialogs.issues_flow.form.header`)
+        );
+      },
+
+      renderShowFormStepDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
+      },
+
+      renderShowFormStepFieldLabel(hass, step, field) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.data.${field.name}`
+        );
+      },
+
+      renderShowFormStepFieldHelper(hass, step, field) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.data_description.${field.name}`
+        );
+      },
+
+      renderShowFormStepFieldError(hass, step, error) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.error.${error}`,
+          step.description_placeholders
+        );
+      },
+
+      renderExternalStepHeader(_hass, _step) {
+        return "";
+      },
+
+      renderExternalStepDescription(_hass, _step) {
+        return "";
+      },
+
+      renderCreateEntryDescription(hass, _step) {
+        return html`
+          <p>${hass.localize(`ui.dialogs.repairs.success.description`)}</p>
+        `;
+      },
+
+      renderShowFormProgressHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.step.${issue.issue_id}.fix_flow.${step.step_id}.title`
+          ) || hass.localize(`component.${issue.domain}.title`)
+        );
+      },
+
+      renderShowFormProgressDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.progress.${step.progress_action}`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
+      },
+
+      renderMenuHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.title`
+          ) || hass.localize(`component.${issue.domain}.title`)
+        );
+      },
+
+      renderMenuDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
+      },
+
+      renderMenuOption(hass, step, option) {
+        return hass.localize(
+          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.menu_issues.${option}`,
+          step.description_placeholders
+        );
+      },
+
+      renderLoadingDescription(hass, reason) {
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.loading`
+          ) ||
+          hass.localize(`ui.dialogs.repairs.loading.${reason}`, {
+            integration: domainToName(hass.localize, issue.domain),
+          })
+        );
+      },
+    }
+  );

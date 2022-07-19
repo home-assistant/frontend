@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../types";
+import { DataEntryFlowStep } from "./data_entry_flow";
 
 export interface RepairsIssue {
   domain: string;
@@ -28,8 +29,32 @@ export const dismissRepairsIssue = async (
     domain: issue.domain,
   });
 
-export const fixRepairsIssue = (hass: HomeAssistant, issue: RepairsIssue) =>
-  hass.callApi("POST", "resolution_center/issues/fix", {
-    handler: issue.domain,
-    issue_id: issue.issue_id,
+export const createRepairsFlow = (
+  hass: HomeAssistant,
+  handler: string,
+  issue_id: string
+) =>
+  hass.callApi<DataEntryFlowStep>("POST", "resolution_center/issues/fix", {
+    handler,
+    issue_id,
   });
+
+export const fetchRepairsFlow = (hass: HomeAssistant, flowId: string) =>
+  hass.callApi<DataEntryFlowStep>(
+    "GET",
+    `resolution_center/issues/fix/${flowId}`
+  );
+
+export const handleRepairsFlowStep = (
+  hass: HomeAssistant,
+  flowId: string,
+  data: Record<string, any>
+) =>
+  hass.callApi<DataEntryFlowStep>(
+    "POST",
+    `resolution_center/issues/fix/${flowId}`,
+    data
+  );
+
+export const deleteRepairsFlow = (hass: HomeAssistant, flowId: string) =>
+  hass.callApi("DELETE", `resolution_center/issues/fix/${flowId}`);

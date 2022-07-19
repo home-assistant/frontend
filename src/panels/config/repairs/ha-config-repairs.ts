@@ -7,6 +7,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import type { RepairsIssue } from "../../../data/repairs";
+import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
@@ -63,8 +64,13 @@ class HaConfigRepairs extends LitElement {
     `;
   }
 
-  private _openShowMoreDialog(ev: MouseEvent): void {
-    showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+  private _openShowMoreDialog(ev): void {
+    const issue = ev.currentTarget.issue as RepairsIssue;
+    if (issue.is_fixable) {
+      showRepairsFlowDialog(this, issue);
+    } else {
+      showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+    }
   }
 
   static styles = css`
