@@ -49,6 +49,12 @@ class DialogRepairsIssue extends LitElement {
               `component.${this._issue.domain}.issues.${this._issue.issue_id}.title`
             )}
           </h3>
+          ${this.hass.localize(
+            `component.${this._issue.domain}.issues.${this._issue.issue_id}.${
+              this._issue.translation_key || "description"
+            }`,
+            this._issue.translation_placeholders
+          )}
           ${this._issue.breaks_in_ha_version
             ? html`
                 This will no longer work as of the

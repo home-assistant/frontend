@@ -35,30 +35,32 @@ class HaConfigRepairs extends LitElement {
         })}
       </div>
       <mwc-list>
-        ${issues.map(
-          (issue) => html`
-            <ha-list-item
-              twoline
-              graphic="avatar"
-              .hasMeta=${!this.narrow}
-              .issue=${issue}
-              @click=${this._openShowMoreDialog}
-            >
-              <ha-svg-icon
-                slot="graphic"
-                .title=${issue.domain}
-                .path=${domainIcon(issue.domain)}
-              ></ha-svg-icon>
-              <span
-                >${this.hass.localize(
-                  `component.${issue.domain}.issues.${issue.issue_id}.title`
-                )}</span
-              >
-              <span slot="secondary">
-                Breaks in version ${issue.breaks_in_ha_version}
-              </span>
-            </ha-list-item>
-          `
+        ${issues.map((issue) =>
+          issue.ignored
+            ? ""
+            : html`
+                <ha-list-item
+                  twoline
+                  graphic="avatar"
+                  .hasMeta=${!this.narrow}
+                  .issue=${issue}
+                  @click=${this._openShowMoreDialog}
+                >
+                  <ha-svg-icon
+                    slot="graphic"
+                    .title=${issue.domain}
+                    .path=${domainIcon(issue.domain)}
+                  ></ha-svg-icon>
+                  <span
+                    >${this.hass.localize(
+                      `component.${issue.domain}.issues.${issue.issue_id}.title`
+                    )}</span
+                  >
+                  <span slot="secondary">
+                    Breaks in version ${issue.breaks_in_ha_version}
+                  </span>
+                </ha-list-item>
+              `
         )}
       </mwc-list>
     `;

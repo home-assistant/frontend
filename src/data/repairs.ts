@@ -8,6 +8,8 @@ export interface RepairsIssue {
   is_fixable: boolean;
   severity?: "error" | "warning" | "critical";
   breaks_in_ha_version?: string;
+  ignored: boolean;
+  created: string;
   dismissed_version?: string;
   learn_more_url?: string;
   translation_key?: string;
