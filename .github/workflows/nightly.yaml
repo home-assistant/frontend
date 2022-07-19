@@ -6,7 +6,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: 3.8
+  PYTHON_VERSION: 3.10
   NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
