@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
 
+import { nothing } from "lit";
 import { fireEvent } from "../../../../../../src/common/dom/fire_event";
 
 import {
@@ -68,6 +69,11 @@ class DialogZHARestoreBackup extends LitElement {
       return html``;
     }
 
+    // Sort the backups by their timestamp
+    const sortedBackups: ZHANetworkBackup[] = this._currentBackups!.slice(
+      0
+    ).sort((a, b) => Date.parse(b.backup_time) - Date.parse(a.backup_time));
+
     return html`
       <ha-dialog
         open
@@ -112,7 +118,7 @@ class DialogZHARestoreBackup extends LitElement {
               ? html`
                   <p>Select a backup:</p>
                   <div>
-                    ${this._currentBackups!.map(
+                    ${sortedBackups.map(
                       (backup) => html`
                         <ha-formfield .label=${this._formatBackupLabel(backup)}>
                           <ha-radio
@@ -125,7 +131,7 @@ class DialogZHARestoreBackup extends LitElement {
                     )}
                   </div>
                 `
-              : html``
+              : nothing
           }
 
           ${
@@ -145,7 +151,7 @@ class DialogZHARestoreBackup extends LitElement {
                     ></ha-file-upload>
                   </div>
                 `
-              : html``
+              : nothing
           }
 
         <div class="dialog-actions">
