@@ -76,6 +76,7 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiTextToSpeech,
   counter: mdiCounter,
+  demo: mdiHomeAssistant,
   fan: mdiFan,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
