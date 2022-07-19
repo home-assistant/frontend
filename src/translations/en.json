@@ -955,6 +955,18 @@
           "description": "Options successfully saved."
         }
       },
+      "repair_flow": {
+        "form": {
+          "header": "Repair issue"
+        },
+        "loading": {
+          "loading_flow": "Please wait while the repair for {integration} is being initialized",
+          "loading_step": "[%key:ui::panel::config::integrations::config_flow::loading::loading_step%]"
+        },
+        "success": {
+          "description": "The issue is repaired!"
+        }
+      },
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
@@ -1215,6 +1227,17 @@
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
+        },
+        "repairs": {
+          "caption": "Repairs",
+          "description": "Find and fix issues with your Home Assistant instance",
+          "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
+          "no_repairs": "There are currently no repairs available",
+          "dialog": {
+            "title": "Repair",
+            "fix": "Repair",
+            "learn": "Learn more"
+          }
         },
         "areas": {
           "caption": "Areas",

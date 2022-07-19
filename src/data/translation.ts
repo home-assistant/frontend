@@ -39,7 +39,8 @@ export type TranslationCategory =
   | "mfa_setup"
   | "system_health"
   | "device_class"
-  | "application_credentials";
+  | "application_credentials"
+  | "issues";
 
 export const fetchTranslationPreferences = (hass: HomeAssistant) =>
   fetchFrontendUserData(hass.connection, "language");
