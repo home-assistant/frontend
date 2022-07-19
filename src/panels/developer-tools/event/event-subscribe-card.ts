@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
+import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
 import { HomeAssistant } from "../../../types";
 
@@ -74,7 +75,10 @@ class EventSubscribeCard extends LitElement {
                   ev.id
                 )}
                 ${formatTime(new Date(ev.event.time_fired), this.hass!.locale)}:
-                <pre>${JSON.stringify(ev.event, null, 4)}</pre>
+                <ha-yaml-editor
+                  .defaultValue=${ev.event}
+                  readOnly
+                ></ha-code-editor>
               </div>
             `
           )}
