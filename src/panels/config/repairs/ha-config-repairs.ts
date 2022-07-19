@@ -3,6 +3,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
@@ -74,7 +75,10 @@ class HaConfigRepairs extends LitElement {
   private _openShowMoreDialog(ev): void {
     const issue = ev.currentTarget.issue as RepairsIssue;
     if (issue.is_fixable) {
-      showRepairsFlowDialog(this, issue);
+      showRepairsFlowDialog(this, issue, () => {
+        // @ts-ignore
+        fireEvent(this, "update-issues");
+      });
     } else {
       showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
     }

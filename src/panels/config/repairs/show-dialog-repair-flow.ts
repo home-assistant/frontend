@@ -16,13 +16,15 @@ export const loadRepairFlowDialog = loadDataEntryFlowDialog;
 
 export const showRepairsFlowDialog = (
   element: HTMLElement,
-  issue: RepairsIssue
+  issue: RepairsIssue,
+  dialogClosedCallback?: (params: { flowFinished: boolean }) => void
 ): void =>
   showFlowDialog(
     element,
     {
       startFlowHandler: issue.domain,
       domain: issue.domain,
+      dialogClosedCallback,
     },
     {
       loadDevicesAndAreas: false,

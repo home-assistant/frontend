@@ -17,13 +17,7 @@ class HaConfigRepairsDashboard extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-
-    Promise.all([
-      this.hass.loadBackendTranslation("issues"),
-      fetchRepairsIssues(this.hass),
-    ]).then(([, repairsIssues]) => {
-      this._repairsIssues = repairsIssues.issues;
-    });
+    this._fetchIssues();
   }
 
   protected render(): TemplateResult {
@@ -43,6 +37,7 @@ class HaConfigRepairsDashboard extends LitElement {
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .repairsIssues=${this._repairsIssues}
+                      @update-issues=${this._fetchIssues}
                     ></ha-config-repairs>
                   `
                 : html`
@@ -57,6 +52,15 @@ class HaConfigRepairsDashboard extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private async _fetchIssues(): Promise<void> {
+    const [, repairsIssues] = await Promise.all([
+      this.hass.loadBackendTranslation("issues"),
+      fetchRepairsIssues(this.hass),
+    ]);
+
+    this._repairsIssues = repairsIssues.issues;
   }
 
   static styles = css`
