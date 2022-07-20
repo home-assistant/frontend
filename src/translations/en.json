@@ -423,9 +423,7 @@
         "remove_user": "Remove user"
       },
       "blueprint-picker": {
-        "select_blueprint": "Select a Blueprint",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "select_blueprint": "Select a Blueprint"
       },
       "device-picker": {
         "clear": "Clear",
@@ -1592,6 +1590,7 @@
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
+            "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
