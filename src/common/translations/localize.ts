@@ -7,8 +7,19 @@ import { Resources, TranslationDict } from "../../types";
 import { getLocalLanguage } from "../../util/common-translation";
 
 // Exclude some patterns from key type checking for now
-// Fixing requires tighter definition of types from backend and/or web socket
-type LocalizeKeyExceptions = `component.${string}`;
+// These are intended to be removed as errors are fixed
+// Fixing component category will require tighter definition of types from backend and/or web socket
+type LocalizeKeyExceptions =
+  | `${string}`
+  | `panel.${string}`
+  | `state.${string}`
+  | `state_attributes.${string}`
+  | `state_badge.${string}`
+  | `groups.${string}`
+  | `config_entry.${string}`
+  | `ui.${string}`
+  | `${keyof TranslationDict["supervisor"]}.${string}`
+  | `component.${string}`;
 
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
 type FlattenObjectKeys<
