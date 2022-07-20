@@ -166,6 +166,11 @@ export interface ZHANetworkBackup {
   node_info: ZHANetworkBackupNodeInfo;
 }
 
+export interface ZHANetworkBackupAndMetadata {
+  backup: ZHANetworkBackup;
+  is_complete: boolean;
+}
+
 export interface ZHAGroupMember {
   ieee: string;
   endpoint_id: string;
@@ -396,7 +401,7 @@ export const fetchZHANetworkSettings = (
 
 export const createZHANetworkBackup = (
   hass: HomeAssistant
-): Promise<ZHANetworkBackup> =>
+): Promise<ZHANetworkBackupAndMetadata> =>
   hass.callWS({
     type: "zha/network/backups/create",
   });

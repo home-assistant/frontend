@@ -26,7 +26,12 @@ import {
   fetchZHANetworkSettings,
   createZHANetworkBackup,
   ZHANetworkBackup,
+  ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
+
+import {
+  showAlertDialog,
+} from "../../../../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("zha-network-page")
 class ZHANetworkPage extends LitElement {
@@ -127,14 +132,25 @@ class ZHANetworkPage extends LitElement {
 
   private async _createAndDownloadBackup(): Promise<void> {
     this._generatingBackup = true;
-    const backup: ZHANetworkBackup = await createZHANetworkBackup(this.hass!);
+    const backup_and_metadata: ZHANetworkBackupAndMetadata = await createZHANetworkBackup(this.hass!);
     this._generatingBackup = false;
+
+    if (!backup_and_metadata.is_complete) {
+      await showAlertDialog(this, {
+        title: "Backup is incomplete",
+        text: "A backup has been created but it is incomplete and cannot be restored. This is a coordinator firmware limitation.",
+      });
+    }
 
     const backupJSON: string =
       "data:text/plain;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(backup, null, 4));
-    const backupTime: Date = new Date(Date.parse(backup.backup_time));
-    const filename: string = backupTime.toISOString().replace(/:/g, "-");
+      encodeURIComponent(JSON.stringify(backup_and_metadata.backup, null, 4));
+    const backupTime: Date = new Date(Date.parse(backup_and_metadata.backup.backup_time));
+    let filename: string = backupTime.toISOString().replace(/:/g, "-");
+
+    if (!backup_and_metadata.is_complete) {
+      filename += ", incomplete";
+    }
 
     fileDownload(backupJSON, `ZHA backup ${filename}.json`);
   }
