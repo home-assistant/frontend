@@ -8,4 +8,4 @@ are very customizable, as no household is the same.
 This gallery helps our developers and designers to see all the
 different states that each card can be in.
 
-Check [the Dashboard documentation](https://www.home-assistant.io/dashboards/) for instructions on how to get started with Dashboards.
+Check [the Dashboards documentation](https://www.home-assistant.io/dashboards/) for instructions on how to get started with Dashboards.
