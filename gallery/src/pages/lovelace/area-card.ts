@@ -31,7 +31,7 @@ const ENTITIES = [
     friendly_name: "Office Light",
   }),
   getEntity("fan", "kitchen", "on", {
-    friendly_name: "Second Office Fan",
+    friendly_name: "Kitchen Fan",
   }),
   getEntity("binary_sensor", "kitchen_door", "on", {
     friendly_name: "Office Door",
