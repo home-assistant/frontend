@@ -454,9 +454,6 @@ class DialogPersonDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         ha-picture-upload,
         ha-textfield {
           display: block;

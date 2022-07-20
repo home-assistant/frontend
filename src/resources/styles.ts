@@ -46,6 +46,7 @@ export const darkStyles = {
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
   "energy-grid-return-color": "#a280db",
+  "map-filter": "invert(.9) hue-rotate(170deg) grayscale(.7)",
 };
 
 export const derivedStyles = {
@@ -316,7 +317,6 @@ export const haStyleDialog = css`
   }
 
   ha-dialog .form {
-    padding-bottom: 24px;
     color: var(--primary-text-color);
   }
 
