@@ -70,9 +70,10 @@ class DialogZHARestoreBackup extends LitElement {
     }
 
     // Sort the backups by their timestamp
-    const sortedBackups: ZHANetworkBackup[] = this._currentBackups!.slice(
-      0
-    ).sort((a, b) => Date.parse(b.backup_time) - Date.parse(a.backup_time));
+    const sortedBackups: ZHANetworkBackup[] =
+      this._currentBackups!.slice().sort(
+        (a, b) => Date.parse(b.backup_time) - Date.parse(a.backup_time)
+      );
 
     return html`
       <ha-dialog
@@ -115,22 +116,26 @@ class DialogZHARestoreBackup extends LitElement {
 
           ${
             this._backupType === BackupType.Automatic
-              ? html`
-                  <p>Select a backup:</p>
-                  <div>
-                    ${sortedBackups.map(
-                      (backup) => html`
-                        <ha-formfield .label=${this._formatBackupLabel(backup)}>
-                          <ha-radio
-                            name="chosenAutomaticBackup"
-                            @change=${this._handleAutomaticBackupChanged}
-                            .value=${backup}
-                          ></ha-radio>
-                        </ha-formfield>
-                      `
-                    )}
-                  </div>
-                `
+              ? sortedBackups.length === 0
+                ? html`<p>No valid backups exist.</p>`
+                : html`
+                    <p>Select a backup:</p>
+                    <div>
+                      ${sortedBackups.map(
+                        (backup) => html`
+                          <ha-formfield
+                            .label=${this._formatBackupLabel(backup)}
+                          >
+                            <ha-radio
+                              name="chosenAutomaticBackup"
+                              @change=${this._handleAutomaticBackupChanged}
+                              .value=${backup}
+                            ></ha-radio>
+                          </ha-formfield>
+                        `
+                      )}
+                    </div>
+                  `
               : nothing
           }
 
