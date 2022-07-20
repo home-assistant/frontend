@@ -18,7 +18,7 @@ export interface RepairsIssue {
 
 export const fetchRepairsIssues = async (hass: HomeAssistant) =>
   hass.callWS<{ issues: RepairsIssue[] }>({
-    type: "resolution_center/list_issues",
+    type: "repairs/list_issues",
   });
 
 export const dismissRepairsIssue = async (
@@ -26,7 +26,7 @@ export const dismissRepairsIssue = async (
   issue: RepairsIssue
 ) =>
   hass.callWS<string>({
-    type: "resolution_center/dismiss_issue",
+    type: "repairs/dismiss_issue",
     issue_id: issue.issue_id,
     domain: issue.domain,
   });
@@ -36,27 +36,20 @@ export const createRepairsFlow = (
   handler: string,
   issue_id: string
 ) =>
-  hass.callApi<DataEntryFlowStep>("POST", "resolution_center/issues/fix", {
+  hass.callApi<DataEntryFlowStep>("POST", "repairs/issues/fix", {
     handler,
     issue_id,
   });
 
 export const fetchRepairsFlow = (hass: HomeAssistant, flowId: string) =>
-  hass.callApi<DataEntryFlowStep>(
-    "GET",
-    `resolution_center/issues/fix/${flowId}`
-  );
+  hass.callApi<DataEntryFlowStep>("GET", `repairs/issues/fix/${flowId}`);
 
 export const handleRepairsFlowStep = (
   hass: HomeAssistant,
   flowId: string,
   data: Record<string, any>
 ) =>
-  hass.callApi<DataEntryFlowStep>(
-    "POST",
-    `resolution_center/issues/fix/${flowId}`,
-    data
-  );
+  hass.callApi<DataEntryFlowStep>("POST", `repairs/issues/fix/${flowId}`, data);
 
 export const deleteRepairsFlow = (hass: HomeAssistant, flowId: string) =>
-  hass.callApi("DELETE", `resolution_center/issues/fix/${flowId}`);
+  hass.callApi("DELETE", `repairs/issues/fix/${flowId}`);
