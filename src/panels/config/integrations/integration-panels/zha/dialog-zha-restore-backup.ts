@@ -5,6 +5,7 @@ import { mdiFileUpload } from "@mdi/js";
 import { nothing } from "lit";
 import { fireEvent } from "../../../../../../src/common/dom/fire_event";
 
+import { extractApiErrorMessage } from "../../../../../../src/data/hassio/common";
 import {
   ZHANetworkBackup,
   listZHANetworkBackups,
@@ -207,7 +208,16 @@ class DialogZHARestoreBackup extends LitElement {
       return;
     }
 
-    await restoreZHANetworkBackup(this.hass, this._chosenBackup!);
+    try {
+      await restoreZHANetworkBackup(this.hass, this._chosenBackup!);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        title: "Restore failed",
+        text: extractApiErrorMessage(err),
+      });
+
+      return;
+    }
 
     await showAlertDialog(this, {
       title: "Restore succeeded",
