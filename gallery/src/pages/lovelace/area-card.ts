@@ -102,7 +102,7 @@ class DemoArea extends LitElement {
         picture: "/images/office.jpg",
       },
       {
-        name: "Second Office",
+        name: "Kitchen",
         area_id: "kitchen",
         picture: "/images/kitchen.png",
       },
