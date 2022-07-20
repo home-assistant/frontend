@@ -65,14 +65,18 @@ export const showRepairsFlowDialog = (
       renderShowFormStepHeader(hass, step) {
         return (
           hass.localize(
-            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.title`
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.step.${step.step_id}.title`
           ) || hass.localize(`ui.dialogs.issues_flow.form.header`)
         );
       },
 
       renderShowFormStepDescription(hass, step) {
         const description = hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.description`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.description`,
           step.description_placeholders
         );
         return description
@@ -88,19 +92,25 @@ export const showRepairsFlowDialog = (
 
       renderShowFormStepFieldLabel(hass, step, field) {
         return hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.data.${field.name}`
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.data.${field.name}`
         );
       },
 
       renderShowFormStepFieldHelper(hass, step, field) {
         return hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.data_description.${field.name}`
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.data_description.${field.name}`
         );
       },
 
       renderShowFormStepFieldError(hass, step, error) {
         return hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.error.${error}`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.error.${error}`,
           step.description_placeholders
         );
       },
@@ -122,14 +132,18 @@ export const showRepairsFlowDialog = (
       renderShowFormProgressHeader(hass, step) {
         return (
           hass.localize(
-            `component.${issue.domain}.issues.step.${issue.issue_id}.fix_flow.${step.step_id}.title`
+            `component.${issue.domain}.issues.step.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.${step.step_id}.title`
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
 
       renderShowFormProgressDescription(hass, step) {
         const description = hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.progress.${step.progress_action}`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.progress.${step.progress_action}`,
           step.description_placeholders
         );
         return description
@@ -146,14 +160,18 @@ export const showRepairsFlowDialog = (
       renderMenuHeader(hass, step) {
         return (
           hass.localize(
-            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.title`
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.step.${step.step_id}.title`
           ) || hass.localize(`component.${issue.domain}.title`)
         );
       },
 
       renderMenuDescription(hass, step) {
         const description = hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.description`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.description`,
           step.description_placeholders
         );
         return description
@@ -169,7 +187,9 @@ export const showRepairsFlowDialog = (
 
       renderMenuOption(hass, step, option) {
         return hass.localize(
-          `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.step.${step.step_id}.menu_issues.${option}`,
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.step.${step.step_id}.menu_issues.${option}`,
           step.description_placeholders
         );
       },
@@ -177,7 +197,9 @@ export const showRepairsFlowDialog = (
       renderLoadingDescription(hass, reason) {
         return (
           hass.localize(
-            `component.${issue.domain}.issues.${issue.issue_id}.fix_flow.loading`
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.loading`
           ) ||
           hass.localize(`ui.dialogs.repairs.loading.${reason}`, {
             integration: domainToName(hass.localize, issue.domain),

@@ -45,7 +45,9 @@ class DialogRepairsIssue extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(
-            `component.${this._issue.domain}.issues.${this._issue.issue_id}.title`
+            `component.${this._issue.domain}.issues.${
+              this._issue.translation_key || this._issue.issue_id
+            }.title`
           ) || this.hass!.localize("ui.panel.config.repairs.dialog.title")
         )}
       >
@@ -54,8 +56,9 @@ class DialogRepairsIssue extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           ${this.hass.localize(
-            `component.${this._issue.domain}.issues.${this._issue.issue_id}.${
-              this._issue.translation_key || "description"
+            `component.${this._issue.domain}.issues.${
+              this._issue.translation_key || this._issue.issue_id
+            }.description
             }`,
             this._issue.translation_placeholders
           )}
