@@ -190,7 +190,8 @@ class DialogZHARestoreBackup extends LitElement {
     this._chosenBackup = undefined;
 
     this._uploadingBackup = true;
-    const backupContents: string = await ev.detail.files[0].text();
+    this._backupFile = ev.detail.files[0];
+    const backupContents: string = await this._backupFile!.text();
     this._uploadingBackup = false;
 
     this._chosenBackup = JSON.parse(backupContents) as ZHANetworkBackup;
