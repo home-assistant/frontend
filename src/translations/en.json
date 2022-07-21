@@ -1218,7 +1218,7 @@
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
-          "more_updates": "Show all updates",
+          "more_updates": "+{count} updates",
           "show": "show",
           "show_skipped": "Show skipped",
           "hide_skipped": "Hide skipped",
