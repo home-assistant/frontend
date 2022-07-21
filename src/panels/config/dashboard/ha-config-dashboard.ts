@@ -197,7 +197,10 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <a class="button" href="/config/repairs">
                           ${this.hass.localize(
-                            "ui.panel.config.repairs.more_repairs"
+                            "ui.panel.config.repairs.more_repairs",
+                            {
+                              count: totalRepairIssues - repairsIssues.length,
+                            }
                           )}
                         </a>
                       `
@@ -218,7 +221,10 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <a class="button" href="/config/updates">
                           ${this.hass.localize(
-                            "ui.panel.config.updates.more_updates"
+                            "ui.panel.config.updates.more_updates",
+                            {
+                              count: totalUpdates - canInstallUpdates.length,
+                            }
                           )}
                         </a>
                       `
