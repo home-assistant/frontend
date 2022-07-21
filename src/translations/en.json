@@ -1231,7 +1231,7 @@
           "description": "Find and fix issues with your Home Assistant instance",
           "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
           "no_repairs": "There are currently no repairs available",
-          "more_repairs": "Show all repairs",
+          "more_repairs": "+{count} repairs",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",
