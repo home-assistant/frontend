@@ -29,7 +29,102 @@ interface DeprecatedIcon {
   };
 }
 
-const mdiDeprecatedIcons: DeprecatedIcon = {};
+const mdiDeprecatedIcons: DeprecatedIcon = {
+  "android-messages": {
+    newName: "message-text",
+    removeIn: "2022.10",
+  },
+  "book-variant-multiple": {
+    newName: "bookmark-box-multiple",
+    removeIn: "2022.10",
+  },
+  "desktop-mac": {
+    newName: "monitor",
+    removeIn: "2022.10",
+  },
+  "desktop-mac-dashboard": {
+    newName: "monitor-dashboard",
+    removeIn: "2022.10",
+  },
+  discord: {
+    removeIn: "2022.10",
+  },
+  "diving-scuba": {
+    newName: "diving-scuba-mask",
+    removeIn: "2022.10",
+  },
+  "email-send": {
+    newName: "email-arrow-right",
+    removeIn: "2022.10",
+  },
+  "email-send-outline": {
+    newName: "email-arrow-right-outline",
+    removeIn: "2022.10",
+  },
+  "email-receive": {
+    newName: "email-arrow-left",
+    removeIn: "2022.10",
+  },
+  "email-receive-outline": {
+    newName: "email-arrow-left-outline",
+    removeIn: "2022.10",
+  },
+  "format-textdirection-r-to-l": {
+    newName: "format-pilcrow-arrow-left",
+    removeIn: "2022.10",
+  },
+  "format-textdirection-l-to-r": {
+    newName: "format-pilcrow-arrow-right",
+    removeIn: "2022.10",
+  },
+  "google-controller": {
+    newName: "controller",
+    removeIn: "2022.10",
+  },
+  "google-controller-off": {
+    newName: "controller-off",
+    removeIn: "2022.10",
+  },
+  "google-home": {
+    removeIn: "2022.10",
+  },
+  lecturn: {
+    newName: "lectern",
+    removeIn: "2022.10",
+  },
+  receipt: {
+    newName: "receipt-text",
+    removeIn: "2022.10",
+  },
+  "receipt-outline": {
+    newName: "receipt-text-outline",
+    removeIn: "2022.10",
+  },
+  "tablet-android": {
+    newName: "tablet",
+    removeIn: "2022.10",
+  },
+  "text-to-speech": {
+    newName: "microphone-message",
+    removeIn: "2022.10",
+  },
+  "text-to-speech-off": {
+    newName: "microphone-message-off",
+    removeIn: "2022.10",
+  },
+  "timeline-help": {
+    newName: "timeline-question",
+    removeIn: "2022.10",
+  },
+  "timeline-help-outline": {
+    newName: "timeline-question-outline",
+    removeIn: "2022.10",
+  },
+  "vector-point": {
+    newName: "vector-point-select",
+    removeIn: "2022.10",
+  },
+};
 
 const chunks: Chunks = {};
 
