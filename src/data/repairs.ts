@@ -6,7 +6,7 @@ export interface RepairsIssue {
   issue_id: string;
   active: boolean;
   is_fixable: boolean;
-  severity?: "error" | "warning" | "critical";
+  severity: "error" | "warning" | "critical";
   breaks_in_ha_version?: string;
   ignored: boolean;
   created: string;
@@ -15,6 +15,12 @@ export interface RepairsIssue {
   translation_key?: string;
   translation_placeholders?: Record<string, string>;
 }
+
+export const severitySort = {
+  critical: 1,
+  error: 2,
+  warning: 3,
+};
 
 export const fetchRepairsIssues = async (hass: HomeAssistant) =>
   hass.callWS<{ issues: RepairsIssue[] }>({

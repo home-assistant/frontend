@@ -24,6 +24,11 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import { CloudStatus } from "../../../data/cloud";
 import {
+  fetchRepairsIssues,
+  RepairsIssue,
+  severitySort,
+} from "../../../data/repairs";
+import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
   UpdateEntity,
@@ -36,6 +41,7 @@ import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
+import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
@@ -118,6 +124,8 @@ class HaConfigDashboard extends LitElement {
 
   @state() private _tip?: string;
 
+  @state() private _repairsIssues: [RepairsIssue[], number] = [[], 0];
+
   private _pages = memoizeOne((clouStatus, isLoaded) => {
     const pages: PageNavigation[] = [];
     if (clouStatus && isLoaded) {
@@ -136,6 +144,8 @@ class HaConfigDashboard extends LitElement {
   protected render(): TemplateResult {
     const [canInstallUpdates, totalUpdates] =
       this._filterUpdateEntitiesWithInstall(this.hass.states);
+
+    const [repairsIssues, totalRepairIssues] = this._repairsIssues;
 
     return html`
       <ha-app-layout>
@@ -174,26 +184,55 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${canInstallUpdates.length
-            ? html`<ha-card outlined>
-                <ha-config-updates
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .total=${totalUpdates}
-                  .updateEntities=${canInstallUpdates}
-                ></ha-config-updates>
-                ${totalUpdates > canInstallUpdates.length
-                  ? html`<a class="button" href="/config/updates">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.more_updates",
-                        {
-                          count: totalUpdates - canInstallUpdates.length,
-                        }
-                      )}
-                    </a>`
-                  : ""}
-              </ha-card>`
+          ${repairsIssues.length
+            ? html`
+                <ha-card outlined>
+                  <ha-config-repairs
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .total=${totalRepairIssues}
+                    .repairsIssues=${repairsIssues}
+                  ></ha-config-repairs>
+                  ${totalRepairIssues > repairsIssues.length
+                    ? html`
+                        <a class="button" href="/config/repairs">
+                          ${this.hass.localize(
+                            "ui.panel.config.repairs.more_repairs",
+                            {
+                              count: totalRepairIssues - repairsIssues.length,
+                            }
+                          )}
+                        </a>
+                      `
+                    : ""}
+                </ha-card>
+              `
             : ""}
+          ${canInstallUpdates.length
+            ? html`
+                <ha-card outlined>
+                  <ha-config-updates
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .total=${totalUpdates}
+                    .updateEntities=${canInstallUpdates}
+                  ></ha-config-updates>
+                  ${totalUpdates > canInstallUpdates.length
+                    ? html`
+                        <a class="button" href="/config/updates">
+                          ${this.hass.localize(
+                            "ui.panel.config.updates.more_updates",
+                            {
+                              count: totalUpdates - canInstallUpdates.length,
+                            }
+                          )}
+                        </a>
+                      `
+                    : ""}
+                </ha-card>
+              `
+            : ""}
+
           <ha-card outlined>
             <ha-config-navigation
               .hass=${this.hass}
@@ -209,6 +248,11 @@ class HaConfigDashboard extends LitElement {
         </ha-config-section>
       </ha-app-layout>
     `;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+    this._fetchIssues();
   }
 
   protected override updated(changedProps: PropertyValues): void {
@@ -229,6 +273,23 @@ class HaConfigDashboard extends LitElement {
       ];
     }
   );
+
+  private async _fetchIssues(): Promise<void> {
+    const [, repairsIssues] = await Promise.all([
+      this.hass.loadBackendTranslation("issues"),
+      fetchRepairsIssues(this.hass),
+    ]);
+
+    this._repairsIssues = [
+      repairsIssues.issues
+        .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
+        .slice(
+          0,
+          repairsIssues.issues.length === 3 ? repairsIssues.issues.length : 2
+        ),
+      repairsIssues.issues.length,
+    ];
+  }
 
   private _showQuickBar(): void {
     showQuickBar(this, {
