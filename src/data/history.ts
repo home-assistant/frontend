@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import {
@@ -268,7 +268,8 @@ const processTimelineEntity = (
   localize: LocalizeFunc,
   language: FrontendLocaleData,
   entityId: string,
-  states: EntityHistoryState[]
+  states: EntityHistoryState[],
+  current_state: HassEntity | undefined
 ): TimelineEntity => {
   const data: TimelineState[] = [];
   const first: EntityHistoryState = states[0];
@@ -292,7 +293,10 @@ const processTimelineEntity = (
   }
 
   return {
-    name: computeStateNameFromEntityAttributes(entityId, states[0].a),
+    name: computeStateNameFromEntityAttributes(
+      entityId,
+      current_state?.attributes || first.a
+    ),
     entity_id: entityId,
     data,
   };
@@ -300,7 +304,8 @@ const processTimelineEntity = (
 
 const processLineChartEntities = (
   unit,
-  entities: HistoryStates
+  entities: HistoryStates,
+  hassEntities: HassEntities
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
@@ -349,9 +354,16 @@ const processLineChartEntities = (
       processedStates.push(processedState);
     }
 
+    const attributes =
+      entityId in hassEntities
+        ? hassEntities[entityId].attributes
+        : "friendly_name" in first.a
+        ? first.a
+        : undefined;
+
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, first.a),
+      name: computeStateNameFromEntityAttributes(entityId, attributes || {}),
       entity_id: entityId,
       states: processedStates,
     });
@@ -411,7 +423,13 @@ export const computeHistory = (
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, hass.locale, entityId, stateInfo)
+        processTimelineEntity(
+          localize,
+          hass.locale,
+          entityId,
+          stateInfo,
+          currentState
+        )
       );
     } else if (unit in lineChartDevices && entityId in lineChartDevices[unit]) {
       lineChartDevices[unit][entityId].push(...stateInfo);
@@ -424,7 +442,7 @@ export const computeHistory = (
   });
 
   const unitStates = Object.keys(lineChartDevices).map((unit) =>
-    processLineChartEntities(unit, lineChartDevices[unit])
+    processLineChartEntities(unit, lineChartDevices[unit], hass.states)
   );
 
   return { line: unitStates, timeline: timelineDevices };

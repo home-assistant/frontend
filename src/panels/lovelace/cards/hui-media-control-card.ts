@@ -673,7 +673,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-inline-end: initial;
         padding-inline-start: 0;
         padding-inline-end: 8px;
-        direction: var(--direction);
+        direction: ltr;
       }
 
       .controls > div {
@@ -699,9 +699,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       ha-icon-button.browse-media {
         position: absolute;
         right: 4px;
-        inset-inline-start: initial;
-        inset-inline-end: 4px;
-        direction: var(--direction);
         --mdc-icon-size: 24px;
       }
 

@@ -84,20 +84,20 @@ class HaAddonPicker extends LitElement {
       } else {
         showAlertDialog(this, {
           title: this.hass.localize(
-            "ui.componencts.addon-picker.error.no_supervisor.title"
+            "ui.components.addon-picker.error.no_supervisor.title"
           ),
           text: this.hass.localize(
-            "ui.componencts.addon-picker.error.no_supervisor.description"
+            "ui.components.addon-picker.error.no_supervisor.description"
           ),
         });
       }
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.componencts.addon-picker.error.fetch_addons.title"
+          "ui.components.addon-picker.error.fetch_addons.title"
         ),
         text: this.hass.localize(
-          "ui.componencts.addon-picker.error.fetch_addons.description"
+          "ui.components.addon-picker.error.fetch_addons.description"
         ),
       });
     }

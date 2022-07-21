@@ -6,8 +6,8 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: 3.8
-  NODE_VERSION: 14
+  PYTHON_VERSION: "3.10"
+  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 permissions:
@@ -21,15 +21,15 @@ jobs:
       contents: write
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn

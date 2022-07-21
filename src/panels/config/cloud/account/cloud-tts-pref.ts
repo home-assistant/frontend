@@ -185,6 +185,10 @@ export class CloudTTSPref extends LitElement {
         right: auto;
         left: 24px;
       }
+      .card-actions {
+        display: flex;
+        flex-direction: row-reverse;
+      }
     `;
   }
 }

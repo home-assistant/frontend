@@ -423,9 +423,7 @@
         "remove_user": "Remove user"
       },
       "blueprint-picker": {
-        "select_blueprint": "Select a Blueprint",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "select_blueprint": "Select a Blueprint"
       },
       "device-picker": {
         "clear": "Clear",
@@ -955,6 +953,18 @@
           "description": "Options successfully saved."
         }
       },
+      "repair_flow": {
+        "form": {
+          "header": "Repair issue"
+        },
+        "loading": {
+          "loading_flow": "Please wait while the repair for {integration} is being initialized",
+          "loading_step": "[%key:ui::panel::config::integrations::config_flow::loading::loading_step%]"
+        },
+        "success": {
+          "description": "The issue is repaired!"
+        }
+      },
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
@@ -1215,6 +1225,17 @@
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
+        },
+        "repairs": {
+          "caption": "Repairs",
+          "description": "Find and fix issues with your Home Assistant instance",
+          "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
+          "no_repairs": "There are currently no repairs available",
+          "dialog": {
+            "title": "Repair",
+            "fix": "Repair",
+            "learn": "Learn more"
+          }
         },
         "areas": {
           "caption": "Areas",
@@ -1569,6 +1590,7 @@
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
+            "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
@@ -1593,7 +1615,6 @@
           "copy_github": "For GitHub",
           "description": "Version, loaded integrations and links to documentation",
           "home_assistant_logo": "Home Assistant logo",
-          "path_configuration": "Path to configuration.yaml: {path}",
           "developed_by": "Developed by a bunch of awesome people.",
           "license": "Published under the Apache 2.0 license",
           "source": "Source:",
@@ -2851,7 +2872,11 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
+            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
+            "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
+            "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "supported_hardware": "supported hardware",
+            "proceed": "Proceed"
           }
         },
         "users": {
@@ -4012,7 +4037,8 @@
             "month": "Month",
             "year": "Year",
             "previous": "Previous",
-            "next": "Next"
+            "next": "Next",
+            "compare": "Compare Data"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -4537,6 +4563,9 @@
         }
       },
       "energy": {
+        "compare": {
+          "info": "You are comparing the period {start} with the period {end}"
+        },
         "setup": {
           "next": "Next",
           "back": "Back",
@@ -4556,6 +4585,11 @@
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Monitor individual devices"
         }
+      },
+      "history": {
+        "start_search": "Start by selecting an area, device or entity above",
+        "add_all": "Add all entities",
+        "remove_all": "Remove all selections"
       }
     },
     "tips": {

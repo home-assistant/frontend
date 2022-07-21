@@ -16,12 +16,13 @@ export interface EntityRegistryEntry {
   disabled_by: string | null;
   hidden_by: string | null;
   entity_category: "config" | "diagnostic" | null;
+  has_entity_name: boolean;
+  original_name?: string;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   unique_id: string;
   capabilities: Record<string, unknown>;
-  original_name?: string;
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
@@ -34,6 +35,10 @@ export interface UpdateEntityRegistryEntryResult {
 }
 
 export interface SensorEntityOptions {
+  unit_of_measurement?: string | null;
+}
+
+export interface NumberEntityOptions {
   unit_of_measurement?: string | null;
 }
 
@@ -155,3 +160,16 @@ export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
+
+export const getEntityPlatformLookup = (
+  entities: EntityRegistryEntry[]
+): Record<string, string> => {
+  const entityLookup = {};
+  for (const confEnt of entities) {
+    if (!confEnt.platform) {
+      continue;
+    }
+    entityLookup[confEnt.entity_id] = confEnt.platform;
+  }
+  return entityLookup;
+};

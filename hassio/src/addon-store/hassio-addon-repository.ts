@@ -81,10 +81,10 @@ class HassioAddonRepositoryEl extends LitElement {
                         ? this.supervisor.localize(
                             "common.new_version_available"
                           )
-                        : this.supervisor.localize("addon.installed")
+                        : this.supervisor.localize("addon.state.installed")
                       : addon.available
-                      ? this.supervisor.localize("addon.not_installed")
-                      : this.supervisor.localize("addon.not_available")}
+                      ? this.supervisor.localize("addon.state.not_installed")
+                      : this.supervisor.localize("addon.state.not_available")}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"

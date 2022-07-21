@@ -105,6 +105,10 @@ const OVERRIDE_DEVICE_CLASSES = {
   ],
 };
 
+const OVERRIDE_NUMBER_UNITS = {
+  temperature: ["°C", "°F", "K"],
+};
+
 const OVERRIDE_SENSOR_UNITS = {
   temperature: ["°C", "°F", "K"],
   pressure: ["hPa", "Pa", "kPa", "bar", "cbar", "mbar", "mmHg", "inHg", "psi"],
@@ -235,7 +239,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       }
     }
 
-    if (domain === "sensor") {
+    if (domain === "number" || domain === "sensor") {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
       this._unit_of_measurement = stateObj?.attributes?.unit_of_measurement;
@@ -356,6 +360,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                     <mwc-list-item .value=${entry.deviceClass}>
                       ${entry.label}
                     </mwc-list-item>
+                  `
+                )}
+              </ha-select>
+            `
+          : ""}
+        ${domain === "number" &&
+        this._deviceClass &&
+        stateObj?.attributes.unit_of_measurement &&
+        OVERRIDE_NUMBER_UNITS[this._deviceClass]?.includes(
+          stateObj?.attributes.unit_of_measurement
+        )
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.unit_of_measurement"
+                )}
+                .value=${stateObj.attributes.unit_of_measurement}
+                naturalMenuWidth
+                fixedMenuPosition
+                @selected=${this._unitChanged}
+                @closed=${stopPropagation}
+              >
+                ${OVERRIDE_NUMBER_UNITS[this._deviceClass].map(
+                  (unit: string) => html`
+                    <mwc-list-item .value=${unit}>${unit}</mwc-list-item>
                   `
                 )}
               </ha-select>
@@ -861,10 +890,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       params.hidden_by = this._hiddenBy;
     }
     if (
-      domain === "sensor" &&
+      (domain === "number" || domain === "number") &&
       stateObj?.attributes?.unit_of_measurement !== this._unit_of_measurement
     ) {
-      params.options_domain = "sensor";
+      params.options_domain = domain;
       params.options = { unit_of_measurement: this._unit_of_measurement };
     }
     if (
@@ -1023,12 +1052,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           bottom: 0;
           width: 100%;
           box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
-          justify-content: space-between;
-          padding: 8px;
-          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          padding: 0 24px 24px 24px;
+          justify-content: flex-end;
+          padding-bottom: max(env(safe-area-inset-bottom), 24px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         ha-select {

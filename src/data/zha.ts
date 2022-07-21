@@ -26,6 +26,7 @@ export interface ZHADevice {
   power_source?: string;
   area_id?: string;
   device_type: string;
+  active_coordinator: boolean;
   signature: any;
   neighbors: Neighbor[];
   pairing_status?: string;

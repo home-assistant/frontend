@@ -356,6 +356,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         height: 50%;
         top: 45%;
         left: 50%;
+        direction: ltr;
       }
 
       #set-values {
