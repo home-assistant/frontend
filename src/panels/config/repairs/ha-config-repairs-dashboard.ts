@@ -1,8 +1,13 @@
+import type { ActionDetail } from "@material/mwc-list";
+import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
-import type { RepairsIssue } from "../../../data/repairs";
-import { fetchRepairsIssues } from "../../../data/repairs";
+import {
+  fetchRepairsIssues,
+  RepairsIssue,
+  severitySort,
+} from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
@@ -15,12 +20,18 @@ class HaConfigRepairsDashboard extends LitElement {
 
   @state() private _repairsIssues: RepairsIssue[] = [];
 
+  @state() private _showIgnored = false;
+
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._fetchIssues();
   }
 
   protected render(): TemplateResult {
+    const issues = this._showIgnored
+      ? this._repairsIssues
+      : this._repairsIssues.filter((issue) => !issue.ignored);
+
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -28,6 +39,20 @@ class HaConfigRepairsDashboard extends LitElement {
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
+        <div slot="toolbar-icon">
+          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <mwc-list-item id="skipped">
+              ${this._showIgnored
+                ? this.hass.localize("ui.panel.config.repairs.hide_ignored")
+                : this.hass.localize("ui.panel.config.repairs.show_ignored")}
+            </mwc-list-item>
+          </ha-button-menu>
+        </div>
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
@@ -36,7 +61,7 @@ class HaConfigRepairsDashboard extends LitElement {
                     <ha-config-repairs
                       .hass=${this.hass}
                       .narrow=${this.narrow}
-                      .repairsIssues=${this._repairsIssues}
+                      .repairsIssues=${issues}
                       @update-issues=${this._fetchIssues}
                     ></ha-config-repairs>
                   `
@@ -55,12 +80,22 @@ class HaConfigRepairsDashboard extends LitElement {
   }
 
   private async _fetchIssues(): Promise<void> {
-    this._repairsIssues = (await fetchRepairsIssues(this.hass)).issues;
+    this._repairsIssues = (await fetchRepairsIssues(this.hass)).issues.sort(
+      (a, b) => severitySort[a.severity] - severitySort[b.severity]
+    );
     const integrations: Set<string> = new Set();
     for (const issue of this._repairsIssues) {
       integrations.add(issue.domain);
     }
     this.hass.loadBackendTranslation("issues", [...integrations]);
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._showIgnored = !this._showIgnored;
+        break;
+    }
   }
 
   static styles = css`

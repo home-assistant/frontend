@@ -1232,10 +1232,20 @@
           "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
           "no_repairs": "There are currently no repairs available",
           "more_repairs": "+{count} repairs",
+          "show_ignored": "Show ignored",
+          "hide_ignored": "Hide ignored",
+          "critical": "Critical",
+          "error": "Error",
+          "warning": "Warning",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",
-            "learn": "Learn more"
+            "learn": "Learn more",
+            "ignore": "Ignore",
+            "unignore": "Unignore",
+            "alert_not_fixable": "We can not repair this issue for you.",
+            "breaks_in_version": "This will break in version {version}. Please fix this issue before upgrading.",
+            "dismissed_in_version": "This issue was dismissed in version {version}."
           }
         },
         "areas": {
