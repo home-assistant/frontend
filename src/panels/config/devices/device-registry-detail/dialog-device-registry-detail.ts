@@ -169,9 +169,6 @@ class DialogDeviceRegistryDetail extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         mwc-button.warning {
           margin-right: auto;
         }

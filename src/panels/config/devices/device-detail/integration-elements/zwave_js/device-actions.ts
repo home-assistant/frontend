@@ -100,19 +100,14 @@ export const getZwaveDeviceActions = async (
       action: async () => {
         if (
           isNodeFirmwareUpdateInProgress ||
-          (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id))
-        ) {
-          showZWaveJUpdateFirmwareNodeDialog(el, {
-            device,
-          });
-        } else if (
-          await showConfirmationDialog(el, {
+          (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id)) ||
+          (await showConfirmationDialog(el, {
             text: hass.localize(
               "ui.panel.config.zwave_js.update_firmware.warning"
             ),
             dismissText: hass.localize("ui.common.no"),
             confirmText: hass.localize("ui.common.yes"),
-          })
+          }))
         ) {
           showZWaveJUpdateFirmwareNodeDialog(el, {
             device,

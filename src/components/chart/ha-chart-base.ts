@@ -188,6 +188,10 @@ export default class HaChartBase extends LitElement {
     ChartConstructor.defaults.color = computedStyles.getPropertyValue(
       "--secondary-text-color"
     );
+    ChartConstructor.defaults.font.family =
+      computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
+      computedStyles.getPropertyValue("--mdc-typography-font-family") ||
+      "Roboto, Noto, sans-serif";
 
     this.chart = new ChartConstructor(ctx, {
       type: this.chartType,

@@ -6,8 +6,8 @@ on:
       - published
 
 env:
-  PYTHON_VERSION: 3.8
-  NODE_VERSION: 14
+  PYTHON_VERSION: "3.10"
+  NODE_VERSION: 16
   NODE_OPTIONS: --max_old_space_size=6144
 
 # Set default workflow permissions
@@ -21,7 +21,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required to upload release assets
+      contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3

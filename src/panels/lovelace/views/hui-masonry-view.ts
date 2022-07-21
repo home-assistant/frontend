@@ -322,7 +322,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         min-width: 0;
       }
 
-      .column > * {
+      .column > *:not([hidden]) {
         display: block;
         margin: var(--masonry-view-card-margin, 4px 4px 8px);
       }

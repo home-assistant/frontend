@@ -1,12 +1,12 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   EntitySources,
   fetchEntitySourcesWithCache,
 } from "../../data/entity_sources";
-import { EntitySelector } from "../../data/selector";
+import type { EntitySelector } from "../../data/selector";
+import { filterSelectorEntities } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "../entity/ha-entities-picker";
 import "../entity/ha-entity-picker";
@@ -73,37 +73,8 @@ export class HaEntitySelector extends LitElement {
     }
   }
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    const {
-      domain: filterDomain,
-      device_class: filterDeviceClass,
-      integration: filterIntegration,
-    } = this.selector.entity;
-
-    if (filterDomain) {
-      const entityDomain = computeStateDomain(entity);
-      if (
-        Array.isArray(filterDomain)
-          ? !filterDomain.includes(entityDomain)
-          : entityDomain !== filterDomain
-      ) {
-        return false;
-      }
-    }
-    if (
-      filterDeviceClass &&
-      entity.attributes.device_class !== filterDeviceClass
-    ) {
-      return false;
-    }
-    if (
-      filterIntegration &&
-      this._entitySources?.[entity.entity_id]?.domain !== filterIntegration
-    ) {
-      return false;
-    }
-    return true;
-  };
+  private _filterEntities = (entity: HassEntity): boolean =>
+    filterSelectorEntities(this.selector.entity, entity, this._entitySources);
 }
 
 declare global {
