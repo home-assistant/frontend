@@ -151,8 +151,7 @@ export interface TranslationMetadata {
   };
 }
 
-export type TranslationDict = typeof import("./translations/en.json") &
-  typeof import("../translations/backend/en.json");
+export type TranslationDict = typeof import("./translations/en.json");
 
 export interface IconMetaFile {
   version: string;
