@@ -1,3 +1,4 @@
+import "../../../components/ha-markdown";
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -36,6 +37,13 @@ class DialogRepairsIssue extends LitElement {
       return html``;
     }
 
+    const description = this.hass.localize(
+      `component.${this._issue.domain}.issues.${
+        this._issue.translation_key || this._issue.issue_id
+      }.description`,
+      this._issue.translation_placeholders
+    );
+
     return html`
       <ha-dialog
         open
@@ -55,21 +63,24 @@ class DialogRepairsIssue extends LitElement {
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
-          ${this.hass.localize(
-            `component.${this._issue.domain}.issues.${
-              this._issue.translation_key || this._issue.issue_id
-            }.description
-            }`,
-            this._issue.translation_placeholders
-          )}
-          ${this._issue.breaks_in_ha_version
-            ? html`
-                This will no longer work as of the
-                ${this._issue.breaks_in_ha_version} release of Home Assistant.
-              `
-            : ""}
-          The issue is ${this._issue.severity} severity
-          ${this._issue.is_fixable ? "and fixable" : "but not fixable"}.
+          ${description
+            ? html`<ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>`
+            : `${
+                this._issue.breaks_in_ha_version
+                  ? html`
+                      This will no longer work as of the
+                      ${this._issue.breaks_in_ha_version} release of Home
+                      Assistant.
+                    `
+                  : ""
+              }
+          The issue is ${
+            this._issue.severity
+          } severity. We can not automatically repair this issue for you.`}
           ${this._issue.dismissed_version
             ? html`
                 This issue has been dismissed in version
