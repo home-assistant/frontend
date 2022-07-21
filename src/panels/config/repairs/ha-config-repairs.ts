@@ -24,6 +24,9 @@ class HaConfigRepairs extends LitElement {
   @property({ attribute: false })
   public repairsIssues?: RepairsIssue[];
 
+  @property({ type: Number })
+  public total?: number;
+
   protected render(): TemplateResult {
     if (!this.repairsIssues?.length) {
       return html``;
@@ -34,7 +37,7 @@ class HaConfigRepairs extends LitElement {
     return html`
       <div class="title">
         ${this.hass.localize("ui.panel.config.repairs.title", {
-          count: this.repairsIssues.length,
+          count: this.total || this.repairsIssues.length,
         })}
       </div>
       <mwc-list>
