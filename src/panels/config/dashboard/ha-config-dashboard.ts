@@ -279,7 +279,7 @@ class HaConfigDashboard extends LitElement {
         .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
         .slice(
           0,
-          repairsIssues.issues.length === 2 ? repairsIssues.issues.length : 1
+          repairsIssues.issues.length === 3 ? repairsIssues.issues.length : 2
         ),
       repairsIssues.issues.length,
     ];
