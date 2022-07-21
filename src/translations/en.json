@@ -4955,6 +4955,7 @@
       }
     },
     "backup": {
+      "search": "[%key:ui::panel::config::backup::picker::search%]",
       "no_backups": "You don't have any backups yet.",
       "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
       "delete_selected": "Delete selected backups",
