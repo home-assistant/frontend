@@ -11,7 +11,7 @@ export const createCloseHeading = (
   hass: HomeAssistant,
   title: string | TemplateResult
 ) => html`
-  <span class="header_title">${title}</span>
+  <div class="header_title">${title}</div>
   <ha-icon-button
     .label=${hass.localize("ui.dialogs.generic.close")}
     .path=${mdiClose}
@@ -95,8 +95,8 @@ export class HaDialog extends DialogBase {
         color: inherit;
       }
       .header_title {
-        margin-right: 40px;
-        margin-inline-end: 40px;
+        margin-right: 32px;
+        margin-inline-end: 32px;
         margin-inline-start: initial;
         direction: var(--direction);
       }
