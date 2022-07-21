@@ -89,7 +89,13 @@ class HaConfigRepairs extends LitElement {
         fireEvent(this, "update-issues");
       });
     } else {
-      showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+      showRepairsIssueDialog(this, {
+        issue,
+        dialogClosedCallback: () => {
+          // @ts-ignore
+          fireEvent(this, "update-issues");
+        },
+      });
     }
   }
 

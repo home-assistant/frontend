@@ -23,6 +23,10 @@ class DialogRepairsIssue extends LitElement {
   }
 
   public closeDialog() {
+    if (this._params?.dialogClosedCallback) {
+      this._params.dialogClosedCallback();
+    }
+
     this._params = undefined;
     this._issue = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -119,8 +123,6 @@ class DialogRepairsIssue extends LitElement {
   private _ignoreIssue() {
     ignoreRepairsIssue(this.hass, this._issue!, !this._issue!.ignored);
     this.closeDialog();
-    // @ts-ignore
-    fireEvent(this, "update-issues"); // Doesn't work...
   }
 
   static styles: CSSResultGroup = [
