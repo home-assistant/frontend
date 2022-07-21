@@ -55,12 +55,12 @@ class HaConfigRepairsDashboard extends LitElement {
   }
 
   private async _fetchIssues(): Promise<void> {
-    const [, repairsIssues] = await Promise.all([
-      this.hass.loadBackendTranslation("issues"),
-      fetchRepairsIssues(this.hass),
-    ]);
-
-    this._repairsIssues = repairsIssues.issues;
+    this._repairsIssues = (await fetchRepairsIssues(this.hass)).issues;
+    const integrations: Set<string> = new Set();
+    for (const issue of this._repairsIssues) {
+      integrations.add(issue.domain);
+    }
+    this.hass.loadBackendTranslation("issues", [...integrations]);
   }
 
   static styles = css`

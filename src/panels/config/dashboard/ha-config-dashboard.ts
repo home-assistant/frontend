@@ -124,7 +124,10 @@ class HaConfigDashboard extends LitElement {
 
   @state() private _tip?: string;
 
-  @state() private _repairsIssues: [RepairsIssue[], number] = [[], 0];
+  @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
+    issues: [],
+    total: 0,
+  };
 
   private _pages = memoizeOne((clouStatus, isLoaded) => {
     const pages: PageNavigation[] = [];
@@ -142,10 +145,11 @@ class HaConfigDashboard extends LitElement {
   });
 
   protected render(): TemplateResult {
-    const [canInstallUpdates, totalUpdates] =
+    const { updates: canInstallUpdates, total: totalUpdates } =
       this._filterUpdateEntitiesWithInstall(this.hass.states);
 
-    const [repairsIssues, totalRepairIssues] = this._repairsIssues;
+    const { issues: repairsIssues, total: totalRepairIssues } =
+      this._repairsIssues;
 
     return html`
       <ha-app-layout>
@@ -264,31 +268,31 @@ class HaConfigDashboard extends LitElement {
   }
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities): [UpdateEntity[], number] => {
+    (entities: HassEntities): { updates: UpdateEntity[]; total: number } => {
       const updates = filterUpdateEntitiesWithInstall(entities);
 
-      return [
-        updates.slice(0, updates.length === 3 ? updates.length : 2),
-        updates.length,
-      ];
+      return {
+        updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
+        total: updates.length,
+      };
     }
   );
 
   private async _fetchIssues(): Promise<void> {
-    const [, repairsIssues] = await Promise.all([
-      this.hass.loadBackendTranslation("issues"),
-      fetchRepairsIssues(this.hass),
-    ]);
+    const repairsIssues = (await fetchRepairsIssues(this.hass)).issues;
 
-    this._repairsIssues = [
-      repairsIssues.issues
+    this._repairsIssues = {
+      issues: repairsIssues
         .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
-        .slice(
-          0,
-          repairsIssues.issues.length === 3 ? repairsIssues.issues.length : 2
-        ),
-      repairsIssues.issues.length,
-    ];
+        .slice(0, repairsIssues.length === 3 ? repairsIssues.length : 2),
+      total: repairsIssues.length,
+    };
+
+    const integrations: Set<string> = new Set();
+    for (const issue of this._repairsIssues.issues) {
+      integrations.add(issue.domain);
+    }
+    this.hass.loadBackendTranslation("issues", [...integrations]);
   }
 
   private _showQuickBar(): void {
