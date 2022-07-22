@@ -48,7 +48,6 @@ import {
   domainToName,
   fetchIntegrationManifests,
   IntegrationManifest,
-  protocolIntegrationPicked,
 } from "../../../data/integration";
 import { getSupportedBrands } from "../../../data/supported_brands";
 import { scanUSBDevices } from "../../../data/usb";
@@ -62,6 +61,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "../helpers/const";
 import "./ha-config-flow-card";
@@ -69,6 +69,7 @@ import "./ha-ignored-config-entry-card";
 import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
+import { showZWaveJSAddNodeDialog } from "./integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -106,6 +107,85 @@ const groupByIntegration = (
     }
   });
   return result;
+};
+
+export const protocolIntegrationPicked = async (
+  element: HTMLElement,
+  hass: HomeAssistant,
+  slug: string
+) => {
+  if (slug === "zwave_js") {
+    const entries = await getConfigEntries(hass, {
+      domain: "zwave_js",
+    });
+
+    if (!entries.length) {
+      // If the component isn't loaded, ask them to load the integration first
+      showConfirmationDialog(element, {
+        text: hass.localize(
+          "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
+          {
+            integration: "Z-Wave",
+            supported_hardware_link: html`<a
+              href=${documentationUrl(hass, "/docs/z-wave/controllers")}
+              target="_blank"
+              rel="noreferrer"
+              >${hass.localize(
+                "ui.panel.config.integrations.config_flow.supported_hardware"
+              )}</a
+            >`,
+          }
+        ),
+        confirmText: hass.localize(
+          "ui.panel.config.integrations.config_flow.proceed"
+        ),
+        confirm: () => {
+          fireEvent(element, "handler-picked", {
+            handler: "zwave_js",
+          });
+        },
+      });
+      return;
+    }
+
+    showZWaveJSAddNodeDialog(element, {
+      entry_id: entries[0].entry_id,
+    });
+  } else if (slug === "zha") {
+    // If the component isn't loaded, ask them to load the integration first
+    if (!isComponentLoaded(hass, "zha")) {
+      showConfirmationDialog(element, {
+        text: hass.localize(
+          "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
+          {
+            integration: "Zigbee",
+            supported_hardware_link: html`<a
+              href=${documentationUrl(
+                hass,
+                "/integrations/zha/#known-working-zigbee-radio-modules"
+              )}
+              target="_blank"
+              rel="noreferrer"
+              >${hass.localize(
+                "ui.panel.config.integrations.config_flow.supported_hardware"
+              )}</a
+            >`,
+          }
+        ),
+        confirmText: hass.localize(
+          "ui.panel.config.integrations.config_flow.proceed"
+        ),
+        confirm: () => {
+          fireEvent(element, "handler-picked", {
+            handler: "zha",
+          });
+        },
+      });
+      return;
+    }
+
+    navigate("/config/zha/add");
+  }
 };
 
 @customElement("ha-config-integrations")

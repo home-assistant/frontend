@@ -19,10 +19,8 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import "../../components/search-input";
-import {
-  domainToName,
-  protocolIntegrationPicked,
-} from "../../data/integration";
+import { domainToName } from "../../data/integration";
+import { protocolIntegrationPicked } from "../../panels/config/integrations/ha-config-integrations";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
