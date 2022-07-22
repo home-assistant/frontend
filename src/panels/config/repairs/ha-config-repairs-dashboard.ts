@@ -2,6 +2,7 @@ import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import {
   fetchRepairsIssues,
@@ -22,16 +23,23 @@ class HaConfigRepairsDashboard extends LitElement {
 
   @state() private _showIgnored = false;
 
+  private _getFilteredIssues = memoizeOne(
+    (showIgnored: boolean, repairsIssues: RepairsIssue[]) =>
+      showIgnored
+        ? repairsIssues
+        : repairsIssues.filter((issue) => !issue.ignored)
+  );
+
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._fetchIssues();
   }
 
   protected render(): TemplateResult {
-    const issues = this._showIgnored
-      ? this._repairsIssues
-      : this._repairsIssues.filter((issue) => !issue.ignored);
-
+    const issues = this._getFilteredIssues(
+      this._showIgnored,
+      this._repairsIssues
+    );
     return html`
       <hass-subpage
         back-path="/config/system"
