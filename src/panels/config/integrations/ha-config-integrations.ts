@@ -50,7 +50,10 @@ import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
-import { getSupportedBrands } from "../../../data/supported_brands";
+import {
+  getSupportedBrands,
+  getSupportedBrandsLookup,
+} from "../../../data/supported_brands";
 import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -705,21 +708,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     }
 
     const supportedBrands = await getSupportedBrands(this.hass);
-    const supportedBrandsIntegrations = {};
-
-    for (const [d, domainBrands] of Object.entries(supportedBrands)) {
-      for (const [slug, name] of Object.entries(domainBrands)) {
-        supportedBrandsIntegrations[slug] = {
-          name,
-          supported_flows: [d],
-        };
-      }
-    }
+    const supportedBrandsIntegrations =
+      getSupportedBrandsLookup(supportedBrands);
 
     // Supported brand exists, so we can just create a flow
     if (Object.keys(supportedBrandsIntegrations).includes(domain)) {
       const brand = supportedBrandsIntegrations[domain];
-      const slug = brand.supported_flows[0];
+      const slug = brand.supported_flows![0];
 
       showConfirmationDialog(this, {
         text: this.hass.localize(
