@@ -15,6 +15,7 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -85,11 +86,11 @@ export interface EntityRow extends StateEntity {
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @state() private _entities?: EntityRegistryEntry[];
 
@@ -174,7 +175,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         template: (_, entry: EntityRow) => html`
           <ha-state-icon
-            .title=${entry.entity?.state}
+            title=${ifDefined(entry.entity?.state)}
             slot="item-icon"
             .state=${entry.entity}
           ></ha-state-icon>
@@ -237,12 +238,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         hidden: narrow || !showDisabled,
         filterable: true,
         width: "15%",
-        template: (disabled_by) =>
-          this.hass.localize(
-            `ui.panel.config.devices.disabled_by.${disabled_by}`
-          ) ||
-          disabled_by ||
-          "—",
+        template: (disabled_by: EntityRegistryEntry["disabled_by"]) =>
+          disabled_by === null
+            ? "—"
+            : this.hass.localize(`config_entry.disabled_by.${disabled_by}`),
       },
       status: {
         title: this.hass.localize(
@@ -1010,5 +1009,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-entities": HaConfigEntities;
   }
 }
