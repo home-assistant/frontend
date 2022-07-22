@@ -15,7 +15,6 @@ type LocalizeKeyExceptions =
   | `state.${string}`
   | `state_attributes.${string}`
   | `state_badge.${string}`
-  | `groups.${string}`
   | `ui.${string}`
   | `${keyof TranslationDict["supervisor"]}.${string}`
   | `component.${string}`;
