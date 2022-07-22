@@ -53,6 +53,7 @@ import {
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
+  EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
   fetchEntityRegistry,
@@ -128,7 +129,7 @@ const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren"];
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entry!: ExtEntityRegistryEntry;
+  @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
 
   @state() private _name!: string;
 
@@ -142,9 +143,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _areaId?: string | null;
 
-  @state() private _disabledBy!: string | null;
+  @state() private _disabledBy!: EntityRegistryEntry["disabled_by"];
 
-  @state() private _hiddenBy!: string | null;
+  @state() private _hiddenBy!: EntityRegistryEntry["hidden_by"];
 
   @state() private _device?: DeviceRegistryEntry;
 
@@ -630,9 +631,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 name="hiddendisabled"
                 value="enabled"
                 .checked=${!this._hiddenBy && !this._disabledBy}
-                .disabled=${(this._hiddenBy && this._hiddenBy !== "user") ||
-                this._device?.disabled_by ||
-                (this._disabledBy &&
+                .disabled=${(this._hiddenBy !== null &&
+                  this._hiddenBy !== "user") ||
+                !!this._device?.disabled_by ||
+                (this._disabledBy !== null &&
                   this._disabledBy !== "user" &&
                   this._disabledBy !== "integration")}
                 @change=${this._viewStatusChanged}

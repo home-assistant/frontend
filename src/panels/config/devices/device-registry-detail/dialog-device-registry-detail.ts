@@ -6,10 +6,14 @@ import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import { computeDeviceName } from "../../../../data/device_registry";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+} from "../../../../data/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
+import "../../../../components/ha-alert";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -21,11 +25,11 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @state() private _params?: DeviceRegistryDetailDialogParams;
 
-  @property() public _areaId?: string | null;
+  @state() private _areaId!: string;
 
-  @state() private _disabledBy!: string | null;
+  @state() private _disabledBy!: DeviceRegistryEntry["disabled_by"];
 
-  @state() private _submitting?: boolean;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: DeviceRegistryDetailDialogParams
@@ -33,7 +37,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._nameByUser = this._params.device.name_by_user || "";
-    this._areaId = this._params.device.area_id;
+    this._areaId = this._params.device.area_id || "";
     this._disabledBy = this._params.device.disabled_by;
     await this.updateComplete;
   }
