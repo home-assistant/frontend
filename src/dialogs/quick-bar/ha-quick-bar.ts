@@ -550,7 +550,7 @@ export class QuickBar extends LitElement {
   }
 
   private _generateServerControlCommands(): CommandItem[] {
-    const serverActions = ["restart", "stop"];
+    const serverActions = ["restart", "stop"] as const;
 
     return serverActions.map((action) => {
       const categoryKey: CommandItem["categoryKey"] = "server_control";

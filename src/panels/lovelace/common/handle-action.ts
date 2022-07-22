@@ -72,8 +72,7 @@ export const handleAction = async (
             "action",
             serviceName ||
               hass.localize(
-                "ui.panel.lovelace.editor.action-editor.actions." +
-                  actionConfig.action
+                `ui.panel.lovelace.editor.action-editor.actions.${actionConfig.action}`
               ) ||
               actionConfig.action
           ),
