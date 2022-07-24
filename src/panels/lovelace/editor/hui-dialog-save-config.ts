@@ -197,14 +197,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        ha-switch {
-          padding-bottom: 16px;
-        }
-      `,
-    ];
+    return [haStyleDialog];
   }
 }
 
