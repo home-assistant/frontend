@@ -49,8 +49,6 @@ class ZHANetworkPage extends LitElement {
   @state() private _restoringBackup = false;
   @state() private _generatingBackup = false;
 
-  @state() private _backupFile?: File;
-
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {

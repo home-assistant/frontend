@@ -9,6 +9,7 @@ import { extractApiErrorMessage } from "../../../../../../src/data/hassio/common
 import {
   ZHANetworkBackup,
   listZHANetworkBackups,
+  fetchZHANetworkSettings,
   restoreZHANetworkBackup,
 } from "../../../../../data/zha";
 
@@ -22,7 +23,9 @@ import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 
 import { HaRadio } from "../../../../../../src/components/ha-radio";
+import { HaCheckbox } from "../../../../../../src/components/ha-checkbox";
 import "../../../../../../src/components/ha-select";
+import "../../../../../../src/components/ha-checkbox";
 import "../../../../../../src/components/data-table/ha-data-table";
 
 import "../../../../../components/ha-file-upload";
@@ -40,13 +43,16 @@ class DialogZHARestoreBackup extends LitElement {
   @state() private _uploadingBackup = false;
 
   @state() private _currentBackups?: ZHANetworkBackup[];
+  @state() private _currentSettings?: ZHANetworkBackup;
 
   @state() private _backupFile?: File;
   @state() private _backupType?: BackupType;
   @state() private _chosenBackup?: ZHANetworkBackup;
+  @state() private _overwriteCoordinatorIEEE: boolean = false;
 
   public async showDialog(): Promise<void> {
     this._currentBackups = await listZHANetworkBackups(this.hass);
+    this._currentSettings = await fetchZHANetworkSettings(this.hass);
   }
 
   public closeDialog(): void {
@@ -54,6 +60,7 @@ class DialogZHARestoreBackup extends LitElement {
     this._backupType = undefined;
     this._chosenBackup = undefined;
     this._currentBackups = undefined;
+    this._overwriteCoordinatorIEEE = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -63,6 +70,35 @@ class DialogZHARestoreBackup extends LitElement {
     return `${backupTime.toLocaleString()} (${backup.network_info.pan_id} / ${
       backup.network_info.extended_pan_id
     }, ${backup.network_info.source})`;
+  }
+
+  private _shouldOverwriteCoordinatorIEEEAddress(): boolean {
+    if (!this._currentSettings || !this._chosenBackup) {
+      return false;
+    }
+
+    // Ignore if we're using a Z2M backup or we're not using an EZSP radio
+    if (!("ezsp" in this._currentSettings.network_info.metadata)) {
+      return false;
+    }
+
+    if (
+      this._chosenBackup!.node_info.ieee == this._currentSettings.node_info.ieee
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private _canOverrideCoordinatorIEEEAddress(): boolean {
+    if (!this._shouldOverwriteCoordinatorIEEEAddress()) {
+      return false;
+    }
+
+    return this._currentSettings!.network_info.metadata["ezsp"][
+      "can_write_custom_eui64"
+    ];
   }
 
   protected render(): TemplateResult {
@@ -160,6 +196,24 @@ class DialogZHARestoreBackup extends LitElement {
               : nothing
           }
 
+          ${
+            this._canOverrideCoordinatorIEEEAddress() || true
+              ? html`
+                  <div>
+                    <ha-formfield
+                      .label=${"Burn in the new coordinator IEEE address"}
+                    >
+                      <ha-checkbox
+                        @change=${this._overwriteCoordinatorIEEEChanged}
+                        .disabled=${!this._canOverrideCoordinatorIEEEAddress()}
+                        .checked=${this._overwriteCoordinatorIEEE}
+                      ></ha-checkbox>
+                    </ha-formfield>
+                  </div>
+                `
+              : nothing
+          }
+
         <div class="dialog-actions">
           <mwc-button
             class="warning"
@@ -186,6 +240,12 @@ class DialogZHARestoreBackup extends LitElement {
     this._chosenBackup = target.value as unknown as ZHANetworkBackup;
   }
 
+  private _overwriteCoordinatorIEEEChanged(ev: CustomEvent) {
+    const target = ev.currentTarget! as HaCheckbox;
+
+    this._overwriteCoordinatorIEEE = target.checked;
+  }
+
   private async _uploadFile(ev) {
     this._chosenBackup = undefined;
 
@@ -198,11 +258,51 @@ class DialogZHARestoreBackup extends LitElement {
   }
 
   private async _beginRestore(): Promise<void> {
+    if (this._overwriteCoordinatorIEEE) {
+      const overwriteIEEEConfirmation: boolean = await showConfirmationDialog(
+        this,
+        {
+          title:
+            "Are you sure you want to overwrite the coordinator IEEE address?",
+          text: "Changing it is a permanent operation and can only be done once.  Do you wish to continue?",
+          confirmText: "Write",
+          dismissText: "Cancel",
+          warning: true,
+        }
+      );
+
+      if (!overwriteIEEEConfirmation) {
+        return;
+      }
+
+      if (!this._chosenBackup!.network_info.stack_specific) {
+        this._chosenBackup!.network_info.stack_specific = {};
+      }
+
+      this._chosenBackup!.network_info.stack_specific["ezsp"][
+        "i_understand_i_can_update_eui64_only_once_and_i_still_want_to_do_it"
+      ] = true;
+    } else if (this._shouldOverwriteCoordinatorIEEEAddress()) {
+      const differingIEEEAddress: boolean = await showConfirmationDialog(this, {
+        title:
+          "Your coordinator's IEEE address does not match what is in the backup",
+        text: "Your network may be unstable if the coordinator IEEE address does not match what is present in the backup.",
+        confirmText: "Continue",
+        dismissText: "Cancel",
+        warning: true,
+      });
+
+      if (!differingIEEEAddress) {
+        return;
+      }
+    }
+
     const restoreConfirmation: boolean = await showConfirmationDialog(this, {
       title: "Are you sure you want to restore this network backup?",
       text: "The existing network settings on this coordinator will be overwritten.",
       confirmText: "Restore",
       dismissText: "Cancel",
+      warning: true,
     });
 
     if (!restoreConfirmation) {
