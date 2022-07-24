@@ -83,7 +83,7 @@ export class HaTextField extends TextFieldBase {
       }
 
       input {
-        text-align: var(--text-field-text-align);
+        text-align: var(--text-field-text-align, start);
       }
 
       /* Chrome, Safari, Edge, Opera */
