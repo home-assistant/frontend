@@ -197,7 +197,7 @@ class DialogZHARestoreBackup extends LitElement {
           }
 
           ${
-            this._canOverrideCoordinatorIEEEAddress() || true
+            this._canOverrideCoordinatorIEEEAddress()
               ? html`
                   <div>
                     <ha-formfield
