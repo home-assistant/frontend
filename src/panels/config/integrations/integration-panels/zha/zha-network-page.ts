@@ -172,6 +172,12 @@ class ZHANetworkPage extends LitElement {
           word-break: break-all;
           margin-top: 2px;
         }
+
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
       `,
     ];
   }
