@@ -21,7 +21,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
-import "../../../../../components/ha-file-upload";
+import "../../../../../components/buttons/ha-progress-button";
 import {
   fetchZHANetworkSettings,
   createZHANetworkBackup,
@@ -88,8 +88,9 @@ class ZHANetworkPage extends LitElement {
               </div>
 
               <div class="card-actions">
-                <mwc-button
+                <ha-progress-button
                   @click=${this._createAndDownloadBackup}
+                  .progress=${this._generatingBackup}
                   .disabled=${this._generatingBackup ||
                   this._uploadingBackup ||
                   this._restoringBackup}
@@ -97,14 +98,7 @@ class ZHANetworkPage extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.zha.network.create_backup"
                   )}
-
-                  <ha-circular-progress
-                    active
-                    size="small"
-                    .indeterminate=${this._generatingBackup}
-                    .closed=${!this._generatingBackup}
-                  ></ha-circular-progress>
-                </mwc-button>
+                </ha-progress-button>
 
                 <mwc-button
                   class="warning"
@@ -172,10 +166,6 @@ class ZHANetworkPage extends LitElement {
 
         ha-card h1 {
           margin-bottom: 4px;
-        }
-
-        mwc-button > ha-circular-progress {
-          margin-left: 16px;
         }
 
         .network-settings > div {
