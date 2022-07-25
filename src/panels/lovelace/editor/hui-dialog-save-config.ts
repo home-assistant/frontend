@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
