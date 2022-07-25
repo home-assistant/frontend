@@ -43,7 +43,6 @@ class DialogRepairsIssue extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .hideActions=${!this._issue.learn_more_url}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(
@@ -86,7 +85,7 @@ class DialogRepairsIssue extends LitElement {
             ? html`
                 <br /><span class="dismissed">
                   ${this.hass.localize(
-                    "ui.panel.config.repairs.dialog.dismissed_in_version",
+                    "ui.panel.config.repairs.dialog.ignored_in_version",
                     { version: this._issue.dismissed_version }
                   )}</span
                 >

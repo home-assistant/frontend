@@ -1245,7 +1245,8 @@
             "unignore": "Unignore",
             "alert_not_fixable": "We can not repair this issue for you.",
             "breaks_in_version": "This will break in version {version}. Please fix this issue before upgrading.",
-            "dismissed_in_version": "This issue was dismissed in version {version}."
+            "ignored_in_version_short": "Ignored in version {version}",
+            "ignored_in_version": "This issue was ignored in version {version}."
           }
         },
         "areas": {

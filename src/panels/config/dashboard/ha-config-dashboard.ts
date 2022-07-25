@@ -196,6 +196,7 @@ class HaConfigDashboard extends LitElement {
                     .narrow=${this.narrow}
                     .total=${totalRepairIssues}
                     .repairsIssues=${repairsIssues}
+                    @update-issues=${this._fetchIssues}
                   ></ha-config-repairs>
                   ${totalRepairIssues > repairsIssues.length
                     ? html`
@@ -279,7 +280,9 @@ class HaConfigDashboard extends LitElement {
   );
 
   private async _fetchIssues(): Promise<void> {
-    const repairsIssues = (await fetchRepairsIssues(this.hass)).issues;
+    const repairsIssues = (await fetchRepairsIssues(this.hass)).issues.filter(
+      (issue) => !issue.ignored
+    );
 
     this._repairsIssues = {
       issues: repairsIssues
