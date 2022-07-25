@@ -86,7 +86,7 @@ class DialogRepairsIssue extends LitElement {
             ? html`
                 <br /><span class="dismissed">
                   ${this.hass.localize(
-                    "ui.panel.config.repairs.dialog.dismissed_in_version",
+                    "ui.panel.config.repairs.dialog.ignored_in_version",
                     { version: this._issue.dismissed_version }
                   )}</span
                 >

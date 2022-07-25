@@ -48,6 +48,7 @@ class HaConfigRepairs extends LitElement {
               graphic="avatar"
               .hasMeta=${!this.narrow}
               .issue=${issue}
+              class=${issue.ignored ? "ignored" : ""}
               @click=${this._openShowMoreDialog}
             >
               <img
@@ -72,6 +73,12 @@ class HaConfigRepairs extends LitElement {
               <span slot="secondary" class="secondary">
                 ${issue.created
                   ? relativeTime(new Date(issue.created), this.hass.locale)
+                  : ""}
+                ${issue.ignored
+                  ? ` - ${this.hass.localize(
+                      "ui.panel.config.repairs.dialog.ignored_in_version_short",
+                      { version: issue.dismissed_version }
+                    )}`
                   : ""}
               </span>
             </ha-list-item>
@@ -107,6 +114,9 @@ class HaConfigRepairs extends LitElement {
       font-size: 16px;
       padding: 16px;
       padding-bottom: 0;
+    }
+    .ignored {
+      opacity: var(--light-secondary-opacity);
     }
     button.show-more {
       color: var(--primary-color);
