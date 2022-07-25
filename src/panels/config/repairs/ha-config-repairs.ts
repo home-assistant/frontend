@@ -41,43 +41,41 @@ class HaConfigRepairs extends LitElement {
         })}
       </div>
       <mwc-list>
-        ${issues.map((issue) =>
-          issue.ignored
-            ? ""
-            : html`
-                <ha-list-item
-                  twoline
-                  graphic="avatar"
-                  .hasMeta=${!this.narrow}
-                  .issue=${issue}
-                  @click=${this._openShowMoreDialog}
-                >
-                  <img
-                    loading="lazy"
-                    src=${brandsUrl({
-                      domain: issue.domain,
-                      type: "icon",
-                      useFallback: true,
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    .title=${domainToName(this.hass.localize, issue.domain)}
-                    referrerpolicy="no-referrer"
-                    slot="graphic"
-                  />
-                  <span
-                    >${this.hass.localize(
-                      `component.${issue.domain}.issues.${
-                        issue.translation_key || issue.issue_id
-                      }.title`
-                    )}</span
-                  >
-                  <span slot="secondary" class="secondary">
-                    ${issue.created
-                      ? relativeTime(new Date(issue.created), this.hass.locale)
-                      : ""}
-                  </span>
-                </ha-list-item>
-              `
+        ${issues.map(
+          (issue) => html`
+            <ha-list-item
+              twoline
+              graphic="avatar"
+              .hasMeta=${!this.narrow}
+              .issue=${issue}
+              @click=${this._openShowMoreDialog}
+            >
+              <img
+                loading="lazy"
+                src=${brandsUrl({
+                  domain: issue.domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                .title=${domainToName(this.hass.localize, issue.domain)}
+                referrerpolicy="no-referrer"
+                slot="graphic"
+              />
+              <span
+                >${this.hass.localize(
+                  `component.${issue.domain}.issues.${
+                    issue.translation_key || issue.issue_id
+                  }.title`
+                )}</span
+              >
+              <span slot="secondary" class="secondary">
+                ${issue.created
+                  ? relativeTime(new Date(issue.created), this.hass.locale)
+                  : ""}
+              </span>
+            </ha-list-item>
+          `
         )}
       </mwc-list>
     `;
@@ -91,7 +89,13 @@ class HaConfigRepairs extends LitElement {
         fireEvent(this, "update-issues");
       });
     } else {
-      showRepairsIssueDialog(this, { issue: (ev.currentTarget as any).issue });
+      showRepairsIssueDialog(this, {
+        issue,
+        dialogClosedCallback: () => {
+          // @ts-ignore
+          fireEvent(this, "update-issues");
+        },
+      });
     }
   }
 

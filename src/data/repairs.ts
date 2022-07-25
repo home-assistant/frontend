@@ -27,14 +27,16 @@ export const fetchRepairsIssues = async (hass: HomeAssistant) =>
     type: "repairs/list_issues",
   });
 
-export const dismissRepairsIssue = async (
+export const ignoreRepairsIssue = async (
   hass: HomeAssistant,
-  issue: RepairsIssue
+  issue: RepairsIssue,
+  ignore: boolean
 ) =>
   hass.callWS<string>({
-    type: "repairs/dismiss_issue",
+    type: "repairs/ignore_issue",
     issue_id: issue.issue_id,
     domain: issue.domain,
+    ignore,
   });
 
 export const createRepairsFlow = (
