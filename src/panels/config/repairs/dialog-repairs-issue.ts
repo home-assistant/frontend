@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
-import type { RepairsIssue } from "../../../data/repairs";
+import { ignoreRepairsIssue, RepairsIssue } from "../../../data/repairs";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
@@ -23,6 +23,10 @@ class DialogRepairsIssue extends LitElement {
   }
 
   public closeDialog() {
+    if (this._params?.dialogClosedCallback) {
+      this._params.dialogClosedCallback();
+    }
+
     this._params = undefined;
     this._issue = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -50,6 +54,24 @@ class DialogRepairsIssue extends LitElement {
         )}
       >
         <div>
+          <ha-alert
+            .alertType=${this._issue.severity === "error" ||
+            this._issue.severity === "critical"
+              ? "error"
+              : "warning"}
+            .title=${this.hass.localize(
+              `ui.panel.config.repairs.${this._issue.severity}`
+            )}
+            >${this.hass.localize(
+              "ui.panel.config.repairs.dialog.alert_not_fixable"
+            )}
+            ${this._issue.breaks_in_ha_version
+              ? this.hass.localize(
+                  "ui.panel.config.repairs.dialog.breaks_in_version",
+                  { version: this._issue.breaks_in_ha_version }
+                )
+              : ""}
+          </ha-alert>
           <ha-markdown
             allowsvg
             breaks
@@ -60,19 +82,14 @@ class DialogRepairsIssue extends LitElement {
               this._issue.translation_placeholders
             )}
           ></ha-markdown>
-
-          ${this._issue.breaks_in_ha_version
-            ? html`
-                <br />This will no longer work as of the
-                ${this._issue.breaks_in_ha_version} release of Home Assistant.
-              `
-            : ""}
-          <br />The issue is ${this._issue.severity} severity.<br />We can not
-          automatically repair this issue for you.
           ${this._issue.dismissed_version
             ? html`
-                <br />This issue has been dismissed in version
-                ${this._issue.dismissed_version}.
+                <br /><span class="dismissed">
+                  ${this.hass.localize(
+                    "ui.panel.config.repairs.dialog.dismissed_in_version",
+                    { version: this._issue.dismissed_version }
+                  )}</span
+                >
               `
             : ""}
         </div>
@@ -84,19 +101,42 @@ class DialogRepairsIssue extends LitElement {
                 slot="primaryAction"
                 rel="noopener noreferrer"
               >
-                <mwc-button .label=${"Learn More"}></mwc-button>
+                <mwc-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.config.repairs.dialog.learn"
+                  )}
+                ></mwc-button>
               </a>
             `
           : ""}
+        <mwc-button
+          slot="secondaryAction"
+          .label=${this._issue!.ignored
+            ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
+            : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
+          @click=${this._ignoreIssue}
+        ></mwc-button>
       </ha-dialog>
     `;
+  }
+
+  private _ignoreIssue() {
+    ignoreRepairsIssue(this.hass, this._issue!, !this._issue!.ignored);
+    this.closeDialog();
   }
 
   static styles: CSSResultGroup = [
     haStyleDialog,
     css`
+      ha-alert {
+        margin-bottom: 16px;
+        display: block;
+      }
       a {
         text-decoration: none;
+      }
+      .dismissed {
+        font-style: italic;
       }
     `,
   ];
