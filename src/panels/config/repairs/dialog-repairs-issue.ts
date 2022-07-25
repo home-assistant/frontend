@@ -43,7 +43,6 @@ class DialogRepairsIssue extends LitElement {
         @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
-        .hideActions=${!this._issue.learn_more_url}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(
