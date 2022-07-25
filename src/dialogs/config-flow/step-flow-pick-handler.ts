@@ -14,14 +14,13 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import "../../components/search-input";
-import { getConfigEntries } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
-import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
@@ -36,7 +35,7 @@ interface HandlerObj {
   is_helper?: boolean;
 }
 
-interface SupportedBrandObj extends HandlerObj {
+export interface SupportedBrandObj extends HandlerObj {
   supported_flows: string[];
 }
 
@@ -300,79 +299,7 @@ class StepFlowPickHandler extends LitElement {
   }
 
   private async _handleAddPicked(slug: string): Promise<void> {
-    if (slug === "zwave_js") {
-      const entries = await getConfigEntries(this.hass, {
-        domain: "zwave_js",
-      });
-
-      if (!entries.length) {
-        // If the component isn't loaded, ask them to load the integration first
-        showConfirmationDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
-            {
-              integration: "Z-Wave",
-              supported_hardware_link: html`<a
-                href=${documentationUrl(this.hass, "/docs/z-wave/controllers")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.supported_hardware"
-                )}</a
-              >`,
-            }
-          ),
-          confirmText: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.proceed"
-          ),
-          confirm: () => {
-            fireEvent(this, "handler-picked", {
-              handler: "zwave_js",
-            });
-          },
-        });
-        return;
-      }
-
-      showZWaveJSAddNodeDialog(this, {
-        entry_id: entries[0].entry_id,
-      });
-    } else if (slug === "zha") {
-      // If the component isn't loaded, ask them to load the integration first
-      if (!isComponentLoaded(this.hass, "zha")) {
-        showConfirmationDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.missing_zwave_zigbee",
-            {
-              integration: "Zigbee",
-              supported_hardware_link: html`<a
-                href=${documentationUrl(
-                  this.hass,
-                  "/integrations/zha/#known-working-zigbee-radio-modules"
-                )}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.supported_hardware"
-                )}</a
-              >`,
-            }
-          ),
-          confirmText: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.proceed"
-          ),
-          confirm: () => {
-            fireEvent(this, "handler-picked", {
-              handler: "zha",
-            });
-          },
-        });
-        return;
-      }
-
-      navigate("/config/zha/add");
-    }
-
+    await protocolIntegrationPicked(this, this.hass, slug);
     // This closes dialog.
     fireEvent(this, "flow-update");
   }

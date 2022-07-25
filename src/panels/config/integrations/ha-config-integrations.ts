@@ -14,7 +14,8 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { protocolIntegrationPicked } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -49,6 +50,10 @@ import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
+import {
+  getSupportedBrands,
+  getSupportedBrandsLookup,
+} from "../../../data/supported_brands";
 import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -677,49 +682,84 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (!domain) {
       return;
     }
+
     const handlers = await getConfigFlowHandlers(this.hass, "integration");
 
-    if (!handlers.includes(domain)) {
-      if (HELPER_DOMAINS.includes(domain)) {
-        navigate(`/config/helpers/add?domain=${domain}`, {
-          replace: true,
-        });
+    // Integration exists, so we can just create a flow
+    if (handlers.includes(domain)) {
+      const localize = await localizePromise;
+      if (
+        !(await showConfirmationDialog(this, {
+          title: localize("ui.panel.config.integrations.confirm_new", {
+            integration: domainToName(localize, domain),
+          }),
+        }))
+      ) {
         return;
       }
-      const helpers = await getConfigFlowHandlers(this.hass, "helper");
-      if (helpers.includes(domain)) {
-        navigate(`/config/helpers/add?domain=${domain}`, {
-          replace: true,
-        });
-        return;
-      }
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.integrations.config_flow.error"
-        ),
+      showConfigFlowDialog(this, {
+        dialogClosedCallback: () => {
+          this._handleFlowUpdated();
+        },
+        startFlowHandler: domain,
+        manifest: this._manifests[domain],
+        showAdvanced: this.hass.userData?.showAdvanced,
+      });
+    }
+
+    const supportedBrands = await getSupportedBrands(this.hass);
+    const supportedBrandsIntegrations =
+      getSupportedBrandsLookup(supportedBrands);
+
+    // Supported brand exists, so we can just create a flow
+    if (Object.keys(supportedBrandsIntegrations).includes(domain)) {
+      const brand = supportedBrandsIntegrations[domain];
+      const slug = brand.supported_flows![0];
+
+      showConfirmationDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.integrations.config_flow.no_config_flow"
+          "ui.panel.config.integrations.config_flow.supported_brand_flow",
+          {
+            supported_brand: brand.name,
+            flow_domain_name: domainToName(this.hass.localize, slug),
+          }
         ),
+        confirm: () => {
+          if (["zha", "zwave_js"].includes(slug)) {
+            protocolIntegrationPicked(this, this.hass, slug);
+            return;
+          }
+
+          fireEvent(this, "handler-picked", {
+            handler: slug,
+          });
+        },
+      });
+
+      return;
+    }
+
+    // If not an integration or supported brand, try helper else show alert
+    if (HELPER_DOMAINS.includes(domain)) {
+      navigate(`/config/helpers/add?domain=${domain}`, {
+        replace: true,
       });
       return;
     }
-    const localize = await localizePromise;
-    if (
-      !(await showConfirmationDialog(this, {
-        title: localize("ui.panel.config.integrations.confirm_new", {
-          integration: domainToName(localize, domain),
-        }),
-      }))
-    ) {
+    const helpers = await getConfigFlowHandlers(this.hass, "helper");
+    if (helpers.includes(domain)) {
+      navigate(`/config/helpers/add?domain=${domain}`, {
+        replace: true,
+      });
       return;
     }
-    showConfigFlowDialog(this, {
-      dialogClosedCallback: () => {
-        this._handleFlowUpdated();
-      },
-      startFlowHandler: domain,
-      manifest: this._manifests[domain],
-      showAdvanced: this.hass.userData?.showAdvanced,
+    showAlertDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.error"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.no_config_flow"
+      ),
     });
   }
 
