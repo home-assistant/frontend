@@ -412,7 +412,7 @@ export const restoreZHANetworkBackup = (
 ): Promise<void> =>
   hass.callWS({
     type: "zha/network/backups/restore",
-    data: backup,
+    backup: backup,
   });
 
 export const listZHANetworkBackups = (
