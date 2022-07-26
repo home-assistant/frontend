@@ -209,7 +209,9 @@ class HaConfigDashboard extends LitElement {
                     : ""}
                 `
               : ""}
-            <hr />
+            ${repairsIssues.length && canInstallUpdates.length
+              ? html`<hr />`
+              : ""}
             ${canInstallUpdates.length
               ? html`
                   <ha-config-updates
