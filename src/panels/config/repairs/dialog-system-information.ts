@@ -4,8 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-metric";
+import { HassioStats } from "../../../data/hassio/common";
 import type { HassioResolution } from "../../../data/hassio/resolution";
 import { domainToName } from "../../../data/integration";
 import type {
@@ -48,12 +51,18 @@ class DialogSystemInformation extends LitElement {
 
   @state() private _resolutionInfo?: HassioResolution;
 
+  @state() private _supervisorStats?: HassioStats;
+
+  @state() private _coreStats?: HassioStats;
+
   @state() private _params?: SystemInformationDialogParams;
 
   public showDialog(params: SystemInformationDialogParams): void {
     this._params = params;
     this._systemInfo = this._params.systemInfo;
     this._resolutionInfo = this._params.resolutionInfo;
+    this._coreStats = this._params.coreStats;
+    this._supervisorStats = this._params.supervisorStats;
     this.hass!.loadBackendTranslation("system_health");
   }
 
@@ -61,6 +70,8 @@ class DialogSystemInformation extends LitElement {
     this._params = undefined;
     this._systemInfo = undefined;
     this._resolutionInfo = undefined;
+    this._coreStats = undefined;
+    this._supervisorStats = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -113,6 +124,55 @@ class DialogSystemInformation extends LitElement {
             : ""}
 
           <div>${sections}</div>
+
+          ${!this._coreStats && !this._supervisorStats
+            ? ""
+            : html`
+                <div>
+                  ${this._coreStats
+                    ? html`
+                        <h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.system_health.core_stats"
+                          )}
+                        </h3>
+                        <ha-metric
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.system_health.cpu_usage"
+                          )}
+                          .value=${this._coreStats.cpu_percent}
+                        ></ha-metric>
+                        <ha-metric
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.system_health.ram_usage"
+                          )}
+                          .value=${this._coreStats.memory_percent}
+                        ></ha-metric>
+                      `
+                    : ""}
+                  ${this._supervisorStats
+                    ? html`
+                        <h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.system_health.supervisor_stats"
+                          )}
+                        </h3>
+                        <ha-metric
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.system_health.cpu_usage"
+                          )}
+                          .value=${this._supervisorStats.cpu_percent}
+                        ></ha-metric>
+                        <ha-metric
+                          .heading=${this.hass.localize(
+                            "ui.panel.config.system_health.ram_usage"
+                          )}
+                          .value=${this._supervisorStats.memory_percent}
+                        ></ha-metric>
+                      `
+                    : ""}
+                </div>
+              `}
         </div>
         <mwc-button
           slot="primaryAction"

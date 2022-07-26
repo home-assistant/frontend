@@ -6,7 +6,9 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-card";
+import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
 import {
   fetchHassioResolution,
   HassioResolution,
@@ -41,6 +43,10 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _resolutionInfo?: HassioResolution;
 
+  @state() private _supervisorStats?: HassioStats;
+
+  @state() private _coreStats?: HassioStats;
+
   private _getFilteredIssues = memoizeOne(
     (showIgnored: boolean, repairsIssues: RepairsIssue[]) =>
       showIgnored
@@ -59,6 +65,20 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     }
 
     if (isComponentLoaded(this.hass, "hassio")) {
+      subs.push(
+        subscribePollingCollection(
+          this.hass,
+          async () => {
+            this._supervisorStats = await fetchHassioStats(
+              this.hass,
+              "supervisor"
+            );
+            this._coreStats = await fetchHassioStats(this.hass, "core");
+          },
+          10000
+        )
+      );
+
       fetchHassioResolution(this.hass).then((data) => {
         this._resolutionInfo = data;
       });
@@ -165,6 +185,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     showSystemInformationDialog(this, {
       systemInfo: this._info,
       resolutionInfo: this._resolutionInfo,
+      coreStats: this._coreStats,
+      supervisorStats: this._supervisorStats,
     });
   }
 
