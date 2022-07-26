@@ -92,7 +92,7 @@ export const subscribeRepairsIssueRegistry = (
   onChange: (repairs: { issues: RepairsIssue[] }) => void
 ) =>
   createCollection<{ issues: RepairsIssue[] }>(
-    "_reparisIssueRegistry",
+    "_repairsIssueRegistry",
     fetchRepairsIssueRegistry,
     subscribeRepairsIssueUpdates,
     conn,
