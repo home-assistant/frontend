@@ -1,5 +1,9 @@
+import type { Connection } from "home-assistant-js-websocket";
+import { createCollection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
-import { DataEntryFlowStep } from "./data_entry_flow";
+import type { DataEntryFlowStep } from "./data_entry_flow";
 
 export interface RepairsIssue {
   domain: string;
@@ -61,3 +65,36 @@ export const handleRepairsFlowStep = (
 
 export const deleteRepairsFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `repairs/issues/fix/${flowId}`);
+
+export const fetchRepairsIssueRegistry = (conn: Connection) =>
+  conn.sendMessagePromise<{ issues: RepairsIssue[] }>({
+    type: "repairs/list_issues",
+  });
+
+const subscribeRepairsIssueUpdates = (
+  conn: Connection,
+  store: Store<{ issues: RepairsIssue[] }>
+) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchRepairsIssueRegistry(conn).then((repairs) =>
+          store.setState(repairs, true)
+        ),
+      500,
+      true
+    ),
+    "repairs_issue_registry_updated"
+  );
+
+export const subscribeRepairsIssueRegistry = (
+  conn: Connection,
+  onChange: (repairs: { issues: RepairsIssue[] }) => void
+) =>
+  createCollection<{ issues: RepairsIssue[] }>(
+    "_repairsIssueRegistry",
+    fetchRepairsIssueRegistry,
+    subscribeRepairsIssueUpdates,
+    conn,
+    onChange
+  );

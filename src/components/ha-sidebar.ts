@@ -21,6 +21,7 @@ import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -44,7 +45,9 @@ import {
   PersistentNotification,
   subscribeNotifications,
 } from "../data/persistent_notification";
+import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { updateCanInstall, UpdateEntity } from "../data/update";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
@@ -177,7 +180,7 @@ const computePanels = memoizeOne(
 let Sortable;
 
 @customElement("ha-sidebar")
-class HaSidebar extends LitElement {
+class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -191,6 +194,8 @@ class HaSidebar extends LitElement {
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _updatesCount = 0;
+
+  @state() private _issuesCount = 0;
 
   @state() private _renderEmptySortable = false;
 
@@ -213,6 +218,16 @@ class HaSidebar extends LitElement {
   private _hiddenPanels: string[] = [];
 
   private _sortable?;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+        this._issuesCount = repairs.issues.filter(
+          (issue) => !issue.ignored
+        ).length;
+      }),
+    ];
+  }
 
   protected render() {
     if (!this.hass) {
@@ -238,6 +253,7 @@ class HaSidebar extends LitElement {
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
       changedProps.has("_updatesCount") ||
+      changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
       changedProps.has("editMode") ||
       changedProps.has("_renderEmptySortable") ||
@@ -500,7 +516,7 @@ class HaSidebar extends LitElement {
   }
 
   private _renderConfiguration(title: string | null) {
-    return html` <a
+    return html`<a
       class="configuration-container"
       role="option"
       href="/config"
@@ -511,17 +527,20 @@ class HaSidebar extends LitElement {
     >
       <paper-icon-item class="configuration" role="option">
         <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
-        ${!this.alwaysExpand && this._updatesCount > 0
+        ${!this.alwaysExpand &&
+        (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
               <span class="configuration-badge" slot="item-icon">
-                ${this._updatesCount}
+                ${this._updatesCount + this._issuesCount}
               </span>
             `
           : ""}
         <span class="item-text">${title}</span>
-        ${this.alwaysExpand && this._updatesCount > 0
+        ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
-              <span class="configuration-badge">${this._updatesCount}</span>
+              <span class="configuration-badge"
+                >${this._updatesCount + this._issuesCount}</span
+              >
             `
           : ""}
       </paper-icon-item>
