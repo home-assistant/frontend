@@ -1237,6 +1237,9 @@
           "critical": "Critical",
           "error": "Error",
           "warning": "Warning",
+          "system_information": "System information",
+          "integration_startup_time": "Integration startup time",
+          "copy": "Copy",
           "dialog": {
             "title": "Repair",
             "fix": "Repair",

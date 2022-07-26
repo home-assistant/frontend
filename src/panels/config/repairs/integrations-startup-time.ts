@@ -21,8 +21,8 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 
-@customElement("integrations-card")
-class IntegrationsCard extends LitElement {
+@customElement("integrations-startup-time")
+class IntegrationsStartupTime extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -45,57 +45,47 @@ class IntegrationsCard extends LitElement {
     }
 
     return html`
-      <ha-card
-        outlined
-        .header=${this.hass.localize(
-          "ui.panel.config.system_health.integration_start_time"
-        )}
-      >
-        <mwc-list>
-          ${this._setups?.map((setup) => {
-            const manifest = this._manifests && this._manifests[setup.domain];
-            const docLink = manifest
-              ? manifest.is_built_in
-                ? documentationUrl(
-                    this.hass,
-                    `/integrations/${manifest.domain}`
-                  )
-                : manifest.documentation
-              : "";
+      <mwc-list>
+        ${this._setups?.map((setup) => {
+          const manifest = this._manifests && this._manifests[setup.domain];
+          const docLink = manifest
+            ? manifest.is_built_in
+              ? documentationUrl(this.hass, `/integrations/${manifest.domain}`)
+              : manifest.documentation
+            : "";
 
-            const setupSeconds = setup.seconds?.toFixed(2);
-            return html`
-              <ha-clickable-list-item
-                graphic="avatar"
-                twoline
-                hasMeta
-                openNewTab
-                @click=${this._entryClicked}
-                href=${docLink}
-              >
-                <img
-                  loading="lazy"
-                  src=${brandsUrl({
-                    domain: setup.domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  referrerpolicy="no-referrer"
-                  slot="graphic"
-                />
-                <span>
-                  ${domainToName(this.hass.localize, setup.domain, manifest)}
-                </span>
-                <span slot="secondary">${setup.domain}</span>
-                <div slot="meta">
-                  ${setupSeconds ? html`${setupSeconds} s` : ""}
-                </div>
-              </ha-clickable-list-item>
-            `;
-          })}
-        </mwc-list>
-      </ha-card>
+          const setupSeconds = setup.seconds?.toFixed(2);
+          return html`
+            <ha-clickable-list-item
+              graphic="avatar"
+              twoline
+              hasMeta
+              openNewTab
+              @click=${this._entryClicked}
+              href=${docLink}
+            >
+              <img
+                loading="lazy"
+                src=${brandsUrl({
+                  domain: setup.domain,
+                  type: "icon",
+                  useFallback: true,
+                  darkOptimized: this.hass.themes?.darkMode,
+                })}
+                referrerpolicy="no-referrer"
+                slot="graphic"
+              />
+              <span>
+                ${domainToName(this.hass.localize, setup.domain, manifest)}
+              </span>
+              <span slot="secondary">${setup.domain}</span>
+              <div slot="meta">
+                ${setupSeconds ? html`${setupSeconds} s` : ""}
+              </div>
+            </ha-clickable-list-item>
+          `;
+        })}
+      </mwc-list>
     `;
   }
 
@@ -149,6 +139,6 @@ class IntegrationsCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "integrations-card": IntegrationsCard;
+    "integrations-startup-time": IntegrationsStartupTime;
   }
 }
