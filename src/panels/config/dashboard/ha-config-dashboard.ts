@@ -188,7 +188,7 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          <ha-card outlined class="repairs-updates">
+          <ha-card outlined>
             ${repairsIssues.length
               ? html`
                   <ha-config-repairs
@@ -367,7 +367,7 @@ class HaConfigDashboard extends LitElement {
           display: inline-block;
         }
 
-        .repairs-updates hr {
+        hr {
           height: 1px;
           background-color: var(
             --ha-card-border-color,
