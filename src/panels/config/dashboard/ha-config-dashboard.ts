@@ -188,9 +188,9 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${repairsIssues.length
-            ? html`
-                <ha-card outlined>
+          <ha-card outlined class="repairs-updates">
+            ${repairsIssues.length
+              ? html`
                   <ha-config-repairs
                     .hass=${this.hass}
                     .narrow=${this.narrow}
@@ -202,20 +202,16 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <a class="button" href="/config/repairs">
                           ${this.hass.localize(
-                            "ui.panel.config.repairs.more_repairs",
-                            {
-                              count: totalRepairIssues - repairsIssues.length,
-                            }
+                            "ui.panel.config.repairs.more_repairs"
                           )}
                         </a>
                       `
                     : ""}
-                </ha-card>
-              `
-            : ""}
-          ${canInstallUpdates.length
-            ? html`
-                <ha-card outlined>
+                `
+              : ""}
+            <hr />
+            ${canInstallUpdates.length
+              ? html`
                   <ha-config-updates
                     .hass=${this.hass}
                     .narrow=${this.narrow}
@@ -226,17 +222,14 @@ class HaConfigDashboard extends LitElement {
                     ? html`
                         <a class="button" href="/config/updates">
                           ${this.hass.localize(
-                            "ui.panel.config.updates.more_updates",
-                            {
-                              count: totalUpdates - canInstallUpdates.length,
-                            }
+                            "ui.panel.config.updates.more_updates"
                           )}
                         </a>
                       `
                     : ""}
-                </ha-card>
-              `
-            : ""}
+                `
+              : ""}
+          </ha-card>
 
           <ha-card outlined>
             <ha-config-navigation
@@ -336,9 +329,12 @@ class HaConfigDashboard extends LitElement {
           color: var(--primary-text-color);
         }
         a.button {
-          display: block;
-          color: var(--primary-color);
-          padding: 16px;
+          display: inline-block;
+          color: var(--primary-text-color);
+          padding: 6px 16px;
+          margin: 8px 16px 16px 16px;
+          border-radius: 32px;
+          border: 1px solid var(--divider-color);
         }
         .title {
           font-size: 16px;
@@ -367,6 +363,16 @@ class HaConfigDashboard extends LitElement {
 
         .keep-together {
           display: inline-block;
+        }
+
+        .repairs-updates hr {
+          height: 1px;
+          background-color: var(
+            --ha-card-border-color,
+            var(--divider-color, #e0e0e0)
+          );
+          border: none;
+          margin-top: 0;
         }
       `,
     ];
