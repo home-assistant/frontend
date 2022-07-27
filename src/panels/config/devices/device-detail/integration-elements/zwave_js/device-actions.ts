@@ -1,8 +1,8 @@
 import { getConfigEntries } from "../../../../../../data/config_entries";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  fetchZwaveIsAnyFirmwareUpdateInProgress,
-  fetchZwaveNodeIsFirmwareUpdateInProgress,
+  fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
+  fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -88,8 +88,8 @@ export const getZwaveDeviceActions = async (
 
   const [isAnyFirmwareUpdateInProgress, isNodeFirmwareUpdateInProgress] =
     await Promise.all([
-      fetchZwaveIsAnyFirmwareUpdateInProgress(hass, entryId),
-      fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id),
+      fetchZwaveIsAnyOTAFirmwareUpdateInProgress(hass, entryId),
+      fetchZwaveIsNodeFirmwareUpdateInProgress(hass, device.id),
     ]);
 
   if (!isAnyFirmwareUpdateInProgress || isNodeFirmwareUpdateInProgress) {
@@ -100,7 +100,7 @@ export const getZwaveDeviceActions = async (
       action: async () => {
         if (
           isNodeFirmwareUpdateInProgress ||
-          (await fetchZwaveNodeIsFirmwareUpdateInProgress(hass, device.id)) ||
+          (await fetchZwaveIsNodeFirmwareUpdateInProgress(hass, device.id)) ||
           (await showConfirmationDialog(el, {
             text: hass.localize(
               "ui.panel.config.zwave_js.update_firmware.warning"
