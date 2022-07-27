@@ -81,6 +81,9 @@ class HaConfigRepairs extends LitElement {
                     )}`
                   : ""}
               </span>
+              ${!this.narrow
+                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                : ""}
             </ha-list-item>
           `
         )}
