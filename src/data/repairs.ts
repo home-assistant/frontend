@@ -7,6 +7,7 @@ import type { DataEntryFlowStep } from "./data_entry_flow";
 
 export interface RepairsIssue {
   domain: string;
+  issue_domain?: string;
   issue_id: string;
   active: boolean;
   is_fixable: boolean;
