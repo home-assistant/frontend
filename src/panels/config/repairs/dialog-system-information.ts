@@ -1,17 +1,24 @@
 import "@material/mwc-button/mwc-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-metric";
-import { HassioStats } from "../../../data/hassio/common";
-import type { HassioResolution } from "../../../data/hassio/resolution";
+import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
+import {
+  fetchHassioResolution,
+  HassioResolution,
+} from "../../../data/hassio/resolution";
 import { domainToName } from "../../../data/integration";
-import type {
+import {
+  subscribeSystemHealthInfo,
   SystemCheckValueObject,
   SystemHealthInfo,
 } from "../../../data/system_health";
@@ -20,7 +27,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import type { SystemInformationDialogParams } from "./show-system-information-dialog";
+import "../../../components/ha-circular-progress";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
@@ -55,28 +62,74 @@ class DialogSystemInformation extends LitElement {
 
   @state() private _coreStats?: HassioStats;
 
-  @state() private _params?: SystemInformationDialogParams;
+  @state() private _opened = false;
 
-  public showDialog(params: SystemInformationDialogParams): void {
-    this._params = params;
-    this._systemInfo = this._params.systemInfo;
-    this._resolutionInfo = this._params.resolutionInfo;
-    this._coreStats = this._params.coreStats;
-    this._supervisorStats = this._params.supervisorStats;
+  private _subscriptions?: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>>;
+
+  public showDialog(): void {
+    this._opened = true;
     this.hass!.loadBackendTranslation("system_health");
+    this._subscribe();
   }
 
   public closeDialog() {
-    this._params = undefined;
+    this._opened = false;
+    this._unsubscribe();
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _subscribe(): void {
+    const subs: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> = [];
+    if (isComponentLoaded(this.hass, "system_health")) {
+      subs.push(
+        subscribeSystemHealthInfo(this.hass!, (info) => {
+          this._systemInfo = info;
+        })
+      );
+    }
+
+    if (isComponentLoaded(this.hass, "hassio")) {
+      subs.push(
+        subscribePollingCollection(
+          this.hass,
+          async () => {
+            this._supervisorStats = await fetchHassioStats(
+              this.hass,
+              "supervisor"
+            );
+            this._coreStats = await fetchHassioStats(this.hass, "core");
+          },
+          10000
+        )
+      );
+
+      fetchHassioResolution(this.hass).then((data) => {
+        this._resolutionInfo = data;
+      });
+    }
+
+    this._subscriptions = subs;
+  }
+
+  private _unsubscribe() {
+    while (this._subscriptions?.length) {
+      const unsub = this._subscriptions.pop()!;
+      if (unsub instanceof Promise) {
+        unsub.then((unsubFunc) => unsubFunc());
+      } else {
+        unsub();
+      }
+    }
+    this._subscriptions = undefined;
+
     this._systemInfo = undefined;
     this._resolutionInfo = undefined;
     this._coreStats = undefined;
     this._supervisorStats = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._opened) {
       return html``;
     }
 

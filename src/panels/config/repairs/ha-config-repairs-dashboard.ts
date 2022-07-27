@@ -1,27 +1,16 @@
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { mdiDotsVertical } from "@mdi/js";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-card";
-import { fetchHassioStats, HassioStats } from "../../../data/hassio/common";
-import {
-  fetchHassioResolution,
-  HassioResolution,
-} from "../../../data/hassio/resolution";
 import {
   fetchRepairsIssues,
   RepairsIssue,
   severitySort,
 } from "../../../data/repairs";
-import {
-  subscribeSystemHealthInfo,
-  SystemHealthInfo,
-} from "../../../data/system_health";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -39,53 +28,12 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _showIgnored = false;
 
-  @state() private _info?: SystemHealthInfo;
-
-  @state() private _resolutionInfo?: HassioResolution;
-
-  @state() private _supervisorStats?: HassioStats;
-
-  @state() private _coreStats?: HassioStats;
-
   private _getFilteredIssues = memoizeOne(
     (showIgnored: boolean, repairsIssues: RepairsIssue[]) =>
       showIgnored
         ? repairsIssues
         : repairsIssues.filter((issue) => !issue.ignored)
   );
-
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
-    const subs: Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> = [];
-    if (isComponentLoaded(this.hass, "system_health")) {
-      subs.push(
-        subscribeSystemHealthInfo(this.hass!, (info) => {
-          this._info = info;
-        })
-      );
-    }
-
-    if (isComponentLoaded(this.hass, "hassio")) {
-      subs.push(
-        subscribePollingCollection(
-          this.hass,
-          async () => {
-            this._supervisorStats = await fetchHassioStats(
-              this.hass,
-              "supervisor"
-            );
-            this._coreStats = await fetchHassioStats(this.hass, "core");
-          },
-          10000
-        )
-      );
-
-      fetchHassioResolution(this.hass).then((data) => {
-        this._resolutionInfo = data;
-      });
-    }
-
-    return subs;
-  }
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
@@ -182,12 +130,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    showSystemInformationDialog(this, {
-      systemInfo: this._info,
-      resolutionInfo: this._resolutionInfo,
-      coreStats: this._coreStats,
-      supervisorStats: this._supervisorStats,
-    });
+    showSystemInformationDialog(this);
   }
 
   private _showIntegrationStartupDialog(
