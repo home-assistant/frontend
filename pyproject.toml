@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name         = "home-assistant-frontend"
-version      = "20220707.1"
+version      = "20220727.0"
 license      = {text = "Apache-2.0"}
 description  = "The Home Assistant frontend"
 readme       = "README.md"
@@ -23,8 +23,3 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["hass_frontend*"]
-
-[tool.mypy]
-python_version = 3.4
-show_error_codes = true
-strict = true

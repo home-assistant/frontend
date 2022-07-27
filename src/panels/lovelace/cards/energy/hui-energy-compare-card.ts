@@ -26,6 +26,8 @@ export class HuiEnergyCompareCard
 
   @state() private _endCompare?: Date;
 
+  @property({ type: Boolean, reflect: true }) hidden = true;
+
   public getCardSize(): Promise<number> | number {
     return 1;
   }
@@ -82,6 +84,7 @@ export class HuiEnergyCompareCard
     this._end = data.end;
     this._startCompare = data.startCompare;
     this._endCompare = data.endCompare;
+    this.hidden = !this._startCompare;
   }
 
   private _stopCompare(): void {

@@ -306,6 +306,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         border-radius: 100%;
         color: var(--secondary-text-color);
         z-index: 25;
+        inset-inline-start: initial;
+        inset-inline-end: 0;
+        direction: var(--direction);
       }
 
       .content {
@@ -356,6 +359,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         height: 50%;
         top: 45%;
         left: 50%;
+        direction: ltr;
       }
 
       #set-values {

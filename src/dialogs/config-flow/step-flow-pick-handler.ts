@@ -14,25 +14,29 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { protocolIntegrationPicked } from "../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../common/navigate";
-import "../../components/search-input";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
-import { getConfigEntries } from "../../data/config_entries";
+import "../../components/search-input";
 import { domainToName } from "../../data/integration";
-import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
-import { configFlowContentStyles } from "./styles";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { FlowHandlers } from "./show-dialog-data-entry-flow";
+import { configFlowContentStyles } from "./styles";
 
 interface HandlerObj {
   name: string;
   slug: string;
   is_add?: boolean;
   is_helper?: boolean;
+}
+
+export interface SupportedBrandObj extends HandlerObj {
+  supported_flows: string[];
 }
 
 declare global {
@@ -63,11 +67,22 @@ class StepFlowPickHandler extends LitElement {
       h: FlowHandlers,
       filter?: string,
       _localize?: LocalizeFunc
-    ): [HandlerObj[], HandlerObj[]] => {
-      const integrations: HandlerObj[] = h.integrations.map((handler) => ({
-        name: domainToName(this.hass.localize, handler),
-        slug: handler,
-      }));
+    ): [(HandlerObj | SupportedBrandObj)[], HandlerObj[]] => {
+      const integrations: (HandlerObj | SupportedBrandObj)[] =
+        h.integrations.map((handler) => ({
+          name: domainToName(this.hass.localize, handler),
+          slug: handler,
+        }));
+
+      for (const [domain, domainBrands] of Object.entries(h.supportedBrands)) {
+        for (const [slug, name] of Object.entries(domainBrands)) {
+          integrations.push({
+            slug,
+            name,
+            supported_flows: [domain],
+          });
+        }
+      }
 
       if (filter) {
         const options: Fuse.IFuseOptions<HandlerObj> = {
@@ -238,27 +253,10 @@ class StepFlowPickHandler extends LitElement {
   }
 
   private async _handlerPicked(ev) {
-    const handler: HandlerObj = ev.currentTarget.handler;
+    const handler: HandlerObj | SupportedBrandObj = ev.currentTarget.handler;
 
     if (handler.is_add) {
-      if (handler.slug === "zwave_js") {
-        const entries = await getConfigEntries(this.hass, {
-          domain: "zwave_js",
-        });
-
-        if (!entries.length) {
-          return;
-        }
-
-        showZWaveJSAddNodeDialog(this, {
-          entry_id: entries[0].entry_id,
-        });
-      } else if (handler.slug === "zha") {
-        navigate("/config/zha/add");
-      }
-
-      // This closes dialog.
-      fireEvent(this, "flow-update");
+      this._handleAddPicked(handler.slug);
       return;
     }
 
@@ -269,9 +267,41 @@ class StepFlowPickHandler extends LitElement {
       return;
     }
 
+    if ("supported_flows" in handler) {
+      const slug = handler.supported_flows[0];
+
+      showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.supported_brand_flow",
+          {
+            supported_brand: handler.name,
+            flow_domain_name: domainToName(this.hass.localize, slug),
+          }
+        ),
+        confirm: () => {
+          if (["zha", "zwave_js"].includes(slug)) {
+            this._handleAddPicked(slug);
+            return;
+          }
+
+          fireEvent(this, "handler-picked", {
+            handler: slug,
+          });
+        },
+      });
+
+      return;
+    }
+
     fireEvent(this, "handler-picked", {
       handler: handler.slug,
     });
+  }
+
+  private async _handleAddPicked(slug: string): Promise<void> {
+    await protocolIntegrationPicked(this, this.hass, slug);
+    // This closes dialog.
+    fireEvent(this, "flow-update");
   }
 
   private _maybeSubmit(ev: KeyboardEvent) {

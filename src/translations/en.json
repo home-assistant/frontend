@@ -423,9 +423,7 @@
         "remove_user": "Remove user"
       },
       "blueprint-picker": {
-        "select_blueprint": "Select a Blueprint",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "select_blueprint": "Select a Blueprint"
       },
       "device-picker": {
         "clear": "Clear",
@@ -955,6 +953,18 @@
           "description": "Options successfully saved."
         }
       },
+      "repair_flow": {
+        "form": {
+          "header": "Repair issue"
+        },
+        "loading": {
+          "loading_flow": "Please wait while the repair for {integration} is being initialized",
+          "loading_step": "[%key:ui::panel::config::integrations::config_flow::loading::loading_step%]"
+        },
+        "success": {
+          "description": "The issue is repaired!"
+        }
+      },
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
@@ -1208,13 +1218,39 @@
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "version_available": "Version {version_available} is available",
-          "more_updates": "+{count} updates",
+          "more_updates": "Show all updates",
           "show": "show",
           "show_skipped": "Show skipped",
           "hide_skipped": "Hide skipped",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
+        },
+        "repairs": {
+          "caption": "Repairs",
+          "description": "Find and fix issues with your Home Assistant instance",
+          "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
+          "no_repairs": "There are currently no repairs available",
+          "more_repairs": "Show all repairs",
+          "show_ignored": "Show ignored",
+          "hide_ignored": "Hide ignored",
+          "critical": "Critical",
+          "error": "Error",
+          "warning": "Warning",
+          "system_information": "System information",
+          "integration_startup_time": "Integration startup time",
+          "copy": "Copy",
+          "dialog": {
+            "title": "Repair",
+            "fix": "Repair",
+            "learn": "Learn more",
+            "ignore": "Ignore",
+            "unignore": "Unignore",
+            "alert_not_fixable": "We can not repair this issue for you.",
+            "breaks_in_version": "This will break in version {version}. Please fix this issue before upgrading.",
+            "ignored_in_version_short": "Ignored in version {version}",
+            "ignored_in_version": "This issue was ignored in version {version}."
+          }
         },
         "areas": {
           "caption": "Areas",
@@ -1569,6 +1605,7 @@
           "available_hardware": {
             "failed_to_get": "Failed to get available hardware",
             "title": "All Hardware",
+            "search": "Search hardware",
             "subsystem": "Subsystem",
             "device_path": "Device path",
             "id": "ID",
@@ -2850,7 +2887,11 @@
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
-            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?"
+            "missing_credentials": "Setting up {integration} requires configuring application credentials. Do you want to do that now?",
+            "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
+            "missing_zwave_zigbee": "To add a {integration} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
+            "supported_hardware": "supported hardware",
+            "proceed": "Proceed"
           }
         },
         "users": {

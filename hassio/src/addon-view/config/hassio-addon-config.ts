@@ -336,7 +336,7 @@ class HassioAddonConfig extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
       this._error = this.supervisor.localize(
-        "addon.common.update_available",
+        "addon.failed_to_reset",
         "error",
         extractApiErrorMessage(err)
       );

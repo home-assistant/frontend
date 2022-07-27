@@ -52,6 +52,11 @@ export class HaSelect extends SelectBase {
         inset-inline-end: initial;
         direction: var(--direction);
       }
+      .mdc-select--filled.mdc-select--with-leading-icon .mdc-floating-label {
+        inset-inline-start: 48px;
+        inset-inline-end: initial;
+        direction: var(--direction);
+      }
       .mdc-select .mdc-select__anchor {
         padding-inline-start: 12px;
         padding-inline-end: 0px;

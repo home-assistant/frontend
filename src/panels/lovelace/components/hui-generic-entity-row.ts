@@ -156,7 +156,7 @@ class HuiGenericEntityRow extends LitElement {
         : html``}
       ${this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain)
         ? html`<div
-            class="text-content ${classMap({
+            class="text-content value ${classMap({
               pointer,
             })}"
             @action=${this._handleAction}
@@ -235,6 +235,9 @@ class HuiGenericEntityRow extends LitElement {
       }
       .state.rtl {
         text-align: left;
+      }
+      .value {
+        direction: ltr;
       }
     `;
   }

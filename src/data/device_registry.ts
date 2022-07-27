@@ -1,10 +1,11 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
+import type { Store } from "home-assistant-js-websocket/dist/store";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
-import { HomeAssistant } from "../types";
-import { EntityRegistryEntry } from "./entity_registry";
+import type { HomeAssistant } from "../types";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { EntitySources } from "./entity_sources";
 
 export interface DeviceRegistryEntry {
   id: string;
@@ -20,7 +21,7 @@ export interface DeviceRegistryEntry {
   area_id: string | null;
   name_by_user: string | null;
   entry_type: "service" | null;
-  disabled_by: string | null;
+  disabled_by: "user" | "integration" | "config_entry" | null;
   configuration_url: string | null;
 }
 
@@ -141,4 +142,24 @@ export const getDeviceEntityLookup = (
     deviceEntityLookup[entity.device_id].push(entity);
   }
   return deviceEntityLookup;
+};
+
+export const getDeviceIntegrationLookup = (
+  entitySources: EntitySources,
+  entities: EntityRegistryEntry[]
+): Record<string, string[]> => {
+  const deviceIntegrations: Record<string, string[]> = {};
+
+  for (const entity of entities) {
+    const source = entitySources[entity.entity_id];
+    if (!source?.domain || entity.device_id === null) {
+      continue;
+    }
+
+    if (!deviceIntegrations[entity.device_id!]) {
+      deviceIntegrations[entity.device_id!] = [];
+    }
+    deviceIntegrations[entity.device_id!].push(source.domain);
+  }
+  return deviceIntegrations;
 };

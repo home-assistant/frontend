@@ -6,9 +6,9 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
-  mdiHeart,
   mdiInformation,
   mdiInformationOutline,
+  mdiLifebuoy,
   mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
@@ -268,6 +268,12 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#3B808E",
     },
     {
+      path: "/config/repairs",
+      translationKey: "repairs",
+      iconPath: mdiLifebuoy,
+      iconColor: "#5c995c",
+    },
+    {
       component: "logs",
       path: "/config/logs",
       translationKey: "logs",
@@ -314,13 +320,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconPath: mdiMemory,
       iconColor: "#301A8E",
       component: "hassio",
-    },
-    {
-      path: "/config/system_health",
-      translationKey: "system_health",
-      iconPath: mdiHeart,
-      iconColor: "#507FfE",
-      components: ["system_health", "hassio"],
     },
   ],
   about: [
@@ -440,13 +439,13 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
       },
-      system_health: {
-        tag: "ha-config-system-health",
-        load: () => import("./system-health/ha-config-system-health"),
-      },
       updates: {
         tag: "ha-config-section-updates",
         load: () => import("./core/ha-config-section-updates"),
+      },
+      repairs: {
+        tag: "ha-config-repairs-dashboard",
+        load: () => import("./repairs/ha-config-repairs-dashboard"),
       },
       users: {
         tag: "ha-config-users",

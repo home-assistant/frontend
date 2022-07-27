@@ -151,6 +151,8 @@ export interface TranslationMetadata {
   };
 }
 
+export type TranslationDict = typeof import("./translations/en.json");
+
 export interface IconMetaFile {
   version: string;
   parts: IconMeta[];

@@ -202,7 +202,7 @@ class HaConfigHardware extends LitElement {
       title: this.hass.localize("ui.panel.config.hardware.reboot_host"),
       text: this.hass.localize("ui.panel.config.hardware.reboot_host_confirm"),
       confirmText: this.hass.localize("ui.panel.config.hardware.reboot_host"),
-      dismissText: this.hass.localize("common.cancel"),
+      dismissText: this.hass.localize("ui.common.cancel"),
     });
 
     if (!confirmed) {
@@ -236,7 +236,7 @@ class HaConfigHardware extends LitElement {
         "ui.panel.config.hardware.shutdown_host_confirm"
       ),
       confirmText: this.hass.localize("ui.panel.config.hardware.shutdown_host"),
-      dismissText: this.hass.localize("common.cancel"),
+      dismissText: this.hass.localize("ui.common.cancel"),
     });
 
     if (!confirmed) {

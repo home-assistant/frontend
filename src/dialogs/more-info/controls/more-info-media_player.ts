@@ -206,11 +206,21 @@ class MoreInfoMediaPlayer extends LitElement {
         flex-wrap: wrap;
         align-items: center;
         --mdc-theme-primary: currentColor;
+        direction: ltr;
       }
 
       .basic-controls {
         display: inline-flex;
         flex-grow: 1;
+      }
+
+      .volume {
+        direction: ltr;
+      }
+
+      .source-input,
+      .sound-input {
+        direction: var(--direction);
       }
 
       .volume,
@@ -225,6 +235,9 @@ class MoreInfoMediaPlayer extends LitElement {
       .sound-input ha-select {
         margin-left: 10px;
         flex-grow: 1;
+        margin-inline-start: 10px;
+        margin-inline-end: initial;
+        direction: var(--direction);
       }
 
       .tts {

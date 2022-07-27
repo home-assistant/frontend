@@ -4,9 +4,9 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { NumberSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
+import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";
-import "../ha-input-helper-text";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {
@@ -30,21 +30,25 @@ export class HaNumberSelector extends LitElement {
     const isBox = this.selector.number.mode === "box";
 
     return html`
-      ${this.label ? html`${this.label}${this.required ? " *" : ""}` : ""}
       <div class="input">
         ${!isBox
-          ? html`<ha-slider
-              .min=${this.selector.number.min}
-              .max=${this.selector.number.max}
-              .value=${this._value}
-              .step=${this.selector.number.step ?? 1}
-              .disabled=${this.disabled}
-              .required=${this.required}
-              pin
-              ignore-bar-touch
-              @change=${this._handleSliderChange}
-            >
-            </ha-slider>`
+          ? html`
+              ${this.label
+                ? html`${this.label}${this.required ? " *" : ""}`
+                : ""}
+              <ha-slider
+                .min=${this.selector.number.min}
+                .max=${this.selector.number.max}
+                .value=${this._value}
+                .step=${this.selector.number.step ?? 1}
+                .disabled=${this.disabled}
+                .required=${this.required}
+                pin
+                ignore-bar-touch
+                @change=${this._handleSliderChange}
+              >
+              </ha-slider>
+            `
           : ""}
         <ha-textfield
           inputMode="numeric"

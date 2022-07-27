@@ -76,6 +76,7 @@ class HaAttributes extends LitElement {
       css`
         .attribute-container {
           margin-bottom: 8px;
+          direction: ltr;
         }
         .data-entry {
           display: flex;

@@ -1,10 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import {
-  mdiChevronLeft,
-  mdiChevronRight,
-  mdiCompare,
-  mdiCompareRemove,
-} from "@mdi/js";
+import { mdiCompare, mdiCompareRemove } from "@mdi/js";
 import {
   addDays,
   addMonths,
@@ -35,9 +30,12 @@ import {
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-icon-button-next";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -116,20 +114,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}
-          <ha-icon-button
+          <ha-icon-button-prev
             .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.previous"
             )}
             @click=${this._pickPrevious}
-            .path=${mdiChevronLeft}
-          ></ha-icon-button>
-          <ha-icon-button
+          ></ha-icon-button-prev>
+          <ha-icon-button-next
             .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.next"
             )}
             @click=${this._pickNext}
-            .path=${mdiChevronRight}
-          ></ha-icon-button>
+          ></ha-icon-button-next>
           <mwc-button dense outlined @click=${this._pickToday}>
             ${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.today"
@@ -142,6 +138,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .active=${this._period}
             dense
             @value-changed=${this._handleView}
+            .dir=${computeRTLDirection(this.hass)}
           ></ha-button-toggle-group>
           ${this.narrow
             ? html`<ha-icon-button
@@ -291,7 +288,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
-        align-items: flex-end;
+        align-items: center;
       }
       :host([narrow]) .period {
         margin-bottom: 8px;

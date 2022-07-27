@@ -30,13 +30,13 @@ import { showUserDetailDialog } from "./show-dialog-user-detail";
 export class HaConfigUsers extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public _users: User[] = [];
+  @property({ attribute: false }) public _users: User[] = [];
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   private _columns = memoizeOne(
     (narrow: boolean, localize: LocalizeFunc): DataTableColumnContainer => {
@@ -76,7 +76,8 @@ export class HaConfigUsers extends LitElement {
           width: "20%",
           direction: "asc",
           hidden: narrow,
-          template: (groupIds) => html` ${localize(`groups.${groupIds[0]}`)} `,
+          template: (groupIds: User["group_ids"]) =>
+            html` ${localize(`groups.${groupIds[0]}`)} `,
         },
         is_active: {
           title: this.hass.localize(
@@ -236,5 +237,11 @@ export class HaConfigUsers extends LitElement {
         }
       },
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-config-users": HaConfigUsers;
   }
 }
