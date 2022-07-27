@@ -166,6 +166,11 @@ export interface ZHANetworkBackup {
   node_info: ZHANetworkBackupNodeInfo;
 }
 
+export interface ZHANetworkSettings {
+  settings: ZHANetworkBackup;
+  radio_type: "ezsp" | "znp" | "deconz" | "zigate" | "xbee";
+}
+
 export interface ZHANetworkBackupAndMetadata {
   backup: ZHANetworkBackup;
   is_complete: boolean;
@@ -394,7 +399,7 @@ export const updateZHAConfiguration = (
 
 export const fetchZHANetworkSettings = (
   hass: HomeAssistant
-): Promise<ZHANetworkBackup> =>
+): Promise<ZHANetworkSettings> =>
   hass.callWS({
     type: "zha/network/settings",
   });

@@ -8,9 +8,11 @@ import { fireEvent } from "../../../../../../src/common/dom/fire_event";
 import { extractApiErrorMessage } from "../../../../../../src/data/hassio/common";
 import {
   ZHANetworkBackup,
+  createZHANetworkBackup,
   listZHANetworkBackups,
   fetchZHANetworkSettings,
   restoreZHANetworkBackup,
+  ZHANetworkSettings,
 } from "../../../../../data/zha";
 
 import {
@@ -27,9 +29,9 @@ import { HaCheckbox } from "../../../../../../src/components/ha-checkbox";
 import "../../../../../../src/components/ha-select";
 import "../../../../../../src/components/ha-checkbox";
 import "../../../../../../src/components/data-table/ha-data-table";
+import "../../../../../../src/components/buttons/ha-progress-button";
 
 import "../../../../../components/ha-file-upload";
-import "@material/mwc-button/mwc-button";
 
 enum BackupType {
   Automatic = "automatic",
@@ -41,9 +43,10 @@ class DialogZHARestoreBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _uploadingBackup = false;
+  @state() private _restoringBackup = false;
 
   @state() private _currentBackups?: ZHANetworkBackup[];
-  @state() private _currentSettings?: ZHANetworkBackup;
+  @state() private _currentSettings?: ZHANetworkSettings;
 
   @state() private _backupFile?: File;
   @state() private _backupType?: BackupType;
@@ -77,13 +80,13 @@ class DialogZHARestoreBackup extends LitElement {
       return false;
     }
 
-    // Ignore if we're using a Z2M backup or we're not using an EZSP radio
-    if (!("ezsp" in this._currentSettings.network_info.metadata)) {
+    if (this._currentSettings.radio_type !== "ezsp") {
       return false;
     }
 
     if (
-      this._chosenBackup!.node_info.ieee == this._currentSettings.node_info.ieee
+      this._chosenBackup!.node_info.ieee ===
+      this._currentSettings.settings.node_info.ieee
     ) {
       return false;
     }
@@ -91,12 +94,12 @@ class DialogZHARestoreBackup extends LitElement {
     return true;
   }
 
-  private _canOverrideCoordinatorIEEEAddress(): boolean {
+  private _canOverwriteCoordinatorIEEEAddress(): boolean {
     if (!this._shouldOverwriteCoordinatorIEEEAddress()) {
       return false;
     }
 
-    return this._currentSettings!.network_info.metadata["ezsp"][
+    return this._currentSettings!.settings.network_info.metadata["ezsp"][
       "can_write_custom_eui64"
     ];
   }
@@ -125,14 +128,16 @@ class DialogZHARestoreBackup extends LitElement {
         <div class="dialog-content">
           <p>
             Network backups can only restore the state of the <em>coordinator</em>,
-            not any other device on the network. They can be used to migrate between
-            coordinators (for example, a Conbee II to a CC2652).
+            not any other device on the network. They can be used to migrate networks
+            between coordinators (for example, a Conbee II to a CC2652).
           </p>
 
           <p>Choose a backup source:</p>
 
           <div>
-            <ha-formfield .label=${"Automatic backup"}>
+            <ha-formfield .label=${this.hass.localize(
+              "ui.panel.config.zha.network.automatic_backup"
+            )}>
               <ha-radio
                 name="backupType"
                 .value=${BackupType.Automatic}
@@ -141,7 +146,9 @@ class DialogZHARestoreBackup extends LitElement {
               ></ha-radio>
             </ha-formfield>
 
-            <ha-formfield .label=${"Manual backup"}>
+            <ha-formfield .label=${this.hass.localize(
+              "ui.panel.config.zha.network.manual_backup"
+            )}>
               <ha-radio
                 name="backupType"
                 .value=${BackupType.Manual}
@@ -197,15 +204,16 @@ class DialogZHARestoreBackup extends LitElement {
           }
 
           ${
-            this._canOverrideCoordinatorIEEEAddress()
+            this._canOverwriteCoordinatorIEEEAddress()
               ? html`
                   <div>
                     <ha-formfield
-                      .label=${"Burn in the new coordinator IEEE address"}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.zha.network.burn_in_coordinator_ieee"
+                      )}
                     >
                       <ha-checkbox
                         @change=${this._overwriteCoordinatorIEEEChanged}
-                        .disabled=${!this._canOverrideCoordinatorIEEEAddress()}
                         .checked=${this._overwriteCoordinatorIEEE}
                       ></ha-checkbox>
                     </ha-formfield>
@@ -215,13 +223,14 @@ class DialogZHARestoreBackup extends LitElement {
           }
 
         <div class="dialog-actions">
-          <mwc-button
+          <ha-progress-button
             class="warning"
             @click=${this._beginRestore}
+            .progress=${this._restoringBackup}
             .disabled=${!this._chosenBackup}
           >
             ${this.hass.localize("ui.panel.config.zha.network.restore_backup")}
-          </mwc-button>
+          </ha-progress-button>
         </div>
       </ha-dialog>
     `;
@@ -259,37 +268,36 @@ class DialogZHARestoreBackup extends LitElement {
 
   private async _beginRestore(): Promise<void> {
     if (this._overwriteCoordinatorIEEE) {
-      const overwriteIEEEConfirmation: boolean = await showConfirmationDialog(
-        this,
-        {
-          title:
-            "Are you sure you want to overwrite the coordinator IEEE address?",
-          text: "Changing it is a permanent operation and can only be done once.  Do you wish to continue?",
-          confirmText: "Write",
-          dismissText: "Cancel",
-          warning: true,
-        }
-      );
+      const confirmOverwriteIEEE: boolean = await showConfirmationDialog(this, {
+        title:
+          "Are you sure you want to overwrite the coordinator IEEE address?",
+        text: html`Changing it is a <strong>permanent operation</strong> and can
+          only be done once. Do you wish to continue?`,
+        confirmText: "Write",
+        dismissText: "Cancel",
+        warning: true,
+      });
 
-      if (!overwriteIEEEConfirmation) {
+      if (!confirmOverwriteIEEE) {
         return;
       }
     } else if (this._shouldOverwriteCoordinatorIEEEAddress()) {
-      const differingIEEEAddress: boolean = await showConfirmationDialog(this, {
+      const confirmDifferingIEEE: boolean = await showConfirmationDialog(this, {
         title:
           "Your coordinator's IEEE address does not match what is in the backup",
-        text: "Your network may be unstable if the coordinator IEEE address does not match what is present in the backup.",
+        text: html`Your network may become <strong>unstable</strong> if the
+          coordinator IEEE address does not match what is present in the backup.`,
         confirmText: "Continue",
         dismissText: "Cancel",
         warning: true,
       });
 
-      if (!differingIEEEAddress) {
+      if (!confirmDifferingIEEE) {
         return;
       }
     }
 
-    const restoreConfirmation: boolean = await showConfirmationDialog(this, {
+    const confirmRestore: boolean = await showConfirmationDialog(this, {
       title: "Are you sure you want to restore this network backup?",
       text: "The existing network settings on this coordinator will be overwritten.",
       confirmText: "Restore",
@@ -297,11 +305,17 @@ class DialogZHARestoreBackup extends LitElement {
       warning: true,
     });
 
-    if (!restoreConfirmation) {
+    if (!confirmRestore) {
       return;
     }
 
     try {
+      this._restoringBackup = true;
+
+      // Create a new backup, just in case
+      await createZHANetworkBackup(this.hass);
+
+      // Once that completes, perform the restore
       await restoreZHANetworkBackup(
         this.hass,
         this._chosenBackup!,
@@ -315,11 +329,13 @@ class DialogZHARestoreBackup extends LitElement {
       });
 
       return;
+    } finally {
+      this._restoringBackup = false;
     }
 
     await showAlertDialog(this, {
       title: "Restore succeeded",
-      text: "The network settings have been successfully written. It can take a few minutes for routes to existing devices to be rebuilt.",
+      text: "The network settings have been successfully restored. It can take a few minutes for routes to existing devices to be rebuilt.",
     });
   }
 

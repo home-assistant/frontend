@@ -25,7 +25,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import {
   fetchZHANetworkSettings,
   createZHANetworkBackup,
-  ZHANetworkBackup,
+  ZHANetworkSettings,
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 
@@ -43,7 +43,7 @@ class ZHANetworkPage extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @property() private _settings?: ZHANetworkBackup;
+  @property() private _settings?: ZHANetworkSettings;
 
   @state() private _uploadingBackup = false;
   @state() private _restoringBackup = false;
@@ -73,15 +73,29 @@ class ZHANetworkPage extends LitElement {
               )}
             >
               <div class="card-content network-settings">
-                <div>PAN ID: ${this._settings!.network_info.pan_id}</div>
                 <div>
-                  Extended PAN ID:
-                  ${this._settings!.network_info.extended_pan_id}
+                  <strong>PAN ID:</strong>
+                  ${this._settings!.settings.network_info.pan_id}
                 </div>
-                <div>Channel: ${this._settings!.network_info.channel}</div>
-                <div>Coordinator IEEE: ${this._settings!.node_info.ieee}</div>
                 <div>
-                  Network key: ${this._settings!.network_info.network_key.key}
+                  <strong>Extended PAN ID:</strong>
+                  ${this._settings!.settings.network_info.extended_pan_id}
+                </div>
+                <div>
+                  <strong>Channel:</strong>
+                  ${this._settings!.settings.network_info.channel}
+                </div>
+                <div>
+                  <strong>Coordinator IEEE:</strong>
+                  ${this._settings!.settings.node_info.ieee}
+                </div>
+                <div>
+                  <strong>Network key:</strong>
+                  ${this._settings!.settings.network_info.network_key.key}
+                </div>
+                <div>
+                  <strong>Radio type:</strong>
+                  ${this._settings!.radio_type}
                 </div>
               </div>
 

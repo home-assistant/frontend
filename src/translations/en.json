@@ -3042,7 +3042,10 @@
             "settings_title": "Network Settings",
             "create_backup": "Create network backup",
             "restore_backup": "Restore network backup",
-            "upload_backup": "Upload network backup"
+            "upload_backup": "Upload network backup",
+            "burn_in_coordinator_ieee": "Burn in coordinator IEEE address",
+            "automatic_backup": "Automatic backup",
+            "manual_backup": "Manual backup"
           },
           "options": {
             "caption": "Options"
