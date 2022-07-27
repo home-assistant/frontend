@@ -44,7 +44,7 @@ class HaConfigRepairs extends LitElement {
           (issue) => html`
             <ha-list-item
               twoline
-              graphic="avatar"
+              graphic="medium"
               .hasMeta=${!this.narrow}
               .issue=${issue}
               class=${issue.ignored ? "ignored" : ""}
@@ -53,7 +53,7 @@ class HaConfigRepairs extends LitElement {
               <img
                 loading="lazy"
                 src=${brandsUrl({
-                  domain: issue.domain,
+                  domain: issue.issue_domain || issue.domain,
                   type: "icon",
                   useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
@@ -113,6 +113,9 @@ class HaConfigRepairs extends LitElement {
     }
     .ignored {
       opacity: var(--light-secondary-opacity);
+    }
+    ha-list-item {
+      --mdc-list-item-graphic-size: 40px;
     }
     button.show-more {
       color: var(--primary-color);
