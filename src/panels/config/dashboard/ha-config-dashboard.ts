@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -24,9 +24,9 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import { CloudStatus } from "../../../data/cloud";
 import {
-  fetchRepairsIssues,
   RepairsIssue,
   severitySort,
+  subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import {
   checkForEntityUpdates,
@@ -36,6 +36,7 @@ import {
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -110,7 +111,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
 };
 
 @customElement("ha-config-dashboard")
-class HaConfigDashboard extends LitElement {
+class HaConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
@@ -143,6 +144,27 @@ class HaConfigDashboard extends LitElement {
     }
     return [...pages, ...configSections.dashboard];
   });
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+        const repairsIssues = repairs.issues.filter((issue) => !issue.ignored);
+
+        this._repairsIssues = {
+          issues: repairsIssues
+            .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
+            .slice(0, repairsIssues.length === 3 ? repairsIssues.length : 2),
+          total: repairsIssues.length,
+        };
+
+        const integrations: Set<string> = new Set();
+        for (const issue of this._repairsIssues.issues) {
+          integrations.add(issue.domain);
+        }
+        this.hass.loadBackendTranslation("issues", [...integrations]);
+      }),
+    ];
+  }
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
@@ -197,7 +219,6 @@ class HaConfigDashboard extends LitElement {
                         .narrow=${this.narrow}
                         .total=${totalRepairIssues}
                         .repairsIssues=${repairsIssues}
-                        @update-issues=${this._fetchIssues}
                       ></ha-config-repairs>
                       ${totalRepairIssues > repairsIssues.length
                         ? html`
@@ -260,11 +281,6 @@ class HaConfigDashboard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._fetchIssues();
-  }
-
   protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -283,25 +299,6 @@ class HaConfigDashboard extends LitElement {
       };
     }
   );
-
-  private async _fetchIssues(): Promise<void> {
-    const repairsIssues = (await fetchRepairsIssues(this.hass)).issues.filter(
-      (issue) => !issue.ignored
-    );
-
-    this._repairsIssues = {
-      issues: repairsIssues
-        .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
-        .slice(0, repairsIssues.length === 3 ? repairsIssues.length : 2),
-      total: repairsIssues.length,
-    };
-
-    const integrations: Set<string> = new Set();
-    for (const issue of this._repairsIssues.issues) {
-      integrations.add(issue.domain);
-    }
-    this.hass.loadBackendTranslation("issues", [...integrations]);
-  }
 
   private _showQuickBar(): void {
     showQuickBar(this, {

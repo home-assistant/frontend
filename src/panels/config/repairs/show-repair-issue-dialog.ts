@@ -3,7 +3,7 @@ import type { RepairsIssue } from "../../../data/repairs";
 
 export interface RepairsIssueDialogParams {
   issue: RepairsIssue;
-  dialogClosedCallback: () => void;
+  dialogClosedCallback?: () => void;
 }
 
 export const loadRepairsIssueDialog = () => import("./dialog-repairs-issue");
