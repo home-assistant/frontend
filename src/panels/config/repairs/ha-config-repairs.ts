@@ -66,7 +66,8 @@ class HaConfigRepairs extends LitElement {
                 >${this.hass.localize(
                   `component.${issue.domain}.issues.${
                     issue.translation_key || issue.issue_id
-                  }.title`
+                  }.title`,
+                  issue.translation_placeholders || {}
                 )}</span
               >
               <span slot="secondary" class="secondary">
