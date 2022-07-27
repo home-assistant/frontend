@@ -408,11 +408,13 @@ export const createZHANetworkBackup = (
 
 export const restoreZHANetworkBackup = (
   hass: HomeAssistant,
-  backup: ZHANetworkBackup
+  backup: ZHANetworkBackup,
+  ezspForceWriteEUI64: boolean = false
 ): Promise<void> =>
   hass.callWS({
     type: "zha/network/backups/restore",
     backup: backup,
+    ezsp_force_write_eui64: ezspForceWriteEUI64,
   });
 
 export const listZHANetworkBackups = (

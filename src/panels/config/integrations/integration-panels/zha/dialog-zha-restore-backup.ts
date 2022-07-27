@@ -274,14 +274,6 @@ class DialogZHARestoreBackup extends LitElement {
       if (!overwriteIEEEConfirmation) {
         return;
       }
-
-      if (!this._chosenBackup!.network_info.stack_specific) {
-        this._chosenBackup!.network_info.stack_specific = {};
-      }
-
-      this._chosenBackup!.network_info.stack_specific["ezsp"][
-        "i_understand_i_can_update_eui64_only_once_and_i_still_want_to_do_it"
-      ] = true;
     } else if (this._shouldOverwriteCoordinatorIEEEAddress()) {
       const differingIEEEAddress: boolean = await showConfirmationDialog(this, {
         title:
@@ -310,11 +302,16 @@ class DialogZHARestoreBackup extends LitElement {
     }
 
     try {
-      await restoreZHANetworkBackup(this.hass, this._chosenBackup!);
+      await restoreZHANetworkBackup(
+        this.hass,
+        this._chosenBackup!,
+        this._overwriteCoordinatorIEEE
+      );
     } catch (err: any) {
       await showAlertDialog(this, {
         title: "Restore failed",
         text: extractApiErrorMessage(err),
+        warning: true,
       });
 
       return;
