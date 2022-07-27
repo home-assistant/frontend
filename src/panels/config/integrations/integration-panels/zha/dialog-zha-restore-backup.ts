@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult , nothing } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  nothing,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
 
@@ -102,7 +109,8 @@ class DialogZHARestoreBackup extends LitElement {
       return false;
     }
 
-    return this._currentSettings!.settings.network_info.metadata.ezsp.can_write_custom_eui64;
+    return this._currentSettings!.settings.network_info.metadata.ezsp
+      .can_write_custom_eui64;
   }
 
   protected render(): TemplateResult {
