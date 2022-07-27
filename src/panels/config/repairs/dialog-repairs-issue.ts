@@ -48,7 +48,8 @@ class DialogRepairsIssue extends LitElement {
           this.hass.localize(
             `component.${this._issue.domain}.issues.${
               this._issue.translation_key || this._issue.issue_id
-            }.title`
+            }.title`,
+            this._issue.translation_placeholders || {}
           ) || this.hass!.localize("ui.panel.config.repairs.dialog.title")
         )}
       >
