@@ -188,50 +188,60 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          <ha-card outlined>
-            ${repairsIssues.length
-              ? html`
-                  <ha-config-repairs
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .total=${totalRepairIssues}
-                    .repairsIssues=${repairsIssues}
-                    @update-issues=${this._fetchIssues}
-                  ></ha-config-repairs>
-                  ${totalRepairIssues > repairsIssues.length
-                    ? html`
-                        <a class="button" href="/config/repairs">
-                          ${this.hass.localize(
-                            "ui.panel.config.repairs.more_repairs"
-                          )}
-                        </a>
-                      `
-                    : ""}
-                `
-              : ""}
-            ${repairsIssues.length && canInstallUpdates.length
-              ? html`<hr />`
-              : ""}
-            ${canInstallUpdates.length
-              ? html`
-                  <ha-config-updates
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .total=${totalUpdates}
-                    .updateEntities=${canInstallUpdates}
-                  ></ha-config-updates>
-                  ${totalUpdates > canInstallUpdates.length
-                    ? html`
-                        <a class="button" href="/config/updates">
-                          ${this.hass.localize(
-                            "ui.panel.config.updates.more_updates"
-                          )}
-                        </a>
-                      `
-                    : ""}
-                `
-              : ""}
-          </ha-card>
+          ${repairsIssues.length || canInstallUpdates.length
+            ? html`<ha-card outlined>
+                ${repairsIssues.length
+                  ? html`
+                      <ha-config-repairs
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .total=${totalRepairIssues}
+                        .repairsIssues=${repairsIssues}
+                        @update-issues=${this._fetchIssues}
+                      ></ha-config-repairs>
+                      ${totalRepairIssues > repairsIssues.length
+                        ? html`
+                            <a class="button" href="/config/repairs">
+                              ${this.hass.localize(
+                                "ui.panel.config.repairs.more_repairs",
+                                {
+                                  count:
+                                    totalRepairIssues - repairsIssues.length,
+                                }
+                              )}
+                            </a>
+                          `
+                        : ""}
+                    `
+                  : ""}
+                ${repairsIssues.length && canInstallUpdates.length
+                  ? html`<hr />`
+                  : ""}
+                ${canInstallUpdates.length
+                  ? html`
+                      <ha-config-updates
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .total=${totalUpdates}
+                        .updateEntities=${canInstallUpdates}
+                      ></ha-config-updates>
+                      ${totalUpdates > canInstallUpdates.length
+                        ? html`
+                            <a class="button" href="/config/updates">
+                              ${this.hass.localize(
+                                "ui.panel.config.updates.more_updates",
+                                {
+                                  count:
+                                    totalUpdates - canInstallUpdates.length,
+                                }
+                              )}
+                            </a>
+                          `
+                        : ""}
+                    `
+                  : ""}
+              </ha-card>`
+            : ""}
 
           <ha-card outlined>
             <ha-config-navigation
