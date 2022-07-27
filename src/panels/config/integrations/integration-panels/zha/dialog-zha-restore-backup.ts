@@ -1,11 +1,10 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult , nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
 
-import { nothing } from "lit";
-import { fireEvent } from "../../../../../../src/common/dom/fire_event";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
-import { extractApiErrorMessage } from "../../../../../../src/data/hassio/common";
+import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   ZHANetworkBackup,
   createZHANetworkBackup,
@@ -18,18 +17,17 @@ import {
 import {
   showAlertDialog,
   showConfirmationDialog,
-} from "../../../../../../src/dialogs/generic/show-dialog-box";
+} from "../../../../../dialogs/generic/show-dialog-box";
 
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 
-import { HaRadio } from "../../../../../../src/components/ha-radio";
-import { HaCheckbox } from "../../../../../../src/components/ha-checkbox";
-import "../../../../../../src/components/ha-select";
-import "../../../../../../src/components/ha-checkbox";
-import "../../../../../../src/components/data-table/ha-data-table";
-import "../../../../../../src/components/buttons/ha-progress-button";
+import { HaRadio } from "../../../../../components/ha-radio";
+import { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-select";
+import "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/buttons/ha-progress-button";
 
 import "../../../../../components/ha-file-upload";
 
@@ -43,15 +41,20 @@ class DialogZHARestoreBackup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _uploadingBackup = false;
+
   @state() private _restoringBackup = false;
 
   @state() private _currentBackups?: ZHANetworkBackup[];
+
   @state() private _currentSettings?: ZHANetworkSettings;
 
   @state() private _backupFile?: File;
+
   @state() private _backupType?: BackupType;
+
   @state() private _chosenBackup?: ZHANetworkBackup;
-  @state() private _overwriteCoordinatorIEEE: boolean = false;
+
+  @state() private _overwriteCoordinatorIEEE = false;
 
   public async showDialog(): Promise<void> {
     this._currentBackups = await listZHANetworkBackups(this.hass);
@@ -99,9 +102,7 @@ class DialogZHARestoreBackup extends LitElement {
       return false;
     }
 
-    return this._currentSettings!.settings.network_info.metadata["ezsp"][
-      "can_write_custom_eui64"
-    ];
+    return this._currentSettings!.settings.network_info.metadata.ezsp.can_write_custom_eui64;
   }
 
   protected render(): TemplateResult {

@@ -14,8 +14,7 @@ import { showZHARestoreBackupDialog } from "./show-dialog-zha-restore-backup";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-circular-progress";
-import "@material/mwc-button/mwc-button";
-import { fileDownload } from "../../../../../../src/util/file_download";
+import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -29,7 +28,7 @@ import {
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
 
-import { showAlertDialog } from "../../../../../../src/dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 @customElement("zha-network-page")
 class ZHANetworkPage extends LitElement {
@@ -46,7 +45,9 @@ class ZHANetworkPage extends LitElement {
   @property() private _settings?: ZHANetworkSettings;
 
   @state() private _uploadingBackup = false;
+
   @state() private _restoringBackup = false;
+
   @state() private _generatingBackup = false;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
