@@ -26,7 +26,7 @@ import {
 import {
   UNHEALTHY_REASON_URL,
   UNSUPPORTED_REASON_URL,
-} from "../../../src/panels/config/system-health/ha-config-system-health";
+} from "../../../src/panels/config/repairs/dialog-system-information";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";

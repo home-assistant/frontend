@@ -697,8 +697,12 @@ class HuiEnergyDistrubutionCard
     :host {
       --mdc-icon-size: 24px;
     }
+    ha-card {
+      min-width: 210px;
+    }
     .card-content {
       position: relative;
+      direction: ltr;
     }
     .lines {
       position: absolute;

@@ -144,8 +144,6 @@ class DialogBox extends LitElement {
       }
       p {
         margin: 0;
-        padding-top: 6px;
-        padding-bottom: 24px;
         color: var(--primary-text-color);
       }
       .no-bottom-padding {
@@ -157,7 +155,6 @@ class DialogBox extends LitElement {
       ha-dialog {
         --mdc-dialog-heading-ink-color: var(--primary-text-color);
         --mdc-dialog-content-ink-color: var(--primary-text-color);
-        --justify-action-buttons: space-between;
         /* Place above other dialogs */
         --dialog-z-index: 104;
       }

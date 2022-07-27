@@ -401,7 +401,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : this._status === "finished"
@@ -451,7 +451,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
             `
           : this._status === "provisioned"
@@ -469,7 +469,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>`
           : ""}
       </ha-dialog>

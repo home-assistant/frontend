@@ -7,7 +7,7 @@ import {
   mdiDotsVertical,
   mdiOpenInNew,
 } from "@mdi/js";
-import "@polymer/paper-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -31,6 +31,7 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
   ERROR_STATES,
+  RECOVERABLE_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
@@ -63,13 +64,15 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public domain!: string;
 
-  @property() public items!: ConfigEntryExtended[];
+  @property({ attribute: false }) public items!: ConfigEntryExtended[];
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
-  @property() public entityRegistryEntries!: EntityRegistryEntry[];
+  @property({ attribute: false })
+  public entityRegistryEntries!: EntityRegistryEntry[];
 
-  @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
+  @property({ attribute: false })
+  public deviceRegistryEntries!: DeviceRegistryEntry[];
 
   @property() public selectedConfigEntryId?: string;
 
@@ -178,7 +181,7 @@ export class HaIntegrationCard extends LitElement {
     const services = this._getServices(item, this.deviceRegistryEntries);
     const entities = this._getEntities(item, this.entityRegistryEntries);
 
-    let stateText: [string, ...unknown[]] | undefined;
+    let stateText: Parameters<typeof this.hass.localize> | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
 
     if (item.disabled_by) {
@@ -224,7 +227,7 @@ export class HaIntegrationCard extends LitElement {
     for (const [items, localizeKey] of [
       [devices, "devices"],
       [services, "services"],
-    ] as [DeviceRegistryEntry[], string][]) {
+    ] as const) {
       if (items.length === 0) {
         continue;
       }
@@ -366,7 +369,7 @@ export class HaIntegrationCard extends LitElement {
               </a>`
             : ""}
           ${!item.disabled_by &&
-          (item.state === "loaded" || item.state === "setup_retry") &&
+          RECOVERABLE_STATES.includes(item.state) &&
           item.supports_unload &&
           item.source !== "system"
             ? html`<mwc-list-item @request-selected=${this._handleReload}>

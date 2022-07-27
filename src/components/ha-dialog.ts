@@ -11,7 +11,7 @@ export const createCloseHeading = (
   hass: HomeAssistant,
   title: string | TemplateResult
 ) => html`
-  <span class="header_title">${title}</span>
+  <div class="header_title">${title}</div>
   <ha-icon-button
     .label=${hass.localize("ui.dialogs.generic.close")}
     .path=${mdiClose}
@@ -40,10 +40,13 @@ export class HaDialog extends DialogBase {
         z-index: var(--dialog-z-index, 7);
         -webkit-backdrop-filter: var(--dialog-backdrop-filter, none);
         backdrop-filter: var(--dialog-backdrop-filter, none);
+        --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
+        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-size: 1.574rem;
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        padding-bottom: max(env(safe-area-inset-bottom), 24px);
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -54,17 +57,23 @@ export class HaDialog extends DialogBase {
       .mdc-dialog__container {
         align-items: var(--vertial-align-dialog, center);
       }
+      .mdc-dialog__title {
+        padding: 24px 24px 0 24px;
+      }
+      .mdc-dialog__actions {
+        padding: 0 24px 24px 24px;
+      }
       .mdc-dialog__title::before {
         display: block;
-        height: 20px;
+        height: 0px;
       }
       .mdc-dialog .mdc-dialog__content {
         position: var(--dialog-content-position, relative);
-        padding: var(--dialog-content-padding, 20px 24px);
+        padding: var(--dialog-content-padding, 24px);
       }
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
-          var(--dialog-content-padding, 20px),
+          var(--dialog-content-padding, 24px),
           env(safe-area-inset-bottom)
         );
       }
@@ -72,10 +81,7 @@ export class HaDialog extends DialogBase {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
         min-height: var(--mdc-dialog-min-height, auto);
-        border-radius: var(
-          --ha-dialog-border-radius,
-          var(--ha-card-border-radius, 4px)
-        );
+        border-radius: var(--ha-dialog-border-radius, 28px);
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
@@ -89,8 +95,8 @@ export class HaDialog extends DialogBase {
         color: inherit;
       }
       .header_title {
-        margin-right: 40px;
-        margin-inline-end: 40px;
+        margin-right: 32px;
+        margin-inline-end: 32px;
         margin-inline-start: initial;
         direction: var(--direction);
       }

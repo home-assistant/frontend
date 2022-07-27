@@ -194,6 +194,7 @@ const createEntityRegistryEntries = (
     name: null,
     icon: null,
     platform: "updater",
+    has_entity_name: false,
   },
 ];
 

@@ -2,8 +2,8 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ConfigEntry } from "../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -13,6 +13,7 @@ import {
   fetchEntitySourcesWithCache,
 } from "../../data/entity_sources";
 import type { DeviceSelector } from "../../data/selector";
+import { filterSelectorDevices } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../device/ha-device-picker";
@@ -34,11 +35,11 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
 
   @property() public helper?: string;
 
-  @state() public _configEntries?: ConfigEntry[];
-
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -107,48 +108,17 @@ export class HaDeviceSelector extends SubscribeMixin(LitElement) {
   }
 
   private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    const {
-      manufacturer: filterManufacturer,
-      model: filterModel,
-      integration: filterIntegration,
-    } = this.selector.device;
+    const deviceIntegrations =
+      this._entitySources && this._entities
+        ? this._deviceIntegrationLookup(this._entitySources, this._entities)
+        : undefined;
 
-    if (filterManufacturer && device.manufacturer !== filterManufacturer) {
-      return false;
-    }
-    if (filterModel && device.model !== filterModel) {
-      return false;
-    }
-    if (filterIntegration && this._entitySources && this._entities) {
-      const deviceIntegrations = this._deviceIntegrations(
-        this._entitySources,
-        this._entities
-      );
-      if (!deviceIntegrations?.[device.id]?.includes(filterIntegration)) {
-        return false;
-      }
-    }
-    return true;
+    return filterSelectorDevices(
+      this.selector.device,
+      device,
+      deviceIntegrations
+    );
   };
-
-  private _deviceIntegrations = memoizeOne(
-    (entitySources: EntitySources, entities: EntityRegistryEntry[]) => {
-      const deviceIntegrations: Record<string, string[]> = {};
-
-      for (const entity of entities) {
-        const source = entitySources[entity.entity_id];
-        if (!source?.domain) {
-          continue;
-        }
-
-        if (!deviceIntegrations[entity.device_id!]) {
-          deviceIntegrations[entity.device_id!] = [];
-        }
-        deviceIntegrations[entity.device_id!].push(source.domain);
-      }
-      return deviceIntegrations;
-    }
-  );
 }
 
 declare global {

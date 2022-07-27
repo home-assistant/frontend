@@ -3,7 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiCloudLock, mdiDotsVertical, mdiMagnify } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -24,6 +24,11 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import { CloudStatus } from "../../../data/cloud";
 import {
+  RepairsIssue,
+  severitySort,
+  subscribeRepairsIssueRegistry,
+} from "../../../data/repairs";
+import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
   UpdateEntity,
@@ -31,11 +36,13 @@ import {
 import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import "../../../layouts/ha-app-layout";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
+import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
@@ -104,7 +111,7 @@ const randomTip = (hass: HomeAssistant, narrow: boolean) => {
 };
 
 @customElement("ha-config-dashboard")
-class HaConfigDashboard extends LitElement {
+class HaConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
@@ -117,6 +124,11 @@ class HaConfigDashboard extends LitElement {
   @property() public showAdvanced!: boolean;
 
   @state() private _tip?: string;
+
+  @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
+    issues: [],
+    total: 0,
+  };
 
   private _pages = memoizeOne((clouStatus, isLoaded) => {
     const pages: PageNavigation[] = [];
@@ -133,9 +145,33 @@ class HaConfigDashboard extends LitElement {
     return [...pages, ...configSections.dashboard];
   });
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+        const repairsIssues = repairs.issues.filter((issue) => !issue.ignored);
+
+        this._repairsIssues = {
+          issues: repairsIssues
+            .sort((a, b) => severitySort[a.severity] - severitySort[b.severity])
+            .slice(0, repairsIssues.length === 3 ? repairsIssues.length : 2),
+          total: repairsIssues.length,
+        };
+
+        const integrations: Set<string> = new Set();
+        for (const issue of this._repairsIssues.issues) {
+          integrations.add(issue.domain);
+        }
+        this.hass.loadBackendTranslation("issues", [...integrations]);
+      }),
+    ];
+  }
+
   protected render(): TemplateResult {
-    const [canInstallUpdates, totalUpdates] =
+    const { updates: canInstallUpdates, total: totalUpdates } =
       this._filterUpdateEntitiesWithInstall(this.hass.states);
+
+    const { issues: repairsIssues, total: totalRepairIssues } =
+      this._repairsIssues;
 
     return html`
       <ha-app-layout>
@@ -174,26 +210,60 @@ class HaConfigDashboard extends LitElement {
           .isWide=${this.isWide}
           full-width
         >
-          ${canInstallUpdates.length
+          ${repairsIssues.length || canInstallUpdates.length
             ? html`<ha-card outlined>
-                <ha-config-updates
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .total=${totalUpdates}
-                  .updateEntities=${canInstallUpdates}
-                ></ha-config-updates>
-                ${totalUpdates > canInstallUpdates.length
-                  ? html`<a class="button" href="/config/updates">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.more_updates",
-                        {
-                          count: totalUpdates - canInstallUpdates.length,
-                        }
-                      )}
-                    </a>`
+                ${repairsIssues.length
+                  ? html`
+                      <ha-config-repairs
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .total=${totalRepairIssues}
+                        .repairsIssues=${repairsIssues}
+                      ></ha-config-repairs>
+                      ${totalRepairIssues > repairsIssues.length
+                        ? html`
+                            <a class="button" href="/config/repairs">
+                              ${this.hass.localize(
+                                "ui.panel.config.repairs.more_repairs",
+                                {
+                                  count:
+                                    totalRepairIssues - repairsIssues.length,
+                                }
+                              )}
+                            </a>
+                          `
+                        : ""}
+                    `
+                  : ""}
+                ${repairsIssues.length && canInstallUpdates.length
+                  ? html`<hr />`
+                  : ""}
+                ${canInstallUpdates.length
+                  ? html`
+                      <ha-config-updates
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .total=${totalUpdates}
+                        .updateEntities=${canInstallUpdates}
+                      ></ha-config-updates>
+                      ${totalUpdates > canInstallUpdates.length
+                        ? html`
+                            <a class="button" href="/config/updates">
+                              ${this.hass.localize(
+                                "ui.panel.config.updates.more_updates",
+                                {
+                                  count:
+                                    totalUpdates - canInstallUpdates.length,
+                                }
+                              )}
+                            </a>
+                          `
+                        : ""}
+                    `
                   : ""}
               </ha-card>`
             : ""}
+
           <ha-card outlined>
             <ha-config-navigation
               .hass=${this.hass}
@@ -220,13 +290,13 @@ class HaConfigDashboard extends LitElement {
   }
 
   private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities): [UpdateEntity[], number] => {
+    (entities: HassEntities): { updates: UpdateEntity[]; total: number } => {
       const updates = filterUpdateEntitiesWithInstall(entities);
 
-      return [
-        updates.slice(0, updates.length === 3 ? updates.length : 2),
-        updates.length,
-      ];
+      return {
+        updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
+        total: updates.length,
+      };
     }
   );
 
@@ -268,9 +338,12 @@ class HaConfigDashboard extends LitElement {
           color: var(--primary-text-color);
         }
         a.button {
-          display: block;
-          color: var(--primary-color);
-          padding: 16px;
+          display: inline-block;
+          color: var(--primary-text-color);
+          padding: 6px 16px;
+          margin: 8px 16px 16px 16px;
+          border-radius: 32px;
+          border: 1px solid var(--divider-color);
         }
         .title {
           font-size: 16px;
@@ -299,6 +372,16 @@ class HaConfigDashboard extends LitElement {
 
         .keep-together {
           display: inline-block;
+        }
+
+        hr {
+          height: 1px;
+          background-color: var(
+            --ha-card-border-color,
+            var(--divider-color, #e0e0e0)
+          );
+          border: none;
+          margin-top: 0;
         }
       `,
     ];

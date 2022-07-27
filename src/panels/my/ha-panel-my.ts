@@ -216,6 +216,15 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     // Moved from Supervisor panel in 2022.5
     redirect: "/config/info",
   },
+  hacs_repository: {
+    component: "hacs",
+    redirect: "/hacs/_my_redirect/hacs_repository",
+    params: {
+      owner: "string",
+      repository: "string",
+      category: "string?",
+    },
+  },
 });
 
 const getRedirect = (

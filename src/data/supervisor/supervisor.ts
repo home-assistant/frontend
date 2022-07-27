@@ -1,7 +1,7 @@
 import { Connection, getCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
 import { LocalizeFunc } from "../../common/translations/localize";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, TranslationDict } from "../../types";
 import { HassioAddonsInfo } from "../hassio/addon";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import { NetworkInfo } from "../hassio/network";
@@ -67,7 +67,7 @@ export interface Supervisor {
   os: HassioHassOSInfo;
   addon: HassioAddonsInfo;
   store: SupervisorStore;
-  localize: LocalizeFunc;
+  localize: LocalizeFunc<TranslationDict["supervisor"]>;
 }
 
 export const supervisorApiWsRequest = <T>(

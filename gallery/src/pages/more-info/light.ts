@@ -69,7 +69,7 @@ const ENTITIES = [
     effect_list: ["random", "colorloop"],
   }),
   getEntity("light", "color_RGB_light", "on", {
-    friendly_name: "Color Effets Light",
+    friendly_name: "Color Effects Light",
     brightness: 255,
     rgb_color: [30, 100, 255],
     supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
