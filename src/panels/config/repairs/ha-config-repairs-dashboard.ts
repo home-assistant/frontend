@@ -1,8 +1,10 @@
-import type { ActionDetail } from "@material/mwc-list";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-card";
 import {
   fetchRepairsIssues,
@@ -10,11 +12,14 @@ import {
   severitySort,
 } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
+import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
+import { showSystemInformationDialog } from "./show-system-information-dialog";
 
 @customElement("ha-config-repairs-dashboard")
-class HaConfigRepairsDashboard extends LitElement {
+class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -40,6 +45,7 @@ class HaConfigRepairsDashboard extends LitElement {
       this._showIgnored,
       this._repairsIssues
     );
+
     return html`
       <hass-subpage
         back-path="/config/system"
@@ -48,13 +54,32 @@ class HaConfigRepairsDashboard extends LitElement {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-button-menu corner="BOTTOM_START">
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item id="skipped">
+            ${isComponentLoaded(this.hass, "system_health") ||
+            isComponentLoaded(this.hass, "hassio")
+              ? html`
+                  <mwc-list-item
+                    @request-selected=${this._showSystemInformationDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.repairs.system_information"
+                    )}
+                  </mwc-list-item>
+                `
+              : ""}
+            <mwc-list-item
+              @request-selected=${this._showIntegrationStartupDialog}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.repairs.integration_startup_time"
+              )}
+            </mwc-list-item>
+            <mwc-list-item @request-selected=${this._toggleIgnored}>
               ${this._showIgnored
                 ? this.hass.localize("ui.panel.config.repairs.hide_ignored")
                 : this.hass.localize("ui.panel.config.repairs.show_ignored")}
@@ -98,12 +123,32 @@ class HaConfigRepairsDashboard extends LitElement {
     this.hass.loadBackendTranslation("issues", [...integrations]);
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._showIgnored = !this._showIgnored;
-        break;
+  private _showSystemInformationDialog(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
     }
+
+    showSystemInformationDialog(this);
+  }
+
+  private _showIntegrationStartupDialog(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    showIntegrationStartupDialog(this);
+  }
+
+  private _toggleIgnored(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
+    this._showIgnored = !this._showIgnored;
   }
 
   static styles = css`
