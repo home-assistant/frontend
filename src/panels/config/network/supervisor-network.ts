@@ -1,13 +1,16 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+import { ActionDetail } from "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
+import { mdiDotsVertical } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
@@ -29,7 +32,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-card";
+import { showIPDetailDialog } from "./show-ip-detail-dialog";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -236,7 +239,23 @@ export class HassioNetwork extends LitElement {
               </ha-circular-progress>`
             : this.hass.localize("ui.common.save")}
         </mwc-button>
+        <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${"ui.common.menu"}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <mwc-list-item>IP Information</mwc-list-item>
+        </ha-button-menu>
       </div>`;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        showIPDetailDialog(this, { interface: this._interface });
+        break;
+    }
   }
 
   private _selectAP(event) {
