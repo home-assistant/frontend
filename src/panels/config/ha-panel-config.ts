@@ -6,7 +6,6 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
-  mdiHeart,
   mdiInformation,
   mdiInformationOutline,
   mdiLifebuoy,
@@ -322,13 +321,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       iconColor: "#301A8E",
       component: "hassio",
     },
-    {
-      path: "/config/system_health",
-      translationKey: "system_health",
-      iconPath: mdiHeart,
-      iconColor: "#507FfE",
-      components: ["system_health", "hassio"],
-    },
   ],
   about: [
     {
@@ -446,10 +438,6 @@ class HaPanelConfig extends HassRouterPage {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
-      },
-      system_health: {
-        tag: "ha-config-system-health",
-        load: () => import("./system-health/ha-config-system-health"),
       },
       updates: {
         tag: "ha-config-section-updates",
