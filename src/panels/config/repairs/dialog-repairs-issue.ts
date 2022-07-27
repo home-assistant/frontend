@@ -54,24 +54,16 @@ class DialogRepairsIssue extends LitElement {
         )}
       >
         <div>
-          <ha-alert
-            .alertType=${this._issue.severity === "error" ||
-            this._issue.severity === "critical"
-              ? "error"
-              : "warning"}
-            .title=${this.hass.localize(
-              `ui.panel.config.repairs.${this._issue.severity}`
-            )}
-            >${this.hass.localize(
-              "ui.panel.config.repairs.dialog.alert_not_fixable"
-            )}
-            ${this._issue.breaks_in_ha_version
-              ? this.hass.localize(
-                  "ui.panel.config.repairs.dialog.breaks_in_version",
-                  { version: this._issue.breaks_in_ha_version }
-                )
-              : ""}
-          </ha-alert>
+          ${this._issue.breaks_in_ha_version
+            ? html`
+                <ha-alert alert-type="error">
+                  ${this.hass.localize(
+                    "ui.panel.config.repairs.dialog.breaks_in_version",
+                    { version: this._issue.breaks_in_ha_version }
+                  )}
+                </ha-alert>
+              `
+            : ""}
           <ha-markdown
             allowsvg
             breaks
