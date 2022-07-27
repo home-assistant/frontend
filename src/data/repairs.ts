@@ -26,8 +26,8 @@ export const severitySort = {
   warning: 3,
 };
 
-export const fetchRepairsIssues = async (hass: HomeAssistant) =>
-  hass.callWS<{ issues: RepairsIssue[] }>({
+export const fetchRepairsIssues = (conn: Connection) =>
+  conn.sendMessagePromise<{ issues: RepairsIssue[] }>({
     type: "repairs/list_issues",
   });
 
@@ -66,11 +66,6 @@ export const handleRepairsFlowStep = (
 export const deleteRepairsFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `repairs/issues/fix/${flowId}`);
 
-export const fetchRepairsIssueRegistry = (conn: Connection) =>
-  conn.sendMessagePromise<{ issues: RepairsIssue[] }>({
-    type: "repairs/list_issues",
-  });
-
 const subscribeRepairsIssueUpdates = (
   conn: Connection,
   store: Store<{ issues: RepairsIssue[] }>
@@ -78,7 +73,7 @@ const subscribeRepairsIssueUpdates = (
   conn.subscribeEvents(
     debounce(
       () =>
-        fetchRepairsIssueRegistry(conn).then((repairs) =>
+        fetchRepairsIssues(conn).then((repairs) =>
           store.setState(repairs, true)
         ),
       500,
@@ -93,7 +88,7 @@ export const subscribeRepairsIssueRegistry = (
 ) =>
   createCollection<{ issues: RepairsIssue[] }>(
     "_repairsIssueRegistry",
-    fetchRepairsIssueRegistry,
+    fetchRepairsIssues,
     subscribeRepairsIssueUpdates,
     conn,
     onChange

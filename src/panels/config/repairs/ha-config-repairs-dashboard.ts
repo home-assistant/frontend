@@ -1,15 +1,16 @@
 import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { mdiDotsVertical } from "@mdi/js";
-import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-card";
 import {
-  fetchRepairsIssues,
   RepairsIssue,
   severitySort,
+  subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -35,9 +36,19 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         : repairsIssues.filter((issue) => !issue.ignored)
   );
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._fetchIssues();
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+        this._repairsIssues = repairs.issues.sort(
+          (a, b) => severitySort[a.severity] - severitySort[b.severity]
+        );
+        const integrations: Set<string> = new Set();
+        for (const issue of this._repairsIssues) {
+          integrations.add(issue.domain);
+        }
+        this.hass.loadBackendTranslation("issues", [...integrations]);
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
@@ -95,7 +106,6 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .repairsIssues=${issues}
-                      @update-issues=${this._fetchIssues}
                     ></ha-config-repairs>
                   `
                 : html`
@@ -110,17 +120,6 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         </div>
       </hass-subpage>
     `;
-  }
-
-  private async _fetchIssues(): Promise<void> {
-    this._repairsIssues = (await fetchRepairsIssues(this.hass)).issues.sort(
-      (a, b) => severitySort[a.severity] - severitySort[b.severity]
-    );
-    const integrations: Set<string> = new Set();
-    for (const issue of this._repairsIssues) {
-      integrations.add(issue.domain);
-    }
-    this.hass.loadBackendTranslation("issues", [...integrations]);
   }
 
   private _showSystemInformationDialog(
