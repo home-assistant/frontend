@@ -329,6 +329,9 @@ export class HaVoiceCommandDialog extends LitElement {
         ha-icon-button {
           color: var(--secondary-text-color);
           margin-right: -24px;
+          margin-inline-end: -24px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         ha-icon-button[active] {
@@ -373,19 +376,25 @@ export class HaVoiceCommandDialog extends LitElement {
 
         .message.user {
           margin-left: 24px;
-          float: right;
+          margin-inline-start: 24px;
+          margin-inline-end: initial;
+          float: var(--float-end);
           text-align: right;
           border-bottom-right-radius: 0px;
           background-color: var(--light-primary-color);
           color: var(--text-light-primary-color, var(--primary-text-color));
+          direction: var(--direction);
         }
 
         .message.hass {
           margin-right: 24px;
-          float: left;
+          margin-inline-end: 24px;
+          margin-inline-start: initial;
+          float: var(--float-start);
           border-bottom-left-radius: 0px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
+          direction: var(--direction);
         }
 
         .message a {
