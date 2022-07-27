@@ -84,6 +84,19 @@ class DialogRepairsIssue extends LitElement {
                 >
               `
             : ""}
+          <div class="secondary">
+            <span class=${this._issue.severity}
+              >${this.hass.localize(
+                `ui.panel.config.repairs.${this._issue.severity}`
+              )}
+            </span>
+            -
+            ${this._issue.created
+              ? new Date(this._issue.created).toLocaleDateString(
+                  this.hass.language
+                )
+              : ""}
+          </div>
         </div>
         ${this._issue.learn_more_url
           ? html`
@@ -129,6 +142,17 @@ class DialogRepairsIssue extends LitElement {
       }
       .dismissed {
         font-style: italic;
+      }
+      .secondary {
+        margin-top: 8px;
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
+      .error {
+        color: var(--error-color);
+      }
+      .warning {
+        color: var(--warning-color);
       }
     `,
   ];
