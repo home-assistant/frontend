@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-card";
+import "../../../components/ha-check-list-item";
 import {
   RepairsIssue,
   severitySort,
@@ -65,12 +66,20 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu corner="BOTTOM_START">
+          <ha-button-menu corner="BOTTOM_START" multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
+            <ha-check-list-item
+              left
+              @request-selected=${this._toggleIgnored}
+              .selected=${this._showIgnored}
+            >
+              ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
+            </ha-check-list-item>
+            <li divider role="separator"></li>
             ${isComponentLoaded(this.hass, "system_health") ||
             isComponentLoaded(this.hass, "hassio")
               ? html`
@@ -89,11 +98,6 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
               )}
-            </mwc-list-item>
-            <mwc-list-item @request-selected=${this._toggleIgnored}>
-              ${this._showIgnored
-                ? this.hass.localize("ui.panel.config.repairs.hide_ignored")
-                : this.hass.localize("ui.panel.config.repairs.show_ignored")}
             </mwc-list-item>
           </ha-button-menu>
         </div>
@@ -143,7 +147,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _toggleIgnored(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
+    if (ev.detail.source !== "property") {
       return;
     }
 
@@ -176,6 +180,9 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
     .no-repairs {
       padding: 16px;
+    }
+    li[divider] {
+      border-bottom-color: var(--divider-color);
     }
   `;
 }

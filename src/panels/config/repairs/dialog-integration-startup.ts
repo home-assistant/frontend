@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
@@ -31,13 +31,14 @@ class DialogIntegrationStartup extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
+        hideActions
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.repairs.integration_startup_time")
         )}
+        @closed=${this.closeDialog}
       >
         <integrations-startup-time
           .hass=${this.hass}
@@ -47,7 +48,14 @@ class DialogIntegrationStartup extends LitElement {
     `;
   }
 
-  static styles: CSSResultGroup = haStyleDialog;
+  static styles: CSSResultGroup = [
+    haStyleDialog,
+    css`
+      ha-dialog {
+        --dialog-content-padding: 0;
+      }
+    `,
+  ];
 }
 
 declare global {
