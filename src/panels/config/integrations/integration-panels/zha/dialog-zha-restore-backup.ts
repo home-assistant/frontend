@@ -1,10 +1,4 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
 import { fireEvent } from "../../../../../common/dom/fire_event";
