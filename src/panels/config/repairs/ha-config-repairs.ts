@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
@@ -71,8 +72,22 @@ class HaConfigRepairs extends LitElement {
                 )}</span
               >
               <span slot="secondary" class="secondary">
+                ${issue.severity === "critical" || issue.severity === "error"
+                  ? html`<span class="error"
+                      >${this.hass.localize(
+                        `ui.panel.config.repairs.${issue.severity}`
+                      )}</span
+                    >`
+                  : ""}
+                ${(issue.severity === "critical" ||
+                  issue.severity === "error") &&
+                issue.created
+                  ? " - "
+                  : ""}
                 ${issue.created
-                  ? relativeTime(new Date(issue.created), this.hass.locale)
+                  ? capitalizeFirstLetter(
+                      relativeTime(new Date(issue.created), this.hass.locale)
+                    )
                   : ""}
                 ${issue.ignored
                   ? ` - ${this.hass.localize(
@@ -136,6 +151,9 @@ class HaConfigRepairs extends LitElement {
     ha-list-item {
       cursor: pointer;
       font-size: 16px;
+    }
+    .error {
+      color: var(--error-color);
     }
   `;
 }

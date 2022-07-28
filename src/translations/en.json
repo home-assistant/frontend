@@ -1244,7 +1244,7 @@
             "learn": "Learn more",
             "ignore": "Ignore",
             "unignore": "Unignore",
-            "breaks_in_version": "This will break in version {version}. Fix this issue before upgrading.",
+            "breaks_in_version": "This stops working in version {version}. Please address before upgrading.",
             "ignored_in_version_short": "Ignored in version {version}",
             "ignored_in_version": "This issue was ignored in version {version}."
           }
