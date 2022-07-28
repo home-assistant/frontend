@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import {
@@ -36,6 +37,16 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         ? repairsIssues
         : repairsIssues.filter((issue) => !issue.ignored)
   );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+
+    const searchParam = extractSearchParam("dialog");
+
+    if (searchParam === "system-health") {
+      showSystemInformationDialog(this);
+    }
+  }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
