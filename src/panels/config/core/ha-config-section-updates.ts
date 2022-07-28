@@ -1,15 +1,16 @@
-import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-check-list-item";
 import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -72,20 +73,23 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiRefresh}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-button-menu corner="BOTTOM_START" multi>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item id="skipped">
-              ${this._showSkipped
-                ? this.hass.localize("ui.panel.config.updates.hide_skipped")
-                : this.hass.localize("ui.panel.config.updates.show_skipped")}
-            </mwc-list-item>
+            <ha-check-list-item
+              left
+              @request-selected=${this._toggleSkipped}
+              .selected=${this._showSkipped}
+            >
+              ${this.hass.localize("ui.panel.config.updates.show_skipped")}
+            </ha-check-list-item>
             ${this._supervisorInfo?.channel !== "dev"
               ? html`
-                  <mwc-list-item id="beta">
+                  <li divider role="separator"></li>
+                  <mwc-list-item @request-selected=${this._toggleBeta}>
                     ${this._supervisorInfo?.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
@@ -122,18 +126,21 @@ class HaConfigSectionUpdates extends LitElement {
     `;
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._showSkipped = !this._showSkipped;
-        break;
-      case 1:
-        this._toggleBeta();
-        break;
+  private _toggleSkipped(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (ev.detail.source !== "property") {
+      return;
     }
+
+    this._showSkipped = !this._showSkipped;
   }
 
-  private async _toggleBeta(): Promise<void> {
+  private async _toggleBeta(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+
     if (this._supervisorInfo!.channel === "stable") {
       const confirmed = await showConfirmationDialog(this, {
         title: this.hass.localize("ui.dialogs.join_beta_channel.title"),
@@ -205,6 +212,9 @@ class HaConfigSectionUpdates extends LitElement {
 
     .no-updates {
       padding: 16px;
+    }
+    li[divider] {
+      border-bottom-color: var(--divider-color);
     }
   `;
 }

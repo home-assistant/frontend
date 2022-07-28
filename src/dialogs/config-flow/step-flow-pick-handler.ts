@@ -21,6 +21,7 @@ import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import "../../components/search-input";
 import { domainToName } from "../../data/integration";
+import { haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { documentationUrl } from "../../util/documentation-url";
@@ -143,6 +144,7 @@ class StepFlowPickHandler extends LitElement {
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
+        class="ha-scrollbar"
       >
         ${addDeviceRows.length
           ? html`
@@ -321,6 +323,7 @@ class StepFlowPickHandler extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
+      haStyleScrollbar,
       css`
         img {
           width: 40px;

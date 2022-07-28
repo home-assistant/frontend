@@ -6,16 +6,17 @@ import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
 import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [
-  "usb",
-  "unignore",
+  "bluetooth",
   "dhcp",
-  "homekit",
-  "ssdp",
-  "zeroconf",
   "discovery",
+  "hassio",
+  "homekit",
   "integration_discovery",
   "mqtt",
-  "hassio",
+  "ssdp",
+  "unignore",
+  "usb",
+  "zeroconf",
 ];
 
 export const ATTENTION_SOURCES = ["reauth"];

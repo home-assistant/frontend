@@ -453,6 +453,7 @@ export class HaMap extends ReactiveElement {
       }
       #map.dark {
         background: #090909;
+        --map-filter: invert(0.9) hue-rotate(170deg) grayscale(0.7);
       }
       .light {
         color: #000000;
@@ -464,7 +465,7 @@ export class HaMap extends ReactiveElement {
         filter: var(--map-filter);
       }
       .dark .leaflet-bar a {
-        background: var(--card-background-color);
+        background-color: var(--card-background-color, #1c1c1c);
         color: #ffffff;
       }
       .leaflet-marker-draggable {

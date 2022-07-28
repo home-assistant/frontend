@@ -577,7 +577,7 @@
           "title": "Media Management",
           "manage": "Manage",
           "no_items": "No media items found",
-          "folders_not_supported": "Folders can not be managed via the UI.",
+          "folders_not_supported": "Folders cannot be managed via the UI.",
           "highlight_button": "Click here to upload your first media",
           "upload_failed": "Upload failed: {reason}",
           "add_media": "Add Media",
@@ -1220,8 +1220,7 @@
           "version_available": "Version {version_available} is available",
           "more_updates": "Show all updates",
           "show": "show",
-          "show_skipped": "Show skipped",
-          "hide_skipped": "Hide skipped",
+          "show_skipped": "Show skipped updates",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped"
@@ -1232,8 +1231,7 @@
           "title": "{count} {count, plural,\n  one {repair}\n  other {repairs}\n}",
           "no_repairs": "There are currently no repairs available",
           "more_repairs": "Show all repairs",
-          "show_ignored": "Show ignored",
-          "hide_ignored": "Hide ignored",
+          "show_ignored": "Show ignored repairs",
           "critical": "Critical",
           "error": "Error",
           "warning": "Warning",
@@ -1246,8 +1244,7 @@
             "learn": "Learn more",
             "ignore": "Ignore",
             "unignore": "Unignore",
-            "alert_not_fixable": "We can not repair this issue for you.",
-            "breaks_in_version": "This will break in version {version}. Please fix this issue before upgrading.",
+            "breaks_in_version": "This stops working in version {version}. Please address before upgrading.",
             "ignored_in_version_short": "Ignored in version {version}",
             "ignored_in_version": "This issue was ignored in version {version}."
           }
