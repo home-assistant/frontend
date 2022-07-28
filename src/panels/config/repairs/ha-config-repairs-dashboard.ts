@@ -6,7 +6,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { extractSearchParam } from "../../../common/url/search-params";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import {
@@ -44,6 +48,11 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     const searchParam = extractSearchParam("dialog");
 
     if (searchParam === "system-health") {
+      window.history.replaceState(
+        null,
+        "",
+        constructUrlCurrentPath(removeSearchParam("dialog"))
+      );
       showSystemInformationDialog(this);
     }
   }
