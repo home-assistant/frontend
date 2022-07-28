@@ -4,13 +4,10 @@ import {
   html,
   LitElement,
   TemplateResult,
-  nothing,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiFileUpload } from "@mdi/js";
-
 import { fireEvent } from "../../../../../common/dom/fire_event";
-
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   ZHANetworkBackup,
@@ -20,23 +17,20 @@ import {
   restoreZHANetworkBackup,
   ZHANetworkSettings,
 } from "../../../../../data/zha";
-
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
-
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-
-import { HaRadio } from "../../../../../components/ha-radio";
-import { HaCheckbox } from "../../../../../components/ha-checkbox";
+import type { HaRadio } from "../../../../../components/ha-radio";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-radio";
+import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-select";
-import "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/buttons/ha-progress-button";
-
 import "../../../../../components/ha-file-upload";
+import "../../../../../components/buttons/ha-progress-button";
 
 enum BackupType {
   Automatic = "automatic",
@@ -76,41 +70,6 @@ class DialogZHARestoreBackup extends LitElement {
     this._overwriteCoordinatorIEEE = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  private _formatBackupLabel(backup: ZHANetworkBackup): string {
-    const backupTime = new Date(Date.parse(backup.backup_time));
-    return `${backupTime.toLocaleString()} (${backup.network_info.pan_id} / ${
-      backup.network_info.extended_pan_id
-    }, ${backup.network_info.source})`;
-  }
-
-  private _shouldOverwriteCoordinatorIEEEAddress(): boolean {
-    if (!this._currentSettings || !this._chosenBackup) {
-      return false;
-    }
-
-    if (this._currentSettings.radio_type !== "ezsp") {
-      return false;
-    }
-
-    if (
-      this._chosenBackup!.node_info.ieee ===
-      this._currentSettings.settings.node_info.ieee
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private _canOverwriteCoordinatorIEEEAddress(): boolean {
-    if (!this._shouldOverwriteCoordinatorIEEEAddress()) {
-      return false;
-    }
-
-    return this._currentSettings!.settings.network_info.metadata.ezsp
-      .can_write_custom_eui64;
   }
 
   protected render(): TemplateResult {
@@ -189,7 +148,7 @@ class DialogZHARestoreBackup extends LitElement {
                       )}
                     </div>
                   `
-              : nothing
+              : ""
           }
 
           ${
@@ -209,7 +168,7 @@ class DialogZHARestoreBackup extends LitElement {
                     ></ha-file-upload>
                   </div>
                 `
-              : nothing
+              : ""
           }
 
           ${
@@ -228,7 +187,7 @@ class DialogZHARestoreBackup extends LitElement {
                     </ha-formfield>
                   </div>
                 `
-              : nothing
+              : ""
           }
 
         <div class="dialog-actions">
@@ -243,6 +202,41 @@ class DialogZHARestoreBackup extends LitElement {
         </div>
       </ha-dialog>
     `;
+  }
+
+  private _formatBackupLabel(backup: ZHANetworkBackup): string {
+    const backupTime = new Date(Date.parse(backup.backup_time));
+    return `${backupTime.toLocaleString()} (${backup.network_info.pan_id} / ${
+      backup.network_info.extended_pan_id
+    }, ${backup.network_info.source})`;
+  }
+
+  private _shouldOverwriteCoordinatorIEEEAddress(): boolean {
+    if (!this._currentSettings || !this._chosenBackup) {
+      return false;
+    }
+
+    if (this._currentSettings.radio_type !== "ezsp") {
+      return false;
+    }
+
+    if (
+      this._chosenBackup!.node_info.ieee ===
+      this._currentSettings.settings.node_info.ieee
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private _canOverwriteCoordinatorIEEEAddress(): boolean {
+    if (!this._shouldOverwriteCoordinatorIEEEAddress()) {
+      return false;
+    }
+
+    return this._currentSettings!.settings.network_info.metadata.ezsp
+      .can_write_custom_eui64;
   }
 
   private _handleBackupTypeChange(ev: CustomEvent) {

@@ -27,7 +27,6 @@ import {
   ZHANetworkSettings,
   ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
-
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 @customElement("zha-network-page")
