@@ -148,7 +148,8 @@ class DialogRepairsIssue extends LitElement {
         text-align: right;
         color: var(--secondary-text-color);
       }
-      .error {
+      .error,
+      .critical {
         color: var(--error-color);
       }
       .warning {
