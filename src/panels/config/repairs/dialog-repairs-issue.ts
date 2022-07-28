@@ -48,29 +48,22 @@ class DialogRepairsIssue extends LitElement {
           this.hass.localize(
             `component.${this._issue.domain}.issues.${
               this._issue.translation_key || this._issue.issue_id
-            }.title`
+            }.title`,
+            this._issue.translation_placeholders || {}
           ) || this.hass!.localize("ui.panel.config.repairs.dialog.title")
         )}
       >
         <div>
-          <ha-alert
-            .alertType=${this._issue.severity === "error" ||
-            this._issue.severity === "critical"
-              ? "error"
-              : "warning"}
-            .title=${this.hass.localize(
-              `ui.panel.config.repairs.${this._issue.severity}`
-            )}
-            >${this.hass.localize(
-              "ui.panel.config.repairs.dialog.alert_not_fixable"
-            )}
-            ${this._issue.breaks_in_ha_version
-              ? this.hass.localize(
-                  "ui.panel.config.repairs.dialog.breaks_in_version",
-                  { version: this._issue.breaks_in_ha_version }
-                )
-              : ""}
-          </ha-alert>
+          ${this._issue.breaks_in_ha_version
+            ? html`
+                <ha-alert alert-type="error">
+                  ${this.hass.localize(
+                    "ui.panel.config.repairs.dialog.breaks_in_version",
+                    { version: this._issue.breaks_in_ha_version }
+                  )}
+                </ha-alert>
+              `
+            : ""}
           <ha-markdown
             allowsvg
             breaks
@@ -91,6 +84,19 @@ class DialogRepairsIssue extends LitElement {
                 >
               `
             : ""}
+          <div class="secondary">
+            <span class=${this._issue.severity}
+              >${this.hass.localize(
+                `ui.panel.config.repairs.${this._issue.severity}`
+              )}
+            </span>
+            -
+            ${this._issue.created
+              ? new Date(this._issue.created).toLocaleDateString(
+                  this.hass.language
+                )
+              : ""}
+          </div>
         </div>
         ${this._issue.learn_more_url
           ? html`
@@ -136,6 +142,18 @@ class DialogRepairsIssue extends LitElement {
       }
       .dismissed {
         font-style: italic;
+      }
+      .secondary {
+        margin-top: 8px;
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
+      .error,
+      .critical {
+        color: var(--error-color);
+      }
+      .warning {
+        color: var(--warning-color);
       }
     `,
   ];

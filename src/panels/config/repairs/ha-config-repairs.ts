@@ -2,6 +2,7 @@ import "@material/mwc-list/mwc-list";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-list-item";
@@ -44,7 +45,7 @@ class HaConfigRepairs extends LitElement {
           (issue) => html`
             <ha-list-item
               twoline
-              graphic="avatar"
+              graphic="medium"
               .hasMeta=${!this.narrow}
               .issue=${issue}
               class=${issue.ignored ? "ignored" : ""}
@@ -53,7 +54,7 @@ class HaConfigRepairs extends LitElement {
               <img
                 loading="lazy"
                 src=${brandsUrl({
-                  domain: issue.domain,
+                  domain: issue.issue_domain || issue.domain,
                   type: "icon",
                   useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
@@ -66,12 +67,27 @@ class HaConfigRepairs extends LitElement {
                 >${this.hass.localize(
                   `component.${issue.domain}.issues.${
                     issue.translation_key || issue.issue_id
-                  }.title`
+                  }.title`,
+                  issue.translation_placeholders || {}
                 )}</span
               >
               <span slot="secondary" class="secondary">
+                ${issue.severity === "critical" || issue.severity === "error"
+                  ? html`<span class="error"
+                      >${this.hass.localize(
+                        `ui.panel.config.repairs.${issue.severity}`
+                      )}</span
+                    >`
+                  : ""}
+                ${(issue.severity === "critical" ||
+                  issue.severity === "error") &&
+                issue.created
+                  ? " - "
+                  : ""}
                 ${issue.created
-                  ? relativeTime(new Date(issue.created), this.hass.locale)
+                  ? capitalizeFirstLetter(
+                      relativeTime(new Date(issue.created), this.hass.locale)
+                    )
                   : ""}
                 ${issue.ignored
                   ? ` - ${this.hass.localize(
@@ -113,6 +129,9 @@ class HaConfigRepairs extends LitElement {
     .ignored {
       opacity: var(--light-secondary-opacity);
     }
+    ha-list-item {
+      --mdc-list-item-graphic-size: 40px;
+    }
     button.show-more {
       color: var(--primary-color);
       text-align: left;
@@ -132,6 +151,9 @@ class HaConfigRepairs extends LitElement {
     ha-list-item {
       cursor: pointer;
       font-size: 16px;
+    }
+    .error {
+      color: var(--error-color);
     }
   `;
 }
