@@ -717,8 +717,8 @@ export class HaIntegrationCard extends LitElement {
         ),
       });
     }
-    if (result.application_credential_id) {
-      this._removeApplicationCredential(result.application_credential_id);
+    if (result.application_credentials_id) {
+      this._removeApplicationCredential(result.application_credentials_id);
     }
   }
 
