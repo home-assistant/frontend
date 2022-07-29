@@ -8,7 +8,7 @@ Home Assistant Cast is made up of two separate applications:
 ## Development
 
 - Run `script/develop_cast` to launch the Cast receiver dev server. Keep this running.
-- Navigate to http://localhost:8080 to start the launcher
+- Navigate to http://IP-OF-DEV-MACHINE:8080 to start the launcher
 - Debug the receiver running on the Chromecast via [chrome://inspect/#devices](chrome://inspect/#devices)
 
 ## Setting up development environment
