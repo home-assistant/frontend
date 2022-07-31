@@ -4,6 +4,7 @@ import type { WaitAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SCHEMA = [
   {
@@ -46,7 +47,9 @@ export class HaWaitAction extends LitElement implements ActionElement {
     `;
   }
 
-  private _computeLabelCallback = (schema: typeof SCHEMA[number]): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<typeof SCHEMA>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.actions.type.wait_template.${
         schema.name === "continue_on_timeout" ? "continue_timeout" : schema.name

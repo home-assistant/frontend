@@ -7,6 +7,7 @@ import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -111,7 +112,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   }
 
   private _computeLabelCallback = (
-    schema: ReturnType<typeof this._schema>[number]
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
