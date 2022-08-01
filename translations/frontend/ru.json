@@ -38,9 +38,17 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Авто",
+                "on": "Вкл",
                 "off": "Выкл",
-                "on": "Вкл"
+                "auto": "Авто",
+                "low": "Низкий",
+                "middle": "Средний",
+                "high": "Высокий",
+                "top": "Максимальный",
+                "diffuse": "Тихий",
+                "medium": "Средний",
+                "focus": "Мощный",
+                "turbo": "Турбо"
             },
             "hvac_action": {
                 "cooling": "Охлаждение",
