@@ -1,5 +1,4 @@
 import "@material/mwc-list/mwc-list-item";
-import "./ha-select";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,6 +7,7 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { stringCompare } from "../common/string/compare";
 import { Blueprint, Blueprints, fetchBlueprints } from "../data/blueprint";
 import { HomeAssistant } from "../types";
+import "./ha-select";
 
 @customElement("ha-blueprint-picker")
 class HaBluePrintPicker extends LitElement {
@@ -54,12 +54,12 @@ class HaBluePrintPicker extends LitElement {
         this.hass.localize("ui.components.blueprint-picker.select_blueprint")}
         fixedMenuPosition
         naturalMenuWidth
-        .value=${this.value}
+        .value=${this.value || "default"}
         .disabled=${this.disabled}
         @selected=${this._blueprintChanged}
         @closed=${stopPropagation}
       >
-        <mwc-list-item value="">
+        <mwc-list-item value="default">
           ${this.hass.localize(
             "ui.components.blueprint-picker.select_blueprint"
           )}
@@ -87,7 +87,7 @@ class HaBluePrintPicker extends LitElement {
   private _blueprintChanged(ev) {
     const newValue = ev.target.value;
 
-    if (newValue !== this.value) {
+    if (newValue !== "default" && newValue !== this.value) {
       this.value = newValue;
       setTimeout(() => {
         fireEvent(this, "value-changed", { value: newValue });
