@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -6,6 +7,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
@@ -81,11 +83,15 @@ export class DialogHelperDetail extends LitElement {
 
   public closeDialog(): void {
     this._opened = false;
-    this._error = "";
+    this._error = undefined;
+    this._domain = undefined;
     this._params = undefined;
   }
 
   protected render(): TemplateResult {
+    if (!this._opened) {
+      return html``;
+    }
     let content: TemplateResult;
 
     if (this._domain) {
@@ -189,7 +195,7 @@ export class DialogHelperDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .open=${this._opened}
+        open
         @closed=${this.closeDialog}
         class=${classMap({ "button-left": !this._domain })}
         scrimClickAction
@@ -229,7 +235,10 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
-  private _domainPicked(ev: Event): void {
+  private _domainPicked(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
     const domain = (ev.currentTarget! as any).domain;
 
     if (domain in HELPERS) {
