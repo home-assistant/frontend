@@ -1223,7 +1223,16 @@
           "show_skipped": "Show skipped updates",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
-          "skipped": "Skipped"
+          "skipped": "Skipped",
+          "dialog": {
+            "title": "{entity_name} Update Available",
+            "create_backup": "[%key:ui::dialogs::more_info_control::update::create_backup%]",
+            "release_notes": "Read release notes",
+            "update_now": "Update now",
+            "skip": "[%key:ui::dialogs::more_info_control::update::skip%]",
+            "clear_skip": "[%key:ui::dialogs::more_info_control::update::clear_skipped%]",
+            "latest_version": "New version available: {latest_version}"
+          }
         },
         "repairs": {
           "caption": "Repairs",

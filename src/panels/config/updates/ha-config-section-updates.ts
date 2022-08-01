@@ -30,7 +30,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "../dashboard/ha-config-updates";
+import "./ha-config-updates";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {

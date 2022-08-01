@@ -1,12 +1,13 @@
-import "../../../components/ha-alert";
-import "../../../components/ha-faded";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { BINARY_STATE_OFF } from "../../../common/const";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-alert";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -21,7 +22,6 @@ import {
   UPDATE_SUPPORT_SPECIFIC_VERSION,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
-import { BINARY_STATE_OFF } from "../../../common/const";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -114,7 +114,8 @@ class MoreInfoUpdate extends LitElement {
             ></ha-markdown>`
         : ""}
       ${supportsFeature(this.stateObj, UPDATE_SUPPORT_BACKUP)
-        ? html`<hr />
+        ? html`
+            <hr />
             <ha-formfield
               .label=${this.hass.localize(
                 "ui.dialogs.more_info_control.update.create_backup"
@@ -124,7 +125,8 @@ class MoreInfoUpdate extends LitElement {
                 checked
                 .disabled=${updateIsInstalling(this.stateObj)}
               ></ha-checkbox>
-            </ha-formfield> `
+            </ha-formfield>
+          `
         : ""}
       <hr />
       <div class="actions">

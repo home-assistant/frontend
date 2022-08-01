@@ -43,8 +43,8 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
+import "../updates/ha-config-updates";
 import "./ha-config-navigation";
-import "./ha-config-updates";
 
 const randomTip = (hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];

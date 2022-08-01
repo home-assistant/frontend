@@ -2,14 +2,14 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import type { UpdateEntity } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-circular-progress";
-import "../../../components/ha-list-item";
+import { showUpdateDialog } from "./show-update-dialog";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -43,7 +43,7 @@ class HaConfigUpdates extends LitElement {
               twoline
               graphic="avatar"
               class=${entity.attributes.skipped_version ? "skipped" : ""}
-              .entity_id=${entity.entity_id}
+              .entity=${entity}
               .hasMeta=${!this.narrow}
               @click=${this._openMoreInfo}
             >
@@ -95,9 +95,10 @@ class HaConfigUpdates extends LitElement {
   }
 
   private _openMoreInfo(ev: MouseEvent): void {
-    fireEvent(this, "hass-more-info", {
-      entityId: (ev.currentTarget as any).entity_id,
-    });
+    showUpdateDialog(this, { entity: (ev.currentTarget as any).entity });
+    // fireEvent(this, "hass-more-info", {
+    //   entityId: (ev.currentTarget as any).entity.entity_id,
+    // });
   }
 
   static get styles(): CSSResultGroup[] {

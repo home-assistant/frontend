@@ -441,7 +441,7 @@ class HaPanelConfig extends HassRouterPage {
       },
       updates: {
         tag: "ha-config-section-updates",
-        load: () => import("./core/ha-config-section-updates"),
+        load: () => import("./updates/ha-config-section-updates"),
       },
       repairs: {
         tag: "ha-config-repairs-dashboard",
