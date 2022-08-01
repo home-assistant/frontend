@@ -9,18 +9,18 @@ import { getLocalLanguage } from "../../util/common-translation";
 // Exclude some patterns from key type checking for now
 // These are intended to be removed as errors are fixed
 // Fixing component category will require tighter definition of types from backend and/or web socket
-type LocalizeKeyExceptions =
+export type LocalizeKeys =
+  | FlattenObjectKeys<Omit<TranslationDict, "supervisor">>
   | `${string}`
   | `panel.${string}`
   | `state.${string}`
   | `state_attributes.${string}`
   | `state_badge.${string}`
   | `ui.${string}`
-  | `${keyof TranslationDict["supervisor"]}.${string}`
   | `component.${string}`;
 
 // Tweaked from https://www.raygesualdo.com/posts/flattening-object-keys-with-typescript-types
-type FlattenObjectKeys<
+export type FlattenObjectKeys<
   T extends Record<string, any>,
   Key extends keyof T = keyof T
 > = Key extends string
@@ -29,10 +29,8 @@ type FlattenObjectKeys<
     : `${Key}`
   : never;
 
-export type LocalizeFunc<
-  Dict extends Record<string, unknown> = TranslationDict
-> = (
-  key: FlattenObjectKeys<Dict> | LocalizeKeyExceptions,
+export type LocalizeFunc<Keys extends string = LocalizeKeys> = (
+  key: Keys,
   ...args: any[]
 ) => string;
 
@@ -94,14 +92,12 @@ export const polyfillsLoaded =
  * }
  */
 
-export const computeLocalize = async <
-  Dict extends Record<string, unknown> = TranslationDict
->(
+export const computeLocalize = async <Keys extends string = LocalizeKeys>(
   cache: any,
   language: string,
   resources: Resources,
   formats?: FormatsType
-): Promise<LocalizeFunc<Dict>> => {
+): Promise<LocalizeFunc<Keys>> => {
   if (polyfillsLoaded) {
     await polyfillsLoaded;
   }
