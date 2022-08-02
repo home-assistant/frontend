@@ -8,7 +8,6 @@ import {
   mdiDevices,
   mdiInformation,
   mdiInformationOutline,
-  mdiLifebuoy,
   mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
@@ -19,6 +18,7 @@ import {
   mdiPaletteSwatch,
   mdiPuzzle,
   mdiRobot,
+  mdiScrewdriver,
   mdiScriptText,
   mdiShape,
   mdiSofa,
@@ -270,7 +270,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     {
       path: "/config/repairs",
       translationKey: "repairs",
-      iconPath: mdiLifebuoy,
+      iconPath: mdiScrewdriver,
       iconColor: "#5c995c",
     },
     {
