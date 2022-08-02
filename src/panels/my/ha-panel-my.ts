@@ -157,7 +157,7 @@ export const getMyRedirects = (hasSupervisor: boolean): Redirects => ({
     redirect: "/config/info",
   },
   system_health: {
-    redirect: "/config/system_health",
+    redirect: "/config/repairs?dialog=system-health",
   },
   hardware: {
     redirect: "/config/hardware",
