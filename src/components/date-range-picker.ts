@@ -221,6 +221,10 @@ class DateRangePickerElement extends WrappedElement {
           .calendar-table {
             padding: 0 !important;
           }
+          .daterangepicker.ltr {
+            direction: ltr;
+            text-align: left;
+          }
         `;
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);
