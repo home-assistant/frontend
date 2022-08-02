@@ -54,16 +54,11 @@ class HaBluePrintPicker extends LitElement {
         this.hass.localize("ui.components.blueprint-picker.select_blueprint")}
         fixedMenuPosition
         naturalMenuWidth
-        .value=${this.value || "default"}
+        .value=${this.value}
         .disabled=${this.disabled}
         @selected=${this._blueprintChanged}
         @closed=${stopPropagation}
       >
-        <mwc-list-item value="default">
-          ${this.hass.localize(
-            "ui.components.blueprint-picker.select_blueprint"
-          )}
-        </mwc-list-item>
         ${this._processedBlueprints(this.blueprints).map(
           (blueprint) => html`
             <mwc-list-item .value=${blueprint.path}>
@@ -87,7 +82,7 @@ class HaBluePrintPicker extends LitElement {
   private _blueprintChanged(ev) {
     const newValue = ev.target.value;
 
-    if (newValue !== "default" && newValue !== this.value) {
+    if (newValue !== this.value) {
       this.value = newValue;
       setTimeout(() => {
         fireEvent(this, "value-changed", { value: newValue });
