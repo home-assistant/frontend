@@ -60,9 +60,7 @@ export interface SupervisorEvent {
   [key: string]: any;
 }
 
-export type SupervisorKeys =
-  | FlattenObjectKeys<TranslationDict["supervisor"]>
-  | `${keyof TranslationDict["supervisor"]}.${string}`;
+export type SupervisorKeys = FlattenObjectKeys<TranslationDict["supervisor"]>;
 
 export interface Supervisor {
   host: HassioHostInfo;
