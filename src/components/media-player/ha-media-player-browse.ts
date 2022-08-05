@@ -663,6 +663,10 @@ export class HaMediaPlayerBrowse extends LitElement {
       return new Promise((resolve, reject) => {
         this.hass
           .fetchWithAuth(thumbnailUrl!)
+          // Since we are fetching with an authorization header, we cannot just put the
+          // URL directly into the document; we need to embed the image. We could do this
+          // using blob URLs, but then we would need to keep track of them in order to
+          // release them properly. Instead, we embed the thumbnail using base64.
           .then((response) => response.blob())
           .then((blob) => {
             const reader = new FileReader();
