@@ -665,21 +665,21 @@ export const subscribeZwaveNodeStatistics = (
     }
   );
 
-export const fetchZwaveNodeIsFirmwareUpdateInProgress = (
+export const fetchZwaveIsNodeFirmwareUpdateInProgress = (
   hass: HomeAssistant,
   device_id: string
 ): Promise<boolean> =>
   hass.callWS({
-    type: "zwave_js/get_firmware_update_progress",
+    type: "zwave_js/is_node_firmware_update_in_progress",
     device_id,
   });
 
-export const fetchZwaveIsAnyFirmwareUpdateInProgress = (
+export const fetchZwaveIsAnyOTAFirmwareUpdateInProgress = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<boolean> =>
   hass.callWS({
-    type: "zwave_js/get_any_firmware_update_progress",
+    type: "zwave_js/is_any_ota_firmware_update_in_progress",
     entry_id,
   });
 
