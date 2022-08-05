@@ -3,9 +3,9 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import { NumericStateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
@@ -19,19 +19,22 @@ export default class HaNumericStateCondition extends LitElement {
     };
   }
 
-  private _schema = memoizeOne((entityId): HaFormSchema[] => [
-    { name: "entity_id", required: true, selector: { entity: {} } },
-    {
-      name: "attribute",
-      selector: { attribute: { entity_id: entityId } },
-    },
-    { name: "above", selector: { text: {} } },
-    { name: "below", selector: { text: {} } },
-    {
-      name: "value_template",
-      selector: { text: { multiline: true } },
-    },
-  ]);
+  private _schema = memoizeOne(
+    (entityId) =>
+      [
+        { name: "entity_id", required: true, selector: { entity: {} } },
+        {
+          name: "attribute",
+          selector: { attribute: { entity_id: entityId } },
+        },
+        { name: "above", selector: { text: {} } },
+        { name: "below", selector: { text: {} } },
+        {
+          name: "value_template",
+          selector: { text: { multiline: true } },
+        },
+      ] as const
+  );
 
   public render() {
     const schema = this._schema(this.condition.entity_id);
@@ -53,7 +56,9 @@ export default class HaNumericStateCondition extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string => {
     switch (schema.name) {
       case "entity_id":
         return this.hass.localize("ui.components.entity.entity-picker.entity");

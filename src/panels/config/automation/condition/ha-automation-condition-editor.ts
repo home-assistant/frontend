@@ -36,15 +36,15 @@ const OPTIONS = [
   "time",
   "trigger",
   "zone",
-];
+] as const;
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() condition!: Condition;
+  @property({ attribute: false }) condition!: Condition;
 
-  @property() public yamlMode = false;
+  @property({ type: Boolean }) public yamlMode = false;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)

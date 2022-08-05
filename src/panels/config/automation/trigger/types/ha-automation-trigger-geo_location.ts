@@ -3,10 +3,10 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {
@@ -14,29 +14,32 @@ export class HaGeolocationTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => [
-    { name: "source", selector: { text: {} } },
-    { name: "zone", selector: { entity: { domain: "zone" } } },
-    {
-      name: "event",
-      type: "select",
-      required: true,
-      options: [
-        [
-          "enter",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.geo_location.enter"
-          ),
-        ],
-        [
-          "leave",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.geo_location.leave"
-          ),
-        ],
-      ],
-    },
-  ]);
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "source", selector: { text: {} } },
+        { name: "zone", selector: { entity: { domain: "zone" } } },
+        {
+          name: "event",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "enter",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.geo_location.enter"
+              ),
+            ],
+            [
+              "leave",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.geo_location.leave"
+              ),
+            ],
+          ],
+        },
+      ] as const
+  );
 
   public static get defaultConfig() {
     return {
@@ -64,7 +67,9 @@ export class HaGeolocationTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
     );

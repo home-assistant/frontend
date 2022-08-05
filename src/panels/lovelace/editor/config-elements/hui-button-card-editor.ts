@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { ActionConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { ButtonCardConfig } from "../../cards/types";
@@ -58,53 +58,50 @@ export class HuiButtonCardEditor
   }
 
   private _schema = memoizeOne(
-    (
-      entity?: string,
-      icon?: string,
-      entityState?: HassEntity
-    ): HaFormSchema[] => [
-      { name: "entity", selector: { entity: {} } },
-      {
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "name", selector: { text: {} } },
-          {
-            name: "icon",
-            selector: {
-              icon: {
-                placeholder: icon || entityState?.attributes.icon,
-                fallbackPath:
-                  !icon &&
-                  !entityState?.attributes.icon &&
-                  entityState &&
-                  entity
-                    ? domainIcon(computeDomain(entity), entityState)
-                    : undefined,
+    (entity?: string, icon?: string, entityState?: HassEntity) =>
+      [
+        { name: "entity", selector: { entity: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon &&
+                    !entityState?.attributes.icon &&
+                    entityState &&
+                    entity
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
+                },
               },
             },
-          },
-        ],
-      },
-      {
-        name: "",
-        type: "grid",
-        column_min_width: "100px",
-        schema: [
-          { name: "show_name", selector: { boolean: {} } },
-          { name: "show_state", selector: { boolean: {} } },
-          { name: "show_icon", selector: { boolean: {} } },
-        ],
-      },
-      {
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "icon_height", selector: { text: { suffix: "px" } } },
-          { name: "theme", selector: { theme: {} } },
-        ],
-      },
-    ]
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          column_min_width: "100px",
+          schema: [
+            { name: "show_name", selector: { boolean: {} } },
+            { name: "show_state", selector: { boolean: {} } },
+            { name: "show_icon", selector: { boolean: {} } },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "icon_height", selector: { text: { suffix: "px" } } },
+            { name: "theme", selector: { theme: {} } },
+          ],
+        },
+      ] as const
   );
 
   get _tap_action(): ActionConfig | undefined {
@@ -193,7 +190,9 @@ export class HuiButtonCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     if (schema.name === "entity") {
       return `${this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
