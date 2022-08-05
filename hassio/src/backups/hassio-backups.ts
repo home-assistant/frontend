@@ -176,7 +176,7 @@ export class HassioBackups extends LitElement {
           : supervisorTabs(this.hass)}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
-        .searchLabel=${this.supervisor.localize("search")}
+        .searchLabel=${this.supervisor.localize("backup.search")}
         .noDataText=${this.supervisor.localize("backup.no_backups")}
         .narrow=${this.narrow}
         .route=${this.route}
@@ -240,7 +240,7 @@ export class HassioBackups extends LitElement {
                   : html`
                       <ha-icon-button
                         .label=${this.supervisor.localize(
-                          "snapshot.delete_selected"
+                          "backup.delete_selected"
                         )}
                         .path=${mdiDelete}
                         id="delete-btn"
