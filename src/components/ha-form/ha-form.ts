@@ -35,7 +35,7 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormSchema[];
+  @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
   @property() public error?: Record<string, string>;
 
@@ -44,7 +44,7 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
   @property() public computeLabel?: (
-    schema: HaFormSchema,
+    schema: any,
     data?: HaFormDataContainer
   ) => string;
 
@@ -168,7 +168,7 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeHelper ? this.computeHelper(schema) : "";
   }
 
-  private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
+  private _computeError(error, schema: HaFormSchema | readonly HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 

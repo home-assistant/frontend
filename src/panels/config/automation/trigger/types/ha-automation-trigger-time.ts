@@ -5,9 +5,9 @@ import type { TimeTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -22,7 +22,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, inputMode?: boolean): HaFormSchema[] => {
+    (localize: LocalizeFunc, inputMode?: boolean) => {
       const atSelector = inputMode
         ? { entity: { domain: "input_datetime" } }
         : { time: {} };
@@ -48,7 +48,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
           ],
         },
         { name: "at", selector: atSelector },
-      ];
+      ] as const;
     }
   );
 
@@ -77,7 +77,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       this._inputMode ??
       (at?.startsWith("input_datetime.") || at?.startsWith("sensor."));
 
-    const schema: HaFormSchema[] = this._schema(this.hass.localize, inputMode);
+    const schema = this._schema(this.hass.localize, inputMode);
 
     const data = {
       mode: inputMode ? "input" : "value",
@@ -111,7 +111,9 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
     );
