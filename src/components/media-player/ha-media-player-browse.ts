@@ -27,7 +27,6 @@ import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
-import { getSignedPath } from "../../data/auth";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
@@ -339,7 +338,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       : MediaClassBrowserSettings.directory;
 
     const backgroundImage = currentItem.thumbnail
-      ? this._getSignedThumbnail(currentItem.thumbnail).then(
+      ? this._getThumbnailURLorBase64(currentItem.thumbnail).then(
           (value) => `url(${value})`
         )
       : "none";
@@ -550,7 +549,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
     const backgroundImage = child.thumbnail
-      ? this._getSignedThumbnail(child.thumbnail).then(
+      ? this._getThumbnailURLorBase64(child.thumbnail).then(
           (value) => `url(${value})`
         )
       : "none";
@@ -615,7 +614,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     const backgroundImage =
       mediaClass.show_list_images && child.thumbnail
-        ? this._getSignedThumbnail(child.thumbnail).then(
+        ? this._getThumbnailURLorBase64(child.thumbnail).then(
             (value) => `url(${value})`
           )
         : "none";
@@ -652,7 +651,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   };
 
-  private async _getSignedThumbnail(
+  private async _getThumbnailURLorBase64(
     thumbnailUrl: string | undefined
   ): Promise<string> {
     if (!thumbnailUrl) {
@@ -661,7 +660,20 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     if (thumbnailUrl.startsWith("/")) {
       // Thumbnails served by local API require authentication
-      return (await getSignedPath(this.hass, thumbnailUrl)).path;
+      return new Promise((resolve, reject) => {
+        this.hass
+          .fetchWithAuth(thumbnailUrl!)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result;
+              resolve(typeof result === "string" ? result : "");
+            };
+            reader.onerror = (e) => reject(e);
+            reader.readAsDataURL(blob);
+          });
+      });
     }
 
     if (isBrandUrl(thumbnailUrl)) {
