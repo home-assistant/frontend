@@ -15,7 +15,7 @@ import {
 } from "../../../../../data/device_registry";
 import {
   abortZwaveNodeFirmwareUpdate,
-  fetchZwaveNodeIsFirmwareUpdateInProgress,
+  fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNodeStatus,
   FirmwareUpdateStatus,
   NodeStatus,
@@ -272,7 +272,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private async _fetchData(): Promise<void> {
     [this._nodeStatus, this._updateInProgress] = await Promise.all([
       fetchZwaveNodeStatus(this.hass, this.device!.id),
-      fetchZwaveNodeIsFirmwareUpdateInProgress(this.hass, this.device!.id),
+      fetchZwaveIsNodeFirmwareUpdateInProgress(this.hass, this.device!.id),
     ]);
     if (this._updateInProgress) {
       this._subscribeNodeFirmwareUpdate();
