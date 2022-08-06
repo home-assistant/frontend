@@ -560,6 +560,7 @@ class HaLogbookRenderer extends LitElement {
         .icon-message {
           display: flex;
           align-items: center;
+          column-gap: 8px;
         }
 
         .no-entries {
