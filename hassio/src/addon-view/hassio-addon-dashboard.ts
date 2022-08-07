@@ -14,7 +14,6 @@ import "../../../src/components/ha-circular-progress";
 import {
   fetchAddonInfo,
   fetchHassioAddonInfo,
-  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -209,8 +208,8 @@ class HassioAddonDashboard extends LitElement {
       }
 
       if (requestedAddon) {
-        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-        const validAddon = addonsInfo.addons.some(
+        const store = await fetchSupervisorStore(this.hass);
+        const validAddon = store.addons.some(
           (addon) => addon.slug === requestedAddon
         );
         if (!validAddon) {
