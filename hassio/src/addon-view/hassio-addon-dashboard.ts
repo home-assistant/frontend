@@ -75,7 +75,7 @@ class HassioAddonDashboard extends LitElement {
       ></hass-error-screen>`;
     }
 
-    if (!this.addon) {
+    if (!this.addon || !this.supervisor?.addon) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
@@ -263,6 +263,10 @@ class HassioAddonDashboard extends LitElement {
       return;
     }
     try {
+      if (!this.supervisor.addon) {
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        fireEvent(this, "supervisor-update", { addon: addonsInfo });
+      }
       this.addon = await fetchAddonInfo(this.hass, this.supervisor, addon);
     } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
