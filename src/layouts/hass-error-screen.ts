@@ -40,7 +40,7 @@ class HassErrorScreen extends LitElement {
         <h3>${this.error}</h3>
         <slot>
           <mwc-button @click=${this._handleBack}>
-            ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+            ${this.hass?.localize("ui.common.back")}
           </mwc-button>
         </slot>
       </div>
