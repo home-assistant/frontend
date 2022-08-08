@@ -25,6 +25,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
+  BlueprintDomain,
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
@@ -124,7 +125,7 @@ class HaBlueprintOverview extends LitElement {
         title: this.hass.localize(
           "ui.panel.config.blueprint.overview.headers.type"
         ),
-        template: (type: string) =>
+        template: (type: BlueprintDomain) =>
           html`${this.hass.localize(
             `ui.panel.config.blueprint.overview.types.${type}`
           )}`,
@@ -148,7 +149,7 @@ class HaBlueprintOverview extends LitElement {
         title: "",
         width: narrow ? undefined : "20%",
         type: narrow ? "icon-button" : undefined,
-        template: (_, blueprint: any) =>
+        template: (_, blueprint: BlueprintMetaDataPath) =>
           blueprint.error
             ? ""
             : narrow
