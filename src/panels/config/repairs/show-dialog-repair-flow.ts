@@ -67,7 +67,8 @@ export const showRepairsFlowDialog = (
           hass.localize(
             `component.${issue.domain}.issues.${
               issue.translation_key || issue.issue_id
-            }.fix_flow.step.${step.step_id}.title`
+            }.fix_flow.step.${step.step_id}.title`,
+            step.description_placeholders
           ) || hass.localize(`ui.dialogs.issues_flow.form.header`)
         );
       },
