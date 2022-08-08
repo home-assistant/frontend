@@ -14,6 +14,7 @@ import "../../../src/components/ha-circular-progress";
 import {
   fetchAddonInfo,
   fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -237,7 +238,7 @@ class HassioAddonDashboard extends LitElement {
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
       fireEvent(this, "supervisor-collection-refresh", {
-        collection: "supervisor",
+        collection: "addon",
       });
     }
 
