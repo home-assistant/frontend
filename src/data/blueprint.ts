@@ -1,6 +1,8 @@
 import { HomeAssistant } from "../types";
 import { Selector } from "./selector";
 
+export type BlueprintDomain = "automation" | "script";
+
 export type Blueprints = Record<string, BlueprintOrError>;
 
 export type BlueprintOrError = Blueprint | { error: string };
@@ -9,7 +11,7 @@ export interface Blueprint {
 }
 
 export interface BlueprintMetaData {
-  domain: string;
+  domain: BlueprintDomain;
   name: string;
   input?: Record<string, BlueprintInput | null>;
   description?: string;
@@ -30,7 +32,7 @@ export interface BlueprintImportResult {
   validation_errors: string[] | null;
 }
 
-export const fetchBlueprints = (hass: HomeAssistant, domain: string) =>
+export const fetchBlueprints = (hass: HomeAssistant, domain: BlueprintDomain) =>
   hass.callWS<Blueprints>({ type: "blueprint/list", domain });
 
 export const importBlueprint = (hass: HomeAssistant, url: string) =>
@@ -38,7 +40,7 @@ export const importBlueprint = (hass: HomeAssistant, url: string) =>
 
 export const saveBlueprint = (
   hass: HomeAssistant,
-  domain: string,
+  domain: BlueprintDomain,
   path: string,
   yaml: string,
   source_url?: string
@@ -53,7 +55,7 @@ export const saveBlueprint = (
 
 export const deleteBlueprint = (
   hass: HomeAssistant,
-  domain: string,
+  domain: BlueprintDomain,
   path: string
 ) =>
   hass.callWS<BlueprintImportResult>({
