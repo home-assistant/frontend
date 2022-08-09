@@ -69,7 +69,7 @@ export const showRepairsFlowDialog = (
               issue.translation_key || issue.issue_id
             }.fix_flow.step.${step.step_id}.title`,
             step.description_placeholders
-          ) || hass.localize(`ui.dialogs.issues_flow.form.header`)
+          ) || hass.localize("ui.dialogs.repair_flow.form.header")
         );
       },
 
@@ -126,7 +126,7 @@ export const showRepairsFlowDialog = (
 
       renderCreateEntryDescription(hass, _step) {
         return html`
-          <p>${hass.localize(`ui.dialogs.repairs.success.description`)}</p>
+          <p>${hass.localize("ui.dialogs.repair_flow.success.description")}</p>
         `;
       },
 
@@ -202,7 +202,7 @@ export const showRepairsFlowDialog = (
               issue.translation_key || issue.issue_id
             }.fix_flow.loading`
           ) ||
-          hass.localize(`ui.dialogs.repairs.loading.${reason}`, {
+          hass.localize(`ui.dialogs.repair_flow.loading.${reason}`, {
             integration: domainToName(hass.localize, issue.domain),
           })
         );
