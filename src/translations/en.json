@@ -357,6 +357,7 @@
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load logbook",
+        "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
           "was_away": "was detected away",
           "was_at_state": "was detected at {state}",
@@ -925,7 +926,8 @@
         },
         "input_select": {
           "options": "Options",
-          "add_option": "Add option",
+          "add_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::add_option%]",
+          "remove_option": "[%key:ui::panel::config::automation::editor::actions::type::choose::remove_option%]",
           "no_options": "There are no options yet.",
           "add": "Add"
         },
