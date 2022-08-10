@@ -31,6 +31,7 @@ import {
 } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -82,7 +83,10 @@ class HUIRoot extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property() public route?: { path: string; prefix: string };
+  @property({ attribute: false }) public route?: {
+    path: string;
+    prefix: string;
+  };
 
   @state() private _curView?: number | "hass-unused-entities";
 
@@ -240,7 +244,7 @@ class HUIRoot extends LitElement {
                           ${this.lovelace!.config.views.map(
                             (view) => html`
                               <paper-tab
-                                aria-label=${view.title}
+                                aria-label=${ifDefined(view.title)}
                                 class=${classMap({
                                   "hide-tab": Boolean(
                                     view.visible !== undefined &&
@@ -255,7 +259,7 @@ class HUIRoot extends LitElement {
                                 ${view.icon
                                   ? html`
                                       <ha-icon
-                                        title=${view.title}
+                                        title=${ifDefined(view.title)}
                                         .icon=${view.icon}
                                       ></ha-icon>
                                     `
@@ -472,7 +476,7 @@ class HUIRoot extends LitElement {
                     ${this.lovelace!.config.views.map(
                       (view) => html`
                         <paper-tab
-                          aria-label=${view.title}
+                          aria-label=${ifDefined(view.title)}
                           class=${classMap({
                             "hide-tab": Boolean(
                               !this._editMode &&
@@ -501,7 +505,7 @@ class HUIRoot extends LitElement {
                           ${view.icon
                             ? html`
                                 <ha-icon
-                                  title=${view.title}
+                                  title=${ifDefined(view.title)}
                                   .icon=${view.icon}
                                 ></ha-icon>
                               `
@@ -712,7 +716,7 @@ class HUIRoot extends LitElement {
   private _showQuickBar(): void {
     showQuickBar(this, {
       commandMode: false,
-      hint: this.hass.localize("ui.dialogs.quick-bar.key_e_hint"),
+      hint: this.hass.localize("ui.tips.key_e_hint"),
     });
   }
 
