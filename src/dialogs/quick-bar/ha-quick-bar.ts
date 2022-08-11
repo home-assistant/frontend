@@ -1,6 +1,5 @@
 import "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
@@ -34,6 +33,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-header-bar";
 import "../../components/ha-icon-button";
 import "../../components/ha-textfield";
+import "../../components/ha-list-item";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -282,7 +282,7 @@ export class QuickBar extends LitElement {
 
   private _renderEntityItem(item: EntityItem, index?: number) {
     return html`
-      <mwc-list-item
+      <ha-list-item
         .twoline=${Boolean(item.altText)}
         .item=${item}
         index=${ifDefined(index)}
@@ -307,13 +307,13 @@ export class QuickBar extends LitElement {
               >
             `
           : null}
-      </mwc-list-item>
+      </ha-list-item>
     `;
   }
 
   private _renderCommandItem(item: CommandItem, index?: number) {
     return html`
-      <mwc-list-item
+      <ha-list-item
         .item=${item}
         index=${ifDefined(index)}
         class="command-item"
@@ -336,7 +336,7 @@ export class QuickBar extends LitElement {
         </span>
 
         <span class="command-text">${item.primaryText}</span>
-      </mwc-list-item>
+      </ha-list-item>
     `;
   }
 
@@ -363,7 +363,7 @@ export class QuickBar extends LitElement {
   }
 
   private _getItemAtIndex(index: number): ListItem | null {
-    return this.renderRoot.querySelector(`mwc-list-item[index="${index}"]`);
+    return this.renderRoot.querySelector(`ha-list-item[index="${index}"]`);
   }
 
   private _addSpinnerToCommandItem(index: number): void {
@@ -457,7 +457,7 @@ export class QuickBar extends LitElement {
   }
 
   private _handleItemClick(ev) {
-    const listItem = ev.target.closest("mwc-list-item");
+    const listItem = ev.target.closest("ha-list-item");
     this.processItemAndCloseDialog(
       listItem.item,
       Number(listItem.getAttribute("index"))
@@ -770,10 +770,10 @@ export class QuickBar extends LitElement {
           }
         }
 
-        ha-icon.entity,
+        /* ha-icon.entity,
         ha-svg-icon.entity {
           margin-left: 20px;
-        }
+        } */
 
         ha-svg-icon.prefix {
           color: var(--primary-text-color);
@@ -808,11 +808,12 @@ export class QuickBar extends LitElement {
           direction: var(--direction);
         }
 
-        mwc-list-item {
+        ha-list-item {
           width: 100%;
+          --mdc-list-item-graphic-margin: 20px;
         }
 
-        mwc-list-item.command-item {
+        ha-list-item.command-item {
           text-transform: capitalize;
         }
 
