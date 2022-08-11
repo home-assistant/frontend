@@ -20,7 +20,12 @@ import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
-import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
+import {
+  getScheduleTime,
+  Schedule,
+  ScheduleDay,
+  weekdays,
+} from "../../../../data/schedule";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
@@ -243,12 +248,8 @@ class HaScheduleForm extends LitElement {
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
-    const from = `${("0" + start.getHours()).slice(-2)}:${(
-      "0" + start.getMinutes()
-    ).slice(-2)}`;
-    const to = `${("0" + end.getHours()).slice(-2)}:${(
-      "0" + end.getMinutes()
-    ).slice(-2)}`;
+    const from = getScheduleTime(start);
+    const to = getScheduleTime(end);
 
     value.push({
       from,
@@ -275,20 +276,16 @@ class HaScheduleForm extends LitElement {
     }
 
     const [day, index] = info.event.id.split("-");
-    let value = this[`_${day}`][parseInt(index)];
+    const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
 
     const from = value.from;
-    const to = `${("0" + end.getHours()).slice(-2)}:${(
-      "0" + end.getMinutes()
-    ).slice(-2)}`;
+    const to = getScheduleTime(end);
 
-    value = {
+    newValue[day][index] = {
       from,
       to,
     };
-
-    newValue[day][index] = value;
 
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -307,12 +304,8 @@ class HaScheduleForm extends LitElement {
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
-    const from = `${("0" + start.getHours()).slice(-2)}:${(
-      "0" + start.getMinutes()
-    ).slice(-2)}`;
-    const to = `${("0" + end.getHours()).slice(-2)}:${(
-      "0" + end.getMinutes()
-    ).slice(-2)}`;
+    const from = getScheduleTime(start);
+    const to = getScheduleTime(end);
 
     const event = {
       from,
@@ -385,7 +378,7 @@ class HaScheduleForm extends LitElement {
 
         #calendar {
           margin: 8px 0;
-          height: 500px;
+          height: 450px;
           width: 100%;
         }
         .fc-scroller {

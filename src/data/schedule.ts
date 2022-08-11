@@ -60,3 +60,6 @@ export const deleteSchedule = (hass: HomeAssistant, id: string) =>
     type: "schedule/delete",
     schedule_id: id,
   });
+
+export const getScheduleTime = (date: Date): string =>
+  `${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
