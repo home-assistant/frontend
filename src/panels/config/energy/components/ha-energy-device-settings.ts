@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDevices } from "@mdi/js";
+import { mdiDelete, mdiPencil, mdiDevices } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -12,6 +12,7 @@ import {
   EnergyPreferences,
   EnergyPreferencesValidation,
   saveEnergyPreferences,
+  GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
   showAlertDialog,
@@ -78,13 +79,20 @@ export class EnergyDeviceSettings extends LitElement {
           ${this.preferences.device_consumption.map((device) => {
             const entityState = this.hass.states[device.stat_consumption];
             return html`
-              <div class="row">
+              <div class="row" .device=${device}>
                 <ha-state-icon .state=${entityState}></ha-state-icon>
                 <span class="content"
                   >${entityState
                     ? computeStateName(entityState)
                     : device.stat_consumption}</span
                 >
+                <ha-icon-button
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.edit_consumption"
+                  )}
+                  @click=${this._editDevice}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.delete")}
                   @click=${this._deleteDevice}
@@ -94,7 +102,7 @@ export class EnergyDeviceSettings extends LitElement {
               </div>
             `;
           })}
-          <div class="row">
+          <div class="row border-bottom">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
             <mwc-button @click=${this._addDevice}
               >${this.hass.localize(
@@ -108,7 +116,9 @@ export class EnergyDeviceSettings extends LitElement {
   }
 
   private _addDevice() {
+    const flowFrom = this._getPossibleSources();
     showEnergySettingsDeviceDialog(this, {
+      sources: flowFrom,
       saveCallback: async (device) => {
         await this._savePreferences({
           ...this.preferences,
@@ -119,10 +129,38 @@ export class EnergyDeviceSettings extends LitElement {
     });
   }
 
+  private _editDevice(ev) {
+    const flowFrom = this._getPossibleSources();
+    const origDevice: DeviceConsumptionEnergyPreference =
+      ev.currentTarget.closest(".row").device;
+    showEnergySettingsDeviceDialog(this, {
+      device: { ...origDevice },
+      sources: flowFrom,
+      saveCallback: async (newDevice) => {
+        await this._savePreferences({
+          ...this.preferences,
+          device_consumption: this.preferences.device_consumption.map((src) =>
+            src === origDevice ? newDevice : src
+          ),
+        });
+      },
+    });
+  }
+
+  private _getPossibleSources() {
+    const gridSources = this.preferences.energy_sources.filter(
+      (source) => source.type === "grid"
+    );
+    if (gridSources.length > 0) {
+      return (gridSources[0] as GridSourceTypeEnergyPreference).flow_from;
+    }
+
+    return [];
+  }
+
   private async _deleteDevice(ev) {
     const deviceToDelete: DeviceConsumptionEnergyPreference =
-      ev.currentTarget.device;
-
+      ev.currentTarget.closest(".row").device;
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize("ui.panel.config.energy.delete_source"),

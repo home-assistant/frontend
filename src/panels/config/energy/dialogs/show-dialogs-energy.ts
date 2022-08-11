@@ -50,6 +50,8 @@ export interface EnergySettingsGasDialogParams {
 }
 
 export interface EnergySettingsDeviceDialogParams {
+  device?: DeviceConsumptionEnergyPreference;
+  sources?: FlowFromGridSourceEnergyPreference[];
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 

@@ -1472,7 +1472,10 @@
             "dialog": {
               "header": "Add a device",
               "device_consumption_energy": "Device consumption energy (kWh)",
-              "selected_stat_intro": "Select the entity that represents the device energy usage."
+              "selected_stat_intro": "Select the entity that represents the device energy usage.",
+              "from_grid_parent_para": "Select the grid source to which this device is connected.",
+              "from_grid_parent": "Parent Grid",
+              "no_parent": "No parent"
             }
           },
           "validation": {
@@ -1524,6 +1527,10 @@
               "entity_state_class_measurement_no_last_reset": {
                 "title": "Last reset missing",
                 "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
+              },
+              "parent_entity_not_found": {
+                "title": "Parent grid not found",
+                "description": "Check if the following entities are listed under grid consumption"
               }
             }
           }

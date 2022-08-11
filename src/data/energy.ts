@@ -72,6 +72,12 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   number_energy_price: null,
 });
 
+export const emptyDeviceEnergyPreference =
+  (): DeviceConsumptionEnergyPreference => ({
+    stat_consumption: "",
+    entity_parent_source: null,
+  });
+
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
@@ -82,6 +88,9 @@ export type EnergySolarForecasts = {
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+
+  // Parent grid entity to which this device is connected
+  entity_parent_source: string | null;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
