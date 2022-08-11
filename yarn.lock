@@ -1708,7 +1708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/daygrid@npm:5.9.0":
+"@fullcalendar/daygrid@npm:5.9.0, @fullcalendar/daygrid@npm:~5.9.0":
   version: 5.9.0
   resolution: "@fullcalendar/daygrid@npm:5.9.0"
   dependencies:
