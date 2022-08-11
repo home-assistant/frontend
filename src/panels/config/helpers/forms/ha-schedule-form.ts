@@ -248,19 +248,12 @@ class HaScheduleForm extends LitElement {
     const value = [...this[`_${day}`]];
     const newValue = { ...this._item };
 
-    const from = getScheduleTime(start);
-    const to = getScheduleTime(end);
-
     value.push({
-      from,
-      to,
+      from: getScheduleTime(start),
+      to: getScheduleTime(end),
     });
 
-    if (!value) {
-      delete newValue[day];
-    } else {
-      newValue[day] = value;
-    }
+    newValue[day] = value;
 
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -268,23 +261,20 @@ class HaScheduleForm extends LitElement {
   }
 
   private _handleEventResize(info: any) {
-    const { start, end } = info.event;
+    const { id, start, end } = info.event;
 
     if (start.getDay() !== end.getDay()) {
       info.revert();
       return;
     }
 
-    const [day, index] = info.event.id.split("-");
+    const [day, index] = id.split("-");
     const value = this[`_${day}`][parseInt(index)];
     const newValue = { ...this._item };
 
-    const from = value.from;
-    const to = getScheduleTime(end);
-
     newValue[day][index] = {
-      from,
-      to,
+      from: value.from,
+      to: getScheduleTime(end),
     };
 
     fireEvent(this, "value-changed", {
@@ -293,23 +283,20 @@ class HaScheduleForm extends LitElement {
   }
 
   private _handleEventDrop(info: any) {
-    const { start, end } = info.event;
+    const { id, start, end } = info.event;
 
     if (start.getDay() !== end.getDay()) {
       info.revert();
       return;
     }
 
-    const [day, index] = info.event.id.split("-");
+    const [day, index] = id.split("-");
     const newDay = weekdays[start.getDay()];
     const newValue = { ...this._item };
 
-    const from = getScheduleTime(start);
-    const to = getScheduleTime(end);
-
     const event = {
-      from,
-      to,
+      from: getScheduleTime(start),
+      to: getScheduleTime(end),
     };
 
     if (newDay === day) {
