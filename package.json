@@ -46,6 +46,7 @@
     "@fullcalendar/daygrid": "5.9.0",
     "@fullcalendar/interaction": "5.9.0",
     "@fullcalendar/list": "5.9.0",
+    "@fullcalendar/timegrid": "5.9.0",
     "@lit-labs/motion": "^1.0.2",
     "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch",
     "@material/chips": "14.0.0-canary.261f2db59.0",

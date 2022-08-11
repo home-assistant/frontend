@@ -1738,6 +1738,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/timegrid@npm:5.9.0":
+  version: 5.9.0
+  resolution: "@fullcalendar/timegrid@npm:5.9.0"
+  dependencies:
+    "@fullcalendar/common": ~5.9.0
+    "@fullcalendar/daygrid": ~5.9.0
+    tslib: ^2.1.0
+  checksum: dedef1e1147cd17aa277b159c806e0f927715d67c513d940bec61cb97bfdf97c71b43c03166d8442e9683e2d7d6f03d81619a694de84e04e5995b9e8ef3585b9
+  languageName: node
+  linkType: hard
+
 "@gfx/zopfli@npm:^1.0.9":
   version: 1.0.11
   resolution: "@gfx/zopfli@npm:1.0.11"
@@ -9030,6 +9041,7 @@ fsevents@^1.2.7:
     "@fullcalendar/daygrid": 5.9.0
     "@fullcalendar/interaction": 5.9.0
     "@fullcalendar/list": 5.9.0
+    "@fullcalendar/timegrid": 5.9.0
     "@koa/cors": ^3.1.0
     "@lit-labs/motion": ^1.0.2
     "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.7.0-pre.2#./.yarn/patches/@lit-labs/virtualizer/event-target-shim.patch"

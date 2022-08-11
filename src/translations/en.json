@@ -1538,7 +1538,8 @@
             "input_button": "Button",
             "input_datetime": "Date and/or time",
             "counter": "Counter",
-            "timer": "Timer"
+            "timer": "Timer",
+            "schedule": "Schedule"
           },
           "picker": {
             "headers": {
