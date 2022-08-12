@@ -19,6 +19,7 @@ import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
 import { domainToName } from "../../../data/integration";
+import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyleDialog } from "../../../resources/styles";
@@ -32,6 +33,7 @@ import "./forms/ha-input_datetime-form";
 import "./forms/ha-input_number-form";
 import "./forms/ha-input_select-form";
 import "./forms/ha-input_text-form";
+import "./forms/ha-schedule-form";
 import "./forms/ha-timer-form";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
@@ -44,6 +46,7 @@ const HELPERS = {
   input_select: createInputSelect,
   counter: createCounter,
   timer: createTimer,
+  schedule: createSchedule,
 };
 
 @customElement("dialog-helper-detail")
