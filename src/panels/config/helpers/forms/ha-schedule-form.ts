@@ -55,25 +55,18 @@ class HaScheduleForm extends LitElement {
 
   @state() private _icon!: string;
 
-  // @ts-ignore
   @state() private _monday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _tuesday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _wednesday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _thursday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _friday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _saturday!: ScheduleDay[];
 
-  // @ts-ignore
   @state() private _sunday!: ScheduleDay[];
 
   @state() private calendar?: Calendar;
