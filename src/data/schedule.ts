@@ -26,6 +26,7 @@ export interface Schedule extends ScheduleDays {
 
 export interface ScheduleMutableParams {
   name: string;
+  icon: string;
 }
 
 export const fetchSchedule = (hass: HomeAssistant) =>
