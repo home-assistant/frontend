@@ -16,16 +16,12 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
-import {
-  formatScheduleTime,
-  Schedule,
-  ScheduleDay,
-  weekdays,
-} from "../../../../data/schedule";
+import { Schedule, ScheduleDay, weekdays } from "../../../../data/schedule";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
@@ -249,8 +245,8 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     value.push({
-      from: formatScheduleTime(start),
-      to: formatScheduleTime(end),
+      from: formatTime24h(start),
+      to: formatTime24h(end),
     });
 
     newValue[day] = value;
@@ -274,7 +270,7 @@ class HaScheduleForm extends LitElement {
 
     newValue[day][index] = {
       from: value.from,
-      to: formatScheduleTime(end),
+      to: formatTime24h(end),
     };
 
     fireEvent(this, "value-changed", {
@@ -295,8 +291,8 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     const event = {
-      from: formatScheduleTime(start),
-      to: formatScheduleTime(end),
+      from: formatTime24h(start),
+      to: formatTime24h(end),
     };
 
     if (newDay === day) {
