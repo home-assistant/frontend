@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import { HomeAssistant } from "../types";
 
 export const weekdays = [
@@ -58,3 +59,16 @@ export const deleteSchedule = (hass: HomeAssistant, id: string) =>
 
 export const getScheduleTime = (date: Date): string =>
   `${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
+
+// 21:15
+export const formatScheduleTime = (dateObj: Date) =>
+  formatScheduleTimeMem().format(dateObj);
+
+const formatScheduleTimeMem = memoizeOne(
+  () =>
+    new Intl.DateTimeFormat(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: false,
+    })
+);

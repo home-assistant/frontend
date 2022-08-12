@@ -21,7 +21,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
 import {
-  getScheduleTime,
+  formatScheduleTime,
   Schedule,
   ScheduleDay,
   weekdays,
@@ -249,8 +249,8 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     value.push({
-      from: getScheduleTime(start),
-      to: getScheduleTime(end),
+      from: formatScheduleTime(start),
+      to: formatScheduleTime(end),
     });
 
     newValue[day] = value;
@@ -274,7 +274,7 @@ class HaScheduleForm extends LitElement {
 
     newValue[day][index] = {
       from: value.from,
-      to: getScheduleTime(end),
+      to: formatScheduleTime(end),
     };
 
     fireEvent(this, "value-changed", {
@@ -295,8 +295,8 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     const event = {
-      from: getScheduleTime(start),
-      to: getScheduleTime(end),
+      from: formatScheduleTime(start),
+      to: formatScheduleTime(end),
     };
 
     if (newDay === day) {
