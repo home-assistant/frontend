@@ -41,6 +41,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   allDaySlot: false,
   height: "parent",
   locales: allLocales,
+  firstDay: 1,
   dayHeaderFormat: { weekday: "short", month: undefined, day: undefined },
   slotLabelFormat: { hour: "numeric", minute: undefined, meridiem: "narrow" },
 };
@@ -189,7 +190,13 @@ class HaScheduleForm extends LitElement {
     );
 
     this.calendar!.render();
-    this.updateComplete.then(() => this.calendar!.updateSize());
+
+    // Update size after fully rendered to avoid a bad render in the more info
+    this.updateComplete.then(() =>
+      window.setTimeout(() => {
+        this.calendar!.updateSize();
+      }, 500)
+    );
   }
 
   private get _events() {
