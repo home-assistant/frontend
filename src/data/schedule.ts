@@ -8,24 +8,19 @@ export const weekdays = [
   "thursday",
   "friday",
   "saturday",
-];
+] as const;
 
 export interface ScheduleDay {
   from: string;
   to: string;
 }
 
-export interface Schedule {
+type ScheduleDays = { [K in typeof weekdays[number]]?: ScheduleDay[] };
+
+export interface Schedule extends ScheduleDays {
   id: string;
   name: string;
   icon?: string;
-  monday?: ScheduleDay[];
-  tuesday?: ScheduleDay[];
-  wednesday?: ScheduleDay[];
-  thursday?: ScheduleDay[];
-  friday?: ScheduleDay[];
-  saturday?: ScheduleDay[];
-  sunday?: ScheduleDay[];
 }
 
 export interface ScheduleMutableParams {
