@@ -201,6 +201,7 @@
                     "time": "Amser"
                 },
                 "input_number": {
+                    "initial": "Gwerth cychwynnol",
                     "step": "Maint y cam"
                 },
                 "input_text": {

@@ -920,6 +920,7 @@
                 },
                 "input_number": {
                     "box": "Vnosno polje",
+                    "initial": "Začetna vrednost",
                     "max": "Najvišja vrednost",
                     "min": "Najmanjša vrednost",
                     "mode": "Način prikaza",

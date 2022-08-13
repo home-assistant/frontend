@@ -824,6 +824,7 @@
                 },
                 "input_number": {
                     "box": "Innsláttarreitur",
+                    "initial": "Upphafsgildi",
                     "max": "Hámarksgildi",
                     "min": "Lágmarksgildi",
                     "mode": "Birtingarmáti",

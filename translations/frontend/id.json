@@ -1108,6 +1108,7 @@
                 },
                 "input_number": {
                     "box": "Bidang masukan",
+                    "initial": "Nilai awal",
                     "max": "Nilai maksimum",
                     "min": "Nilai minimum",
                     "mode": "Mode tampilan",

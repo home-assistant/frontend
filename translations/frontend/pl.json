@@ -1105,6 +1105,7 @@
                 },
                 "input_datetime": {
                     "date": "Data",
+                    "initial": "Wartość początkowa",
                     "datetime": "Data i czas",
                     "mode": "Co chcesz wprowadzić?",
                     "time": "Czas"

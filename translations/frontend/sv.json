@@ -1111,6 +1111,7 @@
                 },
                 "input_number": {
                     "box": "Inmatningsfält",
+                    "initial": "Initialt värde",
                     "max": "Maximalt värde",
                     "min": "Minsta värde",
                     "mode": "Visningsläge",

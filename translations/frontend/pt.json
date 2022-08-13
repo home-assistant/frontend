@@ -1101,6 +1101,7 @@
                 },
                 "input_number": {
                     "box": "Campo de entrada",
+                    "initial": "Valor inicial",
                     "max": "Valor máximo",
                     "min": "Valor mínimo",
                     "mode": "Modo de introdução",

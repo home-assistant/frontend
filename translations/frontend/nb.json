@@ -1115,6 +1115,7 @@
                 },
                 "input_number": {
                     "box": "Inndatafelt",
+                    "initial": "Opprinnelig verdi",
                     "max": "Maksimumsverdi",
                     "min": "Minimumsverdi",
                     "mode": "Visningsmodus",

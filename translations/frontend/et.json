@@ -1115,6 +1115,7 @@
                 },
                 "input_number": {
                     "box": "Sisestusväli",
+                    "initial": "Algne väärtus",
                     "max": "Maksimaalne väärtus",
                     "min": "Minimaalne väärtus",
                     "mode": "Kuvarežiim",
