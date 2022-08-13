@@ -916,6 +916,7 @@
           "pattern": "Regex pattern for client-side validation"
         },
         "input_number": {
+          "initial": "Initial value",
           "min": "Minimum value",
           "max": "Maximum value",
           "mode": "Display mode",
