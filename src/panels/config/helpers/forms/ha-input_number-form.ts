@@ -122,7 +122,7 @@ class HaInputNumberForm extends LitElement {
           type="number"
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.counter.initial"
+            "ui.dialogs.helper_settings.input_number.initial"
           )}
         ></ha-textfield>
         ${this.hass.userData?.showAdvanced
