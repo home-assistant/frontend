@@ -1111,7 +1111,6 @@
                 },
                 "input_number": {
                     "box": "Giriş alanı",
-                    "initial": "Başlangıç değeri",
                     "max": "Maksimum değer",
                     "min": "Minimum değer",
                     "mode": "Görüntü modu",

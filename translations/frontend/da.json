@@ -1108,7 +1108,6 @@
                 },
                 "input_number": {
                     "box": "Inputfelt",
-                    "initial": "Startværdi",
                     "max": "Maksimumsværdi",
                     "min": "Minimumsværdi",
                     "mode": "Visningstilstand",

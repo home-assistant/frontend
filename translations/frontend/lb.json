@@ -840,7 +840,6 @@
                 },
                 "input_number": {
                     "box": "Angab Feld",
-                    "initial": "Initial Wäert",
                     "max": "Maximale Wäert",
                     "min": "Minimale Wäert",
                     "mode": "Affichage Modus",

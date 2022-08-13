@@ -1115,7 +1115,6 @@
                 },
                 "input_number": {
                     "box": "Camp d'entrada",
-                    "initial": "Valor inicial",
                     "max": "Valor màxim",
                     "min": "Valor mínim",
                     "mode": "Mode de visualització",

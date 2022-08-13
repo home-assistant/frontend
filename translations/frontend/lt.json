@@ -663,7 +663,6 @@
                     "step": "Žingsnio dydis"
                 },
                 "input_number": {
-                    "initial": "Pradinė reikšmė",
                     "step": "Žingsnio dydis",
                     "unit_of_measurement": "Matavimo vienetai"
                 },

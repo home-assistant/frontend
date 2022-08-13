@@ -738,7 +738,6 @@
                 },
                 "input_number": {
                     "box": "Câmpul de intrare",
-                    "initial": "Valoare inițială",
                     "max": "Valoare maximă",
                     "min": "Valoare minimă",
                     "mode": "Mod de afișare",

@@ -1106,7 +1106,6 @@
                 },
                 "input_number": {
                     "box": "Syöttökenttä",
-                    "initial": "Asetusarvo",
                     "max": "Suurin arvo",
                     "min": "Vähimmäisarvo",
                     "mode": "Näyttötila",

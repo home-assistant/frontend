@@ -1115,7 +1115,6 @@
                 },
                 "input_number": {
                     "box": "Input field",
-                    "initial": "Initial value",
                     "max": "Maximum value",
                     "min": "Minimum value",
                     "mode": "Display mode",

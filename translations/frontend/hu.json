@@ -1111,7 +1111,6 @@
                 },
                 "input_number": {
                     "box": "Beviteli mező",
-                    "initial": "Kezdeti érték",
                     "max": "Maximális érték",
                     "min": "Minimális érték",
                     "mode": "Megjelenítési mód",

@@ -1111,7 +1111,6 @@
                 },
                 "input_number": {
                     "box": "Invoerveld",
-                    "initial": "Beginwaarde",
                     "max": "Maximale waarde",
                     "min": "Minimale waarde",
                     "mode": "Weergavemodus",

@@ -1111,7 +1111,6 @@
                 },
                 "input_number": {
                     "box": "Champ de saisie",
-                    "initial": "Valeur initiale",
                     "max": "Valeur maximum",
                     "min": "Valeur minimum",
                     "mode": "Mode d'affichage",

@@ -1111,7 +1111,6 @@
                 },
                 "input_number": {
                     "box": "Campo di immissione",
-                    "initial": "Valore iniziale",
                     "max": "Valore massimo",
                     "min": "Valore minimo",
                     "mode": "Modalità di visualizzazione",
