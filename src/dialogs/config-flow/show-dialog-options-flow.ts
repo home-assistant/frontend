@@ -93,9 +93,13 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepFieldHelper(hass, step, field) {
-        return hass.localize(
-          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`
+        const description = hass.localize(
+          `component.${configEntry.domain}.options.step.${step.step_id}.data_description.${field.name}`,
+          step.description_placeholders
         );
+        return description
+          ? html` <ha-markdown breaks .content=${description}></ha-markdown> `
+          : "";
       },
 
       renderShowFormStepFieldError(hass, step, error) {

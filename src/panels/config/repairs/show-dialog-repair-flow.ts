@@ -100,11 +100,15 @@ export const showRepairsFlowDialog = (
       },
 
       renderShowFormStepFieldHelper(hass, step, field) {
-        return hass.localize(
+        const description = hass.localize(
           `component.${issue.domain}.issues.${
             issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.data_description.${field.name}`
+          }.fix_flow.step.${step.step_id}.data_description.${field.name}`,
+          step.description_placeholders
         );
+        return description
+          ? html` <ha-markdown breaks .content=${description}></ha-markdown> `
+          : "";
       },
 
       renderShowFormStepFieldError(hass, step, error) {
