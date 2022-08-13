@@ -107,7 +107,7 @@ export const showRepairsFlowDialog = (
           step.description_placeholders
         );
         return description
-          ? html` <ha-markdown breaks .content=${description}></ha-markdown> `
+          ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
           : "";
       },
 
