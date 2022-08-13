@@ -26,6 +26,8 @@ class HaInputNumberForm extends LitElement {
 
   @state() private _min?: number;
 
+  @state() private _initial?: number;
+
   @state() private _mode?: string;
 
   @state() private _step?: number;
@@ -42,6 +44,7 @@ class HaInputNumberForm extends LitElement {
       this._min = item.min ?? 0;
       this._mode = item.mode || "slider";
       this._step = item.step ?? 1;
+      this._initial = item.initial ?? 0;
       this._unit_of_measurement = item.unit_of_measurement;
     } else {
       this._item = {
@@ -54,6 +57,7 @@ class HaInputNumberForm extends LitElement {
       this._min = 0;
       this._mode = "slider";
       this._step = 1;
+      this._initial = 0;
     }
   }
 
@@ -110,6 +114,15 @@ class HaInputNumberForm extends LitElement {
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.input_number.max"
+          )}
+        ></ha-textfield>
+        <ha-textfield
+          .value=${this._initial}
+          .configValue=${"initial"}
+          type="number"
+          @input=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.counter.initial"
           )}
         ></ha-textfield>
         ${this.hass.userData?.showAdvanced
