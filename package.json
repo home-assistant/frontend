@@ -107,7 +107,7 @@
     "deep-freeze": "^0.0.1",
     "fuse.js": "^6.0.0",
     "google-timezones-json": "^1.0.2",
-    "hls.js": "^1.1.5",
+    "hls.js": "^1.2.0",
     "home-assistant-js-websocket": "^7.1.0",
     "idb-keyval": "^5.1.3",
     "intl-messageformat": "^9.9.1",
