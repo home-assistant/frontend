@@ -122,9 +122,8 @@ export interface EntitySelector {
 }
 
 export interface FileSelector {
-  // eslint-disable-next-line @typescript-eslint/ban-types
   file: {
-    accept?: string;
+    accept: string;
   };
 }
 
