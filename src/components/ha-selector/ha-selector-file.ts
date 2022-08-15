@@ -20,7 +20,7 @@ export class HaFileSelector extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean, reflect: true }) public disabled = false;
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
 
@@ -35,6 +35,7 @@ export class HaFileSelector extends LitElement {
         .accept=${this.selector.file.accept}
         .icon=${mdiFile}
         .label=${this.label}
+        .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
         .uploading=${this._busy}
