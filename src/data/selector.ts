@@ -16,6 +16,7 @@ export type Selector =
   | DeviceSelector
   | DurationSelector
   | EntitySelector
+  | FileSelector
   | IconSelector
   | LocationSelector
   | MediaSelector
@@ -117,6 +118,13 @@ export interface EntitySelector {
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
+  };
+}
+
+export interface FileSelector {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  file: {
+    accept?: string;
   };
 }
 

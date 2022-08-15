@@ -50,6 +50,7 @@ export const computeInitialHaFormData = (
         "text" in selector ||
         "addon" in selector ||
         "attribute" in selector ||
+        "file" in selector ||
         "icon" in selector ||
         "theme" in selector
       ) {
