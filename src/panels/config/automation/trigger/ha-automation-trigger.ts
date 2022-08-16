@@ -1,12 +1,14 @@
+import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import { Trigger } from "../../../../data/automation";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
+import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 import { HaDeviceTrigger } from "./types/ha-automation-trigger-device";
 
 @customElement("ha-automation-trigger")
@@ -14,6 +16,8 @@ export default class HaAutomationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public triggers!: Trigger[];
+
+  private _focusLastTriggerOnChange = false;
 
   protected render() {
     return html`
@@ -28,16 +32,30 @@ export default class HaAutomationTrigger extends LitElement {
           ></ha-automation-trigger-row>
         `
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addTrigger}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.add"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
+      <mwc-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.add"
+        )}
+        @click=${this._addTrigger}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </mwc-button>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (changedProps.has("triggers") && this._focusLastTriggerOnChange) {
+      this._focusLastTriggerOnChange = false;
+
+      const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
+        "ha-automation-trigger-row:last-of-type"
+      )!;
+      row.toggleExpanded();
+      row.focus();
+    }
   }
 
   private _addTrigger() {
@@ -45,7 +63,7 @@ export default class HaAutomationTrigger extends LitElement {
       platform: "device",
       ...HaDeviceTrigger.defaultConfig,
     });
-
+    this._focusLastTriggerOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
   }
 
@@ -74,14 +92,12 @@ export default class HaAutomationTrigger extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-automation-trigger-row,
-      ha-card {
+      ha-automation-trigger-row {
         display: block;
-        margin-top: 16px;
+        margin-bottom: 16px;
       }
-      .add-card mwc-button {
-        display: block;
-        text-align: center;
+      ha-svg-icon {
+        height: 20px;
       }
     `;
   }

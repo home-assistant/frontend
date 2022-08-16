@@ -1,12 +1,14 @@
+import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import { Condition } from "../../../../data/automation";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-row";
+import type HaAutomationConditionRow from "./ha-automation-condition-row";
 import { HaDeviceCondition } from "./types/ha-automation-condition-device";
 
 @customElement("ha-automation-condition")
@@ -15,10 +17,13 @@ export default class HaAutomationCondition extends LitElement {
 
   @property() public conditions!: Condition[];
 
+  private _focusLastConditionOnChange = false;
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
       return;
     }
+
     let updatedConditions: Condition[] | undefined;
     if (!Array.isArray(this.conditions)) {
       updatedConditions = [this.conditions];
@@ -38,6 +43,13 @@ export default class HaAutomationCondition extends LitElement {
       fireEvent(this, "value-changed", {
         value: updatedConditions,
       });
+    } else if (this._focusLastConditionOnChange) {
+      this._focusLastConditionOnChange = false;
+      const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
+        "ha-automation-condition-row:last-of-type"
+      )!;
+      row.toggleExpanded();
+      row.focus();
     }
   }
 
@@ -57,15 +69,15 @@ export default class HaAutomationCondition extends LitElement {
           ></ha-automation-condition-row>
         `
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addCondition}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.add"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
+      <mwc-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.add"
+        )}
+        @click=${this._addCondition}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </mwc-button>
     `;
   }
 
@@ -74,7 +86,7 @@ export default class HaAutomationCondition extends LitElement {
       condition: "device",
       ...HaDeviceCondition.defaultConfig,
     });
-
+    this._focusLastConditionOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   }
 
@@ -103,14 +115,12 @@ export default class HaAutomationCondition extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-automation-condition-row,
-      ha-card {
+      ha-automation-condition-row {
         display: block;
-        margin-top: 16px;
+        margin-bottom: 16px;
       }
-      .add-card mwc-button {
-        display: block;
-        text-align: center;
+      ha-svg-icon {
+        height: 20px;
       }
     `;
   }

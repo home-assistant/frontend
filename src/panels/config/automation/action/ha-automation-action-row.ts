@@ -1,8 +1,15 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiChevronDown,
+  mdiChevronUp,
+  mdiDotsVertical,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -18,6 +25,7 @@ import type { HaSelect } from "../../../../components/ha-select";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../../data/config";
 import { Action, getActionType } from "../../../../data/script";
+import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
   showAlertDialog,
@@ -122,6 +130,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _expanded = false;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _processedTypes = memoizeOne(
@@ -172,7 +182,15 @@ export default class HaAutomationActionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <div class="card-menu">
+        <div class="card-summary">
+          <ha-icon-button
+            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+            @click=${this.toggleExpanded}
+          ></ha-icon-button>
+          <div class="name" @click=${this.toggleExpanded}>
+            ${describeAction(this.hass, this.action)}
+          </div>
+
           ${this.index !== 0
             ? html`
                 <ha-icon-button
@@ -237,9 +255,11 @@ export default class HaAutomationActionRow extends LitElement {
           </ha-button-menu>
         </div>
         <div
-          class="card-content ${this.action.enabled === false
-            ? "disabled"
-            : ""}"
+          class=${classMap({
+            "card-content": true,
+            disabled: this.action.enabled === false,
+            expanded: this._expanded,
+          })}
         >
           ${this._warnings
             ? html`<ha-alert
@@ -441,10 +461,30 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
+  public get expanded() {
+    return this._expanded;
+  }
+
+  public toggleExpanded() {
+    this._expanded = !this._expanded;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        .card-summary {
+          display: flex;
+          align-items: center;
+        }
+        .card-summary .name {
+          flex: 1;
+          cursor: pointer;
+        }
+        .card-summary ha-button-menu {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -452,21 +492,23 @@ export default class HaAutomationActionRow extends LitElement {
         .card-content {
           padding-top: 16px;
           margin-top: 0;
+          display: none;
         }
+        .card-content.expanded {
+          display: block;
+        }
+        .card-summary ha-button-menu,
+        .card-summary ha-icon-button {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
+
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
         }
-        .card-menu {
-          float: var(--float-end, right);
-          z-index: 3;
-          margin: 4px;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          display: flex;
-          align-items: center;
-        }
+
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }

@@ -1,12 +1,14 @@
+import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import { Action } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
+import type HaAutomationActionRow from "./ha-automation-action-row";
 import { HaDeviceAction } from "./types/ha-automation-action-device_id";
 
 @customElement("ha-automation-action")
@@ -16,6 +18,8 @@ export default class HaAutomationAction extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property() public actions!: Action[];
+
+  private _focusLastActionOnChange = false;
 
   protected render() {
     return html`
@@ -33,23 +37,37 @@ export default class HaAutomationAction extends LitElement {
           ></ha-automation-action-row>
         `
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addAction}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.add"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
+      <mwc-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.add"
+        )}
+        @click=${this._addAction}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </mwc-button>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    if (changedProps.has("actions") && this._focusLastActionOnChange) {
+      this._focusLastActionOnChange = false;
+
+      const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
+        "ha-automation-action-row:last-of-type"
+      )!;
+      row.toggleExpanded();
+      row.focus();
+    }
   }
 
   private _addAction() {
     const actions = this.actions.concat({
       ...HaDeviceAction.defaultConfig,
     });
-
+    this._focusLastActionOnChange = true;
     fireEvent(this, "value-changed", { value: actions });
   }
 
@@ -90,14 +108,12 @@ export default class HaAutomationAction extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-automation-action-row,
-      ha-card {
+      ha-automation-action-row {
         display: block;
-        margin-top: 16px;
+        margin-bottom: 16px;
       }
-      .add-card mwc-button {
-        display: block;
-        text-align: center;
+      ha-svg-icon {
+        height: 20px;
       }
     `;
   }

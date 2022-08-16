@@ -1848,10 +1848,7 @@
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to Clipboard",
             "triggers": {
-              "name": "Trigger",
               "header": "Triggers",
-              "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
-              "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
               "id": "Trigger ID",
@@ -1965,10 +1962,7 @@
               }
             },
             "conditions": {
-              "name": "Condition",
               "header": "Conditions",
-              "introduction": "Conditions are optional and will prevent the automation from running unless all conditions are satisfied.",
-              "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "test": "Test",
               "invalid_condition": "Invalid condition configuration",
@@ -2054,10 +2048,7 @@
               }
             },
             "actions": {
-              "name": "Action",
               "header": "Actions",
-              "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
-              "learn_more": "Learn more about actions",
               "add": "Add action",
               "invalid_action": "Invalid action",
               "run_action": "Run action",

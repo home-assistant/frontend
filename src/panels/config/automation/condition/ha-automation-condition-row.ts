@@ -1,8 +1,9 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiChevronDown, mdiChevronUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
@@ -20,6 +21,7 @@ import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { describeCondition } from "../../../../data/automation_i18n";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -60,6 +62,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @state() private _expanded = false;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected render() {
@@ -75,7 +79,14 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <div class="card-menu">
+        <div class="card-summary">
+          <ha-icon-button
+            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+            @click=${this.toggleExpanded}
+          ></ha-icon-button>
+          <div class="name" @click=${this.toggleExpanded}>
+            ${describeCondition(this.condition)}
+          </div>
           <ha-progress-button @click=${this._testCondition}>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.test"
@@ -119,9 +130,11 @@ export default class HaAutomationConditionRow extends LitElement {
           </ha-button-menu>
         </div>
         <div
-          class="card-content ${this.condition.enabled === false
-            ? "disabled"
-            : ""}"
+          class=${classMap({
+            "card-content": true,
+            disabled: this.condition.enabled === false,
+            expanded: this._expanded,
+          })}
         >
           ${this._warnings
             ? html`<ha-alert
@@ -269,10 +282,30 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  public get expanded() {
+    return this._expanded;
+  }
+
+  public toggleExpanded() {
+    this._expanded = !this._expanded;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        .card-summary {
+          display: flex;
+          align-items: center;
+        }
+        .card-summary .name {
+          flex: 1;
+          cursor: pointer;
+        }
+        .card-summary ha-button-menu,
+        .card-summary ha-progress-button {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
@@ -280,20 +313,16 @@ export default class HaAutomationConditionRow extends LitElement {
         .card-content {
           padding-top: 16px;
           margin-top: 0;
+          display: none;
+        }
+        .card-content.expanded {
+          display: block;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
-        }
-        .card-menu {
-          float: var(--float-end, right);
-          z-index: 3;
-          margin: 4px;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          display: flex;
-          align-items: center;
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
