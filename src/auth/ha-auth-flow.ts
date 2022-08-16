@@ -359,7 +359,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
     this._submitting = true;
 
-    const postData = { ...this._stepData, client_id: this.clientId };
+    const postData = {
+      ...this._stepData,
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
+    };
 
     try {
       const response = await fetch(`/auth/login_flow/${this._step.flow_id}`, {
