@@ -123,7 +123,7 @@ export const describeAction = <T extends ActionType>(
         ? computeStateName(sceneStateObj)
         : "scene" in config
         ? config.scene
-        : config.target?.entity_id || config.entity_id
+        : config.target?.entity_id || config.entity_id || ""
     }`;
   }
 
