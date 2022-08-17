@@ -20,11 +20,11 @@ class HaDurationInput extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean }) public enableMillisecond?: boolean;
+  @property({ type: Boolean }) public enableMillisecond = false;
 
-  @property({ type: Boolean }) public enableDay?: boolean;
+  @property({ type: Boolean }) public enableDay = false;
 
   @property({ type: Boolean }) public disabled = false;
 
