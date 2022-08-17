@@ -331,6 +331,10 @@
       "copied_clipboard": "Copied to clipboard"
     },
     "components": {
+      "expanding": {
+        "expand": "[%key:ui::components::target-picker::expand%]",
+        "collapse": "Collapse"
+      },
       "selectors": {
         "media": {
           "pick_media_player": "Select media player",

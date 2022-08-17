@@ -1,6 +1,6 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiChevronDown, mdiChevronUp, mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -11,6 +11,7 @@ import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-expand";
 import { Condition, testCondition } from "../../../../data/automation";
 import {
   showAlertDialog,
@@ -80,10 +81,11 @@ export default class HaAutomationConditionRow extends LitElement {
             </div>`
           : ""}
         <div class="card-summary">
-          <ha-icon-button
-            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+          <ha-icon-button-expand
+            .hass=${this.hass}
+            .expanded=${this._expanded}
             @click=${this.toggleExpanded}
-          ></ha-icon-button>
+          ></ha-icon-button-expand>
           <div class="name" @click=${this.toggleExpanded}>
             ${describeCondition(this.condition)}
           </div>

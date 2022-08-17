@@ -1,6 +1,6 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiChevronDown, mdiChevronUp, mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -16,6 +16,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-expand";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
@@ -140,10 +141,11 @@ export default class HaAutomationTriggerRow extends LitElement {
           : ""}
 
         <div class="card-summary">
-          <ha-icon-button
-            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+          <ha-icon-button-expand
+            .hass=${this.hass}
+            .expanded=${this._expanded}
             @click=${this.toggleExpanded}
-          ></ha-icon-button>
+          ></ha-icon-button-expand>
           <div class="name" @click=${this.toggleExpanded}>
             ${describeTrigger(this.trigger)}
           </div>

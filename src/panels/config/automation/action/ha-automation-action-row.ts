@@ -3,8 +3,6 @@ import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowDown,
   mdiArrowUp,
-  mdiChevronDown,
-  mdiChevronUp,
   mdiDotsVertical,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
@@ -20,6 +18,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-expand";
 import "../../../../components/ha-select";
 import type { HaSelect } from "../../../../components/ha-select";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -183,10 +182,11 @@ export default class HaAutomationActionRow extends LitElement {
             </div>`
           : ""}
         <div class="card-summary">
-          <ha-icon-button
-            .path=${this._expanded ? mdiChevronUp : mdiChevronDown}
+          <ha-icon-button-expand
+            .hass=${this.hass}
+            .expanded=${this._expanded}
             @click=${this.toggleExpanded}
-          ></ha-icon-button>
+          ></ha-icon-button-expand>
           <div class="name" @click=${this.toggleExpanded}>
             ${describeAction(this.hass, this.action)}
           </div>

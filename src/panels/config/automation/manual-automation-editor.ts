@@ -361,6 +361,9 @@ export class HaManualAutomationEditor extends LitElement {
           font-weight: 400;
           flex: 1;
         }
+        .header a {
+          color: var(--secondary-text-color);
+        }
       `,
     ];
   }
