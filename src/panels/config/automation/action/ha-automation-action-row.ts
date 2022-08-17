@@ -4,19 +4,14 @@ import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stringCompare } from "../../../../common/string/compare";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-select";
-import type { HaSelect } from "../../../../components/ha-select";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../../data/config";
 import { Action, getActionType } from "../../../../data/script";
@@ -43,23 +38,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-const OPTIONS = [
-  "condition",
-  "delay",
-  "event",
-  "play_media",
-  "activate_scene",
-  "service",
-  "wait_template",
-  "wait_for_trigger",
-  "repeat",
-  "choose",
-  "if",
-  "device_id",
-  "stop",
-  "parallel",
-];
+import { ACTION_TYPES } from "../../../../data/action";
 
 const getType = (action: Action | undefined) => {
   if (!action) {
@@ -71,7 +50,7 @@ const getType = (action: Action | undefined) => {
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition";
   }
-  return OPTIONS.find((option) => option in action);
+  return ACTION_TYPES.find((option) => option in action);
 };
 
 declare global {
@@ -128,19 +107,6 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
-
-  private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      OPTIONS.map(
-        (action) =>
-          [
-            action,
-            localize(
-              `ui.panel.config.automation.editor.actions.type.${action}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
-  );
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
@@ -301,21 +267,6 @@ export default class HaAutomationActionRow extends LitElement {
                   ></ha-yaml-editor>
                 `
               : html`
-                  <ha-select
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.type_select"
-                    )}
-                    .value=${getType(this.action)}
-                    naturalMenuWidth
-                    @selected=${this._typeChanged}
-                  >
-                    ${this._processedTypes(this.hass.localize).map(
-                      ([opt, label]) => html`
-                        <mwc-list-item .value=${opt}>${label}</mwc-list-item>
-                      `
-                    )}
-                  </ha-select>
-
                   <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                     ${dynamicElement(`ha-automation-action-${type}`, {
                       hass: this.hass,
@@ -426,31 +377,6 @@ export default class HaAutomationActionRow extends LitElement {
     });
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as HaSelect).value;
-
-    if (!type) {
-      return;
-    }
-
-    this._uiModeAvailable = OPTIONS.includes(type);
-    if (!this._uiModeAvailable && !this._yamlMode) {
-      this._yamlMode = false;
-    }
-
-    if (type !== getType(this.action)) {
-      const elClass = customElements.get(
-        `ha-automation-action-${type}`
-      ) as CustomElementConstructor & { defaultConfig: Action };
-
-      fireEvent(this, "value-changed", {
-        value: {
-          ...elClass.defaultConfig,
-        },
-      });
-    }
-  }
-
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
@@ -464,7 +390,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  public toggleExpanded() {
+  public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
@@ -505,9 +431,6 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
-        }
-        ha-select {
-          margin-bottom: 24px;
         }
       `,
     ];

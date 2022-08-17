@@ -1,15 +1,35 @@
 import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
+import type { ActionDetail } from "@material/mwc-list";
+import memoizeOne from "memoize-one";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-button-menu";
 import { Action } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
 import type HaAutomationActionRow from "./ha-automation-action-row";
-import { HaDeviceAction } from "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-activate_scene";
+import "./types/ha-automation-action-choose";
+import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-parallel";
+import "./types/ha-automation-action-play_media";
+import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-stop";
+import "./types/ha-automation-action-wait_for_trigger";
+import "./types/ha-automation-action-wait_template";
+import { ACTION_TYPES } from "../../../../data/action";
+import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaSelect } from "../../../../components/ha-select";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -37,15 +57,22 @@ export default class HaAutomationAction extends LitElement {
           ></ha-automation-action-row>
         `
       )}
-      <mwc-button
-        outlined
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.add"
+      <ha-button-menu fixed @action=${this._addAction}>
+        <mwc-button
+          slot="trigger"
+          outlined
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.add"
+          )}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </mwc-button>
+        ${this._processedTypes(this.hass.localize).map(
+          ([opt, label]) => html`
+            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          `
         )}
-        @click=${this._addAction}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </mwc-button>
+      </ha-button-menu>
     `;
   }
 
@@ -58,14 +85,21 @@ export default class HaAutomationAction extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
         "ha-automation-action-row:last-of-type"
       )!;
-      row.toggleExpanded();
+      row.expand();
       row.focus();
     }
   }
 
-  private _addAction() {
+  private _addAction(ev: CustomEvent<ActionDetail>) {
+    const action = (ev.currentTarget as HaSelect).items[ev.detail.index]
+      .value as typeof ACTION_TYPES[number];
+
+    const elClass = customElements.get(
+      `ha-automation-action-${action}`
+    ) as CustomElementConstructor & { defaultConfig: Action };
+
     const actions = this.actions.concat({
-      ...HaDeviceAction.defaultConfig,
+      ...elClass.defaultConfig,
     });
     this._focusLastActionOnChange = true;
     fireEvent(this, "value-changed", { value: actions });
@@ -105,6 +139,19 @@ export default class HaAutomationAction extends LitElement {
       value: this.actions.concat(deepClone(this.actions[index])),
     });
   }
+
+  private _processedTypes = memoizeOne(
+    (localize: LocalizeFunc): [string, string][] =>
+      ACTION_TYPES.map(
+        (action) =>
+          [
+            action,
+            localize(
+              `ui.panel.config.automation.editor.actions.type.${action}.label`
+            ),
+          ] as [string, string]
+      ).sort((a, b) => stringCompare(a[1], b[1]))
+  );
 
   static get styles(): CSSResultGroup {
     return css`

@@ -1,0 +1,16 @@
+export const ACTION_TYPES = [
+  "condition",
+  "delay",
+  "event",
+  "play_media",
+  "activate_scene",
+  "service",
+  "wait_template",
+  "wait_for_trigger",
+  "repeat",
+  "choose",
+  "if",
+  "device_id",
+  "stop",
+  "parallel",
+];

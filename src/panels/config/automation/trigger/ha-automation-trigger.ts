@@ -1,15 +1,36 @@
 import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import memoizeOne from "memoize-one";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { ActionDetail } from "@material/mwc-list";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-button-menu";
 import { Trigger } from "../../../../data/automation";
+import { TRIGGER_TYPES } from "../../../../data/trigger";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import { HaDeviceTrigger } from "./types/ha-automation-trigger-device";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { stringCompare } from "../../../../common/string/compare";
+import type { HaSelect } from "../../../../components/ha-select";
+import "./types/ha-automation-trigger-calendar";
+import "./types/ha-automation-trigger-device";
+import "./types/ha-automation-trigger-event";
+import "./types/ha-automation-trigger-geo_location";
+import "./types/ha-automation-trigger-homeassistant";
+import "./types/ha-automation-trigger-mqtt";
+import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-state";
+import "./types/ha-automation-trigger-sun";
+import "./types/ha-automation-trigger-tag";
+import "./types/ha-automation-trigger-template";
+import "./types/ha-automation-trigger-time";
+import "./types/ha-automation-trigger-time_pattern";
+import "./types/ha-automation-trigger-webhook";
+import "./types/ha-automation-trigger-zone";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
@@ -32,15 +53,22 @@ export default class HaAutomationTrigger extends LitElement {
           ></ha-automation-trigger-row>
         `
       )}
-      <mwc-button
-        outlined
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.add"
+      <ha-button-menu @action=${this._addTrigger}>
+        <mwc-button
+          slot="trigger"
+          outlined
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.add"
+          )}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </mwc-button>
+        ${this._processedTypes(this.hass.localize).map(
+          ([opt, label]) => html`
+            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          `
         )}
-        @click=${this._addTrigger}
-      >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-      </mwc-button>
+      </ha-button-menu>
     `;
   }
 
@@ -53,15 +81,24 @@ export default class HaAutomationTrigger extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
         "ha-automation-trigger-row:last-of-type"
       )!;
-      row.toggleExpanded();
+      row.expand();
       row.focus();
     }
   }
 
-  private _addTrigger() {
+  private _addTrigger(ev: CustomEvent<ActionDetail>) {
+    const platform = (ev.currentTarget as HaSelect).items[ev.detail.index]
+      .value as Trigger["platform"];
+
+    const elClass = customElements.get(
+      `ha-automation-trigger-${platform}`
+    ) as CustomElementConstructor & {
+      defaultConfig: Omit<Trigger, "platform">;
+    };
+
     const triggers = this.triggers.concat({
-      platform: "device",
-      ...HaDeviceTrigger.defaultConfig,
+      platform: platform as any,
+      ...elClass.defaultConfig,
     });
     this._focusLastTriggerOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
@@ -89,6 +126,19 @@ export default class HaAutomationTrigger extends LitElement {
       value: this.triggers.concat(deepClone(this.triggers[index])),
     });
   }
+
+  private _processedTypes = memoizeOne(
+    (localize: LocalizeFunc): [string, string][] =>
+      TRIGGER_TYPES.map(
+        (action) =>
+          [
+            action,
+            localize(
+              `ui.panel.config.automation.editor.triggers.type.${action}.label`
+            ),
+          ] as [string, string]
+      ).sort((a, b) => stringCompare(a[1], b[1]))
+  );
 
   static get styles(): CSSResultGroup {
     return css`

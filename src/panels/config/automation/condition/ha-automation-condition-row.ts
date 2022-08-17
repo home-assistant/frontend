@@ -290,7 +290,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  public toggleExpanded() {
+  public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
