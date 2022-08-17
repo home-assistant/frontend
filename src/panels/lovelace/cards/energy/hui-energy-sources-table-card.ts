@@ -1,5 +1,7 @@
 // @ts-ignore
 import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -11,6 +13,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { getColorByIndex } from "../../../../common/color/colors";
 import {
   rgb2hex,
   lab2rgb,
@@ -136,7 +139,19 @@ export class HuiEnergySourcesTableCard
 
     return html` <ha-card>
       ${this._config.title
-        ? html`<h1 class="card-header">${this._config.title}</h1>`
+        ? html`<h1 class="card-header">${this._config.title}</h1>
+            <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+            <paper-tooltip animation-delay="0" for="info" position="left">
+              <span>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_sources_table.per_device_cost_info"
+                )}
+                <br /><br />
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_sources_table.extrapolate_cost_info"
+                )}
+              </span>
+            </paper-tooltip>`
         : ""}
       <div class="mdc-data-table">
         <div class="mdc-data-table__table-container">
@@ -488,61 +503,195 @@ export class HuiEnergySourcesTableCard
                     : consumptionColor;
 
                   return html`<tr class="mdc-data-table__row">
-                    <td class="mdc-data-table__cell cell-bullet">
-                      <div
-                        class="bullet"
-                        style=${styleMap({
-                          borderColor: color,
-                          backgroundColor: color + "7F",
-                        })}
-                      ></div>
-                    </td>
-                    <th class="mdc-data-table__cell" scope="row">
-                      ${entity
-                        ? computeStateName(entity)
-                        : flow.stat_energy_from}
-                    </th>
-                    ${compare
-                      ? html`<td
+                      <td class="mdc-data-table__cell cell-bullet">
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            borderColor: color,
+                            backgroundColor: color + "7F",
+                          })}
+                        ></div>
+                      </td>
+                      <th class="mdc-data-table__cell" scope="row">
+                        ${entity
+                          ? computeStateName(entity)
+                          : flow.stat_energy_from}
+                      </th>
+                      ${compare
+                        ? html`<td
+                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                            >
+                              ${formatNumber(compareEnergy, this.hass.locale)}
+                              kWh
+                            </td>
+                            ${showCosts
+                              ? html`<td
+                                  class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                                >
+                                  ${costCompare !== null
+                                    ? formatNumber(
+                                        costCompare,
+                                        this.hass.locale,
+                                        {
+                                          style: "currency",
+                                          currency: this.hass.config.currency!,
+                                        }
+                                      )
+                                    : ""}
+                                </td>`
+                              : ""}`
+                        : ""}
+                      <td
+                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                      >
+                        ${formatNumber(energy, this.hass.locale)} kWh
+                      </td>
+                      ${showCosts
+                        ? html` <td
                             class="mdc-data-table__cell mdc-data-table__cell--numeric"
                           >
-                            ${formatNumber(compareEnergy, this.hass.locale)} kWh
-                          </td>
-                          ${showCosts
-                            ? html`<td
+                            ${cost !== null
+                              ? formatNumber(cost, this.hass.locale, {
+                                  style: "currency",
+                                  currency: this.hass.config.currency!,
+                                })
+                              : ""}
+                          </td>`
+                        : ""}
+                    </tr>
+                    ${this._data!.prefs.device_consumption.filter(
+                      (device) =>
+                        device.entity_parent_source === flow.stat_energy_from
+                    ).map((device) => {
+                      const childEntity =
+                        this.hass.states[device.stat_consumption];
+                      const childEnergy =
+                        calculateStatisticSumGrowth(
+                          this._data!.stats[device.stat_consumption]
+                        ) || 0;
+
+                      // Stat cost is flawed, since it provides cost for the parent meter -> determine partial cost?
+                      const childCost_stat =
+                        flow.stat_cost ||
+                        this._data!.info.cost_sensors[device.stat_consumption];
+                      let childCost = childCost_stat
+                        ? calculateStatisticSumGrowth(
+                            this._data!.stats[childCost_stat]
+                          ) || 0
+                        : null;
+
+                      // Extrapolate/Intrapolate device cost based on parent cost entity (inaccurate)
+                      if (flow.stat_cost && energy > 0 && cost && childCost) {
+                        childCost = (childEnergy / energy) * cost;
+                      }
+
+                      const childCompareEnergy =
+                        (compare &&
+                          calculateStatisticSumGrowth(
+                            this._data!.statsCompare[device.stat_consumption]
+                          )) ||
+                        0;
+
+                      let childCostCompare =
+                        compare && childCost_stat
+                          ? calculateStatisticSumGrowth(
+                              this._data!.statsCompare[childCost_stat]
+                            ) || 0
+                          : null;
+
+                      // Extrapolate/Intrapolate device cost based on parent cost entity (inaccurate)
+                      if (
+                        flow.stat_cost &&
+                        compareEnergy > 0 &&
+                        costCompare &&
+                        childCostCompare
+                      ) {
+                        childCostCompare =
+                          (childCompareEnergy / compareEnergy) * costCompare;
+                      }
+
+                      const childConsumptionColor = getColorByIndex(
+                        this._data!.prefs.device_consumption.indexOf(device)
+                      );
+
+                      const childModifiedColor =
+                        idx > 0
+                          ? this.hass.themes.darkMode
+                            ? labBrighten(
+                                rgb2lab(hex2rgb(childConsumptionColor)),
+                                idx
+                              )
+                            : labDarken(
+                                rgb2lab(hex2rgb(childConsumptionColor)),
+                                idx
+                              )
+                          : undefined;
+                      const childColor = childModifiedColor
+                        ? rgb2hex(lab2rgb(childModifiedColor))
+                        : childConsumptionColor;
+
+                      return html`<tr class="mdc-data-table__row">
+                        <td class="mdc-data-table__cell cell-bullet">
+                          <div
+                            class="puck"
+                            style=${styleMap({
+                              borderColor: childColor,
+                              backgroundColor: childColor + "7F",
+                            })}
+                          ></div>
+                        </td>
+                        <td class="mdc-data-table__cell">
+                          ${childEntity
+                            ? computeStateName(childEntity)
+                            : device.stat_consumption}
+                        </td>
+                        ${compare
+                          ? html`<td
                                 class="mdc-data-table__cell mdc-data-table__cell--numeric"
                               >
-                                ${costCompare !== null
-                                  ? formatNumber(
-                                      costCompare,
-                                      this.hass.locale,
-                                      {
-                                        style: "currency",
-                                        currency: this.hass.config.currency!,
-                                      }
-                                    )
-                                  : ""}
-                              </td>`
-                            : ""}`
-                      : ""}
-                    <td
-                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
-                    >
-                      ${formatNumber(energy, this.hass.locale)} kWh
-                    </td>
-                    ${showCosts
-                      ? html` <td
+                                ${formatNumber(
+                                  childCompareEnergy,
+                                  this.hass.locale
+                                )}
+                                kWh
+                              </td>
+                              ${showCosts
+                                ? html`<td
+                                    class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                                  >
+                                    ${childCostCompare !== null
+                                      ? formatNumber(
+                                          childCostCompare,
+                                          this.hass.locale,
+                                          {
+                                            style: "currency",
+                                            currency:
+                                              this.hass.config.currency!,
+                                          }
+                                        )
+                                      : ""}
+                                  </td>`
+                                : ""}`
+                          : ""}
+                        <td
                           class="mdc-data-table__cell mdc-data-table__cell--numeric"
                         >
-                          ${cost !== null
-                            ? formatNumber(cost, this.hass.locale, {
-                                style: "currency",
-                                currency: this.hass.config.currency!,
-                              })
-                            : ""}
-                        </td>`
-                      : ""}
-                  </tr>`;
+                          ${formatNumber(childEnergy, this.hass.locale)} kWh
+                        </td>
+                        ${showCosts
+                          ? html` <td
+                              class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                            >
+                              ${childCost !== null
+                                ? formatNumber(childCost, this.hass.locale, {
+                                    style: "currency",
+                                    currency: this.hass.config.currency!,
+                                  })
+                                : ""}
+                            </td>`
+                          : ""}
+                      </tr>`;
+                    })}`;
                 })}
                 ${source.flow_to.map((flow, idx) => {
                   const entity = this.hass.states[flow.stat_energy_to];
@@ -937,8 +1086,31 @@ export class HuiEnergySourcesTableCard
         height: 16px;
         width: 32px;
       }
+      .puck {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 4px;
+        margin-right: 0;
+        margin-left: auto;
+        height: 16px;
+        width: 16px;
+      }
       .mdc-data-table__cell--numeric {
         direction: ltr;
+      }
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
       }
     `;
   }

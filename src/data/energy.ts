@@ -344,6 +344,17 @@ const getEnergyData = async (
     }
   }
 
+  // Add individual device consumptions
+  for (const device of prefs.device_consumption) {
+    if (device.entity_parent_source !== null) {
+      statIDs.push(device.stat_consumption);
+      const costStatId = info.cost_sensors[device.stat_consumption];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
+    }
+  }
+
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
     dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";

@@ -3559,7 +3559,9 @@
               "previous_energy": "Previous Energy",
               "previous_cost": "Previous Cost",
               "battery_total": "Battery total",
-              "total_costs": "Total costs"
+              "total_costs": "Total costs",
+              "per_device_cost_info": "Per device cost information is based on the parent grid. Cost savings through Solar and Battery power do not apply. Thus they might exceed the parents calculated cost.",
+              "extrapolate_cost_info": "For grids with entities tracking the total costs, per device cost will be interpolated or extrapolated and may be inaccurate."
             },
             "energy_solar_graph": {
               "production": "Production {name}",
