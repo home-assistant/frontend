@@ -12,7 +12,7 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { GridCardConfig } from "../../cards/types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
@@ -27,7 +27,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   {
     type: "grid",
     name: "",
@@ -36,7 +36,7 @@ const SCHEMA: HaFormSchema[] = [
       { name: "square", selector: { boolean: {} } },
     ],
   },
-];
+] as const;
 
 @customElement("hui-grid-card-editor")
 export class HuiGridCardEditor extends HuiStackCardEditor {
@@ -68,7 +68,7 @@ export class HuiGridCardEditor extends HuiStackCardEditor {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) =>
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) =>
     this.hass!.localize(`ui.panel.lovelace.editor.card.grid.${schema.name}`);
 }
 
