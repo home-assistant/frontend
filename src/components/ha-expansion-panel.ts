@@ -19,6 +19,8 @@ class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
+  @property({ type: Boolean, reflect: true }) leftChevron = false;
+
   @property() header?: string;
 
   @property() secondary?: string;
@@ -38,14 +40,26 @@ class HaExpansionPanel extends LitElement {
         aria-expanded=${this.expanded}
         aria-controls="sect1"
       >
+        ${this.leftChevron
+          ? html`
+              <ha-svg-icon
+                .path=${mdiChevronDown}
+                class="summary-icon ${classMap({ expanded: this.expanded })}"
+              ></ha-svg-icon>
+            `
+          : ""}
         <slot class="header" name="header">
           ${this.header}
           <slot class="secondary" name="secondary">${this.secondary}</slot>
         </slot>
-        <ha-svg-icon
-          .path=${mdiChevronDown}
-          class="summary-icon ${classMap({ expanded: this.expanded })}"
-        ></ha-svg-icon>
+        ${!this.leftChevron
+          ? html`
+              <ha-svg-icon
+                .path=${mdiChevronDown}
+                class="summary-icon ${classMap({ expanded: this.expanded })}"
+              ></ha-svg-icon>
+            `
+          : ""}
       </div>
       <div
         class="container ${classMap({ expanded: this.expanded })}"
@@ -72,6 +86,9 @@ class HaExpansionPanel extends LitElement {
   }
 
   private async _toggleContainer(ev): Promise<void> {
+    if (ev.defaultPrevented) {
+      return;
+    }
     if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
       return;
     }
@@ -132,9 +149,6 @@ class HaExpansionPanel extends LitElement {
 
       .summary-icon {
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-        margin-left: auto;
-        margin-inline-start: auto;
-        margin-inline-end: initial;
         direction: var(--direction);
       }
 
@@ -151,10 +165,6 @@ class HaExpansionPanel extends LitElement {
 
       .container.expanded {
         height: auto;
-      }
-
-      .header {
-        display: block;
       }
 
       .secondary {
