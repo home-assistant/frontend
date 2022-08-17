@@ -1,18 +1,27 @@
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
+import type { ChartOptions } from "chart.js";
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
+import { round } from "../../../common/number/round";
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import { BOARD_NAMES, HardwareInfo } from "../../../data/hardware";
+import {
+  BOARD_NAMES,
+  HardwareInfo,
+  subscribeSystemStatus,
+  SystemStatusStreamMessage,
+} from "../../../data/hardware";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -30,11 +39,14 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { DEFAULT_PRIMARY_COLOR } from "../../../resources/ha-style";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showToast } from "../../../util/toast";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
+
+const DATASAMPLES = 60;
 
 @customElement("ha-config-hardware")
 class HaConfigHardware extends LitElement {
@@ -50,9 +62,87 @@ class HaConfigHardware extends LitElement {
 
   @state() private _hardwareInfo?: HardwareInfo;
 
+  @state() private _chartOptions?: ChartOptions;
+
+  @state() private _systemStatusData?: SystemStatusStreamMessage;
+
+  private _memoryEntries: { x: string; y: number | null }[] = [];
+
+  private _cpuEntries: { x: string; y: number | null }[] = [];
+
+  private _subscribed?: Promise<(() => Promise<void>) | void>;
+
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) =>
+        unsub ? unsub().catch(() => {}) : undefined
+      );
+      this._subscribed = undefined;
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeSystemStatus();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._memoryEntries = [];
+    this._cpuEntries = [];
+    this._unsubscribe();
+  }
+
+  protected willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._chartOptions = {
+        animation: false,
+        responsive: true,
+        scales: {
+          y: {
+            gridLines: {
+              drawTicks: false,
+            },
+            ticks: {
+              maxTicksLimit: 7,
+              fontSize: 10,
+              max: 100,
+              min: 0,
+              stepSize: 1,
+              callback: (value) => value + "%",
+            },
+          },
+          x: {
+            gridLines: {
+              display: true,
+              drawTicks: false,
+            },
+            ticks: {
+              fontSize: 10,
+              autoSkip: true,
+              maxTicksLimit: 5,
+            },
+          },
+        },
+      };
+    }
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._load();
+
+    // Force graph to start drawing from the right
+    for (let i = 0; i < DATASAMPLES; i++) {
+      this._memoryEntries.push({ x: "", y: null });
+      this._cpuEntries.push({ x: "", y: null });
+    }
+
+    if (this.hass) {
+      this._subscribeSystemStatus();
+    }
   }
 
   protected render(): TemplateResult {
@@ -118,9 +208,9 @@ class HaConfigHardware extends LitElement {
               >
             `
           : ""}
-        ${boardName
-          ? html`
-              <div class="content">
+        <div class="content">
+          ${boardName
+            ? html`
                 <ha-card outlined>
                   <div class="card-content">
                     <mwc-list>
@@ -169,9 +259,73 @@ class HaConfigHardware extends LitElement {
                     </mwc-list>
                   </div>
                 </ha-card>
-              </div>
-            `
-          : ""}
+              `
+            : ""}
+          ${this._systemStatusData
+            ? html`
+                <ha-card outlined>
+                  <div class="header">
+                    <div class="title">Processor</div>
+                    <div class="value">
+                      ${this._systemStatusData!.cpu_percent}%
+                    </div>
+                  </div>
+                  <div class="card-content">
+                    <ha-chart-base
+                      .data=${{
+                        datasets: [
+                          {
+                            fill: "origin",
+                            borderColor: DEFAULT_PRIMARY_COLOR,
+                            backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
+                            pointRadius: 0,
+                            lineTension: 0.2,
+                            borderWidth: 1,
+                            data: this._cpuEntries,
+                          },
+                        ],
+                      }}
+                      .options=${this._chartOptions}
+                    ></ha-chart-base>
+                  </div>
+                </ha-card>
+                <ha-card outlined>
+                  <div class="header">
+                    <div class="title">Memory</div>
+                    <div class="value">
+                      ${round(this._systemStatusData!.memory_used_mb / 1024, 1)}
+                      GB /
+                      ${round(
+                        (this._systemStatusData!.memory_used_mb! +
+                          this._systemStatusData!.memory_free_mb!) /
+                          1024,
+                        0
+                      )}
+                      GB
+                    </div>
+                  </div>
+                  <div class="card-content">
+                    <ha-chart-base
+                      .data=${{
+                        datasets: [
+                          {
+                            fill: "origin",
+                            borderColor: DEFAULT_PRIMARY_COLOR,
+                            backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
+                            pointRadius: 0,
+                            lineTension: 0.2,
+                            borderWidth: 1,
+                            data: this._memoryEntries,
+                          },
+                        ],
+                      }}
+                      .options=${this._chartOptions}
+                    ></ha-chart-base>
+                  </div>
+                </ha-card>
+              `
+            : ""}
+        </div>
       </hass-subpage>
     `;
   }
@@ -265,6 +419,46 @@ class HaConfigHardware extends LitElement {
     }
   }
 
+  private _subscribeSystemStatus() {
+    if (this._subscribed) {
+      return true;
+    }
+    this._subscribed = subscribeSystemStatus(this.hass, (streamMessage) => {
+      if (!this._subscribed) {
+        return;
+      }
+      this._processOrQueueStreamMessage(streamMessage);
+    }).catch((err) => {
+      this._subscribed = undefined;
+      this._error = err;
+    });
+    return true;
+  }
+
+  private _processOrQueueStreamMessage(
+    streamMessage: SystemStatusStreamMessage
+  ) {
+    // Only store the last 60 entries
+    this._memoryEntries.shift();
+    this._cpuEntries.shift();
+
+    const time = formatTimeWithSeconds(
+      new Date(streamMessage.timestamp),
+      this.hass.locale
+    );
+
+    this._memoryEntries.push({
+      x: time,
+      y: streamMessage.memory_used_percent,
+    });
+    this._cpuEntries.push({
+      x: time,
+      y: streamMessage.cpu_percent,
+    });
+
+    this._systemStatusData = streamMessage;
+  }
+
   static styles = [
     haStyle,
     css`
@@ -280,6 +474,7 @@ class HaConfigHardware extends LitElement {
         justify-content: space-between;
         flex-direction: column;
         display: flex;
+        margin-bottom: 16px;
       }
       .card-content {
         display: flex;
@@ -297,6 +492,21 @@ class HaConfigHardware extends LitElement {
       }
       .secondary-text {
         font-size: 14px;
+      }
+
+      .header {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .header .title {
+        color: var(--secondary-text-color);
+        font-size: 18px;
+      }
+
+      .header .value {
+        font-size: 16px;
       }
     `,
   ];

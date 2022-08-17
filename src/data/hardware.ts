@@ -1,3 +1,5 @@
+import type { HomeAssistant } from "../types";
+
 // Keep in sync with https://github.com/home-assistant/analytics.home-assistant.io/blob/dev/site/src/analytics-os-boards.ts#L6-L24
 export const BOARD_NAMES: Record<string, string> = {
   "odroid-n2": "Home Assistant Blue / ODROID-N2",
@@ -37,3 +39,22 @@ export interface HardwareInfoBoardInfo {
   revision?: string;
   hassio_board_id?: string;
 }
+
+export interface SystemStatusStreamMessage {
+  cpu_percent: number;
+  memory_free_mb: number;
+  memory_used_mb: number;
+  memory_used_percent: number;
+  timestamp: string;
+}
+
+export const subscribeSystemStatus = (
+  hass: HomeAssistant,
+  callbackFunction: (message: SystemStatusStreamMessage) => void
+): Promise<() => Promise<void>> =>
+  hass.connection.subscribeMessage<SystemStatusStreamMessage>(
+    (message) => callbackFunction(message),
+    {
+      type: "hardware/subscribe_system_status",
+    }
+  );
