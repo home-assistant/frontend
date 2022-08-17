@@ -324,7 +324,6 @@ export class HaManualAutomationEditor extends LitElement {
       css`
         :host {
           display: block;
-          margin: 16px;
         }
         ha-card {
           overflow: hidden;

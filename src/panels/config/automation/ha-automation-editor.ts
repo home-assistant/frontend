@@ -568,6 +568,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
           flex-direction: column;
           padding-bottom: 0;
         }
+        manual-automation-editor {
+          margin: 0 auto;
+          max-width: 1040px;
+          padding: 28px 20px 0;
+        }
         ha-yaml-editor {
           flex-grow: 1;
           --code-mirror-height: 100%;
