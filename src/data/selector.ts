@@ -112,7 +112,7 @@ export interface DurationSelector {
 export interface EntitySelector {
   entity: {
     integration?: string;
-    domain?: string | string[];
+    domain?: string | readonly string[];
     device_class?: string;
     multiple?: boolean;
     include_entities?: string[];
@@ -180,7 +180,7 @@ export interface SelectSelector {
     multiple?: boolean;
     custom_value?: boolean;
     mode?: "list" | "dropdown";
-    options: string[] | SelectOption[];
+    options: readonly string[] | readonly SelectOption[];
   };
 }
 

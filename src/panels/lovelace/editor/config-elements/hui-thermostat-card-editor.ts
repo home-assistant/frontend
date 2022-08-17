@@ -3,7 +3,7 @@ import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ThermostatCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -18,7 +18,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   { name: "entity", selector: { entity: { domain: "climate" } } },
   {
     type: "grid",
@@ -28,7 +28,7 @@ const SCHEMA: HaFormSchema[] = [
       { name: "theme", required: false, selector: { theme: {} } },
     ],
   },
-];
+] as const;
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor
@@ -64,7 +64,7 @@ export class HuiThermostatCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     if (schema.name === "entity") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"
