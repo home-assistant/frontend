@@ -3,6 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -131,38 +132,46 @@ export default class HaAutomationConditionRow extends LitElement {
             </mwc-list-item>
           </ha-button-menu>
         </div>
-        <div
-          class=${classMap({
-            "card-content": true,
-            disabled: this.condition.enabled === false,
-            expanded: this._expanded,
-          })}
-        >
-          ${this._warnings
-            ? html`<ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}
-              >
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>`
-            : ""}
-          <ha-automation-condition-editor
-            @ui-mode-not-available=${this._handleUiModeNotAvailable}
-            @value-changed=${this._handleChangeEvent}
-            .yamlMode=${this._yamlMode}
-            .hass=${this.hass}
-            .condition=${this.condition}
-          ></ha-automation-condition-editor>
-        </div>
+        ${cache(
+          this._expanded
+            ? html`
+                <div
+                  class=${classMap({
+                    "card-content": true,
+                    disabled: this.condition.enabled === false,
+                  })}
+                >
+                  ${this._warnings
+                    ? html`<ha-alert
+                        alert-type="warning"
+                        .title=${this.hass.localize(
+                          "ui.errors.config.editor_not_supported"
+                        )}
+                      >
+                        ${this._warnings!.length > 0 &&
+                        this._warnings![0] !== undefined
+                          ? html` <ul>
+                              ${this._warnings!.map(
+                                (warning) => html`<li>${warning}</li>`
+                              )}
+                            </ul>`
+                          : ""}
+                        ${this.hass.localize(
+                          "ui.errors.config.edit_in_yaml_supported"
+                        )}
+                      </ha-alert>`
+                    : ""}
+                  <ha-automation-condition-editor
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    @value-changed=${this._handleChangeEvent}
+                    .yamlMode=${this._yamlMode}
+                    .hass=${this.hass}
+                    .condition=${this.condition}
+                  ></ha-automation-condition-editor>
+                </div>
+              `
+            : ""
+        )}
       </ha-card>
     `;
   }
@@ -315,10 +324,6 @@ export default class HaAutomationConditionRow extends LitElement {
         .card-content {
           padding-top: 16px;
           margin-top: 0;
-          display: none;
-        }
-        .card-content.expanded {
-          display: block;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);

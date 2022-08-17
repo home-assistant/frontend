@@ -1,12 +1,9 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import {
-  mdiArrowDown,
-  mdiArrowUp,
-  mdiDotsVertical,
-} from "@mdi/js";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -254,77 +251,90 @@ export default class HaAutomationActionRow extends LitElement {
             </mwc-list-item>
           </ha-button-menu>
         </div>
-        <div
-          class=${classMap({
-            "card-content": true,
-            disabled: this.action.enabled === false,
-            expanded: this._expanded,
-          })}
-        >
-          ${this._warnings
-            ? html`<ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}
-              >
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>`
-            : ""}
-          ${yamlMode
+        ${cache(
+          this._expanded
             ? html`
-                ${type === undefined
-                  ? html`
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.unsupported_action",
-                        "action",
-                        type
-                      )}
-                    `
-                  : ""}
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )}
-                </h2>
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .defaultValue=${this.action}
-                  @value-changed=${this._onYamlChange}
-                ></ha-yaml-editor>
-              `
-            : html`
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type_select"
-                  )}
-                  .value=${getType(this.action)}
-                  naturalMenuWidth
-                  @selected=${this._typeChanged}
-                >
-                  ${this._processedTypes(this.hass.localize).map(
-                    ([opt, label]) => html`
-                      <mwc-list-item .value=${opt}>${label}</mwc-list-item>
-                    `
-                  )}
-                </ha-select>
-
-                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
-                  ${dynamicElement(`ha-automation-action-${type}`, {
-                    hass: this.hass,
-                    action: this.action,
-                    narrow: this.narrow,
+                <div
+                  class=${classMap({
+                    "card-content": true,
+                    disabled: this.action.enabled === false,
                   })}
+                >
+                  ${this._warnings
+                    ? html`<ha-alert
+                        alert-type="warning"
+                        .title=${this.hass.localize(
+                          "ui.errors.config.editor_not_supported"
+                        )}
+                      >
+                        ${this._warnings!.length > 0 &&
+                        this._warnings![0] !== undefined
+                          ? html` <ul>
+                              ${this._warnings!.map(
+                                (warning) => html`<li>${warning}</li>`
+                              )}
+                            </ul>`
+                          : ""}
+                        ${this.hass.localize(
+                          "ui.errors.config.edit_in_yaml_supported"
+                        )}
+                      </ha-alert>`
+                    : ""}
+                  ${yamlMode
+                    ? html`
+                        ${type === undefined
+                          ? html`
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.actions.unsupported_action",
+                                "action",
+                                type
+                              )}
+                            `
+                          : ""}
+                        <h2>
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.edit_yaml"
+                          )}
+                        </h2>
+                        <ha-yaml-editor
+                          .hass=${this.hass}
+                          .defaultValue=${this.action}
+                          @value-changed=${this._onYamlChange}
+                        ></ha-yaml-editor>
+                      `
+                    : html`
+                        <ha-select
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.type_select"
+                          )}
+                          .value=${getType(this.action)}
+                          naturalMenuWidth
+                          @selected=${this._typeChanged}
+                        >
+                          ${this._processedTypes(this.hass.localize).map(
+                            ([opt, label]) => html`
+                              <mwc-list-item .value=${opt}
+                                >${label}</mwc-list-item
+                              >
+                            `
+                          )}
+                        </ha-select>
+
+                        <div
+                          @ui-mode-not-available=${this
+                            ._handleUiModeNotAvailable}
+                        >
+                          ${dynamicElement(`ha-automation-action-${type}`, {
+                            hass: this.hass,
+                            action: this.action,
+                            narrow: this.narrow,
+                          })}
+                        </div>
+                      `}
                 </div>
-              `}
-        </div>
+              `
+            : ""
+        )}
       </ha-card>
     `;
   }
@@ -492,10 +502,6 @@ export default class HaAutomationActionRow extends LitElement {
         .card-content {
           padding-top: 16px;
           margin-top: 0;
-          display: none;
-        }
-        .card-content.expanded {
-          display: block;
         }
         .card-summary ha-button-menu,
         .card-summary ha-icon-button {
