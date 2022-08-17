@@ -50,10 +50,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -329,9 +327,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         baseConfig = {
           ...baseConfig,
           mode: "single",
-          trigger: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
+          trigger: [],
           condition: [],
-          action: [{ ...HaDeviceAction.defaultConfig }],
+          action: [],
         };
       }
       this._config = {
