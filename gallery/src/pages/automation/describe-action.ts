@@ -1,7 +1,9 @@
 import { dump } from "js-yaml";
 import { html, css, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-yaml-editor";
+import { Action } from "../../../../src/data/script";
 import { describeAction } from "../../../../src/data/script_i18n";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -103,9 +105,18 @@ const ACTIONS = [
   },
 ];
 
+const initialAction: Action = {
+  service: "light.turn_on",
+  target: {
+    entity_id: "light.kitchen",
+  },
+};
+
 @customElement("demo-automation-describe-action")
 export class DemoAutomationDescribeAction extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
+
+  @state() _action = initialAction;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -113,6 +124,19 @@ export class DemoAutomationDescribeAction extends LitElement {
     }
     return html`
       <ha-card header="Actions">
+        <div class="action">
+          <span>
+            ${this._action
+              ? describeAction(this.hass, this._action)
+              : "<invalid YAML>"}
+          </span>
+          <ha-yaml-editor
+            label="Action Config"
+            .defaultValue=${initialAction}
+            @value-changed=${this._dataChanged}
+          ></ha-yaml-editor>
+        </div>
+
         ${ACTIONS.map(
           (conf) => html`
             <div class="action">
@@ -132,6 +156,11 @@ export class DemoAutomationDescribeAction extends LitElement {
     hass.addEntities(ENTITIES);
   }
 
+  private _dataChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    this._action = ev.detail.isValid ? ev.detail.value : undefined;
+  }
+
   static get styles() {
     return css`
       ha-card {
@@ -146,6 +175,9 @@ export class DemoAutomationDescribeAction extends LitElement {
       }
       span {
         margin-right: 16px;
+      }
+      ha-yaml-editor {
+        width: 50%;
       }
     `;
   }
