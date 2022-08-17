@@ -1837,9 +1837,8 @@
             },
             "modes": {
               "label": "Mode",
-              "description": "The mode controls what happens when the automation is triggered while the actions are still running from a previous trigger. Check the {documentation_link} for more info.",
-              "documentation": "automation documentation",
-              "single": "Single (default)",
+              "learn_more": "Learn about modes",
+              "single": "Single",
               "restart": "Restart",
               "queued": "Queued",
               "parallel": "Parallel"
@@ -2256,13 +2255,12 @@
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {
-              "label": "Mode",
-              "description": "The mode controls what happens when script is invoked while it is still running from one or more previous invocations. Check the {documentation_link} for more info.",
-              "documentation": "script documentation",
-              "single": "Single (default)",
-              "restart": "Restart",
-              "queued": "Queued",
-              "parallel": "Parallel"
+              "label": "[%key:ui::panel::config::automation::editor::modes::label%]",
+              "learn_more": "[%key:ui::panel::config::automation::editor::modes::learn_more%]",
+              "single": "[%key:ui::panel::config::automation::editor::modes::single%]",
+              "restart": "[%key:ui::panel::config::automation::editor::modes::restart%]",
+              "queued": "[%key:ui::panel::config::automation::editor::modes::queued%]",
+              "parallel": "[%key:ui::panel::config::automation::editor::modes::parallel%]"
             },
             "max": {
               "queued": "Queue length",

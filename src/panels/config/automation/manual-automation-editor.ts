@@ -75,20 +75,6 @@ export class HaManualAutomationEditor extends LitElement {
                   </button>
                 </div>
               `}
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.modes.description",
-              "documentation_link",
-              html`<a
-                href=${documentationUrl(this.hass, "/docs/automation/modes/")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.automation.editor.modes.documentation"
-                )}</a
-              >`
-            )}
-          </p>
           <ha-select
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.modes.label"
@@ -96,6 +82,17 @@ export class HaManualAutomationEditor extends LitElement {
             .value=${this.config.mode || AUTOMATION_DEFAULT_MODE}
             @selected=${this._modeChanged}
             fixedMenuPosition
+            .helper=${html`
+              <a
+                style="color: var(--secondary-text-color)"
+                href=${documentationUrl(this.hass, "/docs/automation/modes/")}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.config.automation.editor.modes.learn_more"
+                )}</a
+              >
+            `}
           >
             ${MODES.map(
               (mode) => html`

@@ -507,25 +507,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _computeHelperCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string | undefined => {
+  ): string | undefined | TemplateResult => {
     if (schema.name === "mode") {
-      return this.hass.localize(
-        "ui.panel.config.script.editor.modes.description",
-        "documentation_link",
-        html`
-          <a
-            href=${documentationUrl(
-              this.hass,
-              "/integrations/script/#script-modes"
-            )}
-            target="_blank"
-            rel="noreferrer"
-            >${this.hass.localize(
-              "ui.panel.config.script.editor.modes.documentation"
-            )}</a
-          >
-        `
-      );
+      return html`
+        <a
+          style="color: var(--secondary-text-color)"
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/script/#script-modes"
+          )}
+          target="_blank"
+          rel="noreferrer"
+          >${this.hass.localize(
+            "ui.panel.config.script.editor.modes.learn_more"
+          )}</a
+        >
+      `;
     }
     return undefined;
   };
