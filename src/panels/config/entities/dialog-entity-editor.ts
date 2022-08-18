@@ -31,7 +31,7 @@ interface Tabs {
 
 interface Tab {
   component: string;
-  translationKey: string;
+  translationKey: Parameters<HomeAssistant["localize"]>[0];
 }
 
 @customElement("dialog-entity-editor")

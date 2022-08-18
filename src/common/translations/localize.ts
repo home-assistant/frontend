@@ -11,7 +11,6 @@ import { getLocalLanguage } from "../../util/common-translation";
 // Fixing component category will require tighter definition of types from backend and/or web socket
 export type LocalizeKeys =
   | FlattenObjectKeys<Omit<TranslationDict, "supervisor">>
-  | `${string}`
   | `panel.${string}`
   | `state.${string}`
   | `state_attributes.${string}`

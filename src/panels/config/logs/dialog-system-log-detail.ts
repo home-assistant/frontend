@@ -74,7 +74,7 @@ class DialogSystemLogDetail extends LitElement {
       "level",
       html`<span class=${item.level.toLowerCase()}
         >${this.hass.localize(
-          "ui.panel.config.logs.level." + item.level.toLowerCase()
+          `ui.panel.config.logs.level.${item.level.toLowerCase()}`
         )}</span
       >`
     );
