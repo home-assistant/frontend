@@ -3,21 +3,19 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
+import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stringCompare } from "../../../../common/string/compare";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-select";
-import type { HaSelect } from "../../../../components/ha-select";
+import "../../../../components/ha-expansion-panel";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { validateConfig } from "../../../../data/config";
 import { Action, getActionType } from "../../../../data/script";
+import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
 import {
   showAlertDialog,
@@ -40,23 +38,7 @@ import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-const OPTIONS = [
-  "condition",
-  "delay",
-  "event",
-  "play_media",
-  "activate_scene",
-  "service",
-  "wait_template",
-  "wait_for_trigger",
-  "repeat",
-  "choose",
-  "if",
-  "device_id",
-  "stop",
-  "parallel",
-];
+import { ACTION_TYPES } from "../../../../data/action";
 
 const getType = (action: Action | undefined) => {
   if (!action) {
@@ -68,7 +50,7 @@ const getType = (action: Action | undefined) => {
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition";
   }
-  return OPTIONS.find((option) => option in action);
+  return ACTION_TYPES.find((option) => option in action);
 };
 
 declare global {
@@ -104,6 +86,8 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   fireEvent(element, "value-changed", { value: newAction });
 };
 
+const preventDefault = (ev) => ev.preventDefault();
+
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -123,19 +107,6 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
-
-  private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      OPTIONS.map(
-        (action) =>
-          [
-            action,
-            localize(
-              `ui.panel.config.automation.editor.actions.type.${action}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
-  );
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
@@ -172,10 +143,14 @@ export default class HaAutomationActionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <div class="card-menu">
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeAction(this.hass, this.action)}
+        >
           ${this.index !== 0
             ? html`
                 <ha-icon-button
+                  slot="icons"
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.move_up"
                   )}
@@ -187,6 +162,7 @@ export default class HaAutomationActionRow extends LitElement {
           ${this.index !== this.totalActions - 1
             ? html`
                 <ha-icon-button
+                  slot="icons"
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.move_down"
                   )}
@@ -195,7 +171,13 @@ export default class HaAutomationActionRow extends LitElement {
                 ></ha-icon-button>
               `
             : ""}
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-button-menu
+            slot="icons"
+            fixed
+            corner="BOTTOM_START"
+            @action=${this._handleAction}
+            @click=${preventDefault}
+          >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
@@ -235,76 +217,65 @@ export default class HaAutomationActionRow extends LitElement {
               )}
             </mwc-list-item>
           </ha-button-menu>
-        </div>
-        <div
-          class="card-content ${this.action.enabled === false
-            ? "disabled"
-            : ""}"
-        >
-          ${this._warnings
-            ? html`<ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}
-              >
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>`
-            : ""}
-          ${yamlMode
-            ? html`
-                ${type === undefined
-                  ? html`
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.unsupported_action",
-                        "action",
-                        type
-                      )}
-                    `
-                  : ""}
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
+          <div
+            class=${classMap({
+              "card-content": true,
+              disabled: this.action.enabled === false,
+            })}
+          >
+            ${this._warnings
+              ? html`<ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.editor_not_supported"
                   )}
-                </h2>
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .defaultValue=${this.action}
-                  @value-changed=${this._onYamlChange}
-                ></ha-yaml-editor>
-              `
-            : html`
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type_select"
-                  )}
-                  .value=${getType(this.action)}
-                  naturalMenuWidth
-                  @selected=${this._typeChanged}
                 >
-                  ${this._processedTypes(this.hass.localize).map(
-                    ([opt, label]) => html`
-                      <mwc-list-item .value=${opt}>${label}</mwc-list-item>
-                    `
+                  ${this._warnings!.length > 0 &&
+                  this._warnings![0] !== undefined
+                    ? html` <ul>
+                        ${this._warnings!.map(
+                          (warning) => html`<li>${warning}</li>`
+                        )}
+                      </ul>`
+                    : ""}
+                  ${this.hass.localize(
+                    "ui.errors.config.edit_in_yaml_supported"
                   )}
-                </ha-select>
-
-                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
-                  ${dynamicElement(`ha-automation-action-${type}`, {
-                    hass: this.hass,
-                    action: this.action,
-                    narrow: this.narrow,
-                  })}
-                </div>
-              `}
-        </div>
+                </ha-alert>`
+              : ""}
+            ${yamlMode
+              ? html`
+                  ${type === undefined
+                    ? html`
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.unsupported_action",
+                          "action",
+                          type
+                        )}
+                      `
+                    : ""}
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_yaml"
+                    )}
+                  </h2>
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .defaultValue=${this.action}
+                    @value-changed=${this._onYamlChange}
+                  ></ha-yaml-editor>
+                `
+              : html`
+                  <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
+                    ${dynamicElement(`ha-automation-action-${type}`, {
+                      hass: this.hass,
+                      action: this.action,
+                      narrow: this.narrow,
+                    })}
+                  </div>
+                `}
+          </div>
+        </ha-expansion-panel>
       </ha-card>
     `;
   }
@@ -319,11 +290,13 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
-  private _moveUp() {
+  private _moveUp(ev) {
+    ev.preventDefault();
     fireEvent(this, "move-action", { direction: "up" });
   }
 
-  private _moveDown() {
+  private _moveDown(ev) {
+    ev.preventDefault();
     fireEvent(this, "move-action", { direction: "down" });
   }
 
@@ -403,31 +376,6 @@ export default class HaAutomationActionRow extends LitElement {
     });
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as HaSelect).value;
-
-    if (!type) {
-      return;
-    }
-
-    this._uiModeAvailable = OPTIONS.includes(type);
-    if (!this._uiModeAvailable && !this._yamlMode) {
-      this._yamlMode = false;
-    }
-
-    if (type !== getType(this.action)) {
-      const elClass = customElements.get(
-        `ha-automation-action-${type}`
-      ) as CustomElementConstructor & { defaultConfig: Action };
-
-      fireEvent(this, "value-changed", {
-        value: {
-          ...elClass.defaultConfig,
-        },
-      });
-    }
-  }
-
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
@@ -441,17 +389,30 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
+  public expand() {
+    this.updateComplete.then(() => {
+      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        ha-button-menu,
+        ha-icon-button {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
         .card-content {
-          padding-top: 16px;
-          margin-top: 0;
+          padding: 16px;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
@@ -459,14 +420,7 @@ export default class HaAutomationActionRow extends LitElement {
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
         }
-        .card-menu {
-          float: var(--float-end, right);
-          z-index: 3;
-          margin: 4px;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          display: flex;
-          align-items: center;
-        }
+
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
@@ -475,9 +429,6 @@ export default class HaAutomationActionRow extends LitElement {
         }
         .warning ul {
           margin: 4px 0;
-        }
-        ha-select {
-          margin-bottom: 24px;
         }
       `,
     ];

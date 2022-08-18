@@ -6,6 +6,7 @@ import {
   mdiContentSave,
   mdiDelete,
   mdiDotsVertical,
+  mdiHelpCircle,
 } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -56,7 +57,6 @@ import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./blueprint-script-editor";
 
@@ -276,59 +276,47 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 >
                   ${this._config
                     ? html`
-                        <ha-config-section vertical .isWide=${this.isWide}>
-                          ${!this.narrow
+                        <ha-card outlined>
+                          <div class="card-content">
+                            <ha-form
+                              .schema=${schema}
+                              .data=${data}
+                              .hass=${this.hass}
+                              .computeLabel=${this._computeLabelCallback}
+                              .computeHelper=${this._computeHelperCallback}
+                              @value-changed=${this._valueChanged}
+                            ></ha-form>
+                          </div>
+                          ${this.scriptEntityId
                             ? html`
-                                <span slot="header">${this._config.alias}</span>
-                              `
-                            : ""}
-                          <span slot="introduction">
-                            ${this.hass.localize(
-                              "ui.panel.config.script.editor.introduction"
-                            )}
-                          </span>
-                          <ha-card outlined>
-                            <div class="card-content">
-                              <ha-form
-                                .schema=${schema}
-                                .data=${data}
-                                .hass=${this.hass}
-                                .computeLabel=${this._computeLabelCallback}
-                                .computeHelper=${this._computeHelperCallback}
-                                @value-changed=${this._valueChanged}
-                              ></ha-form>
-                            </div>
-                            ${this.scriptEntityId
-                              ? html`
-                                  <div
-                                    class="card-actions layout horizontal justified center"
+                                <div
+                                  class="card-actions layout horizontal justified center"
+                                >
+                                  <a
+                                    href="/config/script/trace/${this
+                                      .scriptEntityId}"
                                   >
-                                    <a
-                                      href="/config/script/trace/${this
-                                        .scriptEntityId}"
-                                    >
-                                      <mwc-button>
-                                        ${this.hass.localize(
-                                          "ui.panel.config.script.editor.show_trace"
-                                        )}
-                                      </mwc-button>
-                                    </a>
-                                    <mwc-button
-                                      @click=${this._runScript}
-                                      title=${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
-                                      )}
-                                      ?disabled=${this._dirty}
-                                    >
+                                    <mwc-button>
                                       ${this.hass.localize(
-                                        "ui.panel.config.script.picker.run_script"
+                                        "ui.panel.config.script.editor.show_trace"
                                       )}
                                     </mwc-button>
-                                  </div>
-                                `
-                              : ``}
-                          </ha-card>
-                        </ha-config-section>
+                                  </a>
+                                  <mwc-button
+                                    @click=${this._runScript}
+                                    title=${this.hass.localize(
+                                      "ui.panel.config.script.picker.run_script"
+                                    )}
+                                    ?disabled=${this._dirty}
+                                  >
+                                    ${this.hass.localize(
+                                      "ui.panel.config.script.picker.run_script"
+                                    )}
+                                  </mwc-button>
+                                </div>
+                              `
+                            : ``}
+                        </ha-card>
 
                         ${"use_blueprint" in this._config
                           ? html`
@@ -341,40 +329,34 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               ></blueprint-script-editor>
                             `
                           : html`
-                              <ha-config-section
-                                vertical
-                                .isWide=${this.isWide}
-                              >
-                                <span slot="header">
+                              <div class="header">
+                                <div class="name">
                                   ${this.hass.localize(
                                     "ui.panel.config.script.editor.sequence"
                                   )}
-                                </span>
-                                <span slot="introduction">
-                                  <p>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.script.editor.sequence_sentence"
-                                    )}
-                                  </p>
-                                  <a
-                                    href=${documentationUrl(
-                                      this.hass,
-                                      "/docs/scripts/"
-                                    )}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    ${this.hass.localize(
+                                </div>
+                                <a
+                                  href=${documentationUrl(
+                                    this.hass,
+                                    "/docs/scripts/"
+                                  )}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  <ha-icon-button
+                                    .path=${mdiHelpCircle}
+                                    .label=${this.hass.localize(
                                       "ui.panel.config.script.editor.link_available_actions"
                                     )}
-                                  </a>
-                                </span>
-                                <ha-automation-action
-                                  .actions=${this._config.sequence}
-                                  @value-changed=${this._sequenceChanged}
-                                  .hass=${this.hass}
-                                ></ha-automation-action>
-                              </ha-config-section>
+                                  ></ha-icon-button>
+                                </a>
+                              </div>
+
+                              <ha-automation-action
+                                .actions=${this._config.sequence}
+                                @value-changed=${this._sequenceChanged}
+                                .hass=${this.hass}
+                              ></ha-automation-action>
                             `}
                       `
                     : ""}
@@ -525,25 +507,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private _computeHelperCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string | undefined => {
+  ): string | undefined | TemplateResult => {
     if (schema.name === "mode") {
-      return this.hass.localize(
-        "ui.panel.config.script.editor.modes.description",
-        "documentation_link",
-        html`
-          <a
-            href=${documentationUrl(
-              this.hass,
-              "/integrations/script/#script-modes"
-            )}
-            target="_blank"
-            rel="noreferrer"
-            >${this.hass.localize(
-              "ui.panel.config.script.editor.modes.documentation"
-            )}</a
-          >
-        `
-      );
+      return html`
+        <a
+          style="color: var(--secondary-text-color)"
+          href=${documentationUrl(
+            this.hass,
+            "/integrations/script/#script-modes"
+          )}
+          target="_blank"
+          rel="noreferrer"
+          >${this.hass.localize(
+            "ui.panel.config.script.editor.modes.learn_more"
+          )}</a
+        >
+      `;
     }
     return undefined;
   };
@@ -806,7 +785,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           color: var(--error-color);
         }
         .content {
-          padding-bottom: 20px;
+          padding: 16px 16px 20px;
         }
         .yaml-mode {
           height: 100%;
@@ -840,6 +819,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        .header {
+          display: flex;
+          margin: 16px 0;
+          align-items: center;
+        }
+        .header .name {
+          font-size: 20px;
+          font-weight: 400;
+          flex: 1;
         }
       `,
     ];

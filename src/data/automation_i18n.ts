@@ -1,7 +1,7 @@
 import { Condition, Trigger } from "./automation";
 
 export const describeTrigger = (trigger: Trigger) =>
-  `${trigger.platform} trigger`;
+  `${trigger.platform || "Unknown"} trigger`;
 
 export const describeCondition = (condition: Condition) => {
   if (condition.alias) {

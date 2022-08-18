@@ -3,6 +3,7 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
@@ -10,6 +11,7 @@ import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-expansion-panel";
 import { Condition, testCondition } from "../../../../data/automation";
 import {
   showAlertDialog,
@@ -20,10 +22,13 @@ import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { describeCondition } from "../../../../data/automation_i18n";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
 }
+
+const preventDefault = (ev) => ev.preventDefault();
 
 export const handleChangeEvent = (
   element: ConditionElement,
@@ -75,13 +80,23 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <div class="card-menu">
-          <ha-progress-button @click=${this._testCondition}>
+
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeCondition(this.condition)}
+        >
+          <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.test"
             )}
           </ha-progress-button>
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+          <ha-button-menu
+            slot="icons"
+            fixed
+            corner="BOTTOM_START"
+            @action=${this._handleAction}
+            @click=${preventDefault}
+          >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
@@ -117,37 +132,42 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
             </mwc-list-item>
           </ha-button-menu>
-        </div>
-        <div
-          class="card-content ${this.condition.enabled === false
-            ? "disabled"
-            : ""}"
-        >
-          ${this._warnings
-            ? html`<ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}
-              >
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings!.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>`
-            : ""}
-          <ha-automation-condition-editor
-            @ui-mode-not-available=${this._handleUiModeNotAvailable}
-            @value-changed=${this._handleChangeEvent}
-            .yamlMode=${this._yamlMode}
-            .hass=${this.hass}
-            .condition=${this.condition}
-          ></ha-automation-condition-editor>
-        </div>
+
+          <div
+            class=${classMap({
+              "card-content": true,
+              disabled: this.condition.enabled === false,
+            })}
+          >
+            ${this._warnings
+              ? html`<ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.editor_not_supported"
+                  )}
+                >
+                  ${this._warnings!.length > 0 &&
+                  this._warnings![0] !== undefined
+                    ? html` <ul>
+                        ${this._warnings!.map(
+                          (warning) => html`<li>${warning}</li>`
+                        )}
+                      </ul>`
+                    : ""}
+                  ${this.hass.localize(
+                    "ui.errors.config.edit_in_yaml_supported"
+                  )}
+                </ha-alert>`
+              : ""}
+            <ha-automation-condition-editor
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+              @value-changed=${this._handleChangeEvent}
+              .yamlMode=${this._yamlMode}
+              .hass=${this.hass}
+              .condition=${this.condition}
+            ></ha-automation-condition-editor>
+          </div>
+        </ha-expansion-panel>
       </ha-card>
     `;
   }
@@ -212,6 +232,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private async _testCondition(ev) {
+    ev.preventDefault();
     const condition = this.condition;
     const button = ev.target as HaProgressButton;
     if (button.progress) {
@@ -269,31 +290,36 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  public expand() {
+    this.updateComplete.then(() => {
+      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        ha-button-menu,
+        ha-progress-button {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
         .card-content {
-          padding-top: 16px;
-          margin-top: 0;
+          padding: 16px;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
-        }
-        .card-menu {
-          float: var(--float-end, right);
-          z-index: 3;
-          margin: 4px;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          display: flex;
-          align-items: center;
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
