@@ -1,4 +1,4 @@
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -69,15 +69,15 @@ export class HaChooseAction extends LitElement implements ActionElement {
           </div>
         </ha-card>`
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addOption}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.choose.add_option"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
+      <mwc-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.choose.add_option"
+        )}
+        @click=${this._addOption}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </mwc-button>
       <h2>
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.default"
@@ -154,7 +154,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
       haStyle,
       css`
         ha-card {
-          margin-top: 16px;
+          margin: 16px 0;
         }
         .add-card mwc-button {
           display: block;
@@ -167,6 +167,9 @@ export class HaChooseAction extends LitElement implements ActionElement {
         }
         ha-form::part(root) {
           overflow: visible;
+        }
+        ha-svg-icon {
+          height: 20px;
         }
       `,
     ];

@@ -68,6 +68,10 @@ export class HaWaitForTriggerAction
         display: block;
         margin-bottom: 24px;
       }
+      ha-automation-trigger {
+        display: block;
+        margin-top: 24px;
+      }
     `;
   }
 }

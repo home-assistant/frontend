@@ -1,5 +1,5 @@
 import "@material/mwc-list/mwc-list-item";
-import { html, LitElement, PropertyValues } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
@@ -62,6 +62,14 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
         tag_id: ev.target.value,
       },
     });
+  }
+
+  static get styles() {
+    return css`
+      ha-select {
+        display: block;
+      }
+    `;
   }
 }
 

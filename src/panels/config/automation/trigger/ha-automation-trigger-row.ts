@@ -5,20 +5,16 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stringCompare } from "../../../../common/string/compare";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import { LocalizeFunc } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-select";
-import type { HaSelect } from "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
@@ -43,24 +39,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-
-const OPTIONS = [
-  "calendar",
-  "device",
-  "event",
-  "state",
-  "geo_location",
-  "homeassistant",
-  "mqtt",
-  "numeric_state",
-  "sun",
-  "tag",
-  "template",
-  "time",
-  "time_pattern",
-  "webhook",
-  "zone",
-] as const;
+import { describeTrigger } from "../../../../data/automation_i18n";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -88,6 +67,8 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   fireEvent(element, "value-changed", { value: newTrigger });
 };
 
+const preventDefault = (ev) => ev.preventDefault();
+
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -108,35 +89,36 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
-  private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      OPTIONS.map(
-        (action) =>
-          [
-            action,
-            localize(
-              `ui.panel.config.automation.editor.triggers.type.${action}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
-  );
-
   protected render() {
-    const selected = OPTIONS.indexOf(this.trigger.platform);
-    const yamlMode = this._yamlMode || selected === -1;
+    const supported =
+      customElements.get(`ha-automation-trigger-${this.trigger.platform}`) !==
+      undefined;
+    const yamlMode = this._yamlMode || !supported;
     const showId = "id" in this.trigger || this._requestShowId;
 
     return html`
       <ha-card outlined>
         ${this.trigger.enabled === false
-          ? html`<div class="disabled-bar">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.disabled"
-              )}
-            </div>`
+          ? html`
+              <div class="disabled-bar">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.disabled"
+                )}
+              </div>
+            `
           : ""}
-        <div class="card-menu">
-          <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeTrigger(this.trigger)}
+        >
+          <ha-button-menu
+            slot="icons"
+            fixed
+            corner="BOTTOM_START"
+            @action=${this._handleAction}
+            @click=${preventDefault}
+          >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
@@ -147,7 +129,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 "ui.panel.config.automation.editor.triggers.edit_id"
               )}
             </mwc-list-item>
-            <mwc-list-item .disabled=${selected === -1}>
+            <mwc-list-item .disabled=${!supported}>
               ${yamlMode
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.edit_ui"
@@ -176,86 +158,77 @@ export default class HaAutomationTriggerRow extends LitElement {
               )}
             </mwc-list-item>
           </ha-button-menu>
-        </div>
-        <div
-          class="card-content ${this.trigger.enabled === false
-            ? "disabled"
-            : ""}"
-        >
-          ${this._warnings
-            ? html`<ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.editor_not_supported"
-                )}
-              >
-                ${this._warnings.length && this._warnings[0] !== undefined
-                  ? html` <ul>
-                      ${this._warnings.map(
-                        (warning) => html`<li>${warning}</li>`
-                      )}
-                    </ul>`
-                  : ""}
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>`
-            : ""}
-          ${yamlMode
-            ? html`
-                ${selected === -1
-                  ? html`
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                        "platform",
-                        this.trigger.platform
-                      )}
-                    `
-                  : ""}
-                <h2>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
+
+          <div
+            class=${classMap({
+              "card-content": true,
+              disabled: this.trigger.enabled === false,
+            })}
+          >
+            ${this._warnings
+              ? html`<ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.editor_not_supported"
                   )}
-                </h2>
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .defaultValue=${this.trigger}
-                  @value-changed=${this._onYamlChange}
-                ></ha-yaml-editor>
-              `
-            : html`
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.type_select"
-                  )}
-                  .value=${this.trigger.platform}
-                  naturalMenuWidth
-                  @selected=${this._typeChanged}
                 >
-                  ${this._processedTypes(this.hass.localize).map(
-                    ([opt, label]) => html`
-                      <mwc-list-item .value=${opt}>${label}</mwc-list-item>
-                    `
-                  )}
-                </ha-select>
-                ${showId
-                  ? html`
-                      <ha-textfield
-                        .label=${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.id"
+                  ${this._warnings.length && this._warnings[0] !== undefined
+                    ? html` <ul>
+                        ${this._warnings.map(
+                          (warning) => html`<li>${warning}</li>`
                         )}
-                        .value=${this.trigger.id || ""}
-                        @change=${this._idChanged}
-                      >
-                      </ha-textfield>
-                    `
-                  : ""}
-                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
-                  ${dynamicElement(
-                    `ha-automation-trigger-${this.trigger.platform}`,
-                    { hass: this.hass, trigger: this.trigger }
+                      </ul>`
+                    : ""}
+                  ${this.hass.localize(
+                    "ui.errors.config.edit_in_yaml_supported"
                   )}
-                </div>
-              `}
-        </div>
+                </ha-alert>`
+              : ""}
+            ${yamlMode
+              ? html`
+                  ${!supported
+                    ? html`
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                          "platform",
+                          this.trigger.platform
+                        )}
+                      `
+                    : ""}
+                  <h2>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_yaml"
+                    )}
+                  </h2>
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .defaultValue=${this.trigger}
+                    @value-changed=${this._onYamlChange}
+                  ></ha-yaml-editor>
+                `
+              : html`
+                  ${showId
+                    ? html`
+                        <ha-textfield
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.id"
+                          )}
+                          .value=${this.trigger.id || ""}
+                          @change=${this._idChanged}
+                        >
+                        </ha-textfield>
+                      `
+                    : ""}
+                  <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
+                    ${dynamicElement(
+                      `ha-automation-trigger-${this.trigger.platform}`,
+                      { hass: this.hass, trigger: this.trigger }
+                    )}
+                  </div>
+                `}
+          </div>
+        </ha-expansion-panel>
+
         <div
           class="triggered ${classMap({
             active: this._triggered !== undefined,
@@ -360,6 +333,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     switch (ev.detail.index) {
       case 0:
         this._requestShowId = true;
+        this.expand();
         break;
       case 1:
         this._switchYamlMode();
@@ -395,33 +369,6 @@ export default class HaAutomationTriggerRow extends LitElement {
     fireEvent(this, "value-changed", { value });
     if (this._yamlMode) {
       this._yamlEditor?.setValue(value);
-    }
-  }
-
-  private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as HaSelect).value;
-
-    if (!type) {
-      return;
-    }
-
-    const elClass = customElements.get(
-      `ha-automation-trigger-${type}`
-    ) as CustomElementConstructor & {
-      defaultConfig: Omit<Trigger, "platform">;
-    };
-
-    if (type !== this.trigger.platform) {
-      const value = {
-        platform: type,
-        ...elClass.defaultConfig,
-      };
-      if (this.trigger.id) {
-        value.id = this.trigger.id;
-      }
-      fireEvent(this, "value-changed", {
-        value,
-      });
     }
   }
 
@@ -468,31 +415,35 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   }
 
+  public expand() {
+    this.updateComplete.then(() => {
+      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
+    });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        ha-button-menu {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+        }
         .disabled {
           opacity: 0.5;
           pointer-events: none;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
         .card-content {
-          padding-top: 16px;
-          margin-top: 0;
+          padding: 16px;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
           border-top-right-radius: var(--ha-card-border-radius);
           border-top-left-radius: var(--ha-card-border-radius);
-        }
-        .card-menu {
-          float: var(--float-end, right);
-          z-index: 3;
-          margin: 4px;
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-          display: flex;
-          align-items: center;
         }
         .triggered {
           cursor: pointer;
@@ -524,9 +475,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-        }
-        ha-select {
-          margin-bottom: 24px;
         }
         ha-textfield {
           display: block;
