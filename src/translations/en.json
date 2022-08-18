@@ -1848,6 +1848,7 @@
             "copy_to_clipboard": "Copy to Clipboard",
             "triggers": {
               "header": "Triggers",
+              "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
               "id": "Trigger ID",
@@ -1962,6 +1963,7 @@
             },
             "conditions": {
               "header": "Conditions",
+              "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "test": "Test",
               "invalid_condition": "Invalid condition configuration",
@@ -2048,6 +2050,7 @@
             },
             "actions": {
               "header": "Actions",
+              "learn_more": "Learn more about actions",
               "add": "Add action",
               "invalid_action": "Invalid action",
               "run_action": "Run action",
