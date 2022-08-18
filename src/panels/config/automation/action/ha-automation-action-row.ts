@@ -143,15 +143,14 @@ export default class HaAutomationActionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <ha-expansion-panel leftChevron>
-          <div slot="header" class="name">
-            ${describeAction(this.hass, this.action)}
-          </div>
-
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeAction(this.hass, this.action)}
+        >
           ${this.index !== 0
             ? html`
                 <ha-icon-button
-                  slot="header"
+                  slot="icons"
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.move_up"
                   )}
@@ -163,7 +162,7 @@ export default class HaAutomationActionRow extends LitElement {
           ${this.index !== this.totalActions - 1
             ? html`
                 <ha-icon-button
-                  slot="header"
+                  slot="icons"
                   .label=${this.hass.localize(
                     "ui.panel.config.automation.editor.move_down"
                   )}
@@ -173,7 +172,7 @@ export default class HaAutomationActionRow extends LitElement {
               `
             : ""}
           <ha-button-menu
-            slot="header"
+            slot="icons"
             fixed
             corner="BOTTOM_START"
             @action=${this._handleAction}
@@ -400,9 +399,6 @@ export default class HaAutomationActionRow extends LitElement {
     return [
       haStyle,
       css`
-        .name {
-          flex: 1;
-        }
         ha-button-menu,
         ha-icon-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);

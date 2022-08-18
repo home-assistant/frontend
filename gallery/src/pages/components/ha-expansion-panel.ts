@@ -1,3 +1,4 @@
+import { mdiPacMan } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
@@ -84,8 +85,40 @@ const SAMPLES: {
       return html`
         <ha-expansion-panel slot=${slot} .leftChevron=${leftChevron}>
           <span slot="header">Slot header</span>
-          Add <code>flex: 1</code> style to name in your slot to style it
-          correctly.
+          ${SHORT_TEXT}
+        </ha-expansion-panel>
+      `;
+    },
+  },
+  {
+    template(slot, leftChevron) {
+      return html`
+        <ha-expansion-panel slot=${slot} .leftChevron=${leftChevron}>
+          <span slot="header">Slot header with actions</span>
+          <ha-icon-button
+            slot="icons"
+            label="Some Action"
+            .path=${mdiPacMan}
+          ></ha-icon-button>
+          ${SHORT_TEXT}
+        </ha-expansion-panel>
+      `;
+    },
+  },
+  {
+    template(slot, leftChevron) {
+      return html`
+        <ha-expansion-panel
+          slot=${slot}
+          .leftChevron=${leftChevron}
+          header="Attr Header with actions"
+        >
+          <ha-icon-button
+            slot="icons"
+            label="Some Action"
+            .path=${mdiPacMan}
+          ></ha-icon-button>
+          ${SHORT_TEXT}
         </ha-expansion-panel>
       `;
     },

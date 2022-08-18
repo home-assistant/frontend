@@ -81,17 +81,17 @@ export default class HaAutomationConditionRow extends LitElement {
             </div>`
           : ""}
 
-        <ha-expansion-panel leftChevron>
-          <div slot="header" class="name">
-            ${describeCondition(this.condition)}
-          </div>
-          <ha-progress-button slot="header" @click=${this._testCondition}>
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeCondition(this.condition)}
+        >
+          <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.test"
             )}
           </ha-progress-button>
           <ha-button-menu
-            slot="header"
+            slot="icons"
             fixed
             corner="BOTTOM_START"
             @action=${this._handleAction}
@@ -300,9 +300,6 @@ export default class HaAutomationConditionRow extends LitElement {
     return [
       haStyle,
       css`
-        .name {
-          flex: 1;
-        }
         ha-button-menu,
         ha-progress-button {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);

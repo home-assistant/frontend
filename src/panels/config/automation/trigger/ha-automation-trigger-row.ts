@@ -108,10 +108,12 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : ""}
 
-        <ha-expansion-panel leftChevron>
-          <div slot="header" class="name">${describeTrigger(this.trigger)}</div>
+        <ha-expansion-panel
+          leftChevron
+          .header=${describeTrigger(this.trigger)}
+        >
           <ha-button-menu
-            slot="header"
+            slot="icons"
             fixed
             corner="BOTTOM_START"
             @action=${this._handleAction}
@@ -423,9 +425,6 @@ export default class HaAutomationTriggerRow extends LitElement {
     return [
       haStyle,
       css`
-        .name {
-          flex: 1;
-        }
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
