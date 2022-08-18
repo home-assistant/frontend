@@ -314,7 +314,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _computeStepDescription(step: DataEntryFlowStepForm) {
-    const resourceKey = `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`;
+    const resourceKey =
+      `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
     const args: string[] = [];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {

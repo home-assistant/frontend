@@ -550,7 +550,7 @@ export class QuickBar extends LitElement {
   }
 
   private _generateServerControlCommands(): CommandItem[] {
-    const serverActions = ["restart", "stop"];
+    const serverActions = ["restart", "stop"] as const;
 
     return serverActions.map((action) => {
       const categoryKey: CommandItem["categoryKey"] = "server_control";
@@ -673,6 +673,7 @@ export class QuickBar extends LitElement {
         this.hass.localize(
           `ui.dialogs.quick-bar.commands.navigation.${name}`
         )) ||
+      // @ts-expect-error
       (page.translationKey && this.hass.localize(page.translationKey));
 
     if (caption) {

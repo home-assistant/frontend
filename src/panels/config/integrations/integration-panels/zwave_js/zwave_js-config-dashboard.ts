@@ -494,7 +494,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _renderErrorScreen() {
     const item = this._configEntry!;
-    let stateText: [string, ...unknown[]] | undefined;
+    let stateText: Parameters<typeof this.hass.localize> | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
 
     if (item.disabled_by) {

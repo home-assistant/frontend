@@ -217,8 +217,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 slot="item-icon"
               ></ha-svg-icon>
               ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.set_param_" +
-                  result.status
+                `ui.panel.config.zwave_js.node_config.set_param_${result.status}`
               )}
               ${result.status === "error" && result.error
                 ? html` <br /><em>${result.error}</em> `
