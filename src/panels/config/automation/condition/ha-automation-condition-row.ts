@@ -312,8 +312,12 @@ export default class HaAutomationConditionRow extends LitElement {
           opacity: 0.5;
           pointer-events: none;
         }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
         .card-content {
-          padding: 8px 0;
+          padding: 16px;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);

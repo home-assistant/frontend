@@ -412,10 +412,13 @@ export default class HaAutomationActionRow extends LitElement {
           opacity: 0.5;
           pointer-events: none;
         }
-        .card-content {
-          padding: 8px 0;
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
         }
-
+        .card-content {
+          padding: 16px;
+        }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;

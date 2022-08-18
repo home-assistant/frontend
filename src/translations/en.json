@@ -2107,7 +2107,8 @@
                   }
                 },
                 "activate_scene": {
-                  "label": "Activate scene"
+                  "label": "Activate scene",
+                  "scene": "Scene"
                 },
                 "repeat": {
                   "label": "Repeat",
