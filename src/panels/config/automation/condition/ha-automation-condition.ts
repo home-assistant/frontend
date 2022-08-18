@@ -1,4 +1,5 @@
 import { mdiPlus } from "@mdi/js";
+import { repeat } from "lit/directives/repeat";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
@@ -28,7 +29,6 @@ import { CONDITION_TYPES } from "../../../../data/condition";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaSelect } from "../../../../components/ha-select";
-import { repeat } from "lit/directives/repeat";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
