@@ -14,7 +14,7 @@ import {
   Trigger,
   triggerAutomationActions,
 } from "../../../data/automation";
-import { Action, MODES, MODES_MAX } from "../../../data/script";
+import { Action, isMaxMode, MODES } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -27,13 +27,13 @@ import "./trigger/ha-automation-trigger";
 export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public config!: ManualAutomationConfig;
+  @property({ attribute: false }) public config!: ManualAutomationConfig;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _showDescription = false;
 
@@ -114,7 +114,7 @@ export class HaManualAutomationEditor extends LitElement {
                 `
               )}
             </ha-select>
-            ${this.config.mode && MODES_MAX.includes(this.config.mode)
+            ${this.config.mode && isMaxMode(this.config.mode)
               ? html`
                   <br /><ha-textfield
                     .label=${this.hass.localize(
@@ -300,7 +300,7 @@ export class HaManualAutomationEditor extends LitElement {
       mode,
     };
 
-    if (!MODES_MAX.includes(mode)) {
+    if (!isMaxMode(mode)) {
       delete value.max;
     }
 

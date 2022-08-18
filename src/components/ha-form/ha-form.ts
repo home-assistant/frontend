@@ -41,14 +41,14 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property() public computeError?: (schema: HaFormSchema, error) => string;
+  @property() public computeError?: (schema: any, error) => string;
 
   @property() public computeLabel?: (
     schema: any,
-    data?: HaFormDataContainer
+    data: HaFormDataContainer
   ) => string;
 
-  @property() public computeHelper?: (schema: HaFormSchema) => string;
+  @property() public computeHelper?: (schema: any) => string | undefined;
 
   public focus() {
     const root = this.shadowRoot?.querySelector(".root");
