@@ -84,7 +84,8 @@ const SAMPLES: {
       return html`
         <ha-expansion-panel slot=${slot} .leftChevron=${leftChevron}>
           <span slot="header">Slot header</span>
-          ${SHORT_TEXT}
+          Add <code>flex: 1</code> style to name in your slot to style it
+          correctly.
         </ha-expansion-panel>
       `;
     },
