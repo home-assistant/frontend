@@ -1,3 +1,4 @@
+import { repeat } from "lit/directives/repeat";
 import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import memoizeOne from "memoize-one";
@@ -42,7 +43,11 @@ export default class HaAutomationTrigger extends LitElement {
 
   protected render() {
     return html`
-      ${this.triggers.map(
+      ${repeat(
+        this.triggers,
+        // Use the trigger as key, so moving around keeps the same DOM,
+        // including expand state
+        (trigger) => trigger,
         (trg, idx) => html`
           <ha-automation-trigger-row
             .index=${idx}

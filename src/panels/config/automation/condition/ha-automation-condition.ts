@@ -28,6 +28,7 @@ import { CONDITION_TYPES } from "../../../../data/condition";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaSelect } from "../../../../components/ha-select";
+import { repeat } from "lit/directives/repeat";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -76,7 +77,11 @@ export default class HaAutomationCondition extends LitElement {
       return html``;
     }
     return html`
-      ${this.conditions.map(
+      ${repeat(
+        this.conditions,
+        // Use the condition as key, so moving around keeps the same DOM,
+        // including expand state
+        (condition) => condition,
         (cond, idx) => html`
           <ha-automation-condition-row
             .index=${idx}

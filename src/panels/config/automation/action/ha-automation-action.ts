@@ -1,3 +1,4 @@
+import { repeat } from "lit/directives/repeat";
 import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
@@ -43,7 +44,11 @@ export default class HaAutomationAction extends LitElement {
 
   protected render() {
     return html`
-      ${this.actions.map(
+      ${repeat(
+        this.actions,
+        // Use the action as key, so moving around keeps the same DOM,
+        // including expand state
+        (action) => action,
         (action, idx) => html`
           <ha-automation-action-row
             .index=${idx}
