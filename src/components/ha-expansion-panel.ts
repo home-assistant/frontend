@@ -167,8 +167,7 @@ class HaExpansionPanel extends LitElement {
         transform: rotate(180deg);
       }
 
-      .header,
-      ::slotted([slot="header"]) {
+      .header {
         flex: 1;
       }
 

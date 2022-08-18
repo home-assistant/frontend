@@ -425,7 +425,6 @@ export default class HaAutomationTriggerRow extends LitElement {
       css`
         .name {
           flex: 1;
-          margin-left: 8px;
         }
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);

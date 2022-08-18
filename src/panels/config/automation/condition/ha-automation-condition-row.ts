@@ -302,7 +302,6 @@ export default class HaAutomationConditionRow extends LitElement {
       css`
         .name {
           flex: 1;
-          margin-left: 8px;
         }
         ha-button-menu,
         ha-progress-button {

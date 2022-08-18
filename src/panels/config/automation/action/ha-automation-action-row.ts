@@ -402,7 +402,6 @@ export default class HaAutomationActionRow extends LitElement {
       css`
         .name {
           flex: 1;
-          margin-left: 8px;
         }
         ha-button-menu,
         ha-icon-button {
