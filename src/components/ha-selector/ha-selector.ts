@@ -14,6 +14,7 @@ import "./ha-selector-datetime";
 import "./ha-selector-device";
 import "./ha-selector-duration";
 import "./ha-selector-entity";
+import "./ha-selector-file";
 import "./ha-selector-number";
 import "./ha-selector-object";
 import "./ha-selector-select";
