@@ -4,7 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -25,38 +26,43 @@ declare global {
 export class HuiViewEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isNew!: boolean;
+  @property({ type: Boolean }) public isNew!: boolean;
 
   @state() private _config!: LovelaceViewConfig;
 
   private _suggestedPath = false;
 
-  private _schema = memoizeOne((localize): HaFormSchema[] => [
-    { name: "title", selector: { text: {} } },
-    {
-      name: "icon",
-      selector: {
-        icon: {},
-      },
-    },
-    { name: "path", selector: { text: {} } },
-    { name: "theme", selector: { theme: {} } },
-    {
-      name: "type",
-      selector: {
-        select: {
-          options: [
-            DEFAULT_VIEW_LAYOUT,
-            SIDEBAR_VIEW_LAYOUT,
-            PANEL_VIEW_LAYOUT,
-          ].map((type) => ({
-            value: type,
-            label: localize(`ui.panel.lovelace.editor.edit_view.types.${type}`),
-          })),
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
         },
-      },
-    },
-  ]);
+        { name: "path", selector: { text: {} } },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "type",
+          selector: {
+            select: {
+              options: [
+                DEFAULT_VIEW_LAYOUT,
+                SIDEBAR_VIEW_LAYOUT,
+                PANEL_VIEW_LAYOUT,
+              ].map((type) => ({
+                value: type,
+                label: localize(
+                  `ui.panel.lovelace.editor.edit_view.types.${type}`
+                ),
+              })),
+            },
+          },
+        },
+      ] as const
+  );
 
   set config(config: LovelaceViewConfig) {
     this._config = config;
@@ -114,15 +120,19 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
-    if (schema.name === "path") {
-      return this.hass!.localize(`ui.panel.lovelace.editor.card.generic.url`);
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "path":
+        return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
+      case "type":
+        return this.hass.localize("ui.panel.lovelace.editor.edit_view.type");
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-    return (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      ) || this.hass.localize("ui.panel.lovelace.editor.edit_view.type")
-    );
   };
 }
 

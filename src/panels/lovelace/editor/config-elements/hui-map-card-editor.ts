@@ -26,7 +26,7 @@ import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { HaFormSchema } from "../../../../components/ha-form/types";
+import { SchemaUnion } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -41,7 +41,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   { name: "title", selector: { text: {} } },
   {
     name: "",
@@ -53,7 +53,7 @@ const SCHEMA: HaFormSchema[] = [
       { name: "hours_to_show", selector: { number: { mode: "box", min: 1 } } },
     ],
   },
-];
+] as const;
 
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
@@ -149,11 +149,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) =>
-    this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
-    ) ||
-    this.hass!.localize(`ui.panel.lovelace.editor.card.map.${schema.name}`);
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "dark_mode":
+      case "default_zoom":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.map.${schema.name}`
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [
