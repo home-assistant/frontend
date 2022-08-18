@@ -48,9 +48,11 @@ class HaExpansionPanel extends LitElement {
               ></ha-svg-icon>
             `
           : ""}
-        <slot class="header" name="header">
-          ${this.header}
-          <slot class="secondary" name="secondary">${this.secondary}</slot>
+        <slot name="header">
+          <div class="header">
+            ${this.header}
+            <slot class="secondary" name="secondary">${this.secondary}</slot>
+          </div>
         </slot>
         ${!this.leftChevron
           ? html`
@@ -132,6 +134,15 @@ class HaExpansionPanel extends LitElement {
         border-radius: var(--ha-card-border-radius, 4px);
       }
 
+      .summary-icon {
+        margin-left: 8px;
+      }
+
+      :host([leftchevron]) .summary-icon {
+        margin-left: 0;
+        margin-right: 8px;
+      }
+
       #summary {
         display: flex;
         padding: var(--expansion-panel-summary-padding, 0 8px);
@@ -154,6 +165,11 @@ class HaExpansionPanel extends LitElement {
 
       .summary-icon.expanded {
         transform: rotate(180deg);
+      }
+
+      .header,
+      ::slotted([slot="header"]) {
+        flex: 1;
       }
 
       .container {
