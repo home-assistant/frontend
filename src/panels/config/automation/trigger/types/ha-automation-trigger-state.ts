@@ -54,7 +54,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         },
         {
           name: "attribute",
-          selector: { attribute: { entity_id: entityId } },
+          selector: {
+            attribute: { entity_id: entityId ? entityId[0] : undefined },
+          },
         },
         {
           name: "from",
