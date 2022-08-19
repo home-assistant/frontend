@@ -58,7 +58,7 @@ class HaEntityAttributePicker extends LitElement {
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .value=${this.value || ""}
+        .value=${this.value ? formatAttributeName(this.value) : ""}
         .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize(
