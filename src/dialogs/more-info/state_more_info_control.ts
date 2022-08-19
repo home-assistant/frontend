@@ -1,8 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  DOMAINS_HIDE_DEFAULT_MORE_INFO,
   DOMAINS_WITH_MORE_INFO,
-} from "../../common/const";
+  DOMAINS_HIDE_DEFAULT_MORE_INFO,
+} from "./const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 
 const LAZY_LOADED_MORE_INFO_CONTROL = {

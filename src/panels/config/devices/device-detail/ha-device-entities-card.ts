@@ -21,13 +21,13 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../../data/entity_registry";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
-import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
@@ -90,7 +90,7 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     return html`
       <ha-card outlined .header=${this.header}>
-        <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
+        <div id="entities">
           ${shownEntities.map((entry) =>
             this.hass.states[entry.entity_id]
               ? this._renderEntity(entry)
@@ -221,20 +221,11 @@ export class HaDeviceEntitiesCard extends LitElement {
     `;
   }
 
-  private _overrideMoreInfo(ev: Event): void {
-    ev.stopPropagation();
-    const entry = (ev.target! as any).entry;
-    showEntityEditorDialog(this, {
-      entry,
-      entity_id: entry.entity_id,
-    });
-  }
-
   private _openEditEntry(ev: Event): void {
     const entry = (ev.currentTarget! as any).entry;
-    showEntityEditorDialog(this, {
-      entry,
-      entity_id: entry.entity_id,
+    showMoreInfoDialog(this, {
+      entityId: entry.entity_id,
+      tab: "settings",
     });
   }
 
