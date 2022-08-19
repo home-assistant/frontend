@@ -14,7 +14,7 @@ import { nextRender } from "../common/util/render-status";
 import "./ha-svg-icon";
 
 @customElement("ha-expansion-panel")
-class HaExpansionPanel extends LitElement {
+export class HaExpansionPanel extends LitElement {
   @property({ type: Boolean, reflect: true }) expanded = false;
 
   @property({ type: Boolean, reflect: true }) outlined = false;
