@@ -42,13 +42,13 @@ export default class HaAutomationAction extends LitElement {
 
   private _focusLastActionOnChange = false;
 
+  private _actionKeys = new WeakMap<Action, string>();
+
   protected render() {
     return html`
       ${repeat(
         this.actions,
-        // Use the action as key, so moving around keeps the same DOM,
-        // including expand state
-        (action) => action,
+        (action) => this._getKey(action),
         (action, idx) => html`
           <ha-automation-action-row
             .index=${idx}
@@ -95,6 +95,14 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
+  private _getKey(action: Action) {
+    if (!this._actionKeys.has(action)) {
+      this._actionKeys.set(action, Math.random().toString());
+    }
+
+    return this._actionKeys.get(action)!;
+  }
+
   private _addAction(ev: CustomEvent<ActionDetail>) {
     const action = (ev.currentTarget as HaSelect).items[ev.detail.index]
       .value as typeof ACTION_TYPES[number];
@@ -131,6 +139,10 @@ export default class HaAutomationAction extends LitElement {
     if (newValue === null) {
       actions.splice(index, 1);
     } else {
+      // Store key on new value.
+      const key = this._getKey(actions[index]);
+      this._actionKeys.set(newValue, key);
+
       actions[index] = newValue;
     }
 
