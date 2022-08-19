@@ -48,7 +48,9 @@ export class MoreInfoDialog extends LitElement {
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
-    this._currTab = params.tab || "controls";
+    if (params.tab) {
+      this._currTab = params.tab;
+    }
     if (!this._entityId) {
       this.closeDialog();
       return;
