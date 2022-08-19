@@ -61,16 +61,18 @@ class HaConfigHardware extends LitElement {
     let imageURL: string | undefined;
     let documentationURL: string | undefined;
 
-    if (this._hardwareInfo?.hardware.length) {
-      const boardData = this._hardwareInfo!.hardware[0];
+    const hardware = this._hardwareInfo?.hardware.concat();
 
-      boardId = boardData.board.hassio_board_id;
-      boardName = boardData.name;
-      documentationURL = boardData.url;
+    if (hardware?.length) {
+      const boardData = hardware.shift();
+
+      boardId = boardData!.board.hassio_board_id;
+      boardName = boardData!.name;
+      documentationURL = boardData!.url;
       imageURL = hardwareBrandsUrl({
         category: "boards",
-        manufacturer: boardData.board.manufacturer,
-        model: boardData.board.model,
+        manufacturer: boardData!.board.manufacturer,
+        model: boardData!.board.model,
         darkOptimized: this.hass.themes?.darkMode,
       });
     } else if (this._OSData?.board) {
@@ -170,6 +172,43 @@ class HaConfigHardware extends LitElement {
                   </div>
                 </ha-card>
               </div>
+            `
+          : ""}
+        ${hardware?.length
+          ? html`
+              <ha-card outlined>
+                <div class="connected-hardware-title">Connected Hardware</div>
+                <div class="card-content">
+                  <mwc-list>
+                    ${hardware.map((device) => {
+                      const deviceImageURL = hardwareBrandsUrl({
+                        category: "boards",
+                        manufacturer: device.dongles[0].manufacturer,
+                        model: device.dongles[0].model,
+                        darkOptimized: this.hass.themes?.darkMode,
+                      });
+
+                      return html`
+                        <mwc-list-item
+                          noninteractive
+                          graphic=${ifDefined(
+                            deviceImageURL ? "medium" : undefined
+                          )}
+                          twoline
+                        >
+                          ${deviceImageURL
+                            ? html`<img slot="graphic" src=${deviceImageURL} />`
+                            : ""}
+                          <span class="primary-text">${device.name}</span>
+                          <span class="secondary-text" slot="secondary"
+                            >${device.dongles[0].manufacturer}</span
+                          >
+                        </mwc-list-item>
+                      `;
+                    })}
+                  </mwc-list>
+                </div>
+              </ha-card>
             `
           : ""}
       </hass-subpage>
@@ -276,7 +315,6 @@ class HaConfigHardware extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 0 auto;
-        height: 100%;
         justify-content: space-between;
         flex-direction: column;
         display: flex;
