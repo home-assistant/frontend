@@ -313,6 +313,9 @@ export class MoreInfoDialog extends LitElement {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
+            --dialog-surface-position: fixed;
+            --dialog-surface-top: 40px;
+            --mdc-dialog-max-height: calc(100% - 72px);
           }
 
           ha-icon-button[slot="navigationIcon"] {
