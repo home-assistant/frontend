@@ -20,11 +20,10 @@ import { HomeAssistant } from "../../types";
 import {
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS,
-  DOMAINS_WITH_MORE_INFO,
   DOMAINS_MORE_INFO_NO_HISTORY,
 } from "./const";
 import "./controls/more-info-default";
-import "./ha-more-info-controls";
+import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./ha-more-info-history-and-logbook";
 import "./more-info-content";
@@ -34,7 +33,7 @@ export interface MoreInfoDialogParams {
   tab?: Tab;
 }
 
-type Tab = "controls" | "history" | "settings" | "related";
+type Tab = "info" | "history" | "settings" | "related";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
@@ -44,7 +43,7 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
-  @state() private _currTab: Tab = "controls";
+  @state() private _currTab: Tab = "info";
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -92,11 +91,7 @@ export class MoreInfoDialog extends LitElement {
 
     const domain = computeDomain(entityId);
     const name = stateObj ? computeStateName(stateObj) : entityId;
-    const tabs = this._getTabs(
-      entityId,
-      stateObj !== undefined,
-      this.hass.user!.is_admin
-    );
+    const tabs = this._getTabs(entityId, this.hass.user!.is_admin);
 
     return html`
       <ha-dialog
@@ -147,11 +142,9 @@ export class MoreInfoDialog extends LitElement {
                   ${tabs.map(
                     (tab) => html`
                       <mwc-tab
-                        .label=${
-                          this.hass.localize(
-                            `ui.dialogs.more_info_control.${tab}`
-                          ) || tab // TODO fix translation
-                        }
+                        .label=${this.hass.localize(
+                          `ui.dialogs.more_info_control.${tab}`
+                        )}
                       ></mwc-tab>
                     `
                   )}
@@ -161,12 +154,12 @@ export class MoreInfoDialog extends LitElement {
         </div>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
-            this._currTab === "controls"
+            this._currTab === "info"
               ? html`
-                  <ha-more-info-controls
+                  <ha-more-info-info
                     .hass=${this.hass}
                     .entityId=${this._entityId}
-                  ></ha-more-info-controls>
+                  ></ha-more-info-info>
                 `
               : this._currTab === "history"
               ? html`
@@ -206,11 +199,7 @@ export class MoreInfoDialog extends LitElement {
     if (!this._entityId) {
       return;
     }
-    const tabs = this._getTabs(
-      this._entityId,
-      this._entityId in this.hass.states,
-      this.hass.user!.is_admin
-    );
+    const tabs = this._getTabs(this._entityId, this.hass.user!.is_admin);
     if (!tabs.includes(this._currTab)) {
       this._currTab = tabs[0];
     }
@@ -223,17 +212,9 @@ export class MoreInfoDialog extends LitElement {
     }
   }
 
-  private _getTabs(
-    entityId: string,
-    hasState: boolean,
-    isAdmin: boolean
-  ): Tab[] {
+  private _getTabs(entityId: string, isAdmin: boolean): Tab[] {
     const domain = computeDomain(entityId);
-    const tabs: Tab[] = [];
-
-    if (hasState && DOMAINS_WITH_MORE_INFO.includes(domain)) {
-      tabs.push("controls");
-    }
+    const tabs: Tab[] = ["info"];
 
     if (!DOMAINS_MORE_INFO_NO_HISTORY.includes(domain)) {
       tabs.push("history");
@@ -264,11 +245,9 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs(
-      this._entityId!,
-      this._entityId! in this.hass.states,
-      this.hass.user!.is_admin
-    )[ev.detail.index];
+    const newTab = this._getTabs(this._entityId!, this.hass.user!.is_admin)[
+      ev.detail.index
+    ];
     if (newTab === this._currTab) {
       return;
     }

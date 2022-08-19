@@ -4,17 +4,12 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import {
-  computeShowHistoryComponent,
-  computeShowLogBookComponent,
-  DOMAINS_NO_INFO,
-  DOMAINS_WITH_MORE_INFO,
-} from "./const";
+import { DOMAINS_NO_INFO } from "./const";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 
-@customElement("ha-more-info-controls")
-export class MoreInfoHistoryAndLogbook extends LitElement {
+@customElement("ha-more-info-info")
+export class MoreInfoInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityId!: string;
@@ -34,20 +29,6 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
               .hass=${this.hass}
             ></state-card-content>
           `}
-      ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
-      !computeShowHistoryComponent(this.hass, entityId)
-        ? ""
-        : html`<ha-more-info-history
-            .hass=${this.hass}
-            .entityId=${entityId}
-          ></ha-more-info-history>`}
-      ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
-      !computeShowLogBookComponent(this.hass, entityId)
-        ? ""
-        : html`<ha-more-info-logbook
-            .hass=${this.hass}
-            .entityId=${entityId}
-          ></ha-more-info-logbook>`}
       <more-info-content
         .stateObj=${stateObj}
         .hass=${this.hass}
@@ -94,6 +75,6 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-controls": MoreInfoHistoryAndLogbook;
+    "ha-more-info-info": MoreInfoInfo;
   }
 }
