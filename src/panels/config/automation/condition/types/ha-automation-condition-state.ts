@@ -37,7 +37,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
           name: "attribute",
           selector: { attribute: { entity_id: entityId } },
         },
-        { name: "state", selector: { text: {} } },
+        { name: "state", selector: { state: { entity_id: entityId } } },
         { name: "for", selector: { duration: {} } },
       ] as const
   );

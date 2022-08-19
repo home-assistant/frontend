@@ -115,6 +115,10 @@ const SCHEMAS: {
     name: "One of each",
     input: {
       entity: { name: "Entity", selector: { entity: {} } },
+      state: {
+        name: "State",
+        selector: { state: { entity_id: "alarm_control_panel.alarm" } },
+      },
       attribute: {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },

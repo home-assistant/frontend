@@ -23,6 +23,7 @@ export type Selector =
   | NumberSelector
   | ObjectSelector
   | SelectSelector
+  | StateSelector
   | StringSelector
   | TargetSelector
   | TemplateSelector
@@ -188,6 +189,12 @@ export interface SelectSelector {
     custom_value?: boolean;
     mode?: "list" | "dropdown";
     options: readonly string[] | readonly SelectOption[];
+  };
+}
+
+export interface StateSelector {
+  state: {
+    entity_id?: string;
   };
 }
 
