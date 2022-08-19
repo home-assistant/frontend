@@ -38,6 +38,8 @@ export default class HaAutomationCondition extends LitElement {
 
   private _focusLastConditionOnChange = false;
 
+  private _conditionKeys = new WeakMap<Condition, string>();
+
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
       return;
@@ -79,9 +81,7 @@ export default class HaAutomationCondition extends LitElement {
     return html`
       ${repeat(
         this.conditions,
-        // Use the condition as key, so moving around keeps the same DOM,
-        // including expand state
-        (condition) => condition,
+        (condition) => this._getKey(condition),
         (cond, idx) => html`
           <ha-automation-condition-row
             .index=${idx}
@@ -111,6 +111,14 @@ export default class HaAutomationCondition extends LitElement {
     `;
   }
 
+  private _getKey(condition: Condition) {
+    if (!this._conditionKeys.has(condition)) {
+      this._conditionKeys.set(condition, Math.random().toString());
+    }
+
+    return this._conditionKeys.get(condition)!;
+  }
+
   private _addCondition(ev: CustomEvent<ActionDetail>) {
     const condition = (ev.currentTarget as HaSelect).items[ev.detail.index]
       .value as Condition["condition"];
@@ -138,6 +146,10 @@ export default class HaAutomationCondition extends LitElement {
     if (newValue === null) {
       conditions.splice(index, 1);
     } else {
+      // Store key on new value.
+      const key = this._getKey(conditions[index]);
+      this._conditionKeys.set(newValue, key);
+
       conditions[index] = newValue;
     }
 
