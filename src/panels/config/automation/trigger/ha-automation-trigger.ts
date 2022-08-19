@@ -41,13 +41,13 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _focusLastTriggerOnChange = false;
 
+  private _triggerKeys = new WeakMap<Trigger, string>();
+
   protected render() {
     return html`
       ${repeat(
         this.triggers,
-        // Use the trigger as key, so moving around keeps the same DOM,
-        // including expand state
-        (trigger) => trigger,
+        (trigger) => this._getKey(trigger),
         (trg, idx) => html`
           <ha-automation-trigger-row
             .index=${idx}
@@ -91,6 +91,14 @@ export default class HaAutomationTrigger extends LitElement {
     }
   }
 
+  private _getKey(action: Trigger) {
+    if (!this._triggerKeys.has(action)) {
+      this._triggerKeys.set(action, Math.random().toString());
+    }
+
+    return this._triggerKeys.get(action)!;
+  }
+
   private _addTrigger(ev: CustomEvent<ActionDetail>) {
     const platform = (ev.currentTarget as HaSelect).items[ev.detail.index]
       .value as Trigger["platform"];
@@ -118,6 +126,10 @@ export default class HaAutomationTrigger extends LitElement {
     if (newValue === null) {
       triggers.splice(index, 1);
     } else {
+      // Store key on new value.
+      const key = this._getKey(triggers[index]);
+      this._triggerKeys.set(newValue, key);
+
       triggers[index] = newValue;
     }
 
