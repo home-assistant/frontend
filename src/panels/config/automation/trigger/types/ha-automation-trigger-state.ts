@@ -56,8 +56,18 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           name: "attribute",
           selector: { attribute: { entity_id: entityId } },
         },
-        { name: "from", selector: { text: {} } },
-        { name: "to", selector: { text: {} } },
+        {
+          name: "from",
+          selector: {
+            state: { entity_id: entityId ? entityId[0] : undefined },
+          },
+        },
+        {
+          name: "to",
+          selector: {
+            state: { entity_id: entityId ? entityId[0] : undefined },
+          },
+        },
         { name: "for", selector: { duration: {} } },
       ] as const
   );

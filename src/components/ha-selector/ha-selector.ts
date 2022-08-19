@@ -18,6 +18,7 @@ import "./ha-selector-file";
 import "./ha-selector-number";
 import "./ha-selector-object";
 import "./ha-selector-select";
+import "./ha-selector-state";
 import "./ha-selector-target";
 import "./ha-selector-template";
 import "./ha-selector-text";

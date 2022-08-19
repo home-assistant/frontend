@@ -400,6 +400,9 @@
         "entity-attribute-picker": {
           "attribute": "Attribute",
           "show_attributes": "Show attributes"
+        },
+        "entity-state-picker": {
+          "state": "State"
         }
       },
       "target-picker": {
