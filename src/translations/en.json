@@ -2997,7 +2997,9 @@
           },
           "configuration_page": {
             "shortcuts_title": "Shortcuts",
-            "update_button": "Update Configuration"
+            "update_button": "Update Configuration",
+            "download_backup": "Download Network Backup",
+            "network_settings_title": "Network Settings"
           },
           "add_device_page": {
             "spinner": "Searching for Zigbee devices…",

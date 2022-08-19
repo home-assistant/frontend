@@ -117,8 +117,8 @@ class ZHAConfigDashboard extends LitElement {
         ${this._networkSettings
           ? html` <ha-card
               header=${this.hass.localize(
-                "component.zha.config_panel.network_settings.title"
-              ) || "Network Settings"}
+                "ui.panel.config.zha.configuration_page.network_settings_title"
+              )}
             >
               <div class="card-content network-settings">
                 <div>
@@ -153,8 +153,8 @@ class ZHAConfigDashboard extends LitElement {
                   .disabled=${this._generatingBackup}
                 >
                   ${this.hass.localize(
-                    "component.zha.config_panel.diagnostics.create_backup"
-                  ) || "Download Network Backup"}
+                    "ui.panel.config.zha.configuration_page.download_backup"
+                  )}
                 </ha-progress-button>
               </div>
             </ha-card>`
