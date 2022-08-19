@@ -137,6 +137,11 @@ const SCHEMAS: {
       { name: "addon", selector: { addon: {} } },
       { name: "entity", selector: { entity: {} } },
       {
+        name: "State",
+        selector: { state: { entity_id: "" } },
+        context: { filter_entity: "entity" },
+      },
+      {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },
         context: { filter_entity: "entity" },
