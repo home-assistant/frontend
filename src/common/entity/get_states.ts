@@ -5,7 +5,7 @@ import { UNAVAILABLE_STATES } from "../../data/entity";
 const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
     "armed_away",
-    "armed_custom_bypass 	",
+    "armed_custom_bypass",
     "armed_home",
     "armed_night",
     "armed_vacation",
