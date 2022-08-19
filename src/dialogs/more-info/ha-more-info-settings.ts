@@ -24,40 +24,48 @@ export class HaMoreInfoSettings extends LitElement {
   @state() private _settingsElementTag?: string;
 
   protected render() {
-    if (this._entry) {
-      if (this._settingsElementTag) {
-        return html`
-          ${dynamicElement(this._settingsElementTag, {
-            hass: this.hass,
-            entry: this._entry,
-            entityId: this.entityId,
-          })}
-        `;
-      }
+    // loading.
+    if (this._entry === undefined) {
       return html``;
     }
+
+    // No unique ID
+    if (this._entry === null) {
+      return html`
+        <div class="content">
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.no_unique_id",
+            "entity_id",
+            this.entityId,
+            "faq_link",
+            html`<a
+              href=${documentationUrl(this.hass, "/faq/unique_id")}
+              target="_blank"
+              rel="noreferrer"
+              >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
+            >`
+          )}
+        </div>
+      `;
+    }
+
+    if (!this._settingsElementTag) {
+      return html``;
+    }
+
     return html`
-      <div class="content">
-        ${this.hass.localize(
-          "ui.dialogs.entity_registry.no_unique_id",
-          "entity_id",
-          this.entityId,
-          "faq_link",
-          html`<a
-            href=${documentationUrl(this.hass, "/faq/unique_id")}
-            target="_blank"
-            rel="noreferrer"
-            >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
-          >`
-        )}
-      </div>
+      ${dynamicElement(this._settingsElementTag, {
+        hass: this.hass,
+        entry: this._entry,
+        entityId: this.entityId,
+      })}
     `;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (changedProps.has("entityId")) {
-      this._entry = null;
+      this._entry = undefined;
       if (this.entityId) {
         this._getEntityReg();
       }
