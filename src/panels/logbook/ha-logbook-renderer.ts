@@ -614,7 +614,8 @@ class HaLogbookRenderer extends LitElement {
         .narrow .icon-message state-badge {
           margin-left: 0;
           margin-inline-start: 0;
-          margin-inline-end: initial;
+          margin-inline-end: 8px;
+          margin-right: 8px;
           direction: var(--direction);
         }
       `,
