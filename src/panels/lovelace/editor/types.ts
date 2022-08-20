@@ -64,7 +64,7 @@ export interface Card {
 }
 
 export interface HeaderFooter {
-  type: string;
+  type: LovelaceHeaderFooterConfig["type"];
   icon?: string;
 }
 
@@ -75,7 +75,7 @@ export interface CardPickTarget extends EventTarget {
 export interface SubElementEditorConfig {
   index?: number;
   elementConfig?: LovelaceRowConfig | LovelaceHeaderFooterConfig;
-  type: string;
+  type: "header" | "footer" | "row";
 }
 
 export interface EditSubElementEvent {
