@@ -20,16 +20,22 @@ const ENTITIES = [
   }),
   getEntity("media_player", "livingroom", "playing", {
     friendly_name: "Livingroom",
+    media_content_type: "music",
+    device_class: "tv",
   }),
   getEntity("media_player", "lounge", "idle", {
     friendly_name: "Lounge",
     supported_features: 444983,
+    device_class: "speaker",
   }),
   getEntity("light", "bedroom", "on", {
     friendly_name: "Bedroom",
+    effect: "colorloop",
+    effect_list: ["colorloop", "random"],
   }),
   getEntity("switch", "coffee", "off", {
     friendly_name: "Coffee",
+    device_class: "switch",
   }),
 ];
 
@@ -137,14 +143,14 @@ const SCHEMAS: {
       { name: "addon", selector: { addon: {} } },
       { name: "entity", selector: { entity: {} } },
       {
-        name: "State",
-        selector: { state: { entity_id: "" } },
-        context: { filter_entity: "entity" },
-      },
-      {
         name: "Attribute",
         selector: { attribute: { entity_id: "" } },
         context: { filter_entity: "entity" },
+      },
+      {
+        name: "State",
+        selector: { state: { entity_id: "" } },
+        context: { filter_entity: "entity", filter_attribute: "Attribute" },
       },
       { name: "Device", selector: { device: {} } },
       { name: "Duration", selector: { duration: {} } },
