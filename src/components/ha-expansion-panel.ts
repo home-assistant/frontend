@@ -85,6 +85,12 @@ export class HaExpansionPanel extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("expanded") && this.expanded) {
       this._showContent = this.expanded;
+      setTimeout(() => {
+        // Verify we're still expanded
+        if (this.expanded) {
+          this._container.style.overflow = "initial";
+        }
+      }, 300);
     }
   }
 
