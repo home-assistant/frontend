@@ -30,14 +30,17 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   private _schema = memoizeOne(
-    (entityId) =>
+    (entityId, attribute) =>
       [
         { name: "entity_id", required: true, selector: { entity: {} } },
         {
           name: "attribute",
           selector: { attribute: { entity_id: entityId } },
         },
-        { name: "state", selector: { state: { entity_id: entityId } } },
+        {
+          name: "state",
+          selector: { state: { entity_id: entityId, attribute: attribute } },
+        },
         { name: "for", selector: { duration: {} } },
       ] as const
   );
@@ -57,7 +60,10 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   protected render() {
     const trgFor = createDurationData(this.condition.for);
     const data = { ...this.condition, for: trgFor };
-    const schema = this._schema(this.condition.entity_id);
+    const schema = this._schema(
+      this.condition.entity_id,
+      this.condition.attribute
+    );
 
     return html`
       <ha-form

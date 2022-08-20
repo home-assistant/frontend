@@ -195,6 +195,7 @@ export interface SelectSelector {
 export interface StateSelector {
   state: {
     entity_id?: string;
+    attribute?: string;
   };
 }
 
