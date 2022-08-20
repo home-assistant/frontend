@@ -104,25 +104,21 @@ class HaConfigEntryPicker extends LitElement {
   }
 
   private async _getConfigEntries() {
-    getConfigEntries(this.hass, { type: "integration" }).then(
-      (configEntries) => {
-        this._configEntries = configEntries
-          .filter((entry) => {
-            if (!this.integration) {
-              return true;
-            }
-            return entry.domain === this.integration;
+    getConfigEntries(this.hass, {
+      type: "integration",
+      domain: this.integration,
+    }).then((configEntries) => {
+      this._configEntries = configEntries
+        .map(
+          (entry: ConfigEntry): ConfigEntryExtended => ({
+            ...entry,
+            localized_domain_name: domainToName(
+              this.hass.localize,
+              entry.domain
+            ),
           })
-          .map(
-            (entry: ConfigEntry): ConfigEntryExtended => ({
-              ...entry,
-              localized_domain_name: domainToName(
-                this.hass.localize,
-                entry.domain
-              ),
-            })
-          )
-          .sort((conf1, conf2) =>
+        )
+        .sort((conf1, conf2) =>
             caseInsensitiveStringCompare(
               conf1.localized_domain_name + conf1.title,
               conf2.localized_domain_name + conf2.title
