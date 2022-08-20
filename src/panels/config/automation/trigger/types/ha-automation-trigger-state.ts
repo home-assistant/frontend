@@ -45,7 +45,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (entityId) =>
+    (entityId, attribute) =>
       [
         {
           name: "entity_id",
@@ -61,13 +61,19 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         {
           name: "from",
           selector: {
-            state: { entity_id: entityId ? entityId[0] : undefined },
+            state: {
+              entity_id: entityId ? entityId[0] : undefined,
+              attribute: attribute,
+            },
           },
         },
         {
           name: "to",
           selector: {
-            state: { entity_id: entityId ? entityId[0] : undefined },
+            state: {
+              entity_id: entityId ? entityId[0] : undefined,
+              attribute: attribute,
+            },
           },
         },
         { name: "for", selector: { duration: {} } },
@@ -111,7 +117,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
-    const schema = this._schema(this.trigger.entity_id);
+    const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
 
     return html`
       <ha-form

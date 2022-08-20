@@ -16,6 +16,8 @@ class HaEntityStatePicker extends LitElement {
 
   @property() public entityId?: string;
 
+  @property() public attribute?: string;
+
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled = false;
@@ -44,14 +46,16 @@ class HaEntityStatePicker extends LitElement {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items =
         this.entityId && state
-          ? getStates(state).map((key) => ({
+          ? getStates(state, this.attribute).map((key) => ({
               value: key,
-              label: computeStateDisplay(
-                this.hass.localize,
-                state,
-                this.hass.locale,
-                key
-              ),
+              label: !this.attribute
+                ? computeStateDisplay(
+                    this.hass.localize,
+                    state,
+                    this.hass.locale,
+                    key
+                  )
+                : key,
             }))
           : [];
     }

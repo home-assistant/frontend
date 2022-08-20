@@ -22,6 +22,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public required = true;
 
   @property() public context?: {
+    filter_attribute?: string;
     filter_entity?: string;
   };
 
@@ -31,6 +32,8 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .entityId=${this.selector.state.entity_id ||
         this.context?.filter_entity}
+        .attribute=${this.selector.state.attribute ||
+        this.context?.filter_attribute}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

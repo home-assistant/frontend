@@ -58,32 +58,220 @@ const FIXED_DOMAIN_STATES = {
   ],
 };
 
-export const getStates = (state: HassEntity): string[] => {
+const FIXED_DOMAIN_ATTRIBUTE_STATES = {
+  alarm_control_panel: {
+    code_format: ["number", "text"],
+  },
+  binary_sensor: {
+    device_class: [
+      "battery",
+      "battery_charging",
+      "co",
+      "cold",
+      "connectivity",
+      "door",
+      "garage_door",
+      "gas",
+      "heat",
+      "light",
+      "lock",
+      "moisture",
+      "motion",
+      "moving",
+      "occupancy",
+      "opening",
+      "plug",
+      "power",
+      "presence",
+      "problem",
+      "running",
+      "safety",
+      "smoke",
+      "sound",
+      "tamper",
+      "update",
+      "vibration",
+      "window",
+    ],
+  },
+  button: {
+    device_class: ["restart", "update"],
+  },
+  camera: {
+    frontend_stream_type: ["hls", "web_rtc"],
+  },
+  climate: {
+    hvac_action: ["off", "idle", "heating", "cooling", "drying", "fan"],
+  },
+  cover: {
+    device_class: [
+      "awning",
+      "blind",
+      "curtain",
+      "damper",
+      "door",
+      "garage",
+      "gate",
+      "shade",
+      "shutter",
+      "window",
+    ],
+  },
+  humidifier: {
+    device_class: ["humidifier", "dehumidifier"],
+  },
+  media_player: {
+    device_class: ["tv", "speaker", "receiver"],
+    media_content_type: [
+      "app",
+      "channel",
+      "episode",
+      "game",
+      "image",
+      "movie",
+      "music",
+      "playlist",
+      "tvshow",
+      "url",
+      "video",
+    ],
+  },
+  number: {
+    device_class: ["temperature"],
+  },
+  sensor: {
+    device_class: [
+      "apparent_power",
+      "aqi",
+      "battery",
+      "carbon_dioxide",
+      "carbon_monoxide",
+      "current",
+      "date",
+      "duration",
+      "energy",
+      "frequency",
+      "gas",
+      "humidity",
+      "illuminance",
+      "monetary",
+      "nitrogen_dioxide",
+      "nitrogen_monoxide",
+      "nitrous_oxide",
+      "ozone",
+      "pm1",
+      "pm10",
+      "pm25",
+      "power_factor",
+      "power",
+      "pressure",
+      "reactive_power",
+      "signal_strength",
+      "sulphur_dioxide",
+      "temperature",
+      "timestamp",
+      "volatile_organic_compounds",
+      "voltage",
+    ],
+    state_class: ["measurement", "total", "total_increasing"],
+  },
+  switch: {
+    device_class: ["outlet", "switch"],
+  },
+  update: {
+    device_class: ["firmware"],
+  },
+  water_heater: {
+    away_mode: ["on", "off"],
+  },
+};
+
+export const getStates = (
+  state: HassEntity,
+  attribute: string | undefined = undefined
+): string[] => {
   const domain = computeStateDomain(state);
   const result: string[] = [];
 
-  if (domain in FIXED_DOMAIN_STATES) {
+  if (!attribute && domain in FIXED_DOMAIN_STATES) {
     result.push(...FIXED_DOMAIN_STATES[domain]);
-  } else {
-    // If not fixed, we at least know the current state
-    result.push(state.state);
+  } else if (
+    attribute &&
+    domain in FIXED_DOMAIN_ATTRIBUTE_STATES &&
+    attribute in FIXED_DOMAIN_ATTRIBUTE_STATES[domain]
+  ) {
+    result.push(...FIXED_DOMAIN_ATTRIBUTE_STATES[domain][attribute]);
   }
 
   // Dynamic values based on the entities
   switch (domain) {
     case "climate":
-      result.push(...state.attributes.hvac_modes);
+      if (!attribute) {
+        result.push(...state.attributes.hvac_modes);
+      } else if (attribute === "fan_mode") {
+        result.push(...state.attributes.fan_modes);
+      } else if (attribute === "preset_mode") {
+        result.push(...state.attributes.preset_modes);
+      } else if (attribute === "swing_mode") {
+        result.push(...state.attributes.swing_modes);
+      }
+      break;
+    case "device_tracker":
+    case "person":
+      if (!attribute) {
+        result.push("home", "not_home");
+      }
+      break;
+    case "fan":
+      if (attribute === "preset_mode") {
+        result.push(...state.attributes.preset_modes);
+      }
+      break;
+    case "humidifier":
+      if (attribute === "mode") {
+        result.push(...state.attributes.available_modes);
+      }
       break;
     case "input_select":
     case "select":
-      result.push(...state.attributes.options);
+      if (!attribute) {
+        result.push(...state.attributes.options);
+      }
+      break;
+    case "light":
+      if (attribute === "effect") {
+        result.push(...state.attributes.effect_list);
+      } else if (attribute === "color_mode") {
+        result.push(...state.attributes.color_modes);
+      }
+      break;
+    case "media_player":
+      if (attribute === "sound_mode") {
+        result.push(...state.attributes.sound_mode_list);
+      } else if (attribute === "source") {
+        result.push(...state.attributes.source_list);
+      }
+      break;
+    case "remote":
+      if (attribute === "current_activity") {
+        result.push(...state.attributes.activity_list);
+      }
+      break;
+    case "vacuum":
+      if (attribute === "fan_speed") {
+        result.push(...state.attributes.fan_speed_list);
+      }
       break;
     case "water_heater":
-      result.push(...state.attributes.operation_list);
+      if (!attribute || attribute === "operation_mode") {
+        result.push(...state.attributes.operation_list);
+      }
       break;
   }
 
-  // All entities can have unavailable states
-  result.push(...UNAVAILABLE_STATES);
+  if (!attribute) {
+    // All entities can have unavailable states
+    result.push(...UNAVAILABLE_STATES);
+  }
   return [...new Set(result)];
 };
