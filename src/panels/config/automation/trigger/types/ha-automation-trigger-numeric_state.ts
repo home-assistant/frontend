@@ -1,13 +1,13 @@
-import "../../../../../components/ha-form/ha-form";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
+import "../../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {
@@ -21,7 +21,75 @@ export class HaNumericStateTrigger extends LitElement {
         { name: "entity_id", required: true, selector: { entity: {} } },
         {
           name: "attribute",
-          selector: { attribute: { entity_id: entityId } },
+          selector: {
+            attribute: {
+              entity_id: entityId,
+              exclude_attributes: [
+                "access_token",
+                "auto_update",
+                "available_modes",
+                "away_mode",
+                "changed_by",
+                "code_format",
+                "color_modes",
+                "current_activity",
+                "device_class",
+                "editable",
+                "effect_list",
+                "effect",
+                "entity_picture",
+                "fan_mode",
+                "fan_modes",
+                "fan_speed_list",
+                "forecast",
+                "friendly_name",
+                "frontend_stream_type",
+                "has_date",
+                "has_time",
+                "hs_color",
+                "hvac_mode",
+                "hvac_modes",
+                "icon",
+                "media_album_name",
+                "media_artist",
+                "media_content_type",
+                "media_position_updated_at",
+                "media_title",
+                "next_dawn",
+                "next_dusk",
+                "next_midnight",
+                "next_noon",
+                "next_rising",
+                "next_setting",
+                "operation_list",
+                "operation_mode",
+                "options",
+                "preset_mode",
+                "preset_modes",
+                "release_notes",
+                "release_summary",
+                "release_url",
+                "restored",
+                "rgb_color",
+                "rgbw_color",
+                "shuffle",
+                "sound_mode_list",
+                "sound_mode",
+                "source_list",
+                "source_type",
+                "source",
+                "state_class",
+                "supported_features",
+                "swing_mode",
+                "swing_mode",
+                "swing_modes",
+                "title",
+                "token",
+                "unit_of_measurement",
+                "xy_color",
+              ],
+            },
+          },
         },
         { name: "above", selector: { text: {} } },
         { name: "below", selector: { text: {} } },
