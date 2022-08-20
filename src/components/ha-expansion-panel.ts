@@ -90,6 +90,7 @@ export class HaExpansionPanel extends LitElement {
 
   private _handleTransitionEnd() {
     this._container.style.removeProperty("height");
+    this._container.style.overflow = this.expanded ? "initial" : "hidden";
     this._showContent = this.expanded;
   }
 
@@ -103,6 +104,7 @@ export class HaExpansionPanel extends LitElement {
     ev.preventDefault();
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+    this._container.style.overflow = "hidden";
 
     if (newExpanded) {
       this._showContent = true;
