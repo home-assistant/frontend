@@ -65,7 +65,7 @@ export interface AreaSelector {
 export interface AttributeSelector {
   attribute: {
     entity_id?: string;
-    exclude_attributes?: string[];
+    exclude_attributes?: readonly string[];
   };
 }
 

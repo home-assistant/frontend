@@ -8,9 +8,9 @@ import "../entity/ha-entity-attribute-picker";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: AttributeSelector;
+  @property({ attribute: false }) public selector!: AttributeSelector;
 
   @property() public value?: any;
 
@@ -22,7 +22,7 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = true;
 
-  @property() public context?: {
+  @property({ attribute: false }) public context?: {
     filter_entity?: string;
   };
 
