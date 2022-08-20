@@ -155,9 +155,17 @@ export interface WaitAction extends BaseAction {
   continue_on_timeout?: boolean;
 }
 
+export interface WaitForTriggerActionParts extends BaseAction {
+  milliseconds?: number;
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  days?: number;
+}
+
 export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
-  timeout?: number;
+  timeout?: number | Partial<WaitForTriggerActionParts> | string;
   continue_on_timeout?: boolean;
 }
 
