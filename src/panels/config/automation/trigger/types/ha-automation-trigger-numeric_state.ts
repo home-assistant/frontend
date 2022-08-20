@@ -95,7 +95,7 @@ export class HaNumericStateTrigger extends LitElement {
         { name: "below", selector: { text: {} } },
         {
           name: "value_template",
-          selector: { text: { multiline: true } },
+          selector: { template: {} },
         },
         { name: "for", selector: { duration: {} } },
       ] as const
