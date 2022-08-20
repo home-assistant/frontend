@@ -2,7 +2,7 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -21,7 +21,6 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { describeCondition } from "../../../../data/automation_i18n";
 
 export interface ConditionElement extends LitElement {
@@ -64,8 +63,6 @@ export default class HaAutomationConditionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @state() private _warnings?: string[];
-
-  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected render() {
     if (!this.condition) {
@@ -191,6 +188,7 @@ export default class HaAutomationConditionRow extends LitElement {
     switch (ev.detail.index) {
       case 0:
         this._switchYamlMode();
+        this.expand();
         break;
       case 1:
         fireEvent(this, "duplicate");
@@ -208,9 +206,6 @@ export default class HaAutomationConditionRow extends LitElement {
     const enabled = !(this.condition.enabled ?? true);
     const value = { ...this.condition, enabled };
     fireEvent(this, "value-changed", { value });
-    if (this._yamlMode) {
-      this._yamlEditor?.setValue(value);
-    }
   }
 
   private _onDelete() {

@@ -195,11 +195,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                         )}
                       `
                     : ""}
-                  <h2>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.edit_yaml"
-                    )}
-                  </h2>
                   <ha-yaml-editor
                     .hass=${this.hass}
                     .defaultValue=${this.trigger}
@@ -337,6 +332,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         break;
       case 1:
         this._switchYamlMode();
+        this.expand();
         break;
       case 2:
         fireEvent(this, "duplicate");
