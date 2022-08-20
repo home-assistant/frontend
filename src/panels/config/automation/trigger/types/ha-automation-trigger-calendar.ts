@@ -44,7 +44,7 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
             ],
           ],
         },
-        { name: "offset", selector: { duration: {} } },
+        { name: "offset", selector: { duration: { enable_day: true } } },
         {
           name: "offset_type",
           type: "select",
