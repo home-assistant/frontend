@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../types";
-import { AddonStage } from "../hassio/addon";
+import { AddonRole, AddonStage } from "../hassio/addon";
 import { supervisorApiCall } from "./common";
 import { SupervisorArch } from "./supervisor";
 
@@ -31,7 +31,7 @@ export interface StoreAddonDetails extends StoreAddon {
   documentation: boolean;
   full_access: boolean;
   hassio_api: boolean;
-  hassio_role: string;
+  hassio_role: AddonRole;
   homeassistant_api: boolean;
   host_network: boolean;
   host_pid: boolean;
