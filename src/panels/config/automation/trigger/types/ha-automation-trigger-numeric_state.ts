@@ -106,7 +106,7 @@ export class HaNumericStateTrigger extends LitElement {
       return;
     }
     // Check for templates in trigger. If found, revert to YAML mode.
-    if (this.trigger && hasTemplate(this.trigger)) {
+    if (this.trigger && hasTemplate(this.trigger.for)) {
       fireEvent(
         this,
         "ui-mode-not-available",
