@@ -99,7 +99,7 @@ export default class HaNumericStateCondition extends LitElement {
         { name: "below", selector: { text: {} } },
         {
           name: "value_template",
-          selector: { template: { } },
+          selector: { template: {} },
         },
       ] as const
   );
