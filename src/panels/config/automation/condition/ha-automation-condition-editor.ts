@@ -50,11 +50,6 @@ export default class HaAutomationConditionEditor extends LitElement {
                   )}
                 `
               : ""}
-            <h2>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_yaml"
-              )}
-            </h2>
             <ha-yaml-editor
               .hass=${this.hass}
               .defaultValue=${this.condition}
