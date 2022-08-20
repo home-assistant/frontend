@@ -27,8 +27,28 @@ export default class HaNumericStateCondition extends LitElement {
           name: "attribute",
           selector: { attribute: { entity_id: entityId } },
         },
-        { name: "above", selector: { text: {} } },
-        { name: "below", selector: { text: {} } },
+        {
+          name: "above",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.01,
+            },
+          },
+        },
+        {
+          name: "below",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.01,
+            },
+          },
+        },
         {
           name: "value_template",
           selector: { text: { multiline: true } },
