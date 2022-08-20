@@ -29,44 +29,47 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { entity_id: "", state: "" };
   }
 
-  private _schema = memoizeOne((entityId, attribute) => [
-    { name: "entity_id", required: true, selector: { entity: {} } },
-    {
-      name: "attribute",
-      selector: {
-        attribute: {
-          entity_id: entityId,
-          exclude_attributes: [
-            "access_token",
-            "available_modes",
-            "color_modes",
-            "editable",
-            "effect_list",
-            "entity_picture",
-            "fan_modes",
-            "fan_speed_list",
-            "forecast",
-            "friendly_name",
-            "hvac_modes",
-            "icon",
-            "operation_list",
-            "options",
-            "preset_modes",
-            "sound_mode_list",
-            "source_list",
-            "state_class",
-            "swing_modes",
-            "token",
-          ],
+  private _schema = memoizeOne(
+    (entityId, attribute) =>
+      [
+        { name: "entity_id", required: true, selector: { entity: {} } },
+        {
+          name: "attribute",
+          selector: {
+            attribute: {
+              entity_id: entityId,
+              exclude_attributes: [
+                "access_token",
+                "available_modes",
+                "color_modes",
+                "editable",
+                "effect_list",
+                "entity_picture",
+                "fan_modes",
+                "fan_speed_list",
+                "forecast",
+                "friendly_name",
+                "hvac_modes",
+                "icon",
+                "operation_list",
+                "options",
+                "preset_modes",
+                "sound_mode_list",
+                "source_list",
+                "state_class",
+                "swing_modes",
+                "token",
+              ],
+            },
+          },
         },
-      },
-    },
-    {
-      name: "state",
-      selector: { state: { entity_id: entityId, attribute: attribute } },
-    },
-    { name: "for", selector: { duration: {} } },
-  ]);
+        {
+          name: "state",
+          selector: { state: { entity_id: entityId, attribute: attribute } },
+        },
+        { name: "for", selector: { duration: {} } },
+      ] as const
+  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("condition")) {
