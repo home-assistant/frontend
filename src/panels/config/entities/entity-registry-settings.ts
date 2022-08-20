@@ -66,11 +66,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { showEntityEditorDialog } from "./show-dialog-entity-editor";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -977,8 +977,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           if (!entity) {
             return;
           }
-          showEntityEditorDialog(parent, {
-            entity_id: entity.entity_id,
+          showMoreInfoDialog(parent, {
+            entityId: entity.entity_id,
+            tab: "settings",
           });
         });
       }, "entity_registry_updated");
@@ -1046,17 +1047,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .container {
           padding: 20px 24px;
         }
-        .form {
-          margin-bottom: 53px;
-        }
         .buttons {
-          position: absolute;
-          bottom: 0;
-          width: 100%;
           box-sizing: border-box;
           display: flex;
           padding: 0 24px 24px 24px;
-          justify-content: flex-end;
+          justify-content: space-between;
           padding-bottom: max(env(safe-area-inset-bottom), 24px);
           background-color: var(--mdc-theme-surface, #fff);
         }

@@ -182,18 +182,12 @@ export class EntityRegistrySettingsHelper extends LitElement {
         }
         .form {
           padding: 20px 24px;
-          margin-bottom: 53px;
         }
         .buttons {
-          position: absolute;
-          bottom: 0;
-          width: 100%;
           box-sizing: border-box;
-          border-top: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
           justify-content: space-between;
-          padding: 8px;
+          padding: 0 24px 24px 24px;
           background-color: var(--mdc-theme-surface, #fff);
         }
         .error {

@@ -326,6 +326,9 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
         line-height: var(--paper-font-title_-_line-height);
         opacity: var(--dark-primary-opacity);
       }
+      h3:first-child {
+        margin-top: 0;
+      }
     `;
   }
 }
