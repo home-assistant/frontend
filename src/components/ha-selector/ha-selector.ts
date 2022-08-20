@@ -9,6 +9,7 @@ import "./ha-selector-area";
 import "./ha-selector-attribute";
 import "./ha-selector-boolean";
 import "./ha-selector-color-rgb";
+import "./ha-selector-config-entry";
 import "./ha-selector-date";
 import "./ha-selector-datetime";
 import "./ha-selector-device";
