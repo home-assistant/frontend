@@ -48,11 +48,13 @@ export class HuiViewEditor extends LitElement {
           name: "type",
           selector: {
             select: {
-              options: [
-                DEFAULT_VIEW_LAYOUT,
-                SIDEBAR_VIEW_LAYOUT,
-                PANEL_VIEW_LAYOUT,
-              ].map((type) => ({
+              options: (
+                [
+                  DEFAULT_VIEW_LAYOUT,
+                  SIDEBAR_VIEW_LAYOUT,
+                  PANEL_VIEW_LAYOUT,
+                ] as const
+              ).map((type) => ({
                 value: type,
                 label: localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`
