@@ -42,11 +42,11 @@ import { SceneEntity } from "../../../data/scene";
 import { ScriptEntity } from "../../../data/script";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "../../logbook/ha-logbook";
-import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,
@@ -620,9 +620,8 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
 
   private _openEntity(ev) {
     const entry: EntityRegistryEntry = (ev.currentTarget as any).entity;
-    showEntityEditorDialog(this, {
-      entity_id: entry.entity_id,
-      entry,
+    showMoreInfoDialog(this, {
+      entityId: entry.entity_id,
     });
   }
 

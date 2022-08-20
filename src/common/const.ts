@@ -166,46 +166,6 @@ export const DOMAINS_WITH_CARD = [
   "water_heater",
 ];
 
-/** Domains with separate more info dialog. */
-export const DOMAINS_WITH_MORE_INFO = [
-  "alarm_control_panel",
-  "automation",
-  "camera",
-  "climate",
-  "configurator",
-  "counter",
-  "cover",
-  "fan",
-  "group",
-  "humidifier",
-  "input_datetime",
-  "light",
-  "lock",
-  "media_player",
-  "person",
-  "remote",
-  "script",
-  "scene",
-  "sun",
-  "timer",
-  "update",
-  "vacuum",
-  "water_heater",
-  "weather",
-];
-
-/** Domains that do not show the default more info dialog content (e.g. the attribute section)
- *  and do not have a separate more info (so not in DOMAINS_WITH_MORE_INFO). */
-export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
-  "input_number",
-  "input_select",
-  "input_text",
-  "number",
-  "scene",
-  "update",
-  "select",
-];
-
 /** Domains that render an input element instead of a text value when displayed in a row.
  *  Those rows should then not show a cursor pointer when hovered (which would normally
  *  be the default) unless the element itself enforces it (e.g. a button). Also those elements
@@ -236,9 +196,6 @@ export const DOMAINS_INPUT_ROW = [
   "switch",
   "vacuum",
 ];
-
-/** Domains that should have the history hidden in the more info dialog. */
-export const DOMAINS_MORE_INFO_NO_HISTORY = ["camera", "configurator"];
 
 /** States that we consider "off". */
 export const STATES_OFF = ["closed", "locked", "off"];
