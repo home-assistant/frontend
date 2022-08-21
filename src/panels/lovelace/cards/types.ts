@@ -28,6 +28,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
   conditions: Condition[];
+  condition?: string;
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {

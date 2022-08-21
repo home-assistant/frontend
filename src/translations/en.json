@@ -3786,8 +3786,10 @@
               "state_equal": "State is equal to",
               "state_not_equal": "State is not equal to",
               "current_state": "current",
-              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
-              "change_type": "Change type"
+              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled and the conditions are linked with AND, or when at least ONE conditions below is fulfilled and the conditions are linked with OR.",
+              "change_type": "Change type",
+              "condition_or": "Or link",
+              "condition_and": "And link"
             },
             "config": {
               "required": "required",

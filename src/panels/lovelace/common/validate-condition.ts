@@ -8,16 +8,19 @@ export interface Condition {
 }
 
 export function checkConditionsMet(
+  condition: string,
   conditions: Condition[],
   hass: HomeAssistant
 ): boolean {
-  return conditions.every((c) => {
-    const state = hass.states[c.entity]
-      ? hass!.states[c.entity].state
-      : UNAVAILABLE;
+    return condition === "or" ? conditions.some((c) => isCondStateApplyingHassState(hass, c)) : conditions.every((c) => isCondStateApplyingHassState(hass, c));  
+}
 
-    return c.state ? state === c.state : state !== c.state_not;
-  });
+function isCondStateApplyingHassState(hass: HomeAssistant, c: Condition) {
+  const state = hass.states[c.entity]
+    ? hass!.states[c.entity].state
+    : UNAVAILABLE;
+
+  return c.state ? state === c.state : state !== c.state_not;
 }
 
 export function validateConditionalConfig(conditions: Condition[]): boolean {

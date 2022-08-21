@@ -44,6 +44,7 @@ const cardConfigStruct = assign(
   object({
     card: any(),
     conditions: optional(array(conditionStruct)),
+    condition: optional(string()),
   })
 );
 
@@ -142,6 +143,34 @@ export class HuiConditionalCardEditor
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
+              <div class="condition-link">
+              <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.conditional.condition_and"
+                  )}
+                >
+                  <ha-radio
+                    @change=${this._changeConditionLink}
+                    value="and"
+                    name="conditionAnd"
+                    .checked=${!this._config.condition || this._config.condition === "and"}
+                  >
+                  </ha-radio>
+                </ha-formfield>
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.conditional.condition_or"
+                  )}
+                >
+                  <ha-radio
+                    @change=${this._changeConditionLink}
+                    value="or"
+                    name="conditionOr"
+                    .checked=${this._config.condition === "or"}
+                  >
+                  </ha-radio>
+                </ha-formfield>
+              </div>
               ${this._config.conditions.map(
                 (cond, idx) => html`
                   <div class="condition">
@@ -276,6 +305,19 @@ export class HuiConditionalCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
+  private _changeConditionLink(ev: Event): void {
+    const target = ev.target as any;
+    if (!this._config || !target) {
+      return;
+    }
+
+    this._config = {
+      ...this._config,
+      condition: target.value
+    };
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
   private _changeCondition(ev: Event): void {
     const target = ev.target as any;
     if (!this._config || !target) {
@@ -324,6 +366,11 @@ export class HuiConditionalCardEditor
         .condition {
           margin-top: 8px;
           border: 1px solid var(--divider-color);
+          padding: 12px;
+        }
+        .condition-link
+        {
+          margin-top: 8px;
           padding: 12px;
         }
         .condition .state {

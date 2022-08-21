@@ -86,6 +86,7 @@ export interface LovelaceRow extends HTMLElement {
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
+  condition?: string;
 }
 
 export interface AttributeRowConfig extends EntityConfig {
