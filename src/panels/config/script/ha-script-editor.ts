@@ -122,6 +122,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 name: "mode",
                 selector: {
                   select: {
+                    mode: "dropdown",
                     options: MODES.map((mode) => ({
                       label: this.hass.localize(
                         `ui.panel.config.script.editor.modes.${mode}`
