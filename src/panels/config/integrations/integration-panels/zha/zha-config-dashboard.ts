@@ -237,13 +237,13 @@ class ZHAConfigDashboard extends LitElement {
     const backupTime: Date = new Date(
       Date.parse(backup_and_metadata.backup.backup_time)
     );
-    let filename: string = backupTime.toISOString().replace(/:/g, "-");
+    let basename = `ZHA backup ${backupTime.toISOString().replace(/:/g, "-")}`;
 
     if (!backup_and_metadata.is_complete) {
-      filename += ", incomplete";
+      basename = `Incomplete ${basename}`;
     }
 
-    fileDownload(backupJSON, `ZHA backup ${filename}.json`);
+    fileDownload(backupJSON, `${basename}.json`);
   }
 
   private _dataChanged(ev) {
