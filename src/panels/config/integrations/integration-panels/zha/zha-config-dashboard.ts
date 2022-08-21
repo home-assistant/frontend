@@ -214,10 +214,15 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _createAndDownloadBackup(): Promise<void> {
+    let backup_and_metadata: ZHANetworkBackupAndMetadata;
+
     this._generatingBackup = true;
-    const backup_and_metadata: ZHANetworkBackupAndMetadata =
-      await createZHANetworkBackup(this.hass!);
-    this._generatingBackup = false;
+
+    try {
+      backup_and_metadata = await createZHANetworkBackup(this.hass!);
+    } finally {
+      this._generatingBackup = false;
+    }
 
     if (!backup_and_metadata.is_complete) {
       await showAlertDialog(this, {
