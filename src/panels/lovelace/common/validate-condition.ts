@@ -12,7 +12,9 @@ export function checkConditionsMet(
   conditions: Condition[],
   hass: HomeAssistant
 ): boolean {
-    return condition === "or" ? conditions.some((c) => isCondStateApplyingHassState(hass, c)) : conditions.every((c) => isCondStateApplyingHassState(hass, c));  
+  return condition === "or"
+    ? conditions.some((c) => isCondStateApplyingHassState(hass, c))
+    : conditions.every((c) => isCondStateApplyingHassState(hass, c));
 }
 
 function isCondStateApplyingHassState(hass: HomeAssistant, c: Condition) {

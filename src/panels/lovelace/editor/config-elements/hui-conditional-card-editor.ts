@@ -144,7 +144,7 @@ export class HuiConditionalCardEditor
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
               <div class="condition-link">
-              <ha-formfield
+                <ha-formfield
                   .label=${this.hass.localize(
                     "ui.panel.lovelace.editor.card.conditional.condition_and"
                   )}
@@ -153,7 +153,8 @@ export class HuiConditionalCardEditor
                     @change=${this._changeConditionLink}
                     value="and"
                     name="conditionAnd"
-                    .checked=${!this._config.condition || this._config.condition === "and"}
+                    .checked=${!this._config.condition ||
+                    this._config.condition === "and"}
                   >
                   </ha-radio>
                 </ha-formfield>
@@ -313,7 +314,7 @@ export class HuiConditionalCardEditor
 
     this._config = {
       ...this._config,
-      condition: target.value
+      condition: target.value,
     };
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -368,8 +369,7 @@ export class HuiConditionalCardEditor
           border: 1px solid var(--divider-color);
           padding: 12px;
         }
-        .condition-link
-        {
+        .condition-link {
           margin-top: 8px;
           padding: 12px;
         }
