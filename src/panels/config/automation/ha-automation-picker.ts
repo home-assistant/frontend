@@ -3,6 +3,7 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -16,7 +17,6 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import type { AutomationEntity } from "../../../data/automation";
-import { FrontendLocaleData } from "../../../data/translation";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
@@ -263,7 +263,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-picker": HaAutomationPicker;
   }
-}
-function formatShortDateTime(arg0: Date, locale: FrontendLocaleData): unknown {
-  throw new Error("Function not implemented.");
 }
