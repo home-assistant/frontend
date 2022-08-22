@@ -16,12 +16,12 @@ class HaEntityAttributePicker extends LitElement {
   @property() public entityId?: string;
 
   /**
-   * List of attributes to be excluded.
+   * List of attributes to be hidden.
    * @type {Array}
-   * @attr exclude-attributes
+   * @attr hide-attributes
    */
-  @property({ type: Array, attribute: "exclude-attributes" })
-  public excludeAttributes?: string[];
+  @property({ type: Array, attribute: "hide-attributes" })
+  public hideAttributes?: string[];
 
   @property({ type: Boolean }) public autofocus = false;
 
@@ -51,7 +51,7 @@ class HaEntityAttributePicker extends LitElement {
       const state = this.entityId ? this.hass.states[this.entityId] : undefined;
       (this._comboBox as any).items = state
         ? Object.keys(state.attributes)
-            .filter((key) => !this.excludeAttributes?.includes(key))
+            .filter((key) => !this.hideAttributes?.includes(key))
             .map((key) => ({
               value: key,
               label: formatAttributeName(key),

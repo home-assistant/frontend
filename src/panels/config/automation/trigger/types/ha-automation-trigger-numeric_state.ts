@@ -24,7 +24,7 @@ export class HaNumericStateTrigger extends LitElement {
           selector: {
             attribute: {
               entity_id: entityId,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "auto_update",
                 "available_modes",
