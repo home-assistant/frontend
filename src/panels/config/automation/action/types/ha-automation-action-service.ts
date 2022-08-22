@@ -10,6 +10,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
 const actionStruct = object({
+  alias: optional(string()),
   service: optional(string()),
   entity_id: optional(entityIdOrAll()),
   target: optional(any()),

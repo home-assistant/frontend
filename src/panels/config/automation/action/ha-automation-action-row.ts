@@ -145,7 +145,7 @@ export default class HaAutomationActionRow extends LitElement {
           : ""}
         <ha-expansion-panel
           leftChevron
-          .header=${describeAction(this.hass, this.action)}
+          .header=${this.action.alias || describeAction(this.hass, this.action)}
         >
           ${this.index !== 0
             ? html`
