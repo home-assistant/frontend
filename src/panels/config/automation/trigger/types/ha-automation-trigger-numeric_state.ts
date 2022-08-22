@@ -91,8 +91,28 @@ export class HaNumericStateTrigger extends LitElement {
             },
           },
         },
-        { name: "above", selector: { text: {} } },
-        { name: "below", selector: { text: {} } },
+        {
+          name: "above",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
+        {
+          name: "below",
+          selector: {
+            number: {
+              mode: "box",
+              min: Number.MIN_SAFE_INTEGER,
+              max: Number.MAX_SAFE_INTEGER,
+              step: 0.1,
+            },
+          },
+        },
         {
           name: "value_template",
           selector: { template: {} },
