@@ -1614,6 +1614,8 @@
             "id": "ID",
             "attributes": "Attributes"
           },
+          "processor": "Processor",
+          "memory": "Memory",
           "reboot_host": "Reboot host",
           "rebooting_host": "Rebooting host",
           "reboot_host_confirm": "Are you sure you want to reboot your host?",

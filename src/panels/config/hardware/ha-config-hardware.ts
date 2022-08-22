@@ -48,6 +48,15 @@ import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 
 const DATASAMPLES = 60;
 
+const DATA_SET_CONFIG = {
+  fill: "origin",
+  borderColor: DEFAULT_PRIMARY_COLOR,
+  backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
+  pointRadius: 0,
+  lineTension: 0.2,
+  borderWidth: 1,
+};
+
 @customElement("ha-config-hardware")
 class HaConfigHardware extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -265,7 +274,11 @@ class HaConfigHardware extends LitElement {
             ? html`
                 <ha-card outlined>
                   <div class="header">
-                    <div class="title">Processor</div>
+                    <div class="title">
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.processor"
+                      )}
+                    </div>
                     <div class="value">
                       ${this._systemStatusData!.cpu_percent}%
                     </div>
@@ -275,12 +288,7 @@ class HaConfigHardware extends LitElement {
                       .data=${{
                         datasets: [
                           {
-                            fill: "origin",
-                            borderColor: DEFAULT_PRIMARY_COLOR,
-                            backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
-                            pointRadius: 0,
-                            lineTension: 0.2,
-                            borderWidth: 1,
+                            ...DATA_SET_CONFIG,
                             data: this._cpuEntries,
                           },
                         ],
@@ -291,7 +299,9 @@ class HaConfigHardware extends LitElement {
                 </ha-card>
                 <ha-card outlined>
                   <div class="header">
-                    <div class="title">Memory</div>
+                    <div class="title">
+                      ${this.hass.localize("ui.panel.config.hardware.memory")}
+                    </div>
                     <div class="value">
                       ${round(this._systemStatusData!.memory_used_mb / 1024, 1)}
                       GB /
@@ -309,12 +319,7 @@ class HaConfigHardware extends LitElement {
                       .data=${{
                         datasets: [
                           {
-                            fill: "origin",
-                            borderColor: DEFAULT_PRIMARY_COLOR,
-                            backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
-                            pointRadius: 0,
-                            lineTension: 0.2,
-                            borderWidth: 1,
+                            ...DATA_SET_CONFIG,
                             data: this._memoryEntries,
                           },
                         ],
