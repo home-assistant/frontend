@@ -9,6 +9,7 @@ import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import "../../../../../components/ha-duration-input";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
@@ -55,7 +56,7 @@ export class HaWaitForTriggerAction
     `;
   }
 
-  private _timeoutChanged(ev: CustomEvent): void {
+  private _timeoutChanged(ev: CustomEvent<{ value: TimeChangedEvent }>): void {
     ev.stopPropagation();
     const value = ev.detail.value;
     if (!value) {
