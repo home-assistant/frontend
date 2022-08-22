@@ -1,14 +1,16 @@
+import "@material/mwc-list/mwc-list-item";
 import { html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
-import { HaComboBox } from "./ha-combo-box";
+import type { HaComboBox } from "./ha-combo-box";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
 import { domainToName } from "../data/integration";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { brandsUrl } from "../util/brands-url";
+import "./ha-combo-box";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;
