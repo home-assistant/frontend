@@ -57,7 +57,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           selector: {
             attribute: {
               entity_id: entityId ? entityId[0] : undefined,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "available_modes",
                 "color_modes",
