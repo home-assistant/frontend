@@ -79,9 +79,7 @@ class HaConfigEntryPicker extends LitElement {
       <ha-combo-box
         .hass=${this.hass}
         .label=${this.label === undefined && this.hass
-          ? this.hass.localize(
-              "ui.components.config-entry-picker.config_entry"
-            )
+          ? this.hass.localize("ui.components.config-entry-picker.config_entry")
           : this.label}
         .value=${this._value}
         .required=${this.required}
