@@ -80,7 +80,7 @@ class HaConfigEntryPicker extends LitElement {
         .hass=${this.hass}
         .label=${this.label === undefined && this.hass
           ? this.hass.localize(
-              "ui.components.config-entries-picker.config_entry"
+              "ui.components.config-entry-picker.config_entry"
             )
           : this.label}
         .value=${this._value}
