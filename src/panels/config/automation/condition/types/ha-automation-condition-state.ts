@@ -38,7 +38,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
           selector: {
             attribute: {
               entity_id: entityId,
-              exclude_attributes: [
+              hide_attributes: [
                 "access_token",
                 "available_modes",
                 "color_modes",

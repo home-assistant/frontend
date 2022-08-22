@@ -32,7 +32,7 @@ export class HaSelectorAttribute extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .entityId=${this.selector.attribute.entity_id ||
         this.context?.filter_entity}
-        .excludeAttributes=${this.selector.attribute.exclude_attributes}
+        .hideAttributes=${this.selector.attribute.hide_attributes}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
