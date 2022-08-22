@@ -418,7 +418,7 @@
         "add_entity_id": "Choose entity"
       },
       "config-entry-picker": {
-        "config_entry": "Config entry"
+        "config_entry": "Integration"
       },
       "theme-picker": {
         "theme": "Theme",
