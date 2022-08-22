@@ -220,6 +220,13 @@ class ZHAConfigDashboard extends LitElement {
 
     try {
       backup_and_metadata = await createZHANetworkBackup(this.hass!);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Failed to create backup",
+        text: err.message,
+        warning: true,
+      });
+      return;
     } finally {
       this._generatingBackup = false;
     }
