@@ -25,6 +25,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
+    alias: optional(string()),
     platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
