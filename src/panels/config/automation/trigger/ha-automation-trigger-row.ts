@@ -110,7 +110,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${describeTrigger(this.trigger)}
+          .header=${this.trigger.alias || describeTrigger(this.trigger)}
         >
           <ha-button-menu
             slot="icons"
