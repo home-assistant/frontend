@@ -32,7 +32,21 @@ export const describeCondition = (
       base += ` ${condition.attribute} from`;
     }
 
-    base += ` ${entity} is ${condition.state}`;
+    let states = "";
+
+    if (Array.isArray(condition.state)) {
+      for (const [index, state] of condition.state.entries()) {
+        states += `${index > 0 ? "," : ""} ${
+          condition.state.length > 1 && index === condition.state.length - 1
+            ? "or"
+            : ""
+        } ${state}`;
+      }
+    } else {
+      states = condition.state.toString();
+    }
+
+    base += ` ${entity} is ${states}`;
 
     if ("for" in condition) {
       let duration: string;
