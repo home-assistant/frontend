@@ -305,10 +305,6 @@ export class MoreInfoDialog extends LitElement {
             --mdc-dialog-max-height: calc(100% - 72px);
           }
 
-          ha-icon-button[slot="navigationIcon"] {
-            display: none;
-          }
-
           .main-title {
             overflow: hidden;
             text-overflow: ellipsis;
