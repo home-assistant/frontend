@@ -126,7 +126,7 @@ const SCHEMAS: {
       },
       device: { name: "Device", selector: { device: {} } },
       config_entry: {
-        name: "Config entry",
+        name: "Integration",
         selector: { config_entry: {} },
       },
       duration: { name: "Duration", selector: { duration: {} } },
