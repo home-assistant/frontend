@@ -16,6 +16,7 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import type { AutomationEntity } from "../../../data/automation";
+import { FrontendLocaleData } from "../../../data/translation";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
@@ -23,6 +24,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+
+const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -76,19 +79,25 @@ class HaAutomationPicker extends LitElement {
           direction: "asc",
           grows: true,
           template: narrow
-            ? (name, automation: any) =>
-                html`
+            ? (name, automation: any) => {
+                const date = new Date(automation.attributes.last_triggered);
+                const now = new Date();
+
+                const diff = now.getTime() - date.getTime();
+                const dayDiff = diff / DAY_IN_MILLISECONDS;
+
+                return html`
                   ${name}
                   <div class="secondary">
                     ${this.hass.localize("ui.card.automation.last_triggered")}:
                     ${automation.attributes.last_triggered
-                      ? relativeTime(
-                          new Date(automation.attributes.last_triggered),
-                          this.hass.locale
-                        )
+                      ? dayDiff > 3
+                        ? formatShortDateTime(date, this.hass.locale)
+                        : relativeTime(date, this.hass.locale)
                       : this.hass.localize("ui.components.relative_time.never")}
                   </div>
-                `
+                `;
+              }
             : undefined,
         },
       };
@@ -97,11 +106,21 @@ class HaAutomationPicker extends LitElement {
           sortable: true,
           width: "20%",
           title: this.hass.localize("ui.card.automation.last_triggered"),
-          template: (last_triggered) => html`
-            ${last_triggered
-              ? relativeTime(new Date(last_triggered), this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `,
+          template: (last_triggered) => {
+            const date = new Date(last_triggered);
+            const now = new Date();
+
+            const diff = now.getTime() - date.getTime();
+            const dayDiff = diff / DAY_IN_MILLISECONDS;
+
+            return html`
+              ${last_triggered
+                ? dayDiff > 3
+                  ? formatShortDateTime(date, this.hass.locale)
+                  : relativeTime(date, this.hass.locale)
+                : this.hass.localize("ui.components.relative_time.never")}
+            `;
+          },
         };
       }
       columns.actions = {
@@ -244,4 +263,7 @@ declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-picker": HaAutomationPicker;
   }
+}
+function formatShortDateTime(arg0: Date, locale: FrontendLocaleData): unknown {
+  throw new Error("Function not implemented.");
 }
