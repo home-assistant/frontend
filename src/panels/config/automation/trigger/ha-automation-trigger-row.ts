@@ -21,8 +21,9 @@ import { validateConfig } from "../../../../data/config";
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-device";
@@ -138,6 +139,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                 : this.hass.localize(
                     "ui.panel.config.automation.editor.edit_yaml"
                   )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.rename"
+              )}
             </mwc-list-item>
             <mwc-list-item>
               ${this.hass.localize(
@@ -325,7 +331,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
         this._requestShowId = true;
@@ -336,12 +342,15 @@ export default class HaAutomationTriggerRow extends LitElement {
         this.expand();
         break;
       case 2:
-        fireEvent(this, "duplicate");
+        await this._renameTrigger();
         break;
       case 3:
-        this._onDisable();
+        fireEvent(this, "duplicate");
         break;
       case 4:
+        this._onDisable();
+        break;
+      case 5:
         this._onDelete();
         break;
     }
@@ -412,6 +421,34 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   }
 
+  private async _renameTrigger(): Promise<void> {
+    const describedTrigger = describeTrigger(this.trigger);
+    const alias = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.change_alias"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.triggers.alias"
+      ),
+      inputType: "string",
+      defaultValue: this.trigger.alias || describedTrigger,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+
+    const value = { ...this.trigger };
+    if (!alias || alias === describedTrigger) {
+      delete value.alias;
+    } else {
+      value.alias = alias;
+    }
+    fireEvent(this, "value-changed", {
+      value,
+    });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
+    }
+  }
+
   public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
@@ -421,6 +458,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleDialog,
       css`
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);

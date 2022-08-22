@@ -20,8 +20,9 @@ import { callExecuteScript } from "../../../../data/service";
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
@@ -202,6 +203,11 @@ export default class HaAutomationActionRow extends LitElement {
             </mwc-list-item>
             <mwc-list-item>
               ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.rename"
+              )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
             </mwc-list-item>
@@ -298,7 +304,7 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "move-action", { direction: "down" });
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
         this._runAction();
@@ -308,12 +314,15 @@ export default class HaAutomationActionRow extends LitElement {
         this.expand();
         break;
       case 2:
-        fireEvent(this, "duplicate");
+        await this._renameAction();
         break;
       case 3:
-        this._onDisable();
+        fireEvent(this, "duplicate");
         break;
       case 4:
+        this._onDisable();
+        break;
+      case 5:
         this._onDelete();
         break;
     }
@@ -388,6 +397,34 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
+  private async _renameAction(): Promise<void> {
+    const describedAction = describeAction(this.hass, this.action);
+    const alias = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.change_alias"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.alias"
+      ),
+      inputType: "string",
+      defaultValue: this.action.alias || describedAction,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+
+    const value = { ...this.action };
+    if (!alias || alias === describedAction) {
+      delete value.alias;
+    } else {
+      value.alias = alias;
+    }
+    fireEvent(this, "value-changed", {
+      value,
+    });
+    if (this._yamlMode) {
+      this._yamlEditor?.setValue(value);
+    }
+  }
+
   public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
@@ -397,6 +434,7 @@ export default class HaAutomationActionRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleDialog,
       css`
         ha-button-menu,
         ha-icon-button {
