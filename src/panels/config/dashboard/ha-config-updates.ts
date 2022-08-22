@@ -2,6 +2,8 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
@@ -10,9 +12,19 @@ import type { UpdateEntity } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-list-item";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
 
 @customElement("ha-config-updates")
-class HaConfigUpdates extends LitElement {
+class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -20,8 +32,35 @@ class HaConfigUpdates extends LitElement {
   @property({ attribute: false })
   public updateEntities?: UpdateEntity[];
 
+  @property({ attribute: false, type: Array })
+  private devices?: DeviceRegistryEntry[];
+
+  @property({ attribute: false, type: Array })
+  private entities?: EntityRegistryEntry[];
+
   @property({ type: Number })
   public total?: number;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass.connection, (entries) => {
+        this.devices = entries;
+      }),
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this.entities = entities.filter((entity) => entity.device_id !== null);
+      }),
+    ];
+  }
+
+  private getDeviceEntry = memoizeOne(
+    (deviceId: string): DeviceRegistryEntry | undefined =>
+      this.devices?.find((device) => device.id === deviceId)
+  );
+
+  private getEntityEntry = memoizeOne(
+    (entityId: string): EntityRegistryEntry | undefined =>
+      this.entities?.find((entity) => entity.entity_id === entityId)
+  );
 
   protected render(): TemplateResult {
     if (!this.updateEntities?.length) {
@@ -37,8 +76,14 @@ class HaConfigUpdates extends LitElement {
         })}
       </div>
       <mwc-list>
-        ${updates.map(
-          (entity) => html`
+        ${updates.map((entity) => {
+          const entityEntry = this.getEntityEntry(entity.entity_id);
+          const deviceEntry =
+            entityEntry && entityEntry.device_id
+              ? this.getDeviceEntry(entityEntry.device_id)
+              : undefined;
+
+          return html`
             <ha-list-item
               twoline
               graphic="avatar"
@@ -65,16 +110,13 @@ class HaConfigUpdates extends LitElement {
                   ></ha-circular-progress>`
                 : ""}
               <span
-                >${entity.attributes.title ||
-                entity.attributes.friendly_name}</span
+                >${deviceEntry
+                  ? computeDeviceName(deviceEntry, this.hass)
+                  : entity.attributes.friendly_name}</span
               >
               <span slot="secondary">
-                ${this.hass.localize(
-                  "ui.panel.config.updates.version_available",
-                  {
-                    version_available: entity.attributes.latest_version,
-                  }
-                )}${entity.attributes.skipped_version
+                ${entity.attributes.title} ${entity.attributes.latest_version}
+                ${entity.attributes.skipped_version
                   ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
                   : ""}
               </span>
@@ -88,8 +130,8 @@ class HaConfigUpdates extends LitElement {
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
             </ha-list-item>
-          `
-        )}
+          `;
+        })}
       </mwc-list>
     `;
   }
