@@ -40,6 +40,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { describeTrigger } from "../../../../data/automation_i18n";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -110,7 +111,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${this.trigger.alias || describeTrigger(this.trigger)}
+          .header=${capitalizeFirstLetter(describeTrigger(this.trigger))}
         >
           <ha-button-menu
             slot="icons"
