@@ -80,7 +80,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${describeCondition(this.condition)}
+          .header=${this.condition.alias || describeCondition(this.condition)}
         >
           <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(
