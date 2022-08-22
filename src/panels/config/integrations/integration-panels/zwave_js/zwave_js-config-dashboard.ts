@@ -545,7 +545,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             </h3>
             <p>${stateTextExtra}</p>
             <mwc-button @click=${this._handleBack}>
-              ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+              ${this.hass?.localize("ui.common.back")}
             </mwc-button>
           </div>
         `
