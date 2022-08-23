@@ -51,7 +51,7 @@ const getType = (action: Action | undefined) => {
   if (["and", "or", "not"].some((key) => key in action)) {
     return "condition";
   }
-  return ACTION_TYPES.find((option) => option in action);
+  return Object.keys(ACTION_TYPES).find((option) => option in action);
 };
 
 declare global {
