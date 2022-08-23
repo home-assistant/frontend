@@ -22,6 +22,7 @@ export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
   inputType?: string;
   defaultValue?: string;
+  placeholder?: string;
   confirm?: (out?: string) => void;
 }
 

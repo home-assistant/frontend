@@ -21,7 +21,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 
@@ -298,7 +298,6 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private async _renameCondition(): Promise<void> {
-    const describedCondition = describeCondition(this.condition);
     const alias = await showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.conditions.change_alias"
@@ -307,12 +306,15 @@ export default class HaAutomationConditionRow extends LitElement {
         "ui.panel.config.automation.editor.conditions.alias"
       ),
       inputType: "string",
-      defaultValue: this.condition.alias || describedCondition,
+      placeholder: capitalizeFirstLetter(
+        describeCondition(this.condition, this.hass, true)
+      ),
+      defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
 
     const value = { ...this.condition };
-    if (!alias || alias === describedCondition) {
+    if (!alias) {
       delete value.alias;
     } else {
       value.alias = alias;
@@ -331,7 +333,6 @@ export default class HaAutomationConditionRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleDialog,
       css`
         ha-button-menu,
         ha-progress-button {

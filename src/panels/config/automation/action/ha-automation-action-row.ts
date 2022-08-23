@@ -22,7 +22,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./types/ha-automation-action-activate_scene";
@@ -398,7 +398,6 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private async _renameAction(): Promise<void> {
-    const describedAction = describeAction(this.hass, this.action);
     const alias = await showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.actions.change_alias"
@@ -407,12 +406,14 @@ export default class HaAutomationActionRow extends LitElement {
         "ui.panel.config.automation.editor.actions.alias"
       ),
       inputType: "string",
-      defaultValue: this.action.alias || describedAction,
+      placeholder: capitalizeFirstLetter(
+        describeAction(this.hass, this.action, undefined, true)
+      ),
+      defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
-
     const value = { ...this.action };
-    if (!alias || alias === describedAction) {
+    if (!alias) {
       delete value.alias;
     } else {
       value.alias = alias;
@@ -434,7 +435,6 @@ export default class HaAutomationActionRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleDialog,
       css`
         ha-button-menu,
         ha-icon-button {

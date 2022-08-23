@@ -23,7 +23,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-device";
@@ -422,7 +422,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private async _renameTrigger(): Promise<void> {
-    const describedTrigger = describeTrigger(this.trigger);
     const alias = await showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.change_alias"
@@ -431,12 +430,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         "ui.panel.config.automation.editor.triggers.alias"
       ),
       inputType: "string",
-      defaultValue: this.trigger.alias || describedTrigger,
+      placeholder: capitalizeFirstLetter(describeTrigger(this.trigger, true)),
+      defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
 
     const value = { ...this.trigger };
-    if (!alias || alias === describedTrigger) {
+    if (!alias) {
       delete value.alias;
     } else {
       value.alias = alias;
@@ -458,7 +458,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleDialog,
       css`
         ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
