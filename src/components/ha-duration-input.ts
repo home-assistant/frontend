@@ -14,7 +14,7 @@ export interface HaDurationData {
 
 @customElement("ha-duration-input")
 class HaDurationInput extends LitElement {
-  @property({ attribute: false }) public data!: HaDurationData;
+  @property({ attribute: false }) public data?: HaDurationData;
 
   @property() public label?: string;
 
