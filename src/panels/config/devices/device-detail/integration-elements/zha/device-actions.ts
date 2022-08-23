@@ -85,7 +85,7 @@ export const getZHADeviceActions = async (
       },
       {
         label: hass.localize(
-          "ui.dialogs.zha_device_info.buttons.view_in_visualization"
+          "ui.dialogs.zha_device_info.buttons.view_network"
         ),
         icon: mdiFamilyTree,
         action: () =>
