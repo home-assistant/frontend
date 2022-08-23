@@ -102,7 +102,7 @@ export class HaDeviceInfoZWaveJS extends SubscribeMixin(LitElement) {
             `
           : ""}
         <div>
-          ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
+          ${this.hass.localize("ui.panel.config.zwave_js.device_info.node_id")}:
           ${this._node.node_id}
         </div>
         ${!this._node.is_controller_node
