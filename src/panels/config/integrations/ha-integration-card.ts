@@ -3,9 +3,18 @@ import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
+  mdiBookshelf,
+  mdiBug,
   mdiChevronLeft,
+  mdiCog,
+  mdiDelete,
   mdiDotsVertical,
+  mdiDownload,
   mdiOpenInNew,
+  mdiReload,
+  mdiRenameBox,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
 } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox";
@@ -320,16 +329,47 @@ export class HaIntegrationCard extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item @request-selected=${this._handleRename}>
+          ${!item.disabled_by &&
+          RECOVERABLE_STATES.includes(item.state) &&
+          item.supports_unload &&
+          item.source !== "system"
+            ? html`<mwc-list-item
+                @request-selected=${this._handleReload}
+                graphic="icon"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.reload"
+                )}
+                <ha-svg-icon slot="graphic" .path=${mdiReload}></ha-svg-icon>
+              </mwc-list-item>`
+            : ""}
+
+          <mwc-list-item @request-selected=${this._handleRename} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
+            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
           </mwc-list-item>
-          <mwc-list-item @request-selected=${this._handleSystemOptions}>
-            ${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.system_options"
-            )}
-          </mwc-list-item>
+          ${this.supportsDiagnostics && item.state === "loaded"
+            ? html`<a
+                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
+                target="_blank"
+                @click=${this._signUrl}
+              >
+                <mwc-list-item graphic="icon">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.download_diagnostics"
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiDownload}
+                  ></ha-svg-icon>
+                </mwc-list-item>
+              </a>`
+            : ""}
+
+          <li divider role="separator"></li>
+
           ${this.manifest
             ? html` <a
                 href=${this.manifest.is_built_in
@@ -341,13 +381,15 @@ export class HaIntegrationCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiBookshelf}
                   ></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
@@ -358,59 +400,66 @@ export class HaIntegrationCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.known_issues"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
-                  ></ha-svg-icon>
-                </mwc-list-item>
-              </a>`
-            : ""}
-          ${!item.disabled_by &&
-          RECOVERABLE_STATES.includes(item.state) &&
-          item.supports_unload &&
-          item.source !== "system"
-            ? html`<mwc-list-item @request-selected=${this._handleReload}>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.reload"
-                )}
-              </mwc-list-item>`
-            : ""}
-          ${this.supportsDiagnostics && item.state === "loaded"
-            ? html`<a
-                href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
-                target="_blank"
-                @click=${this._signUrl}
-              >
-                <mwc-list-item>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.download_diagnostics"
                   )}
+                  <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
+
+          <li divider role="separator"></li>
+
+          <mwc-list-item
+            @request-selected=${this._handleSystemOptions}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.system_options"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+          </mwc-list-item>
           ${item.disabled_by === "user"
-            ? html`<mwc-list-item @request-selected=${this._handleEnable}>
+            ? html`<mwc-list-item
+                @request-selected=${this._handleEnable}
+                graphic="icon"
+              >
                 ${this.hass.localize("ui.common.enable")}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiToggleSwitch}
+                ></ha-svg-icon>
               </mwc-list-item>`
             : item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
                 @request-selected=${this._handleDisable}
+                graphic="icon"
               >
                 ${this.hass.localize("ui.common.disable")}
+                <ha-svg-icon
+                  slot="graphic"
+                  class="warning"
+                  .path=${mdiToggleSwitchOff}
+                ></ha-svg-icon>
               </mwc-list-item>`
             : ""}
           ${item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
                 @request-selected=${this._handleDelete}
+                graphic="icon"
               >
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.delete"
                 )}
+                <ha-svg-icon
+                  slot="graphic"
+                  class="warning"
+                  .path=${mdiDelete}
+                ></ha-svg-icon>
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
@@ -806,6 +855,10 @@ export class HaIntegrationCard extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
+        }
+        ha-svg-icon[slot="meta"] {
+          width: 18px;
+          height: 18px;
         }
       `,
     ];
