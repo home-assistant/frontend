@@ -39,6 +39,7 @@ import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 import { ACTION_TYPES } from "../../../../data/action";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 const getType = (action: Action | undefined) => {
   if (!action) {
@@ -145,7 +146,9 @@ export default class HaAutomationActionRow extends LitElement {
           : ""}
         <ha-expansion-panel
           leftChevron
-          .header=${this.action.alias || describeAction(this.hass, this.action)}
+          .header=${capitalizeFirstLetter(
+            describeAction(this.hass, this.action)
+          )}
         >
           ${this.index !== 0
             ? html`
