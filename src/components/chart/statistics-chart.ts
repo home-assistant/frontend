@@ -247,8 +247,8 @@ class StatisticsChart extends LitElement {
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = meta?.unit_of_measurement;
-        } else if (unit !== meta?.unit_of_measurement) {
+          unit = meta?.display_unit_of_measurement;
+        } else if (unit !== meta?.display_unit_of_measurement) {
           unit = null;
         }
       }

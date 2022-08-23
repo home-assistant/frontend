@@ -597,7 +597,7 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
     type: "energy/solar_forecast",
   });
 
-export const ENERGY_GAS_VOLUME_UNITS = ["m³", "ft³"];
+export const ENERGY_GAS_VOLUME_UNITS = ["m³"];
 export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
 export const ENERGY_GAS_UNITS = [
   ...ENERGY_GAS_VOLUME_UNITS,
@@ -628,7 +628,6 @@ export const getEnergyGasUnitCategory = (
 };
 
 export const getEnergyGasUnit = (
-  hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string | undefined => {
@@ -636,18 +635,9 @@ export const getEnergyGasUnit = (
     if (source.type !== "gas") {
       continue;
     }
-    const entity = hass.states[source.stat_energy_from];
-    if (entity?.attributes.unit_of_measurement) {
-      // Wh is normalized to kWh by stats generation
-      return entity.attributes.unit_of_measurement === "Wh"
-        ? "kWh"
-        : entity.attributes.unit_of_measurement;
-    }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
-    if (statisticIdWithMeta?.unit_of_measurement) {
-      return statisticIdWithMeta.unit_of_measurement === "Wh"
-        ? "kWh"
-        : statisticIdWithMeta.unit_of_measurement;
+    if (statisticIdWithMeta?.display_unit_of_measurement) {
+      return statisticIdWithMeta.display_unit_of_measurement;
     }
   }
   return undefined;
