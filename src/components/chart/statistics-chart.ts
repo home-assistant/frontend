@@ -233,19 +233,19 @@ class StatisticsChart extends LitElement {
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
+      const meta = this.statisticIds!.find(
+        (stat) => stat.statistic_id === firstStat.statistic_id
+      );
+
       let name = names[firstStat.statistic_id];
       if (!name) {
         const entityState = this.hass.states[firstStat.statistic_id];
         if (entityState) {
           name = computeStateName(entityState);
         } else {
-          name = firstStat.statistic_id;
-        }
-      }
-
-      const meta = this.statisticIds!.find(
-        (stat) => stat.statistic_id === firstStat.statistic_id
-      );
+          name = meta?.name || firstStat.statistic_id;
+        }  
+      }  
 
       if (!this.unit) {
         if (unit === undefined) {
