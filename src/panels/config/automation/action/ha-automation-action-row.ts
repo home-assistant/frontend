@@ -1,6 +1,17 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
-import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiCheck,
+  mdiContentDuplicate,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiPlay,
+  mdiRenameBox,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
+} from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -187,31 +198,91 @@ export default class HaAutomationActionRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item>
+            <mwc-list-item
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.run_action"
+              )}
+              graphic="icon"
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.run_action"
               )}
+              <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item .disabled=${!this._uiModeAvailable}>
+
+            <li divider role="separator"></li>
+
+            <mwc-list-item
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_ui"
+              )}
+              .disabled=${!this._uiModeAvailable}
+              graphic="icon"
+            >
+              ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
+              ${!yamlMode
+                ? html`<ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
+            </mwc-list-item>
+
+            <mwc-list-item
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_yaml"
+              )}
+              .disabled=${!this._uiModeAvailable}
+              graphic="icon"
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.edit_yaml"
+              )}
               ${yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_ui"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.edit_yaml"
-                  )}
+                ? html`<ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiCheck}
+                  ></ha-svg-icon>`
+                : ``}
             </mwc-list-item>
-            <mwc-list-item>
+
+            <li divider role="separator"></li>
+
+            <mwc-list-item
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.rename"
+              )}
+              graphic="icon"
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.rename"
               )}
+              <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item>
+            <mwc-list-item
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.duplicate"
+              )}
+              graphic="icon"
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiContentDuplicate}
+              ></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item>
+            <mwc-list-item
+              aria-label=${this.action.enabled === false
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.enable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.disable"
+                  )}
+              graphic="icon"
+            >
               ${this.action.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
@@ -219,11 +290,28 @@ export default class HaAutomationActionRow extends LitElement {
                 : this.hass.localize(
                     "ui.panel.config.automation.editor.actions.disable"
                   )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${this.action.enabled === false
+                  ? mdiToggleSwitch
+                  : mdiToggleSwitchOff}
+              ></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item class="warning">
+            <mwc-list-item
+              class="warning"
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.delete"
+              )}
+              graphic="icon"
+            >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.delete"
               )}
+              <ha-svg-icon
+                class="warning"
+                slot="graphic"
+                .path=${mdiDelete}
+              ></ha-svg-icon>
             </mwc-list-item>
           </ha-button-menu>
           <div
@@ -310,19 +398,23 @@ export default class HaAutomationActionRow extends LitElement {
         this._runAction();
         break;
       case 1:
-        this._switchYamlMode();
+        this._switchUiMode();
         this.expand();
         break;
       case 2:
-        await this._renameAction();
+        this._switchYamlMode();
+        this.expand();
         break;
       case 3:
-        fireEvent(this, "duplicate");
+        await this._renameAction();
         break;
       case 4:
-        this._onDisable();
+        fireEvent(this, "duplicate");
         break;
       case 5:
+        this._onDisable();
+        break;
+      case 6:
         this._onDelete();
         break;
     }
@@ -392,9 +484,14 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
+  private _switchUiMode() {
+    this._warnings = undefined;
+    this._yamlMode = false;
+  }
+
   private _switchYamlMode() {
     this._warnings = undefined;
-    this._yamlMode = !this._yamlMode;
+    this._yamlMode = true;
   }
 
   private async _renameAction(): Promise<void> {
@@ -460,9 +557,6 @@ export default class HaAutomationActionRow extends LitElement {
 
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
-        }
-        .warning {
-          margin-bottom: 8px;
         }
         .warning ul {
           margin: 4px 0;
