@@ -3,8 +3,8 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
 
-export const describeTrigger = (trigger: Trigger) => {
-  if (trigger.alias) {
+export const describeTrigger = (trigger: Trigger, ignoreAlias = false) => {
+  if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
   return `${trigger.platform || "Unknown"} trigger`;
@@ -12,9 +12,10 @@ export const describeTrigger = (trigger: Trigger) => {
 
 export const describeCondition = (
   condition: Condition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  ignoreAlias = false
 ) => {
-  if (condition.alias) {
+  if (condition.alias && !ignoreAlias) {
     return condition.alias;
   }
 

@@ -26,9 +26,10 @@ import {
 export const describeAction = <T extends ActionType>(
   hass: HomeAssistant,
   action: ActionTypes[T],
-  actionType?: T
+  actionType?: T,
+  ignoreAlias = false
 ): string => {
-  if (action.alias) {
+  if (action.alias && !ignoreAlias) {
     return action.alias;
   }
   if (!actionType) {
