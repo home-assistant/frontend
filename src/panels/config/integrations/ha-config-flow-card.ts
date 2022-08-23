@@ -178,6 +178,10 @@ export class HaConfigFlowCard extends LitElement {
       text-decoration: none;
       color: var(--primary-color);
     }
+    ha-svg-icon[slot="meta"] {
+      width: 18px;
+      height: 18px;
+    }
   `;
 }
 

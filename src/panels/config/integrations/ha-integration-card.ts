@@ -856,6 +856,10 @@ export class HaIntegrationCard extends LitElement {
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
         }
+        ha-svg-icon[slot="meta"] {
+          width: 18px;
+          height: 18px;
+        }
       `,
     ];
   }
