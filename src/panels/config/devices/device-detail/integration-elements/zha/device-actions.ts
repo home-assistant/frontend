@@ -84,9 +84,7 @@ export const getZHADeviceActions = async (
         action: () => showZHAClusterDialog(el, { device: zhaDevice }),
       },
       {
-        label: hass.localize(
-          "ui.dialogs.zha_device_info.buttons.view_network"
-        ),
+        label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),
         icon: mdiFamilyTree,
         action: () =>
           navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
