@@ -2837,6 +2837,7 @@
             "area": "In {area}",
             "no_area": "No Area",
             "not_loaded": "Not loaded",
+            "setup_in_progress": "Setup in progress",
             "check_the_logs": "Check the logs",
             "disable": {
               "disabled": "Disabled",
@@ -2857,7 +2858,8 @@
               "migration_error": "Migration error",
               "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
-              "failed_unload": "Failed to unload"
+              "failed_unload": "Failed to unload",
+              "setup_in_progress": "Setup in progress"
             },
             "open_configuration_url": "Visit device"
           },
