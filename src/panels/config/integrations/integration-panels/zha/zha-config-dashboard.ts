@@ -8,10 +8,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
+import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../components/ha-icon-next";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
@@ -19,11 +20,17 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/buttons/ha-progress-button";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
   ZHAConfiguration,
+  fetchZHANetworkSettings,
+  createZHANetworkBackup,
+  ZHANetworkSettings,
+  ZHANetworkBackupAndMetadata,
 } from "../../../../../data/zha";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -57,11 +64,16 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() private _configuration?: ZHAConfiguration;
 
+  @property() private _networkSettings?: ZHANetworkSettings;
+
+  @state() private _generatingBackup = false;
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
       this._fetchConfiguration();
+      this._fetchSettings();
     }
   }
 
@@ -102,6 +114,51 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
+        ${this._networkSettings
+          ? html` <ha-card
+              header=${this.hass.localize(
+                "ui.panel.config.zha.configuration_page.network_settings_title"
+              )}
+            >
+              <div class="card-content network-settings">
+                <div>
+                  <strong>PAN ID:</strong>
+                  ${this._networkSettings.settings.network_info.pan_id}
+                </div>
+                <div>
+                  <strong>Extended PAN ID:</strong>
+                  ${this._networkSettings.settings.network_info.extended_pan_id}
+                </div>
+                <div>
+                  <strong>Channel:</strong>
+                  ${this._networkSettings.settings.network_info.channel}
+                </div>
+                <div>
+                  <strong>Coordinator IEEE:</strong>
+                  ${this._networkSettings.settings.node_info.ieee}
+                </div>
+                <div>
+                  <strong>Network key:</strong>
+                  ${this._networkSettings.settings.network_info.network_key.key}
+                </div>
+                <div>
+                  <strong>Radio type:</strong>
+                  ${this._networkSettings.radio_type}
+                </div>
+              </div>
+              <div class="card-actions">
+                <ha-progress-button
+                  @click=${this._createAndDownloadBackup}
+                  .progress=${this._generatingBackup}
+                  .disabled=${this._generatingBackup}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.configuration_page.download_backup"
+                  )}
+                </ha-progress-button>
+              </div>
+            </ha-card>`
+          : ""}
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
               ([section, schema]) => html`<ha-card
@@ -152,6 +209,50 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
+  private async _fetchSettings(): Promise<void> {
+    this._networkSettings = await fetchZHANetworkSettings(this.hass!);
+  }
+
+  private async _createAndDownloadBackup(): Promise<void> {
+    let backup_and_metadata: ZHANetworkBackupAndMetadata;
+
+    this._generatingBackup = true;
+
+    try {
+      backup_and_metadata = await createZHANetworkBackup(this.hass!);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Failed to create backup",
+        text: err.message,
+        warning: true,
+      });
+      return;
+    } finally {
+      this._generatingBackup = false;
+    }
+
+    if (!backup_and_metadata.is_complete) {
+      await showAlertDialog(this, {
+        title: "Backup is incomplete",
+        text: "A backup has been created but it is incomplete and cannot be restored. This is a coordinator firmware limitation.",
+      });
+    }
+
+    const backupJSON: string =
+      "data:text/plain;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(backup_and_metadata.backup, null, 4));
+    const backupTime: Date = new Date(
+      Date.parse(backup_and_metadata.backup.backup_time)
+    );
+    let basename = `ZHA backup ${backupTime.toISOString().replace(/:/g, "-")}`;
+
+    if (!backup_and_metadata.is_complete) {
+      basename = `Incomplete ${basename}`;
+    }
+
+    fileDownload(backupJSON, `${basename}.json`);
+  }
+
   private _dataChanged(ev) {
     this._configuration!.data[ev.currentTarget!.section] = ev.detail.value;
   }
@@ -175,6 +276,11 @@ class ZHAConfigDashboard extends LitElement {
           margin: auto;
           margin-top: 16px;
           max-width: 500px;
+        }
+
+        .network-settings > div {
+          word-break: break-all;
+          margin-top: 2px;
         }
       `,
     ];
