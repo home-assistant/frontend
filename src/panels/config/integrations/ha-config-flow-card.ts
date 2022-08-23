@@ -1,7 +1,13 @@
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiBookshelf,
+  mdiCog,
+  mdiDotsVertical,
+  mdiEyeOff,
+  mdiOpenInNew,
+} from "@mdi/js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ATTENTION_SOURCES,
@@ -71,13 +77,18 @@ export class HaConfigFlowCard extends LitElement {
                   ? "_self"
                   : "_blank"}
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.open_configuration_url"
+                  )}
+                  graphic="icon"
+                  hasMeta
+                >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.open_configuration_url"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
-                  ></ha-svg-icon>
+                  )}
+                  <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
@@ -92,23 +103,38 @@ export class HaConfigFlowCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item hasMeta>
+                <mwc-list-item
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.documentation"
+                  )}
+                  graphic="icon"
+                  hasMeta
+                >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
-                  )}<ha-svg-icon
-                    slot="meta"
-                    .path=${mdiOpenInNew}
+                  )}
+                  <ha-svg-icon
+                    slot="graphic"
+                    .path=${mdiBookshelf}
                   ></ha-svg-icon>
+                  <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
                 </mwc-list-item>
               </a>`
             : ""}
           ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
           this.flow.context.unique_id
             ? html`
-                <mwc-list-item @click=${this._ignoreFlow}>
+                <mwc-list-item
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.integrations.ignore.ignore"
+                  )}
+                  graphic="icon"
+                  @click=${this._ignoreFlow}
+                >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.ignore.ignore"
                   )}
+                  <ha-svg-icon slot="graphic" .path=${mdiEyeOff}></ha-svg-icon>
                 </mwc-list-item>
               `
             : ""}
