@@ -198,6 +198,7 @@ export class HaIntegrationCard extends LitElement {
 
     let stateText: Parameters<typeof this.hass.localize> | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
+    let icon: string = mdiAlertCircle;
 
     if (item.disabled_by) {
       stateText = [
@@ -216,6 +217,7 @@ export class HaIntegrationCard extends LitElement {
     } else if (item.state === "not_loaded") {
       stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
     } else if (item.state === "setup_in_progress") {
+      icon = mdiProgressHelper;
       stateText = [
         "ui.panel.config.integrations.config_entry.setup_in_progress",
       ];
@@ -300,7 +302,7 @@ export class HaIntegrationCard extends LitElement {
       ${stateText
         ? html`
             <div class="message">
-              <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+              <ha-svg-icon .path=${icon}></ha-svg-icon>
               <div>${this.hass.localize(...stateText)}${stateTextExtra}</div>
             </div>
           `
