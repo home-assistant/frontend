@@ -75,6 +75,10 @@ const ENTITIES = [
     timestamp: 1641801600,
     friendly_name: "Date and Time",
   }),
+  getEntity("sensor", "humidity", "23.2", {
+    friendly_name: "Humidity",
+    unit_of_measurement: "%",
+  }),
   getEntity("input_select", "dropdown", "Soda", {
     friendly_name: "Dropdown",
     options: ["Soda", "Beer", "Wine"],
@@ -142,6 +146,7 @@ const CONFIGS = [
     - light.non_existing
     - climate.ecobee
     - input_number.number
+    - sensor.humidity
     `,
   },
   {
