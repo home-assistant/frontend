@@ -3,10 +3,281 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
 
-export const describeTrigger = (trigger: Trigger, ignoreAlias = false) => {
+export const describeTrigger = (
+  trigger: Trigger,
+  hass: HomeAssistant,
+  ignoreAlias = false
+) => {
   if (trigger.alias && !ignoreAlias) {
     return trigger.alias;
   }
+
+  // Event Trigger
+  if (trigger.platform === "event" && trigger.event_type) {
+    let eventTypes = "";
+
+    if (Array.isArray(trigger.event_type)) {
+      for (const [index, state] of trigger.event_type.entries()) {
+        eventTypes += `${index > 0 ? "," : ""} ${
+          trigger.event_type.length > 1 &&
+          index === trigger.event_type.length - 1
+            ? "or"
+            : ""
+        } ${state}`;
+      }
+    } else {
+      eventTypes = trigger.event_type.toString();
+    }
+
+    return `When ${eventTypes} event is fired`;
+  }
+
+  // Home Assistant Trigger
+  if (trigger.platform === "homeassistant" && trigger.event) {
+    return `When Home Assistant is ${
+      trigger.event === "start" ? "started" : "shutdown"
+    }`;
+  }
+
+  // Numeric State Trigger
+  if (trigger.platform === "numeric_state" && trigger.entity_id) {
+    let base = "When";
+    const stateObj = hass.states[trigger.entity_id];
+    const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
+
+    if ("attribute" in trigger) {
+      base += ` ${trigger.attribute} from`;
+    }
+
+    base += ` ${entity} is`;
+
+    if ("above" in trigger) {
+      base += ` above ${trigger.above}`;
+    }
+
+    if ("below" in trigger && "above" in trigger) {
+      base += " and";
+    }
+
+    if ("below" in trigger) {
+      base += ` below ${trigger.below}`;
+    }
+
+    return base;
+  }
+
+  // State Trigger
+  if (trigger.platform === "state" && trigger.entity_id) {
+    let base = "When";
+    let entities = "";
+
+    const states = hass.states;
+
+    if ("attribute" in trigger) {
+      base += ` ${trigger.attribute} from`;
+    }
+
+    if (Array.isArray(trigger.entity_id)) {
+      for (const [index, entity] of trigger.entity_id.entries()) {
+        if (states[entity]) {
+          entities += `${index > 0 ? "," : ""} ${
+            trigger.entity_id.length > 1 &&
+            index === trigger.entity_id.length - 1
+              ? "or"
+              : ""
+          } ${computeStateName(states[entity]) || entity}`;
+        }
+      }
+    } else {
+      entities = states[trigger.entity_id]
+        ? computeStateName(states[trigger.entity_id])
+        : trigger.entity_id;
+    }
+
+    base += ` ${entities} changes`;
+
+    if (trigger.from) {
+      let from = "";
+      if (Array.isArray(trigger.from)) {
+        for (const [index, state] of trigger.from.entries()) {
+          from += `${index > 0 ? "," : ""} ${
+            trigger.from.length > 1 && index === trigger.from.length - 1
+              ? "or"
+              : ""
+          } ${state}`;
+        }
+      } else {
+        from = trigger.from.toString();
+      }
+      base += ` from ${from}`;
+    }
+
+    if (trigger.to) {
+      let to = "";
+      if (Array.isArray(trigger.to)) {
+        for (const [index, state] of trigger.to.entries()) {
+          to += `${index > 0 ? "," : ""} ${
+            trigger.to.length > 1 && index === trigger.to.length - 1 ? "or" : ""
+          } ${state}`;
+        }
+      } else if (trigger.to) {
+        to = trigger.to.toString();
+      }
+
+      base += ` to ${to}`;
+    }
+
+    if ("for" in trigger) {
+      let duration: string;
+      if (typeof trigger.for === "number") {
+        duration = `for ${secondsToDuration(trigger.for)!}`;
+      } else if (typeof trigger.for === "string") {
+        duration = `for ${trigger.for}`;
+      } else {
+        duration = `for ${JSON.stringify(trigger.for)}`;
+      }
+
+      base += ` for ${duration}`;
+    }
+
+    return base;
+  }
+
+  // Sun Trigger
+  if (trigger.platform === "sun" && trigger.event) {
+    let base = `When the sun ${trigger.event === "sunset" ? "sets" : "rises"}`;
+
+    if (trigger.offset) {
+      let duration = "";
+
+      if (trigger.offset) {
+        if (typeof trigger.offset === "number") {
+          duration = ` offset by ${secondsToDuration(trigger.offset)!}`;
+        } else if (typeof trigger.offset === "string") {
+          duration = ` offset by ${trigger.offset}`;
+        } else {
+          duration = ` offset by ${JSON.stringify(trigger.offset)}`;
+        }
+      }
+      base += duration;
+    }
+
+    return base;
+  }
+
+  // Tag Trigger
+  if (trigger.platform === "tag") {
+    return "When a tag is scanned";
+  }
+
+  // Time Trigger
+  if (trigger.platform === "time" && trigger.at) {
+    const at = trigger.at.includes(".")
+      ? hass.states[trigger.at] || trigger.at
+      : trigger.at;
+
+    return `When the time is equal to ${at}`;
+  }
+
+  // Time Patter Trigger
+  if (trigger.platform === "time_pattern") {
+    return "Time Pattern Trigger";
+  }
+
+  // Zone Trigger
+  if (trigger.platform === "zone" && trigger.entity_id && trigger.zone) {
+    let entities = "";
+    let zones = "";
+    let zonesPlural = false;
+
+    const states = hass.states;
+
+    if (Array.isArray(trigger.entity_id)) {
+      for (const [index, entity] of trigger.entity_id.entries()) {
+        if (states[entity]) {
+          entities += `${index > 0 ? "," : ""} ${
+            trigger.entity_id.length > 1 &&
+            index === trigger.entity_id.length - 1
+              ? "or"
+              : ""
+          } ${computeStateName(states[entity]) || entity}`;
+        }
+      }
+    } else {
+      entities = states[trigger.entity_id]
+        ? computeStateName(states[trigger.entity_id])
+        : trigger.entity_id;
+    }
+
+    if (Array.isArray(trigger.zone)) {
+      if (trigger.zone.length > 1) {
+        zonesPlural = true;
+      }
+
+      for (const [index, zone] of trigger.zone.entries()) {
+        if (states[zone]) {
+          zones += `${index > 0 ? "," : ""} ${
+            trigger.zone.length > 1 && index === trigger.zone.length - 1
+              ? "or"
+              : ""
+          } ${computeStateName(states[zone]) || zone}`;
+        }
+      }
+    } else {
+      zones = states[trigger.zone]
+        ? computeStateName(states[trigger.zone])
+        : trigger.zone;
+    }
+
+    return `When ${entities} ${trigger.event}s ${zones} ${
+      zonesPlural ? "zones" : "zone"
+    }`;
+  }
+
+  // Geo Location Trigger
+  if (trigger.platform === "geo_location" && trigger.source && trigger.zone) {
+    let sources = "";
+    let zones = "";
+    let zonesPlural = false;
+    const states = hass.states;
+
+    if (Array.isArray(trigger.source)) {
+      for (const [index, source] of trigger.source.entries()) {
+        sources += `${index > 0 ? "," : ""} ${
+          trigger.source.length > 1 && index === trigger.source.length - 1
+            ? "or"
+            : ""
+        } ${source}`;
+      }
+    } else {
+      sources = trigger.source;
+    }
+
+    if (Array.isArray(trigger.zone)) {
+      if (trigger.zone.length > 1) {
+        zonesPlural = true;
+      }
+
+      for (const [index, zone] of trigger.zone.entries()) {
+        if (states[zone]) {
+          zones += `${index > 0 ? "," : ""} ${
+            trigger.zone.length > 1 && index === trigger.zone.length - 1
+              ? "or"
+              : ""
+          } ${computeStateName(states[zone]) || zone}`;
+        }
+      }
+    } else {
+      zones = states[trigger.zone]
+        ? computeStateName(states[trigger.zone])
+        : trigger.zone;
+    }
+
+    return `When ${sources} ${trigger.event}s ${zones} ${
+      zonesPlural ? "zones" : "zone"
+    }`;
+  }
+
   return `${trigger.platform || "Unknown"} trigger`;
 };
 

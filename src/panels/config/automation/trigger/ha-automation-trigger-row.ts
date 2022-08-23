@@ -7,6 +7,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -14,9 +15,10 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/ha-textfield";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
+import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import {
   showAlertDialog,
@@ -40,8 +42,6 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { describeTrigger } from "../../../../data/automation_i18n";
-import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -112,7 +112,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${capitalizeFirstLetter(describeTrigger(this.trigger))}
+          .header=${capitalizeFirstLetter(
+            describeTrigger(this.trigger, this.hass)
+          )}
         >
           <ha-button-menu
             slot="icons"
@@ -430,7 +432,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         "ui.panel.config.automation.editor.triggers.alias"
       ),
       inputType: "string",
-      placeholder: capitalizeFirstLetter(describeTrigger(this.trigger, true)),
+      placeholder: capitalizeFirstLetter(
+        describeTrigger(this.trigger, this.hass, true)
+      ),
       defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),
     });
