@@ -74,7 +74,7 @@ export const describeTrigger = (
     const states = hass.states;
 
     if ("attribute" in trigger) {
-      base += ` ${trigger.attribute} from`;
+      base += ` ${formatAttributeName(trigger.attribute)} from`;
     }
 
     if (Array.isArray(trigger.entity_id)) {
