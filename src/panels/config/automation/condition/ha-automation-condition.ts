@@ -103,8 +103,10 @@ export default class HaAutomationCondition extends LitElement {
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </mwc-button>
         ${this._processedTypes(this.hass.localize).map(
-          ([opt, label]) => html`
-            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
           `
         )}
       </ha-button-menu>
@@ -165,16 +167,19 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      CONDITION_TYPES.map(
-        (condition) =>
-          [
-            condition,
-            localize(
-              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(CONDITION_TYPES)
+        .map(
+          ([condition, icon]) =>
+            [
+              condition,
+              localize(
+                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
   );
 
   static get styles(): CSSResultGroup {
