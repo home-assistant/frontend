@@ -986,9 +986,7 @@ export class HaConfigDevicePage extends LitElement {
         href: configurationUrl,
         icon: mdiCog,
         label: this.hass.localize(
-          `ui.panel.config.devices.open_configuration_url_${
-            device.entry_type || "device"
-          }`
+          "ui.panel.config.devices.open_configuration_url"
         ),
         trailingIcon: mdiOpenInNew,
       });
