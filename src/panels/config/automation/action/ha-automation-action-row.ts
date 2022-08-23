@@ -200,7 +200,7 @@ export default class HaAutomationActionRow extends LitElement {
             ></ha-icon-button>
             <mwc-list-item graphic="icon">
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.run_action"
+                "ui.panel.config.automation.editor.actions.run"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
             </mwc-list-item>
