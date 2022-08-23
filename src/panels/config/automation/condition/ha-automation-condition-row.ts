@@ -5,9 +5,9 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
+  mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
+  mdiStopCircleOutline,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -113,12 +113,25 @@ export default class HaAutomationConditionRow extends LitElement {
             >
             </ha-icon-button>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_ui"
+            <mwc-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.rename"
               )}
-              graphic="icon"
-            >
+              <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+            </mwc-list-item>
+            <mwc-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.duplicate"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiContentDuplicate}
+              ></ha-svg-icon>
+            </mwc-list-item>
+
+            <li divider role="separator"></li>
+
+            <mwc-list-item graphic="icon">
               ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
               ${!this._yamlMode
                 ? html`<ha-svg-icon
@@ -128,12 +141,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 : ``}
             </mwc-list-item>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_yaml"
-              )}
-              graphic="icon"
-            >
+            <mwc-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.edit_yaml"
               )}
@@ -147,41 +155,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
             <li divider role="separator"></li>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.rename"
-              )}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.rename"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.duplicate"
-              )}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.duplicate"
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiContentDuplicate}
-              ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
-              aria-label=${this.condition.enabled === false
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.enable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disable"
-                  )}
-              graphic="icon"
-            >
+            <mwc-list-item graphic="icon">
               ${this.condition.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
@@ -192,17 +166,11 @@ export default class HaAutomationConditionRow extends LitElement {
               <ha-svg-icon
                 slot="graphic"
                 .path=${this.condition.enabled === false
-                  ? mdiToggleSwitch
-                  : mdiToggleSwitchOff}
+                  ? mdiPlayCircleOutline
+                  : mdiStopCircleOutline}
               ></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item
-              class="warning"
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.delete"
-              )}
-              graphic="icon"
-            >
+            <mwc-list-item class="warning" graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.delete"
               )}
@@ -271,18 +239,18 @@ export default class HaAutomationConditionRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
+        await this._renameCondition();
+        break;
+      case 1:
+        fireEvent(this, "duplicate");
+        break;
+      case 2:
         this._switchUiMode();
         this.expand();
         break;
-      case 1:
+      case 3:
         this._switchYamlMode();
         this.expand();
-        break;
-      case 2:
-        await this._renameCondition();
-        break;
-      case 3:
-        fireEvent(this, "duplicate");
         break;
       case 4:
         this._onDisable();

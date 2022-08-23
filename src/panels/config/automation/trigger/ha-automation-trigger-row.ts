@@ -6,9 +6,9 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiIdentifier,
+  mdiPlayCircleOutline,
   mdiRenameBox,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
+  mdiStopCircleOutline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
@@ -135,12 +135,24 @@ export default class HaAutomationTriggerRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.edit_id"
+
+            <mwc-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.rename"
               )}
-              graphic="icon"
-            >
+              <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+            </mwc-list-item>
+            <mwc-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.duplicate"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiContentDuplicate}
+              ></ha-svg-icon>
+            </mwc-list-item>
+
+            <mwc-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.edit_id"
               )}
@@ -149,13 +161,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
             <li divider role="separator"></li>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_ui"
-              )}
-              .disabled=${!supported}
-              graphic="icon"
-            >
+            <mwc-list-item .disabled=${!supported} graphic="icon">
               ${this.hass.localize("ui.panel.config.automation.editor.edit_ui")}
               ${!yamlMode
                 ? html`<ha-svg-icon
@@ -165,13 +171,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 : ``}
             </mwc-list-item>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.edit_yaml"
-              )}
-              .disabled=${!supported}
-              graphic="icon"
-            >
+            <mwc-list-item .disabled=${!supported} graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.edit_yaml"
               )}
@@ -185,41 +185,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
             <li divider role="separator"></li>
 
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.rename"
-              )}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.rename"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.duplicate"
-              )}
-              graphic="icon"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.duplicate"
-              )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiContentDuplicate}
-              ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item
-              aria-label=${this.trigger.enabled === false
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.enable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disable"
-                  )}
-              graphic="icon"
-            >
+            <mwc-list-item graphic="icon">
               ${this.trigger.enabled === false
                 ? this.hass.localize(
                     "ui.panel.config.automation.editor.actions.enable"
@@ -230,17 +196,11 @@ export default class HaAutomationTriggerRow extends LitElement {
               <ha-svg-icon
                 slot="graphic"
                 .path=${this.trigger.enabled === false
-                  ? mdiToggleSwitch
-                  : mdiToggleSwitchOff}
+                  ? mdiPlayCircleOutline
+                  : mdiStopCircleOutline}
               ></ha-svg-icon>
             </mwc-list-item>
-            <mwc-list-item
-              class="warning"
-              aria-label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.delete"
-              )}
-              graphic="icon"
-            >
+            <mwc-list-item class="warning" graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.delete"
               )}
@@ -420,22 +380,22 @@ export default class HaAutomationTriggerRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
+        await this._renameTrigger();
+        break;
+      case 1:
+        fireEvent(this, "duplicate");
+        break;
+      case 2:
         this._requestShowId = true;
         this.expand();
         break;
-      case 1:
+      case 3:
         this._switchUiMode();
         this.expand();
         break;
-      case 2:
+      case 4:
         this._switchYamlMode();
         this.expand();
-        break;
-      case 3:
-        await this._renameTrigger();
-        break;
-      case 4:
-        fireEvent(this, "duplicate");
         break;
       case 5:
         this._onDisable();
