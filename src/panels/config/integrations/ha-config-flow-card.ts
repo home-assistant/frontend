@@ -77,13 +77,7 @@ export class HaConfigFlowCard extends LitElement {
                   ? "_self"
                   : "_blank"}
               >
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.open_configuration_url"
-                  )}
-                  graphic="icon"
-                  hasMeta
-                >
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.open_configuration_url"
                   )}
@@ -103,13 +97,7 @@ export class HaConfigFlowCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.documentation"
-                  )}
-                  graphic="icon"
-                  hasMeta
-                >
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
                   )}
@@ -124,13 +112,7 @@ export class HaConfigFlowCard extends LitElement {
           ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
           this.flow.context.unique_id
             ? html`
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.ignore.ignore"
-                  )}
-                  graphic="icon"
-                  @click=${this._ignoreFlow}
-                >
+                <mwc-list-item graphic="icon" @click=${this._ignoreFlow}>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.ignore.ignore"
                   )}

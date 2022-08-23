@@ -334,9 +334,6 @@ export class HaIntegrationCard extends LitElement {
           item.supports_unload &&
           item.source !== "system"
             ? html`<mwc-list-item
-                aria-label=${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.reload"
-                )}
                 @request-selected=${this._handleReload}
                 graphic="icon"
               >
@@ -347,13 +344,7 @@ export class HaIntegrationCard extends LitElement {
               </mwc-list-item>`
             : ""}
 
-          <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.rename"
-            )}
-            @request-selected=${this._handleRename}
-            graphic="icon"
-          >
+          <mwc-list-item @request-selected=${this._handleRename} graphic="icon">
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
@@ -365,12 +356,7 @@ export class HaIntegrationCard extends LitElement {
                 target="_blank"
                 @click=${this._signUrl}
               >
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.download_diagnostics"
-                  )}
-                  graphic="icon"
-                >
+                <mwc-list-item graphic="icon">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.download_diagnostics"
                   )}
@@ -395,13 +381,7 @@ export class HaIntegrationCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.documentation"
-                  )}
-                  graphic="icon"
-                  hasMeta
-                >
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.documentation"
                   )}
@@ -420,13 +400,7 @@ export class HaIntegrationCard extends LitElement {
                 rel="noreferrer"
                 target="_blank"
               >
-                <mwc-list-item
-                  aria-label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.known_issues"
-                  )}
-                  graphic="icon"
-                  hasMeta
-                >
+                <mwc-list-item graphic="icon" hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.known_issues"
                   )}
@@ -439,9 +413,6 @@ export class HaIntegrationCard extends LitElement {
           <li divider role="separator"></li>
 
           <mwc-list-item
-            aria-label=${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.system_options"
-            )}
             @request-selected=${this._handleSystemOptions}
             graphic="icon"
           >
@@ -452,7 +423,6 @@ export class HaIntegrationCard extends LitElement {
           </mwc-list-item>
           ${item.disabled_by === "user"
             ? html`<mwc-list-item
-                aria-label=${this.hass.localize("ui.common.enable")}
                 @request-selected=${this._handleEnable}
                 graphic="icon"
               >
@@ -465,7 +435,6 @@ export class HaIntegrationCard extends LitElement {
             : item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
-                aria-label=${this.hass.localize("ui.common.disable")}
                 @request-selected=${this._handleDisable}
                 graphic="icon"
               >
@@ -480,9 +449,6 @@ export class HaIntegrationCard extends LitElement {
           ${item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
-                aria-label=${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.delete"
-                )}
                 @request-selected=${this._handleDelete}
                 graphic="icon"
               >
