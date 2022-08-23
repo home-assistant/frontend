@@ -764,6 +764,9 @@ export class HaConfigDevicePage extends LitElement {
                                           .action=${deviceAction.action}
                                           @click=${this._deviceActionClicked}
                                           graphic="icon"
+                                          .hasMeta=${Boolean(
+                                            deviceAction.trailingIcon
+                                          )}
                                         >
                                           ${deviceAction.label}
                                           ${deviceAction.icon
@@ -780,6 +783,7 @@ export class HaConfigDevicePage extends LitElement {
                                           ${deviceAction.trailingIcon
                                             ? html`
                                                 <ha-svg-icon
+                                                  slot="meta"
                                                   .path=${deviceAction.trailingIcon}
                                                 ></ha-svg-icon>
                                               `
@@ -1407,6 +1411,13 @@ export class HaConfigDevicePage extends LitElement {
 
         ha-svg-icon[slot="trailingIcon"] {
           display: block;
+          width: 18px;
+          height: 18px;
+        }
+
+        ha-svg-icon[slot="meta"] {
+          width: 18px;
+          height: 18px;
         }
 
         .items {
