@@ -19,6 +19,7 @@ import { validateConfig } from "../../../../data/config";
 import {
   showAlertDialog,
   showConfirmationDialog,
+  showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -114,6 +115,11 @@ export default class HaAutomationConditionRow extends LitElement {
             </mwc-list-item>
             <mwc-list-item>
               ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.rename"
+              )}
+            </mwc-list-item>
+            <mwc-list-item>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
             </mwc-list-item>
@@ -187,19 +193,22 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
+  private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
         this._switchYamlMode();
         this.expand();
         break;
       case 1:
-        fireEvent(this, "duplicate");
+        await this._renameCondition();
         break;
       case 2:
-        this._onDisable();
+        fireEvent(this, "duplicate");
         break;
       case 3:
+        this._onDisable();
+        break;
+      case 4:
         this._onDelete();
         break;
     }
@@ -286,6 +295,33 @@ export default class HaAutomationConditionRow extends LitElement {
     } finally {
       button.progress = false;
     }
+  }
+
+  private async _renameCondition(): Promise<void> {
+    const alias = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.change_alias"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.alias"
+      ),
+      inputType: "string",
+      placeholder: capitalizeFirstLetter(
+        describeCondition(this.condition, this.hass, true)
+      ),
+      defaultValue: this.condition.alias,
+      confirmText: this.hass.localize("ui.common.submit"),
+    });
+
+    const value = { ...this.condition };
+    if (!alias) {
+      delete value.alias;
+    } else {
+      value.alias = alias;
+    }
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 
   public expand() {
