@@ -317,7 +317,11 @@ class ActionRenderer {
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
     this._renderEntry(
       triggerStep.path,
-      `Triggered ${
+      `${
+        triggerStep.changed_variables.trigger.alias
+          ? `${triggerStep.changed_variables.trigger.alias} triggered`
+          : "Triggered"
+      } ${
         triggerStep.path === "trigger"
           ? "manually"
           : `by the ${this.trace.trigger}`
