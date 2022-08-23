@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
@@ -153,6 +154,7 @@ const SCHEMAS: {
         context: { filter_entity: "entity", filter_attribute: "Attribute" },
       },
       { name: "Device", selector: { device: {} } },
+      { name: "Config entry", selector: { config_entry: {} } },
       { name: "Duration", selector: { duration: {} } },
       { name: "area", selector: { area: {} } },
       { name: "target", selector: { target: {} } },
@@ -434,6 +436,7 @@ class DemoHaForm extends LitElement {
     hass.addEntities(ENTITIES);
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass, DEVICES);
+    mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
     mockHassioSupervisor(hass);
   }

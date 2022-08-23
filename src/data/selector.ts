@@ -11,6 +11,7 @@ export type Selector =
   | BooleanSelector
   | ColorRGBSelector
   | ColorTempSelector
+  | ConfigEntrySelector
   | DateSelector
   | DateTimeSelector
   | DeviceSelector
@@ -83,6 +84,12 @@ export interface ColorTempSelector {
   color_temp: {
     min_mireds?: number;
     max_mireds?: number;
+  };
+}
+
+export interface ConfigEntrySelector {
+  config_entry: {
+    integration?: string;
   };
 }
 
