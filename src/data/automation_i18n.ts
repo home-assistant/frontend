@@ -181,7 +181,7 @@ export const describeTrigger = (
 
   // Time Patter Trigger
   if (trigger.platform === "time_pattern") {
-    return "Time Pattern Trigger";
+    return "Time pattern trigger";
   }
 
   // Zone Trigger
