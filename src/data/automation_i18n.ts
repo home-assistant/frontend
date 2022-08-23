@@ -46,7 +46,7 @@ export const describeTrigger = (
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
     if ("attribute" in trigger) {
-      base += ` ${trigger.attribute} from`;
+      base += ` ${formatAttributeName(trigger.attribute)} from`;
     }
 
     base += ` ${entity} is`;
