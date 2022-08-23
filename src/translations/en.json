@@ -1006,13 +1006,13 @@
         "device_signature": "Zigbee device signature",
         "device_children": "Zigbee device children",
         "buttons": {
-          "add": "Add Devices via this device",
-          "remove": "Remove Device",
-          "clusters": "Manage Clusters",
-          "reconfigure": "Reconfigure Device",
-          "zigbee_information": "Zigbee device signature",
-          "device_children": "View Children",
-          "view_in_visualization": "View in Visualization"
+          "add": "Add devices via this device",
+          "remove": "Remove",
+          "clusters": "Manage clusters",
+          "reconfigure": "Reconfigure",
+          "zigbee_information": "Zigbee signature",
+          "device_children": "View children",
+          "view_network": "View network"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
@@ -2558,11 +2558,10 @@
             "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
-          "open_configuration_url_device": "Visit device",
-          "open_configuration_url_service": "Visit service",
+          "open_configuration_url": "Visit",
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
-          "delete_device": "Delete device",
+          "delete_device": "Delete",
           "delete_device_integration": "Remove {integration} from device",
           "type": {
             "device_heading": "Device",
@@ -3164,18 +3163,19 @@
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
-            "node_status": "Device Status",
-            "node_ready": "Device Ready",
-            "device_config": "Configure Device",
-            "reinterview_device": "Re-interview Device",
-            "heal_node": "Heal Device",
-            "remove_failed": "Remove Failed Device",
-            "update_firmware": "Update Device Firmware",
-            "highest_security": "Highest Security",
+            "node_id": "ID",
+            "node_status": "Status",
+            "node_ready": "Ready",
+            "device_config": "Configure",
+            "reinterview_device": "Re-interview",
+            "heal_node": "Heal",
+            "remove_failed": "Remove failed",
+            "update_firmware": "Update",
+            "highest_security": "Highest security",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
-            "node_statistics": "Show Device Statistics"
+            "node_statistics": "Statistics"
           },
           "node_statistics": {
             "title": "Device Statistics",
