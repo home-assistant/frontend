@@ -417,6 +417,9 @@
         "add_device_id": "Choose device",
         "add_entity_id": "Choose entity"
       },
+      "config-entry-picker": {
+        "config_entry": "Integration"
+      },
       "theme-picker": {
         "theme": "Theme",
         "no_theme": "No theme"
