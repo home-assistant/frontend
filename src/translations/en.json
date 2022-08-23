@@ -2552,7 +2552,7 @@
           "open_configuration_url": "Visit",
           "download_diagnostics": "Download diagnostics",
           "download_diagnostics_integration": "Download {integration} diagnostics",
-          "delete_device": "Delete device",
+          "delete_device": "Delete",
           "delete_device_integration": "Remove {integration} from device",
           "type": {
             "device_heading": "Device",
