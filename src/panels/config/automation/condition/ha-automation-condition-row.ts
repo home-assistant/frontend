@@ -5,14 +5,17 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
-import "../../../../components/ha-icon-button";
+import "../../../../components/ha-button-menu";
+import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
 import { Condition, testCondition } from "../../../../data/automation";
+import { describeCondition } from "../../../../data/automation_i18n";
+import { validateConfig } from "../../../../data/config";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -20,9 +23,6 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
-import { validateConfig } from "../../../../data/config";
-import { describeCondition } from "../../../../data/automation_i18n";
-import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -81,7 +81,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${capitalizeFirstLetter(describeCondition(this.condition))}
+          .header=${capitalizeFirstLetter(
+            describeCondition(this.condition, this.hass)
+          )}
         >
           <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(

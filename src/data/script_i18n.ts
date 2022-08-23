@@ -163,7 +163,7 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition)}`;
+    return `Test ${describeCondition(action as Condition, hass)}`;
   }
 
   if (actionType === "stop") {
@@ -177,7 +177,7 @@ export const describeAction = <T extends ActionType>(
       typeof config.if === "string"
         ? config.if
         : ensureArray(config.if)
-            .map((condition) => describeCondition(condition))
+            .map((condition) => describeCondition(condition, hass))
             .join(", ")
     } then ${ensureArray(config.then).map((thenAction) =>
       describeAction(hass, thenAction)
@@ -200,7 +200,7 @@ export const describeAction = <T extends ActionType>(
                 typeof chooseAction.conditions === "string"
                   ? chooseAction.conditions
                   : ensureArray(chooseAction.conditions)
-                      .map((condition) => describeCondition(condition))
+                      .map((condition) => describeCondition(condition, hass))
                       .join(", ")
               } then ${ensureArray(chooseAction.sequence)
                 .map((chooseSeq) => describeAction(hass, chooseSeq))
@@ -223,11 +223,11 @@ export const describeAction = <T extends ActionType>(
     )} ${"count" in config.repeat ? `${config.repeat.count} times` : ""}${
       "while" in config.repeat
         ? `while ${ensureArray(config.repeat.while)
-            .map((condition) => describeCondition(condition))
+            .map((condition) => describeCondition(condition, hass))
             .join(", ")} is true`
         : "until" in config.repeat
         ? `until ${ensureArray(config.repeat.until)
-            .map((condition) => describeCondition(condition))
+            .map((condition) => describeCondition(condition, hass))
             .join(", ")} is true`
         : "for_each" in config.repeat
         ? `for every item: ${ensureArray(config.repeat.for_each)
@@ -238,7 +238,7 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "check_condition") {
-    return `Test ${describeCondition(action as Condition)}`;
+    return `Test ${describeCondition(action as Condition, hass)}`;
   }
 
   if (actionType === "device_action") {
