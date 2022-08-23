@@ -22,6 +22,7 @@ import { HomeAssistant } from "../../../../types";
 import "./ha-automation-condition-editor";
 import { validateConfig } from "../../../../data/config";
 import { describeCondition } from "../../../../data/automation_i18n";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -80,7 +81,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
         <ha-expansion-panel
           leftChevron
-          .header=${this.condition.alias || describeCondition(this.condition)}
+          .header=${capitalizeFirstLetter(describeCondition(this.condition))}
         >
           <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(
