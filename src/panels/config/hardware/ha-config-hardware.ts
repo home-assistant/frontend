@@ -6,7 +6,7 @@ import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
+import { numberFormatToLocale } from "../../../common/number/format_number";
 import { round } from "../../../common/number/round";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
@@ -75,9 +75,9 @@ class HaConfigHardware extends LitElement {
 
   @state() private _systemStatusData?: SystemStatusStreamMessage;
 
-  private _memoryEntries: { x: string; y: number | null }[] = [];
+  private _memoryEntries: { x: number; y: number | null }[] = [];
 
-  private _cpuEntries: { x: string; y: number | null }[] = [];
+  private _cpuEntries: { x: number; y: number | null }[] = [];
 
   private _subscribed?: Promise<(() => Promise<void>) | void>;
 
@@ -124,17 +124,31 @@ class HaConfigHardware extends LitElement {
             },
           },
           x: {
+            type: "time",
+            adapters: {
+              date: {
+                locale: this.hass.locale,
+              },
+            },
             gridLines: {
               display: true,
               drawTicks: false,
             },
             ticks: {
+              maxRotation: 0,
+              sampleSize: 5,
+              autoSkipPadding: 20,
+              major: {
+                enabled: true,
+              },
               fontSize: 10,
               autoSkip: true,
               maxTicksLimit: 5,
             },
           },
         },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
       };
     }
   }
@@ -143,10 +157,13 @@ class HaConfigHardware extends LitElement {
     super.firstUpdated(changedProps);
     this._load();
 
+    const date = new Date();
     // Force graph to start drawing from the right
     for (let i = 0; i < DATASAMPLES; i++) {
-      this._memoryEntries.push({ x: "", y: null });
-      this._cpuEntries.push({ x: "", y: null });
+      const t = new Date(date);
+      t.setSeconds(t.getSeconds() - 5 * (DATASAMPLES - i));
+      this._memoryEntries.push({ x: t.getTime(), y: null });
+      this._cpuEntries.push({ x: t.getTime(), y: null });
     }
 
     if (this.hass) {
@@ -447,17 +464,12 @@ class HaConfigHardware extends LitElement {
     this._memoryEntries.shift();
     this._cpuEntries.shift();
 
-    const time = formatTimeWithSeconds(
-      new Date(streamMessage.timestamp),
-      this.hass.locale
-    );
-
     this._memoryEntries.push({
-      x: time,
+      x: new Date(streamMessage.timestamp).getTime(),
       y: streamMessage.memory_used_percent,
     });
     this._cpuEntries.push({
-      x: time,
+      x: new Date(streamMessage.timestamp).getTime(),
       y: streamMessage.cpu_percent,
     });
 
