@@ -88,9 +88,11 @@ export default class HaAutomationTrigger extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
         "ha-automation-trigger-row:last-of-type"
       )!;
-      row.expand();
-      row.scrollIntoView();
-      row.focus();
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
     }
   }
 
