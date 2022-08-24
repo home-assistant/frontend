@@ -14,7 +14,6 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../../common/color/colors";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -26,6 +25,7 @@ import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
+  getStatisticLabel,
   Statistics,
 } from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
@@ -45,6 +45,8 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _chartData: ChartData = { datasets: [] };
 
+  @state() private _data?: EnergyData;
+
   @query("ha-chart-base") private _chart?: HaChartBase;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
@@ -53,7 +55,10 @@ export class HuiEnergyDevicesGraphCard
     return [
       getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
-      }).subscribe((data) => this._getStatistics(data)),
+      }).subscribe((data) => {
+        this._data = data;
+        this._getStatistics(data);
+      }),
     ];
   }
 
@@ -105,11 +110,14 @@ export class HuiEnergyDevicesGraphCard
           ticks: {
             autoSkip: false,
             callback: (index) => {
-              const entityId = (
+              const statisticId = (
                 this._chartData.datasets[0].data[index] as ScatterDataPoint
               ).y;
-              const entity = this.hass.states[entityId];
-              return entity ? computeStateName(entity) : entityId;
+              return getStatisticLabel(
+                this.hass,
+                statisticId as any,
+                this._data?.statsMetadata
+              );
             },
           },
         },
@@ -126,8 +134,12 @@ export class HuiEnergyDevicesGraphCard
           mode: "nearest",
           callbacks: {
             title: (item) => {
-              const entity = this.hass.states[item[0].label];
-              return entity ? computeStateName(entity) : item[0].label;
+              const statisticId = item[0].label;
+              return getStatisticLabel(
+                this.hass,
+                statisticId,
+                this._data?.statsMetadata
+              );
             },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
