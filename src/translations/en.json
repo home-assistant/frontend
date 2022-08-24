@@ -2859,7 +2859,7 @@
               "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload",
-              "setup_in_progress": "Setup in progress"
+              "setup_in_progress": "Initializing"
             },
             "open_configuration_url": "Visit device"
           },
