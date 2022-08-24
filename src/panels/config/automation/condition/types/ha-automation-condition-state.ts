@@ -66,7 +66,10 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         },
         {
           name: "state",
-          selector: { state: { entity_id: entityId, attribute: attribute } },
+          required: true,
+          selector: {
+            state: { entity_id: entityId, attribute: attribute },
+          },
         },
         { name: "for", selector: { duration: {} } },
       ] as const
@@ -105,15 +108,21 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    const newCondition = ev.detail.value;
 
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
+    Object.keys(newCondition).forEach((key) =>
+      newCondition[key] === undefined || newCondition[key] === ""
+        ? delete newCondition[key]
         : {}
     );
 
-    fireEvent(this, "value-changed", { value: newTrigger });
+    // We should not cleanup state in the above, as it is required.
+    // Set it to empty string if it is undefined.
+    if (!newCondition.state) {
+      newCondition.state = "";
+    }
+
+    fireEvent(this, "value-changed", { value: newCondition });
   }
 
   private _computeLabelCallback = (
