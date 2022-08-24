@@ -5,9 +5,9 @@ import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./types";
 
 @customElement("ha-form-positive_time_period_dict")
 export class HaFormTimePeriod extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormTimeSchema;
+  @property({ attribute: false }) public schema!: HaFormTimeSchema;
 
-  @property() public data!: HaFormTimeData;
+  @property({ attribute: false }) public data!: HaFormTimeData;
 
   @property() public label!: string;
 
@@ -25,7 +25,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
     return html`
       <ha-duration-input
         .label=${this.label}
-        .required=${this.schema.required}
+        ?required=${this.schema.required}
         .data=${this.data}
         .disabled=${this.disabled}
       ></ha-duration-input>
