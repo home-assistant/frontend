@@ -278,7 +278,20 @@ export const describeTrigger = (
       zonesPlural ? "zones" : "zone"
     }`;
   }
-
+  // MQTT Trigger
+  if (trigger.platform === "mqtt") {
+    return "When a MQTT payload has been received";
+  }
+  
+  // Template Trigger
+  if (trigger.platform === "template") {
+    return "When a template triggers";
+  }
+  
+  // Webhook Trigger
+  if (trigger.platform === "webhook") {
+    return "When a Webhook payload has been received";
+  }
   return `${trigger.platform || "Unknown"} trigger`;
 };
 
