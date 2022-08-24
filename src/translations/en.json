@@ -2837,7 +2837,7 @@
             "area": "In {area}",
             "no_area": "No Area",
             "not_loaded": "Not loaded",
-            "setup_in_progress": "Setup in progress",
+            "setup_in_progress": "Initializing",
             "check_the_logs": "Check the logs",
             "disable": {
               "disabled": "Disabled",
