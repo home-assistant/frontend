@@ -2,7 +2,6 @@ import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Action, ParallelAction } from "../../../../../data/script";
-import { HaDeviceAction } from "./ha-automation-action-device_id";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
@@ -17,7 +16,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   public static get defaultConfig() {
     return {
-      parallel: [HaDeviceAction.defaultConfig],
+      parallel: [],
     };
   }
 
