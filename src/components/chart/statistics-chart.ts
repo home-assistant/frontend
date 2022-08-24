@@ -15,13 +15,13 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
 } from "../../common/number/format_number";
 import {
   getStatisticIds,
+  getStatisticLabel,
   Statistics,
   statisticsHaveType,
   StatisticsMetaData,
@@ -236,16 +236,14 @@ class StatisticsChart extends LitElement {
       const meta = this.statisticIds!.find(
         (stat) => stat.statistic_id === firstStat.statistic_id
       );
-
       let name = names[firstStat.statistic_id];
       if (!name) {
-        const entityState = this.hass.states[firstStat.statistic_id];
-        if (entityState) {
-          name = computeStateName(entityState);
-        } else {
-          name = meta?.name || firstStat.statistic_id;
-        }  
-      }  
+        const tmp: Record<string, StatisticsMetaData> = {};
+        if (meta) {
+          tmp[firstStat.statistic_id] = meta;
+        }
+        name = getStatisticLabel(this.hass, firstStat.statistic_id, tmp);
+      }
 
       if (!this.unit) {
         if (unit === undefined) {
