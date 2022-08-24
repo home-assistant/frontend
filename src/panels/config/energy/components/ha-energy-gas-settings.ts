@@ -3,7 +3,6 @@ import { mdiDelete, mdiFire, mdiPencil } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import {
@@ -14,6 +13,10 @@ import {
   getEnergyGasUnitCategory,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -31,6 +34,9 @@ export class EnergyGasSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  @property({ attribute: false })
+  public statsMetadata!: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -89,9 +95,11 @@ export class EnergyGasSettings extends LitElement {
                     ></ha-icon>`
                   : html`<ha-svg-icon .path=${mdiFire}></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : source.stat_energy_from}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    source.stat_energy_from,
+                    this.statsMetadata
+                  )}</span
                 >
                 <ha-icon-button
                   .label=${this.hass.localize(

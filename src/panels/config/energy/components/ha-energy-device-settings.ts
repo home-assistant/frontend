@@ -3,7 +3,6 @@ import { mdiDelete, mdiDevices } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-state-icon";
@@ -13,6 +12,10 @@ import {
   EnergyPreferencesValidation,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -30,6 +33,9 @@ export class EnergyDeviceSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  @property({ attribute: false })
+  public statsMetadata!: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -81,9 +87,11 @@ export class EnergyDeviceSettings extends LitElement {
               <div class="row">
                 <ha-state-icon .state=${entityState}></ha-state-icon>
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : device.stat_consumption}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    device.stat_consumption,
+                    this.statsMetadata
+                  )}</span
                 >
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.delete")}
