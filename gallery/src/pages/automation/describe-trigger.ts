@@ -1,25 +1,56 @@
 import { dump } from "js-yaml";
-import { html, css, LitElement, TemplateResult } from "lit";
-import { customElement, state } from "lit/decorators";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
 import { Trigger } from "../../../../src/data/automation";
 import { describeTrigger } from "../../../../src/data/automation_i18n";
+import { getEntity } from "../../../../src/fake_data/entity";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { HomeAssistant } from "../../../../src/types";
+
+const ENTITIES = [
+  getEntity("light", "kitchen", "on", {
+    friendly_name: "Kitchen Light",
+  }),
+  getEntity("person", "person", "", {
+    friendly_name: "Person",
+  }),
+  getEntity("zone", "home", "", {
+    friendly_name: "Home",
+  }),
+];
 
 const triggers = [
-  { platform: "state" },
+  { platform: "state", entity_id: "light.kitchen", from: "off", to: "on" },
   { platform: "mqtt" },
-  { platform: "geo_location" },
-  { platform: "homeassistant" },
-  { platform: "numeric_state" },
-  { platform: "sun" },
+  {
+    platform: "geo_location",
+    source: "test_source",
+    zone: "zone.home",
+    event: "enter",
+  },
+  { platform: "homeassistant", event: "start" },
+  {
+    platform: "numeric_state",
+    entity_id: "light.kitchen",
+    attribute: "brightness",
+    below: 80,
+    above: 20,
+  },
+  { platform: "sun", event: "sunset" },
   { platform: "time_pattern" },
   { platform: "webhook" },
-  { platform: "zone" },
+  {
+    platform: "zone",
+    entity_id: "person.person",
+    zone: "zone.home",
+    event: "enter",
+  },
   { platform: "tag" },
-  { platform: "time" },
+  { platform: "time", at: "15:32" },
   { platform: "template" },
-  { platform: "event" },
+  { platform: "event", event_type: "homeassistant_started" },
 ];
 
 const initialTrigger: Trigger = {
@@ -29,14 +60,22 @@ const initialTrigger: Trigger = {
 
 @customElement("demo-automation-describe-trigger")
 export class DemoAutomationDescribeTrigger extends LitElement {
+  @property({ attribute: false }) hass!: HomeAssistant;
+
   @state() _trigger = initialTrigger;
 
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
+
     return html`
       <ha-card header="Triggers">
         <div class="trigger">
           <span>
-            ${this._trigger ? describeTrigger(this._trigger) : "<invalid YAML>"}
+            ${this._trigger
+              ? describeTrigger(this._trigger, this.hass)
+              : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
             label="Trigger Config"
@@ -47,13 +86,20 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         ${triggers.map(
           (conf) => html`
             <div class="trigger">
-              <span>${describeTrigger(conf as any)}</span>
+              <span>${describeTrigger(conf as any, this.hass)}</span>
               <pre>${dump(conf)}</pre>
             </div>
           `
         )}
       </ha-card>
     `;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    const hass = provideHass(this);
+    hass.updateTranslations(null, "en");
+    hass.addEntities(ENTITIES);
   }
 
   private _dataChanged(ev: CustomEvent): void {
