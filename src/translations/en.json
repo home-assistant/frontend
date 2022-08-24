@@ -776,11 +776,8 @@
           "activity": "Current activity"
         },
         "restored": {
-          "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
-          "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
-          "remove_action": "Remove entity",
-          "confirm_remove_title": "Remove entity?",
-          "confirm_remove_text": "Are you sure you want to remove this entity?"
+          "title": "Entity unavailable",
+          "not_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings."
         },
         "vacuum": {
           "status": "Status",
