@@ -3,6 +3,13 @@ title: Alerts
 subtitle: An alert displays a short, important message in a way that attracts the user's attention without interrupting the user's task.
 ---
 
+<style>
+  ha-alert {
+    display: block;
+    margin: 4px 0;
+  }
+</style>
+
 # Alert `<ha-alert>`
 The alert offers four severity levels that set a distinctive icon and color.
 
