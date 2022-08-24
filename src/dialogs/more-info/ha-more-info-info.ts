@@ -33,7 +33,7 @@ export class MoreInfoInfo extends LitElement {
       ${stateObj.attributes.restored && this._entityEntry
         ? html`<ha-alert alert-type="warning">
             ${this.hass.localize(
-              "ui.dialogs.more_info_control.restored.not_provided",
+              "ui.dialogs.more_info_control.restored.no_longer_provided",
               {
                 integration: this._entityEntry.platform,
               }
