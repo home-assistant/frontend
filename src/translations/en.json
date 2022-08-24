@@ -1975,7 +1975,6 @@
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "test": "Test",
-              "testing": "Testing condition...",
               "testing_error": "Condition is not passing",
               "testing_pass": "Condition is passing",
               "invalid_condition": "Invalid condition configuration",

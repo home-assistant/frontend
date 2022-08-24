@@ -234,11 +234,7 @@ export default class HaAutomationConditionRow extends LitElement {
             error: this._testingResult === false,
           })}"
         >
-          ${this._testingResult === undefined
-            ? this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.testing"
-              )
-            : this._testingResult
+          ${this._testingResult
             ? this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.testing_pass"
               )
@@ -268,7 +264,7 @@ export default class HaAutomationConditionRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await this._testCondition2();
+        await this._testCondition();
         break;
       case 1:
         await this._renameCondition();
@@ -322,7 +318,7 @@ export default class HaAutomationConditionRow extends LitElement {
     this._yamlMode = true;
   }
 
-  private async _testCondition2() {
+  private async _testCondition() {
     if (this._testing) {
       return;
     }
@@ -444,7 +440,6 @@ export default class HaAutomationConditionRow extends LitElement {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .testing {
-          cursor: pointer;
           position: absolute;
           top: 0px;
           right: 0px;
