@@ -10,6 +10,7 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import "../../../../../components/ha-duration-input";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
+import { ensureArray } from "../../../../../common/ensure-array";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
@@ -18,14 +19,13 @@ export class HaWaitForTriggerAction
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public action!: WaitForTriggerAction;
+  @property({ attribute: false }) public action!: WaitForTriggerAction;
 
   public static get defaultConfig() {
     return { wait_for_trigger: [] };
   }
 
   protected render() {
-    const { wait_for_trigger, continue_on_timeout } = this.action;
     const timeData = createDurationData(this.action.timeout);
 
     return html`
@@ -43,12 +43,12 @@ export class HaWaitForTriggerAction
         )}
       >
         <ha-switch
-          .checked=${continue_on_timeout ?? true}
+          .checked=${this.action.continue_on_timeout ?? true}
           @change=${this._continueChanged}
         ></ha-switch>
       </ha-formfield>
       <ha-automation-trigger
-        .triggers=${wait_for_trigger}
+        .triggers=${ensureArray(this.action.wait_for_trigger)}
         .hass=${this.hass}
         .name=${"wait_for_trigger"}
         @value-changed=${this._valueChanged}

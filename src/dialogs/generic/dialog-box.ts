@@ -73,6 +73,7 @@ class DialogBox extends LitElement {
                 <ha-textfield
                   dialogInitialFocus
                   value=${ifDefined(this._params.defaultValue)}
+                  .placeholder=${ifDefined(this._params.placeholder)}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -157,6 +158,14 @@ class DialogBox extends LitElement {
         --mdc-dialog-content-ink-color: var(--primary-text-color);
         /* Place above other dialogs */
         --dialog-z-index: 104;
+      }
+      @media all and (min-width: 600px) {
+        ha-dialog {
+          --mdc-dialog-min-width: 400px;
+        }
+      }
+      ha-textfield {
+        width: 100%;
       }
     `;
   }

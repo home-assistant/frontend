@@ -1,10 +1,11 @@
 import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-select";
-import "./ha-textfield";
+import { HaTextField } from "./ha-textfield";
 import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {
@@ -36,7 +37,7 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * determines if inputs are required
    */
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   /**
    * 12 or 24 hr format
@@ -123,11 +124,6 @@ export class HaBaseTimeInput extends LitElement {
    */
   @property() amPm: "AM" | "PM" = "AM";
 
-  /**
-   * Formatted time string
-   */
-  @property() value?: string;
-
   protected render(): TemplateResult {
     return html`
       ${this.label
@@ -140,11 +136,11 @@ export class HaBaseTimeInput extends LitElement {
                 id="day"
                 type="number"
                 inputmode="numeric"
-                .value=${this.days}
+                .value=${this.days.toFixed()}
                 .label=${this.dayLabel}
                 name="days"
                 @input=${this._valueChanged}
-                @focus=${this._onFocus}
+                @focusin=${this._onFocus}
                 no-spinner
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
@@ -161,16 +157,16 @@ export class HaBaseTimeInput extends LitElement {
           id="hour"
           type="number"
           inputmode="numeric"
-          .value=${this.hours}
+          .value=${this.hours.toFixed()}
           .label=${this.hourLabel}
           name="hours"
           @input=${this._valueChanged}
-          @focus=${this._onFocus}
+          @focusin=${this._onFocus}
           no-spinner
           .required=${this.required}
           .autoValidate=${this.autoValidate}
           maxlength="2"
-          .max=${this._hourMax}
+          max=${ifDefined(this._hourMax)}
           min="0"
           .disabled=${this.disabled}
           suffix=":"
@@ -184,7 +180,7 @@ export class HaBaseTimeInput extends LitElement {
           .value=${this._formatValue(this.minutes)}
           .label=${this.minLabel}
           @input=${this._valueChanged}
-          @focus=${this._onFocus}
+          @focusin=${this._onFocus}
           name="minutes"
           no-spinner
           .required=${this.required}
@@ -205,7 +201,7 @@ export class HaBaseTimeInput extends LitElement {
               .value=${this._formatValue(this.seconds)}
               .label=${this.secLabel}
               @input=${this._valueChanged}
-              @focus=${this._onFocus}
+              @focusin=${this._onFocus}
               name="seconds"
               no-spinner
               .required=${this.required}
@@ -226,7 +222,7 @@ export class HaBaseTimeInput extends LitElement {
               .value=${this._formatValue(this.milliseconds, 3)}
               .label=${this.millisecLabel}
               @input=${this._valueChanged}
-              @focus=${this._onFocus}
+              @focusin=${this._onFocus}
               name="milliseconds"
               no-spinner
               .required=${this.required}
@@ -260,9 +256,10 @@ export class HaBaseTimeInput extends LitElement {
     `;
   }
 
-  private _valueChanged(ev) {
-    this[ev.target.name] =
-      ev.target.name === "amPm" ? ev.target.value : Number(ev.target.value);
+  private _valueChanged(ev: InputEvent) {
+    const textField = ev.currentTarget as HaTextField;
+    this[textField.name] =
+      textField.name === "amPm" ? textField.value : Number(textField.value);
     const value: TimeChangedEvent = {
       hours: this.hours,
       minutes: this.minutes,
@@ -277,8 +274,8 @@ export class HaBaseTimeInput extends LitElement {
     });
   }
 
-  private _onFocus(ev) {
-    ev.target.select();
+  private _onFocus(ev: FocusEvent) {
+    (ev.currentTarget as HaTextField).select();
   }
 
   /**
@@ -293,7 +290,7 @@ export class HaBaseTimeInput extends LitElement {
    */
   private get _hourMax() {
     if (this.noHoursLimit) {
-      return null;
+      return undefined;
     }
     if (this.format === 12) {
       return 12;

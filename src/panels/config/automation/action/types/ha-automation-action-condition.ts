@@ -34,8 +34,10 @@ export class HaConditionAction extends LitElement implements ActionElement {
         @selected=${this._typeChanged}
       >
         ${this._processedTypes(this.hass.localize).map(
-          ([opt, label]) => html`
-            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
           `
         )}
       </ha-select>
@@ -48,16 +50,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      CONDITION_TYPES.map(
-        (condition) =>
-          [
-            condition,
-            localize(
-              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(CONDITION_TYPES)
+        .map(
+          ([condition, icon]) =>
+            [
+              condition,
+              localize(
+                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
   );
 
   private _conditionChanged(ev: CustomEvent) {

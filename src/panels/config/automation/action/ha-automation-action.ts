@@ -73,8 +73,10 @@ export default class HaAutomationAction extends LitElement {
           <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
         </mwc-button>
         ${this._processedTypes(this.hass.localize).map(
-          ([opt, label]) => html`
-            <mwc-list-item .value=${opt}>${label}</mwc-list-item>
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
           `
         )}
       </ha-button-menu>
@@ -90,8 +92,11 @@ export default class HaAutomationAction extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
         "ha-automation-action-row:last-of-type"
       )!;
-      row.expand();
-      row.focus();
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
     }
   }
 
@@ -104,9 +109,7 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _addAction(ev: CustomEvent<ActionDetail>) {
-    const action = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as typeof ACTION_TYPES[number];
-
+    const action = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
     const elClass = customElements.get(
       `ha-automation-action-${action}`
     ) as CustomElementConstructor & { defaultConfig: Action };
@@ -158,16 +161,19 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string][] =>
-      ACTION_TYPES.map(
-        (action) =>
-          [
-            action,
-            localize(
-              `ui.panel.config.automation.editor.actions.type.${action}.label`
-            ),
-          ] as [string, string]
-      ).sort((a, b) => stringCompare(a[1], b[1]))
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(ACTION_TYPES)
+        .map(
+          ([action, icon]) =>
+            [
+              action,
+              localize(
+                `ui.panel.config.automation.editor.actions.type.${action}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
   );
 
   static get styles(): CSSResultGroup {
@@ -175,6 +181,7 @@ export default class HaAutomationAction extends LitElement {
       ha-automation-action-row {
         display: block;
         margin-bottom: 16px;
+        scroll-margin-top: 48px;
       }
       ha-svg-icon {
         height: 20px;
