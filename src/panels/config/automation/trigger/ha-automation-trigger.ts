@@ -89,6 +89,7 @@ export default class HaAutomationTrigger extends LitElement {
         "ha-automation-trigger-row:last-of-type"
       )!;
       row.expand();
+      row.scrollIntoView();
       row.focus();
     }
   }
@@ -167,6 +168,7 @@ export default class HaAutomationTrigger extends LitElement {
       ha-automation-trigger-row {
         display: block;
         margin-bottom: 16px;
+        scroll-margin-top: 48px;
       }
       ha-svg-icon {
         height: 20px;
