@@ -104,7 +104,7 @@ export class MoreInfoHistory extends LitElement {
   }
 
   private _close(): void {
-    setTimeout(() => fireEvent(this, "closed"), 500);
+    setTimeout(() => fireEvent(this, "close-dialog"), 500);
   }
 
   static get styles() {

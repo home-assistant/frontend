@@ -412,6 +412,7 @@ export const computeHistory = (
       unit = stateWithUnitorStateClass.a.unit_of_measurement || " ";
     } else {
       unit = {
+        zone: localize("ui.dialogs.more_info_control.zone.graph_unit"),
         climate: hass.config.unit_system.temperature,
         counter: "#",
         humidifier: "%",

@@ -803,6 +803,9 @@
           "open_tilt_cover": "Open cover tilt",
           "close_tilt_cover": "Close cover tilt",
           "stop_cover": "Stop cover"
+        },
+        "zone": {
+          "graph_unit": "People home"
         }
       },
       "entity_registry": {
