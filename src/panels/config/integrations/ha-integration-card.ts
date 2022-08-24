@@ -368,7 +368,12 @@ export class HaIntegrationCard extends LitElement {
               </a>`
             : ""}
 
-          <li divider role="separator"></li>
+          ${this.manifest &&
+          (this.manifest.is_built_in ||
+            this.manifest.issue_tracker ||
+            this.manifest.documentation)
+            ? html`<li divider role="separator"></li>`
+            : ""}
 
           ${this.manifest
             ? html` <a
