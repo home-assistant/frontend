@@ -11,10 +11,10 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiOpenInNew,
+  mdiPlayCircleOutline,
   mdiReload,
   mdiRenameBox,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
+  mdiStopCircleOutline,
 } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox";
@@ -429,7 +429,7 @@ export class HaIntegrationCard extends LitElement {
                 ${this.hass.localize("ui.common.enable")}
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiToggleSwitch}
+                  .path=${mdiPlayCircleOutline}
                 ></ha-svg-icon>
               </mwc-list-item>`
             : item.source !== "system"
@@ -442,7 +442,7 @@ export class HaIntegrationCard extends LitElement {
                 <ha-svg-icon
                   slot="graphic"
                   class="warning"
-                  .path=${mdiToggleSwitchOff}
+                  .path=${mdiStopCircleOutline}
                 ></ha-svg-icon>
               </mwc-list-item>`
             : ""}
