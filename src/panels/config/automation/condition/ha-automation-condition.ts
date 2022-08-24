@@ -69,8 +69,11 @@ export default class HaAutomationCondition extends LitElement {
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
         "ha-automation-condition-row:last-of-type"
       )!;
-      row.expand();
-      row.focus();
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
     }
   }
 
@@ -187,6 +190,7 @@ export default class HaAutomationCondition extends LitElement {
       ha-automation-condition-row {
         display: block;
         margin-bottom: 16px;
+        scroll-margin-top: 48px;
       }
       ha-svg-icon {
         height: 20px;
