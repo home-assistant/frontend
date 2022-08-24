@@ -142,7 +142,7 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "wait_for_trigger") {
     const config = action as WaitForTriggerAction;
     return `Wait for ${ensureArray(config.wait_for_trigger)
-      .map((trigger) => describeTrigger(trigger))
+      .map((trigger) => describeTrigger(trigger, hass))
       .join(", ")}`;
   }
 
