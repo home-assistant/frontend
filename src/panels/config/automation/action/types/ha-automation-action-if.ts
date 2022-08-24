@@ -2,8 +2,6 @@ import { CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Action, IfAction } from "../../../../../data/script";
-import { HaDeviceCondition } from "../../condition/types/ha-automation-condition-device";
-import { HaDeviceAction } from "./ha-automation-action-device_id";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
@@ -19,8 +17,8 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   public static get defaultConfig() {
     return {
-      if: [{ ...HaDeviceCondition.defaultConfig, condition: "device" }],
-      then: [HaDeviceAction.defaultConfig],
+      if: [],
+      then: [],
     };
   }
 
