@@ -2,6 +2,7 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
+import { formatAttributeName } from "./entity_attributes";
 
 export const describeTrigger = (
   trigger: Trigger,
@@ -45,7 +46,7 @@ export const describeTrigger = (
     const stateObj = hass.states[trigger.entity_id];
     const entity = stateObj ? computeStateName(stateObj) : trigger.entity_id;
 
-    if ("attribute" in trigger) {
+    if (trigger.attribute) {
       base += ` ${formatAttributeName(trigger.attribute)} from`;
     }
 
@@ -73,7 +74,7 @@ export const describeTrigger = (
 
     const states = hass.states;
 
-    if ("attribute" in trigger) {
+    if (trigger.attribute) {
       base += ` ${formatAttributeName(trigger.attribute)} from`;
     }
 
