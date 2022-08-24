@@ -776,7 +776,6 @@
           "activity": "Current activity"
         },
         "restored": {
-          "title": "Entity unavailable",
           "no_longer_provided": "This entity is no longer being provided by the {integration} integration. If the entity is no longer in use, delete it in settings."
         },
         "vacuum": {
