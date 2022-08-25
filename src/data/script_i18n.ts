@@ -119,7 +119,7 @@ export const describeAction = <T extends ActionType>(
       entityId = config.target?.entity_id || config.entity_id;
     }
     const sceneStateObj = entityId ? hass.states[entityId] : undefined;
-    return `Activate scene ${
+    return `Scene ${
       sceneStateObj
         ? computeStateName(sceneStateObj)
         : "scene" in config
@@ -154,9 +154,9 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "fire_event") {
     const config = action as EventAction;
     if (isTemplate(config.event)) {
-      return "Fire event based on a template";
+      return "Event based on a template";
     }
-    return `Fire event ${config.event}`;
+    return `Event ${config.event}`;
   }
 
   if (actionType === "wait_template") {

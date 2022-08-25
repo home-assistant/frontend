@@ -4,7 +4,7 @@ import {
   mdiClockOutline,
   mdiCodeBraces,
   mdiDevices,
-  mdiExclamation,
+  mdiGestureDoubleTap,
   mdiHomeAssistant,
   mdiMapMarker,
   mdiMapMarkerRadius,
@@ -19,7 +19,7 @@ import {
 export const TRIGGER_TYPES = {
   calendar: mdiCalendar,
   device: mdiDevices,
-  event: mdiExclamation,
+  event: mdiGestureDoubleTap,
   state: mdiStateMachine,
   geo_location: mdiMapMarker,
   homeassistant: mdiHomeAssistant,
