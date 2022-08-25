@@ -560,6 +560,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     });
     if (result) {
       this._config!.alias = result;
+      this._dirty = true;
       this.requestUpdate();
     }
     return result;
@@ -571,7 +572,9 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       const alias = await this.promptAutomationAlias();
       if (!alias) {
         showAlertDialog(this, {
-          text: "missing_name",
+          text: this.hass.localize(
+            "ui.panel.config.automation.editor.missing_name"
+          ),
         });
         return;
       }
