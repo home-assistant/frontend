@@ -5,6 +5,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
+  mdiFlask,
   mdiPlayCircleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
@@ -15,8 +16,6 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import "../../../../components/buttons/ha-progress-button";
-import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
@@ -75,6 +74,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @state() private _testing = false;
+
+  @state() private _testingResult?: boolean;
+
   protected render() {
     if (!this.condition) {
       return html``;
@@ -100,11 +103,6 @@ export default class HaAutomationConditionRow extends LitElement {
             )}
           </div>
 
-          <ha-progress-button slot="icons" @click=${this._testCondition}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.test"
-            )}
-          </ha-progress-button>
           <ha-button-menu
             slot="icons"
             fixed
@@ -119,6 +117,12 @@ export default class HaAutomationConditionRow extends LitElement {
             >
             </ha-icon-button>
 
+            <mwc-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.test"
+              )}
+              <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
+            </mwc-list-item>
             <mwc-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.rename"
@@ -223,6 +227,21 @@ export default class HaAutomationConditionRow extends LitElement {
             ></ha-automation-condition-editor>
           </div>
         </ha-expansion-panel>
+        <div
+          class="testing ${classMap({
+            active: this._testing,
+            pass: this._testingResult === true,
+            error: this._testingResult === false,
+          })}"
+        >
+          ${this._testingResult
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.testing_pass"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.testing_error"
+              )}
+        </div>
       </ha-card>
     `;
   }
@@ -245,23 +264,26 @@ export default class HaAutomationConditionRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await this._renameCondition();
+        await this._testCondition();
         break;
       case 1:
-        fireEvent(this, "duplicate");
+        await this._renameCondition();
         break;
       case 2:
+        fireEvent(this, "duplicate");
+        break;
+      case 3:
         this._switchUiMode();
         this.expand();
         break;
-      case 3:
+      case 4:
         this._switchYamlMode();
         this.expand();
         break;
-      case 4:
+      case 5:
         this._onDisable();
         break;
-      case 5:
+      case 6:
         this._onDelete();
         break;
     }
@@ -296,14 +318,13 @@ export default class HaAutomationConditionRow extends LitElement {
     this._yamlMode = true;
   }
 
-  private async _testCondition(ev) {
-    ev.preventDefault();
-    const condition = this.condition;
-    const button = ev.target as HaProgressButton;
-    if (button.progress) {
+  private async _testCondition() {
+    if (this._testing) {
       return;
     }
-    button.progress = true;
+    this._testingResult = undefined;
+    this._testing = true;
+    const condition = this.condition;
 
     try {
       const validateResult = await validateConfig(this.hass, {
@@ -312,6 +333,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
       // Abort if condition changed.
       if (this.condition !== condition) {
+        this._testing = false;
         return;
       }
 
@@ -322,13 +344,16 @@ export default class HaAutomationConditionRow extends LitElement {
           ),
           text: validateResult.condition.error,
         });
+        this._testing = false;
         return;
       }
+
       let result: { result: boolean };
       try {
         result = await testCondition(this.hass, condition);
       } catch (err: any) {
         if (this.condition !== condition) {
+          this._testing = false;
           return;
         }
 
@@ -338,20 +363,15 @@ export default class HaAutomationConditionRow extends LitElement {
           ),
           text: err.message,
         });
+        this._testing = false;
         return;
       }
 
-      if (this.condition !== condition) {
-        return;
-      }
-
-      if (result.result) {
-        button.actionSuccess();
-      } else {
-        button.actionError();
-      }
+      this._testingResult = result.result;
     } finally {
-      button.progress = false;
+      setTimeout(() => {
+        this._testing = false;
+      }, 2500);
     }
   }
 
@@ -392,8 +412,7 @@ export default class HaAutomationConditionRow extends LitElement {
     return [
       haStyle,
       css`
-        ha-button-menu,
-        ha-progress-button {
+        ha-button-menu {
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
         .disabled {
@@ -419,6 +438,32 @@ export default class HaAutomationConditionRow extends LitElement {
         }
         mwc-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        .testing {
+          position: absolute;
+          top: 0px;
+          right: 0px;
+          left: 0px;
+          text-transform: uppercase;
+          font-weight: bold;
+          font-size: 14px;
+          background-color: var(--divider-color, #e0e0e0);
+          color: var(--text-primary-color);
+          max-height: 0px;
+          overflow: hidden;
+          transition: max-height 0.3s;
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius, 4px);
+          border-top-left-radius: var(--ha-card-border-radius, 4px);
+        }
+        .testing.active {
+          max-height: 100px;
+        }
+        .testing.error {
+          background-color: var(--accent-color);
+        }
+        .testing.pass {
+          background-color: var(--success-color);
         }
       `,
     ];
