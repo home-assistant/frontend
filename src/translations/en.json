@@ -1819,7 +1819,7 @@
             "disabled": "Automation is disabled",
             "run": "[%key:ui::panel::config::automation::editor::actions::run%]",
             "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
-            "show_trace": "Show trace",
+            "show_trace": "Traces",
             "introduction": "Use automations to bring your home to life.",
             "default_name": "New Automation",
             "missing_name": "Cannot save automation without a name",
