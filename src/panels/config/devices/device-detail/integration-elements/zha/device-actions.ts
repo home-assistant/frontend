@@ -1,5 +1,6 @@
 import {
   mdiCogRefresh,
+  mdiDelete,
   mdiDrawPen,
   mdiFamilyTree,
   mdiFileTree,
@@ -95,6 +96,7 @@ export const getZHADeviceActions = async (
   if (!zhaDevice.active_coordinator) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.remove"),
+      icon: mdiDelete,
       classes: "warning",
       action: async () => {
         const confirmed = await showConfirmationDialog(el, {
