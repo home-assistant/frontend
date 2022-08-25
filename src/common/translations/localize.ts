@@ -18,7 +18,6 @@ export type LocalizeKeys =
   | `ui.card.alarm_control_panel.${string}`
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
-  | `ui.components.combo-box.${string}`
   | `ui.components.logbook.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.dialogs.entity_registry.editor.${string}`

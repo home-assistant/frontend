@@ -171,18 +171,19 @@ export class HaComboBox extends LitElement {
         </ha-textfield>
         ${this.value
           ? html`<ha-svg-icon
-              aria-label=${ifDefined(
-                this.hass?.localize("ui.components.combo-box.clear")
-              )}
+              role="button"
+              tabindex="-1"
+              aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
               class="clear-button"
               .path=${mdiClose}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
         <ha-svg-icon
-          aria-label=${ifDefined(
-            this.hass?.localize("ui.components.combo-box.show")
-          )}
+          role="button"
+          tabindex="-1"
+          aria-label=${ifDefined(this.label)}
+          aria-expanded=${this.opened ? "true" : "false"}
           class="toggle-button"
           .path=${this.opened ? mdiMenuUp : mdiMenuDown}
           @click=${this._toggleOpen}
