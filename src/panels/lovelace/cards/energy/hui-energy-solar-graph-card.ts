@@ -405,7 +405,7 @@ export class HuiEnergySolarGraphCard
             name: getStatisticLabel(
               this.hass,
               source.stat_energy_from,
-              statisticsMetaData
+              statisticsMetaData[source.stat_energy_from]
             ),
           }
         ),
@@ -483,7 +483,7 @@ export class HuiEnergySolarGraphCard
                   name: getStatisticLabel(
                     this.hass,
                     source.stat_energy_from,
-                    statisticsMetaData
+                    statisticsMetaData[source.stat_energy_from]
                   ),
                 }
               ),

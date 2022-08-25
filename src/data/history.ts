@@ -569,12 +569,11 @@ export const adjustStatisticsSum = (
 export const getStatisticLabel = (
   hass: HomeAssistant,
   statisticsId: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> | undefined
+  statisticsMetaData: StatisticsMetaData | undefined
 ): string => {
   const entity = hass.states[statisticsId];
   if (entity) {
     return computeStateName(entity);
   }
-  const statisticMetaData = statisticsMetaData?.[statisticsId];
-  return statisticMetaData?.name || statisticsId;
+  return statisticsMetaData?.name || statisticsId;
 };

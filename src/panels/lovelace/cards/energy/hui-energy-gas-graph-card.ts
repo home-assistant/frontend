@@ -382,7 +382,7 @@ export class HuiEnergyGasGraphCard
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
-          statisticsMetaData
+          statisticsMetaData[source.stat_energy_from]
         ),
         borderColor: compare ? borderColor + "7F" : borderColor,
         backgroundColor: compare ? borderColor + "32" : borderColor + "7F",
