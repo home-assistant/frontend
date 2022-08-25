@@ -267,7 +267,7 @@ class HaScriptPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.script.picker.introduction")}
         <p>
           <a
-            href=${documentationUrl(this.hass, "/docs/scripts/editor/")}
+            href=${documentationUrl(this.hass, "/docs/scripts/")}
             target="_blank"
             rel="noreferrer"
           >
