@@ -770,11 +770,6 @@ export class QuickBar extends LitElement {
           }
         }
 
-        /* ha-icon.entity,
-        ha-svg-icon.entity {
-          margin-left: 20px;
-        } */
-
         ha-svg-icon.prefix {
           color: var(--primary-text-color);
         }
