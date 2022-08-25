@@ -134,11 +134,6 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
           </mwc-list-item>
 
-          <mwc-list-item graphic="icon" @click=${this.promptAutomationAlias}>
-            ${this.hass.localize("ui.panel.config.automation.editor.rename")}
-            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </mwc-list-item>
-
           ${stateObj
             ? html`<a
                 href="/config/automation/trace/${this._config
@@ -158,6 +153,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 </mwc-list-item>
               </a>`
             : ""}
+
+          <mwc-list-item graphic="icon" @click=${this.promptAutomationAlias}>
+            ${this.hass.localize("ui.panel.config.automation.editor.rename")}
+            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
+          </mwc-list-item>
 
           <mwc-list-item
             .disabled=${!this.automationId}
