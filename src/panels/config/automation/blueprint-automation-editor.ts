@@ -77,15 +77,6 @@ export class HaBlueprintAutomationEditor extends LitElement {
         </span>
         <ha-card outlined>
           <div class="card-content">
-            <ha-textfield
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.alias"
-              )}
-              name="alias"
-              .value=${this.config.alias || ""}
-              @change=${this._valueChanged}
-            >
-            </ha-textfield>
             ${this._showDescription
               ? html`
                   <ha-textarea
