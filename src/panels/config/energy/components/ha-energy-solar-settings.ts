@@ -106,7 +106,7 @@ export class EnergySolarSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     source.stat_energy_from,
-                    this.statsMetadata
+                    this.statsMetadata[source.stat_energy_from]
                   )}</span
                 >
                 ${this.info
