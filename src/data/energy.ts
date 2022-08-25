@@ -607,18 +607,21 @@ export const ENERGY_GAS_UNITS = [
 export type EnergyGasUnit = "volume" | "energy";
 
 export const getEnergyGasUnitCategory = (
-  hass: HomeAssistant,
-  prefs: EnergyPreferences
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeSource?: string
 ): EnergyGasUnit | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-
-    const entity = hass.states[source.stat_energy_from];
-    if (entity) {
+    if (excludeSource && excludeSource === source.stat_energy_from) {
+      continue;
+    }
+    const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
+    if (statisticIdWithMeta) {
       return ENERGY_GAS_VOLUME_UNITS.includes(
-        entity.attributes.unit_of_measurement!
+        statisticIdWithMeta.display_unit_of_measurement
       )
         ? "volume"
         : "energy";
