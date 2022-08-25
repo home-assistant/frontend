@@ -11,6 +11,7 @@ import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -72,31 +73,31 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
-  @property({ type: Boolean }) public invalid?: boolean;
+  @property({ type: Boolean }) public invalid = false;
 
-  @property({ type: Boolean }) public icon?: boolean;
+  @property({ type: Boolean }) public icon = false;
 
-  @property() public items?: any[];
+  @property({ attribute: false }) public items?: any[];
 
-  @property() public filteredItems?: any[];
+  @property({ attribute: false }) public filteredItems?: any[];
 
   @property({ attribute: "allow-custom-value", type: Boolean })
-  public allowCustomValue?: boolean;
+  public allowCustomValue = false;
 
-  @property({ attribute: "item-value-path" }) public itemValuePath?: string;
+  @property({ attribute: "item-value-path" }) public itemValuePath = "value";
 
-  @property({ attribute: "item-label-path" }) public itemLabelPath?: string;
+  @property({ attribute: "item-label-path" }) public itemLabelPath = "label";
 
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
   @property() public renderer?: ComboBoxLitRenderer<any>;
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, reflect: true, attribute: "opened" })
-  private _opened?: boolean;
+  public opened?: boolean;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
@@ -149,11 +150,11 @@ export class HaComboBox extends LitElement {
         attr-for-value="value"
       >
         <ha-textfield
-          .label=${this.label}
-          .placeholder=${this.placeholder}
-          .disabled=${this.disabled}
-          .required=${this.required}
-          .validationMessage=${this.validationMessage}
+          label=${ifDefined(this.label)}
+          placeholder=${ifDefined(this.placeholder)}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          validationMessage=${ifDefined(this.validationMessage)}
           .errorMessage=${this.errorMessage}
           class="input"
           autocapitalize="none"
@@ -163,23 +164,27 @@ export class HaComboBox extends LitElement {
           .suffix=${html`<div style="width: 28px;"></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .helper=${this.helper}
+          helper=${ifDefined(this.helper)}
           helperPersistent
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-textfield>
         ${this.value
           ? html`<ha-svg-icon
-              aria-label=${this.hass?.localize("ui.components.combo-box.clear")}
+              aria-label=${ifDefined(
+                this.hass?.localize("ui.components.combo-box.clear")
+              )}
               class="clear-button"
               .path=${mdiClose}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
         <ha-svg-icon
-          aria-label=${this.hass?.localize("ui.components.combo-box.show")}
+          aria-label=${ifDefined(
+            this.hass?.localize("ui.components.combo-box.show")
+          )}
           class="toggle-button"
-          .path=${this._opened ? mdiMenuUp : mdiMenuDown}
+          .path=${this.opened ? mdiMenuUp : mdiMenuDown}
           @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
@@ -199,7 +204,7 @@ export class HaComboBox extends LitElement {
   }
 
   private _toggleOpen(ev: Event) {
-    if (this._opened) {
+    if (this.opened) {
       this._comboBox?.close();
       ev.stopPropagation();
     } else {
@@ -211,7 +216,7 @@ export class HaComboBox extends LitElement {
     const opened = ev.detail.value;
     // delay this so we can handle click event before setting _opened
     setTimeout(() => {
-      this._opened = opened;
+      this.opened = opened;
     }, 0);
     // @ts-ignore
     fireEvent(this, ev.type, ev.detail);
