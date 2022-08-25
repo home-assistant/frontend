@@ -26,6 +26,7 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
         #target_temperature {
           @apply --layout-self-center;
           font-size: 200%;
+          direction: ltr;
         }
         .control-buttons {
           font-size: 200%;
