@@ -152,6 +152,7 @@ export class MoreInfoDialog extends LitElement {
               `
             : ""}
         </div>
+
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
             this._currTab === "info"
