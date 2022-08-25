@@ -136,7 +136,7 @@ export class EnergyGridSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     flow.stat_energy_from,
-                    this.statsMetadata
+                    this.statsMetadata[flow.stat_energy_from]
                   )}</span
                 >
                 <ha-icon-button
@@ -183,7 +183,7 @@ export class EnergyGridSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     flow.stat_energy_to,
-                    this.statsMetadata
+                    this.statsMetadata[flow.stat_energy_to]
                   )}</span
                 >
                 <ha-icon-button

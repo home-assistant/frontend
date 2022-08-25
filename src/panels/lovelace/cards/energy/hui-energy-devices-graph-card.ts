@@ -116,7 +116,7 @@ export class HuiEnergyDevicesGraphCard
               return getStatisticLabel(
                 this.hass,
                 statisticId as any,
-                this._data?.statsMetadata
+                this._data?.statsMetadata[statisticId]
               );
             },
           },
@@ -138,7 +138,7 @@ export class HuiEnergyDevicesGraphCard
               return getStatisticLabel(
                 this.hass,
                 statisticId,
-                this._data?.statsMetadata
+                this._data?.statsMetadata[statisticId]
               );
             },
             label: (context) =>

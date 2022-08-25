@@ -239,7 +239,7 @@ export class HuiEnergySourcesTableCard
                     ${getStatisticLabel(
                       this.hass,
                       source.stat_energy_from,
-                      this._data?.statsMetadata
+                      this._data?.statsMetadata[source.stat_energy_from]
                     )}
                   </th>
                   ${compare
@@ -347,7 +347,7 @@ export class HuiEnergySourcesTableCard
                       ${getStatisticLabel(
                         this.hass,
                         source.stat_energy_from,
-                        this._data?.statsMetadata
+                        this._data?.statsMetadata[source.stat_energy_from]
                       )}
                     </th>
                     ${compare
@@ -384,7 +384,7 @@ export class HuiEnergySourcesTableCard
                       ${getStatisticLabel(
                         this.hass,
                         source.stat_energy_to,
-                        this._data?.statsMetadata
+                        this._data?.statsMetadata[source.stat_energy_to]
                       )}
                     </th>
                     ${compare
@@ -505,7 +505,7 @@ export class HuiEnergySourcesTableCard
                       ${getStatisticLabel(
                         this.hass,
                         flow.stat_energy_from,
-                        this._data?.statsMetadata
+                        this._data?.statsMetadata[flow.stat_energy_from]
                       )}
                     </th>
                     ${compare
@@ -610,7 +610,7 @@ export class HuiEnergySourcesTableCard
                       ${getStatisticLabel(
                         this.hass,
                         flow.stat_energy_to,
-                        this._data?.statsMetadata
+                        this._data?.statsMetadata[flow.stat_energy_to]
                       )}
                     </th>
                     ${compare
@@ -763,7 +763,7 @@ export class HuiEnergySourcesTableCard
                     ${getStatisticLabel(
                       this.hass,
                       source.stat_energy_from,
-                      this._data?.statsMetadata
+                      this._data?.statsMetadata[source.stat_energy_from]
                     )}
                   </th>
                   ${compare

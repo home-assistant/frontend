@@ -90,7 +90,7 @@ export class EnergyDeviceSettings extends LitElement {
                   >${getStatisticLabel(
                     this.hass,
                     device.stat_consumption,
-                    this.statsMetadata
+                    this.statsMetadata[device.stat_consumption]
                   )}</span
                 >
                 <ha-icon-button

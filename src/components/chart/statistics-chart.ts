@@ -238,11 +238,7 @@ class StatisticsChart extends LitElement {
       );
       let name = names[firstStat.statistic_id];
       if (!name) {
-        const tmp: Record<string, StatisticsMetaData> = {};
-        if (meta) {
-          tmp[firstStat.statistic_id] = meta;
-        }
-        name = getStatisticLabel(this.hass, firstStat.statistic_id, tmp);
+        name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
       }
 
       if (!this.unit) {
