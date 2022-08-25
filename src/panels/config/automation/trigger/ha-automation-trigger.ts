@@ -1,22 +1,25 @@
-import { repeat } from "lit/directives/repeat";
-import { mdiPlus } from "@mdi/js";
-import deepClone from "deep-clone-simple";
-import memoizeOne from "memoize-one";
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { ActionDetail } from "@material/mwc-list";
+import { mdiDrag, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { guard } from "lit/directives/guard";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+import type { SortableEvent } from "sortablejs";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-svg-icon";
+import { stringCompare } from "../../../../common/string/compare";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-button-menu";
+import type { HaSelect } from "../../../../components/ha-select";
+import "../../../../components/ha-svg-icon";
 import { Trigger } from "../../../../data/automation";
 import { TRIGGER_TYPES } from "../../../../data/trigger";
+import { sortableStyles } from "../../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { stringCompare } from "../../../../common/string/compare";
-import type { HaSelect } from "../../../../components/ha-select";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
@@ -33,6 +36,8 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 
+let Sortable;
+
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -43,21 +48,46 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _triggerKeys = new WeakMap<Trigger, string>();
 
+  @state() private _attached = false;
+
+  @state() private _renderEmptySortable = false;
+
+  private _sortable?;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._attached = true;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._attached = false;
+  }
+
   protected render() {
     return html`
-      ${repeat(
-        this.triggers,
-        (trigger) => this._getKey(trigger),
-        (trg, idx) => html`
-          <ha-automation-trigger-row
-            .index=${idx}
-            .trigger=${trg}
-            @duplicate=${this._duplicateTrigger}
-            @value-changed=${this._triggerChanged}
-            .hass=${this.hass}
-          ></ha-automation-trigger-row>
-        `
-      )}
+      <div class="triggers">
+        ${guard([this.triggers, this._renderEmptySortable], () =>
+          this._renderEmptySortable
+            ? ""
+            : repeat(
+                this.triggers,
+                (trigger) => this._getKey(trigger),
+                (trg, idx) => html`
+                  <div class="trigger">
+                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
+                    <ha-automation-trigger-row
+                      .index=${idx}
+                      .trigger=${trg}
+                      @duplicate=${this._duplicateTrigger}
+                      @value-changed=${this._triggerChanged}
+                      .hass=${this.hass}
+                    ></ha-automation-trigger-row>
+                  </div>
+                `
+              )
+        )}
+      </div>
       <ha-button-menu @action=${this._addTrigger}>
         <mwc-button
           slot="trigger"
@@ -82,16 +112,39 @@ export default class HaAutomationTrigger extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("triggers") && this._focusLastTriggerOnChange) {
-      this._focusLastTriggerOnChange = false;
+    const attachedChanged = changedProps.has("_attached");
+    const triggerChanged = changedProps.has("triggers");
 
-      const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
-        "ha-automation-trigger-row:last-of-type"
-      )!;
-      row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
-        row.focus();
+    if (!triggerChanged && !attachedChanged) {
+      return;
+    }
+
+    if (attachedChanged && !this._attached) {
+      // Tear down sortable, if available
+      this._sortable?.destroy();
+      this._sortable = undefined;
+      return;
+    }
+
+    if (!this._sortable && this.triggers) {
+      this._createSortable();
+      return;
+    }
+
+    if (triggerChanged) {
+      this._handleTriggerChanged().then(() => {
+        if (this._focusLastTriggerOnChange) {
+          this._focusLastTriggerOnChange = false;
+
+          const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
+            ".trigger:last-child ha-automation-trigger-row"
+          )!;
+          row.updateComplete.then(() => {
+            row.expand();
+            row.scrollIntoView();
+            row.focus();
+          });
+        }
       });
     }
   }
@@ -102,6 +155,35 @@ export default class HaAutomationTrigger extends LitElement {
     }
 
     return this._triggerKeys.get(action)!;
+  }
+
+  private async _handleTriggerChanged() {
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    const container = this.shadowRoot!.querySelector(".triggers")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
+    this._renderEmptySortable = false;
+  }
+
+  private async _createSortable() {
+    if (!Sortable) {
+      const sortableImport = await import(
+        "sortablejs/modular/sortable.core.esm"
+      );
+
+      Sortable = sortableImport.Sortable;
+      Sortable.mount(sortableImport.OnSpill);
+      Sortable.mount(sortableImport.AutoScroll());
+    }
+
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".triggers"), {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: ".handle",
+      onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
+    });
   }
 
   private _addTrigger(ev: CustomEvent<ActionDetail>) {
@@ -120,6 +202,18 @@ export default class HaAutomationTrigger extends LitElement {
     });
     this._focusLastTriggerOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
+  }
+
+  private _rowMoved(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) {
+      return;
+    }
+
+    const newTriggers = this.triggers!.concat();
+
+    newTriggers.splice(ev.newIndex!, 0, newTriggers.splice(ev.oldIndex!, 1)[0]);
+
+    fireEvent(this, "value-changed", { value: newTriggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {
@@ -166,16 +260,36 @@ export default class HaAutomationTrigger extends LitElement {
   );
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-automation-trigger-row {
-        display: block;
-        margin-bottom: 16px;
-        scroll-margin-top: 48px;
-      }
-      ha-svg-icon {
-        height: 20px;
-      }
-    `;
+    return [
+      sortableStyles,
+      css`
+        ha-automation-trigger-row {
+          display: block;
+          margin-bottom: 16px;
+          scroll-margin-top: 48px;
+        }
+        ha-svg-icon {
+          height: 20px;
+        }
+        .trigger {
+          display: flex;
+          align-items: flex-start;
+        }
+
+        .trigger .handle {
+          padding-top: 12px;
+          padding-right: 8px;
+          cursor: move;
+          padding-inline-end: 8px;
+          padding-inline-start: initial;
+          direction: var(--direction);
+        }
+
+        .trigger ha-automation-trigger-row {
+          flex-grow: 1;
+        }
+      `,
+    ];
   }
 }
 
