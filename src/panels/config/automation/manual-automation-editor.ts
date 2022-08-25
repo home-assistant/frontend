@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircle, mdiRobot } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,7 +14,6 @@ import {
   Condition,
   ManualAutomationConfig,
   Trigger,
-  triggerAutomationActions,
 } from "../../../data/automation";
 import { Action, isMaxMode, MODES } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -41,115 +40,99 @@ export class HaManualAutomationEditor extends LitElement {
   protected render() {
     return html`
       <ha-card outlined>
-        <div class="card-content">
-          <ha-textfield
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.alias"
+        ${
+          this.stateObj && this.stateObj.state === "off"
+            ? html`<div class="disabled-bar">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.disabled"
+                )}
+              </div>`
+            : ""
+        }
+
+        <ha-expansion-panel leftChevron>
+          <div slot="header">
+            <ha-svg-icon class="settings-icon" .path=${mdiRobot}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.automation_settings"
             )}
-            name="alias"
-            .value=${this.config.alias || ""}
-            @change=${this._valueChanged}
-          >
-          </ha-textfield>
-          ${this._showDescription
-            ? html`
-                <ha-textarea
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.description.label"
-                  )}
-                  .placeholder=${this.hass.localize(
-                    "ui.panel.config.automation.editor.description.placeholder"
-                  )}
-                  name="description"
-                  autogrow
-                  .value=${this.config.description || ""}
-                  @change=${this._valueChanged}
-                ></ha-textarea>
-              `
-            : html`
-                <div class="link-button-row">
-                  <button class="link" @click=${this._addDescription}>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.description.add"
-                    )}
-                  </button>
-                </div>
-              `}
-          <ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.modes.label"
-            )}
-            .value=${this.config.mode || AUTOMATION_DEFAULT_MODE}
-            @selected=${this._modeChanged}
-            fixedMenuPosition
-            .helper=${html`
-              <a
-                style="color: var(--secondary-text-color)"
-                href=${documentationUrl(this.hass, "/docs/automation/modes/")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.automation.editor.modes.learn_more"
-                )}</a
-              >
-            `}
-          >
-            ${MODES.map(
-              (mode) => html`
-                <mwc-list-item .value=${mode}>
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.modes.${mode}`
-                  ) || mode}
-                </mwc-list-item>
-              `
-            )}
-          </ha-select>
-          ${this.config.mode && isMaxMode(this.config.mode)
-            ? html`
-                <br /><ha-textfield
-                  .label=${this.hass.localize(
-                    `ui.panel.config.automation.editor.max.${this.config.mode}`
-                  )}
-                  type="number"
-                  name="max"
-                  .value=${this.config.max || "10"}
-                  @change=${this._valueChanged}
-                  class="max"
-                >
-                </ha-textfield>
-              `
-            : html``}
-        </div>
-        ${this.stateObj
-          ? html`
-              <div class="card-actions layout horizontal justified center">
-                <div class="layout horizontal center">
-                  <ha-entity-toggle
-                    .hass=${this.hass}
-                    .stateObj=${this.stateObj!}
-                  ></ha-entity-toggle>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.enable_disable"
-                  )}
-                </div>
-                <div>
-                  <a href="/config/automation/trace/${this.config.id}">
-                    <mwc-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.show_trace"
+          </div>
+          <div class="card-content">
+            </ha-textfield>
+            ${
+              this._showDescription
+                ? html`
+                    <ha-textarea
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.description.label"
                       )}
-                    </mwc-button>
-                  </a>
-                  <mwc-button
-                    @click=${this._runActions}
-                    .stateObj=${this.stateObj}
-                  >
-                    ${this.hass.localize("ui.card.automation.trigger")}
-                  </mwc-button>
-                </div>
-              </div>
-            `
-          : ""}
+                      .placeholder=${this.hass.localize(
+                        "ui.panel.config.automation.editor.description.placeholder"
+                      )}
+                      name="description"
+                      autogrow
+                      .value=${this.config.description || ""}
+                      @change=${this._valueChanged}
+                    ></ha-textarea>
+                  `
+                : html`
+                    <div class="link-button-row">
+                      <button class="link" @click=${this._addDescription}>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.description.add"
+                        )}
+                      </button>
+                    </div>
+                  `
+            }
+            <ha-select
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.modes.label"
+              )}
+              .value=${this.config.mode || AUTOMATION_DEFAULT_MODE}
+              @selected=${this._modeChanged}
+              fixedMenuPosition
+              .helper=${html`
+                <a
+                  style="color: var(--secondary-text-color)"
+                  href=${documentationUrl(this.hass, "/docs/automation/modes/")}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.automation.editor.modes.learn_more"
+                  )}</a
+                >
+              `}
+            >
+              ${MODES.map(
+                (mode) => html`
+                  <mwc-list-item .value=${mode}>
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.modes.${mode}`
+                    ) || mode}
+                  </mwc-list-item>
+                `
+              )}
+            </ha-select>
+            ${
+              this.config.mode && isMaxMode(this.config.mode)
+                ? html`
+                    <br /><ha-textfield
+                      .label=${this.hass.localize(
+                        `ui.panel.config.automation.editor.max.${this.config.mode}`
+                      )}
+                      type="number"
+                      name="max"
+                      .value=${this.config.max || "10"}
+                      @change=${this._valueChanged}
+                      class="max"
+                    >
+                    </ha-textfield>
+                  `
+                : html``
+            }
+          </div>
+        </ha-expansion-panel>
       </ha-card>
 
       <div class="header">
@@ -242,10 +225,6 @@ export class HaManualAutomationEditor extends LitElement {
     ) {
       this._showDescription = true;
     }
-  }
-
-  private _runActions(ev: Event) {
-    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -359,6 +338,23 @@ export class HaManualAutomationEditor extends LitElement {
         }
         .header a {
           color: var(--secondary-text-color);
+        }
+        ha-expansion-panel {
+          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-content-padding: 0;
+        }
+        .card-content {
+          padding: 16px;
+        }
+        .settings-icon {
+          color: var(--sidebar-icon-color);
+          padding-right: 8px;
+        }
+        .disabled-bar {
+          background: var(--divider-color, #e0e0e0);
+          text-align: center;
+          border-top-right-radius: var(--ha-card-border-radius);
+          border-top-left-radius: var(--ha-card-border-radius);
         }
       `,
     ];
