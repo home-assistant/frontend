@@ -303,6 +303,17 @@ export class HaConfigDevicePage extends LitElement {
       actions.push(...this._deleteButtons);
     }
 
+    // Move all warning actions to the end
+    actions.sort((a, b) => {
+      if (a.classes === "warning" && b.classes !== "warning") {
+        return 1;
+      }
+      if (a.classes !== "warning" && b.classes === "warning") {
+        return -1;
+      }
+      return 0;
+    });
+
     const firstDeviceAction = actions.shift();
 
     if (device.disabled_by) {
