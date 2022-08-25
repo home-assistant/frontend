@@ -9,7 +9,7 @@ import type {
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";

@@ -1,5 +1,5 @@
 import { html, LitElement } from "lit";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
