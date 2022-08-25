@@ -11,6 +11,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiOpenInNew,
+  mdiProgressHelper,
   mdiPlayCircleOutline,
   mdiReload,
   mdiRenameBox,
@@ -112,6 +113,7 @@ export class HaIntegrationCard extends LitElement {
           disabled: this.disabled,
           "state-not-loaded": hasItem && item!.state === "not_loaded",
           "state-failed-unload": hasItem && item!.state === "failed_unload",
+          "state-setup": hasItem && item!.state === "setup_in_progress",
           "state-error": hasItem && ERROR_STATES.includes(item!.state),
         })}
         .configEntry=${item}
@@ -165,6 +167,19 @@ export class HaIntegrationCard extends LitElement {
                   "ui.panel.config.integrations.config_entry.unnamed_entry"
                 )}</paper-item-body
               >
+              ${item.state === "setup_in_progress"
+                ? html`<span>
+                    <ha-svg-icon
+                      class="info"
+                      .path=${mdiProgressHelper}
+                    ></ha-svg-icon
+                    ><paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.state.setup_in_progress`
+                      )}
+                    </paper-tooltip>
+                  </span>`
+                : ""}
               ${ERROR_STATES.includes(item.state)
                 ? html`<span>
                     <ha-svg-icon
@@ -192,6 +207,7 @@ export class HaIntegrationCard extends LitElement {
 
     let stateText: Parameters<typeof this.hass.localize> | undefined;
     let stateTextExtra: TemplateResult | string | undefined;
+    let icon: string = mdiAlertCircle;
 
     if (item.disabled_by) {
       stateText = [
@@ -209,6 +225,11 @@ export class HaIntegrationCard extends LitElement {
       }
     } else if (item.state === "not_loaded") {
       stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
+    } else if (item.state === "setup_in_progress") {
+      icon = mdiProgressHelper;
+      stateText = [
+        "ui.panel.config.integrations.config_entry.setup_in_progress",
+      ];
     } else if (ERROR_STATES.includes(item.state)) {
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
@@ -290,7 +311,7 @@ export class HaIntegrationCard extends LitElement {
       ${stateText
         ? html`
             <div class="message">
-              <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+              <ha-svg-icon .path=${icon}></ha-svg-icon>
               <div>${this.hass.localize(...stateText)}${stateTextExtra}</div>
             </div>
           `
@@ -761,6 +782,9 @@ export class HaIntegrationCard extends LitElement {
         }
         .state-not-loaded {
           --state-message-color: var(--primary-text-color);
+        }
+        .state-setup {
+          --state-message-color: var(--secondary-text-color);
         }
         :host(.highlight) ha-card {
           --state-color: var(--primary-color);
