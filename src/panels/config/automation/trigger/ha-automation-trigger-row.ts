@@ -29,6 +29,7 @@ import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { subscribeTrigger, Trigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
+import { TRIGGER_TYPES } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -119,12 +120,14 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : ""}
 
-        <ha-expansion-panel
-          leftChevron
-          .header=${capitalizeFirstLetter(
-            describeTrigger(this.trigger, this.hass)
-          )}
-        >
+        <ha-expansion-panel leftChevron>
+          <div slot="header">
+            <ha-svg-icon
+              class="trigger-icon"
+              .path=${TRIGGER_TYPES[this.trigger.platform]}
+            ></ha-svg-icon>
+            ${capitalizeFirstLetter(describeTrigger(this.trigger, this.hass))}
+          </div>
           <ha-button-menu
             slot="icons"
             fixed
@@ -528,6 +531,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        .trigger-icon {
+          color: var(--sidebar-icon-color);
+          padding-right: 8px;
         }
         .card-content {
           padding: 16px;

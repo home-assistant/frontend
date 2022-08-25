@@ -156,12 +156,15 @@ export default class HaAutomationActionRow extends LitElement {
               )}
             </div>`
           : ""}
-        <ha-expansion-panel
-          leftChevron
-          .header=${capitalizeFirstLetter(
-            describeAction(this.hass, this.action)
-          )}
-        >
+        <ha-expansion-panel leftChevron>
+          <div slot="header">
+            <ha-svg-icon
+              class="action-icon"
+              .path=${ACTION_TYPES[type!]}
+            ></ha-svg-icon>
+            ${capitalizeFirstLetter(describeAction(this.hass, this.action))}
+          </div>
+
           ${this.index !== 0
             ? html`
                 <ha-icon-button
@@ -503,6 +506,10 @@ export default class HaAutomationActionRow extends LitElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        .action-icon {
+          color: var(--sidebar-icon-color);
+          padding-right: 8px;
         }
         .card-content {
           padding: 16px;
