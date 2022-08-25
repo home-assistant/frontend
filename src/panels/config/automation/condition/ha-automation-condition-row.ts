@@ -23,6 +23,7 @@ import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import { Condition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
+import { CONDITION_TYPES } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import {
   showAlertDialog,
@@ -88,12 +89,17 @@ export default class HaAutomationConditionRow extends LitElement {
             </div>`
           : ""}
 
-        <ha-expansion-panel
-          leftChevron
-          .header=${capitalizeFirstLetter(
-            describeCondition(this.condition, this.hass)
-          )}
-        >
+        <ha-expansion-panel leftChevron>
+          <div slot="header">
+            <ha-svg-icon
+              class="condition-icon"
+              .path=${CONDITION_TYPES[this.condition.condition]}
+            ></ha-svg-icon>
+            ${capitalizeFirstLetter(
+              describeCondition(this.condition, this.hass)
+            )}
+          </div>
+
           <ha-progress-button slot="icons" @click=${this._testCondition}>
             ${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.test"
@@ -397,6 +403,10 @@ export default class HaAutomationConditionRow extends LitElement {
         ha-expansion-panel {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
+        }
+        .condition-icon {
+          color: var(--sidebar-icon-color);
+          padding-right: 8px;
         }
         .card-content {
           padding: 16px;
