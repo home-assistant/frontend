@@ -10,7 +10,6 @@ import {
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
   mdiChevronDown,
-  mdiChevronRight,
   mdiChevronUp,
   mdiClose,
   mdiCloseOctagon,
@@ -18,6 +17,7 @@ import {
   mdiDevices,
   mdiExclamation,
   mdiRefresh,
+  mdiRoomService,
   mdiShuffleDisabled,
   mdiTimerOutline,
   mdiTrafficLight,
@@ -504,7 +504,7 @@ export class HatScriptGraph extends LitElement {
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${mdiChevronRight}
+        .iconPath=${mdiRoomService}
         @focus=${this.selectNode(node, path)}
         ?track=${path in this.trace.trace}
         ?active=${this.selected === path}
