@@ -154,7 +154,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               </a>`
             : ""}
 
-          <mwc-list-item graphic="icon" @click=${this.promptAutomationAlias}>
+          <mwc-list-item graphic="icon" @click=${this._promptAutomationAlias}>
             ${this.hass.localize("ui.panel.config.automation.editor.rename")}
             <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
           </mwc-list-item>
@@ -258,7 +258,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                               </h1>
                               <ha-icon-button
                                 .path=${mdiPencil}
-                                @click=${this.promptAutomationAlias}
+                                @click=${this._promptAutomationAlias}
                                 .label=${this.hass.localize(
                                   "ui.panel.config.automation.editor.rename"
                                 )}
@@ -545,7 +545,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._mode = "yaml";
   }
 
-  private async promptAutomationAlias(): Promise<string | null> {
+  private async _promptAutomationAlias(): Promise<string | null> {
     const result = await showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.automation_alias"
@@ -569,7 +569,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   private async _saveAutomation(): Promise<void> {
     const id = this.automationId || String(Date.now());
     if (!this._config!.alias) {
-      const alias = await this.promptAutomationAlias();
+      const alias = await this._promptAutomationAlias();
       if (!alias) {
         showAlertDialog(this, {
           text: this.hass.localize(
