@@ -269,6 +269,7 @@ export default class HaAutomationTrigger extends LitElement {
 
         .trigger .handle {
           padding-top: 12px;
+          padding-bottom: 12px;
           padding-right: 8px;
           cursor: move;
           padding-inline-end: 8px;
