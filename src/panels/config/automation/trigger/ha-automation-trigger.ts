@@ -4,7 +4,6 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { guard } from "lit/directives/guard";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import type { SortableEvent } from "sortablejs";
@@ -50,8 +49,6 @@ export default class HaAutomationTrigger extends LitElement {
 
   @state() private _attached = false;
 
-  @state() private _renderEmptySortable = false;
-
   private _sortable?;
 
   public connectedCallback() {
@@ -67,25 +64,21 @@ export default class HaAutomationTrigger extends LitElement {
   protected render() {
     return html`
       <div class="triggers">
-        ${guard([this.triggers, this._renderEmptySortable], () =>
-          this._renderEmptySortable
-            ? ""
-            : repeat(
-                this.triggers,
-                (trigger) => this._getKey(trigger),
-                (trg, idx) => html`
-                  <div class="trigger">
-                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
-                    <ha-automation-trigger-row
-                      .index=${idx}
-                      .trigger=${trg}
-                      @duplicate=${this._duplicateTrigger}
-                      @value-changed=${this._triggerChanged}
-                      .hass=${this.hass}
-                    ></ha-automation-trigger-row>
-                  </div>
-                `
-              )
+        ${repeat(
+          this.triggers,
+          (trigger) => this._getKey(trigger),
+          (trg, idx) => html`
+            <div class="trigger">
+              <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
+              <ha-automation-trigger-row
+                .index=${idx}
+                .trigger=${trg}
+                @duplicate=${this._duplicateTrigger}
+                @value-changed=${this._triggerChanged}
+                .hass=${this.hass}
+              ></ha-automation-trigger-row>
+            </div>
+          `
         )}
       </div>
       <ha-button-menu @action=${this._addTrigger}>
@@ -131,20 +124,16 @@ export default class HaAutomationTrigger extends LitElement {
       return;
     }
 
-    if (triggerChanged) {
-      this._handleTriggerChanged().then(() => {
-        if (this._focusLastTriggerOnChange) {
-          this._focusLastTriggerOnChange = false;
+    if (this._focusLastTriggerOnChange) {
+      this._focusLastTriggerOnChange = false;
 
-          const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
-            ".trigger:last-child ha-automation-trigger-row"
-          )!;
-          row.updateComplete.then(() => {
-            row.expand();
-            row.scrollIntoView();
-            row.focus();
-          });
-        }
+      const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
+        ".trigger:last-child ha-automation-trigger-row"
+      )!;
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
       });
     }
   }
@@ -155,16 +144,6 @@ export default class HaAutomationTrigger extends LitElement {
     }
 
     return this._triggerKeys.get(action)!;
-  }
-
-  private async _handleTriggerChanged() {
-    this._renderEmptySortable = true;
-    await this.updateComplete;
-    const container = this.shadowRoot!.querySelector(".triggers")!;
-    while (container.lastElementChild) {
-      container.removeChild(container.lastElementChild);
-    }
-    this._renderEmptySortable = false;
   }
 
   private async _createSortable() {
@@ -182,7 +161,19 @@ export default class HaAutomationTrigger extends LitElement {
       animation: 150,
       fallbackClass: "sortable-fallback",
       handle: ".handle",
-      onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
+      onChoose: (evt: SortableEvent) => {
+        (evt.item as any).placeholder =
+          document.createComment("sort-placeholder");
+        evt.item.after((evt.item as any).placeholder);
+      },
+      onEnd: (evt: SortableEvent) => {
+        // put back in original location
+        if ((evt.item as any).placeholder) {
+          (evt.item as any).placeholder.replaceWith(evt.item);
+          delete (evt.item as any).placeholder;
+        }
+        this._rowMoved(evt);
+      },
     });
   }
 
