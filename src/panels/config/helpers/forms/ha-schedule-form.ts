@@ -125,6 +125,7 @@ class HaScheduleForm extends LitElement {
           dialogInitialFocus
         ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}

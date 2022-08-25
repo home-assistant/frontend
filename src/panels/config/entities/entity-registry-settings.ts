@@ -315,6 +315,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           @input=${this._nameChanged}
         ></ha-textfield>
         <ha-icon-picker
+          .hass=${this.hass}
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
