@@ -22,8 +22,10 @@ import {
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { StoreAddon } from "../../../src/data/supervisor/store";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -59,8 +61,15 @@ class HassioAddonStore extends LitElement {
   @state() private _filter?: string;
 
   public async refreshData() {
-    await reloadHassioAddons(this.hass);
-    await this._loadData();
+    try {
+      await reloadHassioAddons(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        text: extractApiErrorMessage(err),
+      });
+    } finally {
+      await this._loadData();
+    }
   }
 
   protected render(): TemplateResult {
