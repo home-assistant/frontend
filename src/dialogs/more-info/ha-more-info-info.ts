@@ -1,9 +1,12 @@
 import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import { subscribeOne } from "../../common/util/subscribe-one";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
@@ -19,12 +22,24 @@ export class MoreInfoInfo extends LitElement {
 
   @property() public entityId!: string;
 
+  @state() private _entityEntry?: EntityRegistryEntry;
+
   protected render() {
     const entityId = this.entityId;
     const stateObj = this.hass.states[entityId];
     const domain = computeDomain(entityId);
 
     return html`
+      ${stateObj.attributes.restored && this._entityEntry
+        ? html`<ha-alert alert-type="warning">
+            ${this.hass.localize(
+              "ui.dialogs.more_info_control.restored.no_longer_provided",
+              {
+                integration: this._entityEntry.platform,
+              }
+            )}
+          </ha-alert>`
+        : ""}
       ${DOMAINS_NO_INFO.includes(domain)
         ? ""
         : html`
@@ -52,43 +67,18 @@ export class MoreInfoInfo extends LitElement {
         .stateObj=${stateObj}
         .hass=${this.hass}
       ></more-info-content>
-      ${stateObj.attributes.restored
-        ? html`
-            <p>
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.restored.not_provided"
-              )}
-            </p>
-            <p>
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.restored.remove_intro"
-              )}
-            </p>
-            <mwc-button class="warning" @click=${this._removeEntity}>
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.restored.remove_action"
-              )}
-            </mwc-button>
-          `
-        : ""}
     `;
   }
 
-  private _removeEntity() {
-    const entityId = this.entityId!;
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.dialogs.more_info_control.restored.confirm_remove_title"
-      ),
-      text: this.hass.localize(
-        "ui.dialogs.more_info_control.restored.confirm_remove_text"
-      ),
-      confirmText: this.hass.localize("ui.common.remove"),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirm: () => {
-        removeEntityRegistryEntry(this.hass, entityId);
-      },
-    });
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    subscribeOne(this.hass.connection, subscribeEntityRegistry).then(
+      (entries) => {
+        this._entityEntry = entries.find(
+          (entry) => entry.entity_id === this.entityId
+        );
+      }
+    );
   }
 
   static get styles() {
@@ -98,6 +88,13 @@ export class MoreInfoInfo extends LitElement {
       ha-more-info-logbook:not(:last-child) {
         display: block;
         margin-bottom: 16px;
+      }
+
+      ha-alert {
+        display: block;
+        margin: calc(-1 * var(--dialog-content-padding, 24px))
+          calc(-1 * var(--dialog-content-padding, 24px)) 16px
+          calc(-1 * var(--dialog-content-padding, 24px));
       }
     `;
   }
