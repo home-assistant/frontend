@@ -2149,6 +2149,7 @@
                 "choose": {
                   "label": "Choose",
                   "default": "Default actions",
+                  "add_default": "Add default actions",
                   "option": "Option {number}",
                   "add_option": "Add option",
                   "remove_option": "Remove option",
@@ -2159,7 +2160,8 @@
                   "label": "If-then",
                   "if": "If",
                   "then": "Then",
-                  "else": "Else"
+                  "else": "Else",
+                  "add_else": "Add else"
                 },
                 "stop": {
                   "label": "Stop",
