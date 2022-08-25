@@ -161,7 +161,10 @@ export class HaComboBox extends LitElement {
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
-          .suffix=${html`<div style="width: 28px;"></div>`}
+          .suffix=${html`<div
+            style="width: 28px;"
+            role="none presentation"
+          ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
           helper=${ifDefined(this.helper)}
