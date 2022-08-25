@@ -171,7 +171,7 @@ export class SupervisorBackupContent extends LitElement {
         : ""}
       ${this.backupType === "partial"
         ? html`<div class="partial-picker">
-            ${this.backup?.homeassistant
+            ${!this.backup || this.backup.homeassistant
               ? html`<ha-formfield
                   .label=${html`<supervisor-formfield-label
                     label="Home Assistant"
