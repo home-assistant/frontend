@@ -2113,7 +2113,7 @@
                   "label": "Condition"
                 },
                 "event": {
-                  "label": "Fire event",
+                  "label": "Event",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]"
                 },
@@ -2133,7 +2133,7 @@
                   }
                 },
                 "activate_scene": {
-                  "label": "Activate scene",
+                  "label": "Scene",
                   "scene": "Scene"
                 },
                 "repeat": {

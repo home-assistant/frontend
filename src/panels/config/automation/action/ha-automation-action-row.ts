@@ -508,8 +508,15 @@ export default class HaAutomationActionRow extends LitElement {
           --expansion-panel-content-padding: 0;
         }
         .action-icon {
-          color: var(--sidebar-icon-color);
-          padding-right: 8px;
+          display: none;
+        }
+        @media (min-width: 870px) {
+          .action-icon {
+            display: inline-block;
+            color: var(--primary-color);
+            opacity: 0.9;
+            margin-right: 8px;
+          }
         }
         .card-content {
           padding: 16px;
