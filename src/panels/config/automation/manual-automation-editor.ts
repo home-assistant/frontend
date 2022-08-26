@@ -1,8 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle, mdiRobot } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -35,20 +35,16 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
-  @state() private _showDescription = false;
-
   protected render() {
     return html`
       <ha-card outlined>
-        ${
-          this.stateObj && this.stateObj.state === "off"
-            ? html`<div class="disabled-bar">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.disabled"
-                )}
-              </div>`
-            : ""
-        }
+        ${this.stateObj && this.stateObj.state === "off"
+          ? html`<div class="disabled-bar">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.disabled"
+              )}
+            </div>`
+          : ""}
 
         <ha-expansion-panel leftChevron>
           <div slot="header">
@@ -58,33 +54,18 @@ export class HaManualAutomationEditor extends LitElement {
             )}
           </div>
           <div class="card-content">
-            </ha-textfield>
-            ${
-              this._showDescription
-                ? html`
-                    <ha-textarea
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.description.label"
-                      )}
-                      .placeholder=${this.hass.localize(
-                        "ui.panel.config.automation.editor.description.placeholder"
-                      )}
-                      name="description"
-                      autogrow
-                      .value=${this.config.description || ""}
-                      @change=${this._valueChanged}
-                    ></ha-textarea>
-                  `
-                : html`
-                    <div class="link-button-row">
-                      <button class="link" @click=${this._addDescription}>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.description.add"
-                        )}
-                      </button>
-                    </div>
-                  `
-            }
+            <ha-textarea
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.description.label"
+              )}
+              .placeholder=${this.hass.localize(
+                "ui.panel.config.automation.editor.description.placeholder"
+              )}
+              name="description"
+              autogrow
+              .value=${this.config.description || ""}
+              @change=${this._valueChanged}
+            ></ha-textarea>
             <ha-select
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.modes.label"
@@ -114,23 +95,21 @@ export class HaManualAutomationEditor extends LitElement {
                 `
               )}
             </ha-select>
-            ${
-              this.config.mode && isMaxMode(this.config.mode)
-                ? html`
-                    <br /><ha-textfield
-                      .label=${this.hass.localize(
-                        `ui.panel.config.automation.editor.max.${this.config.mode}`
-                      )}
-                      type="number"
-                      name="max"
-                      .value=${this.config.max || "10"}
-                      @change=${this._valueChanged}
-                      class="max"
-                    >
-                    </ha-textfield>
-                  `
-                : html``
-            }
+            ${this.config.mode && isMaxMode(this.config.mode)
+              ? html`
+                  <br /><ha-textfield
+                    .label=${this.hass.localize(
+                      `ui.panel.config.automation.editor.max.${this.config.mode}`
+                    )}
+                    type="number"
+                    name="max"
+                    .value=${this.config.max || "10"}
+                    @change=${this._valueChanged}
+                    class="max"
+                  >
+                  </ha-textfield>
+                `
+              : html``}
           </div>
         </ha-expansion-panel>
       </ha-card>
@@ -216,17 +195,6 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      !this._showDescription &&
-      changedProps.has("config") &&
-      this.config.description
-    ) {
-      this._showDescription = true;
-    }
-  }
-
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const target = ev.target as any;
@@ -293,10 +261,6 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  private _addDescription() {
-    this._showDescription = true;
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -345,6 +309,9 @@ export class HaManualAutomationEditor extends LitElement {
         }
         .card-content {
           padding: 16px;
+        }
+        .card-content ha-textarea:first-child {
+          margin-top: -16px;
         }
         .settings-icon {
           display: none;
