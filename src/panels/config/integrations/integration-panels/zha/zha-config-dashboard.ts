@@ -9,6 +9,10 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  ConfigEntry,
+  getConfigEntries,
+} from "../../../../../data/config_entries";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -16,6 +20,7 @@ import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../components/ha-icon-next";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
@@ -114,13 +119,14 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
-        ${this._networkSettings
-          ? html` <ha-card
-              header=${this.hass.localize(
-                "ui.panel.config.zha.configuration_page.network_settings_title"
-              )}
-            >
-              <div class="card-content network-settings">
+        <ha-card
+          class="network-settings"
+          header=${this.hass.localize(
+            "ui.panel.config.zha.configuration_page.network_settings_title"
+          )}
+        >
+          ${this._networkSettings
+            ? html` <div class="card-content network-settings">
                 <div>
                   <strong>PAN ID:</strong>
                   ${this._networkSettings.settings.network_info.pan_id}
@@ -145,20 +151,25 @@ class ZHAConfigDashboard extends LitElement {
                   <strong>Radio type:</strong>
                   ${this._networkSettings.radio_type}
                 </div>
-              </div>
-              <div class="card-actions">
-                <ha-progress-button
-                  @click=${this._createAndDownloadBackup}
-                  .progress=${this._generatingBackup}
-                  .disabled=${this._generatingBackup}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.zha.configuration_page.download_backup"
-                  )}
-                </ha-progress-button>
-              </div>
-            </ha-card>`
-          : ""}
+              </div>`
+            : ""}
+          <div class="card-actions">
+            <ha-progress-button
+              @click=${this._createAndDownloadBackup}
+              .progress=${this._generatingBackup}
+              .disabled=${!this._networkSettings || this._generatingBackup}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.zha.configuration_page.download_backup"
+              )}
+            </ha-progress-button>
+            <mwc-button class="warning" @click=${this._openOptionFlow}>
+              ${this.hass.localize(
+                "ui.panel.config.zha.configuration_page.reconfigure"
+              )}
+            </mwc-button>
+          </div>
+        </ha-card>
         ${this._configuration
           ? Object.entries(this._configuration.schemas).map(
               ([section, schema]) => html`<ha-card
@@ -253,6 +264,22 @@ class ZHAConfigDashboard extends LitElement {
     fileDownload(backupJSON, `${basename}.json`);
   }
 
+  private async _openOptionFlow() {
+    if (!this.configEntryId) {
+      return;
+    }
+
+    const configEntries: ConfigEntry[] = await getConfigEntries(this.hass, {
+      domain: "zha",
+    });
+
+    const configEntry = configEntries.find(
+      (entry) => entry.entry_id === this.configEntryId
+    );
+
+    showOptionsFlowDialog(this, configEntry!);
+  }
+
   private _dataChanged(ev) {
     this._configuration!.data[ev.currentTarget!.section] = ev.detail.value;
   }
@@ -281,6 +308,12 @@ class ZHAConfigDashboard extends LitElement {
         .network-settings > div {
           word-break: break-all;
           margin-top: 2px;
+        }
+
+        .network-settings > .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
       `,
     ];

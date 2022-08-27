@@ -3022,6 +3022,7 @@
             "shortcuts_title": "Shortcuts",
             "update_button": "Update Configuration",
             "download_backup": "Download Network Backup",
+            "reconfigure": "Reconfigure",
             "network_settings_title": "Network Settings"
           },
           "add_device_page": {
