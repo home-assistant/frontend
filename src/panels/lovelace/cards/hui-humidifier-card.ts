@@ -134,25 +134,25 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     `;
     const currentMode = svg`
       <svg viewBox="0 0 40 10" id="humidity">
-          <text
-            x="50%"
-            y="50%"
-            text-anchor="middle"
-            id="set-mode"
-          >
-            ${this.hass!.localize(`state.default.${stateObj.state}`)}
-            ${
-              stateObj.attributes.mode &&
-              !UNAVAILABLE_STATES.includes(stateObj.state)
-                ? html`
-                    -
-                    ${this.hass!.localize(
-                      `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
-                    ) || stateObj.attributes.mode}
-                  `
-                : ""
-            }
-          </text>
+        <text
+          x="50%"
+          y="50%"
+          text-anchor="middle"
+          id="set-mode"
+        >
+          ${this.hass!.localize(`state.default.${stateObj.state}`)}
+          ${
+            stateObj.attributes.mode &&
+            !UNAVAILABLE_STATES.includes(stateObj.state)
+              ? html`
+                  -
+                  ${this.hass!.localize(
+                    `state_attributes.humidifier.mode.${stateObj.attributes.mode}`
+                  ) || stateObj.attributes.mode}
+                `
+              : ""
+          }
+        </text>
       </svg>
     `;
 
