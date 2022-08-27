@@ -171,7 +171,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               ${slider}
               <div id="slider-center">
                 <ha-icon-button
-                  class="switch-button"
+                  class="toggle-button"
                   .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                   @click=${this._toggle}
                   tabindex="0"
@@ -350,7 +350,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         font-size: 4px;
       }
 
-      .switch-button {
+      .toggle-button {
         color: var(--paper-item-icon-color, #44739e);
         width: 60%;
         height: auto;
