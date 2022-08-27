@@ -109,14 +109,13 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         `;
 
     const setValues = svg`
-      <svg viewBox="0 0 40 20">
+      <svg viewBox="0 0 24 20">
         <text
           x="50%"
           dx="1"
           y="60%"
           text-anchor="middle"
-          style="font-size: 13px;"
-          class="set-value"
+          id="set-values"
         >
           ${
             UNAVAILABLE_STATES.includes(stateObj.state) ||
@@ -132,10 +131,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           }
         </text>
       </svg>
-      <svg id="set-values">
-        <g>
+    `;
+    const currentMode = svg`
+      <svg viewBox="0 0 40 10" id="humidity">
           <text
-            dy="22"
+            x="50%"
+            y="50%"
             text-anchor="middle"
             id="set-mode"
           >
@@ -152,7 +153,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
                 : ""
             }
           </text>
-        </g>
       </svg>
     `;
 
@@ -170,7 +170,15 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="humidity">${setValues}</div>
+                <ha-icon-button
+                  class="switch-button"
+                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  @click=${this._toggle}
+                  tabindex="0"
+                >
+                  ${setValues}
+                </ha-icon-button>
+                ${currentMode}
               </div>
             </div>
           </div>
@@ -208,15 +216,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-
-    const stateObj = this.hass.states[this._config.entity];
-    if (!stateObj) {
-      return;
-    }
-
-    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._rescale_svg();
-    }
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -236,28 +235,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _rescale_svg() {
-    // Set the viewbox of the SVG containing the set humidity to perfectly
-    // fit the text
-    // That way it will auto-scale correctly
-    // This is not done to the SVG containing the current humidity, because
-    // it should not be centered on the text, but only on the value
-    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (
-        this.shadowRoot.querySelector("ha-card") as LitElement
-      ).updateComplete.then(() => {
-        const svgRoot = this.shadowRoot!.querySelector("#set-values");
-        const box = svgRoot!.querySelector("g")!.getBBox();
-        svgRoot!.setAttribute(
-          "viewBox",
-          `${box!.x} ${box!.y} ${box!.width} ${box!.height}`
-        );
-        svgRoot!.setAttribute("width", `${box!.width}`);
-        svgRoot!.setAttribute("height", `${box!.height}`);
-      });
-    }
-  }
-
   private _getSetHum(stateObj: HassEntity): undefined | number {
     if (UNAVAILABLE_STATES.includes(stateObj.state)) {
       return undefined;
@@ -274,6 +251,12 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     this.hass!.callService("humidifier", "set_humidity", {
       entity_id: this._config!.entity,
       humidity: e.detail.value,
+    });
+  }
+
+  private _toggle(): void {
+    this.hass!.callService("humidifier", "toggle", {
+      entity_id: this._config!.entity,
     });
   }
 
@@ -349,28 +332,37 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         top: 20px;
         text-align: center;
         overflow-wrap: break-word;
-        pointer-events: none;
       }
 
       #humidity {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 50%;
-        top: 45%;
-        left: 50%;
-        direction: ltr;
+        max-width: 80%;
+        transform: translate(0, 350%);
       }
 
       #set-values {
-        max-width: 80%;
-        transform: translate(0, -50%);
-        font-size: 20px;
+        font-size: 13px;
+        font-family: var(--paper-font-body1_-_font-family);
+        font-weight: var(--paper-font-body1_-_font-weight);
       }
 
       #set-mode {
         fill: var(--secondary-text-color);
-        font-size: 16px;
+        font-size: 4px;
+      }
+
+      .switch-button {
+        color: var(--paper-item-icon-color, #44739e);
+        width: 60%;
+        height: auto;
+        position: absolute;
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+        border-radius: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        --mdc-icon-button-size: 100%;
+        --mdc-icon-size: 100%;
       }
 
       #info {
