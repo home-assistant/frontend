@@ -1,8 +1,9 @@
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
 export interface Condition {
   entity: string;
+  attribute?: string;
   state?: string;
   state_not?: string;
 }
@@ -12,9 +13,19 @@ export function checkConditionsMet(
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    const state = hass.states[c.entity]
-      ? hass!.states[c.entity].state
-      : UNAVAILABLE;
+    let state: string;
+
+    if (!hass.states[c.entity]) {
+      state = UNAVAILABLE;
+    }
+
+    if (c.attribute) {
+      state = hass!.states[c.entity].attributes[c.attribute]
+        ? hass!.states[c.entity].attributes[c.attribute]
+        : UNKNOWN;
+    } else {
+      state = hass!.states[c.entity].state;
+    }
 
     return c.state ? state === c.state : state !== c.state_not;
   });
