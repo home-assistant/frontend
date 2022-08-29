@@ -126,7 +126,7 @@ class ZHAConfigDashboard extends LitElement {
           )}
         >
           ${this._networkSettings
-            ? html` <div class="card-content network-settings">
+            ? html`<div class="card-content network-settings">
                 <div>
                   <strong>PAN ID:</strong>
                   ${this._networkSettings.settings.network_info.pan_id}
