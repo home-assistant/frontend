@@ -579,7 +579,7 @@ class MoreInfoLight extends LitElement {
 
       .color_temp {
         --ha-slider-background: -webkit-linear-gradient(
-          right,
+          var(--float-end),
           rgb(255, 160, 0) 0%,
           white 50%,
           rgb(166, 209, 255) 100%
