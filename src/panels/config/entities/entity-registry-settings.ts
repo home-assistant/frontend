@@ -19,13 +19,17 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stringCompare } from "../../../common/string/compare";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
+import { HaSelector } from "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -581,12 +585,12 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               <ha-settings-row>
                 <span slot="heading"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.preload_stream"
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream"
                   )}</span
                 >
                 <span slot="description"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.preload_stream_description"
+                    "ui.dialogs.entity_registry.editor.stream.preload_stream_description"
                   )}</span
                 >
                 <ha-switch
@@ -594,6 +598,38 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                   @change=${this._handleCameraPrefsChanged}
                 >
                 </ha-switch>
+              </ha-settings-row>
+              <ha-settings-row>
+                <span slot="heading"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}</span
+                >
+                <span slot="description"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation_description"
+                  )}</span
+                >
+                <ha-select
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+                  )}
+                  naturalMenuWidth
+                  fixedMenuPosition
+                  @selected=${this._handleCameraOrientationChanged}
+                  @closed=${stopPropagation}
+                >
+                  ${[1, 2, 3, 4, 6, 8].map((num) => {
+                    const localizeStr =
+                      "ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
+                      num.toString();
+                    return html`
+                      <mwc-list-item value=${num}>
+                        ${this.hass.localize(localizeStr as LocalizeKeys)}
+                      </mwc-list-item>
+                    `;
+                  })}
+                </ha-select>
               </ha-settings-row>
             `
           : ""}
@@ -833,6 +869,21 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     } catch (err: any) {
       showAlertDialog(this, { text: err.message });
       checkbox.checked = !checkbox.checked;
+    }
+  }
+
+  private async _handleCameraOrientationChanged(ev) {
+    const selector = ev.currentTarget as HaSelector;
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass,
+        this.entry.entity_id,
+        {
+          orientation: selector.value,
+        }
+      );
+    } catch (err: any) {
+      showAlertDialog(this, { text: err.message });
     }
   }
 

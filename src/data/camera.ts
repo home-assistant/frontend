@@ -26,6 +26,7 @@ export interface CameraEntity extends HassEntityBase {
 
 export interface CameraPreferences {
   preload_stream: boolean;
+  orientation: number;
 }
 
 export interface CameraThumbnail {
@@ -114,6 +115,7 @@ export const updateCameraPrefs = (
   entityId: string,
   prefs: {
     preload_stream?: boolean;
+    orientation?: number;
   }
 ) =>
   hass.callWS<CameraPreferences>({
