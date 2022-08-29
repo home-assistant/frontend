@@ -32,7 +32,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-button-menu";
 import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import {
   BROWSER_PLAYER,
@@ -357,7 +357,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
               (source) => html`
                 <mwc-list-item
                   ?selected=${source.entity_id === this.entityId}
-                  .disabled=${UNAVAILABLE_STATES.includes(source.state)}
+                  .disabled=${source.state === UNAVAILABLE}
                   .player=${source.entity_id}
                   @click=${this._selectPlayer}
                 >
