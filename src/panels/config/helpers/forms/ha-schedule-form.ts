@@ -293,7 +293,6 @@ class HaScheduleForm extends LitElement {
 
   private _handleEventDrop(info: any) {
     const { id, start, end } = info.event;
-    isSameDay(start, end);
 
     const [day, index] = id.split("-");
     const newDay = weekdays[start.getDay()];
