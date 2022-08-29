@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // @ts-ignore
 import timegridStyle from "@fullcalendar/timegrid/main.css";
+import { isSameDay } from "date-fns";
 import {
   css,
   CSSResultGroup,
@@ -240,7 +241,6 @@ class HaScheduleForm extends LitElement {
 
   private _handleSelect(info: { start: Date; end: Date }) {
     const { start, end } = info;
-    const dayDiff = Math.abs(start.getDay() - end.getDay());
 
     const day = weekdays[start.getDay()];
     const value = [...this[`_${day}`]];
@@ -249,7 +249,10 @@ class HaScheduleForm extends LitElement {
     const endFormatted = formatTime24h(end);
     value.push({
       from: formatTime24h(start),
-      to: dayDiff >= 1 || endFormatted === "0:00" ? "24:00" : endFormatted,
+      to:
+        isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     });
 
     newValue[day] = value;
@@ -258,14 +261,13 @@ class HaScheduleForm extends LitElement {
       value: newValue,
     });
 
-    if (dayDiff >= 1) {
+    if (isSameDay(start, end)) {
       this.calendar!.unselect();
     }
   }
 
   private _handleEventResize(info: any) {
     const { id, start, end } = info.event;
-    const dayDiff = Math.abs(start.getDay() - end.getDay());
 
     const [day, index] = id.split("-");
     const value = this[`_${day}`][parseInt(index)];
@@ -274,21 +276,24 @@ class HaScheduleForm extends LitElement {
     const endFormatted = formatTime24h(end);
     newValue[day][index] = {
       from: value.from,
-      to: dayDiff >= 1 || endFormatted === "0:00" ? "24:00" : endFormatted,
+      to:
+        isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     };
 
     fireEvent(this, "value-changed", {
       value: newValue,
     });
 
-    if (dayDiff >= 1) {
+    if (isSameDay(start, end)) {
       info.revert();
     }
   }
 
   private _handleEventDrop(info: any) {
     const { id, start, end } = info.event;
-    const dayDiff = Math.abs(start.getDay() - end.getDay());
+    isSameDay(start, end);
 
     const [day, index] = id.split("-");
     const newDay = weekdays[start.getDay()];
@@ -297,7 +302,10 @@ class HaScheduleForm extends LitElement {
     const endFormatted = formatTime24h(end);
     const event = {
       from: formatTime24h(start),
-      to: dayDiff >= 1 || endFormatted === "0:00" ? "24:00" : endFormatted,
+      to:
+        isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
     };
 
     if (newDay === day) {
@@ -313,7 +321,7 @@ class HaScheduleForm extends LitElement {
       value: newValue,
     });
 
-    if (dayDiff >= 1) {
+    if (isSameDay(start, end)) {
       info.revert();
     }
   }
