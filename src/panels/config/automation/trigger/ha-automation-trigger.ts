@@ -72,8 +72,10 @@ export default class HaAutomationTrigger extends LitElement {
               <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
               <ha-automation-trigger-row
                 .index=${idx}
+                .totalTriggers=${this.triggers.length}
                 .trigger=${trg}
                 @duplicate=${this._duplicateTrigger}
+                @move-action=${this._move}
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
               ></ha-automation-trigger-row>
@@ -205,6 +207,18 @@ export default class HaAutomationTrigger extends LitElement {
     newTriggers.splice(ev.newIndex!, 0, newTriggers.splice(ev.oldIndex!, 1)[0]);
 
     fireEvent(this, "value-changed", { value: newTriggers });
+  }
+
+  private _move(ev: CustomEvent) {
+    // Prevent possible parent action-row from also moving
+    ev.stopPropagation();
+
+    const index = (ev.target as any).index;
+    const newIndex = ev.detail.direction === "up" ? index - 1 : index + 1;
+    const triggers = this.triggers.concat();
+    const trigger = triggers.splice(index, 1)[0];
+    triggers.splice(newIndex, 0, trigger);
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private _triggerChanged(ev: CustomEvent) {

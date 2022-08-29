@@ -1,6 +1,8 @@
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import {
+  mdiArrowDown,
+  mdiArrowUp,
   mdiCheck,
   mdiContentDuplicate,
   mdiDelete,
@@ -87,6 +89,10 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ attribute: false }) public trigger!: Trigger;
 
+  @property() public index!: number;
+
+  @property() public totalTriggers!: number;
+
   @state() private _warnings?: string[];
 
   @state() private _yamlMode = false;
@@ -128,6 +134,31 @@ export default class HaAutomationTriggerRow extends LitElement {
             ></ha-svg-icon>
             ${capitalizeFirstLetter(describeTrigger(this.trigger, this.hass))}
           </div>
+
+          ${this.index !== 0
+            ? html`
+                <ha-icon-button
+                  slot="icons"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_up"
+                  )}
+                  .path=${mdiArrowUp}
+                  @click=${this._moveUp}
+                ></ha-icon-button>
+              `
+            : ""}
+          ${this.index !== this.totalTriggers - 1
+            ? html`
+                <ha-icon-button
+                  slot="icons"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_down"
+                  )}
+                  .path=${mdiArrowDown}
+                  @click=${this._moveDown}
+                ></ha-icon-button>
+              `
+            : ""}
           <ha-button-menu
             slot="icons"
             fixed
@@ -380,6 +411,16 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
+  }
+
+  private _moveUp(ev) {
+    ev.preventDefault();
+    fireEvent(this, "move-action", { direction: "up" });
+  }
+
+  private _moveDown(ev) {
+    ev.preventDefault();
+    fireEvent(this, "move-action", { direction: "down" });
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
