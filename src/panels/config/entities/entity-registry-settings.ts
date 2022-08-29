@@ -1043,6 +1043,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       css`
         :host {
           display: block;
+          margin-bottom: 60px;
         }
         .container {
           padding: 20px 24px;
@@ -1054,6 +1055,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           justify-content: space-between;
           padding-bottom: max(env(safe-area-inset-bottom), 24px);
           background-color: var(--mdc-theme-surface, #fff);
+
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          border-top: 1px solid var(--divider-color);
         }
         ha-select {
           width: 100%;
