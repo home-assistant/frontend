@@ -165,7 +165,7 @@ class ZHAConfigDashboard extends LitElement {
             </ha-progress-button>
             <mwc-button class="warning" @click=${this._openOptionFlow}>
               ${this.hass.localize(
-                "ui.panel.config.zha.configuration_page.reconfigure"
+                "ui.panel.config.zha.configuration_page.migrate_radio"
               )}
             </mwc-button>
           </div>

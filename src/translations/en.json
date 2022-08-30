@@ -3022,7 +3022,7 @@
             "shortcuts_title": "Shortcuts",
             "update_button": "Update Configuration",
             "download_backup": "Download Network Backup",
-            "reconfigure": "Reconfigure",
+            "migrate_radio": "Migrate Radio",
             "network_settings_title": "Network Settings"
           },
           "add_device_page": {
