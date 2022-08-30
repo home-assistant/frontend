@@ -29,7 +29,9 @@ export class HaDialog extends DialogBase {
   }
 
   protected renderHeading() {
-    return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
+    return html`<slot name="heading" class="mdc-dialog__heading">
+      ${super.renderHeading()}
+    </slot>`;
   }
 
   static override styles = [
@@ -82,7 +84,15 @@ export class HaDialog extends DialogBase {
         top: var(--dialog-surface-top);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 28px);
+        overflow-y: visible;
       }
+
+      .mdc-dialog .mdc-dialog__surface .mdc-dialog__heading {
+        overflow-y: hidden;
+        border-radius: 28px;
+        display: block;
+      }
+
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
         flex-direction: column;
