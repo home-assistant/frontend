@@ -69,7 +69,9 @@ export default class HaAutomationTrigger extends LitElement {
           (trigger) => this._getKey(trigger),
           (trg, idx) => html`
             <div class="trigger">
-              <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
+              <div class="handle">
+                <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+              </div>
               <ha-automation-trigger-row
                 .index=${idx}
                 .totalTriggers=${this.triggers.length}
@@ -290,7 +292,9 @@ export default class HaAutomationTrigger extends LitElement {
           padding-inline-start: initial;
           direction: var(--direction);
         }
-
+        .trigger .handle > * {
+          pointer-events: none;
+        }
         .trigger ha-automation-trigger-row {
           flex-grow: 1;
         }
