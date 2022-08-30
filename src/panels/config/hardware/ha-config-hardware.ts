@@ -19,7 +19,6 @@ import "../../../components/ha-settings-row";
 import {
   BOARD_NAMES,
   HardwareInfo,
-  subscribeSystemStatus,
   SystemStatusStreamMessage,
 } from "../../../data/hardware";
 import {
@@ -39,6 +38,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { DEFAULT_PRIMARY_COLOR } from "../../../resources/ha-style";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -58,7 +58,7 @@ const DATA_SET_CONFIG = {
 };
 
 @customElement("ha-config-hardware")
-class HaConfigHardware extends LitElement {
+class HaConfigHardware extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -79,29 +79,30 @@ class HaConfigHardware extends LitElement {
 
   private _cpuEntries: { x: number; y: number | null }[] = [];
 
-  private _subscribed?: Promise<(() => Promise<void>) | void>;
+  public hassSubscribe() {
+    return [
+      this.hass.connection.subscribeMessage<SystemStatusStreamMessage>(
+        (message) => {
+          // Only store the last 60 entries
+          this._memoryEntries.shift();
+          this._cpuEntries.shift();
 
-  private _unsubscribe(): void {
-    if (this._subscribed) {
-      this._subscribed.then((unsub) =>
-        unsub ? unsub().catch(() => {}) : undefined
-      );
-      this._subscribed = undefined;
-    }
-  }
+          this._memoryEntries.push({
+            x: new Date(message.timestamp).getTime(),
+            y: message.memory_used_percent,
+          });
+          this._cpuEntries.push({
+            x: new Date(message.timestamp).getTime(),
+            y: message.cpu_percent,
+          });
 
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this.hasUpdated) {
-      this._subscribeSystemStatus();
-    }
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._memoryEntries = [];
-    this._cpuEntries = [];
-    this._unsubscribe();
+          this._systemStatusData = message;
+        },
+        {
+          type: "hardware/subscribe_system_status",
+        }
+      ),
+    ];
   }
 
   protected willUpdate(): void {
@@ -164,10 +165,6 @@ class HaConfigHardware extends LitElement {
       t.setSeconds(t.getSeconds() - 5 * (DATASAMPLES - i));
       this._memoryEntries.push({ x: t.getTime(), y: null });
       this._cpuEntries.push({ x: t.getTime(), y: null });
-    }
-
-    if (this.hass) {
-      this._subscribeSystemStatus();
     }
   }
 
@@ -438,41 +435,6 @@ class HaConfigHardware extends LitElement {
         });
       }
     }
-  }
-
-  private _subscribeSystemStatus() {
-    if (this._subscribed) {
-      return true;
-    }
-    this._subscribed = subscribeSystemStatus(this.hass, (streamMessage) => {
-      if (!this._subscribed) {
-        return;
-      }
-      this._processOrQueueStreamMessage(streamMessage);
-    }).catch((err) => {
-      this._subscribed = undefined;
-      this._error = err;
-    });
-    return true;
-  }
-
-  private _processOrQueueStreamMessage(
-    streamMessage: SystemStatusStreamMessage
-  ) {
-    // Only store the last 60 entries
-    this._memoryEntries.shift();
-    this._cpuEntries.shift();
-
-    this._memoryEntries.push({
-      x: new Date(streamMessage.timestamp).getTime(),
-      y: streamMessage.memory_used_percent,
-    });
-    this._cpuEntries.push({
-      x: new Date(streamMessage.timestamp).getTime(),
-      y: streamMessage.cpu_percent,
-    });
-
-    this._systemStatusData = streamMessage;
   }
 
   static styles = [
