@@ -3021,7 +3021,7 @@
           "configuration_page": {
             "shortcuts_title": "Shortcuts",
             "update_button": "Update Configuration",
-            "download_backup": "Download Network Backup",
+            "download_backup": "Download Backup",
             "migrate_radio": "Migrate Radio",
             "network_settings_title": "Network Settings"
           },
