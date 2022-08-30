@@ -74,7 +74,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             : this.entities!.map(
                 (entityConf, index) => html`
                   <div class="entity">
-                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    </div>
                     ${entityConf.type
                       ? html`
                           <div class="special-row">
@@ -276,6 +278,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           padding-inline-end: 8px;
           padding-inline-start: initial;
           direction: var(--direction);
+        }
+        .entity .handle > * {
+          pointer-events: none;
         }
 
         .entity ha-entity-picker {
