@@ -36,6 +36,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   selectOverlap: false,
   eventOverlap: false,
   allDaySlot: false,
+  slotMinTime: "00:00:59",
   height: "parent",
   locales: allLocales,
   firstDay: 1,
@@ -248,6 +249,14 @@ class HaScheduleForm extends LitElement {
 
     const endFormatted = formatTime24h(end);
     value.push({
+      from: formatTime24h(start),
+      to:
+        !isSameDay(start, end) || endFormatted === "0:00"
+          ? "24:00"
+          : endFormatted,
+    });
+
+    console.log({
       from: formatTime24h(start),
       to:
         !isSameDay(start, end) || endFormatted === "0:00"
