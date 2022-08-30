@@ -71,7 +71,8 @@ export const formatTime24h = (dateObj: Date) =>
 
 const formatTime24hMem = memoizeOne(
   () =>
-    new Intl.DateTimeFormat(undefined, {
+    // en-GB to fix Chrome 24:59 to 0:59 https://stackoverflow.com/a/60898146
+    new Intl.DateTimeFormat("en-GB", {
       hour: "numeric",
       minute: "2-digit",
       hour12: false,
