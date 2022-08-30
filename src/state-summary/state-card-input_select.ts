@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { UNAVAILABLE } from "../data/entity";
 import { InputSelectEntity, setInputSelectOption } from "../data/input_select";
 import type { HomeAssistant } from "../types";
 
@@ -21,7 +21,9 @@ class StateCardInputSelect extends LitElement {
       <ha-select
         .label=${computeStateName(this.stateObj)}
         .value=${this.stateObj.state}
-        .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
+        .disabled=${
+          this.stateObj.state === UNAVAILABLE /* UNKNWON state is allowed */
+        }
         naturalMenuWidth
         fixedMenuPosition
         @selected=${this._selectedOptionChanged}
