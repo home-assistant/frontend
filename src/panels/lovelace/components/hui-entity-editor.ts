@@ -15,7 +15,10 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
-import { loadSortable } from "../../../resources/sortable.ondemand";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "../entity-rows/types";
 
@@ -31,7 +34,7 @@ export class HuiEntityEditor extends LitElement {
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   public connectedCallback() {
     super.connectedCallback();
