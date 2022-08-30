@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   InputSelectEntity,
@@ -61,7 +61,9 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
-          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          .disabled=${
+            stateObj.state === UNAVAILABLE /* UNKNWON state is allowed */
+          }
           naturalMenuWidth
           @selected=${this._selectedChanged}
           @click=${stopPropagation}
