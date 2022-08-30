@@ -256,14 +256,6 @@ class HaScheduleForm extends LitElement {
           : endFormatted,
     });
 
-    console.log({
-      from: formatTime24h(start),
-      to:
-        !isSameDay(start, end) || endFormatted === "0:00"
-          ? "24:00"
-          : endFormatted,
-    });
-
     newValue[day] = value;
 
     fireEvent(this, "value-changed", {
