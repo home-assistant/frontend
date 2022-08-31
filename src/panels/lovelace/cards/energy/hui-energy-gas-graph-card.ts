@@ -274,8 +274,7 @@ export class HuiEnergyGasGraphCard
       ) as GasSourceTypeEnergyPreference[];
 
     this._unit =
-      getEnergyGasUnit(this.hass, energyData.prefs, energyData.statsMetadata) ||
-      "m³";
+      getEnergyGasUnit(energyData.prefs, energyData.statsMetadata) || "m³";
 
     const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
 

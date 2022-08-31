@@ -31,12 +31,23 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean }) public disabled?: boolean;
 
   /**
-   * Show only statistics with these unit of measuments.
+   * Show only statistics natively stored with these units of measurements.
    * @type {Array}
-   * @attr include-unit-of-measurement
+   * @attr include-statistics-unit-of-measurement
    */
-  @property({ type: Array, attribute: "include-unit-of-measurement" })
-  public includeUnitOfMeasurement?: string[];
+  @property({
+    type: Array,
+    attribute: "include-statistics-unit-of-measurement",
+  })
+  public includeStatisticsUnitOfMeasurement?: string[];
+
+  /**
+   * Show only statistics displayed with these units of measurements.
+   * @type {Array}
+   * @attr include-display-unit-of-measurement
+   */
+  @property({ type: Array, attribute: "include-display-unit-of-measurement" })
+  public includeDisplayUnitOfMeasurement?: string[];
 
   /**
    * Show only statistics with these device classes.
@@ -86,7 +97,8 @@ export class HaStatisticPicker extends LitElement {
   private _getStatistics = memoizeOne(
     (
       statisticIds: StatisticsMetaData[],
-      includeUnitOfMeasurement?: string[],
+      includeStatisticsUnitOfMeasurement?: string[],
+      includeDisplayUnitOfMeasurement?: string[],
       includeDeviceClasses?: string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
@@ -101,9 +113,18 @@ export class HaStatisticPicker extends LitElement {
         ];
       }
 
-      if (includeUnitOfMeasurement) {
+      if (includeStatisticsUnitOfMeasurement) {
         statisticIds = statisticIds.filter((meta) =>
-          includeUnitOfMeasurement.includes(meta.unit_of_measurement)
+          includeStatisticsUnitOfMeasurement.includes(
+            meta.statistics_unit_of_measurement
+          )
+        );
+      }
+      if (includeDisplayUnitOfMeasurement) {
+        statisticIds = statisticIds.filter((meta) =>
+          includeDisplayUnitOfMeasurement.includes(
+            meta.display_unit_of_measurement
+          )
         );
       }
 
@@ -184,7 +205,8 @@ export class HaStatisticPicker extends LitElement {
       if (this.hasUpdated) {
         (this.comboBox as any).items = this._getStatistics(
           this.statisticIds!,
-          this.includeUnitOfMeasurement,
+          this.includeStatisticsUnitOfMeasurement,
+          this.includeDisplayUnitOfMeasurement,
           this.includeDeviceClasses,
           this.entitiesOnly
         );
@@ -192,7 +214,8 @@ export class HaStatisticPicker extends LitElement {
         this.updateComplete.then(() => {
           (this.comboBox as any).items = this._getStatistics(
             this.statisticIds!,
-            this.includeUnitOfMeasurement,
+            this.includeStatisticsUnitOfMeasurement,
+            this.includeDisplayUnitOfMeasurement,
             this.includeDeviceClasses,
             this.entitiesOnly
           );

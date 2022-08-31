@@ -67,7 +67,7 @@ export class DialogEnergyBatterySettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeStatisticsUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_to}
           .label=${this.hass.localize(
@@ -79,7 +79,7 @@ export class DialogEnergyBatterySettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeStatisticsUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
           .label=${this.hass.localize(
