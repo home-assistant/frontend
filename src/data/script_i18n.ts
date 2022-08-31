@@ -5,6 +5,7 @@ import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
+import { localizeDeviceAutomationAction } from "./device_automation";
 import { computeDeviceName } from "./device_registry";
 import {
   computeEntityRegistryName,
@@ -258,6 +259,10 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "device_action") {
     const config = action as DeviceAction;
+    const localized = localizeDeviceAutomationAction(hass, config);
+    if (localized) {
+      return localized;
+    }
     const stateObj = hass.states[config.entity_id as string];
     return `${config.type || "Perform action with"} ${
       stateObj ? computeStateName(stateObj) : config.entity_id

@@ -2,7 +2,12 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { Condition, Trigger } from "./automation";
-import { DeviceCondition, DeviceTrigger } from "./device_automation";
+import {
+  DeviceCondition,
+  DeviceTrigger,
+  localizeDeviceAutomationCondition,
+  localizeDeviceAutomationTrigger,
+} from "./device_automation";
 import { formatAttributeName } from "./entity_attributes";
 
 export const describeTrigger = (
@@ -296,6 +301,10 @@ export const describeTrigger = (
 
   if (trigger.platform === "device") {
     const config = trigger as DeviceTrigger;
+    const localized = localizeDeviceAutomationTrigger(hass, config);
+    if (localized) {
+      return localized;
+    }
     const stateObj = hass.states[config.entity_id as string];
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
@@ -479,6 +488,10 @@ export const describeCondition = (
 
   if (condition.condition === "device") {
     const config = condition as DeviceCondition;
+    const localized = localizeDeviceAutomationCondition(hass, config);
+    if (localized) {
+      return localized;
+    }
     const stateObj = hass.states[config.entity_id as string];
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
