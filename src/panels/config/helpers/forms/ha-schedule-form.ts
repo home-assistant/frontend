@@ -381,6 +381,9 @@ class HaScheduleForm extends LitElement {
           margin: 8px 0;
           height: 450px;
           width: 100%;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
         }
         .fc-scroller {
           overflow-x: visible !important;
