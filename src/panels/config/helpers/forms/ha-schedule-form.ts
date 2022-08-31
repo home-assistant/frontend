@@ -36,6 +36,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   selectOverlap: false,
   eventOverlap: false,
   allDaySlot: false,
+  slotMinTime: "00:00:59",
   height: "parent",
   locales: allLocales,
   firstDay: 1,
@@ -250,7 +251,7 @@ class HaScheduleForm extends LitElement {
     value.push({
       from: formatTime24h(start),
       to:
-        isSameDay(start, end) || endFormatted === "0:00"
+        !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
           : endFormatted,
     });
@@ -261,7 +262,7 @@ class HaScheduleForm extends LitElement {
       value: newValue,
     });
 
-    if (isSameDay(start, end)) {
+    if (!isSameDay(start, end)) {
       this.calendar!.unselect();
     }
   }
@@ -277,7 +278,7 @@ class HaScheduleForm extends LitElement {
     newValue[day][index] = {
       from: value.from,
       to:
-        isSameDay(start, end) || endFormatted === "0:00"
+        !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
           : endFormatted,
     };
@@ -286,7 +287,7 @@ class HaScheduleForm extends LitElement {
       value: newValue,
     });
 
-    if (isSameDay(start, end)) {
+    if (!isSameDay(start, end)) {
       info.revert();
     }
   }
@@ -302,7 +303,7 @@ class HaScheduleForm extends LitElement {
     const event = {
       from: formatTime24h(start),
       to:
-        isSameDay(start, end) || endFormatted === "0:00"
+        !isSameDay(start, end) || endFormatted === "0:00"
           ? "24:00"
           : endFormatted,
     };
@@ -320,7 +321,7 @@ class HaScheduleForm extends LitElement {
       value: newValue,
     });
 
-    if (isSameDay(start, end)) {
+    if (!isSameDay(start, end)) {
       info.revert();
     }
   }
