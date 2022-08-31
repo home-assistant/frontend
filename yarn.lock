@@ -9108,7 +9108,6 @@ fsevents@^1.2.7:
     lint-staged: ^13.0.3
     lit: ^2.1.2
     lit-analyzer: ^1.2.1
-    lit-vaadin-helpers: ^0.3.0
     lodash.template: ^4.5.0
     magic-string: ^0.25.7
     map-stream: ^0.0.7
@@ -10746,15 +10745,6 @@ fsevents@^1.2.7:
     parse5: ^6.0.1
     tslib: ^2.0.2
   checksum: 49d59ff05959ed725799c69691aa81d759426900150f91edd17debb1cd05ace1ac766172d80b196610e1f1b7b87215cccd9ba13e93638e4f75afeab87303471c
-  languageName: node
-  linkType: hard
-
-"lit-vaadin-helpers@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "lit-vaadin-helpers@npm:0.3.0"
-  dependencies:
-    lit: ^2.0.0
-  checksum: c96df23272442b3f6c38273721306eb650ea27876fade53ccfbb0158eef838865b1727b9657d35a80f55d94b1418106be63794adb064b79f35dfe3014fb435ff
   languageName: node
   linkType: hard
 
