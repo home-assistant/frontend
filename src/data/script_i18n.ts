@@ -5,6 +5,7 @@ import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
+import { computeDeviceName } from "./device_registry";
 import {
   ActionType,
   ActionTypes,
@@ -75,6 +76,27 @@ export const describeAction = <T extends ActionType>(
             targets.push(`templated ${label}`);
             renderValues = false;
             break;
+          } else if (key === "entity_id") {
+            const state = hass.states[targetThing];
+            if (state) {
+              values.push(computeStateName(state));
+            } else {
+              values.push(targetThing);
+            }
+          } else if (key === "device_id") {
+            const device = hass.devices[targetThing];
+            if (device) {
+              values.push(computeDeviceName(device, hass));
+            } else {
+              values.push(targetThing);
+            }
+          } else if (key === "area_id") {
+            const area = hass.areas[targetThing];
+            if (area) {
+              values.push(area.name);
+            } else {
+              values.push(targetThing);
+            }
           } else {
             values.push(targetThing);
           }
