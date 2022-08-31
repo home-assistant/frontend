@@ -14,6 +14,7 @@ import {
   EventAction,
   getActionType,
   IfAction,
+  ParallelAction,
   PlayMediaAction,
   RepeatAction,
   SceneAction,
@@ -221,7 +222,8 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "parallel") {
-    return "Run multiple actions in parallel";
+    const config = action as ParallelAction;
+    return `Run  ${ensureArray(config.parallel).length} actions in parallel`;
   }
 
   return actionType;
