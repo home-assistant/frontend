@@ -269,6 +269,7 @@ export class MoreInfoDialog extends LitElement {
         ha-dialog {
           --dialog-surface-position: static;
           --dialog-content-position: static;
+          --vertial-align-dialog: flex-start;
         }
 
         ha-header-bar {
@@ -301,8 +302,7 @@ export class MoreInfoDialog extends LitElement {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
-            --dialog-surface-position: fixed;
-            --dialog-surface-top: 40px;
+            --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
 

@@ -80,6 +80,7 @@ export class HaDialog extends DialogBase {
       .mdc-dialog .mdc-dialog__surface {
         position: var(--dialog-surface-position, relative);
         top: var(--dialog-surface-top);
+        margin-top: var(--dialog-surface-margin-top);
         min-height: var(--mdc-dialog-min-height, auto);
         border-radius: var(--ha-dialog-border-radius, 28px);
       }
