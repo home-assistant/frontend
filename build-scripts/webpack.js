@@ -76,7 +76,7 @@ const createWebpackConfig = ({
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
-      new WebpackBar({ fancy: !isProdBuild }),
+      !isStatsBuild && new WebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
