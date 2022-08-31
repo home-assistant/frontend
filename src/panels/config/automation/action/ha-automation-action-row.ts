@@ -507,6 +507,11 @@ export default class HaAutomationActionRow extends LitElement {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
         }
+        h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
         .action-icon {
           display: none;
         }

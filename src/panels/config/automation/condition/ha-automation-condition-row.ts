@@ -423,6 +423,11 @@ export default class HaAutomationConditionRow extends LitElement {
           --expansion-panel-summary-padding: 0 0 0 8px;
           --expansion-panel-content-padding: 0;
         }
+        h3 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
         .condition-icon {
           display: none;
         }
