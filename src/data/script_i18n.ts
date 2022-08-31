@@ -1,3 +1,4 @@
+import { formatDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { ensureArray } from "../common/ensure-array";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -98,7 +99,7 @@ export const describeAction = <T extends ActionType>(
                   computeEntityRegistryName(hass, entityReg) || targetThing
                 );
               } else {
-                targets.push(targetThing);
+                targets.push("unknown entity");
               }
             }
           } else if (key === "device_id") {
@@ -106,14 +107,14 @@ export const describeAction = <T extends ActionType>(
             if (device) {
               targets.push(computeDeviceName(device, hass));
             } else {
-              targets.push(targetThing);
+              targets.push("unknown device");
             }
           } else if (key === "area_id") {
             const area = hass.areas[targetThing];
             if (area?.name) {
               targets.push(area.name);
             } else {
-              targets.push(targetThing);
+              targets.push("unknown area");
             }
           } else {
             targets.push(targetThing);
@@ -140,7 +141,7 @@ export const describeAction = <T extends ActionType>(
         ? "based on a template"
         : `for ${config.delay}`;
     } else {
-      duration = `for ${JSON.stringify(config.delay)}`;
+      duration = `for ${formatDuration(config.delay)}`;
     }
 
     return `Delay ${duration}`;
