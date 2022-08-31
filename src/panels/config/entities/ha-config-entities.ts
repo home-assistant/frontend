@@ -68,9 +68,10 @@ import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 
-export interface StateEntity extends EntityRegistryEntry {
+export interface StateEntity extends Omit<EntityRegistryEntry, "unique_id"> {
   readonly?: boolean;
   selectable?: boolean;
+  unique_id?: string;
 }
 
 export interface EntityRow extends StateEntity {
@@ -302,7 +303,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _filteredEntitiesAndDomains = memoize(
     (
-      entities: EntityRegistryEntry[],
+      entities: StateEntity[],
       devices: DeviceRegistryEntry[] | undefined,
       areas: AreaRegistryEntry[] | undefined,
       stateEntities: StateEntity[],
@@ -392,7 +393,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         result.push({
           ...entry,
           entity,
-          name: computeEntityRegistryName(this.hass!, entry),
+          name: computeEntityRegistryName(
+            this.hass!,
+            entry as EntityRegistryEntry
+          ),
           unavailable,
           restored,
           area: area ? area.name : "—",

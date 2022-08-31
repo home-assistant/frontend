@@ -5,6 +5,13 @@ import { isTemplate } from "../common/string/has-template";
 import { HomeAssistant } from "../types";
 import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
+import { localizeDeviceAutomationAction } from "./device_automation";
+import { computeDeviceName } from "./device_registry";
+import {
+  computeEntityRegistryName,
+  entityRegistryByUniqueId,
+} from "./entity_registry";
+import { domainToName } from "./integration";
 import {
   ActionType,
   ActionTypes,
@@ -47,7 +54,11 @@ export const describeAction = <T extends ActionType>(
     ) {
       base = "Call a service based on a template";
     } else if (config.service) {
-      base = `Call service ${config.service}`;
+      const [domain, serviceName] = config.service.split(".", 2);
+      const service = hass.services[domain][serviceName];
+      base = service
+        ? `${domainToName(hass.localize, domain)}: ${service.name}`
+        : `Call service: ${config.service}`;
     } else {
       return actionType;
     }
@@ -66,26 +77,51 @@ export const describeAction = <T extends ActionType>(
           ? config.target[key]
           : [config.target[key]];
 
-        const values: string[] = [];
-
-        let renderValues = true;
-
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
             targets.push(`templated ${label}`);
-            renderValues = false;
             break;
+          } else if (key === "entity_id") {
+            if (targetThing.includes(".")) {
+              const state = hass.states[targetThing];
+              if (state) {
+                targets.push(computeStateName(state));
+              } else {
+                targets.push(targetThing);
+              }
+            } else {
+              const entityReg = entityRegistryByUniqueId(hass.entities)[
+                targetThing
+              ];
+              if (entityReg) {
+                targets.push(
+                  computeEntityRegistryName(hass, entityReg) || targetThing
+                );
+              } else {
+                targets.push(targetThing);
+              }
+            }
+          } else if (key === "device_id") {
+            const device = hass.devices[targetThing];
+            if (device) {
+              targets.push(computeDeviceName(device, hass));
+            } else {
+              targets.push(targetThing);
+            }
+          } else if (key === "area_id") {
+            const area = hass.areas[targetThing];
+            if (area?.name) {
+              targets.push(area.name);
+            } else {
+              targets.push(targetThing);
+            }
           } else {
-            values.push(targetThing);
+            targets.push(targetThing);
           }
-        }
-
-        if (renderValues) {
-          targets.push(`${label} ${values.join(", ")}`);
         }
       }
       if (targets.length > 0) {
-        base += ` on ${targets.join(", ")}`;
+        base += ` ${targets.join(", ")}`;
       }
     }
 
@@ -175,11 +211,15 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "if") {
     const config = action as IfAction;
     return `Perform an action if: ${
-      typeof config.if === "string"
+      !config.if
+        ? ""
+        : typeof config.if === "string"
         ? config.if
         : ensureArray(config.if).length > 1
         ? `${ensureArray(config.if).length} conditions`
-        : describeCondition(ensureArray(config.if)[0], hass)
+        : ensureArray(config.if).length
+        ? describeCondition(ensureArray(config.if)[0], hass)
+        : ""
     }${config.else ? " (or else!)" : ""}`;
   }
 
@@ -219,6 +259,10 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "device_action") {
     const config = action as DeviceAction;
+    const localized = localizeDeviceAutomationAction(hass, config);
+    if (localized) {
+      return localized;
+    }
     const stateObj = hass.states[config.entity_id as string];
     return `${config.type || "Perform action with"} ${
       stateObj ? computeStateName(stateObj) : config.entity_id
