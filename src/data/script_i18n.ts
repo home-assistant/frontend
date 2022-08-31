@@ -210,11 +210,15 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "if") {
     const config = action as IfAction;
     return `Perform an action if: ${
-      typeof config.if === "string"
+      !config.if
+        ? ""
+        : typeof config.if === "string"
         ? config.if
         : ensureArray(config.if).length > 1
         ? `${ensureArray(config.if).length} conditions`
-        : describeCondition(ensureArray(config.if)[0], hass)
+        : ensureArray(config.if).length
+        ? describeCondition(ensureArray(config.if)[0], hass)
+        : ""
     }${config.else ? " (or else!)" : ""}`;
   }
 
