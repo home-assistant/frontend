@@ -3,11 +3,13 @@ import {
   Connection,
   HassConfig,
   HassEntities,
-  HassServices,
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
+import { AreaRegistryEntry } from "./data/area_registry";
+import { DeviceRegistryEntry } from "./data/device_registry";
+import { EntityRegistryEntry } from "./data/entity_registry";
 import { CoreFrontendUserData } from "./data/frontend";
 import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
@@ -197,7 +199,9 @@ export interface HomeAssistant {
   connection: Connection;
   connected: boolean;
   states: HassEntities;
-  services: HassServices;
+  entities: { [id: string]: EntityRegistryEntry };
+  devices: { [id: string]: DeviceRegistryEntry };
+  areas: { [id: string]: AreaRegistryEntry };
   config: HassConfig;
   themes: Themes;
   selectedTheme: ThemeSettings | null;

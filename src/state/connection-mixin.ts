@@ -18,13 +18,16 @@ import { serviceCallWillDisconnect } from "../data/service";
 import { NumberFormat, TimeFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, ServiceCallResponse } from "../types";
+import { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { getLocalLanguage } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 import { polyfillsLoaded } from "../common/translations/localize";
+import { subscribeAreaRegistry } from "../data/area_registry";
+import { subscribeDeviceRegistry } from "../data/device_registry";
+import { subscribeEntityRegistry } from "../data/entity_registry";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -180,6 +183,27 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
+      subscribeEntityRegistry(conn, (entityReg) => {
+        const entities: HomeAssistant["entities"] = {};
+        for (const entity of entityReg) {
+          entities[entity.entity_id] = entity;
+        }
+        this._updateHass({ entities });
+      });
+      subscribeDeviceRegistry(conn, (deviceReg) => {
+        const devices: HomeAssistant["devices"] = {};
+        for (const device of deviceReg) {
+          devices[device.id] = device;
+        }
+        this._updateHass({ devices });
+      });
+      subscribeAreaRegistry(conn, (areaReg) => {
+        const areas: HomeAssistant["areas"] = {};
+        for (const area of areaReg) {
+          areas[area.area_id] = area;
+        }
+        this._updateHass({ areas });
+      });
       subscribeConfig(conn, (config) => {
         if (this.hass?.config?.time_zone !== config.time_zone) {
           if (__BUILD__ === "latest" && polyfillsLoaded) {
