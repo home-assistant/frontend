@@ -513,7 +513,7 @@ export default class HaAutomationActionRow extends LitElement {
         @media (min-width: 870px) {
           .action-icon {
             display: inline-block;
-            color: var(--primary-color);
+            color: var(--secondary-text-color);
             opacity: 0.9;
             margin-right: 8px;
           }
