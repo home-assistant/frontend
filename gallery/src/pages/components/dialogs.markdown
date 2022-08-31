@@ -7,7 +7,7 @@ subtitle: Dialogs provide important prompts in a user flow.
 
 Our dialogs are based on the latest version of Material Design. Specs and guidelines can be found on it's [website](https://m3.material.io/components/dialogs/overview). 
 
-# Extra guidelines
+# Highlighted guidelines
 
 ## Content
 * A best practice is to always use a title, even if it is optional by Material guidelines.
@@ -16,16 +16,12 @@ Our dialogs are based on the latest version of Material Design. Specs and guidel
 * If users become unsure, they read the description. Make sure this explains what will happen.
 * Strive for minimalism.
 
-## Buttons
-* When adding an action button, there should always be a `Cancel` button
+## Buttons and X-icon
 * Keep the labels short, for example `Save`, `Delete`, `Enable`.
+* Dialog with actions must always have a discard button. On desktop a `Cancel` button and X-icon, on mobile only the X-icon.
 * Destructive actions should be a red warning button.
+* Alert or confirmation dialogs only have buttons and no X-icon.
 * Try to avoid three buttons in one dialog. Especially when you leave the dialog task unfinished.
-
-## X-icon
-* Is it an alert or confirmation dialog? Then there are only buttons and no X-icon.
-* Contains the dialog a form that can be saved, then it should have a X-icon to discard all changes and exit.
-
 
 ## Example
 ### Confirmation dialog
