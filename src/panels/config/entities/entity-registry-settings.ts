@@ -1054,8 +1054,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           padding: 0 24px 24px 24px;
           justify-content: space-between;
           padding-bottom: max(env(safe-area-inset-bottom), 24px);
-          background-color: var(--mdc-theme-surface, #fff);
-
           position: absolute;
           bottom: 0;
           width: 100%;

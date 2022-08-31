@@ -89,7 +89,8 @@ export class HaDialog extends DialogBase {
 
       .mdc-dialog .mdc-dialog__surface .mdc-dialog__heading {
         overflow-y: hidden;
-        border-radius: 28px;
+        border-radius: var(--ha-dialog-border-radius, 28px)
+          var(--ha-dialog-border-radius, 28px) 0 0;
         display: block;
       }
 
