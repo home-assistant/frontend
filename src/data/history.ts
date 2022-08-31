@@ -82,7 +82,8 @@ export interface StatisticValue {
 }
 
 export interface StatisticsMetaData {
-  unit_of_measurement: string;
+  display_unit_of_measurement: string;
+  statistics_unit_of_measurement: string;
   statistic_id: string;
   source: string;
   name?: string | null;

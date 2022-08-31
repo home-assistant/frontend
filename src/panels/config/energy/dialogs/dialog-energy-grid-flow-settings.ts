@@ -93,7 +93,7 @@ export class DialogEnergyGridFlowSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeStatisticsUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source[
             this._params.direction === "from"

@@ -133,7 +133,7 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
-      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
+      unit: getEnergyGasUnitCategory(this.preferences, this.statsMetadata),
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -149,7 +149,11 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
+      unit: getEnergyGasUnitCategory(
+        this.preferences,
+        this.statsMetadata,
+        origSource.stat_energy_from
+      ),
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,
