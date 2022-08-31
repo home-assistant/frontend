@@ -1,5 +1,6 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
+import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
@@ -7,6 +8,7 @@ import { HomeAssistant } from "../types";
 
 export interface EntityRegistryEntry {
   entity_id: string;
+  unique_id: string;
   name: string | null;
   icon: string | null;
   platform: string;
@@ -21,7 +23,6 @@ export interface EntityRegistryEntry {
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
-  unique_id: string;
   capabilities: Record<string, unknown>;
   original_icon?: string;
   device_class?: string;
@@ -160,6 +161,16 @@ export const sortEntityRegistryByName = (entries: EntityRegistryEntry[]) =>
   entries.sort((entry1, entry2) =>
     caseInsensitiveStringCompare(entry1.name || "", entry2.name || "")
   );
+
+export const entityRegistryByUniqueId = memoizeOne(
+  (entries: HomeAssistant["entities"]) => {
+    const entities: HomeAssistant["entities"] = {};
+    for (const entity of Object.values(entries)) {
+      entities[entity.unique_id] = entity;
+    }
+    return entities;
+  }
+);
 
 export const getEntityPlatformLookup = (
   entities: EntityRegistryEntry[]

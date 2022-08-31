@@ -7,6 +7,10 @@ import { Condition } from "./automation";
 import { describeCondition, describeTrigger } from "./automation_i18n";
 import { computeDeviceName } from "./device_registry";
 import {
+  computeEntityRegistryName,
+  entityRegistryByUniqueId,
+} from "./entity_registry";
+import {
   ActionType,
   ActionTypes,
   ChooseAction,
@@ -67,43 +71,47 @@ export const describeAction = <T extends ActionType>(
           ? config.target[key]
           : [config.target[key]];
 
-        const values: string[] = [];
-
-        let renderValues = true;
-
         for (const targetThing of keyConf) {
           if (isTemplate(targetThing)) {
             targets.push(`templated ${label}`);
-            renderValues = false;
             break;
           } else if (key === "entity_id") {
-            const state = hass.states[targetThing];
-            if (state) {
-              values.push(computeStateName(state));
+            if (targetThing.includes(".")) {
+              const state = hass.states[targetThing];
+              if (state) {
+                targets.push(computeStateName(state));
+              } else {
+                targets.push(targetThing);
+              }
             } else {
-              values.push(targetThing);
+              const entityReg = entityRegistryByUniqueId(hass.entities)[
+                targetThing
+              ];
+              if (entityReg) {
+                targets.push(
+                  computeEntityRegistryName(hass, entityReg) || targetThing
+                );
+              } else {
+                targets.push(targetThing);
+              }
             }
           } else if (key === "device_id") {
             const device = hass.devices[targetThing];
             if (device) {
-              values.push(computeDeviceName(device, hass));
+              targets.push(computeDeviceName(device, hass));
             } else {
-              values.push(targetThing);
+              targets.push(targetThing);
             }
           } else if (key === "area_id") {
             const area = hass.areas[targetThing];
-            if (area) {
-              values.push(area.name);
+            if (area?.name) {
+              targets.push(area.name);
             } else {
-              values.push(targetThing);
+              targets.push(targetThing);
             }
           } else {
-            values.push(targetThing);
+            targets.push(targetThing);
           }
-        }
-
-        if (renderValues) {
-          targets.push(`${label} ${values.join(", ")}`);
         }
       }
       if (targets.length > 0) {
