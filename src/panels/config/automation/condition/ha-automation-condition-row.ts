@@ -93,7 +93,7 @@ export default class HaAutomationConditionRow extends LitElement {
           : ""}
 
         <ha-expansion-panel leftChevron>
-          <div slot="header">
+          <h3 slot="header">
             <ha-svg-icon
               class="condition-icon"
               .path=${CONDITION_TYPES[this.condition.condition]}
@@ -101,7 +101,7 @@ export default class HaAutomationConditionRow extends LitElement {
             ${capitalizeFirstLetter(
               describeCondition(this.condition, this.hass)
             )}
-          </div>
+          </h3>
 
           <ha-button-menu
             slot="icons"

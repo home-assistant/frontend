@@ -115,11 +115,11 @@ export class HaManualAutomationEditor extends LitElement {
       </ha-card>
 
       <div class="header">
-        <div class="name">
+        <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.header"
           )}
-        </div>
+        </h2>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
           target="_blank"
@@ -135,17 +135,19 @@ export class HaManualAutomationEditor extends LitElement {
       </div>
 
       <ha-automation-trigger
+        role="region"
+        aria-labelledby="triggers-heading"
         .triggers=${this.config.trigger}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
       ></ha-automation-trigger>
 
       <div class="header">
-        <div class="name">
+        <h2 id="conditions-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.conditions.header"
           )}
-        </div>
+        </h2>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/condition/")}
           target="_blank"
@@ -161,17 +163,19 @@ export class HaManualAutomationEditor extends LitElement {
       </div>
 
       <ha-automation-condition
+        role="region"
+        aria-labelledby="conditions-heading"
         .conditions=${this.config.condition || []}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
       ></ha-automation-condition>
 
       <div class="header">
-        <div class="name">
+        <h2 id="actions-heading" class="name">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.header"
           )}
-        </div>
+        </h2>
         <a
           href=${documentationUrl(this.hass, "/docs/automation/action/")}
           target="_blank"
@@ -187,6 +191,8 @@ export class HaManualAutomationEditor extends LitElement {
       </div>
 
       <ha-automation-action
+        role="region"
+        aria-labelledby="actions-heading"
         .actions=${this.config.action}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
