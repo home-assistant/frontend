@@ -91,6 +91,15 @@ const ACTIONS = [
     else: [{ delay: "00:00:05" }],
   },
   {
+    if: [{ condition: "state" }],
+    then: [{ delay: "00:00:01" }],
+  },
+  {
+    if: [{ condition: "state" }, { condition: "state" }],
+    then: [{ delay: "00:00:01" }],
+    else: [{ delay: "00:00:05" }],
+  },
+  {
     choose: [
       {
         conditions: [{ condition: "state" }],
