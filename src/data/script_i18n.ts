@@ -14,7 +14,6 @@ import {
   EventAction,
   getActionType,
   IfAction,
-  ParallelAction,
   PlayMediaAction,
   RepeatAction,
   SceneAction,
@@ -154,9 +153,9 @@ export const describeAction = <T extends ActionType>(
   if (actionType === "fire_event") {
     const config = action as EventAction;
     if (isTemplate(config.event)) {
-      return "Event based on a template";
+      return "Fire event based on a template";
     }
-    return `Event ${config.event}`;
+    return `Fire event ${config.event}`;
   }
 
   if (actionType === "wait_template") {
@@ -174,54 +173,25 @@ export const describeAction = <T extends ActionType>(
 
   if (actionType === "if") {
     const config = action as IfAction;
-    return `If ${
-      typeof config.if === "string"
-        ? config.if
-        : ensureArray(config.if)
-            .map((condition) => describeCondition(condition, hass))
-            .join(", ")
-    } then ${ensureArray(config.then).map((thenAction) =>
-      describeAction(hass, thenAction)
-    )}${
-      config.else
-        ? ` else ${ensureArray(config.else).map((elseAction) =>
-            describeAction(hass, elseAction)
-          )}`
-        : ""
+    return `Perform an action based on a condition${
+      config.else ? ", else perform other action" : ""
     }`;
   }
 
   if (actionType === "choose") {
     const config = action as ChooseAction;
     return config.choose
-      ? `If ${ensureArray(config.choose)
-          .map(
-            (chooseAction) =>
-              `${
-                typeof chooseAction.conditions === "string"
-                  ? chooseAction.conditions
-                  : ensureArray(chooseAction.conditions)
-                      .map((condition) => describeCondition(condition, hass))
-                      .join(", ")
-              } then ${ensureArray(chooseAction.sequence)
-                .map((chooseSeq) => describeAction(hass, chooseSeq))
-                .join(", ")}`
-          )
-          .join(", else if ")}${
-          config.default
-            ? `. If none match: ${ensureArray(config.default)
-                .map((dAction) => describeAction(hass, dAction))
-                .join(", ")}`
-            : ""
-        }`
-      : "Choose";
+      ? `Choose between ${
+          ensureArray(config.choose).length + (config.default ? 1 : 0)
+        } actions`
+      : "Choose an action";
   }
 
   if (actionType === "repeat") {
     const config = action as RepeatAction;
-    return `Repeat ${ensureArray(config.repeat.sequence).map((repeatAction) =>
-      describeAction(hass, repeatAction)
-    )} ${"count" in config.repeat ? `${config.repeat.count} times` : ""}${
+    return `Repeat an action ${
+      "count" in config.repeat ? `${config.repeat.count} times` : ""
+    }${
       "while" in config.repeat
         ? `while ${ensureArray(config.repeat.while)
             .map((condition) => describeCondition(condition, hass))
@@ -251,10 +221,7 @@ export const describeAction = <T extends ActionType>(
   }
 
   if (actionType === "parallel") {
-    const config = action as ParallelAction;
-    return `Run in parallel: ${ensureArray(config.parallel)
-      .map((pAction) => describeAction(hass, pAction))
-      .join(", ")}`;
+    return "Run multiple actions in parallel";
   }
 
   return actionType;
