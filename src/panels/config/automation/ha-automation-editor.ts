@@ -230,6 +230,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
         ${this._config
           ? html`
+              ${this.narrow
+                ? html`<span slot="header"
+                    >${this._config!.alias ||
+                    this.hass.localize(
+                      "ui.panel.config.automation.editor.default_name"
+                    )}</span
+                  >`
+                : ""}
               <div
                 class="content ${classMap({
                   "yaml-mode": this._mode === "yaml",
@@ -242,12 +250,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                 ${this._mode === "gui"
                   ? html`
                       ${this.narrow
-                        ? html`<span slot="header"
-                            >${this._config!.alias ||
-                            this.hass.localize(
-                              "ui.panel.config.automation.editor.default_name"
-                            )}</span
-                          >`
+                        ? ""
                         : html`
                             <div class="header-name">
                               <h1>
