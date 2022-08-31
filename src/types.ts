@@ -3,6 +3,7 @@ import {
   Connection,
   HassConfig,
   HassEntities,
+  HassServices,
   HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
@@ -202,6 +203,7 @@ export interface HomeAssistant {
   entities: { [id: string]: EntityRegistryEntry };
   devices: { [id: string]: DeviceRegistryEntry };
   areas: { [id: string]: AreaRegistryEntry };
+  services: HassServices;
   config: HassConfig;
   themes: Themes;
   selectedTheme: ThemeSettings | null;
