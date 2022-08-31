@@ -13,7 +13,7 @@ import {
 } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { GaugeCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -54,57 +54,66 @@ export class HuiGaugeCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((showSeverity: boolean) => {
-    const schema = [
-      {
-        name: "entity",
-        selector: {
-          entity: {
-            domain: ["counter", "input_number", "number", "sensor"],
+  private _schema = memoizeOne(
+    (showSeverity: boolean) =>
+      [
+        {
+          name: "entity",
+          selector: {
+            entity: {
+              domain: ["counter", "input_number", "number", "sensor"],
+            },
           },
         },
-      },
-      {
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "name", selector: { text: {} } },
-          { name: "unit", selector: { text: {} } },
-        ],
-      },
-      { name: "theme", selector: { theme: {} } },
-      {
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "min", selector: { number: { min: 1, mode: "box" } } },
-          { name: "max", selector: { number: { min: 1, mode: "box" } } },
-        ],
-      },
-      {
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "needle", selector: { boolean: {} } },
-          { name: "show_severity", selector: { boolean: {} } },
-        ],
-      },
-    ];
-
-    if (showSeverity) {
-      schema.push({
-        name: "",
-        type: "grid",
-        schema: [
-          { name: "green", selector: { number: { min: 0, mode: "box" } } },
-          { name: "yellow", selector: { number: { min: 0, mode: "box" } } },
-          { name: "red", selector: { number: { min: 0, mode: "box" } } },
-        ],
-      });
-    }
-
-    return schema;
-  });
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            { name: "unit", selector: { text: {} } },
+          ],
+        },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "min", selector: { number: { min: 1, mode: "box" } } },
+            { name: "max", selector: { number: { min: 1, mode: "box" } } },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "needle", selector: { boolean: {} } },
+            { name: "show_severity", selector: { boolean: {} } },
+          ],
+        },
+        ...(showSeverity
+          ? ([
+              {
+                name: "",
+                type: "grid",
+                schema: [
+                  {
+                    name: "green",
+                    selector: { number: { min: 0, mode: "box" } },
+                  },
+                  {
+                    name: "yellow",
+                    selector: { number: { min: 0, mode: "box" } },
+                  },
+                  {
+                    name: "red",
+                    selector: { number: { min: 0, mode: "box" } },
+                  },
+                ],
+              },
+            ] as const)
+          : []),
+      ] as const
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
@@ -152,7 +161,9 @@ export class HuiGaugeCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "name":
         return this.hass!.localize(
@@ -186,18 +197,16 @@ export class HuiGaugeCardEditor
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
+      case "unit":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.unit"
+        );
+      default:
+        // "green" | "yellow" | "red"
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.gauge.severity.${schema.name}`
+        );
     }
-    return (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.gauge.${schema.name}`
-      ) ||
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      ) ||
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.gauge.severity.${schema.name}`
-      )
-    );
   };
 }
 

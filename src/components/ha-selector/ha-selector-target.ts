@@ -64,7 +64,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     super.updated(changedProperties);
     if (
       changedProperties.has("selector") &&
-      this.selector.target.device?.integration &&
+      (this.selector.target.device?.integration ||
+        this.selector.target.entity?.integration) &&
       !this._entitySources
     ) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {

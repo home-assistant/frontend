@@ -16,10 +16,12 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
-
-let Sortable;
 
 declare global {
   interface HASSDomEvents {
@@ -41,7 +43,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -74,7 +76,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
             : this.entities!.map(
                 (entityConf, index) => html`
                   <div class="entity">
-                    <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
+                    <div class="handle">
+                      <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                    </div>
                     ${entityConf.type
                       ? html`
                           <div class="special-row">
@@ -171,22 +175,17 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   }
 
   private async _createSortable() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
+    const Sortable = await loadSortable();
 
-      Sortable = sortableImport.Sortable;
-      Sortable.mount(sortableImport.OnSpill);
-      Sortable.mount(sortableImport.AutoScroll());
-    }
-
-    this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      handle: ".handle",
-      onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
-    });
+    this._sortable = new Sortable(
+      this.shadowRoot!.querySelector(".entities")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        handle: ".handle",
+        onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
+      }
+    );
   }
 
   private async _addEntity(ev: CustomEvent): Promise<void> {
@@ -276,6 +275,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
           padding-inline-end: 8px;
           padding-inline-start: initial;
           direction: var(--direction);
+        }
+        .entity .handle > * {
+          pointer-events: none;
         }
 
         .entity ha-entity-picker {

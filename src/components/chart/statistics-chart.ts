@@ -15,13 +15,13 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
 } from "../../common/number/format_number";
 import {
   getStatisticIds,
+  getStatisticLabel,
   Statistics,
   statisticsHaveType,
   StatisticsMetaData,
@@ -233,24 +233,18 @@ class StatisticsChart extends LitElement {
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
-      let name = names[firstStat.statistic_id];
-      if (!name) {
-        const entityState = this.hass.states[firstStat.statistic_id];
-        if (entityState) {
-          name = computeStateName(entityState);
-        } else {
-          name = firstStat.statistic_id;
-        }
-      }
-
       const meta = this.statisticIds!.find(
         (stat) => stat.statistic_id === firstStat.statistic_id
       );
+      let name = names[firstStat.statistic_id];
+      if (!name) {
+        name = getStatisticLabel(this.hass, firstStat.statistic_id, meta);
+      }
 
       if (!this.unit) {
         if (unit === undefined) {
-          unit = meta?.unit_of_measurement;
-        } else if (unit !== meta?.unit_of_measurement) {
+          unit = meta?.display_unit_of_measurement;
+        } else if (unit !== meta?.display_unit_of_measurement) {
           unit = null;
         }
       }

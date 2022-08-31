@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
@@ -20,16 +21,22 @@ const ENTITIES = [
   }),
   getEntity("media_player", "livingroom", "playing", {
     friendly_name: "Livingroom",
+    media_content_type: "music",
+    device_class: "tv",
   }),
   getEntity("media_player", "lounge", "idle", {
     friendly_name: "Lounge",
     supported_features: 444983,
+    device_class: "speaker",
   }),
   getEntity("light", "bedroom", "on", {
     friendly_name: "Bedroom",
+    effect: "colorloop",
+    effect_list: ["colorloop", "random"],
   }),
   getEntity("switch", "coffee", "off", {
     friendly_name: "Coffee",
+    device_class: "switch",
   }),
 ];
 
@@ -141,7 +148,13 @@ const SCHEMAS: {
         selector: { attribute: { entity_id: "" } },
         context: { filter_entity: "entity" },
       },
+      {
+        name: "State",
+        selector: { state: { entity_id: "" } },
+        context: { filter_entity: "entity", filter_attribute: "Attribute" },
+      },
       { name: "Device", selector: { device: {} } },
+      { name: "Config entry", selector: { config_entry: {} } },
       { name: "Duration", selector: { duration: {} } },
       { name: "area", selector: { area: {} } },
       { name: "target", selector: { target: {} } },
@@ -423,6 +436,7 @@ class DemoHaForm extends LitElement {
     hass.addEntities(ENTITIES);
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass, DEVICES);
+    mockConfigEntries(hass);
     mockAreaRegistry(hass, AREAS);
     mockHassioSupervisor(hass);
   }

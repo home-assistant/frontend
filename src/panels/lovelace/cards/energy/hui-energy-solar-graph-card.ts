@@ -26,7 +26,6 @@ import {
 import { labBrighten, labDarken } from "../../../../common/color/lab";
 import { formatDateShort } from "../../../../common/datetime/format_date";
 import { formatTime } from "../../../../common/datetime/format_time";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -327,6 +326,7 @@ export class HuiEnergySolarGraphCard
     if (forecasts) {
       datasets.push(
         ...this._processForecast(
+          energyData.statsMetadata,
           forecasts,
           solarSources,
           computedStyles.getPropertyValue("--primary-text-color"),
@@ -405,7 +405,7 @@ export class HuiEnergySolarGraphCard
             name: getStatisticLabel(
               this.hass,
               source.stat_energy_from,
-              statisticsMetaData
+              statisticsMetaData[source.stat_energy_from]
             ),
           }
         ),
@@ -422,6 +422,7 @@ export class HuiEnergySolarGraphCard
   }
 
   private _processForecast(
+    statisticsMetaData: Record<string, StatisticsMetaData>,
     forecasts: EnergySolarForecasts,
     solarSources: SolarSourceTypeEnergyPreference[],
     borderColor: string,
@@ -435,8 +436,6 @@ export class HuiEnergySolarGraphCard
     // Process solar forecast data.
     solarSources.forEach((source) => {
       if (source.config_entry_solar_forecast) {
-        const entity = this.hass.states[source.stat_energy_from];
-
         const forecastsData: Record<string, number> | undefined = {};
         source.config_entry_solar_forecast.forEach((configEntryId) => {
           if (!forecasts![configEntryId]) {
@@ -481,9 +480,11 @@ export class HuiEnergySolarGraphCard
               label: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {
-                  name: entity
-                    ? computeStateName(entity)
-                    : source.stat_energy_from,
+                  name: getStatisticLabel(
+                    this.hass,
+                    source.stat_energy_from,
+                    statisticsMetaData[source.stat_energy_from]
+                  ),
                 }
               ),
               fill: false,

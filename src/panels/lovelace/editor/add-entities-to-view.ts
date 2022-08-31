@@ -97,9 +97,7 @@ export const addEntitiesToLovelaceView = async (
         try {
           await saveConfig(hass!, null, newConfig);
         } catch (err: any) {
-          alert(
-            hass.localize("ui.panel.config.devices.add_entities.saving_failed")
-          );
+          alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
         }
       },
       path: [0],
@@ -123,9 +121,7 @@ export const addEntitiesToLovelaceView = async (
             await saveConfig(hass!, newUrlPath, newConfig);
           } catch {
             alert(
-              hass.localize(
-                "ui.panel.config.devices.add_entities.saving_failed"
-              )
+              hass.localize("ui.panel.lovelace.add_entities.saving_failed")
             );
           }
         },

@@ -5,7 +5,7 @@ import { html, css, LitElement, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
-import "../../src/components/ha-expansion-panel";
+import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import { haStyle } from "../../src/resources/styles";
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
@@ -174,9 +174,10 @@ class HaGallery extends LitElement {
     const menuItem = this.shadowRoot!.querySelector(
       `a[href="#${this._page}"]`
     )!;
+
     // Make sure section is expanded
-    if (menuItem.parentElement instanceof HTMLDetailsElement) {
-      menuItem.parentElement.open = true;
+    if (menuItem.parentElement instanceof HaExpansionPanel) {
+      menuItem.parentElement.expanded = true;
     }
   }
 

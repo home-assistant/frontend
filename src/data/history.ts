@@ -82,7 +82,8 @@ export interface StatisticValue {
 }
 
 export interface StatisticsMetaData {
-  unit_of_measurement: string;
+  display_unit_of_measurement: string;
+  statistics_unit_of_measurement: string;
   statistic_id: string;
   source: string;
   name?: string | null;
@@ -412,6 +413,7 @@ export const computeHistory = (
       unit = stateWithUnitorStateClass.a.unit_of_measurement || " ";
     } else {
       unit = {
+        zone: localize("ui.dialogs.more_info_control.zone.graph_unit"),
         climate: hass.config.unit_system.temperature,
         counter: "#",
         humidifier: "%",
@@ -568,12 +570,11 @@ export const adjustStatisticsSum = (
 export const getStatisticLabel = (
   hass: HomeAssistant,
   statisticsId: string,
-  statisticsMetaData: Record<string, StatisticsMetaData>
+  statisticsMetaData: StatisticsMetaData | undefined
 ): string => {
   const entity = hass.states[statisticsId];
   if (entity) {
     return computeStateName(entity);
   }
-  const statisticMetaData = statisticsMetaData[statisticsId];
-  return statisticMetaData?.name || statisticsId;
+  return statisticsMetaData?.name || statisticsId;
 };

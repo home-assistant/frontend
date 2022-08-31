@@ -1,13 +1,36 @@
+import { repeat } from "lit/directives/repeat";
+import { mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import "@material/mwc-button";
-import { css, CSSResultGroup, html, LitElement } from "lit";
+import type { ActionDetail } from "@material/mwc-list";
+import memoizeOne from "memoize-one";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-button-menu";
 import { Action } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
-import { HaDeviceAction } from "./types/ha-automation-action-device_id";
+import type HaAutomationActionRow from "./ha-automation-action-row";
+import "./types/ha-automation-action-activate_scene";
+import "./types/ha-automation-action-choose";
+import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-parallel";
+import "./types/ha-automation-action-play_media";
+import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-stop";
+import "./types/ha-automation-action-wait_for_trigger";
+import "./types/ha-automation-action-wait_template";
+import { ACTION_TYPES } from "../../../../data/action";
+import { stringCompare } from "../../../../common/string/compare";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaSelect } from "../../../../components/ha-select";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -17,9 +40,15 @@ export default class HaAutomationAction extends LitElement {
 
   @property() public actions!: Action[];
 
+  private _focusLastActionOnChange = false;
+
+  private _actionKeys = new WeakMap<Action, string>();
+
   protected render() {
     return html`
-      ${this.actions.map(
+      ${repeat(
+        this.actions,
+        (action) => this._getKey(action),
         (action, idx) => html`
           <ha-automation-action-row
             .index=${idx}
@@ -33,23 +62,62 @@ export default class HaAutomationAction extends LitElement {
           ></ha-automation-action-row>
         `
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addAction}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.add"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
+      <ha-button-menu fixed @action=${this._addAction}>
+        <mwc-button
+          slot="trigger"
+          outlined
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.actions.add"
+          )}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        </mwc-button>
+        ${this._processedTypes(this.hass.localize).map(
+          ([opt, label, icon]) => html`
+            <mwc-list-item .value=${opt} aria-label=${label} graphic="icon">
+              ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
+            ></mwc-list-item>
+          `
+        )}
+      </ha-button-menu>
     `;
   }
 
-  private _addAction() {
-    const actions = this.actions.concat({
-      ...HaDeviceAction.defaultConfig,
-    });
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
 
+    if (changedProps.has("actions") && this._focusLastActionOnChange) {
+      this._focusLastActionOnChange = false;
+
+      const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
+        "ha-automation-action-row:last-of-type"
+      )!;
+      row.updateComplete.then(() => {
+        row.expand();
+        row.scrollIntoView();
+        row.focus();
+      });
+    }
+  }
+
+  private _getKey(action: Action) {
+    if (!this._actionKeys.has(action)) {
+      this._actionKeys.set(action, Math.random().toString());
+    }
+
+    return this._actionKeys.get(action)!;
+  }
+
+  private _addAction(ev: CustomEvent<ActionDetail>) {
+    const action = (ev.currentTarget as HaSelect).items[ev.detail.index].value;
+    const elClass = customElements.get(
+      `ha-automation-action-${action}`
+    ) as CustomElementConstructor & { defaultConfig: Action };
+
+    const actions = this.actions.concat({
+      ...elClass.defaultConfig,
+    });
+    this._focusLastActionOnChange = true;
     fireEvent(this, "value-changed", { value: actions });
   }
 
@@ -74,6 +142,10 @@ export default class HaAutomationAction extends LitElement {
     if (newValue === null) {
       actions.splice(index, 1);
     } else {
+      // Store key on new value.
+      const key = this._getKey(actions[index]);
+      this._actionKeys.set(newValue, key);
+
       actions[index] = newValue;
     }
 
@@ -88,16 +160,31 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
+  private _processedTypes = memoizeOne(
+    (localize: LocalizeFunc): [string, string, string][] =>
+      Object.entries(ACTION_TYPES)
+        .map(
+          ([action, icon]) =>
+            [
+              action,
+              localize(
+                `ui.panel.config.automation.editor.actions.type.${action}.label`
+              ),
+              icon,
+            ] as [string, string, string]
+        )
+        .sort((a, b) => stringCompare(a[1], b[1]))
+  );
+
   static get styles(): CSSResultGroup {
     return css`
-      ha-automation-action-row,
-      ha-card {
+      ha-automation-action-row {
         display: block;
-        margin-top: 16px;
+        margin-bottom: 16px;
+        scroll-margin-top: 48px;
       }
-      .add-card mwc-button {
-        display: block;
-        text-align: center;
+      ha-svg-icon {
+        height: 20px;
       }
     `;
   }

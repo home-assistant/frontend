@@ -20,11 +20,12 @@ import { baseTriggerStruct, forDictStruct } from "../../structs";
 import { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import { HaFormSchema } from "../../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
+    alias: optional(string()),
     platform: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
@@ -38,26 +39,75 @@ const stateTriggerStruct = assign(
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trigger!: StateTrigger;
+  @property({ attribute: false }) public trigger!: StateTrigger;
 
   public static get defaultConfig() {
     return { entity_id: [] };
   }
 
-  private _schema = memoizeOne((entityId) => [
-    {
-      name: "entity_id",
-      required: true,
-      selector: { entity: { multiple: true } },
-    },
-    {
-      name: "attribute",
-      selector: { attribute: { entity_id: entityId } },
-    },
-    { name: "from", selector: { text: {} } },
-    { name: "to", selector: { text: {} } },
-    { name: "for", selector: { duration: {} } },
-  ]);
+  private _schema = memoizeOne(
+    (entityId, attribute) =>
+      [
+        {
+          name: "entity_id",
+          required: true,
+          selector: { entity: { multiple: true } },
+        },
+        {
+          name: "attribute",
+          selector: {
+            attribute: {
+              entity_id: entityId ? entityId[0] : undefined,
+              hide_attributes: [
+                "access_token",
+                "available_modes",
+                "color_modes",
+                "device_class",
+                "editable",
+                "effect_list",
+                "entity_picture",
+                "fan_modes",
+                "fan_speed_list",
+                "friendly_name",
+                "has_date",
+                "has_time",
+                "hvac_modes",
+                "icon",
+                "operation_list",
+                "options",
+                "preset_modes",
+                "sound_mode_list",
+                "source_list",
+                "state_class",
+                "supported_features",
+                "swing_modes",
+                "token",
+                "unit_of_measurement",
+              ],
+            },
+          },
+        },
+        {
+          name: "from",
+          selector: {
+            state: {
+              entity_id: entityId ? entityId[0] : undefined,
+              attribute: attribute,
+            },
+          },
+        },
+        {
+          name: "to",
+          selector: {
+            state: {
+              entity_id: entityId ? entityId[0] : undefined,
+              attribute: attribute,
+            },
+          },
+        },
+        { name: "for", selector: { duration: {} } },
+      ] as const
+  );
 
   public shouldUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("trigger")) {
@@ -96,7 +146,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
-    const schema = this._schema(this.trigger.entity_id);
+    const schema = this._schema(this.trigger.entity_id, this.trigger.attribute);
 
     return html`
       <ha-form
@@ -122,7 +172,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
       schema.name === "entity_id"
         ? "ui.components.entity.entity-picker.entity"

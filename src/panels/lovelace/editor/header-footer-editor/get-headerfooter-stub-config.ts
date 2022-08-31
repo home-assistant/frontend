@@ -4,7 +4,7 @@ import { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 
 export const getHeaderFooterStubConfig = async (
   hass: HomeAssistant,
-  type: string,
+  type: LovelaceHeaderFooterConfig["type"],
   entities: string[],
   entitiesFallback: string[]
 ): Promise<LovelaceHeaderFooterConfig> => {

@@ -40,6 +40,7 @@ import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
+  AddonCapability,
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -701,7 +702,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private _showMoreInfo(ev): void {
-    const id = ev.currentTarget.id;
+    const id = ev.currentTarget.id as AddonCapability;
     showHassioMarkdownDialog(this, {
       title: this.supervisor.localize(`addon.dashboard.capability.${id}.title`),
       content:

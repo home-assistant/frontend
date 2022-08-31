@@ -30,8 +30,10 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 import type { HaTextField } from "../../../components/ha-textfield";
-
-let Sortable;
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
@@ -59,7 +61,7 @@ class HuiShoppingListCard
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   @query("#sortable") private _sortableEl?: HTMLElement;
 
@@ -299,12 +301,6 @@ class HuiShoppingListCard
   }
 
   private async _toggleReorder() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
-      Sortable = sortableImport.Sortable;
-    }
     this._reordering = !this._reordering;
     await this.updateComplete;
     if (this._reordering) {
@@ -315,18 +311,22 @@ class HuiShoppingListCard
     }
   }
 
-  private _createSortable() {
+  private async _createSortable() {
+    const Sortable = await loadSortable();
     const sortableEl = this._sortableEl;
-    this._sortable = new Sortable(sortableEl, {
+    this._sortable = new Sortable(sortableEl!, {
       animation: 150,
       fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
       handle: "ha-svg-icon",
       onEnd: async (evt) => {
+        if (evt.newIndex === undefined || evt.oldIndex === undefined) {
+          return;
+        }
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
         if (evt.oldIndex !== evt.newIndex) {
-          reorderItems(this.hass!, this._sortable.toArray()).catch(() =>
+          reorderItems(this.hass!, this._sortable!.toArray()).catch(() =>
             this._fetchData()
           );
           // Move the shopping list item in memory.

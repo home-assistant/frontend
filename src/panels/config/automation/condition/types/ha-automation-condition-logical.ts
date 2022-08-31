@@ -1,14 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type {
-  Condition,
-  LogicalCondition,
-} from "../../../../../data/automation";
+import type { LogicalCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-condition";
 import type { ConditionElement } from "../ha-automation-condition-row";
-import { HaStateCondition } from "./ha-automation-condition-state";
 
 @customElement("ha-automation-condition-logical")
 export class HaLogicalCondition extends LitElement implements ConditionElement {
@@ -18,12 +14,7 @@ export class HaLogicalCondition extends LitElement implements ConditionElement {
 
   public static get defaultConfig() {
     return {
-      conditions: [
-        {
-          condition: "state",
-          ...HaStateCondition.defaultConfig,
-        },
-      ] as Condition[],
+      conditions: [],
     };
   }
 

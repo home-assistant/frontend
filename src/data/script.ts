@@ -28,7 +28,12 @@ import {
 import { BlueprintInput } from "./blueprint";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
-export const MODES_MAX = ["queued", "parallel"];
+export const MODES_MAX = ["queued", "parallel"] as const;
+
+export const isMaxMode = (
+  mode: typeof MODES[number]
+): mode is typeof MODES_MAX[number] =>
+  MODES_MAX.includes(mode as typeof MODES_MAX[number]);
 
 export const baseActionStruct = object({
   alias: optional(string()),
@@ -150,9 +155,17 @@ export interface WaitAction extends BaseAction {
   continue_on_timeout?: boolean;
 }
 
+export interface WaitForTriggerActionParts extends BaseAction {
+  milliseconds?: number;
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  days?: number;
+}
+
 export interface WaitForTriggerAction extends BaseAction {
   wait_for_trigger: Trigger | Trigger[];
-  timeout?: number;
+  timeout?: number | Partial<WaitForTriggerActionParts> | string;
   continue_on_timeout?: boolean;
 }
 
@@ -275,7 +288,7 @@ export const canRun = (state: ScriptEntity) => {
   }
   if (
     state.state === "on" &&
-    MODES_MAX.includes(state.attributes.mode) &&
+    isMaxMode(state.attributes.mode) &&
     state.attributes.current! < state.attributes.max!
   ) {
     return true;

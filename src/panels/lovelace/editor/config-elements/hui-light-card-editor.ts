@@ -15,7 +15,7 @@ import { configElementStyle } from "./config-elements-style";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -44,37 +44,34 @@ export class HuiLightCardEditor
   }
 
   private _schema = memoizeOne(
-    (
-      entity: string,
-      icon: string | undefined,
-      entityState: HassEntity
-    ): HaFormSchema[] => [
-      {
-        name: "entity",
-        required: true,
-        selector: { entity: { domain: "light" } },
-      },
-      {
-        type: "grid",
-        name: "",
-        schema: [
-          { name: "name", selector: { text: {} } },
-          {
-            name: "icon",
-            selector: {
-              icon: {
-                placeholder: icon || entityState?.attributes.icon,
-                fallbackPath:
-                  !icon && !entityState?.attributes.icon && entityState
-                    ? domainIcon(computeDomain(entity), entityState)
-                    : undefined,
+    (entity: string, icon: string | undefined, entityState: HassEntity) =>
+      [
+        {
+          name: "entity",
+          required: true,
+          selector: { entity: { domain: "light" } },
+        },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            { name: "name", selector: { text: {} } },
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon && !entityState?.attributes.icon && entityState
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
+                },
               },
             },
-          },
-        ],
-      },
-      { name: "theme", selector: { theme: {} } },
-    ]
+          ],
+        },
+        { name: "theme", selector: { theme: {} } },
+      ] as const
   );
 
   get _hold_action(): ActionConfig {
@@ -172,7 +169,9 @@ export class HuiLightCardEditor
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     if (schema.name === "entity") {
       return this.hass!.localize(
         "ui.panel.lovelace.editor.card.generic.entity"

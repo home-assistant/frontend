@@ -6,9 +6,9 @@ import "../ha-time-input";
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public selector!: TimeSelector;
+  @property({ attribute: false }) public selector!: TimeSelector;
 
   @property() public value?: string;
 

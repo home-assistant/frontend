@@ -37,6 +37,9 @@ export class HaSceneAction extends LitElement implements ActionElement {
     return html`
       <ha-entity-picker
         .hass=${this.hass}
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.activate_scene.scene"
+        )}
         .value=${scene}
         @value-changed=${this._entityPicked}
         .includeDomains=${includeDomains}

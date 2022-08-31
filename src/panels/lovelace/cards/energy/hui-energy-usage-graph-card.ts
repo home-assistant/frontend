@@ -246,7 +246,7 @@ export class HuiEnergyUsageGraphCard
                     : "",
                   totalReturned
                     ? this.hass.localize(
-                        "ui.panel.lovelace.cards.energyenergy_usage_graph.total_returned",
+                        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_returned",
                         { num: formatNumber(totalReturned, locale) }
                       )
                     : "",
@@ -620,7 +620,11 @@ export class HuiEnergyUsageGraphCard
           label:
             type in labels
               ? labels[type]
-              : getStatisticLabel(this.hass, statId, statisticsMetaData),
+              : getStatisticLabel(
+                  this.hass,
+                  statId,
+                  statisticsMetaData[statId]
+                ),
           order:
             type === "used_solar"
               ? 1

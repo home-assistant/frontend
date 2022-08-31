@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { array, assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { ActionConfig } from "../../../../data/lovelace";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
@@ -36,7 +36,7 @@ const cardConfigStruct = assign(
 
 const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "image", selector: { text: {} } },
   { name: "camera_image", selector: { entity: { domain: "camera" } } },
@@ -53,7 +53,7 @@ const SCHEMA: HaFormSchema[] = [
   },
   { name: "entity", selector: { entity: {} } },
   { name: "theme", selector: { theme: {} } },
-];
+] as const;
 
 @customElement("hui-picture-glance-card-editor")
 export class HuiPictureGlanceCardEditor
@@ -158,29 +158,23 @@ export class HuiPictureGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
-    if (schema.name === "entity") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.picture-glance.state_entity"
-      );
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      case "entity":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.picture-glance.state_entity"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-
-    if (schema.name === "theme") {
-      return `${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.theme"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.optional"
-      )})`;
-    }
-
-    return (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      ) ||
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.picture-glance.${schema.name}`
-      )
-    );
   };
 
   static styles: CSSResultGroup = configElementStyle;

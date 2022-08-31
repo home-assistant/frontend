@@ -9,7 +9,6 @@ import {
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import {
@@ -28,6 +27,10 @@ import {
   GridSourceTypeEnergyPreference,
   saveEnergyPreferences,
 } from "../../../../data/energy";
+import {
+  StatisticsMetaData,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import {
   showAlertDialog,
@@ -50,6 +53,9 @@ export class EnergyGridSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  @property({ attribute: false })
+  public statsMetadata!: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -127,9 +133,11 @@ export class EnergyGridSettings extends LitElement {
                       .path=${mdiHomeImportOutline}
                     ></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : flow.stat_energy_from}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    flow.stat_energy_from,
+                    this.statsMetadata[flow.stat_energy_from]
+                  )}</span
                 >
                 <ha-icon-button
                   .label=${this.hass.localize(
@@ -172,9 +180,11 @@ export class EnergyGridSettings extends LitElement {
                       .path=${mdiHomeExportOutline}
                     ></ha-svg-icon>`}
                 <span class="content"
-                  >${entityState
-                    ? computeStateName(entityState)
-                    : flow.stat_energy_to}</span
+                  >${getStatisticLabel(
+                    this.hass,
+                    flow.stat_energy_to,
+                    this.statsMetadata[flow.stat_energy_to]
+                  )}</span
                 >
                 <ha-icon-button
                   .label=${this.hass.localize(

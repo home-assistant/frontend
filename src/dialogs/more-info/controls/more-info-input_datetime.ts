@@ -60,7 +60,7 @@ class MoreInfoInputDatetime extends LitElement {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev): void {
+  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
     setInputDateTimeValue(
       this.hass!,
       this.stateObj!.entity_id,
@@ -69,10 +69,9 @@ class MoreInfoInputDatetime extends LitElement {
         ? this.stateObj!.state.split(" ")[0]
         : undefined
     );
-    ev.target.blur();
   }
 
-  private _dateChanged(ev): void {
+  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
     setInputDateTimeValue(
       this.hass!,
       this.stateObj!.entity_id,
@@ -81,8 +80,6 @@ class MoreInfoInputDatetime extends LitElement {
         : undefined,
       ev.detail.value
     );
-
-    ev.target.blur();
   }
 
   static get styles(): CSSResultGroup {

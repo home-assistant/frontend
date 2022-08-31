@@ -15,13 +15,13 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
 import "../ha-alert";
 import "../ha-form/ha-form";
-import type { HaFormSchema } from "../ha-form/types";
+import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 
 const MANUAL_SCHEMA = [
   { name: "media_content_id", required: false, selector: { text: {} } },
   { name: "media_content_type", required: false, selector: { text: {} } },
-];
+] as const;
 
 @customElement("ha-selector-media")
 export class HaMediaSelector extends LitElement {
@@ -163,7 +163,9 @@ export class HaMediaSelector extends LitElement {
           </ha-card>`}`;
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<typeof MANUAL_SCHEMA>
+  ): string =>
     this.hass.localize(`ui.components.selectors.media.${schema.name}`);
 
   private _entityChanged(ev: CustomEvent) {

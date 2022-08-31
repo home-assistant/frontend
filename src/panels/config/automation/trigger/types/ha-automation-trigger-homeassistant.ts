@@ -5,8 +5,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HassTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-homeassistant")
 export class HaHassTrigger extends LitElement {
@@ -14,27 +14,30 @@ export class HaHassTrigger extends LitElement {
 
   @property({ attribute: false }) public trigger!: HassTrigger;
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => [
-    {
-      name: "event",
-      type: "select",
-      required: true,
-      options: [
-        [
-          "start",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
-          ),
-        ],
-        [
-          "shutdown",
-          localize(
-            "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
-          ),
-        ],
-      ],
-    },
-  ]);
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        {
+          name: "event",
+          type: "select",
+          required: true,
+          options: [
+            [
+              "start",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
+              ),
+            ],
+            [
+              "shutdown",
+              localize(
+                "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
+              ),
+            ],
+          ],
+        },
+      ] as const
+  );
 
   public static get defaultConfig() {
     return {
@@ -60,9 +63,11 @@ export class HaHassTrigger extends LitElement {
     fireEvent(this, "value-changed", { value: newTrigger });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema): string =>
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
     this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.geo_location.${schema.name}`
+      `ui.panel.config.automation.editor.triggers.type.homeassistant.${schema.name}`
     );
 
   static styles = css`

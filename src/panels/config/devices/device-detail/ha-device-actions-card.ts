@@ -7,9 +7,9 @@ import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-actions-card")
 export class HaDeviceActionsCard extends HaDeviceAutomationCard<DeviceAction> {
-  protected type = "action";
+  readonly type = "action";
 
-  protected headerKey = "ui.panel.config.devices.automation.actions.caption";
+  readonly headerKey = "ui.panel.config.devices.automation.actions.caption";
 
   constructor() {
     super(localizeDeviceAutomationAction);

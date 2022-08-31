@@ -16,7 +16,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { SensorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -52,61 +52,58 @@ export class HuiSensorCardEditor
   }
 
   private _schema = memoizeOne(
-    (
-      entity: string,
-      icon: string | undefined,
-      entityState: HassEntity
-    ): HaFormSchema[] => [
-      {
-        name: "entity",
-        selector: {
-          entity: { domain: ["counter", "input_number", "number", "sensor"] },
+    (entity: string, icon: string | undefined, entityState: HassEntity) =>
+      [
+        {
+          name: "entity",
+          selector: {
+            entity: { domain: ["counter", "input_number", "number", "sensor"] },
+          },
         },
-      },
-      { name: "name", selector: { text: {} } },
-      {
-        type: "grid",
-        name: "",
-        schema: [
-          {
-            name: "icon",
-            selector: {
-              icon: {
-                placeholder: icon || entityState?.attributes.icon,
-                fallbackPath:
-                  !icon && !entityState?.attributes.icon && entityState
-                    ? domainIcon(computeDomain(entity), entityState)
-                    : undefined,
+        { name: "name", selector: { text: {} } },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {
+                  placeholder: icon || entityState?.attributes.icon,
+                  fallbackPath:
+                    !icon && !entityState?.attributes.icon && entityState
+                      ? domainIcon(computeDomain(entity), entityState)
+                      : undefined,
+                },
               },
             },
-          },
-          {
-            name: "graph",
-            selector: {
-              select: {
-                options: [
-                  {
-                    value: "none",
-                    label: "None",
-                  },
-                  {
-                    value: "line",
-                    label: "Line",
-                  },
-                ],
+            {
+              name: "graph",
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "none",
+                      label: "None",
+                    },
+                    {
+                      value: "line",
+                      label: "Line",
+                    },
+                  ],
+                },
               },
             },
-          },
-          { name: "unit", selector: { text: {} } },
-          { name: "detail", selector: { boolean: {} } },
-          { name: "theme", selector: { theme: {} } },
-          {
-            name: "hours_to_show",
-            selector: { number: { min: 1, mode: "box" } },
-          },
-        ],
-      },
-    ]
+            { name: "unit", selector: { text: {} } },
+            { name: "detail", selector: { boolean: {} } },
+            { name: "theme", selector: { theme: {} } },
+            {
+              name: "hours_to_show",
+              selector: { number: { min: 1, mode: "box" } },
+            },
+          ],
+        },
+      ] as const
   );
 
   protected render(): TemplateResult {
@@ -146,33 +143,29 @@ export class HuiSensorCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (schema: HaFormSchema) => {
-    if (schema.name === "entity") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.entity"
-      );
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "theme":
+        return `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      case "detail":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.sensor.show_more_detail"
+        );
+      case "graph":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.sensor.graph_type"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
     }
-
-    if (schema.name === "theme") {
-      return `${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.generic.theme"
-      )} (${this.hass!.localize(
-        "ui.panel.lovelace.editor.card.config.optional"
-      )})`;
-    }
-
-    if (schema.name === "detail") {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.card.sensor.show_more_detail"
-      );
-    }
-
-    return (
-      this.hass!.localize(
-        `ui.panel.lovelace.editor.card.generic.${schema.name}`
-      ) ||
-      this.hass!.localize(`ui.panel.lovelace.editor.card.sensor.${schema.name}`)
-    );
   };
 
   static get styles(): CSSResultGroup {

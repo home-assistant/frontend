@@ -37,3 +37,11 @@ export interface HardwareInfoBoardInfo {
   revision?: string;
   hassio_board_id?: string;
 }
+
+export interface SystemStatusStreamMessage {
+  cpu_percent: number;
+  memory_free_mb: number;
+  memory_used_mb: number;
+  memory_used_percent: number;
+  timestamp: string;
+}

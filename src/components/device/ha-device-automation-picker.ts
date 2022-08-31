@@ -172,8 +172,7 @@ export abstract class HaDeviceAutomationPicker<
   static get styles(): CSSResultGroup {
     return css`
       ha-select {
-        width: 100%;
-        margin-top: 4px;
+        display: block;
       }
     `;
   }

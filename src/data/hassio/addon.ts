@@ -1,6 +1,6 @@
 import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, TranslationDict } from "../../types";
 import { supervisorApiCall } from "../supervisor/common";
 import { StoreAddonDetails } from "../supervisor/store";
 import { Supervisor, SupervisorArch } from "../supervisor/supervisor";
@@ -10,6 +10,10 @@ import {
   HassioResponse,
 } from "./common";
 
+export type AddonCapability = Exclude<
+  keyof TranslationDict["supervisor"]["addon"]["dashboard"]["capability"],
+  "label" | "role" | "stages"
+>;
 export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
 export type AddonRole = "default" | "homeassistant" | "manager" | "admin";

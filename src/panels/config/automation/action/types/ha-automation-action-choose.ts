@@ -1,6 +1,6 @@
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiPlus } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ensureArray } from "../../../../../common/ensure-array";
 import "../../../../../components/ha-icon-button";
@@ -17,8 +17,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property() public action!: ChooseAction;
 
+  @state() private _showDefault = false;
+
   public static get defaultConfig() {
-    return { choose: [{ conditions: [], sequence: [] }], default: [] };
+    return { choose: [{ conditions: [], sequence: [] }] };
   }
 
   protected render() {
@@ -69,26 +71,40 @@ export class HaChooseAction extends LitElement implements ActionElement {
           </div>
         </ha-card>`
       )}
-      <ha-card outlined>
-        <div class="card-actions add-card">
-          <mwc-button @click=${this._addOption}>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.type.choose.add_option"
-            )}
-          </mwc-button>
-        </div>
-      </ha-card>
-      <h2>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.default"
-        )}:
-      </h2>
-      <ha-automation-action
-        .actions=${action.default || []}
-        @value-changed=${this._defaultChanged}
-        .hass=${this.hass}
-      ></ha-automation-action>
+      <mwc-button
+        outlined
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.choose.add_option"
+        )}
+        @click=${this._addOption}
+      >
+        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+      </mwc-button>
+      ${this._showDefault || action.default
+        ? html`
+            <h2>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.default"
+              )}:
+            </h2>
+            <ha-automation-action
+              .actions=${action.default || []}
+              @value-changed=${this._defaultChanged}
+              .hass=${this.hass}
+            ></ha-automation-action>
+          `
+        : html` <div class="link-button-row">
+            <button class="link" @click=${this._addDefault}>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_default"
+              )}
+            </button>
+          </div>`}
     `;
+  }
+
+  private _addDefault() {
+    this._showDefault = true;
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -154,7 +170,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
       haStyle,
       css`
         ha-card {
-          margin-top: 16px;
+          margin: 16px 0;
         }
         .add-card mwc-button {
           display: block;
@@ -167,6 +183,12 @@ export class HaChooseAction extends LitElement implements ActionElement {
         }
         ha-form::part(root) {
           overflow: visible;
+        }
+        ha-svg-icon {
+          height: 20px;
+        }
+        .link-button-row {
+          padding: 14px;
         }
       `,
     ];

@@ -18,7 +18,6 @@ import {
   hex2rgb,
 } from "../../../../common/color/convert-color";
 import { labBrighten, labDarken } from "../../../../common/color/lab";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
@@ -28,7 +27,10 @@ import {
   getEnergyDataCollection,
   getEnergyGasUnit,
 } from "../../../../data/energy";
-import { calculateStatisticSumGrowth } from "../../../../data/history";
+import {
+  calculateStatisticSumGrowth,
+  getStatisticLabel,
+} from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
@@ -129,8 +131,7 @@ export class HuiEnergySourcesTableCard
       );
 
     const gasUnit =
-      getEnergyGasUnit(this.hass, this._data.prefs, this._data.statsMetadata) ||
-      "";
+      getEnergyGasUnit(this._data.prefs, this._data.statsMetadata) || "";
 
     const compare = this._data.statsCompare !== undefined;
 
@@ -199,7 +200,6 @@ export class HuiEnergySourcesTableCard
             </thead>
             <tbody class="mdc-data-table__content">
               ${types.solar?.map((source, idx) => {
-                const entity = this.hass.states[source.stat_energy_from];
                 const energy =
                   calculateStatisticSumGrowth(
                     this._data!.stats[source.stat_energy_from]
@@ -235,9 +235,11 @@ export class HuiEnergySourcesTableCard
                     ></div>
                   </td>
                   <th class="mdc-data-table__cell" scope="row">
-                    ${entity
-                      ? computeStateName(entity)
-                      : source.stat_energy_from}
+                    ${getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_from,
+                      this._data?.statsMetadata[source.stat_energy_from]
+                    )}
                   </th>
                   ${compare
                     ? html`<td
@@ -287,8 +289,6 @@ export class HuiEnergySourcesTableCard
                   </tr>`
                 : ""}
               ${types.battery?.map((source, idx) => {
-                const entityFrom = this.hass.states[source.stat_energy_from];
-                const entityTo = this.hass.states[source.stat_energy_to];
                 const energyFrom =
                   calculateStatisticSumGrowth(
                     this._data!.stats[source.stat_energy_from]
@@ -343,9 +343,11 @@ export class HuiEnergySourcesTableCard
                       ></div>
                     </td>
                     <th class="mdc-data-table__cell" scope="row">
-                      ${entityFrom
-                        ? computeStateName(entityFrom)
-                        : source.stat_energy_from}
+                      ${getStatisticLabel(
+                        this.hass,
+                        source.stat_energy_from,
+                        this._data?.statsMetadata[source.stat_energy_from]
+                      )}
                     </th>
                     ${compare
                       ? html`<td
@@ -378,9 +380,11 @@ export class HuiEnergySourcesTableCard
                       ></div>
                     </td>
                     <th class="mdc-data-table__cell" scope="row">
-                      ${entityTo
-                        ? computeStateName(entityTo)
-                        : source.stat_energy_from}
+                      ${getStatisticLabel(
+                        this.hass,
+                        source.stat_energy_to,
+                        this._data?.statsMetadata[source.stat_energy_to]
+                      )}
                     </th>
                     ${compare
                       ? html`<td
@@ -440,7 +444,6 @@ export class HuiEnergySourcesTableCard
                 : ""}
               ${types.grid?.map(
                 (source) => html`${source.flow_from.map((flow, idx) => {
-                  const entity = this.hass.states[flow.stat_energy_from];
                   const energy =
                     calculateStatisticSumGrowth(
                       this._data!.stats[flow.stat_energy_from]
@@ -498,9 +501,11 @@ export class HuiEnergySourcesTableCard
                       ></div>
                     </td>
                     <th class="mdc-data-table__cell" scope="row">
-                      ${entity
-                        ? computeStateName(entity)
-                        : flow.stat_energy_from}
+                      ${getStatisticLabel(
+                        this.hass,
+                        flow.stat_energy_from,
+                        this._data?.statsMetadata[flow.stat_energy_from]
+                      )}
                     </th>
                     ${compare
                       ? html`<td
@@ -545,7 +550,6 @@ export class HuiEnergySourcesTableCard
                   </tr>`;
                 })}
                 ${source.flow_to.map((flow, idx) => {
-                  const entity = this.hass.states[flow.stat_energy_to];
                   const energy =
                     (calculateStatisticSumGrowth(
                       this._data!.stats[flow.stat_energy_to]
@@ -602,7 +606,11 @@ export class HuiEnergySourcesTableCard
                       ></div>
                     </td>
                     <th class="mdc-data-table__cell" scope="row">
-                      ${entity ? computeStateName(entity) : flow.stat_energy_to}
+                      ${getStatisticLabel(
+                        this.hass,
+                        flow.stat_energy_to,
+                        this._data?.statsMetadata[flow.stat_energy_to]
+                      )}
                     </th>
                     ${compare
                       ? html`<td
@@ -695,7 +703,6 @@ export class HuiEnergySourcesTableCard
                   </tr>`
                 : ""}
               ${types.gas?.map((source, idx) => {
-                const entity = this.hass.states[source.stat_energy_from];
                 const energy =
                   calculateStatisticSumGrowth(
                     this._data!.stats[source.stat_energy_from]
@@ -752,9 +759,11 @@ export class HuiEnergySourcesTableCard
                     ></div>
                   </td>
                   <th class="mdc-data-table__cell" scope="row">
-                    ${entity
-                      ? computeStateName(entity)
-                      : source.stat_energy_from}
+                    ${getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_from,
+                      this._data?.statsMetadata[source.stat_energy_from]
+                    )}
                   </th>
                   ${compare
                     ? html` <td
