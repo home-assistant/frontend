@@ -301,6 +301,7 @@ export class HaSceneEditor extends SubscribeMixin(
                         )}
                       ></ha-textfield>
                       <ha-icon-picker
+                        .hass=${this.hass}
                         .label=${this.hass.localize(
                           "ui.panel.config.scene.editor.icon"
                         )}
