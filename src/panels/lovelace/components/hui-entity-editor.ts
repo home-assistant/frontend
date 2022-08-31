@@ -15,10 +15,12 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
+import {
+  loadSortable,
+  SortableInstance,
+} from "../../../resources/sortable.ondemand";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "../entity-rows/types";
-
-let Sortable;
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -32,7 +34,7 @@ export class HuiEntityEditor extends LitElement {
 
   @state() private _renderEmptySortable = false;
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -123,23 +125,18 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private async _createSortable() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
+    const Sortable = await loadSortable();
 
-      Sortable = sortableImport.Sortable;
-      Sortable.mount(sortableImport.OnSpill);
-      Sortable.mount(sortableImport.AutoScroll());
-    }
-
-    this._sortable = new Sortable(this.shadowRoot!.querySelector(".entities"), {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      handle: "ha-svg-icon",
-      dataIdAttr: "data-entity-id",
-      onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
-    });
+    this._sortable = new Sortable(
+      this.shadowRoot!.querySelector(".entities")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        handle: "ha-svg-icon",
+        dataIdAttr: "data-entity-id",
+        onEnd: async (evt: SortableEvent) => this._entityMoved(evt),
+      }
+    );
   }
 
   private async _addEntity(ev: CustomEvent): Promise<void> {

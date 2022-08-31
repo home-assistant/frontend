@@ -49,6 +49,7 @@ import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { updateCanInstall, UpdateEntity } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
+import { loadSortable, SortableInstance } from "../resources/sortable.ondemand";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
@@ -177,8 +178,6 @@ const computePanels = memoizeOne(
   }
 );
 
-let Sortable;
-
 @customElement("ha-sidebar")
 class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -205,6 +204,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _recentKeydownActiveUntil = 0;
 
+  private sortableStyleLoaded = false;
+
   // @ts-ignore
   @LocalStorage("sidebarPanelOrder", true, {
     attribute: false,
@@ -217,7 +218,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   })
   private _hiddenPanels: string[] = [];
 
-  private _sortable?;
+  private _sortable?: SortableInstance;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -658,36 +659,36 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private async _activateEditMode() {
-    if (!Sortable) {
-      const [sortableImport, sortStylesImport] = await Promise.all([
-        import("sortablejs/modular/sortable.core.esm"),
-        import("../resources/ha-sortable-style"),
-      ]);
-
-      const style = document.createElement("style");
-      style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
-      this.shadowRoot!.appendChild(style);
-
-      Sortable = sortableImport.Sortable;
-      Sortable.mount(sortableImport.OnSpill);
-      Sortable.mount(sortableImport.AutoScroll());
-    }
-
-    await this.updateComplete;
-
-    this._createSortable();
+    await Promise.all([this._loadSortableStyle(), this._createSortable()]);
   }
 
-  private _createSortable() {
-    this._sortable = new Sortable(this.shadowRoot!.getElementById("sortable"), {
-      animation: 150,
-      fallbackClass: "sortable-fallback",
-      dataIdAttr: "data-panel",
-      handle: "paper-icon-item",
-      onSort: async () => {
-        this._panelOrder = this._sortable.toArray();
-      },
-    });
+  private async _loadSortableStyle() {
+    if (this.sortableStyleLoaded) return;
+
+    const sortStylesImport = await import("../resources/ha-sortable-style");
+
+    const style = document.createElement("style");
+    style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
+    this.shadowRoot!.appendChild(style);
+
+    this.sortableStyleLoaded = true;
+    await this.updateComplete;
+  }
+
+  private async _createSortable() {
+    const Sortable = await loadSortable();
+    this._sortable = new Sortable(
+      this.shadowRoot!.getElementById("sortable")!,
+      {
+        animation: 150,
+        fallbackClass: "sortable-fallback",
+        dataIdAttr: "data-panel",
+        handle: "paper-icon-item",
+        onSort: async () => {
+          this._panelOrder = this._sortable!.toArray();
+        },
+      }
+    );
   }
 
   private _deactivateEditMode() {
